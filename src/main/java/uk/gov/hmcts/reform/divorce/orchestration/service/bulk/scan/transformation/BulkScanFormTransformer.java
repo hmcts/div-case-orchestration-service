@@ -48,4 +48,5 @@ public abstract class BulkScanFormTransformer {
     }
 
     abstract Map<String, String> getOcrToCCDMapping();
+
 }

@@ -24,7 +24,12 @@ import static org.awaitility.Awaitility.await;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_JUDGE_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.BULK_CASE_ACCEPTED_LIST_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_LIST_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_REFERENCE_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CREATE_EVENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.LISTED_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
 
@@ -32,13 +37,8 @@ public class RemoveCaseFromListingTest extends CcdSubmissionSupport {
 
     private static final String BULK_CREATE_JSON_FILE = "bulk-create.json";
     private static final String BULK_UPDATE_JSON_FILE = "bulk-update-listing.json";
-    private static final String SCHEDULE_CREATED_EVENT_ID = "create";
     private static final String SCHEDULE_FOR_LISTING_EVENT_ID = "scheduleForListing";
-    private static final String BULK_CASE_ACCEPTED_LIST_KEY = "CaseAcceptedList";
-    private static final String BULK_CASE_LIST_KEY = "CaseList";
     private static final String BULK_HEARING_DATE_TIME_KEY = "hearingDate";
-    private static final String CASE_REFERENCE_FIELD = "CaseReference";
-    private static final String BULK_LISTED_EVENT = "listed";
     private static final String REMOVE_FROM_BULK_LISTED_EVENT = "removeFromListed";
 
     private static final int  MAX_WAITING_TIME_IN_SECONDS = 90;
@@ -48,7 +48,6 @@ public class RemoveCaseFromListingTest extends CcdSubmissionSupport {
     @Test
     public void whenScheduleBulkCaseForRemoval_thenIndividualCasesShouldBeUpdated() throws Exception {
 
-        // given
         final UserDetails user1 = createCitizenUser();
         final UserDetails user2 = createCitizenUser();
 
@@ -64,21 +63,17 @@ public class RemoveCaseFromListingTest extends CcdSubmissionSupport {
 
         List<CollectionMember<Map<String, Object>>> caseList = asList(getCaseInfo(caseId1), getCaseInfo(caseId2));
         String bulkCaseId = submitBulkCase(BULK_CREATE_JSON_FILE, Pair.of(BULK_CASE_ACCEPTED_LIST_KEY, acceptedCases),
-            Pair.of(BULK_CASE_LIST_KEY, caseList))
+            Pair.of(CASE_LIST_KEY, caseList))
             .getId().toString();
 
         moveBulkCaseListed(bulkCaseId);
-
         waitForIndividualCasesToUpdate(createCaseWorkerUser(), caseId2);
 
-        // when
         updateCase(bulkCaseId, REMOVE_FROM_BULK_LISTED_EVENT, true, Pair.of(BULK_CASE_ACCEPTED_LIST_KEY, Collections.singletonList(caseLink1)));
 
         CaseDetails bulkCase = retrieveCaseForCaseworker(createCaseWorkerUser(), bulkCaseId);
-
         String jsonResponse = objectToJson(bulkCase);
 
-        // then
         assertThat(
             jsonResponse,
             hasJsonPath("$.case_data.D8DocumentsGenerated[0].value.DocumentFileName", is("caseListForPronouncement" + bulkCaseId))
@@ -93,12 +88,12 @@ public class RemoveCaseFromListingTest extends CcdSubmissionSupport {
     }
 
     private void moveBulkCaseListed(String bulkCaseId) {
-        updateCase(bulkCaseId, SCHEDULE_CREATED_EVENT_ID, true);
+        updateCase(bulkCaseId, CREATE_EVENT, true);
         updateCase(bulkCaseId, BULK_UPDATE_JSON_FILE, SCHEDULE_FOR_LISTING_EVENT_ID, true,
             Pair.of(BULK_HEARING_DATE_TIME_KEY, LocalDateTime.now().plusMonths(3).toString()),
             Pair.of(PRONOUNCEMENT_JUDGE_CCD_FIELD, TEST_JUDGE_NAME));
 
-        updateCase(bulkCaseId, BULK_LISTED_EVENT, true);
+        updateCase(bulkCaseId, LISTED_EVENT, true);
     }
 
     private CollectionMember<Map<String,Object>> getCaseInfo(String caseReference) {

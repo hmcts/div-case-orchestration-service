@@ -53,7 +53,7 @@ public class ProcessApplicantDAEligibilityTest extends MockedFunctionalTest {
         assertThat(jsonResponse, allOf(
             isJson(),
             hasJsonPath("$.data", allOf(
-                hasJsonPath(DATE_RESPONDENT_ELIGIBLE_FOR_DA_CCD_FIELD, equalTo("2019-07-28")),
+                hasJsonPath(DATE_RESPONDENT_ELIGIBLE_FOR_DA_CCD_FIELD, equalTo("2019-07-27")),
                 hasJsonPath(DATE_CASE_NO_LONGER_ELIGIBLE_FOR_DA_CCD_FIELD, equalTo("2020-03-15"))
             )),
             hasJsonPath("$.warnings", is(nullValue())),

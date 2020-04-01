@@ -22,14 +22,19 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.junit.Assert.assertThat;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_INVITATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_MADE_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 
 @Slf4j
@@ -40,8 +45,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
     private static final String CO_RESPONDENT_PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/co-respondent/";
     private static final String AOS_DEFEND_CONSENT_JSON = "aos-defend-consent.json";
 
-    private static final String PAYMENT_MADE = "payment-made.json";
-    private static final String PAYMENT_EVENT_ID = "paymentMade";
+    private static final String PAYMENT_MADE_JSON = "payment-made.json";
     private static final String ISSUE_EVENT_ID = "issueFromSubmitted";
     private static final String ISSUE_AOS_EVENT_ID = "issueAos";
     private static final String REJECTED_EVENT_ID = "rejected";
@@ -49,13 +53,9 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
 
     private static final String DOC_TYPE_MINI_PETITION = "petition";
     private static final String DOC_TYPE_AOS_INVITATION = "aos";
-    private static final String DOC_TYPE_CO_RESPONDENT_INVITATION = "aoscr";
     private static final String D8_MINI_PETITION_FILE_NAME_FORMAT = "d8petition%d.pdf";
     private static final String D8_AOS_INVITATION_FILE_NAME_FORMAT = "aosinvitation%s.pdf";
     private static final String D8_CO_RESPONDENT_INVITATION_FILE_NAME_FORMAT = "co-respondentaosinvitation%s.pdf";
-
-    private static final String AOS_LETTER_HOLDER_ID = "AosLetterHolderId";
-    private static final String CO_RESPONDENT_LETTER_HOLDER_ID = "CoRespLetterHolderId";
 
     @Value("${case.orchestration.maintenance.link-respondent.context-path}")
     private String linkRespondentContextPath;
@@ -66,8 +66,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_SERVICE_CENTRE_CASE, petitionerUserDetails);
 
         // make payment
-        updateCase(caseDetails.getId().toString(), PAYMENT_MADE, PAYMENT_EVENT_ID);
-
+        updateCase(caseDetails.getId().toString(), PAYMENT_MADE_JSON, PAYMENT_MADE_EVENT);
         final CaseDetails issuedCase = fireEvent(caseDetails.getId().toString(), ISSUE_EVENT_ID);
 
         assertGeneratedDocumentsExists(issuedCase, true, false);
@@ -80,8 +79,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_SERVICE_CENTRE_CO_RESPONDENT_CASE, petitionerUserDetails);
 
         // make payment
-        updateCase(caseDetails.getId().toString(), PAYMENT_MADE, PAYMENT_EVENT_ID);
-
+        updateCase(caseDetails.getId().toString(), PAYMENT_MADE_JSON, PAYMENT_MADE_EVENT);
         final CaseDetails issuedCase = fireEvent(caseDetails.getId().toString(), ISSUE_EVENT_ID);
 
         assertGeneratedDocumentsExists(issuedCase, true, true);
@@ -94,9 +92,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_SERVICE_CENTRE_CO_RESPONDENT_CASE, petitionerUserDetails);
 
         // make payment
-        updateCase(caseDetails.getId().toString(), null, PAYMENT_EVENT_ID);
-
-        // issue the case
+        updateCase(caseDetails.getId().toString(), null, PAYMENT_MADE_EVENT);
         fireEvent(caseDetails.getId().toString(), ISSUE_EVENT_ID);
 
         log.info("case {}", caseDetails.getId().toString());
@@ -106,7 +102,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
 
         // link the respondent
         final UserDetails respondentUser = createCitizenUser();
-        final String respondentPin = idamTestSupportUtil.getPin((String) updatedCaseDetails.getData().get(AOS_LETTER_HOLDER_ID));
+        final String respondentPin = idamTestSupportUtil.getPin((String) updatedCaseDetails.getData().get(RESPONDENT_LETTER_HOLDER_ID));
 
         linkRespondent(respondentUser.getAuthToken(), caseDetails.getId(), respondentPin);
 
@@ -160,7 +156,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
         final List<Map<String, Object>> documentsCollection = getDocumentsGenerated(caseDetails);
 
         Map<String, Object> miniPetition = documentsCollection.stream()
-            .filter(m -> m.get("DocumentType").equals(DOC_TYPE_MINI_PETITION))
+            .filter(m -> m.get(DOCUMENT_TYPE_JSON_KEY).equals(DOC_TYPE_MINI_PETITION))
             .findAny()
             .orElseThrow(() -> new AssertionError("Mini Petition not found"));
 
@@ -168,7 +164,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
 
         if (expectAosInvitation) {
             Map<String, Object> aosInvitation = documentsCollection.stream()
-                .filter(m -> m.get("DocumentType").equals(DOC_TYPE_AOS_INVITATION))
+                .filter(m -> m.get(DOCUMENT_TYPE_JSON_KEY).equals(DOC_TYPE_AOS_INVITATION))
                 .findAny()
                 .orElseThrow(() -> new AssertionError("AOS invitation not found"));
 
@@ -178,11 +174,11 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
 
         if (expectCoRespondentInvitation) {
             Map<String, Object> coRespondentInvitation = documentsCollection.stream()
-                .filter(m -> m.get("DocumentType").equals(DOC_TYPE_CO_RESPONDENT_INVITATION))
+                .filter(m -> m.get(DOCUMENT_TYPE_JSON_KEY).equals(DOCUMENT_TYPE_CO_RESPONDENT_INVITATION))
                 .findAny()
                 .orElseThrow(() -> new AssertionError("Co-respondent invitation not found"));
 
-            assertDocumentWasGenerated(coRespondentInvitation, DOC_TYPE_CO_RESPONDENT_INVITATION,
+            assertDocumentWasGenerated(coRespondentInvitation, DOCUMENT_TYPE_CO_RESPONDENT_INVITATION,
                 String.format(D8_CO_RESPONDENT_INVITATION_FILE_NAME_FORMAT, caseDetails.getId()));
         }
     }

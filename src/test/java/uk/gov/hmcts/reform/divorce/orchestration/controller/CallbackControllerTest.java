@@ -193,7 +193,7 @@ public class CallbackControllerTest {
         final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
         ccdCallbackRequest.setCaseDetails(caseDetails);
         when(caseOrchestrationService.sendPetitionerGenericUpdateNotificationEmail(ccdCallbackRequest)).thenReturn(caseData);
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.petitionUpdated(null, ccdCallbackRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.petitionUpdated(ccdCallbackRequest);
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
         assertEquals(OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
@@ -227,7 +227,7 @@ public class CallbackControllerTest {
 
         when(caseOrchestrationService.sendPetitionerSubmissionNotificationEmail(ccdCallbackRequest)).thenReturn(caseData);
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.petitionSubmitted(null, ccdCallbackRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.petitionSubmitted(ccdCallbackRequest);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
@@ -246,7 +246,7 @@ public class CallbackControllerTest {
 
         when(caseOrchestrationService.sendDnPronouncedNotificationEmail(ccdCallbackRequest)).thenReturn(caseData);
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.dnPronounced(null, ccdCallbackRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.dnPronounced(ccdCallbackRequest);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
@@ -1239,7 +1239,7 @@ public class CallbackControllerTest {
                 .data(DUMMY_CASE_DATA)
                 .build());
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.clarificationSubmitted(TEST_TOKEN, ccdCallbackRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.clarificationSubmitted(ccdCallbackRequest);
 
         assertThat(response.getStatusCode(), equalTo(OK));
         assertThat(response.getBody().getData(), is(DUMMY_CASE_DATA));

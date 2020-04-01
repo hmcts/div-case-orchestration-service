@@ -23,7 +23,7 @@ public class MakeCasesDAOverdueJob implements Job {
         try {
             log.info("Starting MakeCasesDAOverdue Job...");
             decreeAbsoluteService.processCaseOverdueForDecreeAbsolute(authUtil.getCaseworkerToken());
-            log.info("MakeCasesDAOverdue Job executed");
+            log.info("MakeCasesDAOverdue Job successfully executed");
         } catch (WorkflowException e) {
             throw new JobExecutionException("Cases overdue for DA failed", e);
         }

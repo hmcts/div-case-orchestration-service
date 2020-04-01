@@ -10,6 +10,8 @@ import uk.gov.hmcts.reform.divorce.support.CcdSubmissionSupport;
 
 import static org.junit.Assert.assertEquals;
 import static org.springframework.http.HttpStatus.OK;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_LEGAL_ADVISOR_REFERRAL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 
 public class SubmitDnCaseTest extends CcdSubmissionSupport {
     private static final String TEST_AOS_STARTED_EVENT_ID = "testAosStarted";
@@ -33,7 +35,7 @@ public class SubmitDnCaseTest extends CcdSubmissionSupport {
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
         assertEquals(caseDetails.getId(), cosResponse.path("id"));
-        assertEquals("AwaitingLegalAdvisorReferral", cosResponse.path("state"));
+        assertEquals(AWAITING_LEGAL_ADVISOR_REFERRAL, cosResponse.path(CASE_STATE_JSON_KEY));
     }
 
     @Ignore // Needs config to pass
@@ -51,7 +53,7 @@ public class SubmitDnCaseTest extends CcdSubmissionSupport {
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
         assertEquals(caseDetails.getId(), cosResponse.path("id"));
-        assertEquals("ClarificationSubmitted", cosResponse.path("state"));
+        assertEquals("ClarificationSubmitted", cosResponse.path(CASE_STATE_JSON_KEY));
     }
 
     private void updateCaseForCitizen(final String eventId) {
