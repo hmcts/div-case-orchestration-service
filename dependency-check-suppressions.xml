@@ -62,4 +62,12 @@
         <packageUrl regex="true">.*</packageUrl>
         <cve>CVE-2019-10797</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: elasticsearch-7.5.1.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.elasticsearch/elasticsearch@.*$</packageUrl>
+        <cpe>cpe:/a:elasticsearch:elasticsearch</cpe>
+        <cve>CVE-2020-7009</cve>
+    </suppress>
 </suppressions>
