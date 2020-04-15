@@ -58,4 +58,11 @@
         <packageUrl regex="true">.*</packageUrl>
         <cve>CVE-2019-10797</cve>
     </suppress>
+    <suppress>
+        <notes>Vulnerability applies to Netty 4.1.x before 4.1.46, project uses 4.1.42</notes>
+        <cve>CVE-2019-20444</cve>
+        <cve>CVE-2019-20445</cve>
+        <cve>CVE-2020-11612</cve>
+        <cve>CVE-2020-7238</cve>
+    </suppress>
 </suppressions>
