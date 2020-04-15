@@ -38,7 +38,7 @@ def versions = [
         commonsMath3                 : '3.6.1',
         divCommonLib                 : '1.0.7',
         dumbster                     : '1.7.1',
-        elasticsearch                : '7.5.1',
+        elasticsearch                : '7.6.2',
         feignHttpClient              : '10.3.0',
         flyway                       : '5.2.4',
         gradlePitest                 : '1.4.6',
