@@ -1,10 +1,13 @@
 package uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.mockito.InjectMocks;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.*;
 import static org.hamcrest.core.Is.is;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
@@ -16,6 +19,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLIC
 
 public class PaymentItemTest {
 
+    private static PaymentItem paymentItem = new PaymentItem();
     private static final String VALID_STRING = "150.50";
     private static final String NULL = null;
     private static final String INVALID_STRING_WORD = "NOT_A_NUMBER";
@@ -24,7 +28,9 @@ public class PaymentItemTest {
 
     @InjectMocks
     private OrderSummary orderSummary;
-    private static PaymentItem paymentItem = new PaymentItem();
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     @Before
     public void setup() {
@@ -43,16 +49,10 @@ public class PaymentItemTest {
         paymentItem.setVersion(TEST_FEE_VERSION.toString());
     }
 
-    private String convertStringToPennies(String amount) {
-        double amountAsDouble = Double.parseDouble(amount);
-        String amountConvertedToPennies = String.valueOf(amountAsDouble / 100);
-        return amountConvertedToPennies;
-    }
-
     @Test
     public void shouldSetCalculatedAmount_WithValidString() {
         paymentItem.setCalculatedAmount(VALID_STRING);
-        String amount = convertStringToPennies(VALID_STRING);
+        String amount = convertPoundsToPennies(VALID_STRING);
         assertEquals(paymentItem.getCalculatedAmount(), amount);
     }
 
@@ -62,11 +62,13 @@ public class PaymentItemTest {
         assertEquals(paymentItem.getCalculatedAmount(), NULL);
     }
 
-    @Test(expected = NumberFormatException.class)
-    public void shouldNotSetCalculatedAmount_WithWord() {
+    @Test
+    public void shouldThrowException_WhenValueIsNotANumber() {
+        thrown.expect(NumberFormatException.class);
+        thrown.expectMessage(containsString("Z"));
         paymentItem.setCalculatedAmount(INVALID_STRING_WORD);
-        assertThat(paymentItem.getCalculatedAmount(), is(INVALID_STRING_WORD));
     }
+
 
     @Test(expected = NumberFormatException.class)
     public void shouldNotSetCalculatedAmount_AsExponent() {
@@ -78,6 +80,11 @@ public class PaymentItemTest {
     public void shouldNotSetCalculatedAmount_WithNegativeString() {
         paymentItem.setCalculatedAmount(INVALID_DIGIT_NEGATIVE);
         assertNotEquals(paymentItem.getCalculatedAmount(), INVALID_DIGIT_NEGATIVE);
+    }
+
+    private String convertPoundsToPennies(String amount) {
+        double amountInPennies = Double.parseDouble(amount);
+        return String.valueOf(amountInPennies / 100);
     }
 
 }
