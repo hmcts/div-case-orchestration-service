@@ -69,12 +69,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SendDaGrantedNotificationEmailTest {
+public class SendDaGrantedNotificationEmailTaskTest {
 
     @Mock EmailService emailService;
 
     @InjectMocks
-    SendDaGrantedNotificationEmail sendDaGrantedNotificationEmail;
+    SendDaGrantedNotificationEmailTask sendDaGrantedNotificationEmail;
 
     private static String DA_GRANTED_NOTIFICATION_EMAIL_DESC = "Decree Absolute Notification - Decree Absolute Granted";
     private static String SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC = "Decree Absolute Notification To Solicitor - Decree Absolute Granted";
