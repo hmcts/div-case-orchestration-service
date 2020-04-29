@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SendDaGrantedNotificationEmailTaskWorkflowTest {
+public class SendDaGrantedNotificationEmailWorkflowTest {
 
     @Mock
     private SendDaGrantedNotificationEmailTask sendDaGrantedNotificationEmail;
