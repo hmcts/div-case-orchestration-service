@@ -62,7 +62,7 @@ public class SendDaGrantedNotificationEmailTask implements Task<Map<String, Obje
     private final LocalDateToWelshStringConverter localDateToWelshStringConverter;
 
     @Autowired
-    public SendDaGrantedNotificationEmail(EmailService emailService, LocalDateToWelshStringConverter localDateToWelshStringConverter) {
+    public SendDaGrantedNotificationEmailTask(EmailService emailService, LocalDateToWelshStringConverter localDateToWelshStringConverter) {
         this.emailService = emailService;
         this.localDateToWelshStringConverter = localDateToWelshStringConverter;
     }
