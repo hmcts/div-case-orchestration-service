@@ -53,7 +53,7 @@ import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomer
 
 @Component
 @Slf4j
-public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>> {
+public class SendDaGrantedNotificationEmailTask implements Task<Map<String, Object>> {
 
     private static final String EMAIL_DESC = "Decree Absolute Notification - Decree Absolute Granted";
     private static final String SOL_EMAIL_DESC = "Decree Absolute Notification To Solicitor - Decree Absolute Granted";
@@ -112,7 +112,7 @@ public class SendDaGrantedNotificationEmail implements Task<Map<String, Object>>
         templateVars.put(NOTIFICATION_RESP_NAME, respFirstName + " " + respLastName);
 
         Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
-        
+
         emailService.sendEmail(
                 solicitorEmail,
                 EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name(),
