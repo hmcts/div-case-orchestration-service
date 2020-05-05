@@ -78,7 +78,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.Applic
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.DnSubmittedEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.NotifyApplicantCanFinaliseDivorceWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.NotifyForRefusalOrderWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.SendDaGrantedNotificationEmailWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.SendDaGrantedNotificationWorkflow;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.math.BigDecimal;
@@ -312,7 +312,7 @@ public class CaseOrchestrationServiceImplTest {
     private NotifyApplicantCanFinaliseDivorceWorkflow notifyApplicantCanFinaliseDivorceWorkflow;
 
     @Mock
-    private SendDaGrantedNotificationEmailWorkflow sendDaGrantedNotificationEmailWorkflow;
+    private SendDaGrantedNotificationWorkflow sendDaGrantedNotificationWorkflow;
 
     @Mock
     private DnSubmittedEmailNotificationWorkflow dnSubmittedEmailNotificationWorkflow;
@@ -585,7 +585,7 @@ public class CaseOrchestrationServiceImplTest {
         CaseDetails caseDetails = CaseDetails.builder().state("notAwaitingPayment").build();
 
         when(getCaseWithIdWorkflow.run(any())).thenReturn(caseDetails);
-        
+
         Map<String, Object> actual = classUnderTest.update(paymentUpdate);
 
         assertEquals(Collections.EMPTY_MAP, actual);
@@ -1143,14 +1143,14 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void shouldCallTheRightWorkflow_forHandleDaGranted() throws WorkflowException {
-        when(sendDaGrantedNotificationEmailWorkflow.run(
+        when(sendDaGrantedNotificationWorkflow.run(
                 ccdCallbackRequest.getCaseDetails().getCaseData(),
                 ccdCallbackRequest.getCaseDetails().getCaseId()))
                 .thenReturn(requestPayload);
 
         classUnderTest.handleDaGranted(ccdCallbackRequest);
 
-        verify(sendDaGrantedNotificationEmailWorkflow).run(
+        verify(sendDaGrantedNotificationWorkflow).run(
                 ccdCallbackRequest.getCaseDetails().getCaseData(),
                 ccdCallbackRequest.getCaseDetails().getCaseId());
     }

@@ -13,7 +13,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @Component
-public class SendDaGrantedNotificationEmailWorkflow extends DefaultWorkflow<Map<String, Object>> {
+public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     @Autowired
     private SendDaGrantedNotificationEmailTask sendDaGrantedNotificationEmail;

@@ -76,7 +76,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.Applic
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.DnSubmittedEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.NotifyApplicantCanFinaliseDivorceWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.NotifyForRefusalOrderWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.SendDaGrantedNotificationEmailWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.SendDaGrantedNotificationWorkflow;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.math.BigDecimal;
@@ -160,7 +160,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final CleanStatusCallbackWorkflow cleanStatusCallbackWorkflow;
     private final MakeCaseEligibleForDecreeAbsoluteWorkflow makeCaseEligibleForDecreeAbsoluteWorkflow;
     private final DecreeAbsoluteAboutToBeGrantedWorkflow decreeAbsoluteAboutToBeGrantedWorkflow;
-    private final SendDaGrantedNotificationEmailWorkflow sendDaGrantedNotificationEmailWorkflow;
+    private final SendDaGrantedNotificationWorkflow sendDaGrantedNotificationWorkflow;
     private final ApplicantDecreeAbsoluteEligibilityWorkflow applicantDecreeAbsoluteEligibilityWorkflow;
     private final NotifyApplicantCanFinaliseDivorceWorkflow notifyApplicantCanFinaliseDivorceWorkflow;
     private final RemoveLinkWorkflow removeLinkWorkflow;
@@ -698,7 +698,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     public Map<String, Object> handleDaGranted(CcdCallbackRequest ccdCallbackRequest)
         throws WorkflowException {
 
-        return sendDaGrantedNotificationEmailWorkflow.run(
+        return sendDaGrantedNotificationWorkflow.run(
                 ccdCallbackRequest.getCaseDetails().getCaseData(),
                 ccdCallbackRequest.getCaseDetails().getCaseId());
     }
