@@ -695,12 +695,10 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> handleDaGranted(CcdCallbackRequest ccdCallbackRequest)
+    public Map<String, Object> handleDaGranted(CcdCallbackRequest ccdCallbackRequest, String authorisationToken)
         throws WorkflowException {
 
-        return sendDaGrantedNotificationWorkflow.run(
-                ccdCallbackRequest.getCaseDetails().getCaseData(),
-                ccdCallbackRequest.getCaseDetails().getCaseId());
+        return sendDaGrantedNotificationWorkflow.run(ccdCallbackRequest.getCaseDetails(), authorisationToken);
     }
 
     @Override

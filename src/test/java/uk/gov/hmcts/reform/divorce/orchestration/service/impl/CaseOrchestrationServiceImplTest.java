@@ -1143,16 +1143,11 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void shouldCallTheRightWorkflow_forHandleDaGranted() throws WorkflowException {
-        when(sendDaGrantedNotificationWorkflow.run(
-                ccdCallbackRequest.getCaseDetails().getCaseData(),
-                ccdCallbackRequest.getCaseDetails().getCaseId()))
-                .thenReturn(requestPayload);
+        when(sendDaGrantedNotificationWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN)).thenReturn(requestPayload);
 
-        classUnderTest.handleDaGranted(ccdCallbackRequest);
+        classUnderTest.handleDaGranted(ccdCallbackRequest, AUTH_TOKEN);
 
-        verify(sendDaGrantedNotificationWorkflow).run(
-                ccdCallbackRequest.getCaseDetails().getCaseData(),
-                ccdCallbackRequest.getCaseDetails().getCaseId());
+        verify(sendDaGrantedNotificationWorkflow).run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN);
     }
 
     @Test(expected = WorkflowException.class)

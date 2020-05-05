@@ -612,10 +612,12 @@ public class CallbackController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "DA Granted callback processed")})
     public ResponseEntity<CcdCallbackResponse> handleDaGranted(
+        @RequestHeader(value = AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
         return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .data(caseOrchestrationService.handleDaGranted(ccdCallbackRequest))
+            .data(caseOrchestrationService.handleDaGranted(ccdCallbackRequest, authorizationToken))
             .build());
     }
 

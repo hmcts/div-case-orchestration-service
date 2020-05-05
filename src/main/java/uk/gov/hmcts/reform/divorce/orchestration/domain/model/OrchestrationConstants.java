@@ -316,6 +316,9 @@ public class OrchestrationConstants {
     public static final String DECREE_ABSOLUTE_DOCUMENT_TYPE = "daGranted";
     public static final String DECREE_ABSOLUTE_FILENAME = "decreeAbsolute";
     public static final String DECREE_ABSOLUTE_TEMPLATE_ID = "FL-DIV-GOR-ENG-00062.docx";
+    public static final String DECREE_ABSOLUTE_LETTER_DOCUMENT_TYPE = "daGrantedLetter";
+    public static final String DECREE_ABSOLUTE_LETTER_FILENAME = "decreeAbsoluteLetter";
+    public static final String DECREE_ABSOLUTE_LETTER_TEMPLATE_ID = "FL-DIV-GOR-ENG-00355.docx";
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID = "FL-DIV-GNO-ENG-00073.docx";
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_FILENAME = "solicitor-personal-service-";
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE = "personalService";
