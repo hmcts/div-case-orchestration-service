@@ -10,9 +10,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.MultipleDocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaGrantedDocumentsToBulkPrintTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaGrantedNotificationEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,13 +39,16 @@ public class SendDaGrantedNotificationWorkflowTest {
     private SendDaGrantedNotificationEmailTask sendDaGrantedNotificationEmail;
 
     @Mock
-    private DocumentGenerationTask documentGenerationTask;
+    private  MultipleDocumentGenerationTask documentsGenerationTask;
 
     @Mock
     private CaseFormatterAddDocuments caseFormatterAddDocuments;
 
     @Mock
-    private SendDaGrantedDocumentsToBulkPrintTask sendDaGrantedDocumentsToBulkPrint;
+    private FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
+
+    @Mock
+    private BulkPrinter bulkPrinterTask;
 
     @InjectMocks
     private SendDaGrantedNotificationWorkflow sendDaGrantedNotificationWorkflow;
@@ -64,7 +69,7 @@ public class SendDaGrantedNotificationWorkflowTest {
         assertEquals(casePayload, result);
 
         verify(sendDaGrantedNotificationEmail,times(1)).execute(any(TaskContext.class), eq(casePayload));
-        verify(documentGenerationTask, never()).execute(any(TaskContext.class), eq(casePayload));
+        verify(documentsGenerationTask, never()).execute(any(TaskContext.class), eq(casePayload));
     }
 
     @Test
@@ -76,9 +81,10 @@ public class SendDaGrantedNotificationWorkflowTest {
 
         final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
-        when(documentGenerationTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
+        when(documentsGenerationTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
         when(caseFormatterAddDocuments.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
-        when(sendDaGrantedDocumentsToBulkPrint.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
+        when(fetchPrintDocsFromDmStore.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
+        when(bulkPrinterTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
 
         Map<String, Object> result = sendDaGrantedNotificationWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN_JSON_KEY);
 
@@ -86,9 +92,10 @@ public class SendDaGrantedNotificationWorkflowTest {
 
         verify(sendDaGrantedNotificationEmail,never()).execute(any(TaskContext.class), eq(casePayload));
 
-        verify(documentGenerationTask, times(1)).execute(any(TaskContext.class), eq(casePayload));
+        verify(documentsGenerationTask, times(1)).execute(any(TaskContext.class), eq(casePayload));
         verify(caseFormatterAddDocuments, times(1)).execute(any(TaskContext.class), eq(casePayload));
-        verify(sendDaGrantedDocumentsToBulkPrint, times(1)).execute(any(TaskContext.class), eq(casePayload));
+        verify(fetchPrintDocsFromDmStore, times(1)).execute(any(TaskContext.class), eq(casePayload));
+        verify(bulkPrinterTask, times(1)).execute(any(TaskContext.class), eq(casePayload));
     }
 
 }

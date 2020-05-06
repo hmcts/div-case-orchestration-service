@@ -4,69 +4,95 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentGenerationRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaGrantedDocumentsToBulkPrintTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.MultipleDocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaGrantedNotificationEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DA_GRANTED_OFFLINE_PACK_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_LETTER_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_LETTER_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_TEMPLATE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TEMPLATE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_GENERATION_REQUESTS_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter.BULK_PRINT_LETTER_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter.DOCUMENT_TYPES_TO_PRINT;
 
 @Component
 @RequiredArgsConstructor
 public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final SendDaGrantedNotificationEmailTask sendDaGrantedNotificationEmail;
-    private final DocumentGenerationTask documentGenerationTask;
+    private final MultipleDocumentGenerationTask documentsGenerationTask;
     private final CaseFormatterAddDocuments caseFormatterAddDocuments;
-    private final SendDaGrantedDocumentsToBulkPrintTask sendDaGrantedDocumentsToBulkPrint;
+    private final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
+    private final BulkPrinter bulkPrinter;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
         Map<String, Object> caseData = caseDetails.getCaseData();
-        String caseId = caseDetails.getCaseId();
+        List<DocumentGenerationRequest> documentGenerationRequestsList = getDocumentGenerationRequestsList();
+        final List<String> documentTypesToPrint = documentGenerationRequestsList.stream()
+            .map(DocumentGenerationRequest::getDocumentType)
+            .collect(Collectors.toList());
 
-        List<Task> taskList = new ArrayList<>();
+        List<Task> tasks = new ArrayList<>();
         if (isDigitalProcess(caseData)) {
-            taskList.add(sendDaGrantedNotificationEmail);
+            tasks.add(sendDaGrantedNotificationEmail);
         } else {
-            taskList.add(documentGenerationTask);
-            taskList.add(caseFormatterAddDocuments);
-            taskList.add(sendDaGrantedDocumentsToBulkPrint);
+            tasks.add(documentsGenerationTask);
+            tasks.add(caseFormatterAddDocuments);
+            tasks.add(fetchPrintDocsFromDmStore);
+            tasks.add(bulkPrinter);
         }
 
-        Task[] taskArr = new Task[taskList.size()];
+        Task[] taskArr = new Task[tasks.size()];
         return this.execute(
-            taskList.toArray(taskArr),
+            tasks.toArray(taskArr),
             caseData,
-            ImmutablePair.of(CASE_ID_JSON_KEY, caseId),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
-            ImmutablePair.of(DOCUMENT_TYPE, DECREE_ABSOLUTE_LETTER_DOCUMENT_TYPE),
-            ImmutablePair.of(DOCUMENT_TEMPLATE_ID, DECREE_ABSOLUTE_LETTER_TEMPLATE_ID),
-            ImmutablePair.of(DOCUMENT_FILENAME, DECREE_ABSOLUTE_LETTER_FILENAME)
+            ImmutablePair.of(DOCUMENT_GENERATION_REQUESTS_KEY, documentGenerationRequestsList),
+            ImmutablePair.of(BULK_PRINT_LETTER_TYPE, DA_GRANTED_OFFLINE_PACK_RESPONDENT),
+            ImmutablePair.of(DOCUMENT_TYPES_TO_PRINT, documentTypesToPrint)
         );
     }
 
-    public boolean isDigitalProcess(Map<String, Object> caseData) {
+    private List<DocumentGenerationRequest> getDocumentGenerationRequestsList() {
+        List<DocumentGenerationRequest> documentGenerationRequestList = new ArrayList<>();
+
+        DocumentGenerationRequest daGrantedCoverLetter = new DocumentGenerationRequest(
+            DECREE_ABSOLUTE_LETTER_TEMPLATE_ID,
+            DECREE_ABSOLUTE_LETTER_DOCUMENT_TYPE,
+            DECREE_ABSOLUTE_LETTER_FILENAME);
+
+        DocumentGenerationRequest daGrantedDocument = new DocumentGenerationRequest(
+            DECREE_ABSOLUTE_TEMPLATE_ID,
+            DECREE_ABSOLUTE_DOCUMENT_TYPE,
+            DECREE_ABSOLUTE_FILENAME);
+
+        documentGenerationRequestList.add(daGrantedCoverLetter);
+        documentGenerationRequestList.add(daGrantedDocument);
+
+        return documentGenerationRequestList;
+    }
+
+    private boolean isDigitalProcess(Map<String, Object> caseData) {
         String respContactMethodIsDigital = (String) caseData.get(RESP_IS_USING_DIGITAL_CHANNEL);
         return YES_VALUE.equalsIgnoreCase(respContactMethodIsDigital);
     }
