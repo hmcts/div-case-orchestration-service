@@ -23,7 +23,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -35,6 +37,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_TYPE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DA_GRANTED_OFFLINE_PACK_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_LETTER_DOCUMENT_TYPE;
@@ -45,6 +51,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter.BULK_PRINT_LETTER_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter.DOCUMENT_TYPES_TO_PRINT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SendDaGrantedNotificationWorkflowTest {
@@ -72,8 +80,8 @@ public class SendDaGrantedNotificationWorkflowTest {
 
     @Test
     public void notifyApplicantCanFinaliseDivorceTaskIsExecuted_send_email_if_is_digital_channel() throws Exception {
-        Map<String, Object> casePayload = getCasePayload(YES_VALUE);
-        final CaseDetails caseDetails = getCaseDetails(casePayload);
+        Map<String, Object> casePayload = buildTestCasePayload(YES_VALUE);
+        final CaseDetails caseDetails = buildTestCaseDetails(casePayload);
         final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
         when(sendDaGrantedNotificationEmail.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
@@ -88,8 +96,8 @@ public class SendDaGrantedNotificationWorkflowTest {
 
     @Test
     public void notifyApplicantCanFinaliseDivorceTaskIsExecuted_send_email_if_is_not_digital_channel() throws Exception {
-        Map<String, Object> casePayload = getCasePayload(NO_VALUE);
-        final CaseDetails caseDetails = getCaseDetails(casePayload);
+        Map<String, Object> casePayload = buildTestCasePayload(NO_VALUE);
+        final CaseDetails caseDetails = buildTestCaseDetails(casePayload);
         final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
         when(documentsGenerationTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
@@ -102,7 +110,6 @@ public class SendDaGrantedNotificationWorkflowTest {
         assertEquals(casePayload, result);
 
         verify(sendDaGrantedNotificationEmail, never()).execute(any(TaskContext.class), eq(casePayload));
-
         verify(documentsGenerationTask, times(1)).execute(any(TaskContext.class), eq(casePayload));
         verify(caseFormatterAddDocuments, times(1)).execute(any(TaskContext.class), eq(casePayload));
         verify(fetchPrintDocsFromDmStore, times(1)).execute(any(TaskContext.class), eq(casePayload));
@@ -111,8 +118,8 @@ public class SendDaGrantedNotificationWorkflowTest {
 
     @Test
     public void testThatDocumentsGenerationTask_is_called_with_required_documents() throws TaskException, WorkflowException {
-        Map<String, Object> casePayload = getCasePayload(NO_VALUE);
-        final CaseDetails caseDetails = getCaseDetails(casePayload);
+        Map<String, Object> casePayload = buildTestCasePayload(NO_VALUE);
+        final CaseDetails caseDetails = buildTestCaseDetails(casePayload);
         final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
         when(documentsGenerationTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
@@ -132,14 +139,32 @@ public class SendDaGrantedNotificationWorkflowTest {
         assertThat(documentGenerationRequestList.get(1).getDocumentTemplateId(), is(DECREE_ABSOLUTE_TEMPLATE_ID));
         assertThat(documentGenerationRequestList.get(1).getDocumentFileName(), is(DECREE_ABSOLUTE_FILENAME));
         assertThat(documentGenerationRequestList.get(1).getDocumentType(), is(DECREE_ABSOLUTE_DOCUMENT_TYPE));
+
+        List<String> documentTypesToPrint = documentGenerationRequestList.stream()
+            .map(DocumentGenerationRequest::getDocumentType)
+            .collect(Collectors.toList());
+
+        verifyBulkPrintIsCalledWithCorrectData(documentTypesToPrint);
     }
 
-    private HashMap<String, Object> getCasePayload(String value) {
+    private void verifyBulkPrintIsCalledWithCorrectData(List<String> documentTypesToPrint) {
+        Map<String, Object> casePayload = buildTestCasePayload(NO_VALUE);
+        final CaseDetails caseDetails = buildTestCaseDetails(casePayload);
+
+        TaskContext bulkPrintTaskContext = taskContextArgumentCaptor.getValue();
+        assertThat(bulkPrintTaskContext.getTransientObject(CASE_DETAILS_JSON_KEY), is(caseDetails));
+        assertThat(bulkPrintTaskContext.getTransientObject(BULK_PRINT_LETTER_TYPE), is(DA_GRANTED_OFFLINE_PACK_RESPONDENT));
+        assertThat(bulkPrintTaskContext.getTransientObject(DOCUMENT_TYPES_TO_PRINT), equalTo(documentTypesToPrint));
+    }
+
+    private HashMap<String, Object> buildTestCasePayload(String value) {
         return new HashMap<>(ImmutableMap.of(RESP_IS_USING_DIGITAL_CHANNEL, value));
     }
 
-    private CaseDetails getCaseDetails(Map<String, Object> casePayload) {
+    private CaseDetails buildTestCaseDetails(Map<String, Object> casePayload) {
         return CaseDetails.builder()
+            .caseId(CASE_TYPE_ID)
+            .state(CASE_STATE_JSON_KEY)
             .caseData(casePayload)
             .build();
     }
