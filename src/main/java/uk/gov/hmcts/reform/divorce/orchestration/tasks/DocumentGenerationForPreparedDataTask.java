@@ -73,6 +73,6 @@ public class DocumentGenerationForPreparedDataTask implements Task<Map<String, O
         Object preparedData = context
             .getTransientObject(PrepareDataForDocumentGenerationTask.ContextKeys.PREPARED_DATA_FOR_DOCUMENT_GENERATION);
 
-        return singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, new HashMap<>(ImmutableMap.of(ContextKeys.CASE_DATA, preparedData)));
+        return singletonMap(ContextKeys.CASE_DETAILS, new HashMap<>(ImmutableMap.of(ContextKeys.CASE_DATA, preparedData)));
     }
 }
