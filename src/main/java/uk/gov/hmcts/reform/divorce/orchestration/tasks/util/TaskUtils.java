@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.util;
 
+import org.apache.commons.lang3.StringUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
@@ -64,8 +65,19 @@ public class TaskUtils {
         return caseId;
     }
 
+    public static String nullToEmpty(Object object) {
+        return object == null ? StringUtils.EMPTY : object.toString();
+    }
+
+    public static String buildFullName(Map<String, Object> caseData, String firstName, String lastName) {
+        return (
+            nullToEmpty((caseData.get(firstName))).trim()
+                + " "
+                + nullToEmpty((caseData.get(lastName))).trim()
+        ).trim();
+    }
+
     private static TaskException buildTaskExceptionForMandatoryProperty(String key) {
         return new TaskException(format("Could not evaluate value of mandatory property \"%s\"", key));
     }
-
 }

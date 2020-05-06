@@ -1,17 +1,17 @@
 package uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
 
 @Data
-@Builder
-@EqualsAndHashCode
+@AllArgsConstructor
+@NoArgsConstructor
 public class DocmosisTemplateVars {
     @JsonProperty("ctscContactDetails")
-    private CtscContactDetails ctscContactDetails;
+    protected CtscContactDetails ctscContactDetails;
     @JsonProperty("caseReference")
-    private String caseReference;
+    protected String caseReference;
 }
