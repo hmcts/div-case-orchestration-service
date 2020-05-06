@@ -40,7 +40,7 @@ def versions = [
         dumbster                     : '1.7.1',
         elasticsearch                : '7.5.1',
         feignHttpClient              : '10.3.0',
-        flyway                       : '6.4.0',
+        flyway                       : '5.2.4',
         gradlePitest                 : '1.4.6',
         guava                        : '28.2-jre',
         hibernateTypes               : '2.4.4',
