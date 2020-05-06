@@ -38,6 +38,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOffl
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.AOS_OFFLINE_UNREASONABLE_BEHAVIOUR_AND_DESERTION_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.AOS_OFFLINE_UNREASONABLE_BEHAVIOUR_AND_DESERTION_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.AOS_OFFLINE_UNREASONABLE_BEHAVIOUR_AND_DESERTION_TEMPLATE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.AOS_PACK_OFFLINE_CO_RESPONDENT_LETTER_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.AOS_PACK_OFFLINE_RESPONDENT_LETTER_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID;
@@ -61,10 +63,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.Bulk
 
 @Component
 @Slf4j
-public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Object>> {
-
-    private static final String AOS_PACK_OFFLINE_RESPONDENT_LETTER_TYPE = "aos-pack-offline-respondent";
-    private static final String AOS_PACK_OFFLINE_CO_RESPONDENT_LETTER_TYPE = "aos-pack-offline-co-respondent";
+public class  IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private static final DocumentGenerationRequest RESPONDENT_AOS_INVITATION_LETTER = new DocumentGenerationRequest(
         RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID, RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE, RESPONDENT_AOS_INVITATION_LETTER_FILENAME);
