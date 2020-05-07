@@ -45,9 +45,9 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
         final List<Task> tasks = new ArrayList<>();
 
         tasks.add(serviceMethodValidationTask);
-        tasks.add(fetchPrintDocsFromDmStore);
-        tasks.add(respondentAosPackPrinter);
-        tasks.add(coRespondentAosPackPrinter);
+//        tasks.add(fetchPrintDocsFromDmStore);
+//        tasks.add(respondentAosPackPrinter);
+//        tasks.add(coRespondentAosPackPrinter);
         tasks.add(modifyDueDate);
 
         return this.execute(tasks.toArray(new Task[0]),

@@ -18,6 +18,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_ANSWERS;
 
 @Component
 public class RespondentAnswersGenerator implements Task<Map<String, Object>> {
@@ -45,8 +46,8 @@ public class RespondentAnswersGenerator implements Task<Map<String, Object>> {
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY)
             );
 
-        respondentAnswers.setDocumentType(templateId);
-        respondentAnswers.setFileName(templateId);
+        respondentAnswers.setDocumentType(DOCUMENT_TYPE_RESPONDENT_ANSWERS);
+        respondentAnswers.setFileName(DOCUMENT_TYPE_RESPONDENT_ANSWERS);
 
         final LinkedHashSet<GeneratedDocumentInfo> documentCollection =
             context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new LinkedHashSet<>());
