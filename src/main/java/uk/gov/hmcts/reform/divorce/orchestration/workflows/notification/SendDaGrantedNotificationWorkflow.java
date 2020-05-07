@@ -8,9 +8,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.MultipleDocumentGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationForPreparedDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.PrepareDataForDaGrantedLetterGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaGrantedNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter;
 
@@ -38,10 +37,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.Bulk
 @RequiredArgsConstructor
 public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final SendDaGrantedNotificationEmailTask sendDaGrantedNotificationEmail;
-    private final MultipleDocumentGenerationTask documentsGenerationTask;
-    private final CaseFormatterAddDocuments caseFormatterAddDocuments;
-    private final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
+    private final SendDaGrantedNotificationEmailTask sendDaGrantedNotificationEmailTask;
+    private final PrepareDataForDaGrantedLetterGenerationTask prepareDataForDaGrantedLetterTask;
+    private final DocumentGenerationForPreparedDataTask documentGenerationForPreparedDataTask;
     private final BulkPrinter bulkPrinter;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
@@ -53,11 +51,10 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
 
         List<Task> tasks = new ArrayList<>();
         if (isDigitalProcess(caseData)) {
-            tasks.add(sendDaGrantedNotificationEmail);
+            tasks.add(sendDaGrantedNotificationEmailTask);
         } else {
-            tasks.add(documentsGenerationTask);
-            tasks.add(caseFormatterAddDocuments);
-            tasks.add(fetchPrintDocsFromDmStore);
+            tasks.add(prepareDataForDaGrantedLetterTask);
+            tasks.add(documentGenerationForPreparedDataTask);
             tasks.add(bulkPrinter);
         }
 

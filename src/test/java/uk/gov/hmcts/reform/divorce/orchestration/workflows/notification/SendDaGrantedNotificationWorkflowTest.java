@@ -168,7 +168,4 @@ public class SendDaGrantedNotificationWorkflowTest {
             .caseData(casePayload)
             .build();
     }
-
-
-
 }
