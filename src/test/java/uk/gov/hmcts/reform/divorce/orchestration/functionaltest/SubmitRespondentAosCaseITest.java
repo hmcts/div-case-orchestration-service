@@ -10,10 +10,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -21,6 +23,8 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -63,6 +67,7 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
 
     @Autowired
     private MockMvc webClient;
+
 
     @MockBean
     private CcdUtil ccdUtil;
@@ -132,6 +137,8 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
         stubMaintenanceServerEndpointForRetrieveCaseById(OK, existingCaseData);
 
         stubMaintenanceServerEndpointForUpdate(BAD_REQUEST, AWAITING_DN_AOS_EVENT_ID, caseData, TEST_ERROR);
+        when(ccdUtil.getEventIdForWelshCase(eq(AWAITING_DN_AOS_EVENT_ID),
+                isA(Supplier.class), isA(CaseDetails.class))).thenReturn(AWAITING_DN_AOS_EVENT_ID);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -154,7 +161,8 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
         stubMaintenanceServerEndpointForRetrieveCaseById(OK, existingCaseData);
 
         stubMaintenanceServerEndpointForUpdate(OK, AWAITING_ANSWER_AOS_EVENT_ID, caseData, caseDataString);
-
+        when(ccdUtil.getEventIdForWelshCase(eq(AWAITING_ANSWER_AOS_EVENT_ID),
+                isA(Supplier.class), isA(CaseDetails.class))).thenReturn(AWAITING_ANSWER_AOS_EVENT_ID);
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .content(convertObjectToJsonString(caseData))
@@ -178,6 +186,9 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
         stubMaintenanceServerEndpointForRetrieveCaseById(OK, existingCaseData);
 
         stubMaintenanceServerEndpointForUpdate(OK, AWAITING_ANSWER_AOS_EVENT_ID, caseData, caseDataString);
+
+        when(ccdUtil.getEventIdForWelshCase(eq(AWAITING_ANSWER_AOS_EVENT_ID),
+                isA(Supplier.class), isA(CaseDetails.class))).thenReturn(AWAITING_ANSWER_AOS_EVENT_ID);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -203,7 +214,8 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
         stubMaintenanceServerEndpointForRetrieveCaseById(OK, existingCaseData);
 
         stubMaintenanceServerEndpointForUpdate(OK, COMPLETED_AOS_EVENT_ID, caseData, caseDataString);
-
+        when(ccdUtil.getEventIdForWelshCase(eq(COMPLETED_AOS_EVENT_ID),
+                isA(Supplier.class), isA(CaseDetails.class))).thenReturn(COMPLETED_AOS_EVENT_ID);
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .content(convertObjectToJsonString(caseData))
@@ -220,6 +232,8 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
 
         final Map<String, Object> existingCaseData = new HashMap<>();
         existingCaseData.put(CCD_CASE_DATA_FIELD, singletonMap(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS.getValue()));
+        when(ccdUtil.getEventIdForWelshCase(eq(COMPLETED_AOS_EVENT_ID),
+                isA(Supplier.class), isA(CaseDetails.class))).thenReturn(COMPLETED_AOS_EVENT_ID);
         stubMaintenanceServerEndpointForRetrieveCaseById(OK, existingCaseData);
 
         stubFormatterServerEndpoint(OK, caseData, caseDataString);
@@ -241,7 +255,8 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
 
         stubFormatterServerEndpoint(OK, caseData, caseDataString);
         stubMaintenanceServerEndpointForUpdate(OK, AWAITING_DN_AOS_EVENT_ID, caseData, caseDataString);
-
+        when(ccdUtil.getEventIdForWelshCase(eq(AWAITING_DN_AOS_EVENT_ID),
+                isA(Supplier.class), isA(CaseDetails.class))).thenReturn(AWAITING_DN_AOS_EVENT_ID);
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .content(convertObjectToJsonString(caseData))
@@ -258,7 +273,8 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
 
         stubFormatterServerEndpoint(OK, caseData, caseDataString);
         stubMaintenanceServerEndpointForUpdate(OK, AOS_NOMINATE_SOLICITOR, caseData, caseDataString);
-
+        when(ccdUtil.getEventIdForWelshCase(eq(AOS_NOMINATE_SOLICITOR),
+                isA(Supplier.class), isA(CaseDetails.class))).thenReturn(AOS_NOMINATE_SOLICITOR);
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
                 .header(AUTHORIZATION, AUTH_TOKEN)
                 .content(convertObjectToJsonString(caseData))
