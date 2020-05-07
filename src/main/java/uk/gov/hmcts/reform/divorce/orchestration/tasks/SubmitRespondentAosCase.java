@@ -3,15 +3,13 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.Map;
-import java.util.Optional;
+import java.util.function.Supplier;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_NOMINATE_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
@@ -54,11 +52,12 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
         } else {
             //if respondent didn't nominate a solicitor, then they've provided an answer
             if (isRespondentDefendingDivorce(submissionData)) {
-                eventId = getEventName(context, AWAITING_ANSWER_AOS_EVENT_ID);
+                eventId = getEventName(context, AWAITING_ANSWER_AOS_EVENT_ID,
+                    () -> AWAITING_ANSWER_AOS_WLESH_REVIEW_EVENT_ID);
             } else if (isRespondentAgreeingDivorceButNotAdmittingFact(submissionData, context)) {
-                eventId = getEventName(context, COMPLETED_AOS_EVENT_ID);
+                eventId = getEventName(context, COMPLETED_AOS_EVENT_ID, () -> COMPLETED_AOS_WLESH_REVIEW_EVENT_ID);
             } else {
-                eventId = getEventName(context, AWAITING_DN_AOS_EVENT_ID);
+                eventId = getEventName(context, AWAITING_DN_AOS_EVENT_ID, () -> AWAITING_DN_AOS_WELSH_REVIEW_EVENT_ID);
             }
             submissionData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
             submissionData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
@@ -77,26 +76,15 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
         return updateCase;
     }
 
-    private String getEventName(TaskContext context, String currentEvent){
-        String event = currentEvent;
+    private String getEventName(TaskContext context, String currentEvent, Supplier<String> welshEventId) {
         final CaseDetails currentCaseDetails = caseMaintenanceClient.retrievePetitionById(
-            context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(),
-            context.getTransientObject(CASE_ID_JSON_KEY).toString()
+                context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(),
+                context.getTransientObject(CASE_ID_JSON_KEY).toString()
         );
-        if(currentCaseDetails != null) {
-            Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(currentCaseDetails.getCaseData());
-            if (languagePreference.isPresent() && languagePreference.get().equals(LanguagePreference.WELSH)) {
-                if (currentEvent.equals(AWAITING_ANSWER_AOS_EVENT_ID)) {
-                    event = AWAITING_ANSWER_AOS_WLESH_REVIEW_EVENT_ID; //should be stop case related
-                } else if (currentEvent.equals(COMPLETED_AOS_EVENT_ID)) {
-                    event = COMPLETED_AOS_WLESH_REVIEW_EVENT_ID;
-                } else {
-                    event = AWAITING_DN_AOS_WELSH_REVIEW_EVENT_ID;
-                }
-            }
-        }
-        return event;
+        return ccdUtil.getEventIdForWelshCase(currentEvent, welshEventId, currentCaseDetails);
     }
+
+
 
     private boolean isSolicitorRepresentingRespondent(Map<String, Object> submissionData) {
         final String respondentSolicitorRepresented = (String) submissionData.get(RESP_SOL_REPRESENTED);

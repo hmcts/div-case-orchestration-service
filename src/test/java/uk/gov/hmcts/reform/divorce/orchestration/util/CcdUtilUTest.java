@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.divorce.orchestration.util;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.time.Clock;
@@ -28,6 +30,9 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EXPECTED_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EXPECTED_DUE_DATE_FORMATTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_DUE_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CcdUtilUTest {
@@ -150,4 +155,29 @@ public class CcdUtilUTest {
         assertEquals(FIXED_DATE_TIME, ccdUtil.getCurrentLocalDateTime());
     }
 
+    @Test
+    public void shouldReturnWelshEvent() {
+        String result = "WeslhEvent";
+        Map<String, Object> caseData = ImmutableMap.of(LANGUAGE_PREFERENCE_WELSH, YES_VALUE);
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        String welshEvent = ccdUtil.getEventIdForWelshCase("EnglishEvent", () -> result, caseDetails);
+        assertThat(welshEvent, equalTo(result));
+    }
+
+    @Test
+    public void shouldReturnEnglishEvent() {
+        String result = "EnglishEvent";
+        Map<String, Object> caseData = ImmutableMap.of(LANGUAGE_PREFERENCE_WELSH, NO_VALUE);
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        String englishEvent = ccdUtil.getEventIdForWelshCase(result, () -> "WeslhEvent", caseDetails);
+        assertThat(englishEvent, equalTo(result));
+    }
+
+    @Test
+    public void shouldReturnEvent() {
+        String result = "EnglishEvent";
+        CaseDetails caseDetails = CaseDetails.builder().build();
+        String englishEvent = ccdUtil.getEventIdForWelshCase("EnglishEvent", () -> "WeslhEvent", caseDetails);
+        assertThat(englishEvent, equalTo(result));
+    }
 }
