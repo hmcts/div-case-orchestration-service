@@ -87,6 +87,7 @@ public class DaGrantedLetterDataExtractorTest {
 
     @Test
     public void getRespondentFullNameReturnsValidStringWhenFieldsMissing() {
+        // fistName, lastName, expected
         asList(
             asList(FIRST_NAME, "", "John"),
             asList(FIRST_NAME, null, "John"),
@@ -112,6 +113,7 @@ public class DaGrantedLetterDataExtractorTest {
 
     @Test
     public void getPetitionerFullNameReturnsValidStringWhenFieldsMissing() {
+        // fistName, lastName, expected
         asList(
             asList(FIRST_NAME, "", "John"),
             asList(FIRST_NAME, null, "John"),
@@ -167,7 +169,6 @@ public class DaGrantedLetterDataExtractorTest {
      * workaround for indicating that eg exception catch is what we exactly need to pass test
      */
     private static void thisTestPassed() {
-
         assertThat(true, is(true));
     }
 }
