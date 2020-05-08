@@ -26,7 +26,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_TYPE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
@@ -36,7 +35,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class SendDaGrantedNotificationWorkflowTest {
 
     @Mock
-    private SendDaGrantedNotificationEmailTask sendDaGrantedNotificationEmail;
+    private SendDaGrantedNotificationEmailTask sendDaGrantedNotificationEmailTask;
 
     @Mock
     private PrepareDataForDaGrantedLetterGenerationTask prepareDataForDaGrantedLetterTask;
@@ -52,13 +51,13 @@ public class SendDaGrantedNotificationWorkflowTest {
 
     @Test
     public void runShouldCallSendDaGrantedNotificationEmailTaskWhenDigitalCommunication() throws Exception {
-        Map<String, Object> casePayload = buildTestCasePayload(YES_VALUE);
+        Map<String, Object> casePayload = buildCaseData(YES_VALUE);
 
-        when(sendDaGrantedNotificationEmail.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
+        when(sendDaGrantedNotificationEmailTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
 
-        sendDaGrantedNotificationWorkflow.run(buildTestCaseDetails(casePayload), AUTH_TOKEN);
+        sendDaGrantedNotificationWorkflow.run(buildCaseDetails(casePayload), AUTH_TOKEN);
 
-        verify(sendDaGrantedNotificationEmail, times(1)).execute(any(TaskContext.class), eq(casePayload));
+        verify(sendDaGrantedNotificationEmailTask, times(1)).execute(any(TaskContext.class), eq(casePayload));
 
         verify(prepareDataForDaGrantedLetterTask, never()).execute(any(TaskContext.class), eq(casePayload));
         verify(documentGenerationForPreparedDataTask, never()).execute(any(TaskContext.class), eq(casePayload));
@@ -67,13 +66,13 @@ public class SendDaGrantedNotificationWorkflowTest {
 
     @Test
     public void runShouldCallBulkPrintingWhenNoDigitalCommunication() throws Exception {
-        Map<String, Object> casePayload = buildTestCasePayload(NO_VALUE);
+        Map<String, Object> casePayload = buildCaseData(NO_VALUE);
 
         when(prepareDataForDaGrantedLetterTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
         when(documentGenerationForPreparedDataTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
         when(bulkPrinterTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
 
-        sendDaGrantedNotificationWorkflow.run(buildTestCaseDetails(casePayload), AUTH_TOKEN);
+        sendDaGrantedNotificationWorkflow.run(buildCaseDetails(casePayload), AUTH_TOKEN);
 
         InOrder inOrder = inOrder(
             prepareDataForDaGrantedLetterTask,
@@ -85,17 +84,16 @@ public class SendDaGrantedNotificationWorkflowTest {
         inOrder.verify(documentGenerationForPreparedDataTask).execute(any(TaskContext.class), eq(casePayload));
         inOrder.verify(bulkPrinterTask).execute(any(TaskContext.class), eq(casePayload));
 
-        verify(sendDaGrantedNotificationEmail, never()).execute(any(TaskContext.class), eq(casePayload));
+        verify(sendDaGrantedNotificationEmailTask, never()).execute(any(TaskContext.class), eq(casePayload));
     }
 
-    private HashMap<String, Object> buildTestCasePayload(String value) {
+    private HashMap<String, Object> buildCaseData(String value) {
         return new HashMap<>(ImmutableMap.of(RESP_IS_USING_DIGITAL_CHANNEL, value));
     }
 
-    private CaseDetails buildTestCaseDetails(Map<String, Object> casePayload) {
+    private CaseDetails buildCaseDetails(Map<String, Object> casePayload) {
         return CaseDetails.builder()
             .caseId(CASE_TYPE_ID)
-            .state(CASE_STATE_JSON_KEY)
             .caseData(casePayload)
             .build();
     }
