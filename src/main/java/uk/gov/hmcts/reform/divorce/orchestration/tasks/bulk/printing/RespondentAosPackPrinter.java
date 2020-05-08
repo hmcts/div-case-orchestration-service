@@ -20,10 +20,10 @@ public class RespondentAosPackPrinter implements Task<Map<String, Object>> {
     private static final String LETTER_TYPE_RESPONDENT_PACK = "respondent-aos-pack";
     private static final List<String> DOCUMENT_TYPES_IN_ORDER = asList(DOCUMENT_TYPE_RESPONDENT_INVITATION, DOCUMENT_TYPE_PETITION);
 
-    private final BulkPrinter bulkPrinter;
+    private final BulkPrinterTask bulkPrinter;
 
     @Autowired
-    public RespondentAosPackPrinter(final BulkPrinter bulkPrinter) {
+    public RespondentAosPackPrinter(final BulkPrinterTask bulkPrinter) {
         this.bulkPrinter = bulkPrinter;
     }
 

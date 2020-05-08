@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MarkJourneyAsOffline;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MultipleDocumentGenerationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,8 +56,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.Divor
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.UNREASONABLE_BEHAVIOUR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter.BULK_PRINT_LETTER_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter.DOCUMENT_TYPES_TO_PRINT;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.BULK_PRINT_LETTER_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.DOCUMENT_TYPES_TO_PRINT;
 
 @Component
 @Slf4j
@@ -83,7 +83,7 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
     private FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
 
     @Autowired
-    private BulkPrinter bulkPrinter;
+    private BulkPrinterTask bulkPrinterTask;
 
     @Autowired
     private MarkJourneyAsOffline markJourneyAsOffline;
@@ -106,7 +106,7 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
         tasks.add(documentsGenerationTask);
         tasks.add(caseFormatterAddDocuments);
         tasks.add(fetchPrintDocsFromDmStore);
-        tasks.add(bulkPrinter);
+        tasks.add(bulkPrinterTask);
         tasks.add(markJourneyAsOffline);
         if (divorceParty.equals(RESPONDENT)) {
             tasks.add(modifyDueDate);

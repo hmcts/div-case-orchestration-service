@@ -26,7 +26,7 @@ public class RespondentAosPackPrinterTest {
     private static final List<String> DOCUMENT_TYPES_TO_PRINT = asList(DOCUMENT_TYPE_RESPONDENT_INVITATION, DOCUMENT_TYPE_PETITION);
 
     @Mock
-    private BulkPrinter bulkPrinter;
+    private BulkPrinterTask bulkPrinterTask;
 
     @InjectMocks
     private RespondentAosPackPrinter classUnderTest;
@@ -40,7 +40,7 @@ public class RespondentAosPackPrinterTest {
         final Map<String, Object> result = classUnderTest.execute(context, payload);
 
         assertThat(result, is(payload));
-        verify(bulkPrinter).printSpecifiedDocument(context, payload, RESPONDENT_LETTER_TYPE, DOCUMENT_TYPES_TO_PRINT);
+        verify(bulkPrinterTask).printSpecifiedDocument(context, payload, RESPONDENT_LETTER_TYPE, DOCUMENT_TYPES_TO_PRINT);
     }
 
 }

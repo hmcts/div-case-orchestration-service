@@ -13,15 +13,16 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
-import static java.lang.String.format;
 import static java.util.Collections.singletonMap;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_FMT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.StringHelper.formatFilename;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 
 @Component
@@ -35,7 +36,7 @@ public class DocumentGenerationForPreparedDataTask implements Task<Map<String, O
         /*
          * This is a special field in context to store GeneratedDocumentInfo object with all metadata about generated document.
          */
-        public static final String GENERATED_DOCUMENT = "documentGeneratedWithPreparedData";
+        public static final String GENERATED_DOCUMENTS = OrchestrationConstants.DOCUMENTS_GENERATED;
     }
 
     private final DocumentGeneratorClient documentGeneratorClient;
@@ -60,7 +61,15 @@ public class DocumentGenerationForPreparedDataTask implements Task<Map<String, O
         generatedDocumentInfo.setDocumentType(context.getTransientObject(DOCUMENT_TYPE));
         generatedDocumentInfo.setFileName(formatFilename(getCaseId(context), context.getTransientObject(DOCUMENT_FILENAME)));
 
-        context.setTransientObject(ContextKeys.GENERATED_DOCUMENT, generatedDocumentInfo);
+        appendAnotherDocumentToBulkPrint(context, generatedDocumentInfo);
+    }
+
+    private void appendAnotherDocumentToBulkPrint(TaskContext context, GeneratedDocumentInfo generatedDocumentInfo) {
+        List<GeneratedDocumentInfo> documentsToBulkPrint = context.computeTransientObjectIfAbsent(
+            ContextKeys.GENERATED_DOCUMENTS, new ArrayList<>()
+        );
+
+        documentsToBulkPrint.add(generatedDocumentInfo);
     }
 
     private Map<String, Object> getPreparedDataFromContext(TaskContext context) throws TaskException {
@@ -68,9 +77,5 @@ public class DocumentGenerationForPreparedDataTask implements Task<Map<String, O
             .getTransientObject(PrepareDataForDocumentGenerationTask.ContextKeys.PREPARED_DATA_FOR_DOCUMENT_GENERATION);
 
         return singletonMap(ContextKeys.CASE_DETAILS, new RequestTemplateVarsWrapper(getCaseId(context), preparedData));
-    }
-
-    private String formatFilename(String caseId, String filename) {
-        return format(DOCUMENT_FILENAME_FMT, filename, caseId);
     }
 }

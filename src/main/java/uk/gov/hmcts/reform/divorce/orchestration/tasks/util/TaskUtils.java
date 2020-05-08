@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
-import static com.google.common.base.Strings.nullToEmpty;
 import static java.lang.String.format;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil.parseDateUsingCcdFormat;
@@ -63,14 +62,6 @@ public class TaskUtils {
         }
 
         return caseId;
-    }
-
-    public static String buildFullName(Map<String, Object> caseData, String firstName, String lastName) {
-        return (
-            nullToEmpty((String) (caseData.get(firstName))).trim()
-                + " "
-                + nullToEmpty((String) (caseData.get(lastName))).trim()
-        ).trim();
     }
 
     private static TaskException buildTaskExceptionForMandatoryProperty(String key) {

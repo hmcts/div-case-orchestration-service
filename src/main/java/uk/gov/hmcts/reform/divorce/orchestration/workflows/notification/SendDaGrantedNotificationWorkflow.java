@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaGrantedNotificationEmailTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DocumentGenerationForPreparedDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.PrepareDataForDaGrantedLetterGenerationTask;
 
@@ -30,8 +30,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_GENERATION_REQUESTS_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter.BULK_PRINT_LETTER_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter.DOCUMENT_TYPES_TO_PRINT;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.BULK_PRINT_LETTER_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.DOCUMENT_TYPES_TO_PRINT;
 
 @Component
 @RequiredArgsConstructor
@@ -40,7 +40,7 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
     private final SendDaGrantedNotificationEmailTask sendDaGrantedNotificationEmailTask;
     private final PrepareDataForDaGrantedLetterGenerationTask prepareDataForDaGrantedLetterTask;
     private final DocumentGenerationForPreparedDataTask documentGenerationForPreparedDataTask;
-    private final BulkPrinter bulkPrinter;
+    private final BulkPrinterTask bulkPrinterTask;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
         Map<String, Object> caseData = caseDetails.getCaseData();
@@ -55,7 +55,7 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
         } else {
             tasks.add(prepareDataForDaGrantedLetterTask);
             tasks.add(documentGenerationForPreparedDataTask);
-            tasks.add(bulkPrinter);
+            tasks.add(bulkPrinterTask);
         }
 
         Task[] taskArr = new Task[tasks.size()];

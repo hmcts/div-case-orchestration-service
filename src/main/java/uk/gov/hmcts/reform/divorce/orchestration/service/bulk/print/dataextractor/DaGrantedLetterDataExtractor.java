@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.buildFullName;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.StringHelper.buildFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 

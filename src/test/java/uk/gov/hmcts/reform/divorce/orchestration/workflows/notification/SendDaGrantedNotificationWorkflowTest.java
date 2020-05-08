@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MultipleDocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaGrantedNotificationEmailTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
 
 import java.util.HashMap;
 import java.util.List;
@@ -51,8 +51,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter.BULK_PRINT_LETTER_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter.DOCUMENT_TYPES_TO_PRINT;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.BULK_PRINT_LETTER_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.DOCUMENT_TYPES_TO_PRINT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SendDaGrantedNotificationWorkflowTest {
@@ -70,7 +70,7 @@ public class SendDaGrantedNotificationWorkflowTest {
     private FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
 
     @Mock
-    private BulkPrinter bulkPrinterTask;
+    private BulkPrinterTask bulkPrinterTask;
 
     @InjectMocks
     private SendDaGrantedNotificationWorkflow sendDaGrantedNotificationWorkflow;

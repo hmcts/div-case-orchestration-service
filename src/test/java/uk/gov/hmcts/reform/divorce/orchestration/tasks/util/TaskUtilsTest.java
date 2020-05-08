@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.util;
 
-import org.hamcrest.MatcherAssert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -14,19 +13,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.buildFullName;
 
 public class TaskUtilsTest {
 
     @Rule
     public ExpectedException expectedException = none();
-
-    private static String F_NAME = "f";
-    private static String L_NAME = "l";
 
     @Test
     public void getMandatoryPropertyValueAsString() throws TaskException {
@@ -141,28 +135,5 @@ public class TaskUtilsTest {
         caseDataPayload.put("testKey", "20190513");
 
         TaskUtils.getMandatoryPropertyValueAsLocalDateFromCCD(caseDataPayload, "testKey");
-    }
-
-    @Test
-    public void buildFullNameShouldBuildFullName() {
-        MatcherAssert.assertThat(buildFullName(fullName("Pit", "Smith"), F_NAME, L_NAME), is("Pit Smith"));
-        MatcherAssert.assertThat(buildFullName(fullName("", "Smith"), F_NAME, L_NAME), is("Smith"));
-        MatcherAssert.assertThat(buildFullName(fullName("Pit Adam", "Smith"), F_NAME, L_NAME), is("Pit Adam Smith"));
-        MatcherAssert.assertThat(buildFullName(fullName("Pit", "Smith-Johnson"), F_NAME, L_NAME), is("Pit Smith-Johnson"));
-        MatcherAssert.assertThat(buildFullName(fullName("Pit JK", "Smith"), F_NAME, L_NAME), is("Pit JK Smith"));
-        MatcherAssert.assertThat(buildFullName(fullName("Pit", ""), F_NAME, L_NAME), is("Pit"));
-        MatcherAssert.assertThat(buildFullName(fullName("", ""), F_NAME, L_NAME), is(""));
-        MatcherAssert.assertThat(buildFullName(fullName(null, ""), F_NAME, L_NAME), is(""));
-        MatcherAssert.assertThat(buildFullName(fullName("", null), F_NAME, L_NAME), is(""));
-        MatcherAssert.assertThat(buildFullName(fullName("     ", "    "), F_NAME, L_NAME), is(""));
-        MatcherAssert.assertThat(buildFullName(fullName("    Pit   ", "     Smith    "), F_NAME, L_NAME), is("Pit Smith"));
-    }
-
-    private static Map<String, Object> fullName(String firstName, String lastName) {
-        Map<String, Object> fullNameMap = new HashMap<>();
-        fullNameMap.put(F_NAME, firstName);
-        fullNameMap.put(L_NAME, lastName);
-
-        return fullNameMap;
     }
 }
