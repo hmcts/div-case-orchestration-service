@@ -13,8 +13,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ServiceMethodValidationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoRespondentAosPackPrinter;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.RespondentAosPackPrinter;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoRespondentAosPackPrinterTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.RespondentAosPackPrinterTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,8 +32,8 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
 
     private final ServiceMethodValidationTask serviceMethodValidationTask;
     private final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
-    private final RespondentAosPackPrinter respondentAosPackPrinter;
-    private final CoRespondentAosPackPrinter coRespondentAosPackPrinter;
+    private final RespondentAosPackPrinterTask respondentAosPackPrinterTask;
+    private final CoRespondentAosPackPrinterTask coRespondentAosPackPrinterTask;
     private final ModifyDueDate modifyDueDate;
 
     @Value("${feature-toggle.toggle.feature_resp_solicitor_details}")
@@ -46,8 +46,8 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
 
         tasks.add(serviceMethodValidationTask);
         tasks.add(fetchPrintDocsFromDmStore);
-        tasks.add(respondentAosPackPrinter);
-        tasks.add(coRespondentAosPackPrinter);
+        tasks.add(respondentAosPackPrinterTask);
+        tasks.add(coRespondentAosPackPrinterTask);
         tasks.add(modifyDueDate);
 
         return this.execute(tasks.toArray(new Task[0]),

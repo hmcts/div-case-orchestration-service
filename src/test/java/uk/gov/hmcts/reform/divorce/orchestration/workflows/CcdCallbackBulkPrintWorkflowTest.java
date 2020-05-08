@@ -17,8 +17,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ServiceMethodValidationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoRespondentAosPackPrinter;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.RespondentAosPackPrinter;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoRespondentAosPackPrinterTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.RespondentAosPackPrinterTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,10 +47,10 @@ public class CcdCallbackBulkPrintWorkflowTest {
     private FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
 
     @Mock
-    private RespondentAosPackPrinter respondentAosPackPrinter;
+    private RespondentAosPackPrinterTask respondentAosPackPrinterTask;
 
     @Mock
-    private CoRespondentAosPackPrinter coRespondentAosPackPrinter;
+    private CoRespondentAosPackPrinterTask coRespondentAosPackPrinterTask;
 
     @Mock
     private ModifyDueDate modifyDueDate;
@@ -93,8 +93,8 @@ public class CcdCallbackBulkPrintWorkflowTest {
         when(serviceMethodValidationTask.execute(context, payload)).thenReturn(payload);
         when(fetchPrintDocsFromDmStore.execute(context, payload)).thenReturn(payload);
         when(modifyDueDate.execute(context, payload)).thenReturn(payload);
-        when(respondentAosPackPrinter.execute(context, payload)).thenReturn(payload);
-        when(coRespondentAosPackPrinter.execute(context, payload)).thenReturn(payload);
+        when(respondentAosPackPrinterTask.execute(context, payload)).thenReturn(payload);
+        when(coRespondentAosPackPrinterTask.execute(context, payload)).thenReturn(payload);
 
         Map<String, Object> response = ccdCallbackBulkPrintWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN);
         assertThat(response, is(payload));
@@ -102,15 +102,15 @@ public class CcdCallbackBulkPrintWorkflowTest {
         final InOrder inOrder = inOrder(
             serviceMethodValidationTask,
             fetchPrintDocsFromDmStore,
-            respondentAosPackPrinter,
-            coRespondentAosPackPrinter,
+            respondentAosPackPrinterTask,
+            coRespondentAosPackPrinterTask,
             modifyDueDate
         );
 
         inOrder.verify(serviceMethodValidationTask).execute(context, payload);
         inOrder.verify(fetchPrintDocsFromDmStore).execute(context, payload);
-        inOrder.verify(respondentAosPackPrinter).execute(context, payload);
-        inOrder.verify(coRespondentAosPackPrinter).execute(context, payload);
+        inOrder.verify(respondentAosPackPrinterTask).execute(context, payload);
+        inOrder.verify(coRespondentAosPackPrinterTask).execute(context, payload);
         inOrder.verify(modifyDueDate).execute(context, payload);
     }
 

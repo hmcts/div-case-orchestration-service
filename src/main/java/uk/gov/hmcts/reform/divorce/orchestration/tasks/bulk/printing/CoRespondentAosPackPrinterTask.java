@@ -15,7 +15,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Slf4j
 @Component
-public class CoRespondentAosPackPrinter implements Task<Map<String, Object>> {
+public class CoRespondentAosPackPrinterTask implements Task<Map<String, Object>> {
 
     private static final String LETTER_TYPE_CO_RESPONDENT_PACK = "co-respondent-aos-pack";
     private static final List<String> DOCUMENT_TYPES_TO_PRINT = asList(DOCUMENT_TYPE_CO_RESPONDENT_INVITATION, DOCUMENT_TYPE_PETITION);
@@ -23,7 +23,7 @@ public class CoRespondentAosPackPrinter implements Task<Map<String, Object>> {
     private final BulkPrinterTask bulkPrinter;
 
     @Autowired
-    public CoRespondentAosPackPrinter(final BulkPrinterTask bulkPrinter) {
+    public CoRespondentAosPackPrinterTask(final BulkPrinterTask bulkPrinter) {
         this.bulkPrinter = bulkPrinter;
     }
 
