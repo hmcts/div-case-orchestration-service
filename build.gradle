@@ -30,7 +30,7 @@ plugins {
 def versions = [
         awaitility                   : '4.0.2',
         bcpkixJdk15on                : '1.64',
-        bspCommonLib                 : '0.0.16',
+        bspCommonLib                 : '0.0.37',
         ccdStoreClient               : '4.6.4',
         commonsBeanUtils             : '1.9.4',
         commonsIo                    : '2.6',
@@ -152,7 +152,7 @@ allprojects {
             }
 
             // solves CVE-2014-3488, CVE-2015-2156, CVE-2019-16869
-            dependencySet(group: 'io.netty', version: '4.1.46.Final') {
+            dependencySet(group: 'io.netty', version: '4.1.49.Final') {
                 entry 'netty-buffer'
                 entry 'netty-codec'
                 entry 'netty-codec-http'
