@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.workflows;
+package uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
