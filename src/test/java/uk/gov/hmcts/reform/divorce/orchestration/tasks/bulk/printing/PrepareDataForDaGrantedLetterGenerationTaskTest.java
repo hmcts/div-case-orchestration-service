@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor;
 
 import java.util.Map;
 
@@ -20,6 +21,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractorTest.buildCaseDataWithAddressee;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.PrepareDataForDocumentGenerationTask.ContextKeys.PREPARED_DATA_FOR_DOCUMENT_GENERATION;
 
@@ -38,25 +40,25 @@ public class PrepareDataForDaGrantedLetterGenerationTaskTest {
     }
 
     @Test
-    public void addPreparedDataToContext() throws TaskException {
+    public void executeShouldPopulateFieldInContext() throws TaskException {
         TaskContext context = prepareTaskContext();
 
-        prepareDataForDaGrantedLetterGenerationTask.addPreparedDataToContext(context, buildCaseData());
+        prepareDataForDaGrantedLetterGenerationTask.execute(context, buildCaseData());
 
         assertThat(context.getTransientObject(PREPARED_DATA_FOR_DOCUMENT_GENERATION), instanceOf(DaGrantedLetter.class));
         verify(ctscContactDetailsDataProviderService, times(1)).getCtscContactDetails();
     }
 
-    private TaskContext prepareTaskContext() {
+    public static TaskContext prepareTaskContext() {
         TaskContext context = new DefaultTaskContext();
-        context.setTransientObject("caseId", "It's mandatory field in context");
+        context.setTransientObject(CASE_ID_JSON_KEY, "It's mandatory field in context");
 
         return context;
     }
 
     private Map<String, Object> buildCaseData() {
         Map<String, Object> caseData = buildCaseDataWithAddressee();
-        caseData.put("DecreeAbsoluteGrantedDate", "201-01-10");
+        caseData.put(DaGrantedLetterDataExtractor.CaseDataKeys.DA_GRANTED_DATE, "201-01-10");
 
         return caseData;
     }

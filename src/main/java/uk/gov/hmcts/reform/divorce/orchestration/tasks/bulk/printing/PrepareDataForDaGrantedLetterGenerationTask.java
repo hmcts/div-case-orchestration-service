@@ -22,7 +22,7 @@ public class PrepareDataForDaGrantedLetterGenerationTask extends PrepareDataForD
     }
 
     @Override
-    public void addPreparedDataToContext(TaskContext context, Map<String, Object> caseData) throws TaskException {
+    protected void addPreparedDataToContext(TaskContext context, Map<String, Object> caseData) throws TaskException {
         DaGrantedLetter daGrantedLetterData = DaGrantedLetter.builder()
             .caseReference(getCaseId(context))
             .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())

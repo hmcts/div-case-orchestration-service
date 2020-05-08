@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.bsp.common.model.document.Addressee;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
@@ -14,8 +16,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.bui
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DaGrantedLetterDataExtractor {
 
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class CaseDataKeys {
         public static final String DA_GRANTED_DATE = OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
         public static final String PETITIONER_FIRST_NAME = OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;

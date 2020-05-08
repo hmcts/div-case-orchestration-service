@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
@@ -26,6 +28,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @AllArgsConstructor
 public class DocumentGenerationForPreparedDataTask implements Task<Map<String, Object>> {
 
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class ContextKeys {
         public static final String CASE_DETAILS = OrchestrationConstants.CASE_DETAILS_JSON_KEY;
         public static final String CASE_DATA = OrchestrationConstants.FORMATTER_CASE_DATA_KEY;

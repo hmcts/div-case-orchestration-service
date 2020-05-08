@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -15,6 +17,7 @@ import java.util.Map;
 @AllArgsConstructor
 public abstract class PrepareDataForDocumentGenerationTask implements Task<Map<String, Object>> {
 
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class ContextKeys {
         public static final String PREPARED_DATA_FOR_DOCUMENT_GENERATION = "preparedDataForDocumentGeneration";
     }
