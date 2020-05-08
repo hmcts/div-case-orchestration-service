@@ -137,7 +137,7 @@ public class DaGrantedLetterDataExtractorTest {
         return caseData;
     }
 
-    private static Map<String, Object> buildCaseDataWithAddressee() {
+    public static Map<String, Object> buildCaseDataWithAddressee() {
         Map<String, Object> caseData = buildCaseDataWithRespondentNames(FIRST_NAME, LAST_NAME);
 
         caseData.put(ADDRESS_LINE1, "line1");
