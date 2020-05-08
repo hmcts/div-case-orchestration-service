@@ -8,10 +8,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationForPreparedDataTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.PrepareDataForDaGrantedLetterGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaGrantedNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DocumentGenerationForPreparedDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.PrepareDataForDaGrantedLetterGenerationTask;
 
 import java.util.ArrayList;
 import java.util.List;

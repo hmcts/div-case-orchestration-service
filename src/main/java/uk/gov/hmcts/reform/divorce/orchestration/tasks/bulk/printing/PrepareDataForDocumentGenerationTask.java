@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.tasks;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing;
 
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -8,7 +8,7 @@ import java.util.Map;
 
 /*
  * It should be used as a base class to generate pdf and store its metadata in context
- * so it can be either saved in case data or send to print.
+ * (key PREPARED_DATA_FOR_DOCUMENT_GENERATION) so it can be either saved in case data or send to print.
  */
 public abstract class PrepareDataForDocumentGenerationTask implements Task<Map<String, Object>> {
 

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.tasks;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing;
 
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.bsp.common.model.document.Addressee;
@@ -17,6 +17,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.bui
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 
+/*
+ * data for template: FL-FRM-APP-ENG-00009.docx
+ */
 @Component
 public class PrepareDataForDaGrantedLetterGenerationTask extends PrepareDataForDocumentGenerationTask {
 
@@ -39,7 +42,7 @@ public class PrepareDataForDaGrantedLetterGenerationTask extends PrepareDataForD
             .caseReference(getCaseId(context))
             .ctscContactDetails(getCtscContactDetails())
             .addressee(getAddressee(caseData))
-            .decreeAbsoluteDate(getDaGrantedDate(caseData))
+            .letterDate(getDaGrantedDate(caseData))
             .petitionerFullName(getPetitionerFullName(caseData))
             .respondentFullName(getRespondentFullName(caseData))
             .build();

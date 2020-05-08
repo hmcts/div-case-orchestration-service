@@ -20,21 +20,18 @@ public class DaGrantedLetter extends DocmosisTemplateVars {
     private String petitionerFullName;
     @JsonProperty("addressee")
     private Addressee addressee;
-    @JsonProperty("decreeAbsoluteDate")
-    private String decreeAbsoluteDate;
 
     @Builder
     public DaGrantedLetter(
         CtscContactDetails ctscContactDetails,
         String caseReference,
+        String letterDate,
         String respondentFullName,
         String petitionerFullName,
-        Addressee addressee,
-        String decreeAbsoluteDate) {
-        super(ctscContactDetails, caseReference);
+        Addressee addressee) {
+        super(ctscContactDetails, caseReference, letterDate);
         this.respondentFullName = respondentFullName;
         this.petitionerFullName = petitionerFullName;
         this.addressee = addressee;
-        this.decreeAbsoluteDate = decreeAbsoluteDate;
     }
 }

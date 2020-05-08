@@ -63,8 +63,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.Bulk
 @Slf4j
 public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private static final String AOS_PACK_OFFLINE_RESPONDENT_LETTER_TYPE = "aos-pack-offline-respondent";
-    private static final String AOS_PACK_OFFLINE_CO_RESPONDENT_LETTER_TYPE = "aos-pack-offline-co-respondent";
+    public static final String AOS_PACK_OFFLINE_RESPONDENT_LETTER_TYPE = "aos-pack-offline-respondent";
+    public static final String AOS_PACK_OFFLINE_CO_RESPONDENT_LETTER_TYPE = "aos-pack-offline-co-respondent";
 
     private static final DocumentGenerationRequest RESPONDENT_AOS_INVITATION_LETTER = new DocumentGenerationRequest(
         RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID, RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE, RESPONDENT_AOS_INVITATION_LETTER_FILENAME);
