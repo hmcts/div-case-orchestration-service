@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaGrantedNotificationEmail;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaGrantedNotificationEmailTask;
 
 import java.util.Map;
 
@@ -16,7 +16,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class SendDaGrantedNotificationEmailWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     @Autowired
-    private SendDaGrantedNotificationEmail sendDaGrantedNotificationEmail;
+    private SendDaGrantedNotificationEmailTask sendDaGrantedNotificationEmail;
 
     public Map<String, Object> run(Map<String, Object> caseData, String caseId) throws WorkflowException {
         return this.execute(
