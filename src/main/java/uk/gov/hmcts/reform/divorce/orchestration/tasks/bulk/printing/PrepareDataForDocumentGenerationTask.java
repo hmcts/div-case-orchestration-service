@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import org.checkerframework.checker.units.qual.A;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
@@ -34,7 +33,7 @@ public abstract class PrepareDataForDocumentGenerationTask implements Task<Map<S
         public static final String GENERATED_DOCUMENTS = OrchestrationConstants.DOCUMENTS_GENERATED;
     }
 
-    protected CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService;
+    protected final CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
