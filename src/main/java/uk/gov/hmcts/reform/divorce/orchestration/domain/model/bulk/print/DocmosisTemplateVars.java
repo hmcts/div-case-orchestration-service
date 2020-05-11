@@ -14,4 +14,6 @@ public class DocmosisTemplateVars {
     protected CtscContactDetails ctscContactDetails;
     @JsonProperty("caseReference")
     protected String caseReference;
+    @JsonProperty("letterDate")
+    private String letterDate;
 }
