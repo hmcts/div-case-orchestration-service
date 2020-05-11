@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaGrantedNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DaGrantedCertificateForBulkPrintTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DaGrantedLetterGenerationTask;
 
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
 
     private final SendDaGrantedNotificationEmailTask sendDaGrantedNotificationEmailTask;
     private final DaGrantedLetterGenerationTask prepareDataForDaGrantedLetterTask;
+    private final DaGrantedCertificateForBulkPrintTask loadDaGrantedCertificateForBulkPrintTask;
     private final BulkPrinterTask bulkPrinterTask;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
@@ -62,7 +64,7 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
             // we need to add this taks
             // in caseData you can find D8GeneratedDocuments
             // get "daGranted" type and add it to context like here: uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.PrepareDataForDocumentGenerationTask.appendAnotherDocumentToBulkPrint
-            tasks.add(loadGenratedDocsToBulkPrintTask);
+            tasks.add(loadDaGrantedCertificateForBulkPrintTask);
             tasks.add(bulkPrinterTask);
         }
 
