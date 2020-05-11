@@ -23,7 +23,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractorTest.buildCaseDataWithAddressee;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.PrepareDataForDocumentGenerationTask.ContextKeys.PREPARED_DATA_FOR_DOCUMENT_GENERATION;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DaGrantedLetterGenerationTaskTest {
@@ -45,7 +44,10 @@ public class DaGrantedLetterGenerationTaskTest {
 
         daGrantedLetterGenerationTask.execute(context, buildCaseData());
 
-        assertThat(context.getTransientObject(PREPARED_DATA_FOR_DOCUMENT_GENERATION), instanceOf(DaGrantedLetter.class));
+        // we have a list now - fix
+        assertThat(
+            context.getTransientObject(PrepareDataForDocumentGenerationTask.ContextKeys.GENERATED_DOCUMENTS),
+            instanceOf(DaGrantedLetter.class));
         verify(ctscContactDetailsDataProviderService, times(1)).getCtscContactDetails();
     }
 

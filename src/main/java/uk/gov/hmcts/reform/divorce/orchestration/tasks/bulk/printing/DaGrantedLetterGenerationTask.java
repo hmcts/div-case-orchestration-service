@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing;
 
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DaGrantedLetter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
@@ -20,14 +19,21 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @Component
 public class DaGrantedLetterGenerationTask extends PrepareDataForDocumentGenerationTask {
 
-    public static final String DA_GRANTED_LETTER_TEMPLATE_ID = "FL-FRM-APP-ENG-00009.docx";
-
-    public DaGrantedLetterGenerationTask(CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService, PdfDocumentGenerationService pdfDocumentGenerationService) {
-        super(ctscContactDetailsDataProviderService);
-        this.pdfDocumentGenerationService = pdfDocumentGenerationService;
+    @NoArgsConstructor
+    public static class FileMetadata {
+        public static final String TEMPLATE_ID = "FL-DIV-GOR-ENG-00355.docx";
+        public static final String DOCUMENT_TYPE = "daGrantedLetter";
+        public static final String FILE_NAME = "da-granted-letter.pdf";
     }
 
     private final PdfDocumentGenerationService pdfDocumentGenerationService;
+
+    public DaGrantedLetterGenerationTask(
+        CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
+        PdfDocumentGenerationService pdfDocumentGenerationService) {
+        super(ctscContactDetailsDataProviderService);
+        this.pdfDocumentGenerationService = pdfDocumentGenerationService;
+    }
 
     @Override
     protected DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) throws TaskException {
@@ -43,8 +49,8 @@ public class DaGrantedLetterGenerationTask extends PrepareDataForDocumentGenerat
 
     @Override
     protected GeneratedDocumentInfo populateMetadataForGeneratedDocument(GeneratedDocumentInfo generatedDocumentInfo) {
-        generatedDocumentInfo.setDocumentType("daGrantedLetter");
-        generatedDocumentInfo.setFileName("da-granted-letter.pdf");
+        generatedDocumentInfo.setDocumentType(FileMetadata.DOCUMENT_TYPE);
+        generatedDocumentInfo.setFileName(FileMetadata.FILE_NAME);
 
         return generatedDocumentInfo;
     }
@@ -53,7 +59,7 @@ public class DaGrantedLetterGenerationTask extends PrepareDataForDocumentGenerat
     protected GeneratedDocumentInfo generatePdf(TaskContext context, DocmosisTemplateVars templateModel) {
         return pdfDocumentGenerationService.generatePdf(
             templateModel,
-            DA_GRANTED_LETTER_TEMPLATE_ID,
+            FileMetadata.TEMPLATE_ID,
             context.getTransientObject(AUTH_TOKEN_JSON_KEY)
         );
     }

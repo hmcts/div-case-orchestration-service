@@ -3,27 +3,23 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import org.checkerframework.checker.units.qual.A;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.StringHelper.formatFilename;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
-
 /*
- * It should be used as a base class to generate pdf and store its metadata in context
- * (key PREPARED_DATA_FOR_DOCUMENT_GENERATION) so it can be used by following tasks.
+ * It should be used as a base class to prepare data models with set of data needed to generate pdfs
+ * and store their metadata in context of flow (key GENERATED_DOCUMENTS)
+ * so that it can be used by BulkPrinterTask task.
  */
 @AllArgsConstructor
 public abstract class PrepareDataForDocumentGenerationTask implements Task<Map<String, Object>> {
@@ -56,7 +52,7 @@ public abstract class PrepareDataForDocumentGenerationTask implements Task<Map<S
 
     protected abstract GeneratedDocumentInfo populateMetadataForGeneratedDocument(GeneratedDocumentInfo documentInfo);
 
-    public void appendAnotherDocumentToBulkPrint(TaskContext context, GeneratedDocumentInfo generatedDocumentInfo) {
+    static void appendAnotherDocumentToBulkPrint(TaskContext context, GeneratedDocumentInfo generatedDocumentInfo) {
         List<GeneratedDocumentInfo> documentsToBulkPrint = context.computeTransientObjectIfAbsent(
             ContextKeys.GENERATED_DOCUMENTS, new ArrayList<>()
         );

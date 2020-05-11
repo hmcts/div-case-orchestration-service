@@ -10,8 +10,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaGrantedNotificationEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.AddDaGrantedCertificateToDocumentsToPrintTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DaGrantedLetterGenerationTask;
 
 import java.util.HashMap;
@@ -38,10 +38,10 @@ public class SendDaGrantedNotificationWorkflowTest {
     private SendDaGrantedNotificationEmailTask sendDaGrantedNotificationEmailTask;
 
     @Mock
-    private DaGrantedLetterGenerationTask prepareDataForDaGrantedLetterTask;
+    private DaGrantedLetterGenerationTask daGrantedLetterGenerationTask;
 
     @Mock
-    private PdfDocumentGenerationService pdfDocumentGenerationService;
+    private AddDaGrantedCertificateToDocumentsToPrintTask addDaGrantedCertificateToDocumentsToPrintTask;
 
     @Mock
     private BulkPrinterTask bulkPrinterTask;
@@ -59,8 +59,8 @@ public class SendDaGrantedNotificationWorkflowTest {
 
         verify(sendDaGrantedNotificationEmailTask, times(1)).execute(any(TaskContext.class), eq(casePayload));
 
-        verify(prepareDataForDaGrantedLetterTask, never()).execute(any(TaskContext.class), eq(casePayload));
-        verify(pdfDocumentGenerationService, never()).execute(any(TaskContext.class), eq(casePayload));
+        verify(daGrantedLetterGenerationTask, never()).execute(any(TaskContext.class), eq(casePayload));
+        verify(addDaGrantedCertificateToDocumentsToPrintTask, never()).execute(any(TaskContext.class), eq(casePayload));
         verify(bulkPrinterTask, never()).execute(any(TaskContext.class), eq(casePayload));
     }
 
@@ -68,20 +68,19 @@ public class SendDaGrantedNotificationWorkflowTest {
     public void runShouldCallBulkPrintingWhenNoDigitalCommunication() throws Exception {
         Map<String, Object> casePayload = buildCaseData(NO_VALUE);
 
-        when(prepareDataForDaGrantedLetterTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
-        when(pdfDocumentGenerationService.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
+        when(daGrantedLetterGenerationTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
+        when(addDaGrantedCertificateToDocumentsToPrintTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
         when(bulkPrinterTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
 
         sendDaGrantedNotificationWorkflow.run(buildCaseDetails(casePayload), AUTH_TOKEN);
 
         InOrder inOrder = inOrder(
-            prepareDataForDaGrantedLetterTask,
-            pdfDocumentGenerationService,
+            daGrantedLetterGenerationTask,
+            addDaGrantedCertificateToDocumentsToPrintTask,
             bulkPrinterTask
         );
 
-        inOrder.verify(prepareDataForDaGrantedLetterTask).execute(any(TaskContext.class), eq(casePayload));
-        inOrder.verify(pdfDocumentGenerationService).execute(any(TaskContext.class), eq(casePayload));
+        inOrder.verify(daGrantedLetterGenerationTask).execute(any(TaskContext.class), eq(casePayload));
         inOrder.verify(bulkPrinterTask).execute(any(TaskContext.class), eq(casePayload));
 
         verify(sendDaGrantedNotificationEmailTask, never()).execute(any(TaskContext.class), eq(casePayload));

@@ -8,9 +8,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaGrantedNotificationEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.AddDaGrantedCertificateToDocumentsToPrintTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DaGrantedCertificateForBulkPrintTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DaGrantedLetterGenerationTask;
 
 import java.util.ArrayList;
@@ -23,7 +22,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DA_GRANTED_OFFLINE_PACK_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.BULK_PRINT_LETTER_TYPE;
@@ -34,8 +32,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.Bulk
 public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final SendDaGrantedNotificationEmailTask sendDaGrantedNotificationEmailTask;
-    private final DaGrantedLetterGenerationTask prepareDataForDaGrantedLetterTask;
-    private final DaGrantedCertificateForBulkPrintTask loadDaGrantedCertificateForBulkPrintTask;
+    private final DaGrantedLetterGenerationTask daGrantedLetterGenerationTask;
+    private final AddDaGrantedCertificateToDocumentsToPrintTask addDaGrantedCertificateToDocumentsToPrintTask;
     private final BulkPrinterTask bulkPrinterTask;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
@@ -52,19 +50,19 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
     }
 
     protected static List<String> getDocumentTypesToPrint() {
-        return asList(DECREE_ABSOLUTE_LETTER_DOCUMENT_TYPE, DECREE_ABSOLUTE_DOCUMENT_TYPE);
+        return asList(
+            DaGrantedLetterGenerationTask.FileMetadata.DOCUMENT_TYPE,
+            DECREE_ABSOLUTE_DOCUMENT_TYPE
+        );
     }
 
     private Task<Map<String, Object>>[] getTasks(Map<String, Object> caseData) {
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
-        if (isRespondentRequestingDigitalConctact(caseData)) {
+        if (isRespondentUsingDigitalContact(caseData)) {
             tasks.add(sendDaGrantedNotificationEmailTask);
         } else {
-            tasks.add(prepareDataForDaGrantedLetterTask); // also generate pdf and add all docs to bulk print to context
-            // we need to add this taks
-            // in caseData you can find D8GeneratedDocuments
-            // get "daGranted" type and add it to context like here: uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.PrepareDataForDocumentGenerationTask.appendAnotherDocumentToBulkPrint
-            tasks.add(loadDaGrantedCertificateForBulkPrintTask);
+            tasks.add(daGrantedLetterGenerationTask);
+            tasks.add(addDaGrantedCertificateToDocumentsToPrintTask);
             tasks.add(bulkPrinterTask);
         }
 
@@ -73,7 +71,7 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
         return tasks.toArray(arr);
     }
 
-    private boolean isRespondentRequestingDigitalConctact(Map<String, Object> caseData) {
+    private boolean isRespondentUsingDigitalContact(Map<String, Object> caseData) {
         return YES_VALUE.equalsIgnoreCase(nullToEmpty((String) caseData.get(RESP_IS_USING_DIGITAL_CHANNEL)));
     }
 }
