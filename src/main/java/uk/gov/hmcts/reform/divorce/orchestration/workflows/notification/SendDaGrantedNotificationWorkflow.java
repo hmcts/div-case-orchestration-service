@@ -62,7 +62,7 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
             // we need to add this taks
             // in caseData you can find D8GeneratedDocuments
             // get "daGranted" type and add it to context like here: uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.PrepareDataForDocumentGenerationTask.appendAnotherDocumentToBulkPrint
-            tasks.add(loadGenratedDocsToBulkPrintTask.getDocuments(asList("daGranted")));
+            tasks.add(loadGenratedDocsToBulkPrintTask);
             tasks.add(bulkPrinterTask);
         }
 
