@@ -26,13 +26,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.PrepareDataForDocumentGenerationTask.ContextKeys.PREPARED_DATA_FOR_DOCUMENT_GENERATION;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PrepareDataForDaGrantedLetterGenerationTaskTest {
+public class DaGrantedLetterGenerationTaskTest {
 
     @Mock
     private CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService;
 
     @InjectMocks
-    private PrepareDataForDaGrantedLetterGenerationTask prepareDataForDaGrantedLetterGenerationTask;
+    private DaGrantedLetterGenerationTask daGrantedLetterGenerationTask;
 
     @Before
     public void setup() {
@@ -43,7 +43,7 @@ public class PrepareDataForDaGrantedLetterGenerationTaskTest {
     public void executeShouldPopulateFieldInContext() throws TaskException {
         TaskContext context = prepareTaskContext();
 
-        prepareDataForDaGrantedLetterGenerationTask.execute(context, buildCaseData());
+        daGrantedLetterGenerationTask.execute(context, buildCaseData());
 
         assertThat(context.getTransientObject(PREPARED_DATA_FOR_DOCUMENT_GENERATION), instanceOf(DaGrantedLetter.class));
         verify(ctscContactDetailsDataProviderService, times(1)).getCtscContactDetails();

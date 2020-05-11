@@ -9,8 +9,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaGrantedNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DocumentGenerationForPreparedDataTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.PrepareDataForDaGrantedLetterGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DaGrantedLetterGenerationTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +33,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.Bulk
 public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final SendDaGrantedNotificationEmailTask sendDaGrantedNotificationEmailTask;
-    private final PrepareDataForDaGrantedLetterGenerationTask prepareDataForDaGrantedLetterTask;
-    private final DocumentGenerationForPreparedDataTask documentGenerationForPreparedDataTask;
+    private final DaGrantedLetterGenerationTask prepareDataForDaGrantedLetterTask;
     private final BulkPrinterTask bulkPrinterTask;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
@@ -56,11 +55,12 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
 
     private Task<Map<String, Object>>[] getTasks(Map<String, Object> caseData) {
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
-        if (isDigitalProcess(caseData)) {
+        if (isRespondentRequestingDigitalConctact(caseData)) {
             tasks.add(sendDaGrantedNotificationEmailTask);
         } else {
-            tasks.add(prepareDataForDaGrantedLetterTask);
-            tasks.add(documentGenerationForPreparedDataTask);
+            tasks.add(prepareDataForDaGrantedLetterTask); // also generate pdf and add all docs to bulk print to context
+            // we need to add this taks
+            tasks.add(loadGenratedDocsToBulkPrintTask.getDocuments(asList("daGranted")));
             tasks.add(bulkPrinterTask);
         }
 
@@ -69,7 +69,7 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
         return tasks.toArray(arr);
     }
 
-    private boolean isDigitalProcess(Map<String, Object> caseData) {
+    private boolean isRespondentRequestingDigitalConctact(Map<String, Object> caseData) {
         return YES_VALUE.equalsIgnoreCase(nullToEmpty((String) caseData.get(RESP_IS_USING_DIGITAL_CHANNEL)));
     }
 }

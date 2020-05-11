@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,16 +27,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DocumentGenerationForPreparedDataTask.ContextKeys.GENERATED_DOCUMENTS;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService.ContextKeys.GENERATED_DOCUMENTS;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DocumentGenerationForPreparedDataTaskTest {
+public class PdfDocumentGenerationServiceTest {
 
     @Mock
     private DocumentGeneratorClient documentGeneratorClient;
 
     @InjectMocks
-    private DocumentGenerationForPreparedDataTask documentGenerationForPreparedDataTask;
+    private PdfDocumentGenerationService pdfDocumentGenerationService;
 
     private GeneratedDocumentInfo newDocumentGeneratedByTask = GeneratedDocumentInfo.builder().build();
 
@@ -49,7 +50,7 @@ public class DocumentGenerationForPreparedDataTaskTest {
         Map<String, Object> payload = new HashMap<>();
         TaskContext context = prepareTaskContext();
 
-        documentGenerationForPreparedDataTask.execute(context, payload);
+        pdfDocumentGenerationService.execute(context, payload);
         List<GeneratedDocumentInfo> actual = context.getTransientObject(GENERATED_DOCUMENTS);
 
         assertArrayWithSize(actual, 1);
@@ -63,7 +64,7 @@ public class DocumentGenerationForPreparedDataTaskTest {
         final List<GeneratedDocumentInfo> existingList = listWithOneDocument();
         context.setTransientObject(GENERATED_DOCUMENTS, listWithOneDocument());
 
-        documentGenerationForPreparedDataTask.execute(context, payload);
+        pdfDocumentGenerationService.execute(context, payload);
         List<GeneratedDocumentInfo> actual = context.getTransientObject(GENERATED_DOCUMENTS);
 
         assertArrayWithSize(actual, 2);
@@ -80,7 +81,7 @@ public class DocumentGenerationForPreparedDataTaskTest {
     }
 
     private TaskContext prepareTaskContext() {
-        TaskContext context = PrepareDataForDaGrantedLetterGenerationTaskTest.prepareTaskContext();
+        TaskContext context = DaGrantedLetterGenerationTaskTest.prepareTaskContext();
         context.setTransientObject(DOCUMENT_TYPE, "type");
         context.setTransientObject(DOCUMENT_FILENAME, "my-file");
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
