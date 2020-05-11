@@ -1,11 +1,15 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import java.util.Map;
 
 import static com.google.common.base.Strings.nullToEmpty;
 import static java.lang.String.format;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_FMT;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class StringHelper {
 
     public static String formatFilename(String caseId, String filename) {

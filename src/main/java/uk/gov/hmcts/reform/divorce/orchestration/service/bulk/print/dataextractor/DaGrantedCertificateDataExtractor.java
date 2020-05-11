@@ -9,54 +9,60 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.AddDaGrante
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.function.Predicate;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.StringHelper.notNull;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DaGrantedCertificateDataExtractor {
 
-    @NoArgsConstructor
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class CaseDataKeys {
         public static final String COMPLEX_TYPE_COLLECTION_ELEMENT = "value";
         public static final String DOCUMENTS_GENERATED = OrchestrationConstants.D8DOCUMENTS_GENERATED;
         public static final String DOCUMENT_TYPE = OrchestrationConstants.DOCUMENT_TYPE_JSON_KEY;
         public static final String DOCUMENT_URL = "document_url";
         public static final String DOCUMENT_FILE_NAME = "document_filename";
+        public static final String DOCUMENT_LINK = "DocumentLink";
     }
 
-    public static GeneratedDocumentInfo getExistingDaGrantedFromCaseData(Map<String, Object> caseData) {
-        return getDaGrantedDocumentInformPartiallyPopulated(caseData)
-            .documentType(AddDaGrantedCertificateToDocumentsToPrintTask.FileMetadata.DOCUMENT_TYPE)
-            .build();
-    }
-
-    public static GeneratedDocumentInfo.GeneratedDocumentInfoBuilder getDaGrantedDocumentInformPartiallyPopulated(Map<String, Object> caseData) {
-        return getGeneratedDocumentsFromCaseData(caseData)
+    public static GeneratedDocumentInfo.GeneratedDocumentInfoBuilder getDaGrantedDocumentInformPartiallyPopulated(
+        Map<String, Object> caseData
+    ) {
+        Map<String, Object> data = getGeneratedDocumentsFromCaseData(caseData)
             .stream()
-            .filter(isDaGrantedCertificateDocument())
+            .filter(DaGrantedCertificateDataExtractor::isDaGrantedCertificateDocument)
+            .map(element -> getNotEmptyField(element, CaseDataKeys.COMPLEX_TYPE_COLLECTION_ELEMENT))
             .findFirst()
-            .map(toGeneratedDocumentInfoBuilder())
             .orElseThrow(() -> new IllegalArgumentException("daGranted certificate should be found in caseData!"));
+
+        return toGeneratedDocumentInfoBuilder(data);
     }
 
-    public static Function<Map<String, Object>, GeneratedDocumentInfo.GeneratedDocumentInfoBuilder> toGeneratedDocumentInfoBuilder() {
-        return documentLink -> GeneratedDocumentInfo.builder()
+    private static GeneratedDocumentInfo.GeneratedDocumentInfoBuilder toGeneratedDocumentInfoBuilder(Map<String, Object> document) {
+        Map<String, Object> documentLink = getNotEmptyField(document, CaseDataKeys.DOCUMENT_LINK);
+
+        return GeneratedDocumentInfo.builder()
             .fileName(notNull((String) documentLink.get(CaseDataKeys.DOCUMENT_FILE_NAME)))
             .url(notNull((String) documentLink.get(CaseDataKeys.DOCUMENT_URL)));
     }
 
-    public static Predicate<Map<String, Object>> isDaGrantedCertificateDocument() {
-        return collectionMember -> {
-            Map<String, Object> document = (Map<String, Object>) collectionMember.get(CaseDataKeys.COMPLEX_TYPE_COLLECTION_ELEMENT);
+    public static boolean isDaGrantedCertificateDocument(Map<String, Object> collectionMember) {
+        Map<String, Object> document = getNotEmptyField(collectionMember, CaseDataKeys.COMPLEX_TYPE_COLLECTION_ELEMENT);
 
-            return AddDaGrantedCertificateToDocumentsToPrintTask.FileMetadata.DOCUMENT_TYPE.equals(document.get(CaseDataKeys.DOCUMENT_TYPE));
-        };
+        return AddDaGrantedCertificateToDocumentsToPrintTask.FileMetadata.DOCUMENT_TYPE.equals(document.get(CaseDataKeys.DOCUMENT_TYPE));
     }
 
     public static List<Map<String, Object>> getGeneratedDocumentsFromCaseData(Map<String, Object> caseData) {
         return Optional.ofNullable((List<Map<String, Object>>) caseData.get(CaseDataKeys.DOCUMENTS_GENERATED))
+            .filter(list -> list.size() > 0)
             .orElseThrow(() -> new IllegalArgumentException("D8GeneratedDocuments should be populated!"));
+    }
+
+    private static Map<String, Object> getNotEmptyField(Map<String, Object> data, String field) {
+        return Optional.ofNullable((Map<String, Object>) data.get(field))
+            .orElseThrow(() -> new IllegalArgumentException(
+                    "Invalid data structure. Expected `" + field + "` to be populated."
+                )
+            );
     }
 }
