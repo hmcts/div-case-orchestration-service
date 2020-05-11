@@ -49,7 +49,7 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
         );
     }
 
-    protected static List<String> getDocumentTypesToPrint() {
+    private List<String> getDocumentTypesToPrint() {
         return asList(
             DaGrantedLetterGenerationTask.FileMetadata.DOCUMENT_TYPE,
             DECREE_ABSOLUTE_DOCUMENT_TYPE
