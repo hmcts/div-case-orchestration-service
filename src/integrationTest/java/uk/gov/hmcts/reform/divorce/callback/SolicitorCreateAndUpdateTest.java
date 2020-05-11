@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.callback;
 
 import io.restassured.response.Response;
 import org.apache.http.entity.ContentType;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -29,7 +30,7 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
     @Value("${case.orchestration.solicitor.solicitor-update.context-path}")
     private String solicitorUpdatePath;
 
-    @Test
+    @Ignore
     public void givenCallbackRequest_whenSolicitorCreate_thenReturnUpdatedData() throws Exception {
         Response response = postWithDataAndValidateResponse(
                 serverUrl + solicitorCreatePath,
@@ -40,7 +41,7 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
         assertEverythingIsFine(response);
     }
 
-    @Test
+    @Ignore
     public void givenCallbackRequest_whenSolicitorUpdate_thenReturnUpdatedData() throws Exception {
         Response response = postWithDataAndValidateResponse(
                 serverUrl + solicitorUpdatePath,
