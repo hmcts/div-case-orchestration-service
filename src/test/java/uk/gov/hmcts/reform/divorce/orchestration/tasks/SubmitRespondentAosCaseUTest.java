@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -29,9 +30,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_ANSWER_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_ANSWER_AOS_WLESH_REVIEW_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_AOS_WELSH_REVIEW_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COMPLETED_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COMPLETED_AOS_WLESH_REVIEW_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
@@ -89,6 +92,9 @@ public class SubmitRespondentAosCaseUTest {
 
         verify(caseMaintenanceClient)
                 .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(AWAITING_ANSWER_AOS_WLESH_REVIEW_EVENT_ID), eq(expectedData));
+        ArgumentCaptor<Supplier<String>> welshEventSupplier = ArgumentCaptor.forClass(Supplier.class);
+        verify(ccdUtil).getEventIdForWelshCase(eq(AWAITING_ANSWER_AOS_EVENT_ID),welshEventSupplier.capture(), eq(caseDetails));
+        assertEquals(AWAITING_ANSWER_AOS_WLESH_REVIEW_EVENT_ID, welshEventSupplier.getValue().get());
     }
 
     @Test
@@ -185,6 +191,10 @@ public class SubmitRespondentAosCaseUTest {
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETED_AOS_EVENT_ID, expectedData);
+
+        ArgumentCaptor<Supplier<String>> welshEventSupplier = ArgumentCaptor.forClass(Supplier.class);
+        verify(ccdUtil).getEventIdForWelshCase(eq(COMPLETED_AOS_EVENT_ID),welshEventSupplier.capture(), eq(caseDetails));
+        assertEquals(COMPLETED_AOS_WLESH_REVIEW_EVENT_ID, welshEventSupplier.getValue().get());
     }
 
     @Test
@@ -229,6 +239,9 @@ public class SubmitRespondentAosCaseUTest {
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, expectedData);
+        ArgumentCaptor<Supplier<String>> welshEventSupplier = ArgumentCaptor.forClass(Supplier.class);
+        verify(ccdUtil).getEventIdForWelshCase(eq(AWAITING_DN_AOS_EVENT_ID),welshEventSupplier.capture(), eq(caseDetails));
+        assertEquals(AWAITING_DN_AOS_WELSH_REVIEW_EVENT_ID, welshEventSupplier.getValue().get());
     }
 
     @Test
