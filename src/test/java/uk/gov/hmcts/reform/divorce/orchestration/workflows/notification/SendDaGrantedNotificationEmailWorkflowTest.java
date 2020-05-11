@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaGrantedNotificationEmail;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaGrantedNotificationEmailTask;
 
 import java.util.Collections;
 import java.util.Map;
@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 public class SendDaGrantedNotificationEmailWorkflowTest {
 
     @Mock
-    private SendDaGrantedNotificationEmail sendDaGrantedNotificationEmail;
+    private SendDaGrantedNotificationEmailTask sendDaGrantedNotificationEmail;
 
     @InjectMocks
     private SendDaGrantedNotificationEmailWorkflow sendDaGrantedNotificationEmailWorkflow;
