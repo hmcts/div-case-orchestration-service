@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DaGrantedLe
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNotNull;
@@ -55,7 +56,9 @@ public class SendDaGrantedNotificationWorkflowTest {
 
         when(sendDaGrantedNotificationEmailTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
 
-        sendDaGrantedNotificationWorkflow.run(buildCaseDetails(casePayload), AUTH_TOKEN);
+        Map<String, Object> result = sendDaGrantedNotificationWorkflow.run(buildCaseDetails(casePayload), AUTH_TOKEN);
+
+        assertEquals(result, casePayload);
 
         verify(sendDaGrantedNotificationEmailTask, times(1)).execute(any(TaskContext.class), eq(casePayload));
 
@@ -72,7 +75,9 @@ public class SendDaGrantedNotificationWorkflowTest {
         when(addDaGrantedCertificateToDocumentsToPrintTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
         when(bulkPrinterTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
 
-        sendDaGrantedNotificationWorkflow.run(buildCaseDetails(casePayload), AUTH_TOKEN);
+        Map<String, Object> result = sendDaGrantedNotificationWorkflow.run(buildCaseDetails(casePayload), AUTH_TOKEN);
+
+        assertEquals(result, casePayload);
 
         InOrder inOrder = inOrder(
             daGrantedLetterGenerationTask,
@@ -81,6 +86,7 @@ public class SendDaGrantedNotificationWorkflowTest {
         );
 
         inOrder.verify(daGrantedLetterGenerationTask).execute(any(TaskContext.class), eq(casePayload));
+        inOrder.verify(addDaGrantedCertificateToDocumentsToPrintTask).execute(any(TaskContext.class), eq(casePayload));
         inOrder.verify(bulkPrinterTask).execute(any(TaskContext.class), eq(casePayload));
 
         verify(sendDaGrantedNotificationEmailTask, never()).execute(any(TaskContext.class), eq(casePayload));
