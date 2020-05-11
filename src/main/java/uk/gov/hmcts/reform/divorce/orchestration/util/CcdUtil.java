@@ -108,8 +108,8 @@ public class CcdUtil {
     }
 
     public String getEventIdForWelshCase(String currentEvent, Supplier<String> welshEventId,
-                                         CaseDetails currentCaseDetails) {
-        return Optional.ofNullable(currentCaseDetails).map(caseDetails -> CaseDataUtils.getLanguagePreference(caseDetails.getCaseData()))
+                                         CaseDetails caseDetails) {
+        return Optional.ofNullable(caseDetails).map(details -> CaseDataUtils.getLanguagePreference(details.getCaseData()))
                 .filter(Objects::nonNull)
                 .flatMap(value -> value).filter(value -> LanguagePreference.WELSH.equals(value))
                 .map(value -> welshEventId.get()).orElse(currentEvent);

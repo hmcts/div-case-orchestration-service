@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.Map;
-import java.util.function.Supplier;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_NOMINATE_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
@@ -53,11 +52,11 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
             //if respondent didn't nominate a solicitor, then they've provided an answer
             if (isRespondentDefendingDivorce(submissionData)) {
                 eventId = getEventName(context, AWAITING_ANSWER_AOS_EVENT_ID,
-                    () -> AWAITING_ANSWER_AOS_WLESH_REVIEW_EVENT_ID);
+                    AWAITING_ANSWER_AOS_WLESH_REVIEW_EVENT_ID);
             } else if (isRespondentAgreeingDivorceButNotAdmittingFact(submissionData, context)) {
-                eventId = getEventName(context, COMPLETED_AOS_EVENT_ID, () -> COMPLETED_AOS_WLESH_REVIEW_EVENT_ID);
+                eventId = getEventName(context, COMPLETED_AOS_EVENT_ID, COMPLETED_AOS_WLESH_REVIEW_EVENT_ID);
             } else {
-                eventId = getEventName(context, AWAITING_DN_AOS_EVENT_ID, () -> AWAITING_DN_AOS_WELSH_REVIEW_EVENT_ID);
+                eventId = getEventName(context, AWAITING_DN_AOS_EVENT_ID, AWAITING_DN_AOS_WELSH_REVIEW_EVENT_ID);
             }
             submissionData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
             submissionData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
@@ -76,15 +75,13 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
         return updateCase;
     }
 
-    private String getEventName(TaskContext context, String currentEvent, Supplier<String> welshEventId) {
+    private String getEventName(TaskContext context, String currentEvent, String welshEventId) {
         final CaseDetails currentCaseDetails = caseMaintenanceClient.retrievePetitionById(
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(),
                 context.getTransientObject(CASE_ID_JSON_KEY).toString()
         );
-        return ccdUtil.getEventIdForWelshCase(currentEvent, welshEventId, currentCaseDetails);
+        return ccdUtil.getEventIdForWelshCase(currentEvent, () -> welshEventId, currentCaseDetails);
     }
-
-
 
     private boolean isSolicitorRepresentingRespondent(Map<String, Object> submissionData) {
         final String respondentSolicitorRepresented = (String) submissionData.get(RESP_SOL_REPRESENTED);
