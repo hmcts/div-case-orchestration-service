@@ -100,7 +100,7 @@ public class DaGrantedLetterGenerationTaskTest {
         assertThat(daGrantedLetter.getPetitionerFullName(), is("John Doe"));
         assertThat(daGrantedLetter.getAddressee().getName(), is("Jane Doe"));
         assertNotNull(daGrantedLetter.getCtscContactDetails());
-        //TODO add some more
+        assertNotNull(daGrantedLetter.getAddressee().getFormattedAddress(), is("line1\nline2\ntown\npostcode"));
     }
 
 
