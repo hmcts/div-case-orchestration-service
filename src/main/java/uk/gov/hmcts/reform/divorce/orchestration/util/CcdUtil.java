@@ -102,5 +102,4 @@ public class CcdUtil {
     public LocalDateTime getCurrentLocalDateTime() {
         return LocalDateTime.now(clock);
     }
-
 }

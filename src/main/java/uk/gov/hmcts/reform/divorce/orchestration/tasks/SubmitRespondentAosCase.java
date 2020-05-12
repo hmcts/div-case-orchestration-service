@@ -3,20 +3,26 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
+import uk.gov.hmcts.reform.divorce.orchestration.config.EventConfig;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.EventType;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.Map;
+import java.util.Optional;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.EventType.aosReceivedNoAdConStarted;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.EventType.aosSubmittedDefended;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.EventType.aosSubmittedUndefended;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_NOMINATE_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_ANSWER_AOS_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COMPLETED_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
@@ -34,6 +40,7 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
     private static final String RESP_SOL_REPRESENTED = "respondentSolicitorRepresented";
     private final CaseMaintenanceClient caseMaintenanceClient;
     private final CcdUtil ccdUtil;
+    private final EventConfig eventConfig;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> submissionData) {
@@ -41,18 +48,17 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
         String caseIDJsonKey = context.getTransientObject(CASE_ID_JSON_KEY);
 
         String eventId;
-
         if (isSolicitorRepresentingRespondent(submissionData)) {
             //move back to AOS awaiting, as technically the nominated solicitor will provide a response
             eventId = AOS_NOMINATE_SOLICITOR;
         } else {
             //if respondent didn't nominate a solicitor, then they've provided an answer
             if (isRespondentDefendingDivorce(submissionData)) {
-                eventId = AWAITING_ANSWER_AOS_EVENT_ID;
+                eventId = getEventName(context, aosSubmittedDefended.getEventId());
             } else if (isRespondentAgreeingDivorceButNotAdmittingFact(submissionData, context)) {
-                eventId = COMPLETED_AOS_EVENT_ID;
+                eventId = getEventName(context, aosReceivedNoAdConStarted.getEventId());
             } else {
-                eventId = AWAITING_DN_AOS_EVENT_ID;
+                eventId = getEventName(context, aosSubmittedUndefended.getEventId());
             }
             submissionData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
             submissionData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
@@ -69,6 +75,19 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
         }
 
         return updateCase;
+    }
+
+    private String getEventName(final TaskContext context, final String currentEvent) {
+        CaseDetails currentCaseDetails =
+                Optional.ofNullable(context.<CaseDetails>getTransientObject(CASE_DETAILS_JSON_KEY)).orElse(
+                caseMaintenanceClient.retrievePetitionById(
+                context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(),
+                context.getTransientObject(CASE_ID_JSON_KEY).toString()));
+
+        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(currentCaseDetails.getCaseData());
+        return Optional.ofNullable(eventConfig.getEvents()
+                .get(languagePreference.orElse(LanguagePreference.ENGLISH))
+                .get(EventType.getEvenType(currentEvent))).orElse(currentEvent);
     }
 
     private boolean isSolicitorRepresentingRespondent(Map<String, Object> submissionData) {

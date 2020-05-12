@@ -149,5 +149,4 @@ public class CcdUtilUTest {
     public void shouldReturnCurrentLocalDateTime() {
         assertEquals(FIXED_DATE_TIME, ccdUtil.getCurrentLocalDateTime());
     }
-
 }

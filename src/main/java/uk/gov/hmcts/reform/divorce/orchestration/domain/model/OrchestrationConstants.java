@@ -145,9 +145,6 @@ public class OrchestrationConstants {
     public static final String AMEND_PETITION_FOR_REFUSAL_EVENT = "amendPetitionForRefusalRejection";
     public static final String AOS_START_FROM_OVERDUE = "startAosFromOverdue";
     public static final String AOS_START_FROM_REISSUE = "startAosFromReissue";
-    public static final String AWAITING_DN_AOS_EVENT_ID = "aosSubmittedUndefended";
-    public static final String AWAITING_ANSWER_AOS_EVENT_ID = "aosSubmittedDefended";
-    public static final String COMPLETED_AOS_EVENT_ID = "aosReceivedNoAdConStarted";
     public static final String AOS_NOMINATE_SOLICITOR = "aosNominateSol";
     public static final String SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID = "solAosSubmittedDefended";
     public static final String SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID = "solAosSubmittedUndefended";
@@ -211,6 +208,7 @@ public class OrchestrationConstants {
     public static final String RESPONDENT_PIN = "pin";
     public static final String CO_RESPONDENT_PIN = "coRespondentPin";
     public static final String SUCCESS_STATUS = "success";
+    public static final String DOCUMENT_TYPE_RESPONDENT_ANSWERS = "respondentAnswers";
     /*
        Unfortunately, "court" is the name that is already used in the Divorce session format in many places, although it holds a list of courts.
        Changing it now would probably be more trouble than it's worth. At least our constant can be called the right thing.
