@@ -11,12 +11,13 @@ public enum EventType {
     aosSubmittedUndefended("aosSubmittedUndefended");
 
     private final String eventId;
-    EventType(String eventId){
+
+    EventType(String eventId) {
         this.eventId = eventId;
     }
 
     public static EventType getEvenType(String eventId) {
-        return Arrays.stream(EventType.values()).filter(eventType -> eventType.getEventId().equals(eventId)).findFirst().
-                orElseThrow(() -> new IllegalArgumentException(String.join("","Invalid event id :", eventId)));
+        return Arrays.stream(EventType.values()).filter(eventType -> eventType.getEventId().equals(eventId)).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(String.join("","Invalid event id :", eventId)));
     }
 }

@@ -145,12 +145,6 @@ public class OrchestrationConstants {
     public static final String AMEND_PETITION_FOR_REFUSAL_EVENT = "amendPetitionForRefusalRejection";
     public static final String AOS_START_FROM_OVERDUE = "startAosFromOverdue";
     public static final String AOS_START_FROM_REISSUE = "startAosFromReissue";
-    public static final String AWAITING_DN_AOS_EVENT_ID = "aosSubmittedUndefended";
-    public static final String AWAITING_DN_AOS_WELSH_REVIEW_EVENT_ID = "aosSubmittedUndefendedWelshReview";
-    public static final String AWAITING_ANSWER_AOS_EVENT_ID = "aosSubmittedDefended";
-    public static final String AWAITING_ANSWER_AOS_WLESH_REVIEW_EVENT_ID = "aosSubmittedDefendedWelshReview";
-    public static final String COMPLETED_AOS_EVENT_ID = "aosReceivedNoAdConStarted";
-    public static final String COMPLETED_AOS_WLESH_REVIEW_EVENT_ID = "aosReceivedNoAdConStartedWelshReview";
     public static final String AOS_NOMINATE_SOLICITOR = "aosNominateSol";
     public static final String SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID = "solAosSubmittedDefended";
     public static final String SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID = "solAosSubmittedUndefended";

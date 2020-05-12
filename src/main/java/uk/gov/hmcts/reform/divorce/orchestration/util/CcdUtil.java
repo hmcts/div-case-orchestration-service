@@ -3,8 +3,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.util;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
@@ -13,9 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DATE_FORMAT;
@@ -106,13 +102,4 @@ public class CcdUtil {
     public LocalDateTime getCurrentLocalDateTime() {
         return LocalDateTime.now(clock);
     }
-
-    public String getEventIdForWelshCase(String currentEvent, Supplier<String> welshEventId,
-                                         CaseDetails caseDetails) {
-        return Optional.ofNullable(caseDetails).map(details -> CaseDataUtils.getLanguagePreference(details.getCaseData()))
-                .filter(Objects::nonNull)
-                .flatMap(value -> value).filter(value -> LanguagePreference.WELSH.equals(value))
-                .map(value -> welshEventId.get()).orElse(currentEvent);
-    }
-
 }

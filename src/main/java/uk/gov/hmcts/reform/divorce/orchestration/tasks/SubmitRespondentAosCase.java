@@ -78,14 +78,15 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
     }
 
     private String getEventName(final TaskContext context, final String currentEvent) {
-       CaseDetails currentCaseDetails =
+        CaseDetails currentCaseDetails =
                 Optional.ofNullable(context.<CaseDetails>getTransientObject(CASE_DETAILS_JSON_KEY)).orElse(
                 caseMaintenanceClient.retrievePetitionById(
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(),
                 context.getTransientObject(CASE_ID_JSON_KEY).toString()));
 
         Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(currentCaseDetails.getCaseData());
-        return Optional.ofNullable(eventConfig.getEvents().get(languagePreference.get()).get(EventType.getEvenType(currentEvent))).orElse(currentEvent);
+        return Optional.ofNullable(eventConfig.getEvents()
+                .get(languagePreference.get()).get(EventType.getEvenType(currentEvent))).orElse(currentEvent);
     }
 
     private boolean isSolicitorRepresentingRespondent(Map<String, Object> submissionData) {

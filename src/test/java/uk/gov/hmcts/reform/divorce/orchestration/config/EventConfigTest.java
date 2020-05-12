@@ -45,6 +45,6 @@ public class EventConfigTest {
 
         String input = "aosSubmittedDefendedWelshReview";
         eventConfig.getEvents().get(LanguagePreference.WELSH).get(EventType.getEvenType(input));
-     }
+    }
 }
 
