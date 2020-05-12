@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing;
 
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DaGrantedLetter;
@@ -19,7 +20,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @Component
 public class DaGrantedLetterGenerationTask extends PrepareDataForDocumentGenerationTask {
 
-    @NoArgsConstructor
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FileMetadata {
         public static final String TEMPLATE_ID = "FL-DIV-GOR-ENG-00355.docx";
         public static final String DOCUMENT_TYPE = "daGrantedLetter";

@@ -41,10 +41,10 @@ public class PdfDocumentGenerationServiceTest {
 
         verify(documentGeneratorClient).generatePDF(documentGenerationRequest.capture(), authTokenArg.capture());
 
-        GenerateDocumentRequest capturedRequest = documentGenerationRequest.getValue();
-        RequestTemplateVarsWrapper modelSentToPdfGenerator = (RequestTemplateVarsWrapper) capturedRequest.getValues()
+        final GenerateDocumentRequest capturedRequest = documentGenerationRequest.getValue();
+        final RequestTemplateVarsWrapper modelSentToPdfGenerator = (RequestTemplateVarsWrapper) capturedRequest.getValues()
             .get(OrchestrationConstants.CASE_DETAILS_JSON_KEY);
-        DaGrantedLetter templateVars = (DaGrantedLetter) modelSentToPdfGenerator.getCaseData();
+        final DaGrantedLetter templateVars = (DaGrantedLetter) modelSentToPdfGenerator.getCaseData();
 
         assertThat(capturedRequest.getTemplate(), is(templateId));
         assertThat(modelSentToPdfGenerator.getId(), is(caseId));
