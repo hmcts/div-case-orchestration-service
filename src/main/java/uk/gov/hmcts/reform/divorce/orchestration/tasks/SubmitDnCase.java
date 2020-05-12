@@ -3,21 +3,26 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
+import uk.gov.hmcts.reform.divorce.orchestration.config.EventConfig;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.EventType;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.Map;
+import java.util.Optional;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.EventType.dnReceived;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.EventType.dnReceivedAosCompleted;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.EventType.submitDnClarification;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_COMPLETED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED_AOS_COMPLETE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED_CLARIFICATION;
 
 @Component
 public class SubmitDnCase implements Task<Map<String, Object>> {
@@ -26,8 +31,12 @@ public class SubmitDnCase implements Task<Map<String, Object>> {
     private CaseMaintenanceClient caseMaintenanceClient;
 
     @Autowired
-    public SubmitDnCase(final CaseMaintenanceClient caseMaintenanceClient) {
+    private final EventConfig eventConfig;
+
+    @Autowired
+    public SubmitDnCase(final CaseMaintenanceClient caseMaintenanceClient, EventConfig eventConfig) {
         this.caseMaintenanceClient = caseMaintenanceClient;
+        this.eventConfig = eventConfig;
     }
 
     @Override
@@ -59,11 +68,18 @@ public class SubmitDnCase implements Task<Map<String, Object>> {
         final String caseState = currentCaseDetails.getState();
 
         if (AWAITING_CLARIFICATION.equalsIgnoreCase(caseState)) {
-            return DN_RECEIVED_CLARIFICATION;
+            return  getEventName(currentCaseDetails, submitDnClarification.getEventId());
         } else if (AOS_COMPLETED.equalsIgnoreCase(caseState)) {
-            return DN_RECEIVED_AOS_COMPLETE;
+            return getEventName(currentCaseDetails, dnReceivedAosCompleted.getEventId());
         } else {
-            return DN_RECEIVED;
+            return getEventName(currentCaseDetails, dnReceived.getEventId());
         }
+    }
+
+    private String getEventName(final CaseDetails currentCaseDetails, final String currentEvent) {
+        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(currentCaseDetails.getCaseData());
+        return Optional.ofNullable(eventConfig.getEvents()
+                .get(languagePreference.orElse(LanguagePreference.ENGLISH))
+                .get(EventType.getEvenType(currentEvent))).orElse(currentEvent);
     }
 }

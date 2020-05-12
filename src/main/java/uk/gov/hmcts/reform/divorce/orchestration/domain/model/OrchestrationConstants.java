@@ -138,9 +138,6 @@ public class OrchestrationConstants {
     public static final String DN_REFUSAL_DRAFT = "DNRefusalDraft";
 
     // CCD Events
-    public static final String DN_RECEIVED = "dnReceived";
-    public static final String DN_RECEIVED_AOS_COMPLETE = "dnReceivedAosCompleted";
-    public static final String DN_RECEIVED_CLARIFICATION = "submitDnClarification";
     public static final String AMEND_PETITION_EVENT = "amendPetition";
     public static final String AMEND_PETITION_FOR_REFUSAL_EVENT = "amendPetitionForRefusalRejection";
     public static final String AOS_START_FROM_OVERDUE = "startAosFromOverdue";

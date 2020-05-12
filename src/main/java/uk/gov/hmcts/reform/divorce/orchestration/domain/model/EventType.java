@@ -8,7 +8,10 @@ import java.util.Arrays;
 public enum EventType {
     aosSubmittedDefended("aosSubmittedDefended"),
     aosReceivedNoAdConStarted("aosReceivedNoAdConStarted"),
-    aosSubmittedUndefended("aosSubmittedUndefended");
+    aosSubmittedUndefended("aosSubmittedUndefended"),
+    dnReceived("dnReceived"),
+    dnReceivedAosCompleted( "dnReceivedAosCompleted"),
+    submitDnClarification( "submitDnClarification");
 
     private final String eventId;
 

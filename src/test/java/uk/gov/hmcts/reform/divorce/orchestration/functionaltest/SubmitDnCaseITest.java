@@ -29,14 +29,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN_1;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.EventType.dnReceived;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.EventType.dnReceivedAosCompleted;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.EventType.submitDnClarification;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_COMPLETED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED_AOS_COMPLETE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FORMATTER_CASE_DATA_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FORMATTER_DIVORCE_SESSION_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
@@ -99,9 +99,9 @@ public class SubmitDnCaseITest extends IdamTestSupport {
 
         stubSignInForCaseworker();
         stubMaintenanceServerEndpointForRetrieveCaseById(OK, caseDetails);
-        stubMaintenanceServerEndpointForUpdate(OK, DN_RECEIVED, caseData, caseDataString);
+        stubMaintenanceServerEndpointForUpdate(OK, dnReceived.getEventId(), caseData, caseDataString);
         stubFormatterServerEndpoint(OK, caseData, convertObjectToJsonString(caseData));
-        stubMaintenanceServerEndpointForUpdate(BAD_REQUEST, DN_RECEIVED, caseData, TEST_ERROR);
+        stubMaintenanceServerEndpointForUpdate(BAD_REQUEST, dnReceived.getEventId(), caseData, TEST_ERROR);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -124,7 +124,7 @@ public class SubmitDnCaseITest extends IdamTestSupport {
         stubSignInForCaseworker();
         stubMaintenanceServerEndpointForRetrieveCaseById(OK, caseDetails);
         stubFormatterServerEndpoint(OK, caseData, caseDataString);
-        stubMaintenanceServerEndpointForUpdate(OK, DN_RECEIVED, caseData, caseDataString);
+        stubMaintenanceServerEndpointForUpdate(OK, dnReceived.getEventId(), caseData, caseDataString);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -147,7 +147,7 @@ public class SubmitDnCaseITest extends IdamTestSupport {
         stubSignInForCaseworker();
         stubMaintenanceServerEndpointForRetrieveCaseById(OK, caseDetails);
         stubFormatterServerEndpoint(OK, caseData, caseDataString);
-        stubMaintenanceServerEndpointForUpdate(OK, DN_RECEIVED_AOS_COMPLETE, caseData, caseDataString);
+        stubMaintenanceServerEndpointForUpdate(OK, dnReceivedAosCompleted.getEventId(), caseData, caseDataString);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -174,7 +174,7 @@ public class SubmitDnCaseITest extends IdamTestSupport {
                 FORMATTER_CASE_DATA_KEY, Collections.emptyMap(),
                 FORMATTER_DIVORCE_SESSION_KEY, Collections.emptyMap()
             ), caseDataString);
-        stubMaintenanceServerEndpointForUpdate(OK, DN_RECEIVED_CLARIFICATION, caseData, caseDataString);
+        stubMaintenanceServerEndpointForUpdate(OK, submitDnClarification.getEventId(), caseData, caseDataString);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)

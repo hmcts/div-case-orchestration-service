@@ -439,10 +439,17 @@ events:
     aosSubmittedDefended: "aosSubmittedDefended"
     aosReceivedNoAdConStarted: "aosReceivedNoAdConStarted"
     aosSubmittedUndefended: "aosSubmittedUndefended"
+    dnReceived: "dnReceived"
+    dnReceivedAosCompleted: "dnReceivedAosCompleted"
+    submitDnClarification: "submitDnClarification"
   welsh:
     aosSubmittedDefended: "aosSubmittedDefendedWelshReview"
     aosReceivedNoAdConStarted: "aosReceivedNoAdConStartedWelshReview"
     aosSubmittedUndefended: "aosSubmittedUndefendedWelshReview"
+    dnReceived: "dnReceivedWelshReview"
+    dnReceivedAosCompleted: "dnReceivedAosCompletedWelshReview"
+    submitDnClarification: "submitDnClarificationWelshReview"
+
 
 template:
   relation:
