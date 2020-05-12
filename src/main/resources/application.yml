@@ -450,7 +450,6 @@ events:
     dnReceivedAosCompleted: "dnReceivedAosCompletedWelshReview"
     submitDnClarification: "submitDnClarificationWelshReview"
 
-
 template:
   relation:
     english:
