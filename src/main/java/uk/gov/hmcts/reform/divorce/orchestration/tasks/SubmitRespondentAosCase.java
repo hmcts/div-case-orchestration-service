@@ -86,7 +86,8 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
 
         Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(currentCaseDetails.getCaseData());
         return Optional.ofNullable(eventConfig.getEvents()
-                .get(languagePreference.get()).get(EventType.getEvenType(currentEvent))).orElse(currentEvent);
+                .get(languagePreference.orElse(LanguagePreference.ENGLISH))
+                .get(EventType.getEvenType(currentEvent))).orElse(currentEvent);
     }
 
     private boolean isSolicitorRepresentingRespondent(Map<String, Object> submissionData) {
