@@ -54,7 +54,7 @@ public class DaGrantedCertificateDataExtractor {
 
     public static List<Map<String, Object>> getGeneratedDocumentsFromCaseData(Map<String, Object> caseData) {
         return Optional.ofNullable((List<Map<String, Object>>) caseData.get(CaseDataKeys.DOCUMENTS_GENERATED))
-            .filter(list -> list.size() > 0)
+            .filter(list -> !list.isEmpty())
             .orElseThrow(() -> new IllegalArgumentException("D8GeneratedDocuments should be populated!"));
     }
 
