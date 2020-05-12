@@ -88,7 +88,7 @@ public class DaGrantedLetterGenerationTaskTest {
 
 
     @Test
-    public void testPrepareDataForPdfCorrectlyMapsToValidTemplateVars() throws TaskException, IOException {
+    public void testPrepareDataForPdfCorrectlyMapsToValidTemplateVars() throws TaskException {
         TaskContext context = prepareTaskContext();
         Map<String, Object> caseData = buildCaseData();
 
@@ -96,11 +96,14 @@ public class DaGrantedLetterGenerationTaskTest {
 
         assertEquals(daGrantedLetter.getCaseReference(), TEST_CASE_ID);
         assertEquals(daGrantedLetter.getLetterDate(), VALID_DATE);
+
         assertThat(daGrantedLetter.getRespondentFullName(), is("Jane Doe"));
         assertThat(daGrantedLetter.getPetitionerFullName(), is("John Doe"));
+
         assertThat(daGrantedLetter.getAddressee().getName(), is("Jane Doe"));
-        assertNotNull(daGrantedLetter.getCtscContactDetails());
         assertNotNull(daGrantedLetter.getAddressee().getFormattedAddress(), is("line1\nline2\ntown\npostcode"));
+
+        assertNotNull(daGrantedLetter.getCtscContactDetails());
     }
 
 
@@ -115,6 +118,7 @@ public class DaGrantedLetterGenerationTaskTest {
     private Map<String, Object> buildCaseData() {
         Map<String, Object> caseData = buildCaseDataWithAddressee();
         caseData.put(DA_GRANTED_DATE, VALID_DATE);
+
         caseData.put(RESPONDENT_FIRST_NAME, RESPONDENTS_FIRST_NAME);
         caseData.put(RESPONDENT_LAST_NAME, RESPONDENTS_LAST_NAME);
 
