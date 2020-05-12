@@ -13,6 +13,6 @@ import lombok.EqualsAndHashCode;
 public class RequestTemplateVarsWrapper {
     @JsonProperty("id")
     private String id;
-    @JsonProperty("caseData")
+    @JsonProperty("case_data")
     private Object caseData;
 }

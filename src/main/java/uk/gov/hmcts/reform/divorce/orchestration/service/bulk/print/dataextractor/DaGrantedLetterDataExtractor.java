@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.StringHelper.buildFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
@@ -26,6 +27,10 @@ public class DaGrantedLetterDataExtractor {
         public static final String PETITIONER_LAST_NAME = OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
         public static final String RESPONDENT_FIRST_NAME = OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
         public static final String RESPONDENT_LAST_NAME = OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
+
+        public static final String RESPONDENT_HOME_ADDRESS = "D8RespondentHomeAddress";
+        public static final String RESPONDENT_CORRESPONDENCE_ADDRESS = "D8RespondentCorrespondenceAddress";
+
         public static final String ADDRESS_LINE1 = "AddressLine1";
         public static final String ADDRESS_LINE2 = "AddressLine2";
         public static final String TOWN = "PostTown";
@@ -52,8 +57,10 @@ public class DaGrantedLetterDataExtractor {
         return buildFullName(caseData, CaseDataKeys.PETITIONER_FIRST_NAME, CaseDataKeys.PETITIONER_LAST_NAME);
     }
 
-    private static String formatAddressForLetterPrinting(Map<String, Object> address) throws InvalidDataForTaskException {
+    private static String formatAddressForLetterPrinting(Map<String, Object> caseData) throws InvalidDataForTaskException {
         List<String> addressLines = new ArrayList<>();
+
+        Map<String, Object> address = getRespondentAddressToUse(caseData);
 
         try {
             addressLines.add(getMandatoryPropertyValueAsString(address, CaseDataKeys.ADDRESS_LINE1));
@@ -68,5 +75,15 @@ public class DaGrantedLetterDataExtractor {
         }
 
         return String.join("\n", addressLines);
+    }
+
+    private static Map<String, Object> getRespondentAddressToUse(Map<String, Object> caseData) {
+        return isCorrespondenceAddressPopulated(caseData)
+            ? (Map<String, Object>) caseData.get(CaseDataKeys.RESPONDENT_CORRESPONDENCE_ADDRESS)
+            : (Map<String, Object>) caseData.get(CaseDataKeys.RESPONDENT_HOME_ADDRESS);
+    }
+
+    private static boolean isCorrespondenceAddressPopulated(Map<String, Object> caseData) {
+        return Optional.ofNullable(caseData.get(CaseDataKeys.RESPONDENT_CORRESPONDENCE_ADDRESS)).isPresent();
     }
 }

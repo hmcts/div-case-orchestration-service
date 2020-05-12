@@ -18,7 +18,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.POSTCODE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.RESPONDENT_CORRESPONDENCE_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.RESPONDENT_HOME_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.TOWN;
 
@@ -52,28 +54,82 @@ public class DaGrantedLetterDataExtractorTest {
         Addressee actual = DaGrantedLetterDataExtractor.getAddressee(caseData);
 
         assertThat(actual.getName(), is("John Smith"));
-        assertThat(actual.getFormattedAddress(), is("line1\nline2\ntown\ncounty\npostcode"));
+        assertThat(
+            actual.getFormattedAddress(),
+            is("line1D8RespondentHomeAddress\nline2D8RespondentHomeAddress\ntownD8RespondentHomeAddress\n"
+                + "countyD8RespondentHomeAddress\npostcodeD8RespondentHomeAddress")
+        );
+    }
+
+    @Test
+    public void getAddresseeReturnsValidResultWhenBothHomeAndCorrespondenceAddressProvided() throws TaskException {
+        Map<String, Object> caseData = buildCaseDataWithAddressee();
+        caseData.put(RESPONDENT_HOME_ADDRESS, buildAddress("home"));
+        caseData.put(RESPONDENT_CORRESPONDENCE_ADDRESS, buildAddress("correspondence"));
+
+        Addressee actual = DaGrantedLetterDataExtractor.getAddressee(caseData);
+
+        assertThat(actual.getName(), is("John Smith"));
+        assertThat(
+            actual.getFormattedAddress(),
+            is("line1correspondence\nline2correspondence\ntowncorrespondence\ncountycorrespondence\npostcodecorrespondence")
+        );
+    }
+
+    @Test
+    public void getAddresseeReturnsValidResultWhenOnlyHomeAddressProvided() throws TaskException {
+        Map<String, Object> caseData = buildCaseDataWithAddressee();
+        caseData.put(RESPONDENT_HOME_ADDRESS, buildAddress("home"));
+        caseData.remove(RESPONDENT_CORRESPONDENCE_ADDRESS);
+
+        Addressee actual = DaGrantedLetterDataExtractor.getAddressee(caseData);
+
+        assertThat(actual.getName(), is("John Smith"));
+        assertThat(
+            actual.getFormattedAddress(),
+            is("line1home\nline2home\ntownhome\ncountyhome\npostcodehome")
+        );
+    }
+
+    @Test
+    public void getAddresseeReturnsValidResultWhenOnlyCorrespondenceAddressProvided() throws TaskException {
+        Map<String, Object> caseData = buildCaseDataWithAddressee();
+        caseData.put(RESPONDENT_CORRESPONDENCE_ADDRESS, buildAddress("correspondence"));
+
+        Addressee actual = DaGrantedLetterDataExtractor.getAddressee(caseData);
+
+        assertThat(actual.getName(), is("John Smith"));
+        assertThat(
+            actual.getFormattedAddress(),
+            is("line1correspondence\nline2correspondence\ntowncorrespondence\ncountycorrespondence\npostcodecorrespondence")
+        );
     }
 
     @Test
     public void getAddresseeReturnsValidResultWhenSomeFieldsMissing() throws TaskException {
-        Map<String, Object> caseData = buildCaseDataWithAddressee();
+        final Map<String, Object> caseData = buildCaseDataWithAddressee();
 
-        caseData.remove(RESPONDENT_LAST_NAME);
-        caseData.remove(COUNTY);
-        caseData.put(ADDRESS_LINE2, null);
+        Map<String, Object> address = buildAddress("correspondence");
+        address.remove(RESPONDENT_LAST_NAME);
+        address.remove(COUNTY);
+        address.put(ADDRESS_LINE2, null);
+
+        caseData.put(RESPONDENT_CORRESPONDENCE_ADDRESS, address);
 
         Addressee actual = DaGrantedLetterDataExtractor.getAddressee(caseData);
 
-        assertThat(actual.getName(), is(FIRST_NAME));
-        assertThat(actual.getFormattedAddress(), is("line1\ntown\npostcode"));
+        assertThat(actual.getName(), is("John Smith"));
+        assertThat(actual.getFormattedAddress(), is("line1correspondence\ntowncorrespondence\npostcodecorrespondence"));
     }
 
     @Test(expected = InvalidDataForTaskException.class)
     public void getAddresseeThrowsExceptionWhenRequiredFieldsMissing() throws InvalidDataForTaskException {
         Map<String, Object> caseData = buildCaseDataWithAddressee();
 
-        caseData.remove(ADDRESS_LINE1);
+        Map<String, Object> address = buildAddress("correspondence");
+        address.remove(ADDRESS_LINE1);
+
+        caseData.put(RESPONDENT_CORRESPONDENCE_ADDRESS, address);
 
         DaGrantedLetterDataExtractor.getAddressee(caseData);
     }
@@ -138,15 +194,27 @@ public class DaGrantedLetterDataExtractorTest {
     }
 
     public static Map<String, Object> buildCaseDataWithAddressee() {
+        return buildCaseDataWithAddressee(RESPONDENT_HOME_ADDRESS);
+    }
+
+    public static Map<String, Object> buildCaseDataWithAddressee(String addressField) {
         Map<String, Object> caseData = buildCaseDataWithRespondentNames(FIRST_NAME, LAST_NAME);
 
-        caseData.put(ADDRESS_LINE1, "line1");
-        caseData.put(ADDRESS_LINE2, "line2");
-        caseData.put(TOWN, "town");
-        caseData.put(COUNTY, "county");
-        caseData.put(POSTCODE, "postcode");
+        caseData.put(addressField, buildAddress(addressField));
 
         return caseData;
+    }
+
+    private static Map<String, Object> buildAddress(String type) {
+        Map<String, Object> address = new HashMap<>();
+
+        address.put(ADDRESS_LINE1, "line1" + type);
+        address.put(ADDRESS_LINE2, "line2" + type);
+        address.put(TOWN, "town" + type);
+        address.put(COUNTY, "county" + type);
+        address.put(POSTCODE, "postcode" + type);
+
+        return address;
     }
 
     private static Map<String, Object> buildCaseDataWithRespondentNames(String firstName, String lastName) {
