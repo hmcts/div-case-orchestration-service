@@ -77,6 +77,13 @@ public interface CosApiClient {
         @RequestBody CcdCallbackRequest ccdCallbackRequest
     );
 
+    @ApiOperation("Callback to run after DA Grant event has finished")
+    @PostMapping(value = "/handle-post-da-granted")
+    CcdCallbackResponse handleDaGranted(
+        @RequestHeader(AUTHORIZATION) String authorisation,
+        @RequestBody CcdCallbackRequest ccdCallbackRequest
+    );
+
     @ApiOperation("Handle callback to notify respondent that the DA was requested")
     @PostMapping(value = "/da-requested-by-applicant")
     Map<String, Object> notifyRespondentOfDARequested(
