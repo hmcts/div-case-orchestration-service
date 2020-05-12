@@ -21,7 +21,6 @@ import static java.util.Arrays.asList;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DA_GRANTED_OFFLINE_PACK_RESPONDENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.BULK_PRINT_LETTER_TYPE;
@@ -52,7 +51,7 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
     private List<String> getDocumentTypesToPrint() {
         return asList(
             DaGrantedLetterGenerationTask.FileMetadata.DOCUMENT_TYPE,
-            DECREE_ABSOLUTE_DOCUMENT_TYPE
+            AddDaGrantedCertificateToDocumentsToPrintTask.FileMetadata.DOCUMENT_TYPE
         );
     }
 
