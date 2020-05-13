@@ -36,10 +36,11 @@ public class DaGrantedTest extends IntegrationTest {
 
         assertNotNull(responseData);
         assertEquals(response.getErrors().size(), 0);
-        assertNoExtraDocumentsWhereGenerated((List) responseData.get(D8DOCUMENTS_GENERATED));
+        assertNoExtraDocumentsWhereGenerated(responseData);
     }
 
-    private static void assertNoExtraDocumentsWhereGenerated(List<CollectionMember<Document>> documents) {
+    private void assertNoExtraDocumentsWhereGenerated(Map<String, Object> responseData) {
+        List<CollectionMember<Document>> documents = (List<CollectionMember<Document>>) responseData.get(D8DOCUMENTS_GENERATED);
         assertEquals(1, documents.size());
     }
 }
