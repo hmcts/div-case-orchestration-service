@@ -71,7 +71,7 @@ public class DaGrantedLetterGenerationTaskTest {
 
         daGrantedLetterGenerationTask.execute(context, buildCaseData());
 
-        Map<String, GeneratedDocumentInfo> documents = PrepareDataForDocumentGenerationTask.getDocumentToBulkPrint(context);
+        Map<String, GeneratedDocumentInfo> documents = PrepareDataForDocumentGenerationTask.getDocumentsToBulkPrint(context);
 
         assertThat(documents.size(), is(1));
         assertThat(documents.get(DOCUMENT.getDocumentType()), is(DOCUMENT));

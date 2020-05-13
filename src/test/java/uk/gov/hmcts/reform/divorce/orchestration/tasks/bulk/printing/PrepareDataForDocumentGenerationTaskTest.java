@@ -64,7 +64,7 @@ public class PrepareDataForDocumentGenerationTaskTest {
     public void getDocumentToBulkPrintReturnsEmptyMapWhenNoDocumentsProvided() {
         TaskContext context = new DefaultTaskContext();
 
-        Map<String, GeneratedDocumentInfo> documents = PrepareDataForDocumentGenerationTask.getDocumentToBulkPrint(context);
+        Map<String, GeneratedDocumentInfo> documents = PrepareDataForDocumentGenerationTask.getDocumentsToBulkPrint(context);
 
         assertThat(documents.size(), is(0));
     }
@@ -77,7 +77,7 @@ public class PrepareDataForDocumentGenerationTaskTest {
         PrepareDataForDocumentGenerationTask.appendAnotherDocumentToBulkPrint(context, document());
         PrepareDataForDocumentGenerationTask.appendAnotherDocumentToBulkPrint(context, document());
 
-        Map<String, GeneratedDocumentInfo> documents = PrepareDataForDocumentGenerationTask.getDocumentToBulkPrint(context);
+        Map<String, GeneratedDocumentInfo> documents = PrepareDataForDocumentGenerationTask.getDocumentsToBulkPrint(context);
 
         assertThat(documents.size(), is(3));
         documents.values().forEach(documentInfo -> assertThat(documentInfo, instanceOf(GeneratedDocumentInfo.class)));

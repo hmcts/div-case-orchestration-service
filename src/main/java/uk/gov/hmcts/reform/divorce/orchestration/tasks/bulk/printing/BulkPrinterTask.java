@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_PRINT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.PrepareDataForDocumentGenerationTask.getDocumentToBulkPrint;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.PrepareDataForDocumentGenerationTask.getDocumentsToBulkPrint;
 
 @Slf4j
 @Component
@@ -43,7 +43,7 @@ public class BulkPrinterTask implements Task<Map<String, Object>> {
         final CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
         final String bulkPrintLetterType = context.getTransientObject(BULK_PRINT_LETTER_TYPE);
 
-        Map<String, GeneratedDocumentInfo> generatedDocumentInfoList = getDocumentToBulkPrint(context);
+        Map<String, GeneratedDocumentInfo> generatedDocumentInfoList = getDocumentsToBulkPrint(context);
         final List<String> documentTypesToPrint = context.getTransientObject(DOCUMENT_TYPES_TO_PRINT);
         final List<GeneratedDocumentInfo> documentsToPrint = documentTypesToPrint.stream()
             .map(generatedDocumentInfoList::get)

@@ -38,7 +38,7 @@ public class AddDaGrantedCertificateToDocumentsToPrintTaskTest {
 
         addDaGrantedCertificateToDocumentsToPrintTask.execute(context, caseData);
 
-        Map<String, GeneratedDocumentInfo> documentsToBulkPrint = PrepareDataForDocumentGenerationTask.getDocumentToBulkPrint(context);
+        Map<String, GeneratedDocumentInfo> documentsToBulkPrint = PrepareDataForDocumentGenerationTask.getDocumentsToBulkPrint(context);
         GeneratedDocumentInfo document = documentsToBulkPrint.get(DA_GRANTED_CERTIFICATE);
 
         assertThat(documentsToBulkPrint.size(), is(1));
@@ -60,7 +60,7 @@ public class AddDaGrantedCertificateToDocumentsToPrintTaskTest {
 
         addDaGrantedCertificateToDocumentsToPrintTask.execute(context, caseData);
 
-        Map<String, GeneratedDocumentInfo> documentsToBulkPrint = PrepareDataForDocumentGenerationTask.getDocumentToBulkPrint(context);
+        Map<String, GeneratedDocumentInfo> documentsToBulkPrint = PrepareDataForDocumentGenerationTask.getDocumentsToBulkPrint(context);
         final GeneratedDocumentInfo document = documentsToBulkPrint.get(DA_GRANTED_CERTIFICATE);
 
         assertThat(documentsToBulkPrint.size(), is(2));

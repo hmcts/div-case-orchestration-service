@@ -51,12 +51,12 @@ public abstract class PrepareDataForDocumentGenerationTask implements Task<Map<S
     protected abstract GeneratedDocumentInfo populateMetadataForGeneratedDocument(GeneratedDocumentInfo documentInfo);
 
     static void appendAnotherDocumentToBulkPrint(TaskContext context, GeneratedDocumentInfo generatedDocumentInfo) {
-        Map<String, GeneratedDocumentInfo> documentsToBulkPrint = getDocumentToBulkPrint(context);
+        Map<String, GeneratedDocumentInfo> documentsToBulkPrint = getDocumentsToBulkPrint(context);
 
         documentsToBulkPrint.put(generatedDocumentInfo.getDocumentType(), generatedDocumentInfo);
     }
 
-    static Map<String, GeneratedDocumentInfo> getDocumentToBulkPrint(TaskContext context) {
+    static Map<String, GeneratedDocumentInfo> getDocumentsToBulkPrint(TaskContext context) {
         return context.computeTransientObjectIfAbsent(ContextKeys.GENERATED_DOCUMENTS, new HashMap<>());
     }
 }
