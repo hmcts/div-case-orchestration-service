@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ff4j.FeatureToggle;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
 
 import java.time.LocalDate;
@@ -52,7 +51,6 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.ALL_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -117,7 +115,6 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
 
         stubSendLetterService(OK);
         stubServiceAuthProvider(OK, TEST_SERVICE_AUTH_TOKEN);
-        stubFeatureToggleService(true);
         stubDMStore(OK);
     }
 
@@ -392,21 +389,6 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
             .willReturn(aResponse()
                 .withStatus(status.value())
                 .withBody(response)));
-    }
-
-    private void stubFeatureToggleService(boolean toggle) {
-        FeatureToggle featureToggle = new FeatureToggle();
-        featureToggle.setEnable(String.valueOf(toggle));
-        featureToggle.setUid("divorce_bulk_print");
-        featureToggle.setDescription("some description");
-
-        featureToggleService.stubFor(WireMock.get("/api/ff4j/store/features/" + bulkPrintFeatureToggleName)
-            .withHeader("Content-Type", new EqualToPattern(APPLICATION_JSON_VALUE))
-            .willReturn(aResponse()
-                .withHeader("Content-Type", APPLICATION_JSON_VALUE)
-                .withStatus(OK.value())
-                .withBody(convertObjectToJsonString(featureToggle))));
-
     }
 
 }
