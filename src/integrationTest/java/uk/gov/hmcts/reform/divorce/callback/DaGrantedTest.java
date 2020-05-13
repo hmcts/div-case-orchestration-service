@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.callback;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -14,8 +15,9 @@ import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 import java.util.List;
 import java.util.Map;
 
-import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 
 public class DaGrantedTest extends IntegrationTest {
@@ -36,7 +38,7 @@ public class DaGrantedTest extends IntegrationTest {
         Map<String, Object> responseData = response.getBody().getData();
         Map<String, Object> requestData = ccdCallbackRequest.getCaseDetails().getCaseData();
 
-        assertTrue("Status code should be 200", response.getStatusCode().is2xxSuccessful());
+        assertEquals("Status code should be 200", response.getStatusCode(), HttpStatus.OK);
         assertNotNull("Case data in response should not be null", responseData);
         assertEquals("Response data should be the same as the payload sent", requestData, responseData);
         assertEquals("No errors should be returned", response.getBody().getErrors().size(), 0);

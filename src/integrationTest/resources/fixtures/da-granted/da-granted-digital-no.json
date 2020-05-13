@@ -2,19 +2,12 @@
   "token": "none",
   "event_id": "daGranted",
   "case_details": {
-    "id": "1549365955851103",
+    "id": "1517833758870511",
     "jurisdiction": "DIVORCE",
-    "state": "Issued",
+    "state": "DARequested",
     "case_type_id": "DIVORCE",
-    "created_date": "2018-02-05T12:29:17.81",
-    "last_modified": "2018-02-05T14:57:11.346",
     "case_data": {
-      "D8DerivedRespondentHomeAddress": "82 Landor Road\nLondon\nSW9 9PE",
-      "D8PetitionerNameChangedHow": [
-        "marriageCertificate"
-      ],
-      "D8DerivedPetitionerHomeAddress": "82 Landor Road\nLondon\nSW9 9PE",
-      "RespContactMethodIsDigital": "NO",
+      "RespContactMethodIsDigital": "No",
       "D8RespondentHomeAddress": {
         "PostCode": "SW9 9PE",
         "AddressLine1": "aaa",
@@ -28,8 +21,7 @@
         "PostCode": "N9 9HA",
         "PostTown": "PostTown",
         "AddressLine1": "Petitioner AddressLine1 value",
-        "AddressLine2": "Petitioner AddressLine2 value",
-        "AddressLine3": "Petitioner AddressLine3 value"
+        "AddressLine2": "Petitioner AddressLine2 value"
       },
       "D8PetitionerCorrespondenceAddress": {
         "County": "County",
@@ -50,7 +42,7 @@
               "document_filename": "victorian-marriage-certificate.pdf",
               "document_binary_url": "http://em-api-gateway-web:3404/documents/51400ac5-158d-4177-bdda-ec0058b77c81/binary"
             },
-            "DocumentType": "petition",
+            "DocumentType": "daGranted",
             "DocumentComment": "",
             "DocumentFileName": "victorian-marriage-certificate.pdf",
             "DocumentDateAdded": "2018-02-05",
@@ -58,37 +50,14 @@
           }
         }
       ],
-      "D8DocumentsUploaded": [
-        {
-          "id": "8a70ad2f-9d63-4d33-9b3b-d32ee9f6a919",
-          "value": {
-            "DocumentLink": {
-              "document_url": "http://em-api-gateway-web:3404/documents/51400ac5-158d-4177-bdda-ec0058b77c81",
-              "document_filename": "victorian-marriage-certificate.pdf",
-              "document_binary_url": "http://em-api-gateway-web:3404/documents/51400ac5-158d-4177-bdda-ec0058b77c81/binary"
-            },
-            "DocumentType": "other",
-            "DocumentComment": "",
-            "DocumentFileName": "victorian-marriage-certificate.pdf",
-            "DocumentDateAdded": "2018-02-05",
-            "DocumentEmailContent": ""
-          }
-        }
-      ],
-      "D8DerivedPetitionerCorrespondenceAddr": "82 Landor Road\nLondon\nSW9 9PE",
       "D8PetitionerFirstName": "John",
-      "D8MarriageRespondentName": "Jenny Benny",
       "createdDate": "2018-02-05",
       "D8RespondentCorrespondenceAddress": {
-        "County": "County",
         "Country": "Country",
         "PostCode": "N9 9HA",
-        "PostTown": "PostTown",
         "AddressLine1": "Respondent AddressLine1 value",
-        "AddressLine2": "Respondent AddressLine2 value",
-        "AddressLine3": "Respondent AddressLine3 value"
+        "AddressLine2": "Respondent AddressLine2 value"
       },
-      "DecreeNisiGrantedDate": "2019-10-10",
       "DecreeAbsoluteGrantedDate": "2020-01-13"
     }
   }
