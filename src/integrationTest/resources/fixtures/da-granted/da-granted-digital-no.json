@@ -10,27 +10,15 @@
       "RespContactMethodIsDigital": "No",
       "D8RespondentHomeAddress": {
         "PostCode": "SW9 9PE",
-        "AddressLine1": "aaa",
-        "AddressLine2": "aaa",
-        "PostTown": "aaa",
-        "County": "aaa"
+        "AddressLine1": "Respondent AddressLine1 value",
+        "AddressLine2": "Respondent AddressLine2 value"
       },
       "D8PetitionerHomeAddress": {
         "County": "County",
         "Country": "Country",
         "PostCode": "N9 9HA",
-        "PostTown": "PostTown",
         "AddressLine1": "Petitioner AddressLine1 value",
         "AddressLine2": "Petitioner AddressLine2 value"
-      },
-      "D8PetitionerCorrespondenceAddress": {
-        "County": "County",
-        "Country": "Country",
-        "PostCode": "N9 9HA",
-        "PostTown": "PostTown",
-        "AddressLine1": "Petitioner AddressLine1 value",
-        "AddressLine2": "Petitioner AddressLine2 value",
-        "AddressLine3": "Petitioner AddressLine3 value"
       },
       "D8RespondentLastName": "Jamed",
       "D8DocumentsGenerated": [
