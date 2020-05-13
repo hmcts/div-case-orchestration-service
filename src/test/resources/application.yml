@@ -108,11 +108,8 @@ payment:
       baseurl: ${PAYMENT_API_BASEURL:http://localhost:9190}
 
 feature-toggle:
-  service:
-    api:
-      baseurl: ${FEATURE_TOGGLE_SERVICE_API_BASEURL:http://localhost:4028}
   toggle:
-    bulk-printer-toggle-name: "divorce_bulk_print"
+    bulk-print: true
     feature_resp_solicitor_details: ${FEATURE_RESP_SOLICITOR_DETAILS:true}
     dn_refusal: ${FEATURE_DN_REFUSAL:true}
 

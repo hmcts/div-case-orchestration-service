@@ -49,7 +49,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
         mockEndpointAndResponse(maintenanceServiceServer, true);
         mockEndpointAndResponse(validationServiceServer, true);
         mockEndpointAndResponse(documentGeneratorServiceServer, true);
-        mockEndpointAndResponse(featureToggleService, true);
         mockEndpointAndResponse(feesAndPaymentsServer, true);
         mockEndpointAndResponse(idamServer, true);
         mockEndpointAndResponse(paymentServiceServer, true);
@@ -75,45 +74,9 @@ public class HealthCheckITest extends MockedFunctionalTest {
             equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.diskSpace.status").toString(), equalTo("UP"));
 
-        assertThat(JsonPath.read(body, "$.details.featureToggleServiceHealthCheck.status").toString(), equalTo("UP"));
-
         assertThat(JsonPath.read(body, "$.details.sendLetterServiceHealthCheck.status").toString(), equalTo("UP"));
     }
-
-    @Test
-    public void givenFeatureToggleServiceIsDown_whenCheckHealth_thenReturnStatusDown() throws Exception {
-        mockEndpointAndResponse(formatterServiceServer, false);
-        mockEndpointAndResponse(maintenanceServiceServer, true);
-        mockEndpointAndResponse(validationServiceServer, true);
-        mockEndpointAndResponse(documentGeneratorServiceServer, true);
-        mockEndpointAndResponse(featureToggleService, false);
-        mockEndpointAndResponse(feesAndPaymentsServer, true);
-        mockEndpointAndResponse(idamServer, true);
-        mockEndpointAndResponse(paymentServiceServer, true);
-        mockEndpointAndResponse(sendLetterService, true);
-        mockEndpointAndResponse(serviceAuthProviderServer, true);
-
-        HttpResponse response = getHealth();
-        String body = EntityUtils.toString(response.getEntity());
-
-        assertThat(response.getStatusLine().getStatusCode(), equalTo(503));
-        assertThat(JsonPath.read(body, "$.status").toString(), equalTo("DOWN"));
-        assertThat(JsonPath.read(body, "$.details.caseFormatterServiceHealthCheck.status").toString(),
-            equalTo("DOWN"));
-        assertThat(JsonPath.read(body, "$.details.caseMaintenanceServiceHealthCheck.status").toString(),
-            equalTo("UP"));
-        assertThat(JsonPath.read(body, "$.details.documentGeneratorServiceHealthCheck.status").toString(),
-            equalTo("UP"));
-        assertThat(JsonPath.read(body, "$.details.feesAndPaymentsServiceHealthCheck.status").toString(),
-            equalTo("UP"));
-        assertThat(JsonPath.read(body, "$.details.paymentServiceHealthCheck.status").toString(),
-            equalTo("UP"));
-        assertThat(JsonPath.read(body, "$.details.serviceAuthProviderHealthCheck.status").toString(),
-            equalTo("UP"));
-        assertThat(JsonPath.read(body, "$.details.featureToggleServiceHealthCheck.status").toString(),
-            equalTo("DOWN"));
-        assertThat(JsonPath.read(body, "$.details.diskSpace.status").toString(), equalTo("UP"));
-    }
+    
 
     @Test
     public void givenSendLetterServiceIsDown_whenCheckHealth_thenReturnStatusDown() throws Exception {
@@ -121,7 +84,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
         mockEndpointAndResponse(maintenanceServiceServer, true);
         mockEndpointAndResponse(validationServiceServer, true);
         mockEndpointAndResponse(documentGeneratorServiceServer, true);
-        mockEndpointAndResponse(featureToggleService, true);
         mockEndpointAndResponse(feesAndPaymentsServer, true);
         mockEndpointAndResponse(idamServer, true);
         mockEndpointAndResponse(paymentServiceServer, true);
@@ -145,8 +107,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
             equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.serviceAuthProviderHealthCheck.status").toString(),
             equalTo("UP"));
-        assertThat(JsonPath.read(body, "$.details.featureToggleServiceHealthCheck.status").toString(),
-            equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.sendLetterServiceHealthCheck.status").toString(),
             equalTo("DOWN"));
         assertThat(JsonPath.read(body, "$.details.diskSpace.status").toString(), equalTo("UP"));
@@ -158,7 +118,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
         mockEndpointAndResponse(maintenanceServiceServer, true);
         mockEndpointAndResponse(validationServiceServer, true);
         mockEndpointAndResponse(documentGeneratorServiceServer, true);
-        mockEndpointAndResponse(featureToggleService, true);
         mockEndpointAndResponse(feesAndPaymentsServer, true);
         mockEndpointAndResponse(idamServer, true);
         mockEndpointAndResponse(paymentServiceServer, true);
@@ -191,7 +150,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
         mockEndpointAndResponse(maintenanceServiceServer, true);
         mockEndpointAndResponse(validationServiceServer, true);
         mockEndpointAndResponse(documentGeneratorServiceServer, false);
-        mockEndpointAndResponse(featureToggleService, true);
         mockEndpointAndResponse(feesAndPaymentsServer, true);
         mockEndpointAndResponse(idamServer, true);
         mockEndpointAndResponse(paymentServiceServer, true);
@@ -224,7 +182,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
         mockEndpointAndResponse(maintenanceServiceServer, false);
         mockEndpointAndResponse(validationServiceServer, true);
         mockEndpointAndResponse(documentGeneratorServiceServer, true);
-        mockEndpointAndResponse(featureToggleService, true);
         mockEndpointAndResponse(feesAndPaymentsServer, true);
         mockEndpointAndResponse(idamServer, true);
         mockEndpointAndResponse(paymentServiceServer, true);
@@ -257,7 +214,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
         mockEndpointAndResponse(maintenanceServiceServer, true);
         mockEndpointAndResponse(validationServiceServer, true);
         mockEndpointAndResponse(documentGeneratorServiceServer, true);
-        mockEndpointAndResponse(featureToggleService, true);
         mockEndpointAndResponse(feesAndPaymentsServer, false);
         mockEndpointAndResponse(idamServer, true);
         mockEndpointAndResponse(paymentServiceServer, true);
@@ -290,7 +246,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
         mockEndpointAndResponse(maintenanceServiceServer, true);
         mockEndpointAndResponse(validationServiceServer, true);
         mockEndpointAndResponse(documentGeneratorServiceServer, true);
-        mockEndpointAndResponse(featureToggleService, true);
         mockEndpointAndResponse(feesAndPaymentsServer, true);
         mockEndpointAndResponse(idamServer, true);
         mockEndpointAndResponse(paymentServiceServer, false);
@@ -323,7 +278,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
         mockEndpointAndResponse(maintenanceServiceServer, true);
         mockEndpointAndResponse(validationServiceServer, true);
         mockEndpointAndResponse(documentGeneratorServiceServer, true);
-        mockEndpointAndResponse(featureToggleService, true);
         mockEndpointAndResponse(feesAndPaymentsServer, true);
         mockEndpointAndResponse(idamServer, true);
         mockEndpointAndResponse(paymentServiceServer, true);
@@ -356,7 +310,6 @@ public class HealthCheckITest extends MockedFunctionalTest {
         mockEndpointAndResponse(maintenanceServiceServer, false);
         mockEndpointAndResponse(validationServiceServer, false);
         mockEndpointAndResponse(documentGeneratorServiceServer, false);
-        mockEndpointAndResponse(featureToggleService, true);
         mockEndpointAndResponse(feesAndPaymentsServer, false);
         mockEndpointAndResponse(idamServer, false);
         mockEndpointAndResponse(paymentServiceServer, false);
