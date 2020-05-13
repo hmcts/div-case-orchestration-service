@@ -11,8 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 /*
@@ -52,10 +51,12 @@ public abstract class PrepareDataForDocumentGenerationTask implements Task<Map<S
     protected abstract GeneratedDocumentInfo populateMetadataForGeneratedDocument(GeneratedDocumentInfo documentInfo);
 
     static void appendAnotherDocumentToBulkPrint(TaskContext context, GeneratedDocumentInfo generatedDocumentInfo) {
-        List<GeneratedDocumentInfo> documentsToBulkPrint = context.computeTransientObjectIfAbsent(
-            ContextKeys.GENERATED_DOCUMENTS, new ArrayList<>()
-        );
+        Map<String, GeneratedDocumentInfo> documentsToBulkPrint = getDocumentToBulkPrint(context);
 
-        documentsToBulkPrint.add(generatedDocumentInfo);
+        documentsToBulkPrint.put(generatedDocumentInfo.getDocumentType(), generatedDocumentInfo);
+    }
+
+    static Map<String, GeneratedDocumentInfo> getDocumentToBulkPrint(TaskContext context) {
+        return context.computeTransientObjectIfAbsent(ContextKeys.GENERATED_DOCUMENTS, new HashMap<>());
     }
 }

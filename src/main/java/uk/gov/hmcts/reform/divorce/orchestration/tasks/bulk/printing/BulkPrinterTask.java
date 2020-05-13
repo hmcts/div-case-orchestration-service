@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_PRINT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENTS_GENERATED;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.PrepareDataForDocumentGenerationTask.getDocumentToBulkPrint;
 
 @Slf4j
 @Component
@@ -43,15 +43,14 @@ public class BulkPrinterTask implements Task<Map<String, Object>> {
         final CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
         final String bulkPrintLetterType = context.getTransientObject(BULK_PRINT_LETTER_TYPE);
 
-        final Map<String, GeneratedDocumentInfo> generatedDocumentInfoList = context.getTransientObject(DOCUMENTS_GENERATED);
+        Map<String, GeneratedDocumentInfo> generatedDocumentInfoList = getDocumentToBulkPrint(context);
         final List<String> documentTypesToPrint = context.getTransientObject(DOCUMENT_TYPES_TO_PRINT);
         final List<GeneratedDocumentInfo> documentsToPrint = documentTypesToPrint.stream()
             .map(generatedDocumentInfoList::get)
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
-        //Make sure every requested document type was found
-        if (documentTypesToPrint.size() == documentsToPrint.size()) {
+        if (isListOfActualDocumentsMatchingExpectedDocumentsTypes(documentTypesToPrint, documentsToPrint)) {
             try {
                 bulkPrintService.send(caseDetails.getCaseId(), bulkPrintLetterType, documentsToPrint);
             } catch (final Exception e) {
@@ -59,9 +58,24 @@ public class BulkPrinterTask implements Task<Map<String, Object>> {
                 log.error("Respondent pack bulk print failed for case {}", caseDetails.getCaseId(), e);
                 context.setTransientObject(BULK_PRINT_ERROR_KEY, "Bulk print failed for " + bulkPrintLetterType);
             }
+        } else {
+            log.warn(
+                "Bulk print for case {} is misconfigured. Documents types expected: {}, actual documents: {}",
+                caseDetails.getCaseId(),
+                documentTypesToPrint,
+                documentsToPrint
+            );
+            context.setTaskFailed(true);
+            context.setTransientObject(BULK_PRINT_ERROR_KEY, "Bulk print didn't kicked off for " + bulkPrintLetterType);
         }
 
         return payload;
+    }
+
+    private boolean isListOfActualDocumentsMatchingExpectedDocumentsTypes(
+        List<String> documentTypesToPrint, List<GeneratedDocumentInfo> documentsToPrint) {
+
+        return documentTypesToPrint.size() == documentsToPrint.size();
     }
 
     public Map<String, Object> printSpecifiedDocument(TaskContext context,
@@ -81,5 +95,4 @@ public class BulkPrinterTask implements Task<Map<String, Object>> {
 
         return returnedPayload;
     }
-
 }

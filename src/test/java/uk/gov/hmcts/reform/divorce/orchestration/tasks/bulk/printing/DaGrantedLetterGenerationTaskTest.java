@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextracto
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
@@ -36,6 +35,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractorTest.buildCaseDataWithAddressee;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DaGrantedLetterGenerationTask.FileMetadata.TEMPLATE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.PrepareDataForDocumentGenerationTaskTest.document;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DaGrantedLetterGenerationTaskTest {
@@ -47,7 +47,7 @@ public class DaGrantedLetterGenerationTaskTest {
     private static final String LETTER_DATE = LocalDate.now().toString();
 
     private static final CtscContactDetails CTSC_CONTACT = CtscContactDetails.builder().build();
-    private static final GeneratedDocumentInfo DOCUMENT = GeneratedDocumentInfo.builder().build();
+    private static final GeneratedDocumentInfo DOCUMENT = document();
 
     @Mock
     private CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService;
@@ -71,11 +71,10 @@ public class DaGrantedLetterGenerationTaskTest {
 
         daGrantedLetterGenerationTask.execute(context, buildCaseData());
 
-        List<GeneratedDocumentInfo> documents = context
-            .getTransientObject(PrepareDataForDocumentGenerationTask.ContextKeys.GENERATED_DOCUMENTS);
+        Map<String, GeneratedDocumentInfo> documents = PrepareDataForDocumentGenerationTask.getDocumentToBulkPrint(context);
 
         assertThat(documents.size(), is(1));
-        assertThat(documents.get(0), is(DOCUMENT));
+        assertThat(documents.get(DOCUMENT.getDocumentType()), is(DOCUMENT));
         verify(ctscContactDetailsDataProviderService, times(1)).getCtscContactDetails();
         verifyPdfDocumentGenerationCallIsCorrect();
     }

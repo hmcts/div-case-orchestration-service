@@ -52,8 +52,7 @@ public class BulkPrinterTaskTest {
         context.setTransientObject(BULK_PRINT_LETTER_TYPE, TEST_LETTER_TYPE);
         context.setTransientObject(DOCUMENT_TYPES_TO_PRINT, asList(TEST_FIRST_DOCUMENT_TYPE, TEST_SECOND_DOCUMENT_TYPE));
 
-        final CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
-        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
+        context.setTransientObject(CASE_DETAILS_JSON_KEY, CaseDetails.builder().caseId(TEST_CASE_ID).build());
     }
 
     @Test
@@ -122,6 +121,7 @@ public class BulkPrinterTaskTest {
         classUnderTest.execute(context, emptyMap());
 
         verifyZeroInteractions(bulkPrintService);
+        assertThat(context.getTransientObject(BULK_PRINT_ERROR_KEY), is("Bulk print didn't kicked off for " + TEST_LETTER_TYPE));
     }
 
     @Test
@@ -134,6 +134,6 @@ public class BulkPrinterTaskTest {
         classUnderTest.execute(context, emptyMap());
 
         verifyZeroInteractions(bulkPrintService);
+        assertThat(context.getTransientObject(BULK_PRINT_ERROR_KEY), is("Bulk print didn't kicked off for " + TEST_LETTER_TYPE));
     }
-
 }

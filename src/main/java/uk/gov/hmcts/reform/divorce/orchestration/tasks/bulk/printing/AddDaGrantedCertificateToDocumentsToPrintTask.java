@@ -38,5 +38,4 @@ public class AddDaGrantedCertificateToDocumentsToPrintTask implements Task<Map<S
             .documentType(FileMetadata.DOCUMENT_TYPE)
             .build();
     }
-
 }
