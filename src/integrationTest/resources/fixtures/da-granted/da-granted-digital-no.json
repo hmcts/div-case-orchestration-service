@@ -8,7 +8,6 @@
     "case_type_id": "DIVORCE",
     "created_date": "2018-02-05T12:29:17.81",
     "last_modified": "2018-02-05T14:57:11.346",
-    "security_classification": "PUBLIC",
     "case_data": {
       "D8DerivedRespondentHomeAddress": "82 Landor Road\nLondon\nSW9 9PE",
       "D8PetitionerNameChangedHow": [
@@ -23,10 +22,6 @@
         "PostTown": "aaa",
         "County": "aaa"
       },
-      "D8ScreenHasRespondentAddress": "YES",
-      "D8DivorceCostsClaim": "YES",
-      "D8JurisdictionPetitionerDomicile": "NO",
-      "D8ScreenHasMarriageCert": "YES",
       "D8PetitionerHomeAddress": {
         "County": "County",
         "Country": "Country",
@@ -45,21 +40,6 @@
         "AddressLine2": "Petitioner AddressLine2 value",
         "AddressLine3": "Petitioner AddressLine3 value"
       },
-      "D8DivorceClaimFrom": [
-        "respondent"
-      ],
-      "D8ScreenHasMarriageBroken": "YES",
-      "D8InferredRespondentGender": "female",
-      "D8ReasonForDivorceEnableAdultery": "YES",
-      "D8ReasonForDivorceShowAdultery": "YES",
-      "D8LivingArrangementsLiveTogether": "YES",
-      "D8ReasonForDivorceHasMarriage": "YES",
-      "D8RespondentCorrespondenceUseHomeAddress": "No",
-      "D8JurisdictionRespondentDomicile": "NO",
-      "D8FinancialOrderFor": [
-        "petitioner",
-        "children"
-      ],
       "D8RespondentLastName": "Jamed",
       "D8DocumentsGenerated": [
         {
@@ -96,7 +76,6 @@
         }
       ],
       "D8DerivedPetitionerCorrespondenceAddr": "82 Landor Road\nLondon\nSW9 9PE",
-      "D8JurisdictionPetitionerResidence": "NO",
       "D8PetitionerFirstName": "John",
       "D8MarriageRespondentName": "Jenny Benny",
       "createdDate": "2018-02-05",
@@ -110,10 +89,7 @@
         "AddressLine3": "Respondent AddressLine3 value"
       },
       "DecreeNisiGrantedDate": "2019-10-10",
-      "DecreeAbsoluteGrantedDate": "2020-01-13",
-      "after_submit_callback_response": null,
-      "callback_response_status_code": null,
-      "callback_response_status": null
+      "DecreeAbsoluteGrantedDate": "2020-01-13"
     }
   }
 }
