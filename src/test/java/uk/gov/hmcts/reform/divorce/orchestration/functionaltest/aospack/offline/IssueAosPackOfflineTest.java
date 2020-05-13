@@ -101,9 +101,6 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
     @Autowired
     private MockMvc webClient;
 
-    @Value("${feature-toggle.toggle.bulk-printer-toggle-name}")
-    private String bulkPrintFeatureToggleName;
-
     @Before
     public void setUp() {
         documentGeneratorServiceServer.resetAll();
