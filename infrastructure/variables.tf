@@ -1,10 +1,6 @@
-variable "product" {
-  default = "div"
-}
+variable "product" {}
 
-variable "component" {
-  default = "cos"
-}
+variable "component" {}
 
 variable "location" {
   default = "UK South"
