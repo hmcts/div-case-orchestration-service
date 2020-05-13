@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.callback;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
@@ -28,19 +29,21 @@ public class DaGrantedTest extends IntegrationTest {
     public void givenValidCaseData_whenDaIsGranted_thenReturnDaGrantedData() {
         CcdCallbackRequest ccdCallbackRequest = ResourceLoader.loadJsonToObject(BASE_CASE_RESPONSE, CcdCallbackRequest.class);
 
-        CcdCallbackResponse response = cosApiClient.handleDaGranted(
+        ResponseEntity<CcdCallbackResponse> response = cosApiClient.handleDaGranted(
             createCaseWorkerUser().getAuthToken(),
             ccdCallbackRequest);
 
-        Map<String, Object> responseData = response.getData();
+        Map<String, Object> responseData = response.getBody().getData();
 
-        assertNotNull(responseData);
-        assertEquals(response.getErrors().size(), 0);
-        assertNoExtraDocumentsWhereGenerated(responseData);
+        assertTrue("Status code should be 200", response.getStatusCode().is2xxSuccessful());
+        assertNotNull("Case data in response should not be null",responseData);
+        assertEquals("Response data should be the same as the payload sent", ccdCallbackRequest.getCaseDetails().getCaseData(), responseData);
+        assertEquals("No errors should be returned",response.getBody().getErrors().size(), 0);
+        assertNoDocumentsGeneratedByWorkflow_WasSavedInCasedata(responseData);
     }
 
-    private void assertNoExtraDocumentsWhereGenerated(Map<String, Object> responseData) {
+    private void assertNoDocumentsGeneratedByWorkflow_WasSavedInCasedata(Map<String, Object> responseData) {
         List<CollectionMember<Document>> documents = (List<CollectionMember<Document>>) responseData.get(D8DOCUMENTS_GENERATED);
-        assertEquals(1, documents.size());
+        assertEquals("No addition document entry should be made to case data", 1, documents.size());
     }
 }
