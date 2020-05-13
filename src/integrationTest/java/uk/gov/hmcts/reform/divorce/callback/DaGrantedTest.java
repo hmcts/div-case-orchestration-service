@@ -34,11 +34,13 @@ public class DaGrantedTest extends IntegrationTest {
             ccdCallbackRequest);
 
         Map<String, Object> responseData = response.getBody().getData();
+        Map<String, Object> requestData = ccdCallbackRequest.getCaseDetails().getCaseData();
 
         assertTrue("Status code should be 200", response.getStatusCode().is2xxSuccessful());
-        assertNotNull("Case data in response should not be null",responseData);
-        assertEquals("Response data should be the same as the payload sent", ccdCallbackRequest.getCaseDetails().getCaseData(), responseData);
-        assertEquals("No errors should be returned",response.getBody().getErrors().size(), 0);
+        assertNotNull("Case data in response should not be null", responseData);
+        assertEquals("Response data should be the same as the payload sent", requestData, responseData);
+        assertEquals("No errors should be returned", response.getBody().getErrors().size(), 0);
+
         assertNoDocumentsGeneratedByWorkflow_WasSavedInCasedata(responseData);
     }
 
