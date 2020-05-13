@@ -68,7 +68,6 @@ def versions = [
         serenityCucumber             : '1.9.50',
         serviceTokenGenerator        : '3.0.0',
         sonarPitest                  : '0.5',
-        springCloudDependencies      : '2.1.14.RELEASE',
         springfoxSwagger             : '2.9.2',
         springSecurityCrypto         : '5.2.0.RELEASE',
         springSecurityRsa            : '1.0.8.RELEASE',
@@ -331,7 +330,7 @@ dependencies {
     runtime('org.springframework.boot:spring-boot-devtools')
 
     testCompile group: 'org.awaitility', name:'awaitility', version: versions.awaitility
-    testCompile group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: versions.springCloudDependencies
+    testCompile group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '2.1.5.RELEASE'
     testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
         exclude(module: 'commons-logging')
         exclude(module: 'android-json')
