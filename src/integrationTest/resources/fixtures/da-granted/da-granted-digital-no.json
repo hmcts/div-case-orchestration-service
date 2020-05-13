@@ -28,22 +28,22 @@
       "D8JurisdictionPetitionerDomicile": "NO",
       "D8ScreenHasMarriageCert": "YES",
       "D8PetitionerHomeAddress": {
-        "County": null,
-        "Country": null,
+        "County": "County",
+        "Country": "Country",
         "PostCode": "N9 9HA",
-        "PostTown": null,
-        "AddressLine1": null,
-        "AddressLine2": null,
-        "AddressLine3": null
+        "PostTown": "PostTown",
+        "AddressLine1": "Petitioner AddressLine1 value",
+        "AddressLine2": "Petitioner AddressLine2 value",
+        "AddressLine3": "Petitioner AddressLine3 value"
       },
       "D8PetitionerCorrespondenceAddress": {
-        "County": null,
-        "Country": null,
+        "County": "County",
+        "Country": "Country",
         "PostCode": "N9 9HA",
-        "PostTown": null,
-        "AddressLine1": null,
-        "AddressLine2": null,
-        "AddressLine3": null
+        "PostTown": "PostTown",
+        "AddressLine1": "Petitioner AddressLine1 value",
+        "AddressLine2": "Petitioner AddressLine2 value",
+        "AddressLine3": "Petitioner AddressLine3 value"
       },
       "D8DivorceClaimFrom": [
         "respondent"
@@ -60,9 +60,6 @@
         "petitioner",
         "children"
       ],
-      "D8PetitionerCorrespondenceAddress": {
-        "PostCode": "SW9 9PE"
-      },
       "D8RespondentLastName": "Jamed",
       "D8DocumentsGenerated": [
         {
@@ -104,7 +101,13 @@
       "D8MarriageRespondentName": "Jenny Benny",
       "createdDate": "2018-02-05",
       "D8RespondentCorrespondenceAddress": {
-        "PostCode": "SW9 9PE"
+        "County": "County",
+        "Country": "Country",
+        "PostCode": "N9 9HA",
+        "PostTown": "PostTown",
+        "AddressLine1": "Respondent AddressLine1 value",
+        "AddressLine2": "Respondent AddressLine2 value",
+        "AddressLine3": "Respondent AddressLine3 value"
       },
       "DecreeNisiGrantedDate": "2019-10-10",
       "DecreeAbsoluteGrantedDate": "2020-01-13",
