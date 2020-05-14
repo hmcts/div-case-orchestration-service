@@ -20,6 +20,11 @@ module "div-scheduler-db" {
   subscription       = "${var.subscription}"
 }
 
+data "azurerm_key_vault" "div_key_vault" {
+  name = "${local.vaultName}"
+  resource_group_name = "${local.vaultName}"
+}
+
 resource "azurerm_key_vault_secret" "postgresql-user" {
   name      = "${var.component}-postgresql-user"
   value     = "${module.div-scheduler-db.user_name}"
