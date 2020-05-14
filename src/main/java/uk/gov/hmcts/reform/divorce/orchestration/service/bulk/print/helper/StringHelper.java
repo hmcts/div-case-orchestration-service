@@ -25,7 +25,7 @@ public class StringHelper {
     }
 
     public static String notNull(String value) {
-        if (null == value) {
+        if (value == null) {
             throw new IllegalArgumentException("Value must not be null");
         }
 
