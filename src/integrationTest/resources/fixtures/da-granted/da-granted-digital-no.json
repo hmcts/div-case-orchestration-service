@@ -8,14 +8,10 @@
     "case_type_id": "DIVORCE",
     "case_data": {
       "RespContactMethodIsDigital": "No",
-      "D8RespondentHomeAddress": {
-        "County": "Greater London",
-        "PostCode": "N9 9HA",
-        "PostTown": "London",
-        "AddressLine1": "33 Winchester Road",
-        "AddressLine2": "London"
-      },
-      "D8RespondentLastName": "Jamed",
+      "D8RespondentFirstName": "James",
+      "D8RespondentLastName": "Doe",
+      "D8PetitionerFirstName": "Jane",
+      "D8PetitionerLastName": "Doe-Smith",
       "D8DocumentsGenerated": [
         {
           "id": "97a7f408-846b-48ec-9e24-863e8f47ff44",
@@ -33,14 +29,13 @@
           }
         }
       ],
-      "D8PetitionerFirstName": "John",
       "createdDate": "2018-02-05",
       "D8RespondentCorrespondenceAddress": {
         "County": "Greater London",
         "PostCode": "N9 9HA",
         "PostTown": "London",
         "AddressLine1": "33 Winchester Road",
-        "AddressLine2": "London"
+        "AddressLine2": "Basingstoke"
       },
       "DecreeAbsoluteGrantedDate": "2020-01-13"
     }
