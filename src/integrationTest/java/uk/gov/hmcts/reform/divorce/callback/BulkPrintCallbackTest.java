@@ -71,8 +71,12 @@ public class BulkPrintCallbackTest extends IntegrationTest {
                 body.asString(),
                 isJson()
         );
-        String result = ((Map) body.jsonPath().get(DATA)).get("dueDate").toString();
-        assertEquals(LocalDate.now().plus(30, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE), result);
+        try {
+            String result = ((Map) body.jsonPath().get(DATA)).get("dueDate").toString();
+            assertEquals(LocalDate.now().plus(30, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE), result);
+        } catch(Exception e) {
+            throw new RuntimeException(body.toString(), e);
+        }
     }
 
     @Test
