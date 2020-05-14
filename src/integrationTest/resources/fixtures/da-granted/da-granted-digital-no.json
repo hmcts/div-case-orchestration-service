@@ -2,23 +2,18 @@
   "token": "none",
   "event_id": "daGranted",
   "case_details": {
-    "id": "1517833758870511",
+    "id": "2517833758870511",
     "jurisdiction": "DIVORCE",
     "state": "DARequested",
     "case_type_id": "DIVORCE",
     "case_data": {
       "RespContactMethodIsDigital": "No",
       "D8RespondentHomeAddress": {
-        "PostCode": "SW9 9PE",
-        "AddressLine1": "Respondent AddressLine1 value",
-        "AddressLine2": "Respondent AddressLine2 value"
-      },
-      "D8PetitionerHomeAddress": {
-        "County": "County",
-        "Country": "Country",
+        "County": "Greater London",
         "PostCode": "N9 9HA",
-        "AddressLine1": "Petitioner AddressLine1 value",
-        "AddressLine2": "Petitioner AddressLine2 value"
+        "PostTown": "London",
+        "AddressLine1": "33 Winchester Road",
+        "AddressLine2": "London"
       },
       "D8RespondentLastName": "Jamed",
       "D8DocumentsGenerated": [
@@ -41,10 +36,11 @@
       "D8PetitionerFirstName": "John",
       "createdDate": "2018-02-05",
       "D8RespondentCorrespondenceAddress": {
-        "Country": "Country",
+        "County": "Greater London",
         "PostCode": "N9 9HA",
-        "AddressLine1": "Respondent AddressLine1 value",
-        "AddressLine2": "Respondent AddressLine2 value"
+        "PostTown": "London",
+        "AddressLine1": "33 Winchester Road",
+        "AddressLine2": "London"
       },
       "DecreeAbsoluteGrantedDate": "2020-01-13"
     }
