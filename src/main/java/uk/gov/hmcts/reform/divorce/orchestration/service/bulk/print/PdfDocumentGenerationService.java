@@ -31,7 +31,7 @@ public class PdfDocumentGenerationService {
 
     private Map<String, Object> getPreparedDataFromContext(DocmosisTemplateVars model) {
         return singletonMap(
-            OrchestrationConstants.CASE_DETAILS_JSON_KEY,
+            OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY,
             new RequestTemplateVarsWrapper(model.getCaseReference(), model)
         );
     }
