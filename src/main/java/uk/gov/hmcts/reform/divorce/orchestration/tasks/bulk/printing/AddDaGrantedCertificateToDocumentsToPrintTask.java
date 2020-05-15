@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConst
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.DocumentContentFetcherService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedCertificateDataExtractor;
 
 import java.util.Map;
@@ -23,6 +24,8 @@ public class AddDaGrantedCertificateToDocumentsToPrintTask implements Task<Map<S
         public static final String DOCUMENT_TYPE = OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
     }
 
+    private final DocumentContentFetcherService documentContentFetcherService;
+
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         appendAnotherDocumentToBulkPrint(
@@ -34,8 +37,16 @@ public class AddDaGrantedCertificateToDocumentsToPrintTask implements Task<Map<S
     }
 
     private GeneratedDocumentInfo getExistingDaGrantedFromCaseData(Map<String, Object> caseData) {
-        return DaGrantedCertificateDataExtractor.getDaGrantedDocumentInformPartiallyPopulated(caseData)
+        GeneratedDocumentInfo generatedDocumentInfo = DaGrantedCertificateDataExtractor.getDaGrantedDocumentInformPartiallyPopulated(caseData)
             .documentType(FileMetadata.DOCUMENT_TYPE)
             .build();
+
+        GeneratedDocumentInfo res = getContentOfDocumentFromDocStore(generatedDocumentInfo);
+
+        return res;
+    }
+
+    private GeneratedDocumentInfo getContentOfDocumentFromDocStore(GeneratedDocumentInfo documentInfo) {
+        return documentContentFetcherService.fetchPrintContent(documentInfo);
     }
 }

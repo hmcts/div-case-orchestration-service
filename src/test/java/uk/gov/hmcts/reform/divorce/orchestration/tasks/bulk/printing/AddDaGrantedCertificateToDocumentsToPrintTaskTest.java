@@ -1,12 +1,15 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.DocumentContentFetcherService;
 
 import java.util.Map;
 
@@ -14,6 +17,8 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedCertificateDataExtractorTest.DA_GRANTED_CERTIFICATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedCertificateDataExtractorTest.buildCaseDataWithDocumentsGeneratedList;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedCertificateDataExtractorTest.buildCollectionMemberWithDocumentType;
@@ -23,8 +28,17 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.Prep
 @RunWith(MockitoJUnitRunner.class)
 public class AddDaGrantedCertificateToDocumentsToPrintTaskTest {
 
+    @Mock
+    private DocumentContentFetcherService documentContentFetcherService;
+
     @InjectMocks
     private AddDaGrantedCertificateToDocumentsToPrintTask addDaGrantedCertificateToDocumentsToPrintTask;
+
+    @Before
+    public void setup() {
+        when(documentContentFetcherService.fetchPrintContent(any(GeneratedDocumentInfo.class)))
+            .thenReturn(GeneratedDocumentInfo.builder().documentType(DA_GRANTED_CERTIFICATE).build());
+    }
 
     @Test
     public void executeAddsFirstDocumentToContext() {
