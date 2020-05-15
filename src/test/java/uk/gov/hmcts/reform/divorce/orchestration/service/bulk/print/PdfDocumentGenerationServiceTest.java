@@ -7,7 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DaGrantedLetter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.RequestTemplateVarsWrapper;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
@@ -36,14 +35,14 @@ public class PdfDocumentGenerationServiceTest {
     private PdfDocumentGenerationService pdfDocumentGenerationService;
 
     @Test
-    public void executeCallsDocumentGeneratorAndPopulatesContextWithTheFirstElement() {
+    public void executeCallsDocumentGeneratorWithExpectedData() {
         pdfDocumentGenerationService.generatePdf(model, templateId, AUTH_TOKEN);
 
         verify(documentGeneratorClient).generatePDF(documentGenerationRequest.capture(), authTokenArg.capture());
 
         final GenerateDocumentRequest capturedRequest = documentGenerationRequest.getValue();
         final RequestTemplateVarsWrapper modelSentToPdfGenerator = (RequestTemplateVarsWrapper) capturedRequest.getValues()
-            .get(OrchestrationConstants.CASE_DETAILS_JSON_KEY);
+            .get(PdfDocumentGenerationService.DGS_DATA_KEY);
         final DaGrantedLetter templateVars = (DaGrantedLetter) modelSentToPdfGenerator.getCaseData();
 
         assertThat(capturedRequest.getTemplate(), is(templateId));
