@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentGenerationRequest;
@@ -16,6 +17,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
 
 @Component
+@Slf4j
 public class MultipleDocumentGenerationTask implements Task<Map<String, Object>> {
 
     private final DocumentGenerationTask documentGenerationTask;
@@ -32,13 +34,18 @@ public class MultipleDocumentGenerationTask implements Task<Map<String, Object>>
             throw new TaskException("Could not find a list of document generation requests");
         }
 
+        log.warn("how many docs to generate {}", documentGenerationRequests.size());
+
         Map<String, Object> payloadForNextTask = caseData;
         for (DocumentGenerationRequest documentGenerationRequest : documentGenerationRequests) {
+            log.warn("generate document template: {},  type: {}", documentGenerationRequest.getDocumentTemplateId(), documentGenerationRequest.getDocumentType());
             context.setTransientObject(DOCUMENT_TEMPLATE_ID, documentGenerationRequest.getDocumentTemplateId());
             context.setTransientObject(DOCUMENT_TYPE, documentGenerationRequest.getDocumentType());
             context.setTransientObject(DOCUMENT_FILENAME, documentGenerationRequest.getDocumentFileName());
             payloadForNextTask = documentGenerationTask.execute(context, payloadForNextTask);
         }
+
+        log.warn("Documents generated, case data = {}", payloadForNextTask);
 
         return payloadForNextTask;
     }

@@ -56,10 +56,13 @@ public class BulkPrintCallbackTest extends IntegrationTest {
     @SuppressWarnings("unchecked")
     public void givenRespondentAos_whenReceivedBulkPrint_thenDueDatePopulated() throws Exception {
 
-        Map response = postToRestService(serverUrl + issueContextPath + "?generateAosInvitation=true", citizenHeaders,
-            loadJson(RESPONDENT_AOS_INVITATION))
-            .getBody()
-            .as(Map.class);
+        String jsonRequestBody = loadJson(RESPONDENT_AOS_INVITATION);
+
+        Map response = postToRestService(
+            serverUrl + issueContextPath + "?generateAosInvitation=true",
+            citizenHeaders,
+            jsonRequestBody
+        ).getBody().as(Map.class);
 
         CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
         ccdCallbackRequest.setCaseDetails(CaseDetails.builder().caseData(
