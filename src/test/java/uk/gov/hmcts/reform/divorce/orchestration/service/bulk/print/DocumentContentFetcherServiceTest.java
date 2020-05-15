@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
+import uk.gov.hmcts.reform.divorce.orchestration.exception.FetchingDocumentFromDmStoreException;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.sameInstance;
@@ -63,6 +64,16 @@ public class DocumentContentFetcherServiceTest {
         assertDocsHaveTheSameMetadata(documentInfo, documentWithPopulatedBytes);
         // make sure it's immutable
         assertThat(documentInfo, not(sameInstance(documentWithPopulatedBytes)));
+    }
+
+    @Test(expected = FetchingDocumentFromDmStoreException.class)
+    public void fetchPrintContentCallsDmStoreButFails() {
+        ResponseEntity<byte[]> dmStoreBadRequestResponse = ResponseEntity.badRequest().build();
+
+        when(restTemplate.exchange(eq(URL), eq(HttpMethod.GET), any(HttpEntity.class), eq(byte[].class)))
+            .thenReturn(dmStoreBadRequestResponse);
+
+        documentContentFetcherService.fetchPrintContent(GeneratedDocumentInfo.builder().url(URL).build());
     }
 
     private void assertDocsHaveTheSameMetadata(GeneratedDocumentInfo doc1, GeneratedDocumentInfo doc2) {
