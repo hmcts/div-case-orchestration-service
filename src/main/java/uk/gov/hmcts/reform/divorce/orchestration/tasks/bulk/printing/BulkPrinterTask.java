@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_PRINT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.PrepareDataForDocumentGenerationTask.getDocumentsToBulkPrint;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENTS_GENERATED;
 
 @Slf4j
 @Component
@@ -43,14 +43,15 @@ public class BulkPrinterTask implements Task<Map<String, Object>> {
         final CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
         final String bulkPrintLetterType = context.getTransientObject(BULK_PRINT_LETTER_TYPE);
 
-        Map<String, GeneratedDocumentInfo> generatedDocumentInfoList = getDocumentsToBulkPrint(context);
+        final Map<String, GeneratedDocumentInfo> generatedDocumentInfoList = context.getTransientObject(DOCUMENTS_GENERATED);
         final List<String> documentTypesToPrint = context.getTransientObject(DOCUMENT_TYPES_TO_PRINT);
         final List<GeneratedDocumentInfo> documentsToPrint = documentTypesToPrint.stream()
             .map(generatedDocumentInfoList::get)
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
-        if (isListOfActualDocumentsMatchingExpectedDocumentsTypes(documentTypesToPrint, documentsToPrint)) {
+        //Make sure every requested document type was found
+        if (documentTypesToPrint.size() == documentsToPrint.size()) {
             try {
                 bulkPrintService.send(caseDetails.getCaseId(), bulkPrintLetterType, documentsToPrint);
             } catch (final Exception e) {
@@ -72,12 +73,6 @@ public class BulkPrinterTask implements Task<Map<String, Object>> {
         return payload;
     }
 
-    private boolean isListOfActualDocumentsMatchingExpectedDocumentsTypes(
-        List<String> documentTypesToPrint, List<GeneratedDocumentInfo> documentsToPrint) {
-
-        return documentTypesToPrint.size() == documentsToPrint.size();
-    }
-
     public Map<String, Object> printSpecifiedDocument(TaskContext context,
                                                       Map<String, Object> payload,
                                                       String letterType,
@@ -95,4 +90,5 @@ public class BulkPrinterTask implements Task<Map<String, Object>> {
 
         return returnedPayload;
     }
+
 }

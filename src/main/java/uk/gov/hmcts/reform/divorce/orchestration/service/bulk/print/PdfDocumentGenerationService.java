@@ -17,6 +17,11 @@ import static java.util.Collections.singletonMap;
 @AllArgsConstructor
 public class PdfDocumentGenerationService {
 
+    /*
+     * Document Generator Service requires structure: { caseDetails: { id, case_data }}
+     */
+    public static final String DGS_DATA_KEY = OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
+
     private final DocumentGeneratorClient documentGeneratorClient;
 
     public GeneratedDocumentInfo generatePdf(DocmosisTemplateVars templateModel, String templateId, String authorisationToken) {
@@ -31,7 +36,7 @@ public class PdfDocumentGenerationService {
 
     private Map<String, Object> getPreparedDataFromContext(DocmosisTemplateVars model) {
         return singletonMap(
-            OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY,
+            DGS_DATA_KEY,
             new RequestTemplateVarsWrapper(model.getCaseReference(), model)
         );
     }
