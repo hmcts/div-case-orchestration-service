@@ -14,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
+import uk.gov.hmcts.reform.divorce.orchestration.exception.FetchingDocumentFromDmStoreException;
 
 @Slf4j
 @Component
@@ -52,7 +53,7 @@ public class DocumentContentFetcherService {
 
         if (!response.getStatusCode().is2xxSuccessful()) {
             log.error("Failed to get bytes from document store for document {}, {}", document.getFileName(), document.getUrl());
-            throw new RuntimeException(String.format("Unexpected code from DM store: %s ", response.getStatusCode()));
+            throw new FetchingDocumentFromDmStoreException(String.format("Unexpected code from DM store: %s ", response.getStatusCode()));
         }
 
         log.info("Fetch content of document from DM {}, size: {}", document.getFileName(), response.getBody().length);

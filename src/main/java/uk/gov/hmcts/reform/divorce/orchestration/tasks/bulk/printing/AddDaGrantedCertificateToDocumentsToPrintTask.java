@@ -41,9 +41,7 @@ public class AddDaGrantedCertificateToDocumentsToPrintTask implements Task<Map<S
             .documentType(FileMetadata.DOCUMENT_TYPE)
             .build();
 
-        GeneratedDocumentInfo res = getContentOfDocumentFromDocStore(generatedDocumentInfo);
-
-        return res;
+        return getContentOfDocumentFromDocStore(generatedDocumentInfo);
     }
 
     private GeneratedDocumentInfo getContentOfDocumentFromDocStore(GeneratedDocumentInfo documentInfo) {
