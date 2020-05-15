@@ -62,11 +62,8 @@ public class BulkPrintCallbackTest extends IntegrationTest {
             .as(Map.class);
 
         CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
-        ccdCallbackRequest.setCaseDetails(CaseDetails.builder().caseData(
-            (Map) response.get("data")).caseId("323").state("submitted").build()
-        );
-        ResponseBody body = postToRestService(serverUrl + bulkPrintContextPath, caseworkerHeaders,
-            ccdCallbackRequest).getBody();
+        ccdCallbackRequest.setCaseDetails(CaseDetails.builder().caseData((Map) response.get("data")).caseId("323").state("submitted").build());
+        ResponseBody body = postToRestService(serverUrl + bulkPrintContextPath, caseworkerHeaders, ccdCallbackRequest).getBody();
         assertThat("Response body is not a JSON: " + body.asString(),
                 body.asString(),
                 isJson()
