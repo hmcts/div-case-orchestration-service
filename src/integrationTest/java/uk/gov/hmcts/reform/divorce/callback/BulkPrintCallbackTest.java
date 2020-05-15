@@ -56,35 +56,23 @@ public class BulkPrintCallbackTest extends IntegrationTest {
     @SuppressWarnings("unchecked")
     public void givenRespondentAos_whenReceivedBulkPrint_thenDueDatePopulated() throws Exception {
 
-        String jsonRequestBody = loadJson(RESPONDENT_AOS_INVITATION);
-
-        Map response = postToRestService(
-            serverUrl + issueContextPath + "?generateAosInvitation=true",
-            citizenHeaders,
-            jsonRequestBody
-        ).getBody().as(Map.class);
+        Map response = postToRestService(serverUrl + issueContextPath + "?generateAosInvitation=true", citizenHeaders,
+            loadJson(RESPONDENT_AOS_INVITATION))
+            .getBody()
+            .as(Map.class);
 
         CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
         ccdCallbackRequest.setCaseDetails(CaseDetails.builder().caseData(
             (Map) response.get("data")).caseId("323").state("submitted").build()
         );
-        ResponseBody body = postToRestService(
-            serverUrl + bulkPrintContextPath,
-            caseworkerHeaders,
-            ccdCallbackRequest
-        ).getBody();
-
+        ResponseBody body = postToRestService(serverUrl + bulkPrintContextPath, caseworkerHeaders,
+            ccdCallbackRequest).getBody();
         assertThat("Response body is not a JSON: " + body.asString(),
             body.asString(),
             isJson()
         );
-
-        try {
-            String result = ((Map) body.jsonPath().get(DATA)).get("dueDate").toString(); // Null pointer HERE
-            assertEquals(LocalDate.now().plus(30, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE), result);
-        } catch (NullPointerException e) {
-            throw new RuntimeException(body.prettyPrint(), e);
-        }
+        String result = ((Map) body.jsonPath().get(DATA)).get("dueDate").toString();
+        assertEquals(LocalDate.now().plus(30, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE), result);
     }
 
     @Test
