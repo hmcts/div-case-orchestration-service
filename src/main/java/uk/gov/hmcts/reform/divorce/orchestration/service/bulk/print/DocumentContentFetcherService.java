@@ -38,8 +38,8 @@ public class DocumentContentFetcherService {
             .documentType(document.getDocumentType())
             .url(document.getUrl())
             .mimeType(document.getMimeType())
-            .fileName(document.getDocumentType())
-            .createdOn(document.getDocumentType())
+            .fileName(document.getFileName())
+            .createdOn(document.getCreatedOn())
             .bytes(response.getBody())
             .build();
     }

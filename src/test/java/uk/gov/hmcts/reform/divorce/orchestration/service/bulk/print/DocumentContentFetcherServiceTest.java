@@ -48,13 +48,28 @@ public class DocumentContentFetcherServiceTest {
         when(restTemplate.exchange(eq(URL), eq(HttpMethod.GET), any(HttpEntity.class), eq(byte[].class)))
             .thenReturn(responseFromDmStore);
 
-        GeneratedDocumentInfo documentInfo = GeneratedDocumentInfo.builder().url(URL).build();
+        final GeneratedDocumentInfo documentInfo = GeneratedDocumentInfo.builder()
+            .url(URL)
+            .fileName("aaa")
+            .mimeType("bbb")
+            .documentType("ccc")
+            .createdOn("ddd")
+            .build();
 
-        GeneratedDocumentInfo documentWithPopulatedBytes = documentContentFetcherService.fetchPrintContent(documentInfo);
+        final GeneratedDocumentInfo documentWithPopulatedBytes = documentContentFetcherService.fetchPrintContent(documentInfo);
 
         assertThat(documentWithPopulatedBytes.getUrl(), is(URL));
         assertThat(documentWithPopulatedBytes.getBytes(), is(documentContent));
+        assertDocsHaveTheSameMetadata(documentInfo, documentWithPopulatedBytes);
         // make sure it's immutable
         assertThat(documentInfo, not(sameInstance(documentWithPopulatedBytes)));
+    }
+
+    private void assertDocsHaveTheSameMetadata(GeneratedDocumentInfo doc1, GeneratedDocumentInfo doc2) {
+        assertThat(doc2.getUrl(), is(doc1.getUrl()));
+        assertThat(doc2.getFileName(), is(doc1.getFileName()));
+        assertThat(doc2.getDocumentType(), is(doc1.getDocumentType()));
+        assertThat(doc2.getCreatedOn(), is(doc1.getCreatedOn()));
+        assertThat(doc2.getMimeType(), is(doc1.getMimeType()));
     }
 }
