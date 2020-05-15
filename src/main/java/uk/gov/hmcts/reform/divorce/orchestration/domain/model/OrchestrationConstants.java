@@ -145,6 +145,9 @@ public class OrchestrationConstants {
     public static final String AMEND_PETITION_FOR_REFUSAL_EVENT = "amendPetitionForRefusalRejection";
     public static final String AOS_START_FROM_OVERDUE = "startAosFromOverdue";
     public static final String AOS_START_FROM_REISSUE = "startAosFromReissue";
+    public static final String AWAITING_DN_AOS_EVENT_ID = "aosSubmittedUndefended";
+    public static final String AWAITING_ANSWER_AOS_EVENT_ID = "aosSubmittedDefended";
+    public static final String COMPLETED_AOS_EVENT_ID = "aosReceivedNoAdConStarted";
     public static final String AOS_NOMINATE_SOLICITOR = "aosNominateSol";
     public static final String SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID = "solAosSubmittedDefended";
     public static final String SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID = "solAosSubmittedUndefended";
@@ -157,6 +160,8 @@ public class OrchestrationConstants {
     public static final String AWAITING_DECREE_ABSOLUTE = "AwaitingDecreeAbsolute";
     public static final String SOLICITOR_CREATE_EVENT = "solicitorCreate";
     public static final String SOLICITOR_SUBMIT_EVENT = "solicitorStatementOfTruthPaySubmit";
+    public static final String WELSH_NEXT_EVENT = "WelshNextEvent";
+    public static final String BO_WELSH_REVIEW = "boWelshReview";
 
     // CCD Case States
     public static final String AOS_AWAITING = "AosAwaiting";
