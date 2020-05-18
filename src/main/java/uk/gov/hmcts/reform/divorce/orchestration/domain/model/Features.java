@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 public enum Features {
 
     RESPONDENT_SOLICITOR_DETAILS("feature_resp_solicitor_details"),
-    DN_REFUSAL("dn_refusal");
+    DN_REFUSAL("dn_refusal"),
+    PAPER_UPDATE("paper_update");
 
     private final String name;
 }
