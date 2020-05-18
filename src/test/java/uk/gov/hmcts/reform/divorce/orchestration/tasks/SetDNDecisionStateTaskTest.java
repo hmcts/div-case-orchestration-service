@@ -95,7 +95,9 @@ public class SetDNDecisionStateTaskTest {
     @Test
     public void givenDnRejected_whenSetDnDecisionState_withAddInfo_andWelshLanguage_thenReturnWelshDnRefusedState() {
         Map<String, Object> caseData = ImmutableMap.of(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE,
-            REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION, LANGUAGE_PREFERENCE_WELSH, YES_VALUE, REFUSAL_REJECTION_ADDITIONAL_INFO, "some additional info");
+            REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION,
+            LANGUAGE_PREFERENCE_WELSH, YES_VALUE,
+            REFUSAL_REJECTION_ADDITIONAL_INFO, "some additional info");
 
         Map<String, Object> returnedPayload = classToTest.execute(taskContext, caseData);
 
@@ -109,7 +111,9 @@ public class SetDNDecisionStateTaskTest {
     @Test
     public void givenDnRejected_whenSetDnDecisionState_withWelshAddInfo_andWelshLanguage_thenReturnDnRefusedState() {
         Map<String, Object> caseData = ImmutableMap.of(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE,
-            REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION, LANGUAGE_PREFERENCE_WELSH, YES_VALUE, REFUSAL_REJECTION_ADDITIONAL_INFO, "some additional info",WELSH_REFUSAL_REJECTION_ADDITIONAL_INFO, "some welsh additional info");
+            REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION,
+            LANGUAGE_PREFERENCE_WELSH, YES_VALUE, REFUSAL_REJECTION_ADDITIONAL_INFO,
+            "some additional info",WELSH_REFUSAL_REJECTION_ADDITIONAL_INFO, "some welsh additional info");
 
         Map<String, Object> returnedPayload = classToTest.execute(taskContext, caseData);
 
