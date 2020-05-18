@@ -103,14 +103,20 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
 
         final List<Task> tasks = new ArrayList<>();
 
+        log.warn("documentGenerationRequestsList = {}", documentGenerationRequestsList);
+        log.warn("documentTypesToPrint = {}", documentTypesToPrint);
+
         tasks.add(documentsGenerationTask);
         tasks.add(caseFormatterAddDocuments);
         tasks.add(fetchPrintDocsFromDmStore);
         tasks.add(bulkPrinterTask);
         tasks.add(markJourneyAsOffline);
         if (divorceParty.equals(RESPONDENT)) {
+            log.warn("modify modifyDueDate");
             tasks.add(modifyDueDate);
         }
+
+        log.warn("number of tasks to be executed {}", tasks.size());
 
         return execute(tasks.toArray(new Task[0]),
             caseData,

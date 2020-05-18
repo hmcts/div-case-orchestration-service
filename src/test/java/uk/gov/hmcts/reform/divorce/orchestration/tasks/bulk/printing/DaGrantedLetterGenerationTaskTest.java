@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.DocumentContentFetcherService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor;
@@ -47,7 +48,11 @@ public class DaGrantedLetterGenerationTaskTest {
     private static final String LETTER_DATE = LocalDate.now().toString();
 
     private static final CtscContactDetails CTSC_CONTACT = CtscContactDetails.builder().build();
-    private static final GeneratedDocumentInfo DOCUMENT = document();
+    private static final GeneratedDocumentInfo DOCUMENT = GeneratedDocumentInfo
+        .builder()
+        .documentType(DaGrantedLetterGenerationTask.FileMetadata.DOCUMENT_TYPE)
+        .fileName(DaGrantedLetterGenerationTask.FileMetadata.FILE_NAME)
+        .build();
 
     @Mock
     private CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService;
@@ -55,14 +60,19 @@ public class DaGrantedLetterGenerationTaskTest {
     @Mock
     private PdfDocumentGenerationService pdfDocumentGenerationService;
 
+    @Mock
+    private DocumentContentFetcherService documentContentFetcherService;
+
     @InjectMocks
     private DaGrantedLetterGenerationTask daGrantedLetterGenerationTask;
 
     @Before
     public void setup() {
+        GeneratedDocumentInfo createdDoc = document();
         when(ctscContactDetailsDataProviderService.getCtscContactDetails()).thenReturn(CTSC_CONTACT);
         when(pdfDocumentGenerationService.generatePdf(any(DocmosisTemplateVars.class), eq(TEMPLATE_ID), eq(AUTH_TOKEN)))
-            .thenReturn(DOCUMENT);
+            .thenReturn(createdDoc);
+        when(documentContentFetcherService.fetchPrintContent(createdDoc)).thenReturn(DOCUMENT);
     }
 
     @Test
@@ -83,6 +93,7 @@ public class DaGrantedLetterGenerationTaskTest {
         final ArgumentCaptor<DaGrantedLetter> daGrantedLetterArgumentCaptor = ArgumentCaptor.forClass(DaGrantedLetter.class);
         verify(pdfDocumentGenerationService, times(1))
             .generatePdf(daGrantedLetterArgumentCaptor.capture(), eq(TEMPLATE_ID), eq(AUTH_TOKEN));
+        verify(documentContentFetcherService, times(1)).fetchPrintContent(eq(DOCUMENT));
 
         final DaGrantedLetter daGrantedLetter = daGrantedLetterArgumentCaptor.getValue();
         assertThat(daGrantedLetter.getPetitionerFullName(), is("Anna Nowak"));

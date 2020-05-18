@@ -11,6 +11,7 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.ADDRESS_LINE1;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.ADDRESS_LINE2;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.COUNTY;
@@ -41,6 +42,7 @@ public class DaGrantedLetterDataExtractorTest {
         asList("", null).forEach(daDateValue -> {
             try {
                 DaGrantedLetterDataExtractor.getDaGrantedDate(buildCaseDataWithDaGrantedDate(daDateValue));
+                fail("Should have thrown exception");
             } catch (TaskException e) {
                 thisTestPassed();
             }

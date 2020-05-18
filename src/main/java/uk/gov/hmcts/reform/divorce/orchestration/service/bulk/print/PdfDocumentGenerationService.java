@@ -18,7 +18,8 @@ import static java.util.Collections.singletonMap;
 public class PdfDocumentGenerationService {
 
     /*
-     * Document Generator Service requires structure: { caseDetails: { id, case_data }}
+     * Document Generator Service requires structure:
+     * caseDetails: string id, map case_data
      */
     public static final String DGS_DATA_KEY = OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 
