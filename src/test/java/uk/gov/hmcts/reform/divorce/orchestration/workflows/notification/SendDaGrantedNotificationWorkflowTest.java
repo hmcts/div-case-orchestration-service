@@ -7,8 +7,10 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaGrantedNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.AddDaGrantedCertificateToDocumentsToPrintTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
@@ -47,6 +49,9 @@ public class SendDaGrantedNotificationWorkflowTest {
     @Mock
     private BulkPrinterTask bulkPrinterTask;
 
+    @Mock
+    private FeatureToggleService featureToggleService;
+
     @InjectMocks
     private SendDaGrantedNotificationWorkflow sendDaGrantedNotificationWorkflow;
 
@@ -71,6 +76,7 @@ public class SendDaGrantedNotificationWorkflowTest {
     public void runShouldCallBulkPrintingWhenNoDigitalCommunication() throws Exception {
         Map<String, Object> casePayload = buildCaseData(NO_VALUE);
 
+        when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
         when(daGrantedLetterGenerationTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
         when(addDaGrantedCertificateToDocumentsToPrintTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
         when(bulkPrinterTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
@@ -88,6 +94,23 @@ public class SendDaGrantedNotificationWorkflowTest {
         inOrder.verify(daGrantedLetterGenerationTask).execute(any(TaskContext.class), eq(casePayload));
         inOrder.verify(addDaGrantedCertificateToDocumentsToPrintTask).execute(any(TaskContext.class), eq(casePayload));
         inOrder.verify(bulkPrinterTask).execute(any(TaskContext.class), eq(casePayload));
+
+        verify(sendDaGrantedNotificationEmailTask, never()).execute(any(TaskContext.class), eq(casePayload));
+    }
+
+    @Test
+    public void runShouldSkipBulkPrintingTasksWhenFeatureToggleOff() throws Exception {
+        Map<String, Object> casePayload = buildCaseData(NO_VALUE);
+
+        when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(false);
+
+        Map<String, Object> result = sendDaGrantedNotificationWorkflow.run(buildCaseDetails(casePayload), AUTH_TOKEN);
+
+        assertEquals(casePayload, result);
+
+        verify(daGrantedLetterGenerationTask, never()).execute(any(TaskContext.class), eq(casePayload));
+        verify(addDaGrantedCertificateToDocumentsToPrintTask, never()).execute(any(TaskContext.class), eq(casePayload));
+        verify(bulkPrinterTask, never()).execute(any(TaskContext.class), eq(casePayload));
 
         verify(sendDaGrantedNotificationEmailTask, never()).execute(any(TaskContext.class), eq(casePayload));
     }
