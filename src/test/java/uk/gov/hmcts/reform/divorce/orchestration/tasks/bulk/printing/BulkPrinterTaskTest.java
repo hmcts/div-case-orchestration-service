@@ -121,7 +121,6 @@ public class BulkPrinterTaskTest {
         classUnderTest.execute(context, emptyMap());
 
         verifyZeroInteractions(bulkPrintService);
-        assertThat(context.getTransientObject(BULK_PRINT_ERROR_KEY), is("Bulk print didn't kicked off for " + TEST_LETTER_TYPE));
     }
 
     @Test
@@ -134,6 +133,5 @@ public class BulkPrinterTaskTest {
         classUnderTest.execute(context, emptyMap());
 
         verifyZeroInteractions(bulkPrintService);
-        assertThat(context.getTransientObject(BULK_PRINT_ERROR_KEY), is("Bulk print didn't kicked off for " + TEST_LETTER_TYPE));
     }
 }

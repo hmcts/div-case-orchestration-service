@@ -39,7 +39,8 @@ public abstract class PrepareDataForDocumentGenerationTask implements Task<Map<S
 
         DocmosisTemplateVars templateModel = prepareDataForPdf(context, caseData);
         GeneratedDocumentInfo documentInfo = generatePdf(context, templateModel);
-        appendAnotherDocumentToBulkPrint(context, populateMetadataForGeneratedDocument(documentInfo));
+        GeneratedDocumentInfo documentInfoWithMetadata = populateMetadataForGeneratedDocument(documentInfo);
+        appendAnotherDocumentToBulkPrint(context, populateContentOfDocument(documentInfoWithMetadata));
 
         return caseData;
     }
@@ -49,6 +50,8 @@ public abstract class PrepareDataForDocumentGenerationTask implements Task<Map<S
     protected abstract DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) throws TaskException;
 
     protected abstract GeneratedDocumentInfo populateMetadataForGeneratedDocument(GeneratedDocumentInfo documentInfo);
+
+    protected abstract GeneratedDocumentInfo populateContentOfDocument(GeneratedDocumentInfo documentInfo);
 
     static void appendAnotherDocumentToBulkPrint(TaskContext context, GeneratedDocumentInfo generatedDocumentInfo) {
         Map<String, GeneratedDocumentInfo> documentsToBulkPrint = getDocumentsToBulkPrint(context);
