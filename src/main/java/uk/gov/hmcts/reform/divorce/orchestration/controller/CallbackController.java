@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosPackOfflineService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -40,6 +41,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_ANSWERS_LINK;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.GENERATE_AOS_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_LINK;
@@ -47,6 +49,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ANSWERS_LINK;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_VALIDATION_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_DN_REFUSED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_REFUSAL_REJECTION_ADDITIONAL_INFO;
+
 
 @RestController
 @Slf4j
@@ -285,7 +290,7 @@ public class CallbackController {
     @ApiOperation(value = "Caseworker confirm personal service from CCD")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error message is attached to the case",
-        response = CcdCallbackResponse.class),
+            response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> confirmPersonalService(
@@ -315,7 +320,7 @@ public class CallbackController {
     @ApiOperation(value = "Handles bulk print callback from CCD")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error message is attached to the case",
-        response = CcdCallbackResponse.class),
+            response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> bulkPrint(
@@ -606,7 +611,7 @@ public class CallbackController {
     @PostMapping(path = "/da-about-to-be-granted", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Generate Decree Absolute Certificate and email notifications to Petitioner and Respondent")
     @ApiResponses(value = {
-        @ApiResponse(code = 200,message = "DA Certificate generated and emails sent to Petitioner and Respondent",
+        @ApiResponse(code = 200, message = "DA Certificate generated and emails sent to Petitioner and Respondent",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
@@ -812,7 +817,7 @@ public class CallbackController {
     public ResponseEntity<CcdCallbackResponse> clearStateCallback(
         @RequestHeader(AUTHORIZATION_HEADER)
         @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
-        @RequestBody @ApiParam("CaseData")CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
 
         callbackResponseBuilder.data(caseOrchestrationService.cleanStateCallback(ccdCallbackRequest, authorizationToken));
@@ -833,12 +838,15 @@ public class CallbackController {
         @RequestHeader(AUTHORIZATION_HEADER)
         @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
 
+        if (CaseDataUtils.isWelshTranslationRequiredForDnRefusal(ccdCallbackRequest.getCaseDetails())) {
+            callbackResponseBuilder.data(ccdCallbackRequest.getCaseDetails().getCaseData());
+            return ResponseEntity.ok(callbackResponseBuilder.build());
+        }
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         log.info("DN Decision made - Notifying refusal order. Case ID: {}", caseId);
         caseOrchestrationService.notifyForRefusalOrder(ccdCallbackRequest);
-
-        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
         log.info("DN Decision made - cleaning state for case ID: {}", caseId);
         callbackResponseBuilder.data(caseOrchestrationService.cleanStateCallback(ccdCallbackRequest, authorizationToken));
 

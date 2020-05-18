@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.STATE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_DN_REFUSED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
@@ -46,6 +48,9 @@ public class SetDNDecisionStateTask implements Task<Map<String, Object>> {
                 switch (refusalDecision) {
                     case DN_REFUSED_REJECT_OPTION:
                         newCaseEndState = DN_REFUSED;
+                        if (CaseDataUtils.isRejectReasonAddInfoAwaitingTranslation(caseData)) {
+                            newCaseEndState = WELSH_DN_REFUSED;
+                        }
                         break;
                     case DN_REFUSED_ADMIN_ERROR_OPTION:
                         newCaseEndState = AWAITING_ADMIN_CLARIFICATION;
