@@ -330,7 +330,7 @@ dependencies {
     runtime('org.springframework.boot:spring-boot-devtools')
 
     testCompile group: 'org.awaitility', name:'awaitility', version: versions.awaitility
-    testCompile group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '2.1.5.RELEASE'
+    testCompile group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '2.2.2.RELEASE'
     testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
         exclude(module: 'commons-logging')
         exclude(module: 'android-json')
