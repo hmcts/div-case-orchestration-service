@@ -131,6 +131,8 @@ public class OrchestrationConstants {
     //CCD DN fields
     public static final String DN_OUTCOME_FLAG_CCD_FIELD = "DnOutcomeCase";
     public static final String REFUSAL_DECISION_CCD_FIELD = "RefusalDecision";
+    public static final String REFUSAL_REJECTION_ADDITIONAL_INFO= "RefusalRejectionAdditionalInfo";
+    public static final String WELSH_REFUSAL_REJECTION_ADDITIONAL_INFO= "WelshRefusalRejectionAdditionalInfo";
     public static final String REFUSAL_DECISION_MORE_INFO_VALUE = "moreInfo";
     public static final String DN_REFUSED_REJECT_OPTION = "reject";
     public static final String DN_REFUSED_ADMIN_ERROR_OPTION = "adminError";
@@ -174,6 +176,7 @@ public class OrchestrationConstants {
     public static final String DN_PRONOUNCED = "DNPronounced";
     public static final String AWAITING_DA = "AwaitingDecreeAbsolute";
     public static final String DN_REFUSED = "DNisRefused";
+    public static final String WELSH_DN_REFUSED = "WelshDNisRefused";
     public static final String AWAITING_ADMIN_CLARIFICATION = "AwaitingAdminClarification";
     public static final String DA_REQUESTED = "DARequested";
     public static final String DA_OVERDUE = "DAOverdue";
