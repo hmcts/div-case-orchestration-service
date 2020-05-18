@@ -3,14 +3,10 @@ package uk.gov.hmcts.reform.divorce.orchestration.util;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
-import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.RequestBody;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
@@ -95,15 +91,21 @@ public class CaseDataUtils {
     }
 
     public static boolean isRejectReasonAddInfoAwaitingTranslation(Map<String, Object> caseData) {
-        String refusalDecision = (String) caseData.getOrDefault(REFUSAL_DECISION_CCD_FIELD, EMPTY_STRING);
-        String refusalAdditionalInfo = (String) caseData.getOrDefault(REFUSAL_REJECTION_ADDITIONAL_INFO, EMPTY_STRING);
-        String welshRefusalAdditionalInfo = (String) caseData.getOrDefault(WELSH_REFUSAL_REJECTION_ADDITIONAL_INFO, EMPTY_STRING);
-        return isLanguagePreferenceWelsh(caseData) && refusalDecision.equals(OrchestrationConstants.DN_REFUSED_REJECT_OPTION) && !refusalAdditionalInfo.isEmpty() && welshRefusalAdditionalInfo.isEmpty();
+        String refusalDecision = (String) caseData.getOrDefault(REFUSAL_DECISION_CCD_FIELD,
+            EMPTY_STRING);
+        String refusalAdditionalInfo = (String) caseData.getOrDefault(REFUSAL_REJECTION_ADDITIONAL_INFO,
+            EMPTY_STRING);
+        String welshRefusalAdditionalInfo = (String) caseData.getOrDefault(WELSH_REFUSAL_REJECTION_ADDITIONAL_INFO,
+            EMPTY_STRING);
+        return isLanguagePreferenceWelsh(caseData)
+            && refusalDecision.equals(OrchestrationConstants.DN_REFUSED_REJECT_OPTION)
+            && !refusalAdditionalInfo.isEmpty() && welshRefusalAdditionalInfo.isEmpty();
     }
 
     public static boolean isWelshTranslationRequiredForDnRefusal(CaseDetails caseDetails) {
         Map<String, Object> caseData = caseDetails.getCaseData();
-        String welshRefusalAdditionalInfo = (String) caseData.getOrDefault(WELSH_REFUSAL_REJECTION_ADDITIONAL_INFO, EMPTY_STRING);
+        String welshRefusalAdditionalInfo = (String) caseData.getOrDefault(WELSH_REFUSAL_REJECTION_ADDITIONAL_INFO,
+            EMPTY_STRING);
         return WELSH_DN_REFUSED.equals(caseDetails.getState()) && welshRefusalAdditionalInfo.isEmpty();
     }
 
