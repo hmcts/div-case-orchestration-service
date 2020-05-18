@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.workflows.notification;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
@@ -36,6 +37,9 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
     private final AddDaGrantedCertificateToDocumentsToPrintTask addDaGrantedCertificateToDocumentsToPrintTask;
     private final BulkPrinterTask bulkPrinterTask;
 
+    @Value("${feature-toggle.toggle.paper-update}")
+    private boolean paperUpdateEnabled;
+
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
         Map<String, Object> caseData = caseDetails.getCaseData();
 
@@ -62,9 +66,11 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
         if (isRespondentUsingDigitalContact(caseData)) {
             tasks.add(sendDaGrantedNotificationEmailTask);
         } else {
-            tasks.add(daGrantedLetterGenerationTask);
-            tasks.add(addDaGrantedCertificateToDocumentsToPrintTask);
-            tasks.add(bulkPrinterTask);
+            if (paperUpdateEnabled) {
+                tasks.add(daGrantedLetterGenerationTask);
+                tasks.add(addDaGrantedCertificateToDocumentsToPrintTask);
+                tasks.add(bulkPrinterTask);
+            }
         }
 
         Task<Map<String, Object>>[] arr = new Task[tasks.size()];

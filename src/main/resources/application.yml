@@ -120,6 +120,7 @@ feature-toggle:
     bulk-print: ${FEATURE_BULK_PRINT:true}
     feature_resp_solicitor_details: ${FEATURE_RESP_SOLICITOR_DETAILS:false}
     dn_refusal: ${FEATURE_DN_REFUSAL:true}
+    paper-update: ${FEATURE_PAPER_UPDATE:false}
 
 send-letter:
   url: ${SEND_LETTER_SERIVCE_BASEURL:http://localhost:4021}
