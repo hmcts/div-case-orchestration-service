@@ -13,6 +13,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_SUBMITTED_AWAITING_ANSWER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
@@ -26,8 +27,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 public class CoRespondentAosAnswersProcessorTask implements Task<Map<String, Object>> {
 
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
-        Map<String, Object> payloadToReturn = new HashMap<>(payload);
-        return payloadToReturn;
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
+        caseData.put(RECEIVED_AOS_FROM_CO_RESP, YES_VALUE);
+        return caseData;
     }
 }
