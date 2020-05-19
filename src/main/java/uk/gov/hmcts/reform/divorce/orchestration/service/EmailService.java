@@ -11,7 +11,6 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMAIL_ERROR_KEY;
@@ -31,7 +30,7 @@ public class EmailService {
                                          String templateName,
                                          Map<String, String> templateVars,
                                          String emailDescription,
-                                         Optional<LanguagePreference> languagePreference) {
+                                         LanguagePreference languagePreference) {
 
         EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars, languagePreference);
         return sendEmailAndReturnErrorsInResponse(emailToSend, emailDescription);
@@ -42,7 +41,7 @@ public class EmailService {
                                                    String templateName,
                                                    Map<String, String> templateVars,
                                                    String emailDescription,
-                                                   Optional<LanguagePreference> languagePreference) throws NotificationClientException {
+                                                   LanguagePreference languagePreference) throws NotificationClientException {
 
         EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars, languagePreference);
         sendEmailUsingClient(emailToSend, emailDescription);
@@ -51,11 +50,10 @@ public class EmailService {
     private EmailToSend generateEmail(String destinationAddress,
                                       String templateName,
                                       Map<String, String> templateVars,
-                                      Optional<LanguagePreference> languagePreference) {
+                                      LanguagePreference languagePreference) {
         String referenceId = UUID.randomUUID().toString();
-        LanguagePreference language = languagePreference.orElse(LanguagePreference.ENGLISH);
 
-        String templateId = emailTemplatesConfig.getTemplates().get(language).get(templateName);
+        String templateId = emailTemplatesConfig.getTemplates().get(languagePreference).get(templateName);
         Map<String, String> templateFields = (templateVars != null ? templateVars :
             emailTemplatesConfig.getTemplateVars().get(templateName));
 

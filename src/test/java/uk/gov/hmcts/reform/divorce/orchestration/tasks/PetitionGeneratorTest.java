@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Optional;
 
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.util.Sets.newLinkedHashSet;
@@ -74,7 +73,7 @@ public class PetitionGeneratorTest {
 
         //given
         when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(expectedPetition);
-        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH),
+        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
                 DocumentType.DIVORCE_MINI_PETITION)).thenReturn(MINI_PETITION_TEMPLATE_NAME);
         //when
         petitionGenerator.execute(context, payload);

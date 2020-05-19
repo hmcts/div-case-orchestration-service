@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
@@ -37,7 +36,7 @@ public class GenericEmailNotification implements Task<Map<String, Object>> {
         String emailAddress = context.getTransientObject(NOTIFICATION_EMAIL);
         EmailTemplateNames template = context.getTransientObject(NOTIFICATION_TEMPLATE);
         Map<String, String> templateVars = context.getTransientObject(NOTIFICATION_TEMPLATE_VARS);
-        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(data);
+        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(data);
         try {
             emailService.sendEmailAndReturnExceptionIfFails(emailAddress, template.name(), templateVars,
                 "submission notification", languagePreference);

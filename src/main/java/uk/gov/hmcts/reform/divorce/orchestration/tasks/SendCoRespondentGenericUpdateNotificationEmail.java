@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME;
@@ -56,7 +55,7 @@ public class SendCoRespondentGenericUpdateNotificationEmail implements Task<Map<
             templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, coRespFirstName);
             templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, coRespLastName);
             templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, caseNumber);
-            Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
+            LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
             emailService.sendEmail(coRespEmail, EmailTemplateNames.GENERIC_UPDATE_RESPONDENT.name(), templateVars,
                 EMAIL_DESC, languagePreference);
         }

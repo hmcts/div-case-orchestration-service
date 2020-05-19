@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDaGrantedDetailsTask;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -70,7 +69,7 @@ public class DecreeAbsoluteAboutToBeGrantedWorkflowTest {
             .caseData(payload)
             .build();
 
-        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH), DocumentType.DECREE_ABSOLUTE_TEMPLATE_ID))
+        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_ABSOLUTE_TEMPLATE_ID))
                 .thenReturn(DECREE_ABSOLUTE_TEMPLATE_ID);
 
         final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();

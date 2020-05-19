@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -56,7 +55,7 @@ public class GenericEmailNotificationUTest {
                         RESPONDENT_SUBMISSION_CONSENT.name(),
                         vars,
                         GENERIC_SUBMISSION_NOTIFICATION_EMAIL_DESCRIPTION,
-                        Optional.of(LanguagePreference.ENGLISH));
+                        LanguagePreference.ENGLISH);
         assertEquals(taskResponse, data);
     }
 
@@ -77,7 +76,7 @@ public class GenericEmailNotificationUTest {
                     RESPONDENT_SUBMISSION_CONSENT.name(),
                     vars,
                     GENERIC_SUBMISSION_NOTIFICATION_EMAIL_DESCRIPTION,
-                    Optional.of(LanguagePreference.ENGLISH));
+                    LanguagePreference.ENGLISH);
 
         Map<String, Object> taskResponse = genericEmailNotification.execute(context, data);
 

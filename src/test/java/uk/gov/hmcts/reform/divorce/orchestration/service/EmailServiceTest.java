@@ -12,8 +12,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.service.notify.NotificationClientException;
 
-import java.util.Optional;
-
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -40,7 +38,7 @@ public class EmailServiceTest {
             EmailTemplateNames.APPLIC_SUBMISSION.name(),
             null,
             "submission notification",
-            Optional.empty());
+            LanguagePreference.ENGLISH);
 
         verify(mockClient).sendEmail(
             eq(emailTemplatesConfig.getTemplates().get(LanguagePreference.ENGLISH).get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
@@ -56,7 +54,7 @@ public class EmailServiceTest {
             EmailTemplateNames.APPLIC_SUBMISSION.name(),
             null,
             "submission notification",
-            Optional.of(LanguagePreference.WELSH));
+             LanguagePreference.WELSH);
 
         verify(mockClient).sendEmail(
             eq(emailTemplatesConfig.getTemplates().get(LanguagePreference.WELSH).get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
@@ -72,7 +70,7 @@ public class EmailServiceTest {
             EmailTemplateNames.SAVE_DRAFT.name(),
             null,
             "save draft",
-            Optional.empty());
+            LanguagePreference.ENGLISH);
 
         verify(mockClient).sendEmail(
             eq(emailTemplatesConfig.getTemplates().get(LanguagePreference.ENGLISH).get(EmailTemplateNames.SAVE_DRAFT.name())),
@@ -88,7 +86,7 @@ public class EmailServiceTest {
             EmailTemplateNames.SAVE_DRAFT.name(),
             null,
             "save draft",
-            Optional.of(LanguagePreference.WELSH));
+             LanguagePreference.WELSH);
 
         verify(mockClient).sendEmail(
             eq(emailTemplatesConfig.getTemplates().get(LanguagePreference.WELSH).get(EmailTemplateNames.SAVE_DRAFT.name())),
@@ -108,7 +106,7 @@ public class EmailServiceTest {
                 EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
                 null,
                 "resp does not consent to 2 year separation update notification",
-                Optional.of(LanguagePreference.WELSH));
+                 LanguagePreference.WELSH);
     }
 
     @Test
@@ -118,7 +116,7 @@ public class EmailServiceTest {
                 EmailTemplateNames.APPLIC_SUBMISSION.name(),
                 null,
                 "submission notification",
-                Optional.empty());
+                 LanguagePreference.ENGLISH);
 
         verify(mockClient).sendEmail(
             eq(emailTemplatesConfig.getTemplates().get(LanguagePreference.ENGLISH).get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
@@ -135,7 +133,7 @@ public class EmailServiceTest {
             EmailTemplateNames.APPLIC_SUBMISSION.name(),
             null,
             "submission notification",
-            Optional.of(LanguagePreference.WELSH));
+             LanguagePreference.WELSH);
 
         verify(mockClient).sendEmail(
             eq(emailTemplatesConfig.getTemplates().get(LanguagePreference.WELSH).get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
@@ -154,6 +152,6 @@ public class EmailServiceTest {
                 EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
                 null,
                 "resp does not consent to 2 year separation update notification",
-                Optional.empty());
+                LanguagePreference.ENGLISH);
     }
 }

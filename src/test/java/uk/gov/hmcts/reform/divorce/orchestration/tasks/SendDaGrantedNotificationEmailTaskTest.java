@@ -18,7 +18,6 @@ import uk.gov.service.notify.NotificationClientException;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.is;
@@ -185,7 +184,7 @@ public class SendDaGrantedNotificationEmailTaskTest {
                             eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
                             eq(expectedPetitionerTemplateVars),
                             eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC),
-                            eq(Optional.of(LanguagePreference.WELSH)));
+                            eq(LanguagePreference.WELSH));
 
             verifyNoMoreInteractions(emailService);
             assertThat(e.getMessage(), is(format("Could not evaluate value of mandatory property \"%s\"", "RespEmailAddress")));
@@ -217,7 +216,7 @@ public class SendDaGrantedNotificationEmailTaskTest {
                             eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
                             eq(expectedPetitionerTemplateVars),
                             eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC),
-                            eq(Optional.of(LanguagePreference.ENGLISH)));
+                            eq(LanguagePreference.ENGLISH));
 
             verify(emailService)
                     .sendEmailAndReturnExceptionIfFails(
@@ -225,7 +224,7 @@ public class SendDaGrantedNotificationEmailTaskTest {
                             eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
                             eq(expectedRespondentTemplateVars),
                             eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC),
-                            eq(Optional.of(LanguagePreference.ENGLISH)));
+                            eq(LanguagePreference.ENGLISH));
         } catch (NotificationClientException e) {
             fail("Failed to throw task exception");
         }
@@ -254,7 +253,7 @@ public class SendDaGrantedNotificationEmailTaskTest {
                             eq(EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name()),
                             eq(expectedPetSolicitorTemplateVars),
                             eq(SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC),
-                            eq(Optional.of(LanguagePreference.ENGLISH)));
+                            eq(LanguagePreference.ENGLISH));
 
             verify(emailService)
                     .sendEmailAndReturnExceptionIfFails(
@@ -262,7 +261,7 @@ public class SendDaGrantedNotificationEmailTaskTest {
                             eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
                             eq(expectedRespondentTemplateVars),
                             eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC),
-                            eq(Optional.of(LanguagePreference.ENGLISH)));
+                            eq(LanguagePreference.ENGLISH));
         } catch (NotificationClientException e) {
             fail("Failed to throw task exception");
         }
@@ -293,7 +292,7 @@ public class SendDaGrantedNotificationEmailTaskTest {
                             eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
                             eq(expectedPetitionerTemplateVars),
                             eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC),
-                            eq(Optional.of(LanguagePreference.ENGLISH)));
+                            eq(LanguagePreference.ENGLISH));
 
             verify(emailService)
                     .sendEmail(
@@ -301,7 +300,7 @@ public class SendDaGrantedNotificationEmailTaskTest {
                             eq(EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name()),
                             eq(expectedRespSolicitorTemplateVars),
                             eq(SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC),
-                            eq(Optional.of(LanguagePreference.ENGLISH)));
+                            eq(LanguagePreference.ENGLISH));
         } catch (NotificationClientException e) {
             fail("Failed to throw task exception");
         }
@@ -331,7 +330,7 @@ public class SendDaGrantedNotificationEmailTaskTest {
                             eq(EmailTemplateNames.DA_GRANTED_NOTIFICATION.name()),
                             eq(expectedPetitionerTemplateVars),
                             eq(DA_GRANTED_NOTIFICATION_EMAIL_DESC),
-                            eq(Optional.of(LanguagePreference.ENGLISH)));
+                            eq(LanguagePreference.ENGLISH));
 
             verify(emailService)
                     .sendEmail(
@@ -339,7 +338,7 @@ public class SendDaGrantedNotificationEmailTaskTest {
                             eq(EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name()),
                             eq(expectedRespSolicitorTemplateVars),
                             eq(SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC),
-                            eq(Optional.of(LanguagePreference.ENGLISH)));
+                            eq(LanguagePreference.ENGLISH));
         } catch (NotificationClientException e) {
             fail("Failed to throw task exception");
         }
@@ -370,7 +369,7 @@ public class SendDaGrantedNotificationEmailTaskTest {
                         eq(EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name()),
                         eq(expectedPetSolicitorTemplateVars),
                         eq(SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC),
-                        eq(Optional.of(LanguagePreference.ENGLISH)));
+                        eq(LanguagePreference.ENGLISH));
 
         verify(emailService)
                 .sendEmail(
@@ -378,6 +377,6 @@ public class SendDaGrantedNotificationEmailTaskTest {
                         eq(EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name()),
                         eq(expectedRespSolicitorTemplateVars),
                         eq(SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC),
-                        eq(Optional.of(LanguagePreference.ENGLISH)));
+                        eq(LanguagePreference.ENGLISH));
     }
 }

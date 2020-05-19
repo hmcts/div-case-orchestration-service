@@ -18,7 +18,6 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.is;
@@ -138,7 +137,7 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
                 eq(EmailTemplateNames.DECREE_ABSOLUTE_REQUESTED_NOTIFICATION.name()),
                 anyMap(),
                 eq(REQUESTED_BY_APPLICANT),
-                eq(Optional.of(LanguagePreference.WELSH))
+                eq(LanguagePreference.WELSH)
 
             );
 
@@ -171,7 +170,7 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
                     eq(EmailTemplateNames.DECREE_ABSOLUTE_REQUESTED_NOTIFICATION.name()),
                     eq(expectedTemplateVars),
                     eq(REQUESTED_BY_APPLICANT),
-                    eq(Optional.of(LanguagePreference.ENGLISH)));
+                    eq(LanguagePreference.ENGLISH));
         } catch (NotificationClientException e) {
             fail("exception occurred in test");
         }
@@ -201,7 +200,7 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
                     eq(EmailTemplateNames.DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_SOLICITOR.name()),
                     eq(expectedTempVars),
                     eq(REQUESTED_BY_SOLICITOR),
-                    eq(Optional.of(LanguagePreference.ENGLISH)));
+                    eq(LanguagePreference.ENGLISH));
         } catch (NotificationClientException e) {
             fail("exception occurred in test");
         }

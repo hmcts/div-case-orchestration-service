@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
@@ -78,7 +77,7 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
         String welshFormSubmissionDateLimit = ccdUtil.getWelshFormattedDate(caseDataPayload, CCD_DUE_DATE);
         templateFields.put(OrchestrationConstants.NOTIFICATION_WELSH_FORM_SUBMISSION_DATE_LIMIT_KEY, welshFormSubmissionDateLimit);
 
-        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseDataPayload);
+        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseDataPayload);
         taskCommons.sendEmail(RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION,
             EMAIL_DESCRIPTION,
             respondentEmailAddress,

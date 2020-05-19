@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
@@ -65,7 +64,7 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
             templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, formatCaseIdToReferenceNumber(caseId));
 
             Map<String, Object> previousCaseId = (Map<String, Object>) caseData.get(PREVIOUS_CASE_ID_CCD_KEY);
-            Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
+            LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
 
             if (previousCaseId != null) {
                 emailService.sendEmail(petitionerEmail, EmailTemplateNames.APPLIC_SUBMISSION_AMEND.name(), templateVars,

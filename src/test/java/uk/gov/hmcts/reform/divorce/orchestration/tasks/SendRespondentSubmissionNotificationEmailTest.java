@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.allOf;
@@ -128,7 +127,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
             eq("respondent submission notification email - defended divorce"),
             eq("respondent@divorce.co.uk"),
             templateParametersCaptor.capture(),
-            eq(Optional.of(LanguagePreference.ENGLISH)));
+            eq(LanguagePreference.ENGLISH));
         Map<String, String> templateParameters = templateParametersCaptor.getValue();
         assertThat(templateParameters, hasEntry(NOTIFICATION_CASE_NUMBER_KEY, D8_CASE_ID));
         assertThat(templateParameters, allOf(
@@ -202,7 +201,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
             eq("respondent submission notification email - undefended divorce"),
             eq("respondent@divorce.co.uk"),
             templateParametersCaptor.capture(),
-            eq(Optional.of(LanguagePreference.ENGLISH)));
+            eq(LanguagePreference.ENGLISH));
         Map<String, String> templateParameters = templateParametersCaptor.getValue();
         assertThat(templateParameters, hasEntry(NOTIFICATION_CASE_NUMBER_KEY, D8_CASE_ID));
         assertThat(templateParameters, allOf(

@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AMEND_PETITION_FEE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
@@ -60,7 +59,7 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
                 return payload;
             }
             String refusalReason = (String) payload.get(REFUSAL_DECISION_CCD_FIELD);
-            Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(payload);
+            LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(payload);
             if (REFUSAL_DECISION_MORE_INFO_VALUE.equalsIgnoreCase(refusalReason)) {
                 emailService.sendEmail(
                     petitionerEmail,

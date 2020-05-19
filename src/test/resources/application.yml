@@ -432,16 +432,6 @@ documents:
       aosOfflineAdulteryCORespondentTemplateId: "FL-DIV-APP-WEL-00250.docx"
       respondentAnswers: "respondentAnswersWelsh"
 
-events:
-  english:
-    aosSubmittedDefended: "aosSubmittedDefended"
-    aosReceivedNoAdConStarted: "aosReceivedNoAdConStarted"
-    aosSubmittedUndefended: "aosSubmittedUndefended"
-  welsh:
-    aosSubmittedDefended: "aosSubmittedDefendedWelshReview"
-    aosReceivedNoAdConStarted: "aosReceivedNoAdConStartedWelshReview"
-    aosSubmittedUndefended: "aosSubmittedUndefendedWelshReview"
-
 template:
   relation:
     english:

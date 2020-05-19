@@ -20,7 +20,6 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -106,7 +105,7 @@ public class PetitionerClarificationSubmittedNotificationTest {
                 )
             )),
             anyString(),
-            eq(Optional.of(LanguagePreference.ENGLISH))
+            eq(LanguagePreference.ENGLISH)
         );
     }
 
@@ -120,7 +119,7 @@ public class PetitionerClarificationSubmittedNotificationTest {
         doThrow(new NotificationClientException("Notification Error"))
             .when(emailService).sendEmailAndReturnExceptionIfFails(eq(PETITIONER_EMAIL),
                 eq(EmailTemplateNames.DECREE_NISI_CLARIFICATION_SUBMISSION.name()),
-                anyMap(), anyString(), eq(Optional.of(LanguagePreference.ENGLISH)));
+                anyMap(), anyString(), eq(LanguagePreference.ENGLISH));
 
         classToTest.execute(taskContext, incomingPayload);
 

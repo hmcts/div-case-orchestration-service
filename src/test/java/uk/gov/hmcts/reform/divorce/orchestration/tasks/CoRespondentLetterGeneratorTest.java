@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.assertj.core.util.Sets.newLinkedHashSet;
 import static org.junit.Assert.assertThat;
@@ -93,7 +92,7 @@ public class CoRespondentLetterGeneratorTest {
 
         //given
         when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(expectedCoRespondentInvitation);
-        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH), DocumentType.CO_RESPONDENT_INVITATION))
+        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.CO_RESPONDENT_INVITATION))
                 .thenReturn(CO_RESPONDENT_INVITATION_TEMPLATE_NAME);
 
 

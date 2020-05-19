@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.DnCourt;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -16,7 +17,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.TaskCommons;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
@@ -51,13 +51,13 @@ public class TaskCommonsTest {
                     RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION.name(),
                     templateParameters,
                     "test description",
-                    Optional.empty());
+                    LanguagePreference.ENGLISH);
 
         taskCommons.sendEmail(RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION,
                 "test description",
                 "test@hmcts.net",
                 templateParameters,
-                Optional.empty());
+                LanguagePreference.ENGLISH);
     }
 
     @Test

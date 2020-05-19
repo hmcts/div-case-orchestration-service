@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.TemplateConfigService;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -107,7 +106,7 @@ public class NotifyForRefusalOrderTaskTest {
                 )
             )),
             anyString(),
-            eq(Optional.of(LanguagePreference.ENGLISH))
+            eq(LanguagePreference.ENGLISH)
         );
     }
 
@@ -135,7 +134,7 @@ public class NotifyForRefusalOrderTaskTest {
                 )
             )),
             anyString(),
-            eq(Optional.of(LanguagePreference.ENGLISH))
+            eq(LanguagePreference.ENGLISH)
         );
     }
 
@@ -148,7 +147,7 @@ public class NotifyForRefusalOrderTaskTest {
             eq(EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION.name()),
             anyMap(),
             anyString(),
-            eq(Optional.of(LanguagePreference.ENGLISH))
+            eq(LanguagePreference.ENGLISH)
         );
     }
 
@@ -164,7 +163,7 @@ public class NotifyForRefusalOrderTaskTest {
             eq(EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION.name()),
             anyMap(),
             anyString(),
-            eq(Optional.of(LanguagePreference.ENGLISH))
+            eq(LanguagePreference.ENGLISH)
         );
     }
 
@@ -181,7 +180,7 @@ public class NotifyForRefusalOrderTaskTest {
             eq(EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION.name()),
             anyMap(),
             anyString(),
-            eq(Optional.of(LanguagePreference.ENGLISH))
+            eq(LanguagePreference.ENGLISH)
         );
     }
 }

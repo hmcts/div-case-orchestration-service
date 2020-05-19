@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
@@ -53,7 +52,7 @@ public class NotifyApplicantCanFinaliseDivorceTask implements Task<Map<String, O
         String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
         String petFirstName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME);
         String petLastName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME);
-        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
+        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
         Map<String, String> templateVars = new HashMap<>();
 
         if (StringUtils.isNotBlank(solicitorEmail)) {

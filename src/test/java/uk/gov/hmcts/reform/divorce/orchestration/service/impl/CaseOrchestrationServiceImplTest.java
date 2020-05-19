@@ -76,6 +76,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateDNPronouncedCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListingWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshContinueWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.ApplicantDecreeAbsoluteEligibilityWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.DecreeAbsoluteAboutToBeGrantedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.DnSubmittedEmailNotificationWorkflow;
@@ -89,7 +90,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -325,6 +325,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private DocumentTemplateService documentTemplateService;
+
+    @Mock
+    private WelshContinueWorkflow welshContinueWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -978,7 +981,7 @@ public class CaseOrchestrationServiceImplTest {
             CaseDetails.builder().caseData(caseData).build())
             .build();
 
-        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH), DocumentType.DECREE_NISI_TEMPLATE_ID))
+        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
                 .thenReturn(DECREE_NISI_TEMPLATE_ID);
 
         classUnderTest
@@ -1003,7 +1006,7 @@ public class CaseOrchestrationServiceImplTest {
             CaseDetails.builder().caseData(caseData).build())
             .build();
 
-        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH), DocumentType.DECREE_NISI_TEMPLATE_ID))
+        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
                 .thenReturn(DECREE_NISI_TEMPLATE_ID);
 
         classUnderTest
@@ -1028,10 +1031,10 @@ public class CaseOrchestrationServiceImplTest {
             CaseDetails.builder().caseData(caseData).build())
             .build();
 
-        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH), DocumentType.DECREE_NISI_TEMPLATE_ID))
+        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
                 .thenReturn(DECREE_NISI_TEMPLATE_ID);
 
-        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH), DocumentType.COSTS_ORDER_TEMPLATE_ID))
+        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.COSTS_ORDER_TEMPLATE_ID))
                 .thenReturn(COSTS_ORDER_TEMPLATE_ID);
 
         classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
@@ -1054,9 +1057,9 @@ public class CaseOrchestrationServiceImplTest {
             CaseDetails.builder().caseData(caseData).build())
             .build();
 
-        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH), DocumentType.COSTS_ORDER_TEMPLATE_ID))
+        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.COSTS_ORDER_TEMPLATE_ID))
                 .thenReturn(COSTS_ORDER_TEMPLATE_ID);
-        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH), DocumentType.DECREE_NISI_TEMPLATE_ID))
+        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
                 .thenReturn(DECREE_NISI_TEMPLATE_ID);
 
         classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
@@ -1079,10 +1082,10 @@ public class CaseOrchestrationServiceImplTest {
             CaseDetails.builder().caseData(caseData).build())
             .build();
 
-        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH), DocumentType.DECREE_NISI_TEMPLATE_ID))
+        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
                 .thenReturn(DECREE_NISI_TEMPLATE_ID);
 
-        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH), DocumentType.COSTS_ORDER_TEMPLATE_ID))
+        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.COSTS_ORDER_TEMPLATE_ID))
                 .thenReturn(COSTS_ORDER_TEMPLATE_ID);
 
         classUnderTest
@@ -1118,7 +1121,7 @@ public class CaseOrchestrationServiceImplTest {
             CaseDetails.builder().caseData(caseData).build())
             .build();
 
-        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH), DocumentType.COSTS_ORDER_TEMPLATE_ID))
+        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.COSTS_ORDER_TEMPLATE_ID))
                 .thenReturn(COSTS_ORDER_TEMPLATE_ID);
 
         when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN,
@@ -1311,11 +1314,11 @@ public class CaseOrchestrationServiceImplTest {
             .build();
 
 
-        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH), DocumentType.DECREE_NISI_TEMPLATE_ID))
+        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
                 .thenReturn(DECREE_NISI_TEMPLATE_ID);
 
 
-        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH), DocumentType.COSTS_ORDER_TEMPLATE_ID))
+        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.COSTS_ORDER_TEMPLATE_ID))
                 .thenReturn(COSTS_ORDER_TEMPLATE_ID);
 
 
@@ -1650,6 +1653,19 @@ public class CaseOrchestrationServiceImplTest {
         classUnderTest.processDnDecisionMade(ccdCallbackRequest);
 
         verify(dnDecisionMadeWorkflow).run(ccdCallbackRequest);
+    }
+
+    @Test
+    public void welshContinue() throws WorkflowException {
+        Map<String, Object> caseData = Collections.EMPTY_MAP;
+        ccdCallbackRequest = CcdCallbackRequest.builder().build();
+        when(authUtil.getCaseworkerToken()).thenReturn("AUTH_TOKEN");
+        when(welshContinueWorkflow.run(ccdCallbackRequest, authUtil.getCaseworkerToken()))
+            .thenReturn(caseData);
+
+        Map<String, Object> result = classUnderTest.welshContinue(ccdCallbackRequest);
+        assertThat(result, is(caseData));
+        verify(welshContinueWorkflow).run(ccdCallbackRequest, authUtil.getCaseworkerToken());
     }
 
     @After

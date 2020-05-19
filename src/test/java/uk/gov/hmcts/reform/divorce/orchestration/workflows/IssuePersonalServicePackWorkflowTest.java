@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.PersonalServiceValidation
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -67,7 +66,7 @@ public class IssuePersonalServicePackWorkflowTest {
                 .caseData(caseData)
                 .build();
 
-        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH),
+        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
                 DocumentType.SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID))
                 .thenReturn(SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID);
 

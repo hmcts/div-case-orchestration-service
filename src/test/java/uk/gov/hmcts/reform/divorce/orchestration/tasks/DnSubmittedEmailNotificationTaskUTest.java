@@ -15,7 +15,6 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -83,7 +82,7 @@ public class DnSubmittedEmailNotificationTaskUTest {
             EmailTemplateNames.DN_SUBMISSION.name(),
             notificationTemplateVars,
             "DN Submission",
-            Optional.of(LanguagePreference.WELSH));
+            LanguagePreference.WELSH);
 
     }
 
@@ -113,7 +112,7 @@ public class DnSubmittedEmailNotificationTaskUTest {
             EmailTemplateNames.SOL_APPLICANT_DN_SUBMITTED.name(),
             notificationTemplateVars,
             "DN Submission",
-            Optional.of(LanguagePreference.ENGLISH));
+            LanguagePreference.ENGLISH);
 
     }
 
@@ -153,7 +152,7 @@ public class DnSubmittedEmailNotificationTaskUTest {
             EmailTemplateNames.DN_SUBMISSION.name(),
             notificationTemplateVars,
             "DN Submission",
-            Optional.of(LanguagePreference.ENGLISH));
+             LanguagePreference.ENGLISH);
 
     }
 

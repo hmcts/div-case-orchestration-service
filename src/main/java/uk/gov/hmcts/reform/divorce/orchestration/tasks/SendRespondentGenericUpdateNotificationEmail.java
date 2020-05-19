@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
@@ -55,7 +54,7 @@ public class SendRespondentGenericUpdateNotificationEmail implements Task<Map<St
             templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, caseNumber);
 
 
-            Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
+            LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
             emailService.sendEmail(respEmail, EmailTemplateNames.GENERIC_UPDATE_RESPONDENT.name(), templateVars,
                 RESP_GENERIC_EMAIL_DESC, languagePreference);
         }

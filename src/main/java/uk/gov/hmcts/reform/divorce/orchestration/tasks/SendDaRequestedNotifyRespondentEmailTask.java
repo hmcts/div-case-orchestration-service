@@ -17,7 +17,6 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_NAME;
@@ -90,7 +89,7 @@ public class SendDaRequestedNotifyRespondentEmailTask implements Task<Map<String
     private void sendEmailToRespondent(Map<String, Object> caseData) throws TaskException {
         Map<String, String> templateVars = prepareEmailTemplateVars(caseData);
         String emailAddress = (String) caseData.get(RESPONDENT_EMAIL_ADDRESS);
-        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
+        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
         templateVars.put(NOTIFICATION_EMAIL_ADDRESS_KEY, emailAddress);
 
         send(emailAddress, DECREE_ABSOLUTE_REQUESTED_NOTIFICATION, templateVars, REQUESTED_BY_APPLICANT, languagePreference);
@@ -99,7 +98,7 @@ public class SendDaRequestedNotifyRespondentEmailTask implements Task<Map<String
     private void sendEmailToRespondentSolicitor(Map<String, Object> caseData, String caseId) throws TaskException {
         Map<String, String> templateVars = prepareEmailTemplateVarsForSol(caseData);
         String emailAddress = (String) caseData.get(RESPONDENT_SOLICITOR_EMAIL_ADDRESS);
-        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
+        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
         templateVars.put(NOTIFICATION_EMAIL_ADDRESS_KEY, emailAddress);
         templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, caseId);
 
@@ -108,7 +107,7 @@ public class SendDaRequestedNotifyRespondentEmailTask implements Task<Map<String
 
     private void send(
         String emailAddress, EmailTemplateNames emailTemplate, Map<String, String> templateVars, String description,
-        Optional<LanguagePreference> languagePreference) throws TaskException {
+        LanguagePreference languagePreference) throws TaskException {
         try {
             emailService.sendEmailAndReturnExceptionIfFails(
                 emailAddress, emailTemplate.name(), templateVars, description, languagePreference

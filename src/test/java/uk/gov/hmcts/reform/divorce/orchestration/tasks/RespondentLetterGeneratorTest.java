@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.assertj.core.util.Sets.newLinkedHashSet;
 import static org.hamcrest.CoreMatchers.is;
@@ -85,7 +84,7 @@ public class RespondentLetterGeneratorTest {
 
         //given
         when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(expectedAosInvitation);
-        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH), DocumentType.AOS_INVITATION))
+        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.AOS_INVITATION))
                 .thenReturn(RESPONDENT_INVITATION_TEMPLATE_NAME);
         //when
         respondentLetterGenerator.execute(context, payload);

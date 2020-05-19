@@ -1018,6 +1018,20 @@ public class CallbackController {
         return ResponseEntity.ok(response.build());
     }
 
+    @PostMapping(path = "/welsh-continue")
+    @ApiOperation(value = "Callback to set next event upon receival of translation.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Callback processed.")})
+    public ResponseEntity<CcdCallbackResponse> welshContinue(
+            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        return ResponseEntity.ok(
+                CcdCallbackResponse.builder()
+                        .data(caseOrchestrationService.welshContinue(ccdCallbackRequest))
+                        .build());
+    }
+
+
     private List<String> getErrors(Map<String, Object> response) {
         ValidationResponse validationResponse = (ValidationResponse) response.get(VALIDATION_ERROR_KEY);
         return validationResponse.getErrors();

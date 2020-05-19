@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -101,7 +100,7 @@ public class SendPetitionerGenericUpdateNotificationEmailTest {
                         eq(EmailTemplateNames.GENERIC_UPDATE.name()),
                         eq(expectedTemplateVars),
                         any(),
-                        eq(Optional.of(LanguagePreference.ENGLISH)));
+                        eq((LanguagePreference.ENGLISH)));
     }
 
     @Test
@@ -129,6 +128,6 @@ public class SendPetitionerGenericUpdateNotificationEmailTest {
                 eq(EmailTemplateNames.SOL_GENERAL_CASE_UPDATE.name()),
                 eq(expectedTemplateVars),
                 any(),
-                eq(Optional.of(LanguagePreference.ENGLISH)));
+                eq(LanguagePreference.ENGLISH));
     }
 }

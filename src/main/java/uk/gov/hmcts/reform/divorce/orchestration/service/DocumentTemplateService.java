@@ -16,10 +16,9 @@ public class DocumentTemplateService {
     private static final String ERROR_MESSAGE = "No template found for languagePreference %s and template name %s";
     private final DocumentTemplates documentTemplates;
 
-    public String getTemplateId(Optional<LanguagePreference> languagePreference, DocumentType documentType) {
-        LanguagePreference languagePref = languagePreference.orElse(LanguagePreference.ENGLISH);
-        return Optional.ofNullable(documentTemplates.getTemplates().get(languagePref).get(documentType.getTemplateName()))
-                .orElseThrow(() -> new IllegalArgumentException(String.format(ERROR_MESSAGE, languagePref.getCode(),
+    public String getTemplateId(LanguagePreference languagePreference, DocumentType documentType) {
+        return Optional.ofNullable(documentTemplates.getTemplates().get(languagePreference).get(documentType.getTemplateName()))
+                .orElseThrow(() -> new IllegalArgumentException(String.format(ERROR_MESSAGE, languagePreference.getCode(),
                         documentType.getTemplateName())));
     }
 }
