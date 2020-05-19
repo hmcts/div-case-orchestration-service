@@ -16,20 +16,20 @@ import static java.util.Collections.emptyMap;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_INVITATION;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RespondentAosPackPrinterTest {
+public class CoRespondentAosPackPrinterTaskTest {
 
-    private static final String RESPONDENT_LETTER_TYPE = "respondent-aos-pack";
-    private static final List<String> DOCUMENT_TYPES_TO_PRINT = asList(DOCUMENT_TYPE_RESPONDENT_INVITATION, DOCUMENT_TYPE_PETITION);
+    private static final String CO_RESPONDENT_LETTER_TYPE = "co-respondent-aos-pack";
+    private static final List<String> DOCUMENT_TYPES_TO_PRINT = asList(DOCUMENT_TYPE_CO_RESPONDENT_INVITATION, DOCUMENT_TYPE_PETITION);
 
     @Mock
-    private BulkPrinter bulkPrinter;
+    private BulkPrinterTask bulkPrinterTask;
 
     @InjectMocks
-    private RespondentAosPackPrinter classUnderTest;
+    private CoRespondentAosPackPrinterTask classUnderTest;
 
     @Test
     public void shouldCallBulkPrinterWithSpecificParameters() {
@@ -40,7 +40,7 @@ public class RespondentAosPackPrinterTest {
         final Map<String, Object> result = classUnderTest.execute(context, payload);
 
         assertThat(result, is(payload));
-        verify(bulkPrinter).printSpecifiedDocument(context, payload, RESPONDENT_LETTER_TYPE, DOCUMENT_TYPES_TO_PRINT);
+        verify(bulkPrinterTask).printSpecifiedDocument(context, payload, CO_RESPONDENT_LETTER_TYPE, DOCUMENT_TYPES_TO_PRINT);
     }
 
 }

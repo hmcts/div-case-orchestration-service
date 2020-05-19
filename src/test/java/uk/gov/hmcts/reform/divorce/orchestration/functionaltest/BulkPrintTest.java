@@ -5,7 +5,6 @@ import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -17,7 +16,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRes
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DocumentLink;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ff4j.FeatureToggle;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -28,8 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static java.util.Collections.emptyMap;
@@ -40,7 +36,6 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.ALL_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -61,13 +56,8 @@ public class BulkPrintTest extends IdamTestSupport {
 
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
 
-    private static final String DUE_DATE = "dueDate";
-
     @Autowired
     private MockMvc webClient;
-
-    @Value("${feature-toggle.toggle.bulk-printer-toggle-name}")
-    private String bulkPrintFeatureToggleName;
 
     @MockBean
     private EmailClient emailClient;
@@ -81,7 +71,6 @@ public class BulkPrintTest extends IdamTestSupport {
 
     @Test
     public void givenCaseDataWithNoSolicitor_whenCalledBulkPrint_thenExpectDueDateInCCDResponse() throws Exception {
-        stubFeatureToggleService(true);
         stubSendLetterService(HttpStatus.OK);
 
         Map<String, Object> expectedCaseData = caseDataWithDocuments();
@@ -105,7 +94,6 @@ public class BulkPrintTest extends IdamTestSupport {
 
     @Test
     public void givenValidCaseDataWithSendLetterApiDown_whenCalledBulkPrint_thenExpectErrorInCCDResponse() throws Exception {
-        stubFeatureToggleService(true);
         stubSendLetterService(HttpStatus.INTERNAL_SERVER_ERROR);
 
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
@@ -140,31 +128,7 @@ public class BulkPrintTest extends IdamTestSupport {
         ));
         return caseData;
     }
-
-    @Test
-    public void givenValidCaseData_whenCalledBulkPrintWithFeatureToggleOff_thenExpectNoCallToLetterService() throws Exception {
-        stubFeatureToggleService(false);
-        stubSendLetterService(HttpStatus.OK);
-
-        Map<String, Object> caseData = caseDataWithDocuments();
-        caseData.put(DUE_DATE, LocalDate.now().plus(9, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE));
-        CcdCallbackResponse expected = CcdCallbackResponse.builder()
-            .data(caseData)
-            .errors(Collections.emptyList())
-            .warnings(Collections.emptyList())
-            .build();
-
-        webClient.perform(post(API_URL)
-            .content(convertObjectToJsonString(callbackWithDocuments()))
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().json(convertObjectToJsonString(expected)));
-
-        sendLetterService.verify(0, postRequestedFor(urlEqualTo("/letters")));
-    }
-
+    
     @Test
     public void givenServiceMethodIsPersonalServiceAndStateIsNotAwaitingService_thenResponseContainsErrors() throws Exception {
 
@@ -196,22 +160,7 @@ public class BulkPrintTest extends IdamTestSupport {
                 )
             )));
     }
-
-    private void stubFeatureToggleService(boolean toggle) {
-        FeatureToggle featureToggle = new FeatureToggle();
-        featureToggle.setEnable(String.valueOf(toggle));
-        featureToggle.setUid("divorce_bulk_print");
-        featureToggle.setDescription("some description");
-
-        featureToggleService.stubFor(WireMock.get("/api/ff4j/store/features/" + bulkPrintFeatureToggleName)
-            .withHeader("Content-Type", new EqualToPattern(APPLICATION_JSON_VALUE))
-            .willReturn(aResponse()
-                .withHeader("Content-Type", APPLICATION_JSON_VALUE)
-                .withStatus(HttpStatus.OK.value())
-                .withBody(convertObjectToJsonString(featureToggle))));
-
-    }
-
+    
     private void stubDMStore(HttpStatus status) {
         documentStore.stubFor(WireMock.get("/binary")
             .withHeader(SERVICE_AUTHORIZATION, new EqualToPattern("Bearer " + TEST_SERVICE_AUTH_TOKEN))
