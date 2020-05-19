@@ -17,7 +17,6 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -132,7 +131,7 @@ public class SendDnDecisionSolNotificationTaskTest {
                 eq(EmailTemplateNames.SOL_DN_DECISION_MADE.name()),
                 eq(expectedTemplateVars),
                 eq(SOLICITOR_PERSONAL_SERVICE_EMAIL),
-                eq(Optional.of(LanguagePreference.ENGLISH))
+                eq(LanguagePreference.ENGLISH)
         );
     }
 

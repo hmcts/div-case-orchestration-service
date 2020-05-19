@@ -82,13 +82,13 @@ public class CaseDataUtils {
             && Objects.nonNull(caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD));
     }
 
-    public static Optional<LanguagePreference> getLanguagePreference(Map<String, Object> caseData) {
-        return Optional.of(Optional.ofNullable(caseData)
+    public static LanguagePreference getLanguagePreference(Map<String, Object> caseData) {
+        return  Optional.ofNullable(caseData)
                 .map(data -> data.get(LANGUAGE_PREFERENCE_WELSH))
                 .filter(Objects::nonNull)
                 .map(String.class::cast)
                 .filter(YES_VALUE::equalsIgnoreCase)
                 .map(languagePreferenceWelsh -> LanguagePreference.WELSH)
-                .orElse(LanguagePreference.ENGLISH));
+                .orElse(LanguagePreference.ENGLISH);
     }
 }

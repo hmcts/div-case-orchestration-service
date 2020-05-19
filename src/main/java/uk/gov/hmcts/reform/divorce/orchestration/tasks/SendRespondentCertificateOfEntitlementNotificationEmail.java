@@ -131,7 +131,7 @@ public class SendRespondentCertificateOfEntitlementNotificationEmail implements 
             }
 
             templateParameters.put(COURT_NAME_TEMPLATE_ID, taskCommons.getDnCourt(courtName).getName());
-            Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(
+            LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(
                 caseDataPayload);
 
             taskCommons.sendEmail(template, EMAIL_DESCRIPTION, emailToBeSentTo, templateParameters, languagePreference);

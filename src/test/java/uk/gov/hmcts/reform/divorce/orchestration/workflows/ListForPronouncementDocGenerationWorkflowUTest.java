@@ -23,7 +23,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateDivorceCaseRemovePr
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -91,7 +90,7 @@ public class ListForPronouncementDocGenerationWorkflowUTest {
         when(documentGenerationTask.execute(context, payload)).thenReturn(payload);
         when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
         when(removePronouncementDetailsTask.execute(context, payload)).thenReturn(payload);
-        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH), DocumentType.BULK_LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID))
+        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.BULK_LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID))
                 .thenReturn(LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID);
 
         final Map<String, Object> result = classToTest.run(ccdCallbackRequest, AUTH_TOKEN);
@@ -111,7 +110,7 @@ public class ListForPronouncementDocGenerationWorkflowUTest {
         inOrder.verify(documentGenerationTask).execute(context, payload);
         inOrder.verify(caseFormatterAddDocuments).execute(context, payload);
         inOrder.verify(removePronouncementDetailsTask).execute(context, payload);
-        verify(documentTemplateService).getTemplateId(eq(Optional.of(LanguagePreference.ENGLISH)),
+        verify(documentTemplateService).getTemplateId(eq(LanguagePreference.ENGLISH),
                 eq(DocumentType.BULK_LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID));
     }
     
@@ -129,7 +128,7 @@ public class ListForPronouncementDocGenerationWorkflowUTest {
 
         when(syncBulkCaseListTask.execute(context, payload)).thenReturn(payload);
         when(removePronouncementDetailsTask.execute(context, payload)).thenReturn(payload);
-        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH), DocumentType.BULK_LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID))
+        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.BULK_LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID))
                 .thenReturn(LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID);
 
         final Map<String, Object> result = classToTest.run(ccdCallbackRequest, AUTH_TOKEN);
@@ -141,7 +140,7 @@ public class ListForPronouncementDocGenerationWorkflowUTest {
         verify(documentGenerationTask, never()).execute(context, payload);
         verify(caseFormatterAddDocuments, never()).execute(context, payload);
         verify(removePronouncementDetailsTask, times(1)).execute(context, payload);
-        verify(documentTemplateService).getTemplateId(eq(Optional.of(LanguagePreference.ENGLISH)),
+        verify(documentTemplateService).getTemplateId(eq(LanguagePreference.ENGLISH),
                 eq(DocumentType.BULK_LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID));
     }
 

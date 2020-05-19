@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.DraftDataUtils;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SEND_EMAIL;
@@ -33,7 +32,7 @@ public class EmailNotification  implements Task<Map<String, Object>> {
                                        Map<String, Object> draft) {
         boolean sendEmail = parseBooleanFromString(context.getTransientObject(NOTIFICATION_SEND_EMAIL));
         String emailAddress = context.getTransientObject(NOTIFICATION_EMAIL);
-        Optional<LanguagePreference> languagePreference = DraftDataUtils.getLanguagePreference(draft);
+        LanguagePreference languagePreference = DraftDataUtils.getLanguagePreference(draft);
 
         if (sendEmail && StringUtils.isNotBlank(emailAddress)) {
             return emailService.sendEmail(emailAddress, EmailTemplateNames.SAVE_DRAFT.name(), null,

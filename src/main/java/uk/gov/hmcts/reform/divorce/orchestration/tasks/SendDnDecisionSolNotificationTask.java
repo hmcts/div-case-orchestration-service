@@ -37,7 +37,7 @@ public class SendDnDecisionSolNotificationTask extends SolicitorEmailTask implem
         if (!isDnGranted(caseData) && solicitorEmail.isPresent()) {
             String petSolicitorEmail = getMandatoryPropertyValueAsString(caseData, PET_SOL_EMAIL);
             String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
-            Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
+            LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
             Map<String, String> templateVars = buildEmailTemplateVars(petSolicitorEmail, caseId, caseData);
 
             try {

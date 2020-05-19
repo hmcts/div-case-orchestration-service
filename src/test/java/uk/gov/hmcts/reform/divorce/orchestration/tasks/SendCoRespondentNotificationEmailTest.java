@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -86,7 +85,7 @@ public class SendCoRespondentNotificationEmailTest {
             eq(EmailTemplateNames.GENERIC_UPDATE_RESPONDENT.name()),
             eq(expectedTemplateVars),
             any(),
-            eq(Optional.of(LanguagePreference.ENGLISH)));
+            eq(LanguagePreference.ENGLISH));
     }
 
     @Test

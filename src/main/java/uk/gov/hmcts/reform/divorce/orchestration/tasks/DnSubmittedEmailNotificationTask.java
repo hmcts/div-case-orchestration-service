@@ -15,7 +15,6 @@ import uk.gov.service.notify.NotificationClientException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
@@ -81,7 +80,7 @@ public class DnSubmittedEmailNotificationTask implements Task<Map<String, Object
             emailToBeSentTo = petitionerEmail;
         }
         try {
-            Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(data);
+            LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(data);
             emailService.sendEmailAndReturnExceptionIfFails(emailToBeSentTo,
                 template, notificationTemplateVars, "DN Submission", languagePreference);
         } catch (NotificationClientException e) {

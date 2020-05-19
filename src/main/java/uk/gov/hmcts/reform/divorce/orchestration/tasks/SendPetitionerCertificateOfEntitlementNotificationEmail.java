@@ -75,7 +75,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmail implements 
         String petitionerFirstName = getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_FIRST_NAME);
         String petitionerLastName = getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_LAST_NAME);
         String courtName = getMandatoryPropertyValueAsString(payload, COURT_NAME_CCD_FIELD);
-        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(payload);
+        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(payload);
         EmailTemplateNames template = null;
         String emailToBeSentTo = null;
 

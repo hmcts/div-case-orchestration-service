@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.assertj.core.util.Sets.newLinkedHashSet;
 import static org.hamcrest.CoreMatchers.is;
@@ -96,7 +95,7 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
             .fileName(DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME + TEST_CASE_ID)
             .build();
 
-        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH),
+        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
                 DocumentType.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID))
                 .thenReturn(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID);
 
@@ -161,7 +160,7 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
                 caseDetails), eq(AUTH_TOKEN))
         ).thenReturn(expectedDocument);
 
-        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH),
+        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
                 DocumentType.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID))
                 .thenReturn(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID);
 
@@ -231,7 +230,7 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
         ).thenReturn(expectedDocument);
 
 
-        when(documentTemplateService.getTemplateId(Optional.of(LanguagePreference.ENGLISH),
+        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
                 DocumentType.DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID))
                 .thenReturn(DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID);
 

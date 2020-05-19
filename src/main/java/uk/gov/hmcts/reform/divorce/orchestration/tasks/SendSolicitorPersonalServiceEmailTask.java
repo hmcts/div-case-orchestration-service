@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
@@ -32,7 +31,7 @@ public class SendSolicitorPersonalServiceEmailTask extends SolicitorEmailTask im
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
         String petSolicitorEmail = getMandatoryPropertyValueAsString(caseData, PET_SOL_EMAIL);
         String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
-        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
+        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
         Map<String, String> templateVars = buildEmailTemplateVars(petSolicitorEmail, caseId, caseData);
 
         try {

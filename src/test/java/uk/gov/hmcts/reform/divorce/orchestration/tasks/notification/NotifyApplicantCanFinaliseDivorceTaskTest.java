@@ -16,7 +16,6 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -96,7 +95,7 @@ public class NotifyApplicantCanFinaliseDivorceTaskTest {
                 eq(EmailTemplateNames.APPLICANT_DA_ELIGIBLE.name()),
                 eq(expectedTemplateVars),
                 eq(EMAIL_DESC),
-                eq(Optional.of(LanguagePreference.WELSH))
+                eq(LanguagePreference.WELSH)
         );
     }
 
@@ -125,7 +124,7 @@ public class NotifyApplicantCanFinaliseDivorceTaskTest {
                 eq(EmailTemplateNames.SOL_APPLICANT_DA_ELIGIBLE.name()),
                 eq(expectedTemplateVars),
                 eq(SOL_EMAIL_DESC),
-                eq(Optional.of(LanguagePreference.ENGLISH))
+                eq(LanguagePreference.ENGLISH)
         );
     }
 

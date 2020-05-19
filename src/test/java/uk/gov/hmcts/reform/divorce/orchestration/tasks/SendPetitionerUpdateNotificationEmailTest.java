@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.is;
@@ -152,7 +151,7 @@ public class SendPetitionerUpdateNotificationEmailTest {
                 eq(emailTemplateName),
                 eq(expectedTemplateVars),
                 anyString(),
-                eq(Optional.of(LanguagePreference.ENGLISH)));
+                eq(LanguagePreference.ENGLISH));
     }
 
     @Test

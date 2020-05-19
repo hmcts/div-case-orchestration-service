@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.impl.CourtLookupService
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
-import java.util.Optional;
 
 // TODO: split those into well defined/reusable tasks instead of "common" methods
 @Component
@@ -46,7 +45,7 @@ public class TaskCommons {
                           String emailDescription,
                           String destinationEmailAddress,
                           Map<String, String> templateParameters,
-                          Optional<LanguagePreference> languagePreference) throws TaskException {
+                          LanguagePreference languagePreference) throws TaskException {
         try {
             emailService.sendEmailAndReturnExceptionIfFails(destinationEmailAddress,
                 emailTemplate.name(),

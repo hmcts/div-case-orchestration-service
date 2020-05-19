@@ -678,7 +678,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
 
         if (Objects.nonNull(caseData.get(BULK_LISTING_CASE_ID_FIELD))) {
-            Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
+            LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
             String templateId = documentTemplateService.getTemplateId(languagePreference, DocumentType.DECREE_NISI_TEMPLATE_ID);
             caseData.putAll(documentGenerationWorkflow.run(ccdCallbackRequest, authToken,
                     templateId, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME));
@@ -846,8 +846,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> welshContinue(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
-        return welshContinueWorkflow.run(ccdCallbackRequest, authToken);
+    public Map<String, Object> welshContinue(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        return welshContinueWorkflow.run(ccdCallbackRequest, authUtil.getCaseworkerToken());
     }
 
     @Override

@@ -6,7 +6,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
@@ -99,37 +98,37 @@ public class CaseDataUtilsTest {
     public void getTestLanguagePreferenceWithValue_Yes() {
         HashMap<String, Object> caseData = new HashMap<>();
         caseData.put(LANGUAGE_PREFERENCE_WELSH, YES_VALUE);
-        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
-        assertThat(languagePreference, is(Optional.of(LanguagePreference.WELSH)));
+        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
+        assertThat(languagePreference, is(LanguagePreference.WELSH));
     }
 
     @Test
     public void getTestLanguagePreferenceWithValue_No() {
         HashMap<String, Object> caseData = new HashMap<>();
         caseData.put(LANGUAGE_PREFERENCE_WELSH, NO_VALUE);
-        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
-        assertThat(languagePreference, is(Optional.of(LanguagePreference.ENGLISH)));
+        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
+        assertThat(languagePreference, is(LanguagePreference.ENGLISH));
     }
 
     @Test
     public void getTestLanguagePreferenceWithValue_NULL() {
         HashMap<String, Object> caseData = new HashMap<>();
         caseData.put(LANGUAGE_PREFERENCE_WELSH, null);
-        Optional<LanguagePreference> languagePreference = DraftDataUtils.getLanguagePreference(caseData);
-        assertThat(languagePreference, is(Optional.of(LanguagePreference.ENGLISH)));
+        LanguagePreference languagePreference = DraftDataUtils.getLanguagePreference(caseData);
+        assertThat(languagePreference, is(LanguagePreference.ENGLISH));
     }
 
     @Test
     public void getTestLanguagePreferenceNotSet() {
         HashMap<String, Object> caseData = new HashMap<>();
-        Optional<LanguagePreference> languagePreference = DraftDataUtils.getLanguagePreference(caseData);
-        assertThat(languagePreference, is(Optional.of(LanguagePreference.ENGLISH)));
+        LanguagePreference languagePreference = DraftDataUtils.getLanguagePreference(caseData);
+        assertThat(languagePreference, is(LanguagePreference.ENGLISH));
     }
 
     @Test
     public void getTestLanguagePreference_Null_CaseData() {
         HashMap<String, Object> caseData = null;
-        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
-        assertThat(languagePreference, is(Optional.of(LanguagePreference.ENGLISH)));
+        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
+        assertThat(languagePreference, is(LanguagePreference.ENGLISH));
     }
 }

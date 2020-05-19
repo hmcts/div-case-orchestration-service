@@ -16,7 +16,6 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -96,7 +95,7 @@ public class SendSolicitorPersonalServiceEmailTaskTest {
                 eq(EmailTemplateNames.SOL_PERSONAL_SERVICE.name()),
                 eq(expectedTemplateVars),
                 eq(SOLICITOR_PERSONAL_SERVICE_EMAIL),
-                eq(Optional.of(LanguagePreference.ENGLISH))
+                eq(LanguagePreference.ENGLISH)
         );
     }
 }

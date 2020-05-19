@@ -19,7 +19,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_COMPANY;
@@ -111,7 +110,7 @@ public class SendDaGrantedNotificationEmailTask implements Task<Map<String, Obje
         templateVars.put(NOTIFICATION_PET_NAME, petFirstName + " " + petLastName);
         templateVars.put(NOTIFICATION_RESP_NAME, respFirstName + " " + respLastName);
 
-        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
+        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
 
         emailService.sendEmail(
                 solicitorEmail,
@@ -160,7 +159,7 @@ public class SendDaGrantedNotificationEmailTask implements Task<Map<String, Obje
         String daLimitDownloadDateStr = formatDateWithCustomerFacingFormat(daLmitDownloadDate);
         String welshDaLimitDownloadDate = localDateToWelshStringConverter.convert(daLmitDownloadDate);
 
-        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
+        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
 
 
         if (StringUtils.isNotBlank(emailAddress)) {

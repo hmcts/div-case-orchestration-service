@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -136,7 +135,7 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
                 eq(EmailTemplateNames.APPLIC_SUBMISSION.name()),
                 eq(expectedTemplateVars),
                 any(),
-                eq(Optional.of(LanguagePreference.ENGLISH)));
+                eq(LanguagePreference.ENGLISH));
     }
 
     @Test
@@ -157,7 +156,7 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
                 eq(EmailTemplateNames.APPLIC_SUBMISSION.name()),
                 eq(expectedTemplateVars),
                 any(),
-                eq(Optional.of(LanguagePreference.WELSH)));
+                eq(LanguagePreference.WELSH));
     }
 
     @Test
@@ -176,7 +175,7 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
                 eq(EmailTemplateNames.APPLIC_SUBMISSION.name()),
                 eq(expectedTemplateVars),
                 any(),
-                eq(Optional.of(LanguagePreference.ENGLISH)));
+                eq(LanguagePreference.ENGLISH));
     }
 
     @Test
@@ -197,6 +196,6 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
             eq(EmailTemplateNames.APPLIC_SUBMISSION_AMEND.name()),
             eq(expectedTemplateVars),
             any(),
-            eq(Optional.of(LanguagePreference.ENGLISH)));
+            eq(LanguagePreference.ENGLISH));
     }
 }

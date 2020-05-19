@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -306,7 +305,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
                     hasEntry(COURT_NAME_TEMPLATE_ID, "Court Name")
                 )
             )),
-            eq(Optional.of(LanguagePreference.ENGLISH)));
+            eq(LanguagePreference.ENGLISH));
     }
 
     private void verifySolEmailParameters(Matcher<Map<? extends String, ?>> optionalTextParametersMatcher) throws TaskException {
@@ -328,7 +327,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
                     hasEntry(COURT_NAME_TEMPLATE_ID, "Court Name")
                 )
             )),
-            eq(Optional.of(LanguagePreference.ENGLISH)));
+            eq(LanguagePreference.ENGLISH));
     }
 
 }

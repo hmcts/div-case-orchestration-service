@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
@@ -88,7 +87,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
             EmailTemplateNames.SOL_APPLICANT_CORESP_RESPONDED.name(),
             expectedTemplateVars,
             coRespRespondedSolicitorEmail,
-            Optional.of(LanguagePreference.ENGLISH));
+            LanguagePreference.ENGLISH);
     }
 
     @Test
@@ -117,7 +116,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
             EmailTemplateNames.SOL_APPLICANT_CORESP_RESPONDED.name(),
             expectedTemplateVars,
             coRespRespondedSolicitorEmail,
-            Optional.of(LanguagePreference.WELSH));
+            LanguagePreference.WELSH);
     }
 
     @Test
@@ -143,7 +142,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
             EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_NOT_SUBMITTED.name(),
             expectedTemplateVars,
             coRespRespondedButRespHasNot,
-            Optional.of(LanguagePreference.ENGLISH));
+            LanguagePreference.ENGLISH);
     }
 
     @Test
@@ -169,7 +168,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
             EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND.name(),
             expectedTemplateVars,
             coRespRespondedWhenAosUndefended,
-            Optional.of(LanguagePreference.ENGLISH));
+            LanguagePreference.ENGLISH);
     }
 
     @SuppressWarnings("unchecked")
@@ -197,7 +196,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
             EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND.name(),
             expectedTemplateVars,
             coRespRespondedWhenAosUndefended,
-            Optional.of(LanguagePreference.WELSH));
+            LanguagePreference.WELSH);
     }
 
     @Test

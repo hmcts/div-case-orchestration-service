@@ -15,7 +15,6 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COURT_NAME_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
@@ -50,7 +49,7 @@ public class PetitionerClarificationSubmittedNotificationEmailTask implements Ta
         String petitionerLastName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME);
         String courtName = getMandatoryPropertyValueAsString(caseData, DIVORCE_UNIT_JSON_KEY);
         String caseReference = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
-        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
+        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
 
         Map<String, String> templateVars = new HashMap<>();
         if (StringUtils.isNotBlank(petitionerEmail)) {

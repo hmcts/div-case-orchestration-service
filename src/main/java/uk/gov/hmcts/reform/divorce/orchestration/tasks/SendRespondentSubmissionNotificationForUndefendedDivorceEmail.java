@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
@@ -66,7 +65,7 @@ public class SendRespondentSubmissionNotificationForUndefendedDivorceEmail imple
         templateFields.put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, welshpetRelToRespondent);
 
 
-        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseDataPayload);
+        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseDataPayload);
 
         taskCommons.sendEmail(RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION,
                 EMAIL_DESCRIPTION,

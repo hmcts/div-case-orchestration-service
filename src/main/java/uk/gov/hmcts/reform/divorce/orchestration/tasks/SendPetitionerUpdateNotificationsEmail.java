@@ -16,7 +16,6 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
@@ -92,7 +91,7 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
 
         String petitionerFirstName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME);
         String petitionerLastName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME);
-        Optional<LanguagePreference> languagePreference = CaseDataUtils.getLanguagePreference(caseData);
+        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
 
         Map<String, String> templateVars = new HashMap<>();
 
@@ -135,7 +134,7 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
     }
 
     private void sendSolicitorEmail(String petSolicitorEmail, String eventId, Map<String, String> templateVars,
-                                    Optional<LanguagePreference>  languagePreference) throws NotificationClientException {
+                                    LanguagePreference  languagePreference) throws NotificationClientException {
         if (StringUtils.equalsIgnoreCase(eventId, RESP_ANSWER_RECVD_EVENT)) {
             emailService.sendEmailAndReturnExceptionIfFails(petSolicitorEmail,
                 EmailTemplateNames.SOL_APPLICANT_AOS_RECEIVED.name(),
@@ -160,7 +159,7 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
 
     private void sendPetitionerEmail(Map<String, Object> caseData, String petitionerEmail,
                                      String eventId, Map<String, String> templateVars,
-                                     Optional<LanguagePreference>  languagePreference) throws NotificationClientException {
+                                     LanguagePreference  languagePreference) throws NotificationClientException {
         if (isAosOverdueEvent(eventId)) {
             emailService.sendEmailAndReturnExceptionIfFails(petitionerEmail,
                 EmailTemplateNames.PETITIONER_RESP_NOT_RESPONDED.name(),
@@ -180,7 +179,7 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
 
     private void sendAosAnswerRecvdPetEmail(Map<String, Object> caseData, String petitionerEmail,
                                             Map<String, String> templateVars,
-                                            Optional<LanguagePreference>  languagePreference) throws NotificationClientException {
+                                            LanguagePreference  languagePreference) throws NotificationClientException {
         if (isAdulteryAndNoConsent(caseData)) {
             if (isCoRespNamedAndNotReplied(caseData)) {
                 emailService.sendEmailAndReturnExceptionIfFails(petitionerEmail,
