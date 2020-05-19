@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.CoRespondentAosAnswersProcessorTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.FormFieldValuesToCoreFieldsRelay;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.RespondentAosAnswersProcessorTask;
 
@@ -18,6 +19,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.CO_RESPONDENT;
@@ -28,6 +30,9 @@ public class AosPackOfflineAnswersWorkflowTest {
 
     @Mock
     private RespondentAosAnswersProcessorTask respondentAosAnswersProcessor;
+
+    @Mock
+    private CoRespondentAosAnswersProcessorTask coRespondentAosAnswersProcessor;
 
     @Mock
     private FormFieldValuesToCoreFieldsRelay formFieldValuesToCoreFieldsRelay;
@@ -43,21 +48,26 @@ public class AosPackOfflineAnswersWorkflowTest {
 
         Map<String, Object> returnedPayload = classUnderTest.run(payload, RESPONDENT);
 
-        verify(respondentAosAnswersProcessor).execute(any(), eq(payload));
-        verify(formFieldValuesToCoreFieldsRelay).execute(any(), eq(payload));
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
+
+        verify(formFieldValuesToCoreFieldsRelay, times(1)).execute(any(), eq(payload));
+        verify(respondentAosAnswersProcessor, times(1)).execute(any(), eq(payload));
+        verify(coRespondentAosAnswersProcessor, never()).execute(any(), eq(payload));
     }
 
     @Test
-    public void shouldCallNoTasks_ForCoRespondent() throws WorkflowException, TaskException {
+    public void shouldCallCoRespondentTask_ForCoRespondent() throws WorkflowException, TaskException {
         Map<String, Object> payload = singletonMap("testKey", "testValue");
         when(formFieldValuesToCoreFieldsRelay.execute(any(), eq(payload))).thenReturn(singletonMap("returnedKey", "returnedValue"));
+        when(coRespondentAosAnswersProcessor.execute(any(), eq(payload))).thenReturn(singletonMap("returnedKey", "returnedValue"));
 
         Map<String, Object> returnedPayload = classUnderTest.run(payload, CO_RESPONDENT);
 
-        verify(respondentAosAnswersProcessor, never()).execute(any(), any());
-        verify(formFieldValuesToCoreFieldsRelay).execute(any(), eq(payload));
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
+
+        verify(formFieldValuesToCoreFieldsRelay, times(1)).execute(any(), eq(payload));
+        verify(respondentAosAnswersProcessor, never()).execute(any(), any());
+        verify(coRespondentAosAnswersProcessor, times(1)).execute(any(), eq(payload));
     }
 
 }
