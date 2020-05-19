@@ -77,7 +77,7 @@ public class AosPackOfflineAnswersWorkflowTest {
     }
 
     @Test
-    public void shouldCallCoRespondentTask_and_Update_ReceivedAosFromCoResp_to_Yes() throws WorkflowException, TaskException{
+    public void shouldCallCoRespondentTask_and_Update_ReceivedAosFromCoResp_to_Yes() throws WorkflowException, TaskException {
         Map<String, Object> caseData = new HashMap<>();
 
         when(coRespondentAosAnswersProcessor.execute(any(TaskContext.class), anyMap())).thenCallRealMethod();

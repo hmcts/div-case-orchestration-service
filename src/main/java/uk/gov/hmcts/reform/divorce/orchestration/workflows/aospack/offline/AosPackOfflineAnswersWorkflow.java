@@ -45,7 +45,7 @@ public class AosPackOfflineAnswersWorkflow extends DefaultWorkflow<Map<String, O
 
         if (RESPONDENT.equals(divorceParty)) {
             tasks.add(respondentAosAnswersProcessor);
-        } else if(CO_RESPONDENT.equals(divorceParty)) {
+        } else if (CO_RESPONDENT.equals(divorceParty)) {
             tasks.add(coRespondentAosAnswersProcessorTask);
         }
 
