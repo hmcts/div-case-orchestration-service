@@ -131,7 +131,7 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> handleGrantDACallback(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
-    Map<String, Object> handleDaGranted(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+    Map<String, Object> handleDaGranted(CcdCallbackRequest ccdCallbackRequest, String authorisationToken) throws WorkflowException;
 
     Map<String, Object> processApplicantDecreeAbsoluteEligibility(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 
