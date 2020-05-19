@@ -40,6 +40,7 @@ import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -721,16 +722,17 @@ public class CallbackControllerTest {
 
     @Test
     public void testServiceMethodIsCalled_WhenHandleDaGrantedCallback() throws WorkflowException {
-        when(caseOrchestrationService.handleDaGranted(any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
+        when(caseOrchestrationService.handleDaGranted(any(), anyString())).thenReturn(singletonMap("returnedKey", "returnedValue"));
 
         CcdCallbackRequest callbackRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder().caseData(singletonMap("incomingKey", "incomingValue")).build())
             .build();
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.handleDaGranted(callbackRequest);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.handleDaGranted(AUTH_TOKEN, callbackRequest);
 
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
-        verify(caseOrchestrationService).handleDaGranted(callbackRequest);
+        verify(caseOrchestrationService).handleDaGranted(callbackRequest, AUTH_TOKEN);
     }
 
     @Test
