@@ -8,7 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.FormFieldValuesToCoreFieldsRelay;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.RespondentAosAnswersProcessor;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.RespondentAosAnswersProcessorTask;
 
 import java.util.Map;
 
@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.Div
 public class AosPackOfflineAnswersWorkflowTest {
 
     @Mock
-    private RespondentAosAnswersProcessor respondentAosAnswersProcessor;
+    private RespondentAosAnswersProcessorTask respondentAosAnswersProcessor;
 
     @Mock
     private FormFieldValuesToCoreFieldsRelay formFieldValuesToCoreFieldsRelay;

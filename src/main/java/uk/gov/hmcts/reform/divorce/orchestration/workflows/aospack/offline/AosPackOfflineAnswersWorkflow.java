@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.FormFieldValuesToCoreFieldsRelay;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.RespondentAosAnswersProcessor;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.RespondentAosAnswersProcessorTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.Div
 public class AosPackOfflineAnswersWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     @Autowired
-    private RespondentAosAnswersProcessor respondentAosAnswersProcessor;
+    private RespondentAosAnswersProcessorTask respondentAosAnswersProcessor;
 
     @Autowired
     private FormFieldValuesToCoreFieldsRelay formFieldValuesToCoreFieldsRelay;
