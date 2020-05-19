@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
  * The order of the documents is important for this class.
  * The first document type in this list is the first piece of paper in the envelope. It should contain the address label to be displayed.
  */
-public class BulkPrinter implements Task<Map<String, Object>> {
+public class BulkPrinterTask implements Task<Map<String, Object>> {
 
     public static final String BULK_PRINT_LETTER_TYPE = "bulkPrintLetterType";
     public static final String DOCUMENT_TYPES_TO_PRINT = "documentTypesToPrint";
@@ -33,7 +33,7 @@ public class BulkPrinter implements Task<Map<String, Object>> {
     private final BulkPrintService bulkPrintService;
 
     @Autowired
-    public BulkPrinter(final BulkPrintService bulkPrintService) {
+    public BulkPrinterTask(final BulkPrintService bulkPrintService) {
         this.bulkPrintService = bulkPrintService;
     }
 
@@ -59,6 +59,15 @@ public class BulkPrinter implements Task<Map<String, Object>> {
                 log.error("Respondent pack bulk print failed for case {}", caseDetails.getCaseId(), e);
                 context.setTransientObject(BULK_PRINT_ERROR_KEY, "Bulk print failed for " + bulkPrintLetterType);
             }
+        } else {
+            log.warn(
+                "Bulk print for case {} is misconfigured. Documents types expected: {}, actual documents: {}",
+                caseDetails.getCaseId(),
+                documentTypesToPrint,
+                documentsToPrint
+            );
+            context.setTaskFailed(true);
+            context.setTransientObject(BULK_PRINT_ERROR_KEY, "Bulk print didn't kicked off for " + bulkPrintLetterType);
         }
 
         return payload;

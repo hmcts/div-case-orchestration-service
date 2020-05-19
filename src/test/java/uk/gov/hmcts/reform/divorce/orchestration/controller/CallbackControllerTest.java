@@ -41,7 +41,9 @@ import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
@@ -51,6 +53,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_OUTCOME_FLAG_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -726,16 +729,17 @@ public class CallbackControllerTest {
 
     @Test
     public void testServiceMethodIsCalled_WhenHandleDaGrantedCallback() throws WorkflowException {
-        when(caseOrchestrationService.handleDaGranted(any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
+        when(caseOrchestrationService.handleDaGranted(any(), anyString())).thenReturn(singletonMap("returnedKey", "returnedValue"));
 
         CcdCallbackRequest callbackRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder().caseData(singletonMap("incomingKey", "incomingValue")).build())
             .build();
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.handleDaGranted(callbackRequest);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.handleDaGranted(AUTH_TOKEN, callbackRequest);
 
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
-        verify(caseOrchestrationService).handleDaGranted(callbackRequest);
+        verify(caseOrchestrationService).handleDaGranted(callbackRequest, AUTH_TOKEN);
     }
 
     @Test
@@ -953,6 +957,30 @@ public class CallbackControllerTest {
         verify(caseOrchestrationService).notifyForRefusalOrder(eq(ccdCallbackRequest));
         verify(caseOrchestrationService).cleanStateCallback(eq(ccdCallbackRequest), eq(AUTH_TOKEN));
         verify(caseOrchestrationService).processDnDecisionMade(eq(ccdCallbackRequest));
+    }
+
+    @Test
+    public void testDnDecisionMadeReturnsWithoutMaking() throws WorkflowException {
+
+        HashMap<String, Object> inputPayload = new HashMap<>();
+        inputPayload.put(OrchestrationConstants.WELSH_REFUSAL_REJECTION_ADDITIONAL_INFO, EMPTY_STRING);
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .caseData(inputPayload)
+                .state(OrchestrationConstants.WELSH_DN_REFUSED)
+                .build())
+            .build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.dnDecisionMadeCallback(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getData(), hasEntry(OrchestrationConstants.WELSH_REFUSAL_REJECTION_ADDITIONAL_INFO,EMPTY_STRING));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+
+        verify(caseOrchestrationService, never()).notifyForRefusalOrder(ccdCallbackRequest);
+        verify(caseOrchestrationService, never()).cleanStateCallback(ccdCallbackRequest, AUTH_TOKEN);
+        verify(caseOrchestrationService, never()).processDnDecisionMade(ccdCallbackRequest);
     }
 
     @Test

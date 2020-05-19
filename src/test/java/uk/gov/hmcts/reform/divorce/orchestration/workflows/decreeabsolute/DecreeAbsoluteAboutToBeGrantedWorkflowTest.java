@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.workflows;
+package uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -85,9 +85,9 @@ public class DecreeAbsoluteAboutToBeGrantedWorkflowTest {
         assertThat(result, is(payload));
 
         final InOrder inOrder = inOrder(
-                setDaGrantedDetailsTask,
-                documentGenerationTask,
-                caseFormatterAddDocuments);
+            setDaGrantedDetailsTask,
+            documentGenerationTask,
+            caseFormatterAddDocuments);
 
         inOrder.verify(setDaGrantedDetailsTask).execute(context, payload);
         inOrder.verify(documentGenerationTask).execute(context, payload);

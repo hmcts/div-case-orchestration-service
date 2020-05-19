@@ -17,8 +17,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetAmendPetitionFeeTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PopulateDocLink;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDNDecisionStateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateDNDecisionTask;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,12 +58,15 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
         List<Task> tasksToRun = new ArrayList<>();
 
+        Map<String, Object> caseData = caseDetails.getCaseData();
+        if (CaseDataUtils.isRejectReasonAddInfoAwaitingTranslation(caseData)) {
+            return new HashMap<>(caseData);
+        }
         tasksToRun.add(setDNDecisionStateTask);
         tasksToRun.add(validateDNDecisionTask);
         tasksToRun.add(addDecreeNisiDecisionDateTask);
         tasksToRun.add(addDnOutcomeFlagFieldTask);
 
-        Map<String, Object> caseData = caseDetails.getCaseData();
         if (isDNApproval(caseData)) {
             Object costsClaimGranted = caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD);
             if (YES_VALUE.equals(costsClaimGranted)) {

@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -40,6 +41,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_REJECT_OPTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
@@ -247,7 +250,7 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
         Map<String, Object> returnedPayload = workflow.run(CaseDetails.builder().caseData(inputPayload).build(), AUTH_TOKEN);
 
         assertThat(returnedPayload, allOf(
-                hasEntry(equalTo(DECREE_NISI_GRANTED_CCD_FIELD), equalTo(NO_VALUE))
+            hasEntry(equalTo(DECREE_NISI_GRANTED_CCD_FIELD), equalTo(NO_VALUE))
         ));
 
         final InOrder inOrder = inOrder(
@@ -329,4 +332,25 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
         verify(addDecreeNisiDecisionDateTask, never()).execute(any(), any());
         verify(addDnOutcomeFlagFieldTask, never()).execute(any(), any());
     }
+
+
+    @Test
+    public void shouldNotCallAnyTasks_IfBilingualDecreeNisiIsRefusedWithRejectReasonAddInfo() throws WorkflowException, TaskException {
+        inputPayload.put(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE);
+        inputPayload.put(REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION);
+        inputPayload.put(OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH, YES_VALUE);
+        inputPayload.put(OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO, "Blah blah additional info");
+        inputPayload.put(OrchestrationConstants.WELSH_REFUSAL_REJECTION_ADDITIONAL_INFO, EMPTY_STRING);
+
+        Map<String, Object> returnedPayload = workflow.run(CaseDetails.builder().caseData(inputPayload).build(), AUTH_TOKEN);
+
+        verify(setDNDecisionStateTask, never()).execute(any(), any());
+        verify(validateDNDecisionTask, never()).execute(any(), any());
+        verify(addDecreeNisiDecisionDateTask, never()).execute(any(), any());
+        verify(addDnOutcomeFlagFieldTask, never()).execute(any(), any());
+        verify(defineWhoPaysCostsOrderTask, never()).execute(any(), any());
+        verify(decreeNisiRefusalDocumentGeneratorTask, never()).execute(any(), any());
+        verify(caseFormatterAddDocuments, never()).execute(any(), any());
+    }
+
 }
