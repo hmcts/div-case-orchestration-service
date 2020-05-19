@@ -75,7 +75,7 @@ public class WelshContinueTaskTest {
         try {
             welshContinueTask.execute(context, caseData);
         } catch (TaskException e) {
-            assertEquals(e.getMessage(), "For case: CASEID update failed");
+            assertEquals(e.getMessage(), "For case: CASEID update failed for event id Continue");
         }
         verify(caseMaintenanceClient).updateCase(eq(context.getTransientObject(AUTH_TOKEN_JSON_KEY)),
                 eq(context.getTransientObject(CASE_ID_JSON_KEY)),same("Continue"),

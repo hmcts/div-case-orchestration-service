@@ -1015,13 +1015,11 @@ public class CallbackController {
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Callback processed.")})
     public ResponseEntity<CcdCallbackResponse> welshContinue(
-            @RequestHeader(name = AUTHORIZATION_HEADER)
-            @ApiParam(value = "Authorisation token issued by IDAM", required = true) String authToken,
             @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
         return ResponseEntity.ok(
                 CcdCallbackResponse.builder()
-                        .data(caseOrchestrationService.welshContinue(ccdCallbackRequest, authToken))
+                        .data(caseOrchestrationService.welshContinue(ccdCallbackRequest))
                         .build());
     }
 

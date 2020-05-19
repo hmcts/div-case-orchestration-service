@@ -38,7 +38,7 @@ public class WelshContinueTask implements Task<Map<String, Object>> {
                 );
             } catch (FeignException exception) {
                 payload.put(WELSH_NEXT_EVENT, nextEvent.get());
-                throw new TaskException(String.join(" ", "For case:", caseIDJsonKey, "update failed"), exception);
+                throw new TaskException(String.join(" ", "For case:", caseIDJsonKey, "update failed for event id", nextEvent.get()), exception);
             }
         }
         return payload;

@@ -87,7 +87,7 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
                                 .getCaseData());
 
 
-        return Optional.ofNullable(CaseDataUtils.getLanguagePreference(currentCasedata).get())
+        return Optional.ofNullable(CaseDataUtils.getLanguagePreference(currentCasedata))
                 .filter(value -> value.equals(LanguagePreference.WELSH))
                 .map(k -> {
                     submissionData.put(WELSH_NEXT_EVENT, eventId);
