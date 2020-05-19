@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MarkJourneyAsOffline;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MultipleDocumentGenerationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,15 +56,15 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.Divor
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.UNREASONABLE_BEHAVIOUR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter.BULK_PRINT_LETTER_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter.DOCUMENT_TYPES_TO_PRINT;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.BULK_PRINT_LETTER_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.DOCUMENT_TYPES_TO_PRINT;
 
 @Component
 @Slf4j
 public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private static final String AOS_PACK_OFFLINE_RESPONDENT_LETTER_TYPE = "aos-pack-offline-respondent";
-    private static final String AOS_PACK_OFFLINE_CO_RESPONDENT_LETTER_TYPE = "aos-pack-offline-co-respondent";
+    public static final String AOS_PACK_OFFLINE_RESPONDENT_LETTER_TYPE = "aos-pack-offline-respondent";
+    public static final String AOS_PACK_OFFLINE_CO_RESPONDENT_LETTER_TYPE = "aos-pack-offline-co-respondent";
 
     private static final DocumentGenerationRequest RESPONDENT_AOS_INVITATION_LETTER = new DocumentGenerationRequest(
         RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID, RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE, RESPONDENT_AOS_INVITATION_LETTER_FILENAME);
@@ -83,7 +83,7 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
     private FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
 
     @Autowired
-    private BulkPrinter bulkPrinter;
+    private BulkPrinterTask bulkPrinterTask;
 
     @Autowired
     private MarkJourneyAsOffline markJourneyAsOffline;
@@ -103,14 +103,20 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
 
         final List<Task> tasks = new ArrayList<>();
 
+        log.warn("documentGenerationRequestsList = {}", documentGenerationRequestsList);
+        log.warn("documentTypesToPrint = {}", documentTypesToPrint);
+
         tasks.add(documentsGenerationTask);
         tasks.add(caseFormatterAddDocuments);
         tasks.add(fetchPrintDocsFromDmStore);
-        tasks.add(bulkPrinter);
+        tasks.add(bulkPrinterTask);
         tasks.add(markJourneyAsOffline);
         if (divorceParty.equals(RESPONDENT)) {
+            log.warn("modify modifyDueDate");
             tasks.add(modifyDueDate);
         }
+
+        log.warn("number of tasks to be executed {}", tasks.size());
 
         return execute(tasks.toArray(new Task[0]),
             caseData,
