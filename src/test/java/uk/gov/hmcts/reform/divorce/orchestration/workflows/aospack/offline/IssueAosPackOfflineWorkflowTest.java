@@ -64,8 +64,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.Divor
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.UNREASONABLE_BEHAVIOUR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter.BULK_PRINT_LETTER_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter.DOCUMENT_TYPES_TO_PRINT;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.BULK_PRINT_LETTER_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.DOCUMENT_TYPES_TO_PRINT;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline.IssueAosPackOfflineWorkflow.AOS_PACK_OFFLINE_CO_RESPONDENT_LETTER_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline.IssueAosPackOfflineWorkflow.AOS_PACK_OFFLINE_RESPONDENT_LETTER_TYPE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IssueAosPackOfflineWorkflowTest {
@@ -121,7 +123,7 @@ public class IssueAosPackOfflineWorkflowTest {
     private FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
 
     @Mock
-    private BulkPrinter bulkPrinterTask;
+    private BulkPrinterTask bulkPrinterTask;
 
     @Mock
     private ModifyDueDate modifyDueDate;
