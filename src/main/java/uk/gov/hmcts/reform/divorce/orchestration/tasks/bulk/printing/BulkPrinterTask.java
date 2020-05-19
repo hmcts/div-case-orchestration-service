@@ -59,6 +59,15 @@ public class BulkPrinterTask implements Task<Map<String, Object>> {
                 log.error("Respondent pack bulk print failed for case {}", caseDetails.getCaseId(), e);
                 context.setTransientObject(BULK_PRINT_ERROR_KEY, "Bulk print failed for " + bulkPrintLetterType);
             }
+        } else {
+            log.warn(
+                "Bulk print for case {} is misconfigured. Documents types expected: {}, actual documents: {}",
+                caseDetails.getCaseId(),
+                documentTypesToPrint,
+                documentsToPrint
+            );
+            context.setTaskFailed(true);
+            context.setTransientObject(BULK_PRINT_ERROR_KEY, "Bulk print didn't kicked off for " + bulkPrintLetterType);
         }
 
         return payload;
