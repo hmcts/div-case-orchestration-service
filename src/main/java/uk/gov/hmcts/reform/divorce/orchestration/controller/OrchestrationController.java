@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import uk.gov.hmcts.reform.bsp.common.service.AuthService;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseCreationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
@@ -35,6 +36,7 @@ import javax.validation.constraints.NotNull;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_AUTHORIZATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SUCCESS_STATUS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.ALLOCATED_COURT_KEY;
@@ -46,6 +48,9 @@ public class OrchestrationController {
     @Autowired
     private CaseOrchestrationService orchestrationService;
 
+    @Autowired
+    private AuthService authService;
+
     @PutMapping(path = "/payment-update", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Handles Payment Update callbacks")
     @ApiResponses(value = {
@@ -53,7 +58,9 @@ public class OrchestrationController {
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
-    public ResponseEntity paymentUpdate(@RequestBody PaymentUpdate paymentUpdate) throws WorkflowException {
+    public ResponseEntity<CaseResponse> paymentUpdate(
+        @RequestHeader(value = SERVICE_AUTHORIZATION_HEADER) String s2sAuthToken,
+        @RequestBody PaymentUpdate paymentUpdate) throws WorkflowException {
 
         orchestrationService.update(paymentUpdate);
         return ResponseEntity.ok().build();
