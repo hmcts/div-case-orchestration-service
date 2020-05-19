@@ -83,14 +83,16 @@ public class BulkPrinterTaskTest {
         generatedDocuments.put("differentDocumentType2", fourthDocument);
         context.setTransientObject(DOCUMENTS_GENERATED, generatedDocuments);
 
-        Map<String, Object> returnedPayload = classUnderTest.printSpecifiedDocument(context, emptyMap(),
-            "differentLetterType",
-            asList("differentDocumentType1", "differentDocumentType2"));
+        Map<String, Object> returnedPayload = classUnderTest.printSpecifiedDocument(
+            context, emptyMap(), "differentLetterType", asList("differentDocumentType1", "differentDocumentType2")
+        );
         assertThat(returnedPayload, is(emptyMap()));
         verify(bulkPrintService).send(TEST_CASE_ID, "differentLetterType", asList(thirdDocument, fourthDocument));
 
         returnedPayload = classUnderTest.execute(context, emptyMap());
         assertThat(returnedPayload, is(emptyMap()));
+
+        assertThat(context.hasTaskFailed(), is(false));
         verify(bulkPrintService).send(TEST_CASE_ID, TEST_LETTER_TYPE, asList(firstDocument, secondDocument));
     }
 
@@ -121,6 +123,8 @@ public class BulkPrinterTaskTest {
         classUnderTest.execute(context, emptyMap());
 
         verifyZeroInteractions(bulkPrintService);
+        assertThat(context.hasTaskFailed(), is(true));
+        assertThat(context.getTransientObject(BULK_PRINT_ERROR_KEY), is("Bulk print didn't kicked off for " + TEST_LETTER_TYPE));
     }
 
     @Test
@@ -133,5 +137,7 @@ public class BulkPrinterTaskTest {
         classUnderTest.execute(context, emptyMap());
 
         verifyZeroInteractions(bulkPrintService);
+        assertThat(context.hasTaskFailed(), is(true));
+        assertThat(context.getTransientObject(BULK_PRINT_ERROR_KEY), is("Bulk print didn't kicked off for " + TEST_LETTER_TYPE));
     }
 }
