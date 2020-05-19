@@ -70,4 +70,8 @@
         <notes>Upgrade log4j to 2.13.2 which supports this feature. Previous versions can set the system property mail.smtp.ssl.checkserveridentity to true to globally enable hostname verification for SMTPS connections.</notes>
         <cve>CVE-2020-9488</cve>
     </suppress>
+    <suppress>
+        <notes>dom4j before 2.1.3 allows external DTDs and External Entities by default, which might enable XXE attacks. However, there is popular external documentation from OWASP showing how to enable the safe, non-default behavior in any application that uses dom4j.</notes>
+        <cve>CVE-2020-10683</cve>
+    </suppress>
 </suppressions>
