@@ -160,7 +160,7 @@ public class OrchestrationControllerTest {
             .thenReturn(submissionData);
 
         ResponseEntity<CaseResponse> response = classUnderTest
-            .paymentUpdate(paymentUpdate);
+            .paymentUpdate(AUTH_TOKEN, paymentUpdate);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
     }
