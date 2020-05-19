@@ -27,11 +27,11 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_PRINT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENTS_GENERATED;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter.BULK_PRINT_LETTER_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter.DOCUMENT_TYPES_TO_PRINT;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.BULK_PRINT_LETTER_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.DOCUMENT_TYPES_TO_PRINT;
 
 @RunWith(MockitoJUnitRunner.class)
-public class BulkPrinterTest {
+public class BulkPrinterTaskTest {
 
     private static final String TEST_CASE_ID = "case-id";
     private static final String TEST_LETTER_TYPE = "test-letter-type";
@@ -44,7 +44,7 @@ public class BulkPrinterTest {
     private BulkPrintService bulkPrintService;
 
     @InjectMocks
-    private BulkPrinter classUnderTest;
+    private BulkPrinterTask classUnderTest;
 
     @Before
     public void setUp() {

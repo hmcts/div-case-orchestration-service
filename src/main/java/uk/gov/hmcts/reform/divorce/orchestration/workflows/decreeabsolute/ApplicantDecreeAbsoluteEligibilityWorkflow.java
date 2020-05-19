@@ -20,7 +20,7 @@ public class ApplicantDecreeAbsoluteEligibilityWorkflow extends DefaultWorkflow<
     private CalculateDecreeAbsoluteDates calculateDecreeAbsoluteDates;
 
     @Autowired
-    SetDaRequestedDetailsTask setDaRequestedDetailsTask;
+    private SetDaRequestedDetailsTask setDaRequestedDetailsTask;
 
     public Map<String, Object> run(String caseId, Map<String, Object> payload) throws WorkflowException {
         return execute(
