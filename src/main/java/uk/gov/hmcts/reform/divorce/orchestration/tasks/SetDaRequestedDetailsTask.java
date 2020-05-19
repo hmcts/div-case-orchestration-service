@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -16,8 +15,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil.mapDivorceD
 
 @Component
 public class SetDaRequestedDetailsTask implements Task<Map<String,Object>> {
-
-    @Autowired CcdUtil ccdUtil;
 
     @Autowired Clock clock;
 

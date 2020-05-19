@@ -35,7 +35,6 @@ withPipeline(type, product, component) {
     if (env.CHANGE_TITLE && !env.CHANGE_TITLE.startsWith('[PREVIEW]')) {
         enableDbMigration('div')
     }
-    installCharts()
     loadVaultSecrets(secrets)
     enableAksStagingDeployment()
     disableLegacyDeployment()

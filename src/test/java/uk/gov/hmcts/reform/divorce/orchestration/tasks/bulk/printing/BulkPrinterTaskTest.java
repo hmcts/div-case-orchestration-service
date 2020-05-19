@@ -27,11 +27,11 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_PRINT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENTS_GENERATED;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter.BULK_PRINT_LETTER_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter.DOCUMENT_TYPES_TO_PRINT;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.BULK_PRINT_LETTER_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.DOCUMENT_TYPES_TO_PRINT;
 
 @RunWith(MockitoJUnitRunner.class)
-public class BulkPrinterTest {
+public class BulkPrinterTaskTest {
 
     private static final String TEST_CASE_ID = "case-id";
     private static final String TEST_LETTER_TYPE = "test-letter-type";
@@ -44,7 +44,7 @@ public class BulkPrinterTest {
     private BulkPrintService bulkPrintService;
 
     @InjectMocks
-    private BulkPrinter classUnderTest;
+    private BulkPrinterTask classUnderTest;
 
     @Before
     public void setUp() {
@@ -52,8 +52,7 @@ public class BulkPrinterTest {
         context.setTransientObject(BULK_PRINT_LETTER_TYPE, TEST_LETTER_TYPE);
         context.setTransientObject(DOCUMENT_TYPES_TO_PRINT, asList(TEST_FIRST_DOCUMENT_TYPE, TEST_SECOND_DOCUMENT_TYPE));
 
-        final CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
-        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
+        context.setTransientObject(CASE_DETAILS_JSON_KEY, CaseDetails.builder().caseId(TEST_CASE_ID).build());
     }
 
     @Test
@@ -84,14 +83,16 @@ public class BulkPrinterTest {
         generatedDocuments.put("differentDocumentType2", fourthDocument);
         context.setTransientObject(DOCUMENTS_GENERATED, generatedDocuments);
 
-        Map<String, Object> returnedPayload = classUnderTest.printSpecifiedDocument(context, emptyMap(),
-            "differentLetterType",
-            asList("differentDocumentType1", "differentDocumentType2"));
+        Map<String, Object> returnedPayload = classUnderTest.printSpecifiedDocument(
+            context, emptyMap(), "differentLetterType", asList("differentDocumentType1", "differentDocumentType2")
+        );
         assertThat(returnedPayload, is(emptyMap()));
         verify(bulkPrintService).send(TEST_CASE_ID, "differentLetterType", asList(thirdDocument, fourthDocument));
 
         returnedPayload = classUnderTest.execute(context, emptyMap());
         assertThat(returnedPayload, is(emptyMap()));
+
+        assertThat(context.hasTaskFailed(), is(false));
         verify(bulkPrintService).send(TEST_CASE_ID, TEST_LETTER_TYPE, asList(firstDocument, secondDocument));
     }
 
@@ -122,6 +123,8 @@ public class BulkPrinterTest {
         classUnderTest.execute(context, emptyMap());
 
         verifyZeroInteractions(bulkPrintService);
+        assertThat(context.hasTaskFailed(), is(true));
+        assertThat(context.getTransientObject(BULK_PRINT_ERROR_KEY), is("Bulk print didn't kicked off for " + TEST_LETTER_TYPE));
     }
 
     @Test
@@ -134,6 +137,7 @@ public class BulkPrinterTest {
         classUnderTest.execute(context, emptyMap());
 
         verifyZeroInteractions(bulkPrintService);
+        assertThat(context.hasTaskFailed(), is(true));
+        assertThat(context.getTransientObject(BULK_PRINT_ERROR_KEY), is("Bulk print didn't kicked off for " + TEST_LETTER_TYPE));
     }
-
 }
