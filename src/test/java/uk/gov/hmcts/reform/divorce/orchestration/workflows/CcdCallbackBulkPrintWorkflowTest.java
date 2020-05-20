@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ServiceMethodValidationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoRespondentAosPackPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.RespondentAosPackPrinterTask;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,11 +38,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.DESERTION;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CcdCallbackBulkPrintWorkflowTest {
@@ -60,6 +56,9 @@ public class CcdCallbackBulkPrintWorkflowTest {
 
     @Mock
     private ModifyDueDate modifyDueDate;
+
+    @Mock
+    private CaseDataUtils caseDataUtils;
 
     @InjectMocks
     private CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow;
@@ -96,14 +95,12 @@ public class CcdCallbackBulkPrintWorkflowTest {
 
     @Test
     public void whenWorkflowRunsForAdulteryCase_WithNamedCoRespondent_allTasksRun_payloadReturned() throws WorkflowException, TaskException {
-        payload.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
-        payload.put(D_8_CO_RESPONDENT_NAMED, YES_VALUE);
-
         when(serviceMethodValidationTask.execute(context, payload)).thenReturn(payload);
         when(fetchPrintDocsFromDmStore.execute(context, payload)).thenReturn(payload);
         when(modifyDueDate.execute(context, payload)).thenReturn(payload);
         when(respondentAosPackPrinterTask.execute(context, payload)).thenReturn(payload);
         when(coRespondentAosPackPrinterTask.execute(context, payload)).thenReturn(payload);
+        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(true);
 
         Map<String, Object> response = ccdCallbackBulkPrintWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN);
         assertThat(response, is(payload));
@@ -125,12 +122,11 @@ public class CcdCallbackBulkPrintWorkflowTest {
 
     @Test
     public void whenWorkflowRunsForNonAdulteryCase_allTasksRunExceptForCoRespondent_payloadReturned() throws WorkflowException, TaskException {
-        payload.put(D_8_REASON_FOR_DIVORCE, DESERTION);
-
         when(serviceMethodValidationTask.execute(context, payload)).thenReturn(payload);
         when(fetchPrintDocsFromDmStore.execute(context, payload)).thenReturn(payload);
         when(modifyDueDate.execute(context, payload)).thenReturn(payload);
         when(respondentAosPackPrinterTask.execute(context, payload)).thenReturn(payload);
+        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(false);
 
         Map<String, Object> response = ccdCallbackBulkPrintWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN);
         assertThat(response, is(payload));

@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetIssueDate;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,16 +40,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED_OLD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IssueEventWorkflowTest {
-
-    private IssueEventWorkflow issueEventWorkflow;
 
     @Mock
     private SetIssueDate setIssueDate;
@@ -83,26 +78,18 @@ public class IssueEventWorkflowTest {
     @Mock
     private ResetCoRespondentLinkingFields resetCoRespondentLinkingFields;
 
+    @Mock
+    private CaseDataUtils caseDataUtils;
+
+    @InjectMocks
+    private IssueEventWorkflow issueEventWorkflow;
+
     private CcdCallbackRequest ccdCallbackRequestRequest;
     private Map<String, Object> payload;
     private TaskContext context;
 
     @Before
     public void setUp() {
-        issueEventWorkflow =
-                new IssueEventWorkflow(
-                    validateCaseDataTask,
-                        setIssueDate,
-                        petitionGenerator,
-                        respondentPinGenerator,
-                        coRespondentPinGenerator,
-                        respondentLetterGenerator,
-                        getPetitionIssueFee,
-                        coRespondentLetterGenerator,
-                        caseFormatterAddDocuments,
-                        resetRespondentLinkingFields,
-                        resetCoRespondentLinkingFields);
-
         payload = new HashMap<>();
 
         CaseDetails caseDetails = CaseDetails.builder()
@@ -112,23 +99,22 @@ public class IssueEventWorkflowTest {
             .build();
 
         ccdCallbackRequestRequest =
-                CcdCallbackRequest.builder()
-                        .eventId(TEST_EVENT_ID)
-                        .token(TEST_TOKEN)
-                        .caseDetails(
-                            caseDetails
-                        )
-                        .build();
+            CcdCallbackRequest.builder()
+                .eventId(TEST_EVENT_ID)
+                .token(TEST_TOKEN)
+                .caseDetails(
+                    caseDetails
+                )
+                .build();
 
         context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
     }
 
-
     @Test
-    public void givenGenerateAosInvitationIsTrueAndIsServiceCentre_whenRun_thenProceedAsExpected() throws WorkflowException {
-        payload.put(DIVORCE_UNIT_JSON_KEY, CourtEnum.SERVICE_CENTER.getId());
+    public void givenCaseIsAdulteryWithNamedCoRespondent_AndRespondentLetterCanBeGenerated_whenRun_thenProceedAsExpected() throws WorkflowException {
+        payload.put(D_8_DIVORCE_UNIT, CourtEnum.SERVICE_CENTER.getId());
 
         //Given
         when(validateCaseDataTask.execute(context, payload)).thenReturn(payload);
@@ -136,19 +122,19 @@ public class IssueEventWorkflowTest {
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
+        when(getPetitionIssueFee.execute(context, payload)).thenReturn(payload);
+        when(coRespondentPinGenerator.execute(context, payload)).thenReturn(payload);
+        when(coRespondentLetterGenerator.execute(context, payload)).thenReturn(payload);
         when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
         when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
         when(resetCoRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
+        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(true);
 
         //When
         Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, true);
 
         //Then
         assertThat(response, is(payload));
-
-        verifyZeroInteractions(getPetitionIssueFee);
-        verifyZeroInteractions(coRespondentPinGenerator);
-        verifyZeroInteractions(coRespondentLetterGenerator);
     }
 
     @Test
@@ -164,6 +150,7 @@ public class IssueEventWorkflowTest {
         when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
         when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
         when(resetCoRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
+        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(false);
 
         //When
         Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, true);
@@ -177,61 +164,8 @@ public class IssueEventWorkflowTest {
     }
 
     @Test
-    public void givenCaseIsAdulteryWithNamedCoRespondentAndRespondentLetterCanBeGenerated_whenRun_thenProceedAsExpected() throws WorkflowException {
+    public void givenCaseIsNotAdulteryWithNamedCoRespondent_AndRespondentLetterCanBeGenerated_whenRun_thenCoRespondentLetterIsNotGenerated() throws WorkflowException {
         payload.put(D_8_DIVORCE_UNIT, CourtEnum.SERVICE_CENTER.getId());
-        payload.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
-        payload.put(D_8_CO_RESPONDENT_NAMED, "YES");
-
-        //Given
-        when(validateCaseDataTask.execute(context, payload)).thenReturn(payload);
-        when(setIssueDate.execute(context, payload)).thenReturn(payload);
-        when(petitionGenerator.execute(context, payload)).thenReturn(payload);
-        when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
-        when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
-        when(getPetitionIssueFee.execute(context, payload)).thenReturn(payload);
-        when(coRespondentPinGenerator.execute(context, payload)).thenReturn(payload);
-        when(coRespondentLetterGenerator.execute(context, payload)).thenReturn(payload);
-        when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
-        when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
-        when(resetCoRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
-
-        //When
-        Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, true);
-
-        //Then
-        assertThat(response, is(payload));
-    }
-
-    @Test
-    public void givenCaseIsAdulteryWithNamedCoRespondentNottinghamRdcRespondentPackGen_whenRun_thenProceedAsExpected() throws WorkflowException {
-        payload.put(D_8_DIVORCE_UNIT, CourtEnum.SERVICE_CENTER.getId());
-        payload.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
-        payload.put(D_8_CO_RESPONDENT_NAMED_OLD, "YES");
-
-        //Given
-        when(validateCaseDataTask.execute(context, payload)).thenReturn(payload);
-        when(setIssueDate.execute(context, payload)).thenReturn(payload);
-        when(petitionGenerator.execute(context, payload)).thenReturn(payload);
-        when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
-        when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
-        when(getPetitionIssueFee.execute(context, payload)).thenReturn(payload);
-        when(coRespondentPinGenerator.execute(context, payload)).thenReturn(payload);
-        when(coRespondentLetterGenerator.execute(context, payload)).thenReturn(payload);
-        when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
-        when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
-        when(resetCoRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
-
-        //When
-        Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, true);
-
-        //Then
-        assertThat(response, is(payload));
-    }
-
-    @Test
-    public void givenCaseIsNotAdulteryAndRespondentLetterCanBeGenerated_whenRun_thenCoRespondentLetterIsNotGenerated() throws WorkflowException {
-        payload.put(D_8_DIVORCE_UNIT, CourtEnum.SERVICE_CENTER.getId());
-        payload.put(D_8_REASON_FOR_DIVORCE, "foo");
 
         //Given
         when(validateCaseDataTask.execute(context, payload)).thenReturn(payload);
@@ -242,33 +176,7 @@ public class IssueEventWorkflowTest {
         when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
         when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
         when(resetCoRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
-
-        //When
-        Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, true);
-
-        //Then
-        assertThat(response, is(payload));
-
-        verifyZeroInteractions(getPetitionIssueFee);
-        verifyZeroInteractions(coRespondentPinGenerator);
-        verifyZeroInteractions(coRespondentLetterGenerator);
-    }
-
-    @Test
-    public void givenCaseIsAdulteryButCoRespondentNotNamedAndRespondentLetterCanBeGenerated_whenRun_thenCoRespondentLetterIsNotGenerated() throws WorkflowException {
-        payload.put(D_8_DIVORCE_UNIT, CourtEnum.SERVICE_CENTER.getId());
-        payload.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
-        payload.put(D_8_CO_RESPONDENT_NAMED, "No");
-
-        //Given
-        when(validateCaseDataTask.execute(context, payload)).thenReturn(payload);
-        when(setIssueDate.execute(context, payload)).thenReturn(payload);
-        when(petitionGenerator.execute(context, payload)).thenReturn(payload);
-        when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
-        when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
-        when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
-        when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
-        when(resetCoRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
+        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(false);
 
         //When
         Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, true);
@@ -283,7 +191,6 @@ public class IssueEventWorkflowTest {
 
     @Test
     public void givenGenerateAosInvitationIsTrueAndIsNotServiceCentre_whenRun_thenProceedAsExpected() throws WorkflowException {
-
         //Given
         when(validateCaseDataTask.execute(context, payload)).thenReturn(payload);
         when(setIssueDate.execute(context, payload)).thenReturn(payload);
@@ -326,8 +233,4 @@ public class IssueEventWorkflowTest {
         verifyZeroInteractions(coRespondentLetterGenerator);
     }
 
-    @After
-    public void tearDown() {
-        issueEventWorkflow = null;
-    }
 }

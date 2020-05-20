@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
@@ -35,6 +36,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 
 @Slf4j
+@Component
 public class CaseDataUtils {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -107,7 +109,7 @@ public class CaseDataUtils {
             && Objects.nonNull(caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD));
     }
 
-    public static boolean isAdulteryCaseWithNamedCoRespondent(Map<String, Object> caseData) {
+    public boolean isAdulteryCaseWithNamedCoRespondent(Map<String, Object> caseData) {
         final String divorceReason = getOptionalPropertyValueAsString(caseData, D_8_REASON_FOR_DIVORCE, EMPTY);
         final String coRespondentNamed = getOptionalPropertyValueAsString(caseData, D_8_CO_RESPONDENT_NAMED, EMPTY);
         final String coRespondentNamedOld = getOptionalPropertyValueAsString(caseData, D_8_CO_RESPONDENT_NAMED_OLD, EMPTY);

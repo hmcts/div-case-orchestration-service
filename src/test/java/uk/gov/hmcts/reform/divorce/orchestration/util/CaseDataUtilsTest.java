@@ -28,6 +28,8 @@ public class CaseDataUtilsTest {
     private static final String FIELD_NAME = "TestField";
     private static final String LINK_ID = "LinkId";
 
+    private CaseDataUtils caseDataUtils = new CaseDataUtils();
+
     @Test
     public void givenDataWithCaseLink_thenReturnLinkValue() {
         Map<String, Object> caseLinkData = ImmutableMap.of(FIELD_NAME, ImmutableMap.of(CASE_REFERENCE_FIELD, LINK_ID));
@@ -102,30 +104,30 @@ public class CaseDataUtilsTest {
 
     @Test
     public void shouldReturnAdequateResultsFor_isAdulteryCaseWithCoRespondent() {
-        assertThat(CaseDataUtils.isAdulteryCaseWithNamedCoRespondent(ImmutableMap.of(
+        assertThat(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(ImmutableMap.of(
             D_8_REASON_FOR_DIVORCE, DESERTION
         )), is(false));
 
-        assertThat(CaseDataUtils.isAdulteryCaseWithNamedCoRespondent(ImmutableMap.of(
+        assertThat(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(ImmutableMap.of(
             D_8_REASON_FOR_DIVORCE, ADULTERY
         )), is(false));
 
-        assertThat(CaseDataUtils.isAdulteryCaseWithNamedCoRespondent(ImmutableMap.of(
+        assertThat(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(ImmutableMap.of(
             D_8_REASON_FOR_DIVORCE, ADULTERY,
             D_8_CO_RESPONDENT_NAMED_OLD, NO_VALUE
         )), is(false));
 
-        assertThat(CaseDataUtils.isAdulteryCaseWithNamedCoRespondent(ImmutableMap.of(
+        assertThat(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(ImmutableMap.of(
             D_8_REASON_FOR_DIVORCE, ADULTERY,
             D_8_CO_RESPONDENT_NAMED, NO_VALUE
         )), is(false));
 
-        assertThat(CaseDataUtils.isAdulteryCaseWithNamedCoRespondent(ImmutableMap.of(
+        assertThat(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(ImmutableMap.of(
             D_8_REASON_FOR_DIVORCE, ADULTERY,
             D_8_CO_RESPONDENT_NAMED_OLD, YES_VALUE
         )), is(true));
 
-        assertThat(CaseDataUtils.isAdulteryCaseWithNamedCoRespondent(ImmutableMap.of(
+        assertThat(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(ImmutableMap.of(
             D_8_REASON_FOR_DIVORCE, ADULTERY,
             D_8_CO_RESPONDENT_NAMED, YES_VALUE
         )), is(true));

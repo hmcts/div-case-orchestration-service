@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetIssueDate;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,11 +30,12 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isAdulteryCaseWithNamedCoRespondent;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
+
     private final SetIssueDate setIssueDate;
     private final ValidateCaseDataTask validateCaseDataTask;
     private final PetitionGenerator petitionGenerator;
@@ -45,32 +47,7 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
     private final GetPetitionIssueFee getPetitionIssueFee;
     private final ResetRespondentLinkingFields resetRespondentLinkingFields;
     private final ResetCoRespondentLinkingFields resetCoRespondentLinkingFields;
-
-    @Autowired
-    @SuppressWarnings("squid:S00107") // Can never have enough collaborators
-    public IssueEventWorkflow(ValidateCaseDataTask validateCaseDataTask,
-                              SetIssueDate setIssueDate,
-                              PetitionGenerator petitionGenerator,
-                              RespondentPinGenerator respondentPinGenerator,
-                              CoRespondentPinGenerator coRespondentPinGenerator,
-                              RespondentLetterGenerator respondentLetterGenerator,
-                              GetPetitionIssueFee getPetitionIssueFee,
-                              CoRespondentLetterGenerator coRespondentLetterGenerator,
-                              CaseFormatterAddDocuments caseFormatterAddDocuments,
-                              ResetRespondentLinkingFields resetRespondentLinkingFields,
-                              ResetCoRespondentLinkingFields resetCoRespondentLinkingFields) {
-        this.validateCaseDataTask = validateCaseDataTask;
-        this.setIssueDate = setIssueDate;
-        this.petitionGenerator = petitionGenerator;
-        this.respondentPinGenerator = respondentPinGenerator;
-        this.coRespondentPinGenerator = coRespondentPinGenerator;
-        this.respondentLetterGenerator = respondentLetterGenerator;
-        this.getPetitionIssueFee = getPetitionIssueFee;
-        this.coRespondentLetterGenerator = coRespondentLetterGenerator;
-        this.caseFormatterAddDocuments = caseFormatterAddDocuments;
-        this.resetRespondentLinkingFields = resetRespondentLinkingFields;
-        this.resetCoRespondentLinkingFields = resetCoRespondentLinkingFields;
-    }
+    private final CaseDataUtils caseDataUtils;
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest,
                                    String authToken, boolean generateAosInvitation) throws WorkflowException {
@@ -88,7 +65,7 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
             tasks.add(respondentPinGenerator);
             tasks.add(respondentLetterGenerator);
 
-            if (isAdulteryCaseWithNamedCoRespondent(caseData)) {
+            if (caseDataUtils.isAdulteryCaseWithNamedCoRespondent(caseData)) {
                 log.info("Adultery case with co-respondent: {}. Calculating current petition fee and generating"
                     + " co-respondent letter", caseDetails.getCaseId());
 

@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ServiceMethodValidationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoRespondentAosPackPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.RespondentAosPackPrinterTask;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isAdulteryCaseWithNamedCoRespondent;
 
 @Component
 @RequiredArgsConstructor
@@ -37,6 +37,8 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
     private final CoRespondentAosPackPrinterTask coRespondentAosPackPrinterTask;
     private final ModifyDueDate modifyDueDate;
 
+    private final CaseDataUtils caseDataUtils;
+
     @Value("${feature-toggle.toggle.feature_resp_solicitor_details}")
     private boolean featureToggleRespSolicitor;
 
@@ -48,7 +50,7 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
         tasks.add(serviceMethodValidationTask);
         tasks.add(fetchPrintDocsFromDmStore);
         tasks.add(respondentAosPackPrinterTask);
-        if (isAdulteryCaseWithNamedCoRespondent(caseDetails.getCaseData())) {
+        if (caseDataUtils.isAdulteryCaseWithNamedCoRespondent(caseDetails.getCaseData())) {
             tasks.add(coRespondentAosPackPrinterTask);
         }
         tasks.add(modifyDueDate);
