@@ -27,6 +27,7 @@ feature-toggle:
     bulk-print: true
     feature_resp_solicitor_details: true
     dn_refusal: true
+    paper_update: true
 
 send-letter:
   url: ${SEND_LETTER_SERIVCE_BASEURL:http://rpe-send-letter-service-aat.service.core-compute-aat.internal}
