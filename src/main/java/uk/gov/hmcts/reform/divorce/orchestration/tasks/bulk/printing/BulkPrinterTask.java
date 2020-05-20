@@ -69,7 +69,7 @@ public class BulkPrinterTask implements Task<Map<String, Object>> {
             //TODO - uncomment these lines (and their relevant unit tests) if we don't get the above warning
             // in the production logs in a week or so from 20/05/2020
 
-            context.setTaskFailed(true);
+            //context.setTaskFailed(true);
             //context.setTransientObject(BULK_PRINT_ERROR_KEY, "Bulk print didn't kick off for " + bulkPrintLetterType);
         }
 

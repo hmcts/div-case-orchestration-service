@@ -125,7 +125,7 @@ public class CcdCallbackBulkPrintWorkflowTest {
 
     @Test
     public void whenWorkflowRunsForNonAdulteryCase_allTasksRunExceptForCoRespondent_payloadReturned() throws WorkflowException, TaskException {
-        payload.put(D_8_REASON_FOR_DIVORCE, DESERTION);//TODO - maybe I should mock that method
+        payload.put(D_8_REASON_FOR_DIVORCE, DESERTION);
 
         when(serviceMethodValidationTask.execute(context, payload)).thenReturn(payload);
         when(fetchPrintDocsFromDmStore.execute(context, payload)).thenReturn(payload);
