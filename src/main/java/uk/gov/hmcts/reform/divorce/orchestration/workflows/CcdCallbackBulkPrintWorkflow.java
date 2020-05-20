@@ -47,6 +47,7 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
         tasks.add(serviceMethodValidationTask);
         tasks.add(fetchPrintDocsFromDmStore);
         tasks.add(respondentAosPackPrinterTask);
+        //adultery and D8ReasonForDivorceAdulteryWishToName or D8ReasonForDivorceAdulteryIsNamed
         tasks.add(coRespondentAosPackPrinterTask);
         tasks.add(modifyDueDate);
 

@@ -26,14 +26,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED_OLD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isAdulteryCaseWithNamedCoRespondent;
 
 @Component
 @Slf4j
@@ -92,7 +88,7 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
             tasks.add(respondentPinGenerator);
             tasks.add(respondentLetterGenerator);
 
-            if (isAdulteryCaseWithCoRespondent(caseData)) {
+            if (isAdulteryCaseWithNamedCoRespondent(caseData)) {
                 log.info("Adultery case with co-respondent: {}. Calculating current petition fee and generating"
                     + " co-respondent letter", caseDetails.getCaseId());
 
@@ -121,13 +117,4 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
             || CourtEnum.SERVICE_CENTER.getId().equalsIgnoreCase(court);
     }
 
-    private boolean isAdulteryCaseWithCoRespondent(final Map<String, Object> caseData) {
-        final String divorceReason = String.valueOf(caseData.getOrDefault(D_8_REASON_FOR_DIVORCE, EMPTY));
-        final String coRespondentNamed = String.valueOf(caseData.getOrDefault(D_8_CO_RESPONDENT_NAMED, EMPTY));
-        final String coRespondentNamedOld = String.valueOf(caseData.getOrDefault(D_8_CO_RESPONDENT_NAMED_OLD, EMPTY));
-
-        // we need to ensure older cases can be used before we fixed config in DIV-5068
-        return ADULTERY.equals(divorceReason)
-            && ("YES".equalsIgnoreCase(coRespondentNamed) || "YES".equalsIgnoreCase(coRespondentNamedOld));
-    }
 }
