@@ -22,14 +22,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 public class DaGrantedTest extends IntegrationTest {
 
-    private static final String BASE_CASE_RESPONSE = "fixtures/da-granted/da-granted-digital-no.json";
+    private static final String DA_GRANTED_CALLBACK_REQUEST = "fixtures/da-granted/da-granted-digital-no.json";
 
     @Autowired
     private CosApiClient cosApiClient;
 
     @Test
     public void givenValidCaseData_whenDaIsGranted_thenReturnDaGrantedData() {
-        CcdCallbackRequest ccdCallbackRequest = ResourceLoader.loadJsonToObject(BASE_CASE_RESPONSE, CcdCallbackRequest.class);
+        CcdCallbackRequest ccdCallbackRequest = ResourceLoader.loadJsonToObject(DA_GRANTED_CALLBACK_REQUEST, CcdCallbackRequest.class);
 
         ResponseEntity<CcdCallbackResponse> response = cosApiClient.handleDaGranted(
             createCaseWorkerUser().getAuthToken(),
