@@ -23,7 +23,7 @@ public class ProcessAosOfflineAnswersTest extends IntegrationTest {
     private CosApiClient cosApiClient;
 
     @Test
-    public void givenCase_whenProcessAosOfflineAnswers_shouldReturnCallbackResponse_With_ReceivedAosFromCoResp_Yes_Value() {
+    public void givenCase_whenProcessAosOfflineAnswersEvent_shouldReturnCallbackResponse_With_ReceivedAosFromCoResp_Yes_Value() {
 
         CcdCallbackRequest ccdCallbackRequest = ResourceLoader.loadJsonToObject(CCD_CALLBACK_REQUEST, CcdCallbackRequest.class);
 
