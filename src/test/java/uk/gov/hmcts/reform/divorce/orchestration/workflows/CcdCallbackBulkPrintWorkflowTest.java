@@ -145,9 +145,4 @@ public class CcdCallbackBulkPrintWorkflowTest {
         verifyZeroInteractions(coRespondentAosPackPrinterTask);
     }
 
-    @After
-    public void tearDown() {
-        ccdCallbackBulkPrintWorkflow = null;
-    }
-
 }
