@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
