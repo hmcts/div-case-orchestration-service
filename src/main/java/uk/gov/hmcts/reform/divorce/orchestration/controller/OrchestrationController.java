@@ -67,6 +67,7 @@ public class OrchestrationController {
 
         authUtil.assertIsServiceAllowedToPaymentUpdate(s2sAuthToken);
 
+        authUtil.assertIsServiceAllowedToUpdate(s2sAuthToken);
         orchestrationService.update(paymentUpdate);
         return ResponseEntity.ok().build();
     }
