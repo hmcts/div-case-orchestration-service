@@ -25,7 +25,8 @@ import static uk.gov.hmcts.reform.divorce.util.RestUtil.postToRestService;
 
 public class BulkPrintCallbackTest extends IntegrationTest {
 
-    private static final String RESPONDENT_AOS_INVITATION = "fixtures/issue-petition/ccd-callback-aos-invitation.json";
+    private static final String NON_ADULTERY_CASE = "fixtures/issue-petition/ccd-callback-aos-invitation.json";
+    private static final String ADULTERY_CASE_WITH_CORESPONDENT = "fixtures/issue-petition/ccd-callback-aos-invitation-service-centre-with-coRespondent.json";
     private static final String RESPONDENT_SOLICITOR_AOS_INVITATION = "fixtures/issue-petition/ccd-callback-solicitor-aos-invitation.json";
 
     @Value("${case.orchestration.petition-issued.context-path}")
@@ -54,10 +55,30 @@ public class BulkPrintCallbackTest extends IntegrationTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void givenRespondentAos_whenReceivedBulkPrint_thenDueDatePopulated() throws Exception {
+    public void givenNonAdulteryCase_whenReceivedBulkPrint_thenDueDatePopulated() throws Exception {
 
         Map response = postToRestService(serverUrl + issueContextPath + "?generateAosInvitation=true", citizenHeaders,
-            loadJson(RESPONDENT_AOS_INVITATION))
+            loadJson(NON_ADULTERY_CASE))
+            .getBody()
+            .as(Map.class);
+
+        CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(CaseDetails.builder().caseData((Map) response.get("data")).caseId("323").state("submitted").build());
+        ResponseBody body = postToRestService(serverUrl + bulkPrintContextPath, caseworkerHeaders, ccdCallbackRequest).getBody();
+        assertThat("Response body is not a JSON: " + body.asString(),
+            body.asString(),
+            isJson()
+        );
+        String result = ((Map) body.jsonPath().get(DATA)).get("dueDate").toString();
+        assertEquals(LocalDate.now().plus(30, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE), result);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void givenAdulteryCaseWithCoRespondent_whenReceivedBulkPrint_thenDueDatePopulated() throws Exception {
+
+        Map response = postToRestService(serverUrl + issueContextPath + "?generateAosInvitation=true", citizenHeaders,
+            loadJson(ADULTERY_CASE_WITH_CORESPONDENT))
             .getBody()
             .as(Map.class);
 
@@ -94,4 +115,5 @@ public class BulkPrintCallbackTest extends IntegrationTest {
         String result = ((Map) body.jsonPath().get(DATA)).get("dueDate").toString();
         assertEquals(LocalDate.now().plus(30, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE), result);
     }
+
 }
