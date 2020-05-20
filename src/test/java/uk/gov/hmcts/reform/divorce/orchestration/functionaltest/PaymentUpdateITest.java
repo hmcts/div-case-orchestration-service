@@ -90,10 +90,11 @@ public class PaymentUpdateITest extends IdamTestSupport {
         stubMaintenanceServerEndpointForUpdate(responseData);
 
         webClient.perform(put(API_URL)
-                .content(convertObjectToJsonString(paymentUpdate))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful());
+            .header("ServiceAuthorization", "testServiceToken")
+            .content(convertObjectToJsonString(paymentUpdate))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().is2xxSuccessful());
     }
 
     private void stubMaintenanceServerEndpointForRetrieveCaseById() {
