@@ -64,24 +64,6 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
         return caseData;
     }
 
-    private void populateDocumentBytes(TaskContext context, Map<String, GeneratedDocumentInfo> generatedDocumentInfos) {
-        CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
-        for (GeneratedDocumentInfo generatedDocumentInfo : generatedDocumentInfos.values()) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.set(SERVICE_AUTHORIZATION, authTokenGenerator.generate());
-            headers.set(USER_ROLES, CASEWORKER_DIVORCE);
-            HttpEntity<RestRequest> httpEntity = new HttpEntity<>(headers);
-
-            ResponseEntity<byte[]> response = restTemplate.exchange(generatedDocumentInfo.getUrl(), HttpMethod.GET, httpEntity, byte[].class);
-            if (response.getStatusCode() != HttpStatus.OK) {
-                log.error("Failed to get bytes from document store for document {} in case Id {}",
-                        generatedDocumentInfo.getUrl(), caseDetails.getCaseId());
-                throw new RuntimeException(String.format("Unexpected code from DM store: %s ", response.getStatusCode()));
-            }
-            generatedDocumentInfo.setBytes(response.getBody());
-        }
-    }
-
     /**
      * I'm not using object mapper here to keep it consistent with rest of code, when we migrate the formatter
      * service to as module dependency this method could be simplified.
@@ -108,6 +90,24 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
         }
 
         return generatedDocumentInfoList;
+    }
+
+    private void populateDocumentBytes(TaskContext context, Map<String, GeneratedDocumentInfo> generatedDocumentInfos) {
+        CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
+        for (GeneratedDocumentInfo generatedDocumentInfo : generatedDocumentInfos.values()) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.set(SERVICE_AUTHORIZATION, authTokenGenerator.generate());
+            headers.set(USER_ROLES, CASEWORKER_DIVORCE);
+            HttpEntity<RestRequest> httpEntity = new HttpEntity<>(headers);
+
+            ResponseEntity<byte[]> response = restTemplate.exchange(generatedDocumentInfo.getUrl(), HttpMethod.GET, httpEntity, byte[].class);
+            if (response.getStatusCode() != HttpStatus.OK) {
+                log.error("Failed to get bytes from document store for document {} in case Id {}",
+                        generatedDocumentInfo.getUrl(), caseDetails.getCaseId());
+                throw new RuntimeException(String.format("Unexpected code from DM store: %s ", response.getStatusCode()));
+            }
+            generatedDocumentInfo.setBytes(response.getBody());
+        }
     }
 
     private Object getValue(Map<String, Object> objectMap, String key) {
