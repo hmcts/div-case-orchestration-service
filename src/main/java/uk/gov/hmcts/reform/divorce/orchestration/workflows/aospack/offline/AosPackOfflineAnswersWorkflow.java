@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
@@ -17,19 +18,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.Div
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
 
 @Component
+@RequiredArgsConstructor
 public class AosPackOfflineAnswersWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private RespondentAosAnswersProcessorTask respondentAosAnswersProcessor;
-    private FormFieldValuesToCoreFieldsRelay formFieldValuesToCoreFieldsRelay;
-    private CoRespondentAosAnswersProcessorTask coRespondentAosAnswersProcessorTask;
-
-    public AosPackOfflineAnswersWorkflow(RespondentAosAnswersProcessorTask respondentAosAnswersProcessor,
-                                         FormFieldValuesToCoreFieldsRelay formFieldValuesToCoreFieldsRelay,
-                                         CoRespondentAosAnswersProcessorTask coRespondentAosAnswersProcessorTask) {
-        this.respondentAosAnswersProcessor = respondentAosAnswersProcessor;
-        this.formFieldValuesToCoreFieldsRelay = formFieldValuesToCoreFieldsRelay;
-        this.coRespondentAosAnswersProcessorTask = coRespondentAosAnswersProcessorTask;
-    }
+    private final RespondentAosAnswersProcessorTask respondentAosAnswersProcessor;
+    private final FormFieldValuesToCoreFieldsRelay formFieldValuesToCoreFieldsRelay;
+    private final CoRespondentAosAnswersProcessorTask coRespondentAosAnswersProcessorTask;
 
     public Map<String, Object> run(Map<String, Object> payload, DivorceParty divorceParty) throws WorkflowException {
 
