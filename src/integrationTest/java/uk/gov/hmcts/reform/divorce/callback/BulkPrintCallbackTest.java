@@ -25,9 +25,10 @@ import static uk.gov.hmcts.reform.divorce.util.RestUtil.postToRestService;
 
 public class BulkPrintCallbackTest extends IntegrationTest {
 
-    private static final String NON_ADULTERY_CASE = "fixtures/issue-petition/ccd-callback-aos-invitation.json";
-    private static final String ADULTERY_CASE_WITH_CORESPONDENT = "fixtures/issue-petition/ccd-callback-aos-invitation-service-centre-with-coRespondent.json";
-    private static final String RESPONDENT_SOLICITOR_AOS_INVITATION = "fixtures/issue-petition/ccd-callback-solicitor-aos-invitation.json";
+    private static final String FILES_PATH = "fixtures/issue-petition/";
+    private static final String NON_ADULTERY_CASE = FILES_PATH + "ccd-callback-aos-invitation.json";
+    private static final String ADULTERY_CASE_WITH_CORESPONDENT = FILES_PATH + "ccd-callback-aos-invitation-service-centre-with-coRespondent.json";
+    private static final String RESPONDENT_SOLICITOR_AOS_INVITATION = FILES_PATH + "ccd-callback-solicitor-aos-invitation.json";
 
     @Value("${case.orchestration.petition-issued.context-path}")
     private String issueContextPath;
