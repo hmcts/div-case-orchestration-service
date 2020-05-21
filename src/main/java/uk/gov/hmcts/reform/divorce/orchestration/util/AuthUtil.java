@@ -85,7 +85,7 @@ public class AuthUtil {
         }
     }
 
-    private String authenticate(String authHeader) {
+    public String authenticate(String authHeader) {
         if (isBlank(authHeader)) {
             throw new UnauthenticatedException("Provided S2S token is missing or invalid");
         }
