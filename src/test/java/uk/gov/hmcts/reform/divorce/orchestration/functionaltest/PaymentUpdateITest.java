@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Fee;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Payment;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
@@ -25,12 +26,15 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN_1;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class PaymentUpdateITest extends IdamTestSupport {
+
+    private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
 
     private static final String CASE_ID = "1234567890";
     private static final String EVENT_ID = "paymentMade";
@@ -92,10 +96,11 @@ public class PaymentUpdateITest extends IdamTestSupport {
         stubMaintenanceServerEndpointForUpdate(responseData);
 
         webClient.perform(put(API_URL)
-            .header("ServiceAuthorization", "testServiceToken")
+            .header(SERVICE_AUTHORIZATION, AUTH_TOKEN)
             .content(convertObjectToJsonString(paymentUpdate))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
+            .andDo(MockMvcResultHandlers.print())
             .andExpect(status().is2xxSuccessful());
     }
 
