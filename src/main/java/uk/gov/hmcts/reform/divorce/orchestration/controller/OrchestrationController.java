@@ -64,6 +64,8 @@ public class OrchestrationController {
         @RequestHeader(value = SERVICE_AUTHORIZATION_HEADER) String s2sAuthToken,
         @RequestBody PaymentUpdate paymentUpdate) throws WorkflowException {
 
+        authUtil.assertIsServiceAllowedToUpdate(s2sAuthToken);
+
         orchestrationService.update(paymentUpdate);
         return ResponseEntity.ok().build();
     }
