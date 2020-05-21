@@ -61,13 +61,12 @@ public class OrchestrationController {
         @ApiResponse(code = 401, message = "Provided S2S token is missing or invalid"),
         @ApiResponse(code = 403, message = "Calling service is not authorised to use the endpoint"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
-    public ResponseEntity<CaseResponse> paymentUpdate(
+    public ResponseEntity paymentUpdate(
         @RequestHeader(value = SERVICE_AUTHORIZATION_HEADER) String s2sAuthToken,
         @RequestBody PaymentUpdate paymentUpdate) throws WorkflowException, AuthenticationError {
 
         authUtil.assertIsServiceAllowedToPaymentUpdate(s2sAuthToken);
 
-        authUtil.assertIsServiceAllowedToUpdate(s2sAuthToken);
         orchestrationService.update(paymentUpdate);
         return ResponseEntity.ok().build();
     }
