@@ -2,7 +2,7 @@ import org.springframework.boot.gradle.tasks.run.BootRun
 
 buildscript {
     ext {
-        springBootVersion = '2.1.2.RELEASE'
+        springBootVersion = '2.1.14.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -24,13 +24,13 @@ plugins {
     id 'org.flywaydb.flyway' version '5.2.4'
     id 'org.owasp.dependencycheck' version '5.3.0'
     id 'org.sonarqube' version '2.8'
-    id 'org.springframework.boot' version '2.1.2.RELEASE'
+    id 'org.springframework.boot' version '2.1.14.RELEASE'
 }
 
 def versions = [
         awaitility                   : '4.0.2',
         bcpkixJdk15on                : '1.64',
-        bspCommonLib                 : '0.0.16',
+        bspCommonLib                 : '0.0.38',
         ccdStoreClient               : '4.6.4',
         commonsBeanUtils             : '1.9.4',
         commonsIo                    : '2.6',
@@ -68,9 +68,8 @@ def versions = [
         serenityCucumber             : '1.9.50',
         serviceTokenGenerator        : '3.0.0',
         sonarPitest                  : '0.5',
-        springCloudDependencies      : '2.1.2.RELEASE',
         springfoxSwagger             : '2.9.2',
-        springSecurityCrypto         : '5.2.0.RELEASE',
+        springSecurityCrypto         : '5.2.4.RELEASE',
         springSecurityRsa            : '1.0.8.RELEASE',
         tomcat                       : '9.0.31',
         unirest                      : '1.4.9'
@@ -78,7 +77,7 @@ def versions = [
 
 allprojects {
 
-    def springBootVersion = '2.1.2.RELEASE'
+    def springBootVersion = '2.1.14.RELEASE'
 
     apply plugin: 'checkstyle'
     apply plugin: 'com.github.ben-manes.versions'
@@ -152,7 +151,7 @@ allprojects {
             }
 
             // solves CVE-2014-3488, CVE-2015-2156, CVE-2019-16869
-            dependencySet(group: 'io.netty', version: '4.1.46.Final') {
+            dependencySet(group: 'io.netty', version: '4.1.49.Final') {
                 entry 'netty-buffer'
                 entry 'netty-codec'
                 entry 'netty-codec-http'
@@ -331,7 +330,7 @@ dependencies {
     runtime('org.springframework.boot:spring-boot-devtools')
 
     testCompile group: 'org.awaitility', name:'awaitility', version: versions.awaitility
-    testCompile group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: versions.springCloudDependencies
+    testCompile group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '2.1.5.RELEASE'
     testCompile(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
         exclude(module: 'commons-logging')
         exclude(module: 'android-json')

@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetRespondentLinkingFields;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.RespondentAosPackPrinter;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.RespondentAosPackPrinterTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,7 @@ public class RespondentSolicitorNominatedWorkflow extends DefaultWorkflow<Map<St
     private final RespondentLetterGenerator respondentLetterGenerator;
     private final CaseFormatterAddDocuments caseFormatterAddDocuments;
     private final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
-    private final RespondentAosPackPrinter respondentAosPackPrinter;
+    private final RespondentAosPackPrinterTask respondentAosPackPrinterTask;
     private final ModifyDueDate modifyDueDate;
     private final ResetRespondentLinkingFields resetRespondentLinkingFields;
 
@@ -40,14 +40,14 @@ public class RespondentSolicitorNominatedWorkflow extends DefaultWorkflow<Map<St
                                                 RespondentLetterGenerator respondentLetterGenerator,
                                                 CaseFormatterAddDocuments caseFormatterAddDocuments,
                                                 FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore,
-                                                RespondentAosPackPrinter respondentAosPackPrinter,
+                                                RespondentAosPackPrinterTask respondentAosPackPrinterTask,
                                                 ModifyDueDate modifyDueDate,
                                                 ResetRespondentLinkingFields resetRespondentLinkingFields) {
         this.respondentPinGenerator = respondentPinGenerator;
         this.respondentLetterGenerator = respondentLetterGenerator;
         this.caseFormatterAddDocuments = caseFormatterAddDocuments;
         this.fetchPrintDocsFromDmStore = fetchPrintDocsFromDmStore;
-        this.respondentAosPackPrinter = respondentAosPackPrinter;
+        this.respondentAosPackPrinterTask = respondentAosPackPrinterTask;
         this.modifyDueDate = modifyDueDate;
         this.resetRespondentLinkingFields = resetRespondentLinkingFields;
     }
@@ -61,7 +61,7 @@ public class RespondentSolicitorNominatedWorkflow extends DefaultWorkflow<Map<St
         tasks.add(respondentLetterGenerator);
         tasks.add(caseFormatterAddDocuments);
         tasks.add(fetchPrintDocsFromDmStore);
-        tasks.add(respondentAosPackPrinter);
+        tasks.add(respondentAosPackPrinterTask);
         tasks.add(modifyDueDate);
         tasks.add(resetRespondentLinkingFields);
 

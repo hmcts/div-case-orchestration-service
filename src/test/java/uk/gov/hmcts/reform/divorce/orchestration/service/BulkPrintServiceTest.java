@@ -1,18 +1,13 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.test.util.ReflectionTestUtils;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
-import uk.gov.hmcts.reform.divorce.orchestration.client.FeatureToggleServiceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ff4j.FeatureToggle;
 import uk.gov.hmcts.reform.sendletter.api.LetterWithPdfsRequest;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterApi;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
@@ -36,55 +31,26 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class BulkPrintServiceTest {
 
-    private static final String FEATURE_TOGGLE_NAME = "foo";
-
     @Mock
     private SendLetterApi sendLetterApi;
 
     @Mock
     private AuthTokenGenerator authTokenGenerator;
-
-    @Mock
-    private FeatureToggleServiceClient featureToggleServiceClient;
-
-    @InjectMocks
+    
     private BulkPrintService classUnderTest;
-
-    @Before
-    public void setup() {
-        ReflectionTestUtils.setField(classUnderTest, "bulkPrintFeatureToggleName", FEATURE_TOGGLE_NAME);
-    }
-
+    
     @Test
     public void sendLetterApiIsNeverCalledWhenBulkPrintToggledOff() {
-        final FeatureToggle featureToggle = mock(FeatureToggle.class);
-        when(featureToggle.getEnable()).thenReturn("false");
-
-        when(featureToggleServiceClient.getToggle(FEATURE_TOGGLE_NAME)).thenReturn(featureToggle);
+        classUnderTest = new BulkPrintService(false, authTokenGenerator, sendLetterApi);
         classUnderTest.send("foo", "bar", emptyList());
 
         verifyZeroInteractions(sendLetterApi);
         verifyZeroInteractions(authTokenGenerator);
     }
-
-    @Test
-    public void sendLetterApiIsNeverCalledWhenBulkPrintToggleValueAbsent() {
-        final FeatureToggle featureToggle = mock(FeatureToggle.class);
-        when(featureToggle.getEnable()).thenReturn(null);
-
-        when(featureToggleServiceClient.getToggle(FEATURE_TOGGLE_NAME)).thenReturn(featureToggle);
-        classUnderTest.send("foo", "bar", emptyList());
-
-        verifyZeroInteractions(sendLetterApi);
-        verifyZeroInteractions(authTokenGenerator);
-
-    }
-
+    
     @Test
     public void happyPath() {
-        final FeatureToggle featureToggle = mock(FeatureToggle.class);
-        when(featureToggle.getEnable()).thenReturn("true");
-        when(featureToggleServiceClient.getToggle(FEATURE_TOGGLE_NAME)).thenReturn(featureToggle);
+        classUnderTest = new BulkPrintService(true, authTokenGenerator, sendLetterApi);
 
         final String authToken = "auth-token";
         when(authTokenGenerator.generate()).thenReturn(authToken);
