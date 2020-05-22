@@ -75,6 +75,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitRespondentAosCa
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListingWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshContinueInterceptWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshContinueWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.ApplicantDecreeAbsoluteEligibilityWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.DecreeAbsoluteAboutToBeGrantedWorkflow;
@@ -173,6 +174,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final RemoveDnOutcomeCaseFlagWorkflow removeDnOutcomeCaseFlagWorkflow;
     private final RemoveLegalAdvisorMakeDecisionFieldsWorkflow removeLegalAdvisorMakeDecisionFieldsWorkflow;
     private final WelshContinueWorkflow welshContinueWorkflow;
+    private final WelshContinueInterceptWorkflow welshContinueInterceptWorkflow;
     private final NotifyForRefusalOrderWorkflow notifyForRefusalOrderWorkflow;
     private final RemoveDNDocumentsWorkflow removeDNDocumentsWorkflow;
     private final SendClarificationSubmittedNotificationWorkflow sendClarificationSubmittedNotificationWorkflow;
@@ -863,5 +865,26 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> processDnDecisionMade(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return dnDecisionMadeWorkflow.run(ccdCallbackRequest);
+    }
+
+    @Override
+    public CcdCallbackResponse welshContinueIntercept(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
+        Map<String, Object> response = welshContinueInterceptWorkflow.run(ccdCallbackRequest, authToken);
+        log.info("welshContinueIntercept completed with CASE ID: {}.",
+            ccdCallbackRequest.getCaseDetails().getCaseId());
+
+        if (welshContinueInterceptWorkflow.errors().isEmpty()) {
+            return CcdCallbackResponse.builder()
+                .data(response)
+                .build();
+        } else {
+            Map<String, Object> workflowErrors = welshContinueInterceptWorkflow.errors();
+            log.error("welshContinueInterceptWorkflow with CASE ID: {} failed." + workflowErrors,
+                ccdCallbackRequest.getCaseDetails().getCaseId());
+            return CcdCallbackResponse
+                .builder()
+                .errors(getNotificationErrors(workflowErrors))
+                .build();
+        }
     }
 }

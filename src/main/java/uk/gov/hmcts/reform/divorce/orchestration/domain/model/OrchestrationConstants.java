@@ -166,6 +166,8 @@ public class OrchestrationConstants {
     public static final String BO_WELSH_REVIEW = "boWelshReview";
 
     // CCD Case States
+    public static final String SUBMITTED = "Submitted";
+    public static final String BO_TRANSLATION_REQUESTED = "BOTranslationRequested";
     public static final String AOS_AWAITING = "AosAwaiting";
     public static final String AOS_AWAITING_SOLICITOR = "AosAwaitingSol";
     public static final String AOS_COMPLETED = "AosCompleted";

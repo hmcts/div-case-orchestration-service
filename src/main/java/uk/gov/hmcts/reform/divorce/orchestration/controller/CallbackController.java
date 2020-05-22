@@ -1032,6 +1032,19 @@ public class CallbackController {
     }
 
 
+    @PostMapping(path = "/welsh-continue-intercept", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback to set next state of current Event based on previous state")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> welshContinueIntercept(
+        @RequestHeader(AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        return ResponseEntity.ok(caseOrchestrationService.welshContinueIntercept(ccdCallbackRequest, authorizationToken));
+    }
+
     private List<String> getErrors(Map<String, Object> response) {
         ValidationResponse validationResponse = (ValidationResponse) response.get(VALIDATION_ERROR_KEY);
         return validationResponse.getErrors();
