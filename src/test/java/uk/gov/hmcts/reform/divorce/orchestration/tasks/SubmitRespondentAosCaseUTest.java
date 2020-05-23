@@ -26,7 +26,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_ANSWER_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_AOS_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BO_WELSH_REVIEW;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BO_REQUEST_TRANSLATION_FROM_WLU;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
@@ -148,7 +148,7 @@ public class SubmitRespondentAosCaseUTest {
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
         // we let the case proceed to awaiting DN for unreasonable behaviour regardless of whether they admit or not
-        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, BO_WELSH_REVIEW, expectedData);
+        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, BO_REQUEST_TRANSLATION_FROM_WLU, expectedData);
     }
 
     @Test
@@ -237,7 +237,7 @@ public class SubmitRespondentAosCaseUTest {
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
         verify(caseMaintenanceClient)
-                .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(BO_WELSH_REVIEW), eq(expectedData));
+                .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(BO_REQUEST_TRANSLATION_FROM_WLU), eq(expectedData));
     }
 
     @Test
@@ -248,7 +248,7 @@ public class SubmitRespondentAosCaseUTest {
         TASK_CONTEXT.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
 
         when(caseMaintenanceClient.updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID),
-                eq(BO_WELSH_REVIEW), eq(divorceSession)))
+                eq(BO_REQUEST_TRANSLATION_FROM_WLU), eq(divorceSession)))
                 .thenReturn(CASE_UPDATE_RESPONSE);
 
         Map<String, Object> expectedData = new HashMap<>(divorceSession);
@@ -259,7 +259,7 @@ public class SubmitRespondentAosCaseUTest {
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
         verify(caseMaintenanceClient)
-                .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(BO_WELSH_REVIEW), eq(expectedData));
+                .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(BO_REQUEST_TRANSLATION_FROM_WLU), eq(expectedData));
     }
 
     private Map<String, Object> getCaseData(boolean consented, boolean defended) {

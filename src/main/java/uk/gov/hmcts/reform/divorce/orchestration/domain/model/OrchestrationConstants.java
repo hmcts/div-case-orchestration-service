@@ -163,7 +163,6 @@ public class OrchestrationConstants {
     public static final String SOLICITOR_CREATE_EVENT = "solicitorCreate";
     public static final String SOLICITOR_SUBMIT_EVENT = "solicitorStatementOfTruthPaySubmit";
     public static final String WELSH_NEXT_EVENT = "WelshNextEvent";
-    public static final String BO_WELSH_REVIEW = "boWelshReview";
     public static final String BO_REQUEST_TRANSLATION_FROM_WLU = "boRequestTranslationFromWLU";
 
     // CCD Case States

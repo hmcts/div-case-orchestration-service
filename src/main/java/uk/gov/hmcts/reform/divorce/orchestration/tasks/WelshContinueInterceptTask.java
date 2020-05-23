@@ -41,6 +41,7 @@ public class WelshContinueInterceptTask implements Task<Map<String, Object>> {
             case AOS_OVERDUE:
                 payload.put(STATE_CCD_FIELD, BO_WELSH_RESPONSE_AWAITING_REVIEW);
                 break;
+            default:
         }
         return payload;
     }
