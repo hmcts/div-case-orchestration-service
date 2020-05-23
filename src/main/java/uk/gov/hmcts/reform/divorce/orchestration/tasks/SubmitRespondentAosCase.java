@@ -17,6 +17,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_ANSWER_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BO_REQUEST_TRANSLATION_FROM_WLU;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BO_WELSH_REVIEW;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
@@ -91,7 +92,7 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
                 .filter(value -> value.equals(LanguagePreference.WELSH))
                 .map(k -> {
                     submissionData.put(WELSH_NEXT_EVENT, eventId);
-                    return BO_WELSH_REVIEW; })
+                    return BO_REQUEST_TRANSLATION_FROM_WLU; })
                 .orElse(eventId);
     }
 
