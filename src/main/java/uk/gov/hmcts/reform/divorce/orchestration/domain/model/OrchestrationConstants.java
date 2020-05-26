@@ -164,6 +164,11 @@ public class OrchestrationConstants {
     public static final String SOLICITOR_SUBMIT_EVENT = "solicitorStatementOfTruthPaySubmit";
     public static final String WELSH_NEXT_EVENT = "WelshNextEvent";
     public static final String BO_REQUEST_TRANSLATION_FROM_WLU = "boRequestTranslationFromWLU";
+    public static final String BO_TRANSISTION_TO_SUBMITTED = "boTransToSubmitted";
+    public static final String BO_TRANSISTION_TO_PENDING_REJECTION = "boTransToPendingRejection";
+    public static final String WELSH_PREVIOUS_STATE = "WelshPreviousState";
+    public static final String UPDATE_NEXT_WELSH_CASE_EVENT = "updateNextWelshCaseEvent";
+    public static final String BO_WELSH_REVIEW = "boWelshReview";
 
     // CCD Case States
     public static final String SUBMITTED = "Submitted";
