@@ -15,7 +15,6 @@ import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.StringHelper.buildFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DaGrantedLetterDataExtractor {
@@ -30,12 +29,16 @@ public class DaGrantedLetterDataExtractor {
 
         public static final String RESPONDENT_HOME_ADDRESS = "D8RespondentHomeAddress";
         public static final String RESPONDENT_CORRESPONDENCE_ADDRESS = "D8RespondentCorrespondenceAddress";
+        public static final String DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS = "D8DerivedRespondentCorrespondenceAddr";
+
 
         public static final String ADDRESS_LINE1 = "AddressLine1";
         public static final String ADDRESS_LINE2 = "AddressLine2";
         public static final String TOWN = "PostTown";
         public static final String COUNTY = "County";
         public static final String POSTCODE = "PostCode";
+
+        public static final int MAX_ADDRESS_LINES = 5;
     }
 
     public static String getDaGrantedDate(Map<String, Object> caseData) throws TaskException {
@@ -60,21 +63,25 @@ public class DaGrantedLetterDataExtractor {
     private static String formatAddressForLetterPrinting(Map<String, Object> caseData) throws InvalidDataForTaskException {
         List<String> addressLines = new ArrayList<>();
 
-        Map<String, Object> address = getRespondentAddressToUse(caseData);
-
         try {
-            addressLines.add(getMandatoryPropertyValueAsString(address, CaseDataKeys.ADDRESS_LINE1));
-            addressLines.add(getOptionalPropertyValueAsString(address, CaseDataKeys.ADDRESS_LINE2, ""));
-            addressLines.add(getMandatoryPropertyValueAsString(address, CaseDataKeys.TOWN));
-            addressLines.add(getOptionalPropertyValueAsString(address, CaseDataKeys.COUNTY, ""));
-            addressLines.add(getMandatoryPropertyValueAsString(address, CaseDataKeys.POSTCODE));
+            addressLines.add(getMandatoryPropertyValueAsString(caseData, CaseDataKeys.DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS));
             addressLines.removeAll(Arrays.asList("", null, "null"));
 
         } catch (TaskException exception) {
             throw new InvalidDataForTaskException(exception);
         }
 
-        return String.join("\n", addressLines);
+        return validatedDerivedAddressValue(addressLines);
+    }
+
+    private static String validatedDerivedAddressValue(List<String> addressLines) throws InvalidDataForTaskException {
+        String addressValue =  String.join("", addressLines).trim();
+
+        if (addressValue.split("\n").length > CaseDataKeys.MAX_ADDRESS_LINES) {
+            throw new InvalidDataForTaskException(new Exception("Derived address is more than " + CaseDataKeys.MAX_ADDRESS_LINES + " lines long."));
+        }
+
+        return addressValue;
     }
 
     private static Map<String, Object> getRespondentAddressToUse(Map<String, Object> caseData) {
@@ -84,6 +91,6 @@ public class DaGrantedLetterDataExtractor {
     }
 
     private static boolean isCorrespondenceAddressPopulated(Map<String, Object> caseData) {
-        return Optional.ofNullable(caseData.get(CaseDataKeys.RESPONDENT_CORRESPONDENCE_ADDRESS)).isPresent();
+        return Optional.ofNullable(caseData.get(CaseDataKeys.DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS)).isPresent();
     }
 }
