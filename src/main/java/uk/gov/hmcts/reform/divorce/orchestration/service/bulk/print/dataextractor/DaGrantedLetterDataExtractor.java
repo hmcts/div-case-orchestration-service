@@ -7,9 +7,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConst
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.StringHelper.buildFullName;
@@ -51,21 +48,14 @@ public class DaGrantedLetterDataExtractor {
     }
 
     private static String formatAddressForLetterPrinting(Map<String, Object> caseData) throws InvalidDataForTaskException {
-        List<String> addressLines = new ArrayList<>();
+        String addressLines = null;
 
         try {
-            addressLines.add(getMandatoryPropertyValueAsString(caseData, CaseDataKeys.DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS));
-            addressLines.removeAll(Arrays.asList("", null, "null"));
-
+            addressLines = getMandatoryPropertyValueAsString(caseData, CaseDataKeys.DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS);
         } catch (TaskException exception) {
             throw new InvalidDataForTaskException(exception);
         }
 
-        return trimmedDerivedAddress(addressLines);
+        return addressLines;
     }
-
-    private static String trimmedDerivedAddress(List<String> addressLines)  {
-        return String.join("", addressLines).trim();
-    }
-
 }

@@ -43,10 +43,10 @@ public class DaGrantedTest extends IntegrationTest {
         assertEquals("Response data should be the same as the payload sent", requestData, responseData);
         assertNull("No errors should be returned", response.getBody().getErrors());
 
-        assertNoDocumentsGeneratedByWorkflow_WasSavedInCasedata(responseData);
+        assertNoDocumentsGeneratedByWorkflowWasSavedInCasedata(responseData);
     }
 
-    private void assertNoDocumentsGeneratedByWorkflow_WasSavedInCasedata(Map<String, Object> responseData) {
+    private void assertNoDocumentsGeneratedByWorkflowWasSavedInCasedata(Map<String, Object> responseData) {
         List<CollectionMember<Document>> documents = (List<CollectionMember<Document>>) responseData.get(D8DOCUMENTS_GENERATED);
         assertEquals("No addition document entry should be made to case data", 1, documents.size());
     }
