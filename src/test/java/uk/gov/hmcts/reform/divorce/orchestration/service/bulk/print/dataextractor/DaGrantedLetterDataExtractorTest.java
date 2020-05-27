@@ -115,16 +115,6 @@ public class DaGrantedLetterDataExtractorTest {
     }
 
     @Test
-    public void getAddresseeDoesNotReturnWithNewlineAsLastCharacter() throws InvalidDataForTaskException {
-        Map<String, Object> caseData = buildCaseDataWithAddressee();
-        caseData.put(DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS, DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS_VALUE + "\n");
-
-        Addressee addressee = DaGrantedLetterDataExtractor.getAddressee(caseData);
-
-        assertThat(addressee.getFormattedAddress(), is(DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS_VALUE));
-    }
-
-    @Test
     public void getRespondentFullNameReturnsValidStringWhenFieldsMissing() {
         // fistName, lastName, expected
         asList(
