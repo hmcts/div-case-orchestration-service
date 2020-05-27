@@ -139,6 +139,15 @@ public class DaGrantedLetterDataExtractorTest {
         DaGrantedLetterDataExtractor.getAddressee(caseData);
     }
 
+    @Test(expected = InvalidDataForTaskException.class)
+    public void getAddresseeThrowsExceptionWhenRequiredFieldsEmpty() throws InvalidDataForTaskException {
+        Map<String, Object> caseData = buildCaseDataWithAddressee();
+
+        caseData.put(DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS, "");
+
+        DaGrantedLetterDataExtractor.getAddressee(caseData);
+    }
+
     @Test
     public void getRespondentFullNameReturnsValidStringWhenAllFieldsPopulated() {
         Map<String, Object> caseData = buildCaseDataWithRespondentNames(FIRST_NAME, LAST_NAME);
