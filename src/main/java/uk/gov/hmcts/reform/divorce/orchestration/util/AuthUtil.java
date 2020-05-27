@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
-import uk.gov.hmcts.reform.bsp.common.error.ForbiddenException;
-import uk.gov.hmcts.reform.bsp.common.error.UnauthenticatedException;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.ForbiddenException;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.UnauthenticatedException;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.util.List;
@@ -18,7 +18,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 public class AuthUtil {
 
     private final AuthTokenValidator authTokenValidator;
-    private final List<String> allowedToUpdate;
+    private final List<String> allowedToUpdatePayment;
     private static final String BEARER = "Bearer ";
     private static final String AUTHORIZATION_CODE = "authorization_code";
     private static final String CODE = "code";
@@ -50,11 +50,11 @@ public class AuthUtil {
     public AuthUtil(
                     IdamClient idamClient,
                     AuthTokenValidator authTokenValidator,
-                    @Value("${idam.s2s-auth.services-allowed-to-validate}") List<String> allowedToUpdate
+                    @Value("${idam.s2s-auth.services-allowed-to-update-payment-update}") List<String> allowedToUpdatePayment
     ) {
         this.idamClient = idamClient;
         this.authTokenValidator = authTokenValidator;
-        this.allowedToUpdate = allowedToUpdate;
+        this.allowedToUpdatePayment = allowedToUpdatePayment;
     }
 
     public String getCitizenToken() {
@@ -80,7 +80,7 @@ public class AuthUtil {
     public void assertIsServiceAllowedToUpdate(String token) {
         String serviceName = this.authenticate(token);
 
-        if (!allowedToUpdate.contains(serviceName)) {
+        if (!allowedToUpdatePayment.contains(serviceName)) {
             throw new ForbiddenException("Service is not authorised to access this endpoint");
         }
     }
