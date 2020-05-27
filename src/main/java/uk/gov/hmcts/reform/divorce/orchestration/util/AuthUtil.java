@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.validators.AuthTokenValidator;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.AuthenticationError;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.ForbiddenException;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.UnauthenticatedException;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.util.List;
@@ -77,7 +77,7 @@ public class AuthUtil {
         return token.startsWith(BEARER) ? token : BEARER.concat(token);
     }
 
-    public void assertIsServiceAllowedToUpdate(String token) {
+    public void assertIsServiceAllowedToUpdate(String token) throws AuthenticationError {
         String serviceName = this.authenticate(token);
 
         if (!allowedToUpdatePayment.contains(serviceName)) {
@@ -85,9 +85,9 @@ public class AuthUtil {
         }
     }
 
-    private String authenticate(String authHeader) {
+    private String authenticate(String authHeader) throws AuthenticationError {
         if (isBlank(authHeader)) {
-            throw new UnauthenticatedException("Provided S2S token is missing or invalid");
+            throw new AuthenticationError("Provided S2S token is missing or invalid");
         }
 
         return authTokenValidator.getServiceName(authHeader);
