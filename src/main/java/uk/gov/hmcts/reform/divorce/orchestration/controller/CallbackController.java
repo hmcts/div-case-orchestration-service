@@ -1018,7 +1018,7 @@ public class CallbackController {
         return ResponseEntity.ok(response.build());
     }
 
-    @PostMapping(path = "/welsh-continue")
+    @PostMapping(path = "/welsh-event-intercept")
     @ApiOperation(value = "Callback to set next event upon receival of translation.")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Callback processed.")})
@@ -1041,20 +1041,7 @@ public class CallbackController {
         return ResponseEntity.ok(caseOrchestrationService.welshSetPreviousState(ccdCallbackRequest));
     }
 
-    @PostMapping(path = "/welshCapturePreviousState")
-    @ApiOperation(value = "Callback to set previous state")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Callback processed.")})
-    public ResponseEntity<CcdCallbackResponse> welshCapturePreviousState(
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-
-        return ResponseEntity.ok(
-            CcdCallbackResponse.builder()
-                .data(caseOrchestrationService.welshCapturePreviousState(ccdCallbackRequest))
-                .build());
-    }
-
-    @PostMapping(path = "/welsh-continue-intercept", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @PostMapping(path = "/welsh-state-intercept", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Callback to set next state of current Event based on previous state")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback processed.",
