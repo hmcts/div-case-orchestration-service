@@ -77,11 +77,20 @@ public class DaGrantedLetterDataExtractor {
     private static String validatedDerivedAddressValue(List<String> addressLines) throws InvalidDataForTaskException {
         String addressValue =  String.join("", addressLines).trim();
 
-        if (addressValue.split("\n").length > CaseDataKeys.MAX_ADDRESS_LINES) {
-            throw new InvalidDataForTaskException(new Exception("Derived address is more than " + CaseDataKeys.MAX_ADDRESS_LINES + " lines long."));
+        if (isMoreThanMaxLines(addressValue)) {
+            throwInvalidAddressDataError();
         }
 
         return addressValue;
+    }
+
+    private static String throwInvalidAddressDataError() throws InvalidDataForTaskException {
+        Exception cause = new Exception("Derived address is more than " + CaseDataKeys.MAX_ADDRESS_LINES + " lines long.");
+        throw new InvalidDataForTaskException(cause);
+    }
+
+    private static boolean isMoreThanMaxLines(String addressValue) {
+        return addressValue.split("\n").length > CaseDataKeys.MAX_ADDRESS_LINES;
     }
 
     private static Map<String, Object> getRespondentAddressToUse(Map<String, Object> caseData) {
