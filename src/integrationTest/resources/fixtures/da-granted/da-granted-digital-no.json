@@ -19,12 +19,12 @@
           "value": {
             "DocumentLink": {
               "document_url": "http://em-api-gateway-web:3404/documents/51400ac5-158d-4177-bdda-ec0058b77c81",
-              "document_filename": "victorian-marriage-certificate.pdf",
+              "document_filename": "da-granted-certificate.pdf",
               "document_binary_url": "http://em-api-gateway-web:3404/documents/51400ac5-158d-4177-bdda-ec0058b77c81/binary"
             },
             "DocumentType": "daGranted",
             "DocumentComment": "",
-            "DocumentFileName": "victorian-marriage-certificate.pdf",
+            "DocumentFileName": "da-granted-certificate.pdf",
             "DocumentDateAdded": "2018-02-05",
             "DocumentEmailContent": ""
           }
