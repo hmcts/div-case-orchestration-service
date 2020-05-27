@@ -25,7 +25,7 @@ public class WelshSetPreviousStateTask implements Task<Map<String, Object>> {
         String previousState = caseMaintenanceClient.retrievePetitionById(
             context.<String>getTransientObject(AUTH_TOKEN_JSON_KEY),
             context.<String>getTransientObject(CASE_ID_JSON_KEY))
-            .getState();;
+            .getState();
 
         if (!BO_WELSH_RESPONSE_AWAITING_REVIEW.equals(previousState)) {
             payload.put(WELSH_PREVIOUS_STATE, previousState);

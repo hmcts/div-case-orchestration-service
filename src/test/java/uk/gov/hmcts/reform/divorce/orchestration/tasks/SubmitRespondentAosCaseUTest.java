@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.WelshNextEventUtil;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
+import java.util.function.BooleanSupplier;
 
 import static java.util.Collections.emptyMap;
 import static org.hamcrest.Matchers.equalTo;
@@ -67,7 +67,7 @@ public class SubmitRespondentAosCaseUTest {
     private WelshNextEventUtil welshNextEventUtil;
 
     @Captor
-    ArgumentCaptor<Supplier<Boolean>> isWelsh;
+    ArgumentCaptor<BooleanSupplier> isWelsh;
 
     @InjectMocks
     private SubmitRespondentAosCase classUnderTest;
@@ -100,7 +100,7 @@ public class SubmitRespondentAosCaseUTest {
             .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(AWAITING_ANSWER_AOS_EVENT_ID), eq(expectedData));
 
         verify(welshNextEventUtil).evaluateEventId(isWelsh.capture(), eq(caseDetails.getCaseData()), eq(AWAITING_ANSWER_AOS_EVENT_ID));
-        assertThat(isWelsh.getValue().get(), equalTo(Boolean.FALSE));
+        assertThat(isWelsh.getValue().getAsBoolean(), equalTo(false));
     }
 
     @Test
@@ -125,7 +125,7 @@ public class SubmitRespondentAosCaseUTest {
             .updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, expectedData);
 
         verify(welshNextEventUtil).evaluateEventId(isWelsh.capture(), eq(caseDetails.getCaseData()), eq(AWAITING_ANSWER_AOS_EVENT_ID));
-        assertThat(isWelsh.getValue().get(), equalTo(Boolean.FALSE));
+        assertThat(isWelsh.getValue().getAsBoolean(), equalTo(false));
 
     }
 
@@ -153,7 +153,7 @@ public class SubmitRespondentAosCaseUTest {
         // we let the case proceed to awaiting DN for unreasonable behaviour regardless of whether they admit or not
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, expectedData);
         verify(welshNextEventUtil).evaluateEventId(isWelsh.capture(), any(), eq(AWAITING_DN_AOS_EVENT_ID));
-        assertThat(isWelsh.getValue().get(), equalTo(Boolean.FALSE));
+        assertThat(isWelsh.getValue().getAsBoolean(), equalTo(false));
     }
 
     @Test
@@ -180,7 +180,7 @@ public class SubmitRespondentAosCaseUTest {
         // we let the case proceed to awaiting DN for unreasonable behaviour regardless of whether they admit or not
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, BO_WELSH_REVIEW, expectedData);
         verify(welshNextEventUtil).evaluateEventId(isWelsh.capture(), any(), eq(AWAITING_DN_AOS_EVENT_ID));
-        assertThat(isWelsh.getValue().get(), equalTo(Boolean.TRUE));
+        assertThat(isWelsh.getValue().getAsBoolean(), equalTo(true));
     }
 
     @Test
@@ -208,7 +208,7 @@ public class SubmitRespondentAosCaseUTest {
 
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETED_AOS_EVENT_ID, expectedData);
         verify(welshNextEventUtil).evaluateEventId(isWelsh.capture(), any(), eq(COMPLETED_AOS_EVENT_ID));
-        assertThat(isWelsh.getValue().get(), equalTo(Boolean.FALSE));
+        assertThat(isWelsh.getValue().getAsBoolean(), equalTo(false));
     }
 
     @Test
@@ -234,7 +234,7 @@ public class SubmitRespondentAosCaseUTest {
 
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETED_AOS_EVENT_ID, expectedData);
         verify(welshNextEventUtil).evaluateEventId(isWelsh.capture(), any(), eq(COMPLETED_AOS_EVENT_ID));
-        assertThat(isWelsh.getValue().get(), equalTo(Boolean.FALSE));
+        assertThat(isWelsh.getValue().getAsBoolean(), equalTo(Boolean.FALSE));
     }
 
     @Test
@@ -257,7 +257,7 @@ public class SubmitRespondentAosCaseUTest {
 
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, expectedData);
         verify(welshNextEventUtil).evaluateEventId(isWelsh.capture(), any(), eq(AWAITING_DN_AOS_EVENT_ID));
-        assertThat(isWelsh.getValue().get(), equalTo(Boolean.FALSE));
+        assertThat(isWelsh.getValue().getAsBoolean(), equalTo(false));
 
     }
 
@@ -289,7 +289,7 @@ public class SubmitRespondentAosCaseUTest {
         verify(caseMaintenanceClient)
                 .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(BO_WELSH_REVIEW), eq(expectedData));
         verify(welshNextEventUtil).evaluateEventId(isWelsh.capture(), any(), eq(AWAITING_ANSWER_AOS_EVENT_ID));
-        assertThat(isWelsh.getValue().get(), equalTo(Boolean.TRUE));
+        assertThat(isWelsh.getValue().getAsBoolean(), equalTo(true));
 
     }
 

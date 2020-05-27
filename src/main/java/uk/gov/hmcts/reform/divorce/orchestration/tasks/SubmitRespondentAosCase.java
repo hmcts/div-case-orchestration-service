@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.WelshNextEventUtil;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
+import java.util.function.BooleanSupplier;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_NOMINATE_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
@@ -80,7 +80,7 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
 
     private String evaluateEventId(TaskContext context, Map<String, Object> submissionData, String eventId) {
 
-        Supplier<Boolean> isWelsh = () -> {
+        BooleanSupplier isWelsh = () -> {
             Map<String, Object> currentCasedata =
                 Optional.ofNullable(submissionData.get(LANGUAGE_PREFERENCE_WELSH)).map(k -> submissionData)
                     .orElseGet(() -> caseMaintenanceClient.retrievePetitionById(
