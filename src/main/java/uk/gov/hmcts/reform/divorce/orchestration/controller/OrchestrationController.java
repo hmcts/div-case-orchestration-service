@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseCreationRe
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.AuthenticationError;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
@@ -62,7 +63,7 @@ public class OrchestrationController {
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity paymentUpdate(
         @RequestHeader(value = SERVICE_AUTHORIZATION_HEADER) String s2sAuthToken,
-        @RequestBody PaymentUpdate paymentUpdate) throws WorkflowException {
+        @RequestBody PaymentUpdate paymentUpdate) throws WorkflowException, AuthenticationError {
 
         authUtil.assertIsServiceAllowedToUpdate(s2sAuthToken);
 
