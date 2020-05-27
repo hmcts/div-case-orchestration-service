@@ -133,6 +133,18 @@ public class PaymentUpdateITest extends IdamTestSupport {
             .andExpect(status().is4xxClientError());
     }
 
+    @Test
+    public void givenEventDataAndNoAuth_whenEventDataIsSubmitted_thenReturnError() throws Exception {
+
+        webClient.perform(put(API_URL)
+            .header(SERVICE_AUTHORIZATION_HEADER, "")
+            .content(convertObjectToJsonString(paymentUpdate))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().is4xxClientError());
+    }
+
     private void stubMaintenanceServerEndpointForRetrieveCaseById() {
         maintenanceServiceServer.stubFor(WireMock.get(RETRIEVE_CASE_CONTEXT_PATH)
                 .withHeader(AUTHORIZATION, new EqualToPattern(BEARER_AUTH_TOKEN_1))
