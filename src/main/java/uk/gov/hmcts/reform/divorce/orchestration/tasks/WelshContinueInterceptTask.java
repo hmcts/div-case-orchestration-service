@@ -23,7 +23,7 @@ public class WelshContinueInterceptTask implements Task<Map<String, Object>> {
         Optional.ofNullable(payload.get(WELSH_PREVIOUS_STATE)).map(String.class::cast)
             .ifPresent(nextState ->  {
                 log.debug("WelshContinueInterceptTask Current State {} ", nextState);
-                payload.put(STATE_CCD_FIELD,nextState);
+                payload.put(STATE_CCD_FIELD, nextState);
             });
 
         return payload;
