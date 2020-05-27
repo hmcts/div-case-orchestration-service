@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import uk.gov.hmcts.reform.bsp.common.model.document.Addressee;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
@@ -13,8 +12,6 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.ADDRESS_LINE2;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.COUNTY;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.DA_GRANTED_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
@@ -26,7 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 
 public class DaGrantedLetterDataExtractorTest {
 
-    private static final String VALID_DATE = "2010-10-10";
+    private static final String VALID_DATE = "13 May 2020";
     private static final String FIRST_NAME = "John";
     private static final String LAST_NAME = "Smith";
     private static final String DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS_VALUE =  "33 Winchester Road\nLondon\nN9 9HA";
@@ -94,42 +91,6 @@ public class DaGrantedLetterDataExtractorTest {
         );
     }
 
-    @Test
-    @Ignore
-    // TODO: Have the conversation about this logic, should this be D8DerivedRespondentHomeAddress instead?
-    public void getAddresseeReturnsValidResultWhenOnlyHomeAddressProvided() throws TaskException {
-        Map<String, Object> caseData = buildCaseDataWithAddressee();
-        caseData.put(RESPONDENT_HOME_ADDRESS, buildAddress("home"));
-        caseData.remove(RESPONDENT_CORRESPONDENCE_ADDRESS);
-
-        Addressee actual = DaGrantedLetterDataExtractor.getAddressee(caseData);
-
-        assertThat(actual.getName(), is("John Smith"));
-        assertThat(
-            actual.getFormattedAddress(),
-            is("line1home\nline2home\ntownhome\ncountyhome\npostcodehome")
-        );
-    }
-
-    @Test
-    @Ignore
-    // TODO: is this case still needed or needs updating to validate between D8DerivedHomeAddress and D8DerivedCorrespondenceAddress
-    public void getAddresseeReturnsValidResultWhenSomeFieldsMissing() throws TaskException {
-        final Map<String, Object> caseData = buildCaseDataWithAddressee();
-
-        Map<String, Object> address = buildAddress("correspondence");
-        address.remove(RESPONDENT_LAST_NAME);
-        address.remove(COUNTY);
-        address.put(ADDRESS_LINE2, null);
-
-        caseData.put(RESPONDENT_CORRESPONDENCE_ADDRESS, address);
-
-        Addressee actual = DaGrantedLetterDataExtractor.getAddressee(caseData);
-
-        assertThat(actual.getName(), is("John Smith"));
-        assertThat(actual.getFormattedAddress(), is(DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS_VALUE));
-    }
-
     @Test(expected = InvalidDataForTaskException.class)
     public void getAddresseeThrowsExceptionWhenRequiredFieldsMissing() throws InvalidDataForTaskException {
         Map<String, Object> caseData = buildCaseDataWithAddressee();
@@ -163,15 +124,6 @@ public class DaGrantedLetterDataExtractorTest {
         Addressee addressee = DaGrantedLetterDataExtractor.getAddressee(caseData);
 
         assertThat(addressee.getFormattedAddress(), is(DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS_VALUE));
-    }
-
-    @Test(expected = InvalidDataForTaskException.class)
-    public void getAddresseeDoesNotReturnWithMorethanFiveNewlineCharcters() throws InvalidDataForTaskException {
-        Map<String, Object> caseData = buildCaseDataWithAddressee();
-
-        caseData.put(DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS, DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS_INVALID_VALUE);
-
-        DaGrantedLetterDataExtractor.getAddressee(caseData);
     }
 
     @Test

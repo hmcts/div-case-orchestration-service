@@ -30,15 +30,7 @@
           }
         }
       ],
-      "createdDate": "2018-02-05",
-      "D8RespondentCorrespondenceAddress": {
-        "County": "Greater London",
-        "PostCode": "N9 9HA",
-        "PostTown": "London",
-        "AddressLine1": "33 Winchester Road",
-        "AddressLine2": "Basingstoke"
-      },
-      "DecreeAbsoluteGrantedDate": "2020-01-13"
+      "DecreeAbsoluteGrantedDate": "27 May 2020"
     }
   }
 }

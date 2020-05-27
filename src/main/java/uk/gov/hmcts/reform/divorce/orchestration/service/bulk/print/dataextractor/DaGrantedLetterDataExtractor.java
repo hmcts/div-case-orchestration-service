@@ -13,11 +13,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.StringHelper.buildFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DaGrantedLetterDataExtractor {
+
+    public static final int MAX_ADDRESS_LINES = 5;
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class CaseDataKeys {
@@ -30,15 +33,6 @@ public class DaGrantedLetterDataExtractor {
         public static final String RESPONDENT_HOME_ADDRESS = "D8RespondentHomeAddress";
         public static final String RESPONDENT_CORRESPONDENCE_ADDRESS = "D8RespondentCorrespondenceAddress";
         public static final String DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS = "D8DerivedRespondentCorrespondenceAddr";
-
-
-        public static final String ADDRESS_LINE1 = "AddressLine1";
-        public static final String ADDRESS_LINE2 = "AddressLine2";
-        public static final String TOWN = "PostTown";
-        public static final String COUNTY = "County";
-        public static final String POSTCODE = "PostCode";
-
-        public static final int MAX_ADDRESS_LINES = 5;
     }
 
     public static String getDaGrantedDate(Map<String, Object> caseData) throws TaskException {
@@ -71,32 +65,21 @@ public class DaGrantedLetterDataExtractor {
             throw new InvalidDataForTaskException(exception);
         }
 
-        return validatedDerivedAddressValue(addressLines);
+        return trimedDerivedAddress(addressLines);
     }
 
-    private static String validatedDerivedAddressValue(List<String> addressLines) throws InvalidDataForTaskException {
+    private static String trimedDerivedAddress(List<String> addressLines) throws InvalidDataForTaskException {
         String addressValue =  String.join("", addressLines).trim();
-
-        if (isMoreThanMaxLines(addressValue)) {
-            throwInvalidAddressDataError();
-        }
 
         return addressValue;
     }
 
     private static String throwInvalidAddressDataError() throws InvalidDataForTaskException {
-        Exception cause = new Exception("Derived address is more than " + CaseDataKeys.MAX_ADDRESS_LINES + " lines long.");
-        throw new InvalidDataForTaskException(cause);
+        throw new InvalidDataForTaskException(format("Derived address is more than  %s lines long.", MAX_ADDRESS_LINES));
     }
 
     private static boolean isMoreThanMaxLines(String addressValue) {
-        return addressValue.split("\n").length > CaseDataKeys.MAX_ADDRESS_LINES;
-    }
-
-    private static Map<String, Object> getRespondentAddressToUse(Map<String, Object> caseData) {
-        return isCorrespondenceAddressPopulated(caseData)
-            ? (Map<String, Object>) caseData.get(CaseDataKeys.RESPONDENT_CORRESPONDENCE_ADDRESS)
-            : (Map<String, Object>) caseData.get(CaseDataKeys.RESPONDENT_HOME_ADDRESS);
+        return addressValue.split("\n").length > MAX_ADDRESS_LINES;
     }
 
     private static boolean isCorrespondenceAddressPopulated(Map<String, Object> caseData) {
