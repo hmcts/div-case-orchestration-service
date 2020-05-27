@@ -87,7 +87,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.SendDaGr
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -178,7 +177,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final WelshContinueWorkflow welshContinueWorkflow;
     private final WelshContinueInterceptWorkflow welshContinueInterceptWorkflow;
     private final WelshSetPreviousStateWorkflow welshSetPreviousStateWorkflow;
-   private final NotifyForRefusalOrderWorkflow notifyForRefusalOrderWorkflow;
+    private final NotifyForRefusalOrderWorkflow notifyForRefusalOrderWorkflow;
     private final RemoveDNDocumentsWorkflow removeDNDocumentsWorkflow;
     private final SendClarificationSubmittedNotificationWorkflow sendClarificationSubmittedNotificationWorkflow;
     private final DnDecisionMadeWorkflow dnDecisionMadeWorkflow;
@@ -882,11 +881,11 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                 .build();
         } else {
             Map<String, Object> workflowErrors = welshContinueInterceptWorkflow.errors();
-            log.error("welshContinueInterceptWorkflow with CASE ID: {} failed." + workflowErrors,
-                ccdCallbackRequest.getCaseDetails().getCaseId());
+            log.error("welshContinueInterceptWorkflow with CASE ID: {} failed {}."  ,
+                ccdCallbackRequest.getCaseDetails().getCaseId(), workflowErrors);
             return CcdCallbackResponse
                 .builder()
-                .errors(getNotificationErrors(workflowErrors))
+                .errors(workflowErrors.values().stream().map(String.class::cast).collect(Collectors.toList()))
                 .build();
         }
     }
@@ -901,12 +900,11 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                 .build();
         } else {
             Map<String, Object> workflowErrors = welshSetPreviousStateWorkflow.errors();
-            List<String> errors = workflowErrors.values().stream().map(String.class::cast).collect(Collectors.toList());
-            log.error("CASE ID: {} failed.",
-                ccdCallbackRequest.getCaseDetails().getCaseId());
+            log.error("CASE ID: {} failed {}. ",
+                ccdCallbackRequest.getCaseDetails().getCaseId() , workflowErrors);
             return CcdCallbackResponse
                 .builder()
-                .errors(errors)
+                .errors(workflowErrors.values().stream().map(String.class::cast).collect(Collectors.toList()))
                 .build();
         }
     }

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
@@ -28,7 +27,7 @@ public class WelshSetPreviousStateTask implements Task<Map<String, Object>> {
             context.<String>getTransientObject(CASE_ID_JSON_KEY))
             .getState();;
 
-        if(!BO_WELSH_RESPONSE_AWAITING_REVIEW.equals(previousState)) {
+        if (!BO_WELSH_RESPONSE_AWAITING_REVIEW.equals(previousState)) {
             payload.put(WELSH_PREVIOUS_STATE, previousState);
         }
         return payload;
