@@ -61,13 +61,11 @@ public class DaGrantedLetterDataExtractor {
             throw new InvalidDataForTaskException(exception);
         }
 
-        return trimedDerivedAddress(addressLines);
+        return trimmedDerivedAddress(addressLines);
     }
 
-    private static String trimedDerivedAddress(List<String> addressLines)  {
-        String addressValue =  String.join("", addressLines).trim();
-
-        return addressValue;
+    private static String trimmedDerivedAddress(List<String> addressLines)  {
+        return String.join("", addressLines).trim();
     }
 
 }
