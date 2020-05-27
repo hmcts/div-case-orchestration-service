@@ -16,9 +16,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.RESPONDENT_CORRESPONDENCE_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.RESPONDENT_HOME_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
 
 public class DaGrantedLetterDataExtractorTest {
@@ -62,8 +60,6 @@ public class DaGrantedLetterDataExtractorTest {
     @Test
     public void getAddresseeReturnsValidResultWhenBothHomeAndCorrespondenceAddressProvided() throws TaskException {
         Map<String, Object> caseData = buildCaseDataWithAddressee();
-        caseData.put(RESPONDENT_HOME_ADDRESS, buildAddress("home"));
-        caseData.put(RESPONDENT_CORRESPONDENCE_ADDRESS, buildAddress("correspondence"));
         caseData.put(DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS, DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS_VALUE);
 
         Addressee actual = DaGrantedLetterDataExtractor.getAddressee(caseData);
