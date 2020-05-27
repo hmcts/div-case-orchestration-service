@@ -27,8 +27,6 @@ public class DaGrantedLetterDataExtractorTest {
     private static final String FIRST_NAME = "John";
     private static final String LAST_NAME = "Smith";
     private static final String DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS_VALUE =  "33 Winchester Road\nLondon\nN9 9HA";
-    private static final String DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS_INVALID_VALUE =
-        "10 Baker Street\nAnnex B1\nBakersville\nBakershire\nBK13 B34\nUK\nEurope";
 
     @Test
     public void getDaGrantedDateReturnsValidValueWhenItExists() throws TaskException {
