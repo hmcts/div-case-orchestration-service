@@ -81,7 +81,7 @@ public class AuthUtil {
         String serviceName = this.authenticate(token);
 
         if (!allowedToUpdatePayment.contains(serviceName)) {
-            throw new ForbiddenException("Service is not authorised to access this endpoint");
+            throw new ForbiddenException(serviceName + " is not authorised to access this endpoint");
         }
     }
 
