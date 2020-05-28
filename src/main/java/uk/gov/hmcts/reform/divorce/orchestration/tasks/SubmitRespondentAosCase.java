@@ -3,21 +3,21 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
+import uk.gov.hmcts.reform.divorce.orchestration.util.WelshNextEventUtil;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BooleanSupplier;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_NOMINATE_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_ANSWER_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_AOS_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BO_WELSH_REVIEW;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COMPLETED_AOS_EVENT_ID;
@@ -28,7 +28,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_NEXT_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
@@ -40,6 +39,7 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
     private static final String RESP_SOL_REPRESENTED = "respondentSolicitorRepresented";
     private final CaseMaintenanceClient caseMaintenanceClient;
     private final CcdUtil ccdUtil;
+    private final WelshNextEventUtil welshNextEventUtil;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> submissionData) {
@@ -79,20 +79,18 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
     }
 
     private String evaluateEventId(TaskContext context, Map<String, Object> submissionData, String eventId) {
-        Map<String, Object> currentCasedata =
+
+        BooleanSupplier isWelsh = () -> {
+            Map<String, Object> currentCasedata =
                 Optional.ofNullable(submissionData.get(LANGUAGE_PREFERENCE_WELSH)).map(k -> submissionData)
-                        .orElseGet(() -> caseMaintenanceClient.retrievePetitionById(
-                                context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(),
-                                context.getTransientObject(CASE_ID_JSON_KEY).toString())
-                                .getCaseData());
+                    .orElseGet(() -> caseMaintenanceClient.retrievePetitionById(
+                        context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(),
+                        context.getTransientObject(CASE_ID_JSON_KEY).toString())
+                        .getCaseData());
+            return CaseDataUtils.isLanguagePreferenceWelsh(currentCasedata);
+        };
 
-
-        return Optional.ofNullable(CaseDataUtils.getLanguagePreference(currentCasedata))
-                .filter(value -> value.equals(LanguagePreference.WELSH))
-                .map(k -> {
-                    submissionData.put(WELSH_NEXT_EVENT, eventId);
-                    return BO_WELSH_REVIEW; })
-                .orElse(eventId);
+        return welshNextEventUtil.evaluateEventId(isWelsh, submissionData, eventId);
     }
 
     private boolean isSolicitorRepresentingRespondent(Map<String, Object> submissionData) {

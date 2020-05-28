@@ -29,7 +29,7 @@ public class WelshContinueTask implements Task<Map<String, Object>> {
 
         if (nextEvent.isPresent()) {
             try {
-                payload.remove(WELSH_NEXT_EVENT);
+                payload.put(WELSH_NEXT_EVENT, null);
                 caseMaintenanceClient.updateCase(
                         authToken,
                         caseIDJsonKey,

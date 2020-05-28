@@ -457,6 +457,14 @@ template:
       11: "Tachwedd"
       12: "Rhagfyr"
 
+state:
+  welshStopState:
+    "BOTranslationRequested": "Submitted"
+    "Submitted": "BOTranslationRequested"
+    "PendingRejection": "BOTranslationRequested"
+    "AosStarted": "WelshResponseAwaitingReview"
+    "AosOverdue": "WelshResponseAwaitingReview"
+
 issueAosPackOffLine:
   SEPARATION_TWO_YEARS:
     documentType: AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID

@@ -159,13 +159,17 @@ public class OrchestrationConstants {
     public static final String PAYMENT_MADE_EVENT = "paymentMade";
     public static final String MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER_EVENT_ID = "MakeEligibleForDA_Petitioner";
     public static final String MAKE_CASE_DA_OVERDUE_EVENT_ID = "DecreeAbsoluteOverdue";
-    public static final String AWAITING_DECREE_ABSOLUTE = "AwaitingDecreeAbsolute";
-    public static final String SOLICITOR_CREATE_EVENT = "solicitorCreate";
     public static final String SOLICITOR_SUBMIT_EVENT = "solicitorStatementOfTruthPaySubmit";
     public static final String WELSH_NEXT_EVENT = "WelshNextEvent";
+    public static final String BO_REQUEST_TRANSLATION_FROM_WLU = "boRequestTranslationFromWLU";
+    public static final String WELSH_PREVIOUS_STATE = "WelshPreviousState";
     public static final String BO_WELSH_REVIEW = "boWelshReview";
 
     // CCD Case States
+    public static final String SUBMITTED = "Submitted";
+    public static final String BO_TRANSLATION_REQUESTED = "BOTranslationRequested";
+    public static final String BO_WELSH_RESPONSE_AWAITING_REVIEW = "WelshResponseAwaitingReview";
+    public static final String PENDING_REJECTION = "PendingRejection";
     public static final String AOS_AWAITING = "AosAwaiting";
     public static final String AOS_AWAITING_SOLICITOR = "AosAwaitingSol";
     public static final String AOS_COMPLETED = "AosCompleted";

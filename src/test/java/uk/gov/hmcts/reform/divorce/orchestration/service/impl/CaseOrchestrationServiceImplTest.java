@@ -76,7 +76,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateDNPronouncedCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListingWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshContinueInterceptWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshContinueWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshSetPreviousStateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.ApplicantDecreeAbsoluteEligibilityWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.DecreeAbsoluteAboutToBeGrantedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.DnSubmittedEmailNotificationWorkflow;
@@ -89,7 +91,9 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -328,6 +332,12 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private WelshContinueWorkflow welshContinueWorkflow;
+
+    @Mock
+    private WelshContinueInterceptWorkflow welshContinueInterceptWorkflow;
+
+    @Mock
+    private WelshSetPreviousStateWorkflow welshSetPreviousStateWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -1667,6 +1677,68 @@ public class CaseOrchestrationServiceImplTest {
         assertThat(result, is(caseData));
         verify(welshContinueWorkflow).run(ccdCallbackRequest, authUtil.getCaseworkerToken());
     }
+
+    @Test
+    public void welshContinueInterceptSuccess() throws WorkflowException {
+        Map<String, Object> caseData = Collections.EMPTY_MAP;
+        CaseDetails caseDetails = CaseDetails.builder().caseId("999").build();
+        ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+        when(welshContinueInterceptWorkflow.run(ccdCallbackRequest, authUtil.getCaseworkerToken()))
+            .thenReturn(caseData);
+        when(welshContinueInterceptWorkflow.errors()).thenReturn(Collections.EMPTY_MAP);
+
+        CcdCallbackResponse ccdCallbackResponse = classUnderTest.welshContinueIntercept(ccdCallbackRequest, authUtil.getCaseworkerToken());
+
+        assertThat(ccdCallbackResponse.getData(), is(caseData));
+    }
+
+    @Test
+    public void welshContinueInterceptFailure() throws WorkflowException {
+        CaseDetails caseDetails = CaseDetails.builder().caseId("999").build();
+        ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        Map<String, Object> workflowErrors = ImmutableMap.of("Key1", "value1", "key2", "value2", "key3", "value3");
+
+        when(welshContinueInterceptWorkflow.errors()).thenReturn(workflowErrors);
+
+        CcdCallbackResponse ccdCallbackResponse = classUnderTest.welshContinueIntercept(ccdCallbackRequest, authUtil.getCaseworkerToken());
+
+        List<String> errors = workflowErrors.values().stream().map(String.class::cast).collect(Collectors.toList());
+        String collect = workflowErrors.values().stream().map(String.class::cast).collect(Collectors.joining(":"));
+        System.out.println(collect);
+        assertThat(ccdCallbackResponse.getErrors(), is(errors));
+    }
+
+    @Test
+    public void welshSetPreviousStateSuccess() throws WorkflowException {
+        Map<String, Object> caseData = Collections.EMPTY_MAP;
+        CaseDetails caseDetails = CaseDetails.builder().caseId("999").build();
+        ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+        when(authUtil.getCaseworkerToken()).thenReturn("AUTH_TOKEN");
+        when(welshSetPreviousStateWorkflow.run(ccdCallbackRequest, authUtil.getCaseworkerToken()))
+            .thenReturn(caseData);
+        when(welshSetPreviousStateWorkflow.errors()).thenReturn(Collections.EMPTY_MAP);
+
+        CcdCallbackResponse ccdCallbackResponse = classUnderTest.welshSetPreviousState(ccdCallbackRequest);
+
+        assertThat(ccdCallbackResponse.getData(), is(caseData));
+    }
+
+    @Test
+    public void welshSetPreviousStateFailure() throws WorkflowException {
+        CaseDetails caseDetails = CaseDetails.builder().caseId("999").build();
+        ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+        when(authUtil.getCaseworkerToken()).thenReturn("AUTH_TOKEN");
+        Map<String, Object> workflowErrors = ImmutableMap.of("Key1", "value1", "key2", "value2", "key3", "value3");
+
+        when(welshSetPreviousStateWorkflow.errors()).thenReturn(workflowErrors);
+
+        CcdCallbackResponse ccdCallbackResponse = classUnderTest.welshSetPreviousState(ccdCallbackRequest);
+
+        List<String> errors = workflowErrors.values().stream().map(String.class::cast).collect(Collectors.toList());
+        assertThat(ccdCallbackResponse.getErrors(), is(errors));
+    }
+
 
     @After
     public void tearDown() {
