@@ -97,7 +97,6 @@ public class PaymentUpdateITest extends IdamTestSupport {
 
         stubAuthProviderServerEndpoint();
         stubForbiddenAuthProviderServerEndpoint();
-
     }
 
     @Test
