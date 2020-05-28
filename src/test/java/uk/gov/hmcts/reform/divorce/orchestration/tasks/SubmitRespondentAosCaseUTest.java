@@ -87,7 +87,7 @@ public class SubmitRespondentAosCaseUTest {
         when(caseMaintenanceClient.retrievePetitionById(AUTH_TOKEN, TEST_CASE_ID)).thenReturn(caseDetails);
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
-        when(welshNextEventUtil.evaluateEventId(any(), eq(caseDetails.getCaseData()), eq(AWAITING_ANSWER_AOS_EVENT_ID)))
+        when(welshNextEventUtil.evaluateAOSEventId(any(), eq(caseDetails.getCaseData()), eq(AWAITING_ANSWER_AOS_EVENT_ID)))
             .thenReturn(AWAITING_ANSWER_AOS_EVENT_ID);
 
         Map<String, Object> expectedData = new HashMap<>(divorceSession);
@@ -99,7 +99,7 @@ public class SubmitRespondentAosCaseUTest {
         verify(caseMaintenanceClient)
             .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(AWAITING_ANSWER_AOS_EVENT_ID), eq(expectedData));
 
-        verify(welshNextEventUtil).evaluateEventId(isWelsh.capture(), eq(caseDetails.getCaseData()), eq(AWAITING_ANSWER_AOS_EVENT_ID));
+        verify(welshNextEventUtil).evaluateAOSEventId(isWelsh.capture(), eq(caseDetails.getCaseData()), eq(AWAITING_ANSWER_AOS_EVENT_ID));
         assertThat(isWelsh.getValue().getAsBoolean(), equalTo(false));
     }
 
@@ -112,7 +112,7 @@ public class SubmitRespondentAosCaseUTest {
 
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
-        when(welshNextEventUtil.evaluateEventId(any(), eq(caseDetails.getCaseData()), eq(AWAITING_ANSWER_AOS_EVENT_ID)))
+        when(welshNextEventUtil.evaluateAOSEventId(any(), eq(caseDetails.getCaseData()), eq(AWAITING_ANSWER_AOS_EVENT_ID)))
             .thenReturn(AWAITING_ANSWER_AOS_EVENT_ID);
 
         Map<String, Object> expectedData = new HashMap<>(divorceSession);
@@ -124,7 +124,7 @@ public class SubmitRespondentAosCaseUTest {
         verify(caseMaintenanceClient)
             .updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, expectedData);
 
-        verify(welshNextEventUtil).evaluateEventId(isWelsh.capture(), eq(caseDetails.getCaseData()), eq(AWAITING_ANSWER_AOS_EVENT_ID));
+        verify(welshNextEventUtil).evaluateAOSEventId(isWelsh.capture(), eq(caseDetails.getCaseData()), eq(AWAITING_ANSWER_AOS_EVENT_ID));
         assertThat(isWelsh.getValue().getAsBoolean(), equalTo(false));
 
     }
@@ -141,7 +141,7 @@ public class SubmitRespondentAosCaseUTest {
 
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
-        when(welshNextEventUtil.evaluateEventId(any(), any(), eq(AWAITING_DN_AOS_EVENT_ID)))
+        when(welshNextEventUtil.evaluateAOSEventId(any(), any(), eq(AWAITING_DN_AOS_EVENT_ID)))
             .thenReturn(AWAITING_DN_AOS_EVENT_ID);
 
         Map<String, Object> expectedData = new HashMap<>(divorceSession);
@@ -152,7 +152,7 @@ public class SubmitRespondentAosCaseUTest {
 
         // we let the case proceed to awaiting DN for unreasonable behaviour regardless of whether they admit or not
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, expectedData);
-        verify(welshNextEventUtil).evaluateEventId(isWelsh.capture(), any(), eq(AWAITING_DN_AOS_EVENT_ID));
+        verify(welshNextEventUtil).evaluateAOSEventId(isWelsh.capture(), any(), eq(AWAITING_DN_AOS_EVENT_ID));
         assertThat(isWelsh.getValue().getAsBoolean(), equalTo(false));
     }
 
@@ -167,7 +167,7 @@ public class SubmitRespondentAosCaseUTest {
         when(caseMaintenanceClient.retrievePetitionById(AUTH_TOKEN, TEST_CASE_ID)).thenReturn(
             CaseDetails.builder().caseId(TEST_CASE_ID).caseData(emptyMap()).build());
 
-        when(welshNextEventUtil.evaluateEventId(any(), any(), eq(AWAITING_DN_AOS_EVENT_ID)))
+        when(welshNextEventUtil.evaluateAOSEventId(any(), any(), eq(AWAITING_DN_AOS_EVENT_ID)))
             .thenReturn(BO_WELSH_REVIEW);
 
 
@@ -179,7 +179,7 @@ public class SubmitRespondentAosCaseUTest {
 
         // we let the case proceed to awaiting DN for unreasonable behaviour regardless of whether they admit or not
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, BO_WELSH_REVIEW, expectedData);
-        verify(welshNextEventUtil).evaluateEventId(isWelsh.capture(), any(), eq(AWAITING_DN_AOS_EVENT_ID));
+        verify(welshNextEventUtil).evaluateAOSEventId(isWelsh.capture(), any(), eq(AWAITING_DN_AOS_EVENT_ID));
         assertThat(isWelsh.getValue().getAsBoolean(), equalTo(true));
     }
 
@@ -196,7 +196,7 @@ public class SubmitRespondentAosCaseUTest {
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETED_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
 
-        when(welshNextEventUtil.evaluateEventId(any(), any(), eq(COMPLETED_AOS_EVENT_ID)))
+        when(welshNextEventUtil.evaluateAOSEventId(any(), any(), eq(COMPLETED_AOS_EVENT_ID)))
             .thenReturn(COMPLETED_AOS_EVENT_ID);
 
 
@@ -207,7 +207,7 @@ public class SubmitRespondentAosCaseUTest {
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETED_AOS_EVENT_ID, expectedData);
-        verify(welshNextEventUtil).evaluateEventId(isWelsh.capture(), any(), eq(COMPLETED_AOS_EVENT_ID));
+        verify(welshNextEventUtil).evaluateAOSEventId(isWelsh.capture(), any(), eq(COMPLETED_AOS_EVENT_ID));
         assertThat(isWelsh.getValue().getAsBoolean(), equalTo(false));
     }
 
@@ -223,7 +223,7 @@ public class SubmitRespondentAosCaseUTest {
 
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETED_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
-        when(welshNextEventUtil.evaluateEventId(any(), any(), eq(COMPLETED_AOS_EVENT_ID)))
+        when(welshNextEventUtil.evaluateAOSEventId(any(), any(), eq(COMPLETED_AOS_EVENT_ID)))
             .thenReturn(COMPLETED_AOS_EVENT_ID);
 
 
@@ -233,7 +233,7 @@ public class SubmitRespondentAosCaseUTest {
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETED_AOS_EVENT_ID, expectedData);
-        verify(welshNextEventUtil).evaluateEventId(isWelsh.capture(), any(), eq(COMPLETED_AOS_EVENT_ID));
+        verify(welshNextEventUtil).evaluateAOSEventId(isWelsh.capture(), any(), eq(COMPLETED_AOS_EVENT_ID));
         assertThat(isWelsh.getValue().getAsBoolean(), equalTo(Boolean.FALSE));
     }
 
@@ -246,7 +246,7 @@ public class SubmitRespondentAosCaseUTest {
 
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, divorceSession))
             .thenReturn(CASE_UPDATE_RESPONSE);
-        when(welshNextEventUtil.evaluateEventId(any(), any(), eq(AWAITING_DN_AOS_EVENT_ID)))
+        when(welshNextEventUtil.evaluateAOSEventId(any(), any(), eq(AWAITING_DN_AOS_EVENT_ID)))
             .thenReturn(AWAITING_DN_AOS_EVENT_ID);
 
         Map<String, Object> expectedData = new HashMap<>(divorceSession);
@@ -256,7 +256,7 @@ public class SubmitRespondentAosCaseUTest {
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, expectedData);
-        verify(welshNextEventUtil).evaluateEventId(isWelsh.capture(), any(), eq(AWAITING_DN_AOS_EVENT_ID));
+        verify(welshNextEventUtil).evaluateAOSEventId(isWelsh.capture(), any(), eq(AWAITING_DN_AOS_EVENT_ID));
         assertThat(isWelsh.getValue().getAsBoolean(), equalTo(false));
 
     }
@@ -276,7 +276,7 @@ public class SubmitRespondentAosCaseUTest {
     public void givenConsentAndDefend_whenExecute_thenProceedAsExpected_with_WelshEvent() {
         final Map<String, Object> divorceSession = getCaseData(true, true);
         divorceSession.put(LANGUAGE_PREFERENCE_WELSH, YES_VALUE);
-        when(welshNextEventUtil.evaluateEventId(any(), any(), eq(AWAITING_ANSWER_AOS_EVENT_ID)))
+        when(welshNextEventUtil.evaluateAOSEventId(any(), any(), eq(AWAITING_ANSWER_AOS_EVENT_ID)))
             .thenReturn(BO_WELSH_REVIEW);
 
         Map<String, Object> expectedData = new HashMap<>(divorceSession);
@@ -288,7 +288,7 @@ public class SubmitRespondentAosCaseUTest {
 
         verify(caseMaintenanceClient)
                 .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(BO_WELSH_REVIEW), eq(expectedData));
-        verify(welshNextEventUtil).evaluateEventId(isWelsh.capture(), any(), eq(AWAITING_ANSWER_AOS_EVENT_ID));
+        verify(welshNextEventUtil).evaluateAOSEventId(isWelsh.capture(), any(), eq(AWAITING_ANSWER_AOS_EVENT_ID));
         assertThat(isWelsh.getValue().getAsBoolean(), equalTo(true));
 
     }

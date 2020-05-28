@@ -90,7 +90,7 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
             return CaseDataUtils.isLanguagePreferenceWelsh(currentCasedata);
         };
 
-        return welshNextEventUtil.evaluateEventId(isWelsh, submissionData, eventId);
+        return welshNextEventUtil.evaluateAOSEventId(isWelsh, submissionData, eventId);
     }
 
     private boolean isSolicitorRepresentingRespondent(Map<String, Object> submissionData) {
