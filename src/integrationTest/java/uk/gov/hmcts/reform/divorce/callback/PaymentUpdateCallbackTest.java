@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.support.CcdClientSupport;
+import uk.gov.hmcts.reform.divorce.support.IdamUtils;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
 
@@ -24,18 +25,29 @@ public class PaymentUpdateCallbackTest extends IntegrationTest {
 
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/callback/";
     private static final String SUBMIT_PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/update/";
+    private static final String SERVICE_AUTHORIZATION_HEADER = "ServiceAuthorization";
 
     @Value("${case.orchestration.payment-update.context-path}")
     private String contextPath;
 
+    @Value("${auth.provider.paymentupdate.microservice}")
+    private String allowedService;
+
     @Autowired
     private CcdClientSupport ccdClientSupport;
+
+    @Autowired
+    protected IdamUtils idamTestSupportUtil;
 
     @Test
     public void givenValidPaymentRequest_whenPaymentUpdate_thenReturnStatusOkWithNoErrors() throws Exception {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
         headers.put(HttpHeaders.AUTHORIZATION, createCitizenUser().getAuthToken());
+
+        final Map<String, Object> headersS2S = new HashMap<>();
+        headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
+        headers.put(SERVICE_AUTHORIZATION_HEADER, idamTestSupportUtil.generateUserTokenWithValidMicroService(allowedService));
 
         UserDetails citizenUser = createCitizenUser();
 
@@ -52,7 +64,7 @@ public class PaymentUpdateCallbackTest extends IntegrationTest {
 
         Response response = RestUtil.putToRestService(
                 serverUrl + contextPath,
-                Collections.singletonMap(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString()),
+                headersS2S,
                 paymentUpdate
         );
 
