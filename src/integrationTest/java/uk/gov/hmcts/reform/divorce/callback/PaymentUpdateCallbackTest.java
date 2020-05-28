@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.callback;
 
 import io.restassured.response.Response;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,6 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-@Slf4j
 public class PaymentUpdateCallbackTest extends IntegrationTest {
 
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/callback/";
@@ -45,8 +43,6 @@ public class PaymentUpdateCallbackTest extends IntegrationTest {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
         headers.put(SERVICE_AUTHORIZATION_HEADER, idamTestSupportUtil.generateUserTokenWithValidMicroService(allowedService));
-
-        log.info(headers.toString());
 
         UserDetails citizenUser = createCitizenUser();
 
