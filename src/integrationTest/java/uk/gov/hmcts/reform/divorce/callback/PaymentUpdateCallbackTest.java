@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.divorce.support.IdamUtils;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
