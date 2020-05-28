@@ -18,7 +18,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 public class AuthUtil {
 
     private final AuthTokenValidator authTokenValidator;
-    private final List<String> allowedToUpdatePayment;
+    private final List<String> allowedToPaymentUpdate;
     private static final String BEARER = "Bearer ";
     private static final String AUTHORIZATION_CODE = "authorization_code";
     private static final String CODE = "code";
@@ -50,11 +50,11 @@ public class AuthUtil {
     public AuthUtil(
                     IdamClient idamClient,
                     AuthTokenValidator authTokenValidator,
-                    @Value("${idam.s2s-auth.services-allowed-to-update-payment-update}") List<String> allowedToUpdatePayment
+                    @Value("${idam.s2s-auth.services-allowed-to-payment-update}") List<String> allowedToPaymentUpdate
     ) {
         this.idamClient = idamClient;
         this.authTokenValidator = authTokenValidator;
-        this.allowedToUpdatePayment = allowedToUpdatePayment;
+        this.allowedToPaymentUpdate = allowedToPaymentUpdate;
     }
 
     public String getCitizenToken() {
@@ -77,10 +77,10 @@ public class AuthUtil {
         return token.startsWith(BEARER) ? token : BEARER.concat(token);
     }
 
-    public void assertIsServiceAllowedToUpdate(String token) throws AuthenticationError {
+    public void assertIsServiceAllowedToPaymentUpdate(String token) throws AuthenticationError {
         String serviceName = this.authenticate(token);
 
-        if (!allowedToUpdatePayment.contains(serviceName)) {
+        if (!allowedToPaymentUpdate.contains(serviceName)) {
             throw new ForbiddenException(serviceName + " is not authorised to access this endpoint");
         }
     }

@@ -100,12 +100,10 @@ public class PaymentUpdateITest extends IdamTestSupport {
 
         stubAuthProviderServerEndpoint();
         stubForbiddenAuthProviderServerEndpoint();
-
     }
 
     @Test
     public void givenEventDataAndAuth_whenEventDataIsSubmitted_thenReturnSuccess() throws Exception {
-
         webClient.perform(put(API_URL)
                     .header(SERVICE_AUTHORIZATION_HEADER, BEARER_AUTH_TOKEN_1)
                     .content(convertObjectToJsonString(paymentUpdate))
@@ -117,7 +115,6 @@ public class PaymentUpdateITest extends IdamTestSupport {
 
     @Test
     public void givenEventDataAndForbiddenAuth_whenEventDataIsSubmitted_thenReturnError() throws Exception {
-
         webClient.perform(put(API_URL)
             .header(SERVICE_AUTHORIZATION_HEADER, BEARER_AUTH_TOKEN)
             .content(convertObjectToJsonString(paymentUpdate))
@@ -129,7 +126,6 @@ public class PaymentUpdateITest extends IdamTestSupport {
 
     @Test
     public void givenEventDataAndNoAuth_whenEventDataIsSubmitted_thenReturnError() throws Exception {
-
         webClient.perform(put(API_URL)
             .header(SERVICE_AUTHORIZATION_HEADER, "")
             .content(convertObjectToJsonString(paymentUpdate))

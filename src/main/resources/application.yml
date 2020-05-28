@@ -447,7 +447,7 @@ idam:
     secret: ${SERVICE_AUTH_SECRET:dummysecret}
     services-allowed-to-update: ${BSP_SERVICES_ALLOWED_TO_UPDATE:bulk_scan_orchestrator}
     services-allowed-to-validate: ${BSP_SERVICES_ALLOWED_TO_VALIDATE:bulk_scan_processor}
-    services-allowed-to-update-payment-update: fees_and_payments
+    services-allowed-to-payment-update: ${SERVICES_ALLOWED_TO_PAYMENT_UPDATE:fees_and_payments}
   api:
     url: ${IDAM_API_URL:http://localhost:4503}
 
