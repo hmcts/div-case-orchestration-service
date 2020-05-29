@@ -37,3 +37,13 @@ java:
       port: 5432
     persistence:
       enabled: false
+
+feature-toggle:
+  service:
+    api:
+      baseurl: ${FEATURE_TOGGLE_SERVICE_API_BASEURL:http://rpe-feature-toggle-api-aat.service.core-compute-aat.internal}
+  toggle:
+    bulk-printer-toggle-name: "divorce_bulk_print"
+    feature_resp_solicitor_details: true
+    dn_refusal: true
+    paper_update: true
