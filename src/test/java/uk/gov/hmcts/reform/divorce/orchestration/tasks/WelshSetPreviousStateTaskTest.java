@@ -51,7 +51,7 @@ public class WelshSetPreviousStateTaskTest {
 
     @Test
     public void testExecuteSuccess() throws TaskException {
-       CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).state("previous").build();
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).state("previous").build();
         when(caseMaintenanceClient.retrievePetitionById(context.getTransientObject(AUTH_TOKEN_JSON_KEY),
             context.getTransientObject(CASE_ID_JSON_KEY))).thenReturn(caseDetails);
 

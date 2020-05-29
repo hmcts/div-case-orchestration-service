@@ -457,6 +457,9 @@ template:
       11: "Tachwedd"
       12: "Rhagfyr"
 
+ignore:
+  states: WelshResponseAwaitingReview,WelshDNisRefused
+
 my:
   servers:
     - dev.bar.com

@@ -18,6 +18,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_ANSWER_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BO_WELSH_AOS_RECEIVED_NO_AD_CON_STARTED_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BO_WELSH_AOS_SUBMITTED_DEFENDED_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BO_WELSH_AOS_SUBMITTED_UNDEFENDED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COMPLETED_AOS_EVENT_ID;
@@ -53,13 +56,12 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
         } else {
             //if respondent didn't nominate a solicitor, then they've provided an answer
             if (isRespondentDefendingDivorce(submissionData)) {
-                eventId = AWAITING_ANSWER_AOS_EVENT_ID;
+                eventId = evaluateEventId(context, submissionData, AWAITING_ANSWER_AOS_EVENT_ID, BO_WELSH_AOS_SUBMITTED_DEFENDED_EVENT_ID) ;
             } else if (isRespondentAgreeingDivorceButNotAdmittingFact(submissionData, context)) {
-                eventId = COMPLETED_AOS_EVENT_ID;
+                eventId = evaluateEventId(context, submissionData, COMPLETED_AOS_EVENT_ID, BO_WELSH_AOS_RECEIVED_NO_AD_CON_STARTED_EVENT_ID);
             } else {
-                eventId = AWAITING_DN_AOS_EVENT_ID;
+                eventId = evaluateEventId(context, submissionData, AWAITING_DN_AOS_EVENT_ID, BO_WELSH_AOS_SUBMITTED_UNDEFENDED_EVENT_ID);
             }
-            eventId = evaluateEventId(context, submissionData, eventId);
 
             submissionData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
             submissionData.put(RECEIVED_AOS_FROM_RESP_DATE, ccdUtil.getCurrentDateCcdFormat());
@@ -78,7 +80,7 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
         return updateCase;
     }
 
-    private String evaluateEventId(TaskContext context, Map<String, Object> submissionData, String eventId) {
+    private String evaluateEventId(TaskContext context, Map<String, Object> submissionData, String eventId, String welshEventId) {
 
         BooleanSupplier isWelsh = () -> {
             Map<String, Object> currentCasedata =
@@ -90,7 +92,7 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
             return CaseDataUtils.isLanguagePreferenceWelsh(currentCasedata);
         };
 
-        return welshNextEventUtil.evaluateAOSEventId(isWelsh, submissionData, eventId);
+        return welshNextEventUtil.evaluateAOSEventId(isWelsh, submissionData, eventId, welshEventId);
     }
 
     private boolean isSolicitorRepresentingRespondent(Map<String, Object> submissionData) {

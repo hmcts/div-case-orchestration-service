@@ -21,17 +21,19 @@ public class WelshNextEventUtilTest {
     @Test
     public void testWelshStopEvent() {
         String nextEvent = "next_event";
+        String welshEvent = "welsh_event";
         Map<String, Object> caseData = new HashMap<>();
-        String resNextEvent = nextEventUtil.evaluateAOSEventId(() -> true, caseData, nextEvent);
+        String resNextEvent = nextEventUtil.evaluateAOSEventId(() -> true, caseData, nextEvent, welshEvent);
         assertThat(resNextEvent).isEqualTo(BO_WELSH_REVIEW);
-        assertThat(caseData).contains(entry(WELSH_NEXT_EVENT, nextEvent));
+        assertThat(caseData).contains(entry(WELSH_NEXT_EVENT, welshEvent));
     }
 
     @Test
     public void testEnglishContinue() {
         String nextEvent = "next_event";
+        String welshEvent = "welsh_event";
         Map<String, Object> caseData = new HashMap<>();
-        String resNextEvent = nextEventUtil.evaluateAOSEventId(() -> false, caseData, nextEvent);
+        String resNextEvent = nextEventUtil.evaluateAOSEventId(() -> false, caseData, nextEvent, welshEvent);
         assertThat(resNextEvent).isEqualTo(nextEvent);
         assertThat(caseData).doesNotContainKeys(WELSH_NEXT_EVENT);
     }
