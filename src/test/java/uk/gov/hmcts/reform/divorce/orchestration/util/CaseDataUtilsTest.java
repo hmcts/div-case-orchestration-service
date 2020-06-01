@@ -18,14 +18,22 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseCon
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_COSTS_OPTIONS_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED_OLD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_DN_REFUSED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.DESERTION;
 
 public class CaseDataUtilsTest {
+
     private static final String FIELD_NAME = "TestField";
     private static final String LINK_ID = "LinkId";
+
+    private CaseDataUtils caseDataUtils = new CaseDataUtils();
 
     @Test
     public void givenDataWithCaseLink_thenReturnLinkValue() {
@@ -35,7 +43,8 @@ public class CaseDataUtilsTest {
 
     @Test
     public void givenFieldNoExist_whenGetCaseLinkValue_thenReturnNull() {
-        assertThat(CaseDataUtils.getCaseLinkValue(DUMMY_CASE_DATA, FIELD_NAME), nullValue());
+        Map<String, Object> caseLinkData = DUMMY_CASE_DATA;
+        assertThat(CaseDataUtils.getCaseLinkValue(caseLinkData, FIELD_NAME), nullValue());
     }
 
     @Test
@@ -46,7 +55,8 @@ public class CaseDataUtilsTest {
 
     @Test
     public void givenNonExistValue_whenGetFieldAsStringObjectMap_thenReturnNull() {
-        assertThat(CaseDataUtils.getFieldAsStringObjectMap(DUMMY_CASE_DATA, FIELD_NAME), is(nullValue()));
+        Map<String, Object> input = DUMMY_CASE_DATA;
+        assertThat(CaseDataUtils.getFieldAsStringObjectMap(input, FIELD_NAME), is(nullValue()));
     }
 
     @Test(expected = ClassCastException.class)
@@ -169,5 +179,36 @@ public class CaseDataUtilsTest {
         caseData.put(OrchestrationConstants.WELSH_REFUSAL_REJECTION_ADDITIONAL_INFO, "Welhs add info");
         CaseDetails caseDetails = CaseDetails.builder().state(WELSH_DN_REFUSED).caseData(caseData).build();
         assertThat(CaseDataUtils.isWelshTranslationRequiredForDnRefusal(caseDetails), is(false));
+    }
+
+    @Test
+    public void shouldReturnAdequateResultsFor_isAdulteryCaseWithCoRespondent() {
+        assertThat(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(ImmutableMap.of(
+            D_8_REASON_FOR_DIVORCE, DESERTION.getValue()
+        )), is(false));
+
+        assertThat(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(ImmutableMap.of(
+            D_8_REASON_FOR_DIVORCE, ADULTERY.getValue()
+        )), is(false));
+
+        assertThat(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(ImmutableMap.of(
+            D_8_REASON_FOR_DIVORCE, ADULTERY.getValue(),
+            D_8_CO_RESPONDENT_NAMED_OLD, NO_VALUE
+        )), is(false));
+
+        assertThat(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(ImmutableMap.of(
+            D_8_REASON_FOR_DIVORCE, ADULTERY.getValue(),
+            D_8_CO_RESPONDENT_NAMED, NO_VALUE
+        )), is(false));
+
+        assertThat(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(ImmutableMap.of(
+            D_8_REASON_FOR_DIVORCE, ADULTERY.getValue(),
+            D_8_CO_RESPONDENT_NAMED_OLD, YES_VALUE
+        )), is(true));
+
+        assertThat(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(ImmutableMap.of(
+            D_8_REASON_FOR_DIVORCE, ADULTERY.getValue(),
+            D_8_CO_RESPONDENT_NAMED, YES_VALUE
+        )), is(true));
     }
 }
