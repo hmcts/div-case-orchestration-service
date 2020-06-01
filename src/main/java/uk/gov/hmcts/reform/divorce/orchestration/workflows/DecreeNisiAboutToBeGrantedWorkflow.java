@@ -63,6 +63,16 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
             return new HashMap<>(caseData);
         }
         tasksToRun.add(setDNDecisionStateTask);
+
+        if (CaseDataUtils.isRejectReasonAddInfoAwaitingTranslation(caseData)) {
+            Map<String, Object> payloadToReturn = this.execute(
+                tasksToRun.stream().toArray(Task[]::new),
+                caseData,
+                ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
+                ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails)
+            );
+            return payloadToReturn;
+        }
         tasksToRun.add(validateDNDecisionTask);
         tasksToRun.add(addDecreeNisiDecisionDateTask);
         tasksToRun.add(addDnOutcomeFlagFieldTask);

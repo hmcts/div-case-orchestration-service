@@ -13,11 +13,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class WelshNextEventUtil {
 
-    public String evaluateEventId(BooleanSupplier isWelsh, Map<String, Object> caseData, String eventId) {
+    public String evaluateAOSEventId(BooleanSupplier isWelsh, Map<String, Object> caseData, String eventId, String welshEventId) {
         return Optional.of(isWelsh.getAsBoolean())
             .filter(Predicate.isEqual(true))
             .map(k -> {
-                caseData.put(WELSH_NEXT_EVENT, eventId);
+                caseData.put(WELSH_NEXT_EVENT, welshEventId);
                 return BO_WELSH_REVIEW; })
             .orElse(eventId);
     }
