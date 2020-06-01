@@ -460,11 +460,6 @@ template:
 ignore:
   states: WelshResponseAwaitingReview,WelshDNisRefused
 
-my:
-  servers:
-    - dev.bar.com
-    - foo.bar.com
-
 issueAosPackOffLine:
   SEPARATION_TWO_YEARS:
     documentType: AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID
