@@ -157,6 +157,16 @@ public class BulkPrintTest extends IdamTestSupport {
             )));
     }
 
+    private void stubDMStore(HttpStatus status) {
+        documentStore.stubFor(WireMock.get("/binary")
+            .withHeader(SERVICE_AUTHORIZATION, new EqualToPattern("Bearer " + TEST_SERVICE_AUTH_TOKEN))
+            .withHeader("user-roles", new EqualToPattern("caseworker-divorce"))
+            .willReturn(aResponse()
+                .withStatus(status.value())
+                .withHeader(CONTENT_TYPE, ALL_VALUE)
+                .withBody("imagecontent".getBytes())));
+    }
+
     private void stubServiceAuthProvider(HttpStatus status, String response) {
         serviceAuthProviderServer.stubFor(WireMock.post(SERVICE_AUTH_CONTEXT_PATH)
             .willReturn(aResponse()

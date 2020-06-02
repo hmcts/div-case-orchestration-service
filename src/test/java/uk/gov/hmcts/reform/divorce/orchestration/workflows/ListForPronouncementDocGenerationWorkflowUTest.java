@@ -98,7 +98,7 @@ public class ListForPronouncementDocGenerationWorkflowUTest {
         inOrder.verify(addNewDocumentsToCaseDataTask).execute(context, payload);
         inOrder.verify(removePronouncementDetailsTask).execute(context, payload);
     }
-    
+
     @Test
     public void givenCaseWithoutJudge_notCallDocumentGenerator() throws TaskException, WorkflowException {
         final Map<String, Object> payload = new HashMap<>();

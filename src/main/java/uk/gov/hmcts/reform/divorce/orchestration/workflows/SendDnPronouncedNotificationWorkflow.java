@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmail;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerGenericUpdateNotificationEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentGenericUpdateNotificationEmail;
 
@@ -30,7 +30,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
     SendRespondentGenericUpdateNotificationEmail sendRespondentGenericUpdateNotificationEmail;
 
     @Autowired
-    SendCoRespondentGenericUpdateNotificationEmail sendCoRespondentGenericUpdateNotificationEmail;
+    SendCoRespondentGenericUpdateNotificationEmailTask sendCoRespondentGenericUpdateNotificationEmailTask;
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
@@ -40,7 +40,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         tasks.add(sendRespondentGenericUpdateNotificationEmail);
 
         if (isCoRespondentLiableForCosts(ccdCallbackRequest.getCaseDetails().getCaseData())) {
-            tasks.add(sendCoRespondentGenericUpdateNotificationEmail);
+            tasks.add(sendCoRespondentGenericUpdateNotificationEmailTask);
         }
 
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
