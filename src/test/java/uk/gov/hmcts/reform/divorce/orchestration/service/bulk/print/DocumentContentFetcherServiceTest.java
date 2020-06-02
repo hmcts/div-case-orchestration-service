@@ -82,7 +82,7 @@ public class DocumentContentFetcherServiceTest {
 
     @Test
     public void verifyBinaryUrlIsCreated() {
-        String binaryUrl = documentContentFetcherService.appendBinaryPathToUrl(URL);
+        String binaryUrl = documentContentFetcherService.appendBinaryPathToDocumentsUrl(URL);
 
         assertTrue(binaryUrl.contains(BINARY_URL));
     }

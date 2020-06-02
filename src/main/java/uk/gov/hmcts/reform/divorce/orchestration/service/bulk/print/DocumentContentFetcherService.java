@@ -51,7 +51,7 @@ public class DocumentContentFetcherService {
 
     private ResponseEntity<byte[]> callDocStore(GeneratedDocumentInfo document) {
         HttpEntity<RestRequest> httpEntity = getRequestHeaderForCaseWorker();
-        String binaryUrl = appendBinaryPathToUrl(document.getUrl());
+        String binaryUrl = appendBinaryPathToDocumentsUrl(document.getUrl());
 
         ResponseEntity<byte[]> response = restTemplate.exchange(binaryUrl, HttpMethod.GET, httpEntity, byte[].class);
 
@@ -67,14 +67,14 @@ public class DocumentContentFetcherService {
         return response;
     }
 
-    String appendBinaryPathToUrl(String documentUrl) {
+    String appendBinaryPathToDocumentsUrl(String documentUrl) {
         return Optional.of(documentUrl)
-            .map(url -> generateBinaryUrl(url))
+            .map(url -> appendBinaryUrl(url))
             .orElseThrow(() -> new RuntimeException("No binary url found in document info"));
     }
 
-    // Letters dont have '/binary' prefix as they dont come from generated's document_link
-    private String generateBinaryUrl(String url) {
+    // Letters dont have '/binary' info as they dont come from generated documents document_link key
+    private String appendBinaryUrl(String url) {
         return (StringUtils.endsWith(url, DOCUMENTS_BINARY_PATH)) ?  url : url + DOCUMENTS_BINARY_PATH;
     }
 
