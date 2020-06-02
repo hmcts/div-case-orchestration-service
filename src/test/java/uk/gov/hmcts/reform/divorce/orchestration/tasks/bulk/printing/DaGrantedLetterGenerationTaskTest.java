@@ -8,7 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DaGrantedLetter;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.BasicCoverLetter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
@@ -90,12 +90,12 @@ public class DaGrantedLetterGenerationTaskTest {
     }
 
     private void verifyPdfDocumentGenerationCallIsCorrect() {
-        final ArgumentCaptor<DaGrantedLetter> daGrantedLetterArgumentCaptor = ArgumentCaptor.forClass(DaGrantedLetter.class);
+        final ArgumentCaptor<BasicCoverLetter> daGrantedLetterArgumentCaptor = ArgumentCaptor.forClass(BasicCoverLetter.class);
         verify(pdfDocumentGenerationService, times(1))
             .generatePdf(daGrantedLetterArgumentCaptor.capture(), eq(TEMPLATE_ID), eq(AUTH_TOKEN));
         verify(documentContentFetcherService, times(1)).fetchPrintContent(eq(DOCUMENT));
 
-        final DaGrantedLetter daGrantedLetter = daGrantedLetterArgumentCaptor.getValue();
+        final BasicCoverLetter daGrantedLetter = daGrantedLetterArgumentCaptor.getValue();
         assertThat(daGrantedLetter.getPetitionerFullName(), is("Anna Nowak"));
         assertThat(daGrantedLetter.getRespondentFullName(), is("John Smith"));
         assertThat(daGrantedLetter.getCaseReference(), is(CASE_ID));
