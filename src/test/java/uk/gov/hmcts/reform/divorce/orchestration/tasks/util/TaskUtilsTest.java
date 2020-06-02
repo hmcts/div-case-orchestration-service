@@ -1,18 +1,26 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.util;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.PrepareDataForDocumentGenerationTask;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
@@ -136,4 +144,67 @@ public class TaskUtilsTest {
 
         TaskUtils.getMandatoryPropertyValueAsLocalDateFromCCD(caseDataPayload, "testKey");
     }
+
+    //TODO - what's below here will most likely be deleted at some point
+    @Test
+    public void appendAnotherDocumentToBulkPrintAddsAnotherDocumentToList() {
+        TaskContext context = new DefaultTaskContext();
+        Map<String, GeneratedDocumentInfo> existingDocuments = buildExistingDocumentsMap();
+        context.setTransientObject(PrepareDataForDocumentGenerationTask.ContextKeys.GENERATED_DOCUMENTS, existingDocuments);
+
+        TaskUtils.appendAnotherDocumentToBulkPrint(context, document());
+
+        Map<String, GeneratedDocumentInfo> documents = context.getTransientObject(
+            PrepareDataForDocumentGenerationTask.ContextKeys.GENERATED_DOCUMENTS
+        );
+
+        assertThat(documents.size(), is(2));
+    }
+
+    @Test
+    public void appendAnotherDocumentToBulkPrintCalledMultipleTimesAddsDocumentEachTime() {
+        TaskContext context = new DefaultTaskContext();
+
+        TaskUtils.appendAnotherDocumentToBulkPrint(context, document());
+        TaskUtils.appendAnotherDocumentToBulkPrint(context, document());
+        TaskUtils.appendAnotherDocumentToBulkPrint(context, document());
+
+        Map<String, GeneratedDocumentInfo> documents = context.getTransientObject(
+            PrepareDataForDocumentGenerationTask.ContextKeys.GENERATED_DOCUMENTS
+        );
+
+        assertThat(documents.size(), is(3));
+    }
+
+    @Test
+    public void getDocumentToBulkPrintReturnsMapWithAllDocumentsAdded() {
+        TaskContext context = new DefaultTaskContext();
+
+        TaskUtils.appendAnotherDocumentToBulkPrint(context, document());
+        TaskUtils.appendAnotherDocumentToBulkPrint(context, document());
+        TaskUtils.appendAnotherDocumentToBulkPrint(context, document());
+
+        Map<String, GeneratedDocumentInfo> documents = context.getTransientObject(PrepareDataForDocumentGenerationTask.ContextKeys.GENERATED_DOCUMENTS);
+
+        assertThat(documents.size(), is(3));
+        documents.values().forEach(documentInfo -> assertThat(documentInfo, instanceOf(GeneratedDocumentInfo.class)));
+    }
+
+    private Map<String, GeneratedDocumentInfo> buildExistingDocumentsMap() {
+        GeneratedDocumentInfo doc = document();
+
+        return new HashMap<>(ImmutableMap.of(doc.getDocumentType(), document()));
+    }
+
+    public static GeneratedDocumentInfo document() {
+        return GeneratedDocumentInfo.builder().documentType(randomString()).build();
+    }
+
+    private static String randomString() {
+        byte[] array = new byte[7];
+        new Random().nextBytes(array);
+
+        return new String(array, StandardCharsets.UTF_8);
+    }
+
 }

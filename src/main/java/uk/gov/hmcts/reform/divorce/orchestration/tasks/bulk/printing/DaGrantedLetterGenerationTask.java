@@ -61,7 +61,7 @@ public class DaGrantedLetterGenerationTask extends PrepareDataForDocumentGenerat
     }
 
     @Override
-    protected GeneratedDocumentInfo populateContentOfDocument(GeneratedDocumentInfo generatedDocumentInfo) {
+    protected GeneratedDocumentInfo downloadDocument(GeneratedDocumentInfo generatedDocumentInfo) {
         return documentContentFetcherService.fetchPrintContent(generatedDocumentInfo);
     }
 

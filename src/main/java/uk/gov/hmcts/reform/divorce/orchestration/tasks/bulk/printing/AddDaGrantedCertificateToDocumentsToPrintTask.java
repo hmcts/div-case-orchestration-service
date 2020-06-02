@@ -11,9 +11,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.DocumentContentFetcherService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedCertificateDataExtractor;
 
+import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.PrepareDataForDocumentGenerationTask.appendAnotherDocumentToBulkPrint;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENTS_GENERATED;
 
 @Component
 @AllArgsConstructor
@@ -28,10 +29,10 @@ public class AddDaGrantedCertificateToDocumentsToPrintTask implements Task<Map<S
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
-        appendAnotherDocumentToBulkPrint(
-            context,
-            getExistingDaGrantedFromCaseData(caseData)
-        );
+        GeneratedDocumentInfo existingDaGrantedFromCaseData = getExistingDaGrantedFromCaseData(caseData);
+
+        Map<String, GeneratedDocumentInfo> documentsToBulkPrint = context.computeTransientObjectIfAbsent(DOCUMENTS_GENERATED, new HashMap<>());
+        documentsToBulkPrint.put(existingDaGrantedFromCaseData.getDocumentType(), existingDaGrantedFromCaseData);
 
         return caseData;
     }

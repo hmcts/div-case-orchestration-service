@@ -39,9 +39,14 @@ public abstract class PrepareDataForDocumentGenerationTask implements Task<Map<S
 
         DocmosisTemplateVars templateModel = prepareDataForPdf(context, caseData);
         GeneratedDocumentInfo documentInfo = generatePdf(context, templateModel);
-        GeneratedDocumentInfo documentInfoWithMetadata = populateMetadataForGeneratedDocument(documentInfo);//TODO - is this right?
+        GeneratedDocumentInfo documentInfoWithMetadata = populateMetadataForGeneratedDocument(documentInfo);
 
-        appendAnotherDocumentToBulkPrint(context, populateContentOfDocument(documentInfoWithMetadata));//TODO - this fetches from DS
+//        GeneratedDocumentInfo generatedDocumentInfo = downloadDocument(documentInfoWithMetadata);//TODO - this fetches from DS
+//
+//        Map<String, GeneratedDocumentInfo> documentsToBulkPrint = context.computeTransientObjectIfAbsent(ContextKeys.GENERATED_DOCUMENTS, new HashMap<>());
+//        documentsToBulkPrint.put(generatedDocumentInfo.getDocumentType(), generatedDocumentInfo);
+
+        //TODO - add document to case data - D8DOCUMENTS_GENERATED
 
         return caseData;
     }
@@ -52,15 +57,6 @@ public abstract class PrepareDataForDocumentGenerationTask implements Task<Map<S
 
     protected abstract GeneratedDocumentInfo populateMetadataForGeneratedDocument(GeneratedDocumentInfo documentInfo);
 
-    protected abstract GeneratedDocumentInfo populateContentOfDocument(GeneratedDocumentInfo documentInfo);
+    protected abstract GeneratedDocumentInfo downloadDocument(GeneratedDocumentInfo documentInfo);
 
-    static void appendAnotherDocumentToBulkPrint(TaskContext context, GeneratedDocumentInfo generatedDocumentInfo) {
-        Map<String, GeneratedDocumentInfo> documentsToBulkPrint = getDocumentsToBulkPrint(context);
-
-        documentsToBulkPrint.put(generatedDocumentInfo.getDocumentType(), generatedDocumentInfo);
-    }
-
-    static Map<String, GeneratedDocumentInfo> getDocumentsToBulkPrint(TaskContext context) {
-        return context.computeTransientObjectIfAbsent(ContextKeys.GENERATED_DOCUMENTS, new HashMap<>());
-    }
 }

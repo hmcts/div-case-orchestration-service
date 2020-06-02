@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.DocumentCont
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtilsTest;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -36,7 +37,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractorTest.buildCaseDataWithAddressee;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DaGrantedLetterGenerationTask.FileMetadata.TEMPLATE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.PrepareDataForDocumentGenerationTaskTest.document;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DaGrantedLetterGenerationTaskTest {
@@ -68,7 +68,7 @@ public class DaGrantedLetterGenerationTaskTest {
 
     @Before
     public void setup() {
-        GeneratedDocumentInfo createdDoc = document();
+        GeneratedDocumentInfo createdDoc = TaskUtilsTest.document();
         when(ctscContactDetailsDataProviderService.getCtscContactDetails()).thenReturn(CTSC_CONTACT);
         when(pdfDocumentGenerationService.generatePdf(any(DocmosisTemplateVars.class), eq(TEMPLATE_ID), eq(AUTH_TOKEN)))
             .thenReturn(createdDoc);
@@ -81,8 +81,7 @@ public class DaGrantedLetterGenerationTaskTest {
 
         daGrantedLetterGenerationTask.execute(context, buildCaseData());
 
-        Map<String, GeneratedDocumentInfo> documents = PrepareDataForDocumentGenerationTask.getDocumentsToBulkPrint(context);
-
+        Map<String, GeneratedDocumentInfo> documents = context.getTransientObject(PrepareDataForDocumentGenerationTask.ContextKeys.GENERATED_DOCUMENTS);
         assertThat(documents.size(), is(1));
         assertThat(documents.get(DOCUMENT.getDocumentType()), is(DOCUMENT));
         verify(ctscContactDetailsDataProviderService, times(1)).getCtscContactDetails();

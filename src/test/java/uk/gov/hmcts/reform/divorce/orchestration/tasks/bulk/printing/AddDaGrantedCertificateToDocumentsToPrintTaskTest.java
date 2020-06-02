@@ -10,7 +10,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.DocumentContentFetcherService;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtilsTest;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
@@ -19,11 +21,10 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedCertificateDataExtractorTest.DA_GRANTED_CERTIFICATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedCertificateDataExtractorTest.buildCaseDataWithDocumentsGeneratedList;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedCertificateDataExtractorTest.buildCollectionMemberWithDocumentType;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.PrepareDataForDocumentGenerationTask.appendAnotherDocumentToBulkPrint;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.PrepareDataForDocumentGenerationTaskTest.document;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AddDaGrantedCertificateToDocumentsToPrintTaskTest {
@@ -52,7 +53,7 @@ public class AddDaGrantedCertificateToDocumentsToPrintTaskTest {
 
         addDaGrantedCertificateToDocumentsToPrintTask.execute(context, caseData);
 
-        Map<String, GeneratedDocumentInfo> documentsToBulkPrint = PrepareDataForDocumentGenerationTask.getDocumentsToBulkPrint(context);
+        Map<String, GeneratedDocumentInfo> documentsToBulkPrint = context.getTransientObject(DOCUMENTS_GENERATED);
         GeneratedDocumentInfo document = documentsToBulkPrint.get(DA_GRANTED_CERTIFICATE);
 
         assertThat(documentsToBulkPrint.size(), is(1));
@@ -63,8 +64,10 @@ public class AddDaGrantedCertificateToDocumentsToPrintTaskTest {
     @Test
     public void executeAddsAnotherDocumentToContext() {
         TaskContext context = new DefaultTaskContext();
-        final GeneratedDocumentInfo existingDocument = document();
-        appendAnotherDocumentToBulkPrint(context, existingDocument);
+        Map<String, GeneratedDocumentInfo> existingDocumentsToBulkPrint = new HashMap<>();//TODO - make immutable
+        final GeneratedDocumentInfo existingDocument = TaskUtilsTest.document();
+        existingDocumentsToBulkPrint.put(existingDocument.getDocumentType(), existingDocument);
+        context.setTransientObject(DOCUMENTS_GENERATED, existingDocumentsToBulkPrint);
 
         Map<String, Object> caseData = buildCaseDataWithDocumentsGeneratedList(
             asList(
@@ -74,7 +77,7 @@ public class AddDaGrantedCertificateToDocumentsToPrintTaskTest {
 
         addDaGrantedCertificateToDocumentsToPrintTask.execute(context, caseData);
 
-        Map<String, GeneratedDocumentInfo> documentsToBulkPrint = PrepareDataForDocumentGenerationTask.getDocumentsToBulkPrint(context);
+        Map<String, GeneratedDocumentInfo> documentsToBulkPrint = context.getTransientObject(DOCUMENTS_GENERATED);
         final GeneratedDocumentInfo document = documentsToBulkPrint.get(DA_GRANTED_CERTIFICATE);
 
         assertThat(documentsToBulkPrint.size(), is(2));
