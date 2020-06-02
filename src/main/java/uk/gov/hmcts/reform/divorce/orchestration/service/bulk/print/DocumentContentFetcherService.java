@@ -25,7 +25,6 @@ import java.util.Optional;
 public class DocumentContentFetcherService {
 
     public static final String CALL_DM_ON_BEHALF = "caseworker-divorce";
-    private static final String DOCUMENTS_BINARY_PATH = "/binary";
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Headers {
@@ -51,9 +50,8 @@ public class DocumentContentFetcherService {
 
     private ResponseEntity<byte[]> callDocStore(GeneratedDocumentInfo document) {
         HttpEntity<RestRequest> httpEntity = getRequestHeaderForCaseWorker();
-        String binaryUrl = appendBinaryPathToDocumentsUrl(document.getUrl());
 
-        ResponseEntity<byte[]> response = restTemplate.exchange(binaryUrl, HttpMethod.GET, httpEntity, byte[].class);
+        ResponseEntity<byte[]> response = restTemplate.exchange(document.getUrl(), HttpMethod.GET, httpEntity, byte[].class);
 
         log.info("Try to fetch content of document from DM {}, {}", document.getFileName(), document.getUrl());
 
@@ -65,17 +63,6 @@ public class DocumentContentFetcherService {
         log.info("Fetch content of document from DM {}, size: {}", document.getFileName(), response.getBody().length);
 
         return response;
-    }
-
-    String appendBinaryPathToDocumentsUrl(String documentUrl) {
-        return Optional.of(documentUrl)
-            .map(url -> appendBinaryUrl(url))
-            .orElseThrow(() -> new RuntimeException("No binary url found in document info"));
-    }
-
-    // Letters dont have '/binary' info as they dont come from generated documents document_link key
-    private String appendBinaryUrl(String url) {
-        return (StringUtils.endsWith(url, DOCUMENTS_BINARY_PATH)) ?  url : url + DOCUMENTS_BINARY_PATH;
     }
 
     private HttpEntity<RestRequest> getRequestHeaderForCaseWorker() {

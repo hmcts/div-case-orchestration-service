@@ -29,7 +29,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 public class DocumentContentFetcherServiceTest {
 
     public static final String URL = "dm-store-file-url";
-    private static final String BINARY_URL = "/binary";
+
     @Mock
     private RestTemplate restTemplate;
 
@@ -48,9 +48,8 @@ public class DocumentContentFetcherServiceTest {
     public void fetchPrintContentCallsDmStore() {
         final byte[] documentContent = new byte[100];
         ResponseEntity<byte[]> responseFromDmStore = ResponseEntity.ok(documentContent);
-        final String binaryUrl = URL + BINARY_URL;
 
-        when(restTemplate.exchange(eq(binaryUrl), eq(HttpMethod.GET), any(HttpEntity.class), eq(byte[].class)))
+        when(restTemplate.exchange(eq(URL), eq(HttpMethod.GET), any(HttpEntity.class), eq(byte[].class)))
             .thenReturn(responseFromDmStore);
 
         final GeneratedDocumentInfo documentInfo = GeneratedDocumentInfo.builder()
@@ -78,13 +77,6 @@ public class DocumentContentFetcherServiceTest {
             .thenReturn(dmStoreBadRequestResponse);
 
         documentContentFetcherService.fetchPrintContent(GeneratedDocumentInfo.builder().url(URL).build());
-    }
-
-    @Test
-    public void verifyBinaryUrlIsCreated() {
-        String binaryUrl = documentContentFetcherService.appendBinaryPathToDocumentsUrl(URL);
-
-        assertTrue(binaryUrl.contains(BINARY_URL));
     }
 
     private void assertDocsHaveTheSameMetadata(GeneratedDocumentInfo doc1, GeneratedDocumentInfo doc2) {
