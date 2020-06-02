@@ -22,7 +22,7 @@ public class DaGrantedLetterDataExtractor {
         public static final String PETITIONER_LAST_NAME = OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
         public static final String RESPONDENT_FIRST_NAME = OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
         public static final String RESPONDENT_LAST_NAME = OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
-        public static final String DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS = "D8DerivedRespondentCorrespondenceAddr";
+        public static final String DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS = OrchestrationConstants.RESPONDENT_DERIVED_CORRESPONDENCE_ADDRESS;
     }
 
     public static String getDaGrantedDate(Map<String, Object> caseData) throws TaskException {
