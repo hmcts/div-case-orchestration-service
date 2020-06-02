@@ -40,7 +40,6 @@ public class DaGrantedTest extends IntegrationTest {
 
         assertEquals("Status code should be 200", response.getStatusCode(), HttpStatus.OK);
         assertNotNull("Case data in response should not be null", responseData);
-        assertEquals("Response data should be the same as the payload sent", requestData, responseData);
         assertNull("No errors should be returned", response.getBody().getErrors());
 
         assertNoDocumentsGeneratedByWorkflowWasSavedInCasedata(responseData);

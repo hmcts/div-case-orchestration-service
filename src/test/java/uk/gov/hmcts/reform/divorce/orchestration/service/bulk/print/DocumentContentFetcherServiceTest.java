@@ -18,7 +18,9 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -27,6 +29,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 public class DocumentContentFetcherServiceTest {
 
     public static final String URL = "dm-store-file-url";
+    private static final String BINARY_URL = "/binary";
     @Mock
     private RestTemplate restTemplate;
 
@@ -45,8 +48,9 @@ public class DocumentContentFetcherServiceTest {
     public void fetchPrintContentCallsDmStore() {
         final byte[] documentContent = new byte[100];
         ResponseEntity<byte[]> responseFromDmStore = ResponseEntity.ok(documentContent);
+        final String binaryUrl = URL + BINARY_URL;
 
-        when(restTemplate.exchange(eq(URL), eq(HttpMethod.GET), any(HttpEntity.class), eq(byte[].class)))
+        when(restTemplate.exchange(eq(binaryUrl), eq(HttpMethod.GET), any(HttpEntity.class), eq(byte[].class)))
             .thenReturn(responseFromDmStore);
 
         final GeneratedDocumentInfo documentInfo = GeneratedDocumentInfo.builder()
@@ -70,10 +74,17 @@ public class DocumentContentFetcherServiceTest {
     public void fetchPrintContentCallsDmStoreButFails() {
         ResponseEntity<byte[]> dmStoreBadRequestResponse = ResponseEntity.badRequest().build();
 
-        when(restTemplate.exchange(eq(URL), eq(HttpMethod.GET), any(HttpEntity.class), eq(byte[].class)))
+        when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(byte[].class)))
             .thenReturn(dmStoreBadRequestResponse);
 
         documentContentFetcherService.fetchPrintContent(GeneratedDocumentInfo.builder().url(URL).build());
+    }
+
+    @Test
+    public void verifyBinaryUrlIsCreated() {
+        String binaryUrl = documentContentFetcherService.appendBinaryPathToUrl(URL);
+
+        assertTrue(binaryUrl.contains(BINARY_URL));
     }
 
     private void assertDocsHaveTheSameMetadata(GeneratedDocumentInfo doc1, GeneratedDocumentInfo doc2) {

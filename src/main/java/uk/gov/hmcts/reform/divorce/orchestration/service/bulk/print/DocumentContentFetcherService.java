@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.rest.RestRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -16,12 +17,15 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConst
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.FetchingDocumentFromDmStoreException;
 
+import java.util.Optional;
+
 @Slf4j
 @Component
 @AllArgsConstructor
 public class DocumentContentFetcherService {
 
     public static final String CALL_DM_ON_BEHALF = "caseworker-divorce";
+    private static final String DOCUMENTS_BINARY_PATH = "/binary";
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Headers {
@@ -47,7 +51,9 @@ public class DocumentContentFetcherService {
 
     private ResponseEntity<byte[]> callDocStore(GeneratedDocumentInfo document) {
         HttpEntity<RestRequest> httpEntity = getRequestHeaderForCaseWorker();
-        ResponseEntity<byte[]> response = restTemplate.exchange(document.getUrl(), HttpMethod.GET, httpEntity, byte[].class);
+        String binaryUrl = appendBinaryPathToUrl(document.getUrl());
+
+        ResponseEntity<byte[]> response = restTemplate.exchange(binaryUrl, HttpMethod.GET, httpEntity, byte[].class);
 
         log.info("Try to fetch content of document from DM {}, {}", document.getFileName(), document.getUrl());
 
@@ -59,6 +65,17 @@ public class DocumentContentFetcherService {
         log.info("Fetch content of document from DM {}, size: {}", document.getFileName(), response.getBody().length);
 
         return response;
+    }
+
+    String appendBinaryPathToUrl(String documentUrl) {
+        return Optional.of(documentUrl)
+            .map(url -> generateBinaryUrl(url))
+            .orElseThrow(() -> new RuntimeException("No binary url found in document info"));
+    }
+
+    // Letters dont have '/binary' prefix as they dont come from generated's document_link
+    private String generateBinaryUrl(String url) {
+        return (StringUtils.endsWith(url, DOCUMENTS_BINARY_PATH)) ?  url : url + DOCUMENTS_BINARY_PATH;
     }
 
     private HttpEntity<RestRequest> getRequestHeaderForCaseWorker() {

@@ -20,7 +20,7 @@ public class DaGrantedCertificateDataExtractor {
         public static final String COMPLEX_TYPE_COLLECTION_ELEMENT = "value";
         public static final String DOCUMENTS_GENERATED = OrchestrationConstants.D8DOCUMENTS_GENERATED;
         public static final String DOCUMENT_TYPE = OrchestrationConstants.DOCUMENT_TYPE_JSON_KEY;
-        public static final String DOCUMENT_URL = "document_url";
+        public static final String DOCUMENT_BINARY_URL = "document_binary_url";
         public static final String DOCUMENT_FILE_NAME = "document_filename";
         public static final String DOCUMENT_LINK = "DocumentLink";
     }
@@ -43,7 +43,7 @@ public class DaGrantedCertificateDataExtractor {
 
         return GeneratedDocumentInfo.builder()
             .fileName(notNull((String) documentLink.get(CaseDataKeys.DOCUMENT_FILE_NAME)))
-            .url(notNull((String) documentLink.get(CaseDataKeys.DOCUMENT_URL)));
+            .url(notNull((String) documentLink.get(CaseDataKeys.DOCUMENT_BINARY_URL)));
     }
 
     public static boolean isDaGrantedCertificateDocument(Map<String, Object> collectionMember) {

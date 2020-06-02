@@ -129,7 +129,7 @@ public class DaGrantedCertificateDataExtractorTest {
         Map<String, Object> documentLink = new HashMap<>();
 
         documentLink.put(DaGrantedCertificateDataExtractor.CaseDataKeys.DOCUMENT_FILE_NAME, "file" + type);
-        documentLink.put(DaGrantedCertificateDataExtractor.CaseDataKeys.DOCUMENT_URL, "url" + type);
+        documentLink.put(DaGrantedCertificateDataExtractor.CaseDataKeys.DOCUMENT_BINARY_URL, "url" + type);
 
         return documentLink;
     }
