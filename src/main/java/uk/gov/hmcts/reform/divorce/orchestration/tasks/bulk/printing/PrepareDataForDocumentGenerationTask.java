@@ -39,8 +39,9 @@ public abstract class PrepareDataForDocumentGenerationTask implements Task<Map<S
 
         DocmosisTemplateVars templateModel = prepareDataForPdf(context, caseData);
         GeneratedDocumentInfo documentInfo = generatePdf(context, templateModel);
-        GeneratedDocumentInfo documentInfoWithMetadata = populateMetadataForGeneratedDocument(documentInfo);
-        appendAnotherDocumentToBulkPrint(context, populateContentOfDocument(documentInfoWithMetadata));
+        GeneratedDocumentInfo documentInfoWithMetadata = populateMetadataForGeneratedDocument(documentInfo);//TODO - is this right?
+
+        appendAnotherDocumentToBulkPrint(context, populateContentOfDocument(documentInfoWithMetadata));//TODO - this fetches from DS
 
         return caseData;
     }

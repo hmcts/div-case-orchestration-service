@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaGrantedNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.AddDaGrantedCertificateToDocumentsToPrintTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
@@ -47,6 +48,9 @@ public class SendDaGrantedNotificationWorkflowTest {
     private AddDaGrantedCertificateToDocumentsToPrintTask addDaGrantedCertificateToDocumentsToPrintTask;
 
     @Mock
+    private CaseFormatterAddDocuments caseFormatterAddDocuments;
+
+    @Mock
     private BulkPrinterTask bulkPrinterTask;
 
     @Mock
@@ -69,6 +73,7 @@ public class SendDaGrantedNotificationWorkflowTest {
 
         verify(daGrantedLetterGenerationTask, never()).execute(any(TaskContext.class), eq(casePayload));
         verify(addDaGrantedCertificateToDocumentsToPrintTask, never()).execute(any(TaskContext.class), eq(casePayload));
+        verify(caseFormatterAddDocuments, never()).execute(any(TaskContext.class), eq(casePayload));
         verify(bulkPrinterTask, never()).execute(any(TaskContext.class), eq(casePayload));
     }
 
@@ -79,6 +84,7 @@ public class SendDaGrantedNotificationWorkflowTest {
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
         when(daGrantedLetterGenerationTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
         when(addDaGrantedCertificateToDocumentsToPrintTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
+        when(caseFormatterAddDocuments.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
         when(bulkPrinterTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
 
         Map<String, Object> result = sendDaGrantedNotificationWorkflow.run(buildCaseDetails(casePayload), AUTH_TOKEN);
@@ -88,11 +94,13 @@ public class SendDaGrantedNotificationWorkflowTest {
         InOrder inOrder = inOrder(
             daGrantedLetterGenerationTask,
             addDaGrantedCertificateToDocumentsToPrintTask,
+            caseFormatterAddDocuments,
             bulkPrinterTask
         );
 
         inOrder.verify(daGrantedLetterGenerationTask).execute(any(TaskContext.class), eq(casePayload));
         inOrder.verify(addDaGrantedCertificateToDocumentsToPrintTask).execute(any(TaskContext.class), eq(casePayload));
+        inOrder.verify(caseFormatterAddDocuments).execute(any(TaskContext.class), eq(casePayload));
         inOrder.verify(bulkPrinterTask).execute(any(TaskContext.class), eq(casePayload));
 
         verify(sendDaGrantedNotificationEmailTask, never()).execute(any(TaskContext.class), eq(casePayload));
@@ -110,6 +118,7 @@ public class SendDaGrantedNotificationWorkflowTest {
 
         verify(daGrantedLetterGenerationTask, never()).execute(any(TaskContext.class), eq(casePayload));
         verify(addDaGrantedCertificateToDocumentsToPrintTask, never()).execute(any(TaskContext.class), eq(casePayload));
+        verify(caseFormatterAddDocuments, never()).execute(any(TaskContext.class), eq(casePayload));
         verify(bulkPrinterTask, never()).execute(any(TaskContext.class), eq(casePayload));
 
         verify(sendDaGrantedNotificationEmailTask, never()).execute(any(TaskContext.class), eq(casePayload));
