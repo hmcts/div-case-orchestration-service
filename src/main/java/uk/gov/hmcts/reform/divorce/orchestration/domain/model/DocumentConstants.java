@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.domain.model;
 
-public class AOSPackOfflineConstants {
+public class DocumentConstants {
 
     public static final String RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE = "aosinvitationletter-offline-resp";
     public static final String RESPONDENT_AOS_INVITATION_LETTER_FILENAME = "aos-invitation-letter-offline-respondent";
@@ -32,4 +32,5 @@ public class AOSPackOfflineConstants {
 
     public static final String DECREE_ABSOLUTE_GRANTED_LETTER_TEMPLATE_ID = "FL-DIV-GOR-ENG-00355.docx";
 
+    public static final String CERTIFICATE_OF_ENTITLEMENT_DOCUMENT_TYPE = "coe";
 }
