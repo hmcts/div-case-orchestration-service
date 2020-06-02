@@ -41,12 +41,8 @@ public abstract class PrepareDataForDocumentGenerationTask implements Task<Map<S
         GeneratedDocumentInfo documentInfo = generatePdf(context, templateModel);
         GeneratedDocumentInfo documentInfoWithMetadata = populateMetadataForGeneratedDocument(documentInfo);
 
-//        GeneratedDocumentInfo generatedDocumentInfo = downloadDocument(documentInfoWithMetadata);//TODO - this fetches from DS
-//
-//        Map<String, GeneratedDocumentInfo> documentsToBulkPrint = context.computeTransientObjectIfAbsent(ContextKeys.GENERATED_DOCUMENTS, new HashMap<>());
-//        documentsToBulkPrint.put(generatedDocumentInfo.getDocumentType(), generatedDocumentInfo);
-
-        //TODO - add document to case data - D8DOCUMENTS_GENERATED
+        Map<String, GeneratedDocumentInfo> documentsToBulkPrint = context.computeTransientObjectIfAbsent(ContextKeys.GENERATED_DOCUMENTS, new HashMap<>());
+        documentsToBulkPrint.put(documentInfoWithMetadata.getDocumentType(), documentInfoWithMetadata);
 
         return caseData;
     }
@@ -56,7 +52,5 @@ public abstract class PrepareDataForDocumentGenerationTask implements Task<Map<S
     protected abstract DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) throws TaskException;
 
     protected abstract GeneratedDocumentInfo populateMetadataForGeneratedDocument(GeneratedDocumentInfo documentInfo);
-
-    protected abstract GeneratedDocumentInfo downloadDocument(GeneratedDocumentInfo documentInfo);
 
 }

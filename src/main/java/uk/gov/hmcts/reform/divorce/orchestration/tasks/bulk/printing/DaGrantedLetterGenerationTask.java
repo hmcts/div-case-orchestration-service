@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.Docmosi
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.DocumentContentFetcherService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor;
@@ -29,15 +28,12 @@ public class DaGrantedLetterGenerationTask extends PrepareDataForDocumentGenerat
     }
 
     private final PdfDocumentGenerationService pdfDocumentGenerationService;
-    private final DocumentContentFetcherService documentContentFetcherService;
 
     public DaGrantedLetterGenerationTask(
         CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
-        PdfDocumentGenerationService pdfDocumentGenerationService,
-        DocumentContentFetcherService documentContentFetcherService) {
+        PdfDocumentGenerationService pdfDocumentGenerationService) {
         super(ctscContactDetailsDataProviderService);
         this.pdfDocumentGenerationService = pdfDocumentGenerationService;
-        this.documentContentFetcherService = documentContentFetcherService;
     }
 
     @Override
@@ -58,11 +54,6 @@ public class DaGrantedLetterGenerationTask extends PrepareDataForDocumentGenerat
         generatedDocumentInfo.setFileName(FileMetadata.FILE_NAME);
 
         return generatedDocumentInfo;
-    }
-
-    @Override
-    protected GeneratedDocumentInfo downloadDocument(GeneratedDocumentInfo generatedDocumentInfo) {
-        return documentContentFetcherService.fetchPrintContent(generatedDocumentInfo);
     }
 
     @Override

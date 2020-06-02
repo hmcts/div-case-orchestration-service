@@ -24,6 +24,7 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENTS_GENERATED;
 
 public class TaskUtilsTest {
 
@@ -150,13 +151,11 @@ public class TaskUtilsTest {
     public void appendAnotherDocumentToBulkPrintAddsAnotherDocumentToList() {
         TaskContext context = new DefaultTaskContext();
         Map<String, GeneratedDocumentInfo> existingDocuments = buildExistingDocumentsMap();
-        context.setTransientObject(PrepareDataForDocumentGenerationTask.ContextKeys.GENERATED_DOCUMENTS, existingDocuments);
+        context.setTransientObject(DOCUMENTS_GENERATED, existingDocuments);
 
         TaskUtils.appendAnotherDocumentToBulkPrint(context, document());
 
-        Map<String, GeneratedDocumentInfo> documents = context.getTransientObject(
-            PrepareDataForDocumentGenerationTask.ContextKeys.GENERATED_DOCUMENTS
-        );
+        Map<String, GeneratedDocumentInfo> documents = context.getTransientObject(DOCUMENTS_GENERATED);
 
         assertThat(documents.size(), is(2));
     }
@@ -170,7 +169,7 @@ public class TaskUtilsTest {
         TaskUtils.appendAnotherDocumentToBulkPrint(context, document());
 
         Map<String, GeneratedDocumentInfo> documents = context.getTransientObject(
-            PrepareDataForDocumentGenerationTask.ContextKeys.GENERATED_DOCUMENTS
+            DOCUMENTS_GENERATED
         );
 
         assertThat(documents.size(), is(3));
@@ -184,7 +183,7 @@ public class TaskUtilsTest {
         TaskUtils.appendAnotherDocumentToBulkPrint(context, document());
         TaskUtils.appendAnotherDocumentToBulkPrint(context, document());
 
-        Map<String, GeneratedDocumentInfo> documents = context.getTransientObject(PrepareDataForDocumentGenerationTask.ContextKeys.GENERATED_DOCUMENTS);
+        Map<String, GeneratedDocumentInfo> documents = context.getTransientObject(DOCUMENTS_GENERATED);
 
         assertThat(documents.size(), is(3));
         documents.values().forEach(documentInfo -> assertThat(documentInfo, instanceOf(GeneratedDocumentInfo.class)));
