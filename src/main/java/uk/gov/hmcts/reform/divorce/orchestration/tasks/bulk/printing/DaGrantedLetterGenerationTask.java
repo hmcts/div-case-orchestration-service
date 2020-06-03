@@ -51,7 +51,7 @@ public class DaGrantedLetterGenerationTask extends BasePayloadSpecificDocumentGe
     @Override
     protected GeneratedDocumentInfo populateMetadataForGeneratedDocument(GeneratedDocumentInfo generatedDocumentInfo) {
         generatedDocumentInfo.setDocumentType(FileMetadata.DOCUMENT_TYPE);
-        generatedDocumentInfo.setFileName(FileMetadata.FILE_NAME);
+        generatedDocumentInfo.setFileName(FileMetadata.FILE_NAME);//TODO - shouldn't we use the file name that comes from DGS?
 
         return generatedDocumentInfo;
     }

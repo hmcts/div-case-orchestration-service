@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.callback;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import com.google.common.collect.ImmutableMap;
+import com.microsoft.applicationinsights.boot.dependencies.google.common.collect.Lists;
 import org.json.JSONObject;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
@@ -28,6 +28,7 @@ import uk.gov.service.notify.NotificationClientException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
@@ -62,6 +63,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVI
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
@@ -133,33 +135,35 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
 
     @Test
     public void givenOfflineRespondentDetails_ThenOkResponse() throws Exception {
+        //Existing document
         List<CollectionMember<Document>> resultDocuments = new ArrayList<>();
-        CollectionMember<Document> documentCollectionMember = new CollectionMember<>();
-        documentCollectionMember.setId("doc");
-        Document document = new Document();
-        DocumentLink documentLink = new DocumentLink();
-        document.setDocumentType(DECREE_ABSOLUTE_DOCUMENT_TYPE);
-        documentLink.setDocumentFilename(DECREE_ABSOLUTE_FILENAME);
-        documentLink.setDocumentUrl("http://localhost:4020/documents/7d10126d-0e88-4f0e-b475-628b54a87ca6");
-        documentLink.setDocumentBinaryUrl("http://localhost:4020/documents/7d10126d-0e88-4f0e-b475-628b54a87ca6/binary");
-        document.setDocumentLink(documentLink);
-        documentCollectionMember.setValue(document);
-        resultDocuments.add(documentCollectionMember);//TODO - refactor
+        resultDocuments.add(getDocumentCollectionMember(DECREE_ABSOLUTE_DOCUMENT_TYPE, DECREE_ABSOLUTE_FILENAME, "http://localhost:4020/documents/7d10126d-0e88-4f0e-b475-628b54a87ca6"));//TODO - refactor
 
         Map<String, Object> caseData = new ImmutableMap.Builder<String, Object>().putAll(BASE_CASE_DATA)
             .put(RESP_IS_USING_DIGITAL_CHANNEL, NO_VALUE)
-            .put(OrchestrationConstants.D8DOCUMENTS_GENERATED, resultDocuments)
+            .put(D8DOCUMENTS_GENERATED, resultDocuments)
             .build();
-        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);//TODO - use the other way
+        when(authTokenGenerator.generate()).thenReturn("Bearer " + TEST_SERVICE_AUTH_TOKEN);//TODO - use the other way
+
+        //Newly generated document
+        String newlyGeneratedDocUrlFromDgs = "http://localhost:4020/documents/f1029b24-0a3f-4e74-82df-c7d2c33189e0";
         GeneratedDocumentInfo daDocumentGenerationResponse =
             GeneratedDocumentInfo.builder()
                 .documentType("daGrantedLetter")
-                .fileName("daGrantedLetter" + TEST_CASE_ID)
-                .url("http://localhost:4020/documents/7d10126d-0e88-4f0e-b475-628b54a87ca6")
+                .fileName("DA-granted-letter.pdf")
+                .url(newlyGeneratedDocUrlFromDgs)
                 .build();
         stubDocumentGeneratorServerEndpoint(daDocumentGenerationResponse);
 
-        stubFormatterServerEndpoint(daDocumentGenerationResponse, caseData);//TODO -- ?
+        ///////////
+        ArrayList<Object> newFormattedDocumentList = Lists.newArrayList();
+        newFormattedDocumentList.addAll(resultDocuments);
+        newFormattedDocumentList.add(getDocumentCollectionMember("newDocType", "newDoc", newlyGeneratedDocUrlFromDgs));
+        Map<String, Object> caseDataWithoutDocumentsGenerated = caseData.entrySet().stream().filter(e -> !e.getKey().equals(D8DOCUMENTS_GENERATED)).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        ImmutableMap<String, Object> formattedCaseData = new ImmutableMap.Builder<String, Object>().putAll(caseDataWithoutDocumentsGenerated).put(D8DOCUMENTS_GENERATED, newFormattedDocumentList).build();
+        stubFormatterServerEndpoint(daDocumentGenerationResponse, formattedCaseData);
+        /////////
+
         stubDMStore(HttpStatus.OK);//TODO - refactor this
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
 
@@ -179,6 +183,20 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         verifyZeroInteractions(mockEmailService);
         verify(bulkPrintService).send(eq(TEST_CASE_ID), anyString(), anyList());
         //TODO - make sure the document is not returned
+    }
+
+    private CollectionMember<Document> getDocumentCollectionMember(String documentType, String filename, String baseDocumentUrl) {
+        CollectionMember<Document> documentCollectionMember = new CollectionMember<>();
+        documentCollectionMember.setId("doc");
+        Document document = new Document();
+        document.setDocumentType(documentType);
+        DocumentLink documentLink = new DocumentLink();
+        documentLink.setDocumentFilename(filename);
+        documentLink.setDocumentUrl(baseDocumentUrl);
+        documentLink.setDocumentBinaryUrl(baseDocumentUrl + "/binary");
+        document.setDocumentLink(documentLink);
+        documentCollectionMember.setValue(document);
+        return documentCollectionMember;
     }
 
     @Test

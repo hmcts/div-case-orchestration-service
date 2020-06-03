@@ -33,7 +33,7 @@ public class CaseFormatterAddDocuments implements Task<Map<String, Object>> {
             return caseFormatterClient.addDocuments(
                 DocumentUpdateRequest.builder()
                     .caseData(caseData)
-                    .documents(new ArrayList<>(documentCollection))
+                    .documents(new ArrayList<>(documentCollection))//TODO - should we be passing the old document here?
                     .build());
         }
 
