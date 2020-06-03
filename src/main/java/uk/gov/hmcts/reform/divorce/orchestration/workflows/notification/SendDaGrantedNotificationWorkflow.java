@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaGrantedNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.AddDaGrantedCertificateToDocumentsToPrintTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
@@ -38,6 +39,7 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
     private final DaGrantedLetterGenerationTask daGrantedLetterGenerationTask;
     private final AddDaGrantedCertificateToDocumentsToPrintTask addDaGrantedCertificateToDocumentsToPrintTask;
     private final CaseFormatterAddDocuments caseFormatterAddDocuments;
+    private final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
     private final BulkPrinterTask bulkPrinterTask;
 
     private final FeatureToggleService featureToggleService;
@@ -69,12 +71,12 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
             tasks.add(sendDaGrantedNotificationEmailTask);
         } else {
             if (featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)) {
-                //final Set<GeneratedDocumentInfo> documentCollection = context.getTransientObject(DOCUMENT_COLLECTION);----
                 tasks.add(daGrantedLetterGenerationTask);
                 tasks.add(addDaGrantedCertificateToDocumentsToPrintTask);//TODO - do we still need this after adding the Fetch task?
                 tasks.add(caseFormatterAddDocuments);//TODO - shouldn't this be right after the first task?
-                //TODO - add fetch docs task
+                tasks.add(fetchPrintDocsFromDmStore);
                 tasks.add(bulkPrinterTask);
+                //TODO - remove new document (DA letter) from case data
             }
         }
 
@@ -86,4 +88,5 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
     private boolean isRespondentUsingDigitalContact(Map<String, Object> caseData) {
         return YES_VALUE.equalsIgnoreCase(nullToEmpty((String) caseData.get(RESP_IS_USING_DIGITAL_CHANNEL)));
     }
+
 }

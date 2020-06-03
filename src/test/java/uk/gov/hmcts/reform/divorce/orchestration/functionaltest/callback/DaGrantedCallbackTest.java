@@ -67,6 +67,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
@@ -158,13 +159,14 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         ///////////
         ArrayList<Object> newFormattedDocumentList = Lists.newArrayList();
         newFormattedDocumentList.addAll(resultDocuments);
-        newFormattedDocumentList.add(getDocumentCollectionMember("newDocType", "newDoc", newlyGeneratedDocUrlFromDgs));
+        newFormattedDocumentList.add(getDocumentCollectionMember(DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE, "daLetter.pdf", newlyGeneratedDocUrlFromDgs));
         Map<String, Object> caseDataWithoutDocumentsGenerated = caseData.entrySet().stream().filter(e -> !e.getKey().equals(D8DOCUMENTS_GENERATED)).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-        ImmutableMap<String, Object> formattedCaseData = new ImmutableMap.Builder<String, Object>().putAll(caseDataWithoutDocumentsGenerated).put(D8DOCUMENTS_GENERATED, newFormattedDocumentList).build();
+        Map<String, Object> formattedCaseData = new ImmutableMap.Builder<String, Object>().putAll(caseDataWithoutDocumentsGenerated).put(D8DOCUMENTS_GENERATED, newFormattedDocumentList).build();
         stubFormatterServerEndpoint(daDocumentGenerationResponse, formattedCaseData);
         /////////
 
-        stubDMStore(HttpStatus.OK);//TODO - refactor this
+        stubDMStore("/documents/7d10126d-0e88-4f0e-b475-628b54a87ca6/binary");//TODO - refactor this
+        stubDMStore("/documents/f1029b24-0a3f-4e74-82df-c7d2c33189e0/binary");//TODO - reuse variable
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
 
         Map caseDetails = buildCaseDetails(caseData);
@@ -180,8 +182,8 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
 
-        verifyZeroInteractions(mockEmailService);
         verify(bulkPrintService).send(eq(TEST_CASE_ID), anyString(), anyList());
+        verifyZeroInteractions(mockEmailService);
         //TODO - make sure the document is not returned
     }
 
@@ -264,12 +266,12 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
                 .withBody(convertObjectToJsonString(response))));
     }
 
-    private void stubDMStore(HttpStatus status) {//TODO - look into this. probably the wrong mock
-        documentStore.stubFor(WireMock.get("/documents/7d10126d-0e88-4f0e-b475-628b54a87ca6/binary")
+    private void stubDMStore(String binaryUrl) {//TODO - look into this. probably the wrong mock
+        documentStore.stubFor(WireMock.get(binaryUrl)
             .withHeader(SERVICE_AUTHORIZATION, new EqualToPattern("Bearer " + TEST_SERVICE_AUTH_TOKEN))
             .withHeader("user-roles", new EqualToPattern("caseworker-divorce"))
             .willReturn(aResponse()
-                .withStatus(status.value())
+                .withStatus(HttpStatus.OK.value())
                 .withHeader(CONTENT_TYPE, ALL_VALUE)
                 .withBody("documentContent".getBytes())));
     }
