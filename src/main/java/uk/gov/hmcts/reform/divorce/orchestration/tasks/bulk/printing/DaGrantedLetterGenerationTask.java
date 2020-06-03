@@ -10,8 +10,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.DocumentContentFetcherService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor;
 
 import java.util.Map;
 
@@ -45,10 +47,10 @@ public class DaGrantedLetterGenerationTask extends PrepareDataForDocumentGenerat
         return BasicCoverLetter.builder()
             .caseReference(getCaseId(context))
             .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
-            .addressee(DaGrantedLetterDataExtractor.getAddressee(caseData))
+            .addressee(AddresseeDataExtractor.getRespondent(caseData))
             .letterDate(DaGrantedLetterDataExtractor.getDaGrantedDate(caseData))
-            .petitionerFullName(DaGrantedLetterDataExtractor.getPetitionerFullName(caseData))
-            .respondentFullName(DaGrantedLetterDataExtractor.getRespondentFullName(caseData))
+            .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
+            .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
             .build();
     }
 
