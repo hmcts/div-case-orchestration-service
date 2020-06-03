@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaGrantedNotificationEmailTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.AddDaGrantedCertificateToDocumentsToPrintTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DaGrantedLetterGenerationTask;
 
@@ -26,6 +25,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DA_GRANTED_OFFLINE_PACK_RESPONDENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.BULK_PRINT_LETTER_TYPE;
@@ -37,7 +37,6 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
 
     private final SendDaGrantedNotificationEmailTask sendDaGrantedNotificationEmailTask;
     private final DaGrantedLetterGenerationTask daGrantedLetterGenerationTask;
-    private final AddDaGrantedCertificateToDocumentsToPrintTask addDaGrantedCertificateToDocumentsToPrintTask;
     private final CaseFormatterAddDocuments caseFormatterAddDocuments;
     private final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
     private final BulkPrinterTask bulkPrinterTask;
@@ -61,7 +60,7 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
     private List<String> getDocumentTypesToPrint() {
         return asList(
             DaGrantedLetterGenerationTask.FileMetadata.DOCUMENT_TYPE,
-            AddDaGrantedCertificateToDocumentsToPrintTask.FileMetadata.DOCUMENT_TYPE
+            DECREE_ABSOLUTE_DOCUMENT_TYPE
         );
     }
 
@@ -72,7 +71,6 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
         } else {
             if (featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)) {
                 tasks.add(daGrantedLetterGenerationTask);
-                tasks.add(addDaGrantedCertificateToDocumentsToPrintTask);//TODO - do we still need this after adding the Fetch task?
                 tasks.add(caseFormatterAddDocuments);//TODO - shouldn't this be right after the first task?
                 tasks.add(fetchPrintDocsFromDmStore);
                 tasks.add(bulkPrinterTask);
