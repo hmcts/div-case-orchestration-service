@@ -23,7 +23,7 @@ public class DaGrantedLetterGenerationTask extends BasePayloadSpecificDocumentGe
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FileMetadata {
         public static final String TEMPLATE_ID = "FL-DIV-GOR-ENG-00355.docx";
-        public static final String DOCUMENT_TYPE = "daGrantedLetter";
+        public static final String DOCUMENT_TYPE = "daGrantedLetter";//TODO - move this?
         public static final String FILE_NAME = "DA-granted-letter.pdf";
     }
 

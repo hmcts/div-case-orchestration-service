@@ -16,14 +16,18 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DaGrantedLetterGenerationTask;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Strings.nullToEmpty;
 import static java.util.Arrays.asList;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DA_GRANTED_OFFLINE_PACK_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
@@ -44,17 +48,34 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
     private final FeatureToggleService featureToggleService;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
-        Map<String, Object> caseData = caseDetails.getCaseData();
+        Map<String, Object> incomingCaseData = caseDetails.getCaseData();
 
-        return this.execute(
-            getTasks(caseData),
-            caseData,
+        Map<String, Object> caseDataToReturn = this.execute(
+            getTasks(incomingCaseData),
+            incomingCaseData,
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseDetails.getCaseId()),
             ImmutablePair.of(BULK_PRINT_LETTER_TYPE, DA_GRANTED_OFFLINE_PACK_RESPONDENT),
             ImmutablePair.of(DOCUMENT_TYPES_TO_PRINT, getDocumentTypesToPrint())
         );
+
+        List<Map<String, Map<String, Object>>> listWithoutNewDocument = Optional.ofNullable(caseDataToReturn.get(D8DOCUMENTS_GENERATED))
+            .map(i -> (List<Map<String, Map<String, Object>>>) i)
+            .orElse(new ArrayList<>())
+            .stream()
+            .filter(documentCollectionMember -> !DaGrantedLetterGenerationTask.FileMetadata.DOCUMENT_TYPE.equals(documentCollectionMember.get("value").get("DocumentType")))
+            .collect(Collectors.toList());
+
+        Map<String, Object> newCaseData = new HashMap<>();
+        newCaseData.putAll(incomingCaseData);
+
+        if (!listWithoutNewDocument.isEmpty()) {//TODO - refactor
+            newCaseData.replace(D8DOCUMENTS_GENERATED, listWithoutNewDocument);//TODO - should we not be changing this?
+        }
+
+        return newCaseData;
+        //TODO - remove new document (DA letter) from case data
     }
 
     private List<String> getDocumentTypesToPrint() {
@@ -71,10 +92,9 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
         } else {
             if (featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)) {
                 tasks.add(daGrantedLetterGenerationTask);
-                tasks.add(caseFormatterAddDocuments);//TODO - shouldn't this be right after the first task?
+                tasks.add(caseFormatterAddDocuments);
                 tasks.add(fetchPrintDocsFromDmStore);
                 tasks.add(bulkPrinterTask);
-                //TODO - remove new document (DA letter) from case data
             }
         }
 
