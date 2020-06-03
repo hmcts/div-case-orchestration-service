@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtilsTest;
 
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.Set;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -32,7 +33,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENTS_GENERATED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractorTest.buildCaseDataWithAddressee;
@@ -75,9 +76,9 @@ public class DaGrantedLetterGenerationTaskTest {
 
         daGrantedLetterGenerationTask.execute(context, buildCaseData());
 
-        Map<String, GeneratedDocumentInfo> documents = context.getTransientObject(DOCUMENTS_GENERATED);
+        Set<GeneratedDocumentInfo> documents = context.getTransientObject(DOCUMENT_COLLECTION);
         assertThat(documents.size(), is(1));
-        GeneratedDocumentInfo generatedDocumentInfo = documents.get(DOCUMENT_TYPE);
+        GeneratedDocumentInfo generatedDocumentInfo = documents.stream().findFirst().get();
         assertThat(generatedDocumentInfo.getDocumentType(), is(DOCUMENT_TYPE));
         assertThat(generatedDocumentInfo.getFileName(), is(FILE_NAME));
 
@@ -115,4 +116,5 @@ public class DaGrantedLetterGenerationTaskTest {
 
         return caseData;
     }
+
 }

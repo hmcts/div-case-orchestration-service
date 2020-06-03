@@ -1,9 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -11,38 +8,29 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+
+import static com.google.common.collect.Sets.newHashSet;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 
 /*
  * It should be used as a base class to prepare data models with set of data needed to generate pdfs
- * and store their metadata in context of flow (key GENERATED_DOCUMENTS)
- * so that it can be used by BulkPrinterTask task.
+ * and store their metadata in context of flow (key DOCUMENT_COLLECTION)
+ * so that it can be used by CaseFormatterAddDocuments and eventually by the BulkPrinterTask task.
  */
 @AllArgsConstructor
-public abstract class PrepareDataForDocumentGenerationTask implements Task<Map<String, Object>> {
-
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class ContextKeys {
-        public static final String CASE_DETAILS = OrchestrationConstants.CASE_DETAILS_JSON_KEY;
-        public static final String CASE_DATA = OrchestrationConstants.FORMATTER_CASE_DATA_KEY;
-        /*
-         * This is a special field in context to store GeneratedDocumentInfo object with all metadata about generated document.
-         */
-        public static final String GENERATED_DOCUMENTS = OrchestrationConstants.DOCUMENTS_GENERATED;
-    }
+public abstract class BasePayloadSpecificDocumentGenerationTask implements Task<Map<String, Object>> {
 
     protected final CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
-
         DocmosisTemplateVars templateModel = prepareDataForPdf(context, caseData);
         GeneratedDocumentInfo documentInfo = generatePdf(context, templateModel);
         GeneratedDocumentInfo documentInfoWithMetadata = populateMetadataForGeneratedDocument(documentInfo);
 
-        Map<String, GeneratedDocumentInfo> documentsToBulkPrint = context.computeTransientObjectIfAbsent(ContextKeys.GENERATED_DOCUMENTS, new HashMap<>());
-        documentsToBulkPrint.put(documentInfoWithMetadata.getDocumentType(), documentInfoWithMetadata);
+        context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new HashSet<>()).addAll(newHashSet(documentInfoWithMetadata));
 
         return caseData;
     }

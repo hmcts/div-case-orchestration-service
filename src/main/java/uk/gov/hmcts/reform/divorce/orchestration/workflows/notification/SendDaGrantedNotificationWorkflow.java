@@ -69,6 +69,7 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
             tasks.add(sendDaGrantedNotificationEmailTask);
         } else {
             if (featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)) {
+                //final Set<GeneratedDocumentInfo> documentCollection = context.getTransientObject(DOCUMENT_COLLECTION);----
                 tasks.add(daGrantedLetterGenerationTask);
                 tasks.add(addDaGrantedCertificateToDocumentsToPrintTask);//TODO - do we still need this after adding the Fetch task?
                 tasks.add(caseFormatterAddDocuments);//TODO - shouldn't this be right after the first task?
