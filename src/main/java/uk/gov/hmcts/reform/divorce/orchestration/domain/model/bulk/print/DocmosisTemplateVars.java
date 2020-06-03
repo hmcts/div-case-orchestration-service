@@ -16,4 +16,8 @@ public class DocmosisTemplateVars {
     protected String caseReference;
     @JsonProperty("letterDate")
     private String letterDate;
+    @JsonProperty("petitionerFullName")
+    private String petitionerFullName;
+    @JsonProperty("respondentFullName")
+    private String respondentFullName;
 }
