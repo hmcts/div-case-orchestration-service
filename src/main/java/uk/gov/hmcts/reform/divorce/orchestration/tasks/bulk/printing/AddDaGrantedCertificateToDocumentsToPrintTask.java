@@ -30,9 +30,9 @@ public class AddDaGrantedCertificateToDocumentsToPrintTask implements Task<Map<S
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
-        GeneratedDocumentInfo existingDaGrantedFromCaseData = getExistingDaGrantedFromCaseData(caseData);
+        GeneratedDocumentInfo existingDaGrantedFromCaseData = getExistingDaGrantedFromCaseData(caseData);//TODO - do we still need this
 
-        context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new HashSet<>()).addAll(newHashSet(existingDaGrantedFromCaseData));
+//        context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new HashSet<>()).addAll(newHashSet(existingDaGrantedFromCaseData));
 
         return caseData;
     }

@@ -36,17 +36,20 @@ public class DaGrantedTest extends IntegrationTest {
             ccdCallbackRequest);
 
         Map<String, Object> responseData = response.getBody().getData();
-        Map<String, Object> requestData = ccdCallbackRequest.getCaseDetails().getCaseData();
 
         assertEquals("Status code should be 200", response.getStatusCode(), HttpStatus.OK);
         assertNotNull("Case data in response should not be null", responseData);
         assertNull("No errors should be returned", response.getBody().getErrors());
 
-        assertNoDocumentsGeneratedByWorkflowWasSavedInCasedata(responseData);
+        assertNoDocumentsGeneratedByWorkflowWasSavedInCaseData(responseData);
+        //TODO - should we get the documents from bulk print endpoint
+
+        //TODO - look into why filename ends with ".pdf.pdf"
     }
 
-    private void assertNoDocumentsGeneratedByWorkflowWasSavedInCasedata(Map<String, Object> responseData) {
+    private void assertNoDocumentsGeneratedByWorkflowWasSavedInCaseData(Map<String, Object> responseData) {
         List<CollectionMember<Document>> documents = (List<CollectionMember<Document>>) responseData.get(D8DOCUMENTS_GENERATED);
         assertEquals("No addition document entry should be made to case data", 1, documents.size());
     }
+
 }
