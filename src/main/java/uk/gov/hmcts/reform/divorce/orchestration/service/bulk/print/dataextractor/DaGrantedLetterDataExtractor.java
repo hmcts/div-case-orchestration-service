@@ -17,7 +17,6 @@ public class DaGrantedLetterDataExtractor {
         public static final String DA_GRANTED_DATE = OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
     }
 
-    // TODO - format date
     public static String getDaGrantedDate(Map<String, Object> caseData) throws TaskException {
         return getMandatoryPropertyValueAsString(caseData, CaseDataKeys.DA_GRANTED_DATE);
     }
