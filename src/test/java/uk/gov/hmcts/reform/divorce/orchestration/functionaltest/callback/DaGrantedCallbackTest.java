@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctional
 import uk.gov.hmcts.reform.divorce.orchestration.service.BulkPrintService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
+import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.ArrayList;
@@ -60,6 +62,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVI
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
@@ -91,7 +95,7 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         .put(RESPONDENT_DERIVED_CORRESPONDENCE_ADDRESS, "221B Baker Street")
         .put(D_8_CASE_REFERENCE, TEST_CASE_ID)
         .put(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD, TEST_DECREE_ABSOLUTE_GRANTED_DATE)
-        .build();
+        .build();//TODO - should we just use a JSON here?
 
     @Autowired
     private MockMvc webClient;
@@ -113,7 +117,7 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         Map caseData = ImmutableMap.builder().putAll(BASE_CASE_DATA).put(RESP_IS_USING_DIGITAL_CHANNEL, YES_VALUE).build();
         Map caseDetails = buildCaseDetails(caseData);
 
-        String inputJson = JSONObject.valueToString(caseDetails);
+        String inputJson = ObjectMapperTestUtil.convertObjectToJsonString(caseDetails);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(BASE_CASE_DATA).build();
         webClient.perform(post(API_URL)
@@ -129,8 +133,22 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
 
     @Test
     public void givenOfflineRespondentDetails_ThenOkResponse() throws Exception {
+        List<CollectionMember<Document>> resultDocuments = new ArrayList<>();
+        CollectionMember<Document> documentCollectionMember = new CollectionMember<>();
+        documentCollectionMember.setId("doc");
+        Document document = new Document();
+        DocumentLink documentLink = new DocumentLink();
+        document.setDocumentType(DECREE_ABSOLUTE_DOCUMENT_TYPE);
+        documentLink.setDocumentFilename(DECREE_ABSOLUTE_FILENAME);
+        documentLink.setDocumentUrl("http://localhost:4020/documents/7d10126d-0e88-4f0e-b475-628b54a87ca6");
+        documentLink.setDocumentBinaryUrl("http://localhost:4020/documents/7d10126d-0e88-4f0e-b475-628b54a87ca6/binary");
+        document.setDocumentLink(documentLink);
+        documentCollectionMember.setValue(document);
+        resultDocuments.add(documentCollectionMember);//TODO - refactor
+
         Map<String, Object> caseData = new ImmutableMap.Builder<String, Object>().putAll(BASE_CASE_DATA)
             .put(RESP_IS_USING_DIGITAL_CHANNEL, NO_VALUE)
+            .put(OrchestrationConstants.D8DOCUMENTS_GENERATED, resultDocuments)
             .build();
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);//TODO - use the other way
         GeneratedDocumentInfo daDocumentGenerationResponse =
@@ -141,24 +159,13 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
                 .build();
         stubDocumentGeneratorServerEndpoint(daDocumentGenerationResponse);
 
-        List<CollectionMember<Document>> resultDocuments = new ArrayList<>();
-        CollectionMember<Document> documentCollectionMember = new CollectionMember<>();
-        documentCollectionMember.setId("doc");
-        Document document = new Document();
-        DocumentLink documentLink = new DocumentLink();
-        documentLink.setDocumentBinaryUrl("http://localhost:4020/documents/7d10126d-0e88-4f0e-b475-628b54a87ca6/binary");
-        document.setDocumentLink(documentLink);
-        documentCollectionMember.setValue(document);
-        resultDocuments.add(documentCollectionMember);
-        stubFormatterServerEndpoint(daDocumentGenerationResponse, new ImmutableMap.Builder<String, Object>().putAll(caseData).put(
-            "D8DocumentsGenerated", resultDocuments
-        ).build());
+        stubFormatterServerEndpoint(daDocumentGenerationResponse, caseData);//TODO -- ?
         stubDMStore(HttpStatus.OK);//TODO - refactor this
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
 
         Map caseDetails = buildCaseDetails(caseData);
 
-        String inputJson = JSONObject.valueToString(caseDetails);
+        String inputJson = ObjectMapperTestUtil.convertObjectToJsonString(caseDetails);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(BASE_CASE_DATA).build();
         webClient.perform(post(API_URL)
