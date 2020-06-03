@@ -6,6 +6,8 @@ import com.google.common.collect.ImmutableMap;
 import com.microsoft.applicationinsights.boot.dependencies.google.common.collect.Lists;
 import org.json.JSONObject;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
@@ -34,8 +36,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static java.util.Collections.singletonMap;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
-import static org.mockito.ArgumentMatchers.anyList;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -99,6 +102,9 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         .put(D_8_CASE_REFERENCE, TEST_CASE_ID)
         .put(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD, TEST_DECREE_ABSOLUTE_GRANTED_DATE)
         .build();//TODO - should we just use a JSON here?
+
+    @Captor
+    private ArgumentCaptor<List<GeneratedDocumentInfo>> documentsToPrintCaptor;
 
     @Autowired
     private MockMvc webClient;
@@ -165,12 +171,13 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         stubFormatterServerEndpoint(daDocumentGenerationResponse, formattedCaseData);
         /////////
 
-        stubDMStore("/documents/7d10126d-0e88-4f0e-b475-628b54a87ca6/binary");//TODO - refactor this
-        stubDMStore("/documents/f1029b24-0a3f-4e74-82df-c7d2c33189e0/binary");//TODO - reuse variable
+        byte[] decreeAbsoluteLetterBytes = new byte[] {1, 2, 3};
+        byte[] decreeAbsoluteBytes = new byte[] {4, 5, 6};
+        stubDMStore("/documents/f1029b24-0a3f-4e74-82df-c7d2c33189e0/binary", decreeAbsoluteLetterBytes);//TODO - reuse variable
+        stubDMStore("/documents/7d10126d-0e88-4f0e-b475-628b54a87ca6/binary", decreeAbsoluteBytes);//TODO - refactor this
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
 
         Map caseDetails = buildCaseDetails(caseData);
-
         String inputJson = ObjectMapperTestUtil.convertObjectToJsonString(caseDetails);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(BASE_CASE_DATA).build();
@@ -182,7 +189,10 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
 
-        verify(bulkPrintService).send(eq(TEST_CASE_ID), anyString(), anyList());
+        verify(bulkPrintService).send(eq(TEST_CASE_ID), anyString(), documentsToPrintCaptor.capture());
+        List<GeneratedDocumentInfo> documentsToPrintCaptorValue = documentsToPrintCaptor.getValue();
+        assertThat(documentsToPrintCaptorValue.get(0).getBytes(), is(decreeAbsoluteLetterBytes));
+        assertThat(documentsToPrintCaptorValue.get(1).getBytes(), is(decreeAbsoluteBytes));
         verifyZeroInteractions(mockEmailService);
         //TODO - make sure the document is not returned
     }
@@ -266,14 +276,14 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
                 .withBody(convertObjectToJsonString(response))));
     }
 
-    private void stubDMStore(String binaryUrl) {//TODO - look into this. probably the wrong mock
+    private void stubDMStore(String binaryUrl, byte[] fileBytes) {//TODO - look into this. probably the wrong mock
         documentStore.stubFor(WireMock.get(binaryUrl)
             .withHeader(SERVICE_AUTHORIZATION, new EqualToPattern("Bearer " + TEST_SERVICE_AUTH_TOKEN))
             .withHeader("user-roles", new EqualToPattern("caseworker-divorce"))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader(CONTENT_TYPE, ALL_VALUE)
-                .withBody("documentContent".getBytes())));
+                .withBody(fileBytes)));
     }
 
 }
