@@ -42,7 +42,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DaGrantedLetterGenerationTask.FileMetadata.FILE_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocument;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocumentAsMap;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SendDaGrantedNotificationWorkflowTest {
@@ -116,7 +116,7 @@ public class SendDaGrantedNotificationWorkflowTest {
     public void runRemoveDaGrantedLetterFromCaseData() throws Exception {
         Map<String, Object> incomingCaseData = ImmutableMap.of(
             RESP_IS_USING_DIGITAL_CHANNEL, NO_VALUE,
-            D8DOCUMENTS_GENERATED, asList(createCollectionMemberDocument("http://daGrantedLetter.com", DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE, FILE_NAME))
+            D8DOCUMENTS_GENERATED, asList(createCollectionMemberDocumentAsMap("http://daGrantedLetter.com", DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE, FILE_NAME))
         );
 
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
@@ -162,7 +162,7 @@ public class SendDaGrantedNotificationWorkflowTest {
     private Map<String, Object> buildCaseData(String value) {
         return ImmutableMap.of(
             RESP_IS_USING_DIGITAL_CHANNEL, value,
-            D8DOCUMENTS_GENERATED, asList(createCollectionMemberDocument("http://daGranted.com", DECREE_ABSOLUTE_DOCUMENT_TYPE, DECREE_ABSOLUTE_FILENAME))
+            D8DOCUMENTS_GENERATED, asList(createCollectionMemberDocumentAsMap("http://daGranted.com", DECREE_ABSOLUTE_DOCUMENT_TYPE, DECREE_ABSOLUTE_FILENAME))
         );
     }
 

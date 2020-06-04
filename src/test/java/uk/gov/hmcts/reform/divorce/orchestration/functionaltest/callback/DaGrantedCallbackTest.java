@@ -13,12 +13,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DocumentLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
 import uk.gov.hmcts.reform.divorce.orchestration.service.BulkPrintService;
@@ -83,13 +81,19 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.DocumentContentFetcherService.Headers.SERVICE_AUTHORIZATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocumentAsCollection;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class DaGrantedCallbackTest extends MockedFunctionalTest {
 
     private static final String API_URL = "/handle-post-da-granted";
+
     private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
+    private static final String SERVICE_AUTH_CONTEXT_PATH = "/lease";
+
+    private static final String DECREE_ABSOLUTE_LETTER_ID = "f1029b24-0a3f-4e74-82df-c7d2c33189e0";
+    private static final String DECREE_ABSOLUTE_ID = "7d10126d-0e88-4f0e-b475-628b54a87ca6";
 
     private static final Map<String, Object> BASE_CASE_DATA = ImmutableMap.<String, Object>builder()
         .put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME)
@@ -101,7 +105,8 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         .put(RESPONDENT_DERIVED_CORRESPONDENCE_ADDRESS, "221B Baker Street")
         .put(D_8_CASE_REFERENCE, TEST_CASE_ID)
         .put(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD, TEST_DECREE_ABSOLUTE_GRANTED_DATE)
-        .build();//TODO - should we just use a JSON here?
+        .build();
+    private static final String DGS_MOCK_ENDPOINT = "http://localhost:4020/documents/";
 
     @Captor
     private ArgumentCaptor<List<GeneratedDocumentInfo>> documentsToPrintCaptor;
@@ -117,9 +122,6 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
 
     @MockBean
     private FeatureToggleService featureToggleService;
-
-    @MockBean
-    private AuthTokenGenerator authTokenGenerator;
 
     @Test
     public void givenOnlineRespondentDetails_ThenOkResponse() throws Exception {
@@ -144,16 +146,16 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
     public void givenOfflineRespondentDetails_ThenOkResponse() throws Exception {
         //Existing document
         List<CollectionMember<Document>> resultDocuments = new ArrayList<>();
-        resultDocuments.add(getDocumentCollectionMember(DECREE_ABSOLUTE_DOCUMENT_TYPE, DECREE_ABSOLUTE_FILENAME, "http://localhost:4020/documents/7d10126d-0e88-4f0e-b475-628b54a87ca6"));//TODO - refactor
+        resultDocuments.add(createCollectionMemberDocumentAsCollection(DGS_MOCK_ENDPOINT + DECREE_ABSOLUTE_ID, DECREE_ABSOLUTE_DOCUMENT_TYPE, DECREE_ABSOLUTE_FILENAME));
 
         Map<String, Object> caseData = new ImmutableMap.Builder<String, Object>().putAll(BASE_CASE_DATA)
             .put(RESP_IS_USING_DIGITAL_CHANNEL, NO_VALUE)
             .put(D8DOCUMENTS_GENERATED, resultDocuments)
             .build();
-        when(authTokenGenerator.generate()).thenReturn("Bearer " + TEST_SERVICE_AUTH_TOKEN);//TODO - use the other way
+        stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
 
         //Newly generated document
-        String newlyGeneratedDocUrlFromDgs = "http://localhost:4020/documents/f1029b24-0a3f-4e74-82df-c7d2c33189e0";
+        String newlyGeneratedDocUrlFromDgs = DGS_MOCK_ENDPOINT + DECREE_ABSOLUTE_LETTER_ID;
         GeneratedDocumentInfo daDocumentGenerationResponse =
             GeneratedDocumentInfo.builder()
                 .documentType("daGrantedLetter")
@@ -165,7 +167,7 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         ///////////
         ArrayList<Object> newFormattedDocumentList = Lists.newArrayList();
         newFormattedDocumentList.addAll(resultDocuments);
-        newFormattedDocumentList.add(getDocumentCollectionMember(DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE, "daLetter.pdf", newlyGeneratedDocUrlFromDgs));
+        newFormattedDocumentList.add(createCollectionMemberDocumentAsCollection(newlyGeneratedDocUrlFromDgs, DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE, "daLetter.pdf"));
         Map<String, Object> caseDataWithoutDocumentsGenerated = caseData.entrySet().stream().filter(e -> !e.getKey().equals(D8DOCUMENTS_GENERATED)).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         Map<String, Object> formattedCaseData = new ImmutableMap.Builder<String, Object>().putAll(caseDataWithoutDocumentsGenerated).put(D8DOCUMENTS_GENERATED, newFormattedDocumentList).build();
         stubFormatterServerEndpoint(daDocumentGenerationResponse, formattedCaseData);
@@ -173,8 +175,8 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
 
         byte[] decreeAbsoluteLetterBytes = new byte[] {1, 2, 3};
         byte[] decreeAbsoluteBytes = new byte[] {4, 5, 6};
-        stubDMStore("/documents/f1029b24-0a3f-4e74-82df-c7d2c33189e0/binary", decreeAbsoluteLetterBytes);//TODO - reuse variable
-        stubDMStore("/documents/7d10126d-0e88-4f0e-b475-628b54a87ca6/binary", decreeAbsoluteBytes);//TODO - refactor this
+        stubDMStore("/documents/" + DECREE_ABSOLUTE_LETTER_ID + "/binary", decreeAbsoluteLetterBytes);
+        stubDMStore("/documents/" + DECREE_ABSOLUTE_ID + "/binary", decreeAbsoluteBytes);
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
 
         Map caseDetails = buildCaseDetails(caseData);
@@ -194,21 +196,6 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         assertThat(documentsToPrintCaptorValue.get(0).getBytes(), is(decreeAbsoluteLetterBytes));
         assertThat(documentsToPrintCaptorValue.get(1).getBytes(), is(decreeAbsoluteBytes));
         verifyZeroInteractions(mockEmailService);
-        //TODO - make sure the document is not returned
-    }
-
-    private CollectionMember<Document> getDocumentCollectionMember(String documentType, String filename, String baseDocumentUrl) {
-        CollectionMember<Document> documentCollectionMember = new CollectionMember<>();
-        documentCollectionMember.setId("doc");
-        Document document = new Document();
-        document.setDocumentType(documentType);
-        DocumentLink documentLink = new DocumentLink();
-        documentLink.setDocumentFilename(filename);
-        documentLink.setDocumentUrl(baseDocumentUrl);
-        documentLink.setDocumentBinaryUrl(baseDocumentUrl + "/binary");
-        document.setDocumentLink(documentLink);
-        documentCollectionMember.setValue(document);
-        return documentCollectionMember;
     }
 
     @Test
@@ -276,7 +263,7 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
                 .withBody(convertObjectToJsonString(response))));
     }
 
-    private void stubDMStore(String binaryUrl, byte[] fileBytes) {//TODO - look into this. probably the wrong mock
+    private void stubDMStore(String binaryUrl, byte[] fileBytes) {
         documentStore.stubFor(WireMock.get(binaryUrl)
             .withHeader(SERVICE_AUTHORIZATION, new EqualToPattern("Bearer " + TEST_SERVICE_AUTH_TOKEN))
             .withHeader("user-roles", new EqualToPattern("caseworker-divorce"))
@@ -284,6 +271,13 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
                 .withStatus(HttpStatus.OK.value())
                 .withHeader(CONTENT_TYPE, ALL_VALUE)
                 .withBody(fileBytes)));
+    }
+
+    private void stubServiceAuthProvider(HttpStatus status, String response) {
+        serviceAuthProviderServer.stubFor(WireMock.post(SERVICE_AUTH_CONTEXT_PATH)
+            .willReturn(aResponse()
+                .withStatus(status.value())
+                .withBody(response)));
     }
 
 }

@@ -42,9 +42,6 @@ public class DaGrantedTest extends IntegrationTest {
         assertNull("No errors should be returned", response.getBody().getErrors());
 
         assertNoDocumentsGeneratedByWorkflowWasSavedInCaseData(responseData);
-        //TODO - should we get the documents from bulk print endpoint
-
-        //TODO - look into why filename ends with ".pdf.pdf"
     }
 
     private void assertNoDocumentsGeneratedByWorkflowWasSavedInCaseData(Map<String, Object> responseData) {
