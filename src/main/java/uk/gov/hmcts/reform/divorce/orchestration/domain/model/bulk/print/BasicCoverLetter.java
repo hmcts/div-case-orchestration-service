@@ -13,25 +13,19 @@ import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-public class DaGrantedLetter extends DocmosisTemplateVars {
-    @JsonProperty("respondentFullName")
-    private String respondentFullName;
-    @JsonProperty("petitionerFullName")
-    private String petitionerFullName;
+public class BasicCoverLetter extends DocmosisTemplateVars {
     @JsonProperty("addressee")
     private Addressee addressee;
 
     @Builder
-    public DaGrantedLetter(
+    public BasicCoverLetter(
         CtscContactDetails ctscContactDetails,
         String caseReference,
         String letterDate,
-        String respondentFullName,
         String petitionerFullName,
+        String respondentFullName,
         Addressee addressee) {
-        super(ctscContactDetails, caseReference, letterDate);
-        this.respondentFullName = respondentFullName;
-        this.petitionerFullName = petitionerFullName;
+        super(ctscContactDetails, caseReference, letterDate, petitionerFullName, respondentFullName);
         this.addressee = addressee;
     }
 }
