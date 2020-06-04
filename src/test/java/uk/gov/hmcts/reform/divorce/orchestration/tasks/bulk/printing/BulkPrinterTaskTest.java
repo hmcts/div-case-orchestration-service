@@ -123,9 +123,7 @@ public class BulkPrinterTaskTest {
         classUnderTest.execute(context, emptyMap());
 
         verifyZeroInteractions(bulkPrintService);
-        assertThat(context.hasTaskFailed(), is(false));//TODO - return to the below if warning message doesn't occur in production
-        //assertThat(context.hasTaskFailed(), is(true));
-        //assertThat(context.getTransientObject(BULK_PRINT_ERROR_KEY), is("Bulk print didn't kick off for " + TEST_LETTER_TYPE));
+        assertThat(context.hasTaskFailed(), is(false));
     }
 
     @Test
@@ -138,9 +136,7 @@ public class BulkPrinterTaskTest {
         classUnderTest.execute(context, emptyMap());
 
         verifyZeroInteractions(bulkPrintService);
-        assertThat(context.hasTaskFailed(), is(false));//TODO - return to the below if warning message doesn't occur in production
-        //assertThat(context.hasTaskFailed(), is(true));
-        //assertThat(context.getTransientObject(BULK_PRINT_ERROR_KEY), is("Bulk print didn't kick off for " + TEST_LETTER_TYPE));
+        assertThat(context.hasTaskFailed(), is(false));
     }
 
 }

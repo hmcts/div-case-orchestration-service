@@ -19,6 +19,7 @@ import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -27,6 +28,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 public class DocumentContentFetcherServiceTest {
 
     public static final String URL = "dm-store-file-url";
+
     @Mock
     private RestTemplate restTemplate;
 
@@ -70,7 +72,7 @@ public class DocumentContentFetcherServiceTest {
     public void fetchPrintContentCallsDmStoreButFails() {
         ResponseEntity<byte[]> dmStoreBadRequestResponse = ResponseEntity.badRequest().build();
 
-        when(restTemplate.exchange(eq(URL), eq(HttpMethod.GET), any(HttpEntity.class), eq(byte[].class)))
+        when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(HttpEntity.class), eq(byte[].class)))
             .thenReturn(dmStoreBadRequestResponse);
 
         documentContentFetcherService.fetchPrintContent(GeneratedDocumentInfo.builder().url(URL).build());

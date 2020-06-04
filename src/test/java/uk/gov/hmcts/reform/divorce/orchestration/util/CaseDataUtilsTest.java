@@ -6,12 +6,15 @@ import org.junit.Test;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.DUMMY_CASE_DATA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_REFERENCE_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.VALUE_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_COSTS_OPTIONS_CCD_FIELD;
@@ -22,6 +25,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.DESERTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocumentAsMap;
 
 public class CaseDataUtilsTest {
 
@@ -131,6 +135,16 @@ public class CaseDataUtilsTest {
             D_8_REASON_FOR_DIVORCE, ADULTERY,
             D_8_CO_RESPONDENT_NAMED, YES_VALUE
         )), is(true));
+    }
+
+    @Test
+    public void ensureDocumentIsRemovedByDocumentType() {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(D8DOCUMENTS_GENERATED, asList(createCollectionMemberDocumentAsMap("testUrl", "myDocType", "filename")));
+
+        Map<String, Object> returnedCaseData = CaseDataUtils.removeDocumentByDocumentType(caseData, "myDocType");
+
+        assertThat(returnedCaseData.get(D8DOCUMENTS_GENERATED), is(emptyList()));
     }
 
 }
