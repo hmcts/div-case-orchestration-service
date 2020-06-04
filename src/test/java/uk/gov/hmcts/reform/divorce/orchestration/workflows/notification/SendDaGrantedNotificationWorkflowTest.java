@@ -41,7 +41,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DaGrantedLetterGenerationTask.FileMetadata.FILE_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocumentAsMap;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -116,7 +115,7 @@ public class SendDaGrantedNotificationWorkflowTest {
     public void runRemoveDaGrantedLetterFromCaseData() throws Exception {
         Map<String, Object> incomingCaseData = ImmutableMap.of(
             RESP_IS_USING_DIGITAL_CHANNEL, NO_VALUE,
-            D8DOCUMENTS_GENERATED, asList(createCollectionMemberDocumentAsMap("http://daGrantedLetter.com", DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE, FILE_NAME))
+            D8DOCUMENTS_GENERATED, asList(createCollectionMemberDocumentAsMap("http://daGrantedLetter.com", DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE, "daGrantedLetter.pdf"))
         );
 
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);

@@ -38,7 +38,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractorTest.buildCaseDataWithAddressee;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DaGrantedLetterGenerationTask.FileMetadata.DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DaGrantedLetterGenerationTask.FileMetadata.FILE_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DaGrantedLetterGenerationTask.FileMetadata.TEMPLATE_ID;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -80,7 +79,7 @@ public class DaGrantedLetterGenerationTaskTest {
         assertThat(documents.size(), is(1));
         GeneratedDocumentInfo generatedDocumentInfo = documents.stream().findFirst().get();
         assertThat(generatedDocumentInfo.getDocumentType(), is(DOCUMENT_TYPE));
-        assertThat(generatedDocumentInfo.getFileName(), is(FILE_NAME));
+        assertThat(generatedDocumentInfo.getFileName(), is(createdDoc.getFileName()));
 
         verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
         verifyPdfDocumentGenerationCallIsCorrect();

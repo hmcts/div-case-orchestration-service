@@ -25,7 +25,6 @@ public class DaGrantedLetterGenerationTask extends BasePayloadSpecificDocumentGe
     public static class FileMetadata {
         public static final String TEMPLATE_ID = "FL-DIV-GOR-ENG-00355.docx";
         public static final String DOCUMENT_TYPE = DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE;
-        public static final String FILE_NAME = "DA-granted-letter.pdf";
     }
 
     private final PdfDocumentGenerationService pdfDocumentGenerationService;
@@ -52,7 +51,6 @@ public class DaGrantedLetterGenerationTask extends BasePayloadSpecificDocumentGe
     @Override
     protected GeneratedDocumentInfo populateMetadataForGeneratedDocument(GeneratedDocumentInfo generatedDocumentInfo) {
         generatedDocumentInfo.setDocumentType(FileMetadata.DOCUMENT_TYPE);
-        generatedDocumentInfo.setFileName(FileMetadata.FILE_NAME);//TODO - shouldn't we use the file name that comes from DGS?
 
         return generatedDocumentInfo;
     }

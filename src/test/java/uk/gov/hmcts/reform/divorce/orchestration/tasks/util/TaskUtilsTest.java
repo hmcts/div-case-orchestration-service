@@ -195,7 +195,9 @@ public class TaskUtilsTest {
     }
 
     public static GeneratedDocumentInfo document() {
-        return GeneratedDocumentInfo.builder().documentType(randomString()).build();
+        return GeneratedDocumentInfo.builder()
+            .fileName(randomString())
+            .build();
     }
 
     private static String randomString() {
