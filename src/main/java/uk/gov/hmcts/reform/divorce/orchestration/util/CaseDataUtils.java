@@ -159,10 +159,10 @@ public class CaseDataUtils {
             .filter(Objects::nonNull).map(String.class::cast).map(String::trim).filter(value -> !value.isEmpty()).isPresent();
         boolean refusalClarification = Optional.ofNullable(caseData.get(REFUSAL_CLARIFICATION_ADDITIONAL_INFO_WELSH))
             .filter(Objects::nonNull).map(String.class::cast).map(String::trim).filter(value -> !value.isEmpty()).isPresent();
-        boolean costOrderStop = Optional.ofNullable(caseData.get(COSTS_ORDER_ADDITIONAL_INFO_WELSH))
+        boolean costOrder = Optional.ofNullable(caseData.get(COSTS_ORDER_ADDITIONAL_INFO_WELSH))
             .filter(Objects::nonNull).map(String.class::cast).map(String::trim).filter(value -> !value.isEmpty()).isPresent();
 
-        return WELSH_DN_REFUSED.equals(caseDetails.getState()) && (!refusalRejection ||  !refusalClarification || !costOrderStop);
+        return WELSH_DN_REFUSED.equals(caseDetails.getState()) && (!refusalRejection ||  !refusalClarification || !costOrder);
     }
 
     public static boolean isLanguagePreferenceWelsh(Map<String, Object> caseData) {
