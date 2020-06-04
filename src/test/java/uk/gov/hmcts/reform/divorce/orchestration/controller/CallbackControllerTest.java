@@ -963,7 +963,7 @@ public class CallbackControllerTest {
     public void testDnDecisionMadeReturnsWithoutMaking() throws WorkflowException {
 
         HashMap<String, Object> inputPayload = new HashMap<>();
-        inputPayload.put(OrchestrationConstants.WELSH_REFUSAL_REJECTION_ADDITIONAL_INFO, EMPTY_STRING);
+        inputPayload.put(OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO_WELSH, EMPTY_STRING);
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -975,7 +975,7 @@ public class CallbackControllerTest {
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.dnDecisionMadeCallback(AUTH_TOKEN, ccdCallbackRequest);
 
         assertThat(response.getStatusCode(), equalTo(OK));
-        assertThat(response.getBody().getData(), hasEntry(OrchestrationConstants.WELSH_REFUSAL_REJECTION_ADDITIONAL_INFO,EMPTY_STRING));
+        assertThat(response.getBody().getData(), hasEntry(OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO_WELSH,EMPTY_STRING));
         assertThat(response.getBody().getErrors(), is(nullValue()));
 
         verify(caseOrchestrationService, never()).notifyForRefusalOrder(ccdCallbackRequest);

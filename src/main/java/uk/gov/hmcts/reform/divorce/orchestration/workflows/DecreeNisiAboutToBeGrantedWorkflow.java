@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateDNDecisionTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -57,13 +56,9 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
         List<Task> tasksToRun = new ArrayList<>();
-
         Map<String, Object> caseData = caseDetails.getCaseData();
-        if (CaseDataUtils.isRejectReasonAddInfoAwaitingTranslation(caseData)) {
-            return new HashMap<>(caseData);
-        }
-        tasksToRun.add(setDNDecisionStateTask);
 
+        tasksToRun.add(setDNDecisionStateTask);
         if (CaseDataUtils.isRejectReasonAddInfoAwaitingTranslation(caseData)) {
             Map<String, Object> payloadToReturn = this.execute(
                 tasksToRun.stream().toArray(Task[]::new),
