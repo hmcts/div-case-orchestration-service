@@ -1,19 +1,16 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.util;
 
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.lang.String.format;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil.parseDateUsingCcdFormat;
 
 public class TaskUtils {
@@ -69,11 +66,6 @@ public class TaskUtils {
 
     private static TaskException buildTaskExceptionForMandatoryProperty(String key) {
         return new TaskException(format("Could not evaluate value of mandatory property \"%s\"", key));
-    }
-
-    public static void appendAnotherDocumentToBulkPrint(TaskContext context, GeneratedDocumentInfo generatedDocumentInfo) {//TODO - ?
-        Map<String, GeneratedDocumentInfo> documentsToBulkPrint = context.computeTransientObjectIfAbsent(DOCUMENTS_GENERATED, new HashMap<>());
-        documentsToBulkPrint.put(generatedDocumentInfo.getDocumentType(), generatedDocumentInfo);
     }
 
 }

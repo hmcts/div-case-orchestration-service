@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtilsTest;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -64,7 +63,7 @@ public class DaGrantedLetterGenerationTaskTest {
 
     @Before
     public void setup() {
-        createdDoc = TaskUtilsTest.document();
+        createdDoc = createDocument();
         when(ctscContactDetailsDataProviderService.getCtscContactDetails()).thenReturn(CTSC_CONTACT);
         when(pdfDocumentGenerationService.generatePdf(any(DocmosisTemplateVars.class), eq(TEMPLATE_ID), eq(AUTH_TOKEN))).thenReturn(createdDoc);
     }
@@ -114,6 +113,12 @@ public class DaGrantedLetterGenerationTaskTest {
         caseData.put(PETITIONER_LAST_NAME, PETITIONERS_LAST_NAME);
 
         return caseData;
+    }
+
+    private GeneratedDocumentInfo createDocument() {
+        return GeneratedDocumentInfo.builder()
+            .fileName("myFile.pdf")
+            .build();
     }
 
 }
