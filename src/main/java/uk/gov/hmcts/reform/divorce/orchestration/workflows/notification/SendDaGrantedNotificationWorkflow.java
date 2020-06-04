@@ -16,24 +16,22 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DaGrantedLetterGenerationTask;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.google.common.base.Strings.nullToEmpty;
 import static java.util.Arrays.asList;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DA_GRANTED_OFFLINE_PACK_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.BULK_PRINT_LETTER_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.DOCUMENT_TYPES_TO_PRINT;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.removeDocumentByDocumentType;
 
 @Component
 @RequiredArgsConstructor
@@ -60,27 +58,12 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
             ImmutablePair.of(DOCUMENT_TYPES_TO_PRINT, getDocumentTypesToPrint())
         );
 
-        List<Map<String, Map<String, Object>>> listWithoutNewDocument = Optional.ofNullable(caseDataToReturn.get(D8DOCUMENTS_GENERATED))
-            .map(i -> (List<Map<String, Map<String, Object>>>) i)
-            .orElse(new ArrayList<>())
-            .stream()
-            .filter(documentCollectionMember -> !DaGrantedLetterGenerationTask.FileMetadata.DOCUMENT_TYPE.equals(documentCollectionMember.get("value").get("DocumentType")))
-            .collect(Collectors.toList());
-
-        Map<String, Object> newCaseData = new HashMap<>();
-        newCaseData.putAll(incomingCaseData);
-
-        if (!listWithoutNewDocument.isEmpty()) {//TODO - refactor
-            newCaseData.replace(D8DOCUMENTS_GENERATED, listWithoutNewDocument);//TODO - should we not be changing this?
-        }
-
-        return newCaseData;
-        //TODO - remove new document (DA letter) from case data
+        return removeDocumentByDocumentType(caseDataToReturn, DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE);
     }
 
     private List<String> getDocumentTypesToPrint() {
         return asList(
-            DaGrantedLetterGenerationTask.FileMetadata.DOCUMENT_TYPE,
+            DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE,
             DECREE_ABSOLUTE_DOCUMENT_TYPE
         );
     }
