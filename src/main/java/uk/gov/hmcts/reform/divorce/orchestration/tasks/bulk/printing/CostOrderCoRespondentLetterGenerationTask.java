@@ -3,18 +3,18 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CoverLetters;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DaGrantedLetter;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CoRespondentCoverLetter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.DocumentContentFetcherService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CostOrderCoRespondentLetterDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor;
 
-import java.time.LocalDate;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
@@ -44,11 +44,13 @@ public class CostOrderCoRespondentLetterGenerationTask extends PrepareDataForDoc
 
     @Override
     protected DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        return CoverLetters.builder()
-            .caseReference(getCaseId(context))
+        return CoRespondentCoverLetter.builder()
             .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
-            .addressee(CostOrderCoRespondentLetterDataExtractor.getAddressee(caseData))
+            .caseReference(getCaseId(context))
             .letterDate(CostOrderCoRespondentLetterDataExtractor.getLetterDate())
+            .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
+            .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
+            .addressee(AddresseeDataExtractor.getCoRespondent(caseData))
             .coRespondentFullName(CostOrderCoRespondentLetterDataExtractor.getCoRespondentFullName(caseData))
             .build();
     }
