@@ -8,13 +8,10 @@ import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_DERIVED_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS;
+import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CostOrderCoRespondentLetterDataExtractor.CaseDataKeys.COSTS_CLAIM_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CostOrderCoRespondentLetterDataExtractor.CaseDataKeys.CO_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CostOrderCoRespondentLetterDataExtractor.CaseDataKeys.CO_RESPONDENT_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.RESPONDENT_HOME_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 
 
 public class CostOrderCoRespondentLetterDataExtractorTest {
@@ -30,7 +27,7 @@ public class CostOrderCoRespondentLetterDataExtractorTest {
     public void getPetitionerFullNameIsValid() {
         Map<String, Object> caseData = buildCaseDataWithCoRespondentNames(FIRST_NAME, LAST_NAME);
 
-        assertThat(DaGrantedLetterDataExtractor.getPetitionerFullName(caseData), is(EXPECTED_FULL_NAME));
+        assertThat(CostOrderCoRespondentLetterDataExtractor.getCoRespondentFullName(caseData), is(EXPECTED_FULL_NAME));
     }
 
     @Test
@@ -47,7 +44,7 @@ public class CostOrderCoRespondentLetterDataExtractorTest {
             String expected = values.get(2);
             Map<String, Object> caseData = buildCaseDataWithCoRespondentNames(values.get(0), values.get(1));
 
-            assertThat(DaGrantedLetterDataExtractor.getPetitionerFullName(caseData), is(expected));
+            assertThat(CostOrderCoRespondentLetterDataExtractor.getCoRespondentFullName(caseData), is(expected));
         });
 
     }
@@ -57,16 +54,6 @@ public class CostOrderCoRespondentLetterDataExtractorTest {
         Map<String, Object> caseData = buildCaseDataWithCoRespondentNames(FIRST_NAME, LAST_NAME);
 
         assertThat(CostOrderCoRespondentLetterDataExtractor.getCoRespondentFullName(caseData), is("Finn Mertens"));
-    }
-
-    @Test
-    public void isCostClaimGrantedTrue() {
-        return getMandatoryPropertyValueAsString
-            (caseData, CostOrderCoRespondentLetterDataExtractor.CaseDataKeys.COSTS_CLAIM_GRANTED)
-            .equalsIgnoreCase("yes") ? true : false;
-
-        Map<String, Object> caseData = buildCaseDataWithCoRespondentNames(FIRST_NAME, LAST_NAME);
-
     }
 
     private static Map<String, Object> buildCaseDataWithCoRespondentNames(String firstName, String lastName) {
@@ -81,13 +68,13 @@ public class CostOrderCoRespondentLetterDataExtractorTest {
         String costClaimGrantedYesNoValue;
 
         if (value) {
-            costClaimGrantedYesNoValue = "yes";
+            costClaimGrantedYesNoValue = "Yes";
         } else {
-            costClaimGrantedYesNoValue = "no";
+            costClaimGrantedYesNoValue = "No";
         }
 
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(COSTS_CLAIM_GRANTED, costClaimGrantedYesNoValue.ig);
+        caseData.put(COSTS_CLAIM_GRANTED, costClaimGrantedYesNoValue);
         return caseData;
     }
 
@@ -99,11 +86,12 @@ public class CostOrderCoRespondentLetterDataExtractorTest {
         return caseData;
     }
 
+
+    // TODO: WIP - ADD THESE TEST CASES
+
     // isCostClaimGranted - true
     // isCostClaimGranted - false
     // isCostClaimGranted - null
-
-    // getAddressee
 
     // getLetterDate
 

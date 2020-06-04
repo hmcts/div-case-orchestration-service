@@ -2,9 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextract
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import uk.gov.hmcts.reform.bsp.common.model.document.Addressee;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.time.LocalDate;
@@ -22,18 +20,10 @@ public class CostOrderCoRespondentLetterDataExtractor {
 
         public static final String CO_RESPONDENT_FIRST_NAME = OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME;
         public static final String CO_RESPONDENT_LAST_NAME = OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME;
-        public static final String C0_RESPONDENT_ADDRESS = OrchestrationConstants.D8_DERIVED_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS;
     }
 
     public static boolean isCostClaimGranted(Map<String, Object> caseData) throws TaskException {
         return getMandatoryPropertyValueAsString(caseData, CaseDataKeys.COSTS_CLAIM_GRANTED).equalsIgnoreCase("yes") ? true : false;
-    }
-
-    public static Addressee getAddressee(Map<String, Object> caseData) {
-        return Addressee.builder()
-            .name(getCoRespondentFullName(caseData))
-            .formattedAddress(CaseDataKeys.C0_RESPONDENT_ADDRESS)
-            .build();
     }
 
     public static String getLetterDate() {
