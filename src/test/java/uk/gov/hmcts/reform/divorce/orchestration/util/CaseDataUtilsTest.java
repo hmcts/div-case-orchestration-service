@@ -138,7 +138,7 @@ public class CaseDataUtilsTest {
     }
 
     @Test
-    public void ensureDocumentIsRemovedByDocumentType(){
+    public void ensureDocumentIsRemovedByDocumentType() {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(D8DOCUMENTS_GENERATED, asList(createCollectionMemberDocumentAsMap("testUrl", "myDocType", "filename")));
 
