@@ -67,11 +67,7 @@ public class CostOrderCoRespondentLetterDataExtractorTest {
     private static Map<String, Object> buildCaseDataWithCostClaimGranted(boolean value) {
         String costClaimGrantedYesNoValue;
 
-        if (value) {
-            costClaimGrantedYesNoValue = "Yes";
-        } else {
-            costClaimGrantedYesNoValue = "No";
-        }
+        costClaimGrantedYesNoValue = value ? "Yes" : "No";
 
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(COSTS_CLAIM_GRANTED, costClaimGrantedYesNoValue);

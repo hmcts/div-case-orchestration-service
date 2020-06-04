@@ -6,7 +6,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DaGrantedLetter;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CoRespondentCoverLetter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
@@ -14,14 +14,15 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.DocumentContentFetcherService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CostOrderCoRespondentLetterDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor;
 
 import java.time.LocalDate;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -30,10 +31,10 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractorTest.buildCaseDataWithAddressee;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.CORESPONDENT_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.CORESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.PrepareDataForDocumentGenerationTaskTest.document;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderCoRespondentLetterGenerationTask.FileMetadata.TEMPLATE_ID;
 
 public class CostOrderCoRespondentLetterGenerationTaskTest {
 
@@ -75,7 +76,7 @@ public class CostOrderCoRespondentLetterGenerationTaskTest {
     public void executeShouldPopulateFieldInContext() throws TaskException {
         TaskContext context = prepareTaskContext();
 
-        CostOrderCoRespondentLetterGenerationTask.execute(context, buildCaseData());
+        costOrderCoRespondentLetterGenerationTask.execute(context, buildCaseData());
 
         Map<String, GeneratedDocumentInfo> documents = PrepareDataForDocumentGenerationTask.getDocumentsToBulkPrint(context);
 
@@ -86,17 +87,17 @@ public class CostOrderCoRespondentLetterGenerationTaskTest {
     }
 
     private void verifyPdfDocumentGenerationCallIsCorrect() {
-        final ArgumentCaptor<DaGrantedLetter> daGrantedLetterArgumentCaptor = ArgumentCaptor.forClass(DaGrantedLetter.class);
+        final ArgumentCaptor<CoRespondentCoverLetter> CoRespondentCoverLetterArgumentCaptor = ArgumentCaptor.forClass(CoRespondentCoverLetter.class);
         verify(pdfDocumentGenerationService, times(1))
-            .generatePdf(daGrantedLetterArgumentCaptor.capture(), eq(TEMPLATE_ID), eq(AUTH_TOKEN));
+            .generatePdf(CoRespondentCoverLetterArgumentCaptor.capture(), eq(TEMPLATE_ID), eq(AUTH_TOKEN));
         verify(documentContentFetcherService, times(1)).fetchPrintContent(eq(DOCUMENT));
 
-        final DaGrantedLetter daGrantedLetter = daGrantedLetterArgumentCaptor.getValue();
-        assertThat(daGrantedLetter.getPetitionerFullName(), is("Anna Nowak"));
-        assertThat(daGrantedLetter.getRespondentFullName(), is("John Smith"));
-        assertThat(daGrantedLetter.getCaseReference(), is(CASE_ID));
-        assertThat(daGrantedLetter.getLetterDate(), is(LETTER_DATE));
-        assertThat(daGrantedLetter.getCtscContactDetails(), is(CTSC_CONTACT));
+        final CoRespondentCoverLetter CoRespondentCoverLetter = CoRespondentCoverLetterArgumentCaptor.getValue();
+        assertThat(CoRespondentCoverLetter.getPetitionerFullName(), is("Anna Nowak"));
+        assertThat(CoRespondentCoverLetter.getRespondentFullName(), is("John Smith"));
+        assertThat(CoRespondentCoverLetter.getCaseReference(), is(CASE_ID));
+        assertThat(CoRespondentCoverLetter.getLetterDate(), is(LETTER_DATE));
+        assertThat(CoRespondentCoverLetter.getCtscContactDetails(), is(CTSC_CONTACT));
     }
 
     public static TaskContext prepareTaskContext() {
@@ -108,11 +109,11 @@ public class CostOrderCoRespondentLetterGenerationTaskTest {
     }
 
     private Map<String, Object> buildCaseData() {
-        Map<String, Object> caseData = buildCaseDataWithAddressee();
-        caseData.put(DaGrantedLetterDataExtractor.CaseDataKeys.DA_GRANTED_DATE, LETTER_DATE);
+        Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithRespondentAsAddressee();
+        caseData.put(CostOrderCoRespondentLetterDataExtractor.CaseDataKeys.COSTS_CLAIM_GRANTED, LETTER_DATE);
 
-        caseData.put(PETITIONER_FIRST_NAME, PETITIONERS_FIRST_NAME);
-        caseData.put(PETITIONER_LAST_NAME, PETITIONERS_LAST_NAME);
+        caseData.put(CORESPONDENT_FIRST_NAME, CO_RESPONDENT_FIRST_NAME);
+        caseData.put(CORESPONDENT_LAST_NAME, CO_RESPONDENT_LAST_NAME);
 
         return caseData;
     }
