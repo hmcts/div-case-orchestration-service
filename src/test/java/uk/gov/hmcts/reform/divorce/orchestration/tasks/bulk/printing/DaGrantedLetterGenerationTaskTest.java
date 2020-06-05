@@ -36,6 +36,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DaGrantedLetterGenerationTask.FileMetadata.DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DaGrantedLetterGenerationTask.FileMetadata.TEMPLATE_ID;
 
@@ -44,6 +46,8 @@ public class DaGrantedLetterGenerationTaskTest {
 
     private static final String PETITIONERS_FIRST_NAME = "Anna";
     private static final String PETITIONERS_LAST_NAME = "Nowak";
+    private static final String RESPONDENTS_FIRST_NAME = "John";
+    private static final String RESPONDENTS_LAST_NAME = "Wozniak";
 
     private static final String CASE_ID = "It's mandatory field in context";
     private static final String LETTER_DATE = LocalDate.now().toString();
@@ -72,7 +76,23 @@ public class DaGrantedLetterGenerationTaskTest {
     public void executeShouldPopulateFieldInContext() throws TaskException {
         TaskContext context = prepareTaskContext();
 
-        daGrantedLetterGenerationTask.execute(context, buildCaseData());
+        daGrantedLetterGenerationTask.execute(context, buildCaseDataRespondentNotRepresented());
+
+        Set<GeneratedDocumentInfo> documents = context.getTransientObject(DOCUMENT_COLLECTION);
+        assertThat(documents.size(), is(1));
+        GeneratedDocumentInfo generatedDocumentInfo = documents.stream().findFirst().get();
+        assertThat(generatedDocumentInfo.getDocumentType(), is(DOCUMENT_TYPE));
+        assertThat(generatedDocumentInfo.getFileName(), is(createdDoc.getFileName()));
+
+        verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
+        verifyPdfDocumentGenerationCallIsCorrect();
+    }
+
+    @Test
+    public void executeShouldPopulateFieldInContextWhenRespondentIsRepresented() throws TaskException {
+        TaskContext context = prepareTaskContext();
+
+        daGrantedLetterGenerationTask.execute(context, buildCaseDataRespondentRepresented());
 
         Set<GeneratedDocumentInfo> documents = context.getTransientObject(DOCUMENT_COLLECTION);
         assertThat(documents.size(), is(1));
@@ -90,8 +110,8 @@ public class DaGrantedLetterGenerationTaskTest {
             .generatePdf(daGrantedLetterArgumentCaptor.capture(), eq(TEMPLATE_ID), eq(AUTH_TOKEN));
 
         final BasicCoverLetter daGrantedLetter = daGrantedLetterArgumentCaptor.getValue();
-        assertThat(daGrantedLetter.getPetitionerFullName(), is("Anna Nowak"));
-        assertThat(daGrantedLetter.getRespondentFullName(), is("John Smith"));
+        assertThat(daGrantedLetter.getPetitionerFullName(), is(PETITIONERS_FIRST_NAME + " " + PETITIONERS_LAST_NAME));
+        assertThat(daGrantedLetter.getRespondentFullName(), is(RESPONDENTS_FIRST_NAME + " " + RESPONDENTS_LAST_NAME));
         assertThat(daGrantedLetter.getCaseReference(), is(CASE_ID));
         assertThat(daGrantedLetter.getLetterDate(), is(LETTER_DATE));
         assertThat(daGrantedLetter.getCtscContactDetails(), is(CTSC_CONTACT));
@@ -105,12 +125,24 @@ public class DaGrantedLetterGenerationTaskTest {
         return context;
     }
 
-    private Map<String, Object> buildCaseData() {
-        Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithRespondentAsAddressee();
+    private Map<String, Object> buildCaseDataRespondentRepresented() {
+        return buildCaseData(true);
+    }
+
+    private Map<String, Object> buildCaseDataRespondentNotRepresented() {
+        return buildCaseData(false);
+    }
+
+    private Map<String, Object> buildCaseData(boolean isRespondentRepresented) {
+        Map<String, Object> caseData = isRespondentRepresented
+            ? AddresseeDataExtractorTest.buildCaseDataWithRespondentSolicitorAsAddressee()
+            : AddresseeDataExtractorTest.buildCaseDataWithRespondentAsAddressee();
         caseData.put(DaGrantedLetterDataExtractor.CaseDataKeys.DA_GRANTED_DATE, LETTER_DATE);
 
         caseData.put(PETITIONER_FIRST_NAME, PETITIONERS_FIRST_NAME);
         caseData.put(PETITIONER_LAST_NAME, PETITIONERS_LAST_NAME);
+        caseData.put(RESPONDENT_FIRST_NAME, RESPONDENTS_FIRST_NAME);
+        caseData.put(RESPONDENT_LAST_NAME, RESPONDENTS_LAST_NAME);
 
         return caseData;
     }
@@ -120,5 +152,4 @@ public class DaGrantedLetterGenerationTaskTest {
             .fileName("myFile.pdf")
             .build();
     }
-
 }

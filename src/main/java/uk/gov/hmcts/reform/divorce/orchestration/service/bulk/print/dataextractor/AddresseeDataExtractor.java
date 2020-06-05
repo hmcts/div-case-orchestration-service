@@ -3,14 +3,12 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextract
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.bsp.common.model.document.Addressee;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getRespondentFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getRespondentSolicitorFullName;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AddresseeDataExtractor {
@@ -41,13 +39,5 @@ public class AddresseeDataExtractor {
 
     private static String getRespondentSolicitorFormattedAddress(Map<String, Object> caseData) {
         return getMandatoryStringValue(caseData, CaseDataKeys.RESPONDENT_SOLICITOR_ADDRESS);
-    }
-
-    private static String getMandatoryStringValue(Map<String, Object> caseData, String field) {
-        try {
-            return getMandatoryPropertyValueAsString(caseData, field);
-        } catch (TaskException exception) {
-            throw new InvalidDataForTaskException(exception);
-        }
     }
 }
