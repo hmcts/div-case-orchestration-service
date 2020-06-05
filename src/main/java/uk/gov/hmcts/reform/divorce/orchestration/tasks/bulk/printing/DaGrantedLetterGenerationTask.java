@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.bsp.common.model.document.Addressee;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.BasicCoverLetter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
@@ -43,7 +44,7 @@ public class DaGrantedLetterGenerationTask extends BasePayloadSpecificDocumentGe
         return BasicCoverLetter.builder()
             .caseReference(getCaseId(context))
             .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
-            .addressee(AddresseeDataExtractor.getRespondent(caseData))
+            .addressee(getRespondentOrSolicitorIfRepresented(caseData))
             .letterDate(DaGrantedLetterDataExtractor.getDaGrantedDate(caseData))
             .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
             .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
@@ -66,4 +67,7 @@ public class DaGrantedLetterGenerationTask extends BasePayloadSpecificDocumentGe
         );
     }
 
+    private Addressee getRespondentOrSolicitorIfRepresented(Map<String, Object> caseData) {
+        return AddresseeDataExtractor.getRespondent(caseData);
+    }
 }

@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
 
 import org.junit.Test;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +17,7 @@ public class DaGrantedLetterDataExtractorTest {
     private static final String VALID_DATE = "2010-10-10";
 
     @Test
-    public void getDaGrantedDateReturnsValidValueWhenItExists() throws TaskException {
+    public void getDaGrantedDateReturnsValidValueWhenItExists() {
         Map<String, Object> caseData = buildCaseDataWithDaGrantedDate(VALID_DATE);
         assertThat(DaGrantedLetterDataExtractor.getDaGrantedDate(caseData), is(VALID_DATE));
     }
@@ -28,7 +28,7 @@ public class DaGrantedLetterDataExtractorTest {
             try {
                 DaGrantedLetterDataExtractor.getDaGrantedDate(buildCaseDataWithDaGrantedDate(daDateValue));
                 fail("Should have thrown exception");
-            } catch (TaskException e) {
+            } catch (InvalidDataForTaskException e) {
                 thisTestPassed();
             }
         });
