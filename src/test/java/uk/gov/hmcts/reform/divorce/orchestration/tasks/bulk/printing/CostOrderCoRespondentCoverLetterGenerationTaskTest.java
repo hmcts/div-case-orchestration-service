@@ -34,9 +34,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.CORESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.CORESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.PrepareDataForDocumentGenerationTaskTest.document;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderCoRespondentLetterGenerationTask.FileMetadata.TEMPLATE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderCoRespondentCoverLetterGenerationTask.FileMetadata.TEMPLATE_ID;
 
-public class CostOrderCoRespondentLetterGenerationTaskTest {
+public class CostOrderCoRespondentCoverLetterGenerationTaskTest {
 
     private static final String CO_RESPONDENT_FIRST_NAME = "Anna";
     private static final String CO_RESPONDENT_LAST_NAME = "Nowak";
@@ -47,8 +47,8 @@ public class CostOrderCoRespondentLetterGenerationTaskTest {
     private static final CtscContactDetails CTSC_CONTACT = CtscContactDetails.builder().build();
     private static final GeneratedDocumentInfo DOCUMENT = GeneratedDocumentInfo
         .builder()
-        .documentType(CostOrderCoRespondentLetterGenerationTask.FileMetadata.DOCUMENT_TYPE)
-        .fileName(CostOrderCoRespondentLetterGenerationTask.FileMetadata.FILE_NAME)
+        .documentType(CostOrderCoRespondentCoverLetterGenerationTask.FileMetadata.DOCUMENT_TYPE)
+        .fileName(CostOrderCoRespondentCoverLetterGenerationTask.FileMetadata.FILE_NAME)
         .build();
 
     @Mock
@@ -61,7 +61,7 @@ public class CostOrderCoRespondentLetterGenerationTaskTest {
     private DocumentContentFetcherService documentContentFetcherService;
 
     @InjectMocks
-    private CostOrderCoRespondentLetterGenerationTask costOrderCoRespondentLetterGenerationTask;
+    private CostOrderCoRespondentCoverLetterGenerationTask costOrderCoRespondentCoverLetterGenerationTask;
 
     @Before
     public void setup() {
@@ -76,7 +76,7 @@ public class CostOrderCoRespondentLetterGenerationTaskTest {
     public void executeShouldPopulateFieldInContext() throws TaskException {
         TaskContext context = prepareTaskContext();
 
-        costOrderCoRespondentLetterGenerationTask.execute(context, buildCaseData());
+        costOrderCoRespondentCoverLetterGenerationTask.execute(context, buildCaseData());
 
         Map<String, GeneratedDocumentInfo> documents = PrepareDataForDocumentGenerationTask.getDocumentsToBulkPrint(context);
 

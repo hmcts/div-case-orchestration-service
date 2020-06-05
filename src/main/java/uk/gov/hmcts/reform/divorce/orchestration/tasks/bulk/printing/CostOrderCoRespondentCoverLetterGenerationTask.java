@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 
 @Component
-public class CostOrderCoRespondentLetterGenerationTask extends PrepareDataForDocumentGenerationTask {
+public class CostOrderCoRespondentCoverLetterGenerationTask extends PrepareDataForDocumentGenerationTask {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FileMetadata {
@@ -33,7 +33,7 @@ public class CostOrderCoRespondentLetterGenerationTask extends PrepareDataForDoc
     private final PdfDocumentGenerationService pdfDocumentGenerationService;
     private final DocumentContentFetcherService documentContentFetcherService;
 
-    public CostOrderCoRespondentLetterGenerationTask(
+    public CostOrderCoRespondentCoverLetterGenerationTask(
         CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
         PdfDocumentGenerationService pdfDocumentGenerationService,
         DocumentContentFetcherService documentContentFetcherService) {
