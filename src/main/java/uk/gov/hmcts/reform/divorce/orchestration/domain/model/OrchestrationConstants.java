@@ -134,7 +134,11 @@ public class OrchestrationConstants {
     public static final String DN_OUTCOME_FLAG_CCD_FIELD = "DnOutcomeCase";
     public static final String REFUSAL_DECISION_CCD_FIELD = "RefusalDecision";
     public static final String REFUSAL_REJECTION_ADDITIONAL_INFO = "RefusalRejectionAdditionalInfo";
-    public static final String WELSH_REFUSAL_REJECTION_ADDITIONAL_INFO = "WelshRefusalRejectionAdditionalInfo";
+    public static final String REFUSAL_REJECTION_ADDITIONAL_INFO_WELSH = "RefusalRejectionAdditionalInfoWelsh";
+    public static final String REFUSAL_CLARIFICATION_ADDITIONAL_INFO = "RefusalClarificationAdditionalInfo";
+    public static final String REFUSAL_CLARIFICATION_ADDITIONAL_INFO_WELSH = "RefusalClarificationAdditionalInfoWelsh";
+    public static final String COSTS_ORDER_ADDITIONAL_INFO = "CostsOrderAdditionalInfo";
+    public static final String COSTS_ORDER_ADDITIONAL_INFO_WELSH = "CostsOrderAdditionalInfoWelsh";
     public static final String REFUSAL_DECISION_MORE_INFO_VALUE = "moreInfo";
     public static final String DN_REFUSED_REJECT_OPTION = "reject";
     public static final String DN_REFUSED_ADMIN_ERROR_OPTION = "adminError";

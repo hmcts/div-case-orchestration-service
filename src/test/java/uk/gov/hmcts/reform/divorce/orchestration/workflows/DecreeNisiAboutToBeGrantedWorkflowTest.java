@@ -340,11 +340,10 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
         inputPayload.put(REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION);
         inputPayload.put(OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH, YES_VALUE);
         inputPayload.put(OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO, "Blah blah additional info");
-        inputPayload.put(OrchestrationConstants.WELSH_REFUSAL_REJECTION_ADDITIONAL_INFO, EMPTY_STRING);
+        inputPayload.put(OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO_WELSH, EMPTY_STRING);
 
         Map<String, Object> returnedPayload = workflow.run(CaseDetails.builder().caseData(inputPayload).build(), AUTH_TOKEN);
 
-        verify(setDNDecisionStateTask, never()).execute(any(), any());
         verify(validateDNDecisionTask, never()).execute(any(), any());
         verify(addDecreeNisiDecisionDateTask, never()).execute(any(), any());
         verify(addDnOutcomeFlagFieldTask, never()).execute(any(), any());
