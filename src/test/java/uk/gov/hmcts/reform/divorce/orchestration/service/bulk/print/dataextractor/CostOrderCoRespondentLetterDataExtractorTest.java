@@ -9,7 +9,6 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CostOrderCoRespondentLetterDataExtractor.CaseDataKeys.COSTS_CLAIM_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CostOrderCoRespondentLetterDataExtractor.CaseDataKeys.CO_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CostOrderCoRespondentLetterDataExtractor.CaseDataKeys.CO_RESPONDENT_LAST_NAME;
 
@@ -64,15 +63,15 @@ public class CostOrderCoRespondentLetterDataExtractorTest {
         return caseData;
     }
 
-    private static Map<String, Object> buildCaseDataWithCostClaimGranted(boolean value) {
-        String costClaimGrantedYesNoValue;
-
-        costClaimGrantedYesNoValue = value ? "Yes" : "No";
-
-        Map<String, Object> caseData = new HashMap<>();
-        caseData.put(COSTS_CLAIM_GRANTED, costClaimGrantedYesNoValue);
-        return caseData;
-    }
+//    private static Map<String, Object> buildCaseDataWithCostClaimGranted(boolean value) {
+//        String costClaimGrantedYesNoValue;
+//
+//        costClaimGrantedYesNoValue = value ? "Yes" : "No";
+//
+//        Map<String, Object> caseData = new HashMap<>();
+//        caseData.put(COSTS_CLAIM_GRANTED, costClaimGrantedYesNoValue);
+//        return caseData;
+//    }
 
     public static Map<String, Object> buildCaseDataWithAddressee(String addressField) {
         Map<String, Object> caseData = buildCaseDataWithCoRespondentNames(FIRST_NAME, LAST_NAME);
@@ -84,10 +83,6 @@ public class CostOrderCoRespondentLetterDataExtractorTest {
 
 
     // TODO: WIP - ADD THESE TEST CASES
-
-    // isCostClaimGranted - true
-    // isCostClaimGranted - false
-    // isCostClaimGranted - null
 
     // getLetterDate
 
