@@ -38,6 +38,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.remov
 public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final SendDaGrantedNotificationEmailTask sendDaGrantedNotificationEmailTask;
+
     private final DaGrantedLetterGenerationTask daGrantedLetterGenerationTask;
     private final CaseFormatterAddDocuments caseFormatterAddDocuments;
     private final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
