@@ -10,7 +10,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class CitizenRepresentedChecker {
+public class PartyRepresentationChecker {
 
     public static boolean isRespondentRepresented(Map<String, Object> caseData) {
         return isRepresented(caseData, RESP_SOL_REPRESENTED);
