@@ -7,7 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DaGrantedLetter;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.BasicCoverLetter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.RequestTemplateVarsWrapper;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 
@@ -26,7 +26,7 @@ public class PdfDocumentGenerationServiceTest {
     private final String letterDate = LocalDate.now().toString();
     private final String caseId = "123-987";
     private final String templateId = "template";
-    private final DaGrantedLetter model = DaGrantedLetter.builder().caseReference(caseId).letterDate(letterDate).build();
+    private final BasicCoverLetter model = BasicCoverLetter.builder().caseReference(caseId).letterDate(letterDate).build();
 
     @Mock
     private DocumentGeneratorClient documentGeneratorClient;
@@ -43,7 +43,7 @@ public class PdfDocumentGenerationServiceTest {
         final GenerateDocumentRequest capturedRequest = documentGenerationRequest.getValue();
         final RequestTemplateVarsWrapper modelSentToPdfGenerator = (RequestTemplateVarsWrapper) capturedRequest.getValues()
             .get(PdfDocumentGenerationService.DGS_DATA_KEY);
-        final DaGrantedLetter templateVars = (DaGrantedLetter) modelSentToPdfGenerator.getCaseData();
+        final BasicCoverLetter templateVars = (BasicCoverLetter) modelSentToPdfGenerator.getCaseData();
 
         assertThat(capturedRequest.getTemplate(), is(templateId));
         assertThat(modelSentToPdfGenerator.getId(), is(caseId));

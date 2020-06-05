@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.support.cos;
 
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -73,6 +74,13 @@ public interface CosApiClient {
     @ApiOperation("Handle callback to trigger daAboutToBeGranted workflow")
     @PostMapping(value = "/da-about-to-be-granted")
     Map<String, Object> daAboutToBeGranted(
+        @RequestHeader(AUTHORIZATION) String authorisation,
+        @RequestBody CcdCallbackRequest ccdCallbackRequest
+    );
+
+    @ApiOperation("Callback to run after DA Grant event has finished")
+    @PostMapping(value = "/handle-post-da-granted")
+    ResponseEntity<CcdCallbackResponse> handleDaGranted(
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestBody CcdCallbackRequest ccdCallbackRequest
     );
