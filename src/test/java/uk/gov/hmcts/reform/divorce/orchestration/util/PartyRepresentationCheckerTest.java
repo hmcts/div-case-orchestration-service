@@ -28,6 +28,7 @@ public class PartyRepresentationCheckerTest {
     public void isPetitionerRepresentedReturnsFalse() {
         assertThat(isPetitionerRepresented(createCaseData(PET_SOL_EMAIL, "")), is(false));
         assertThat(isPetitionerRepresented(createCaseData(PET_SOL_EMAIL, null)), is(false));
+        assertThat(isPetitionerRepresented(createCaseData("another-field", "value")), is(false));
         assertThat(isPetitionerRepresented(EMPTY_MAP), is(false));
     }
 
