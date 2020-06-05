@@ -28,7 +28,7 @@ public class PartyRepresentationChecker {
         return isRepresented(caseData, CO_RESPONDENT_REPRESENTED);
     }
 
-    private static boolean isRepresented(Map<String, Object> caseData, String corespondentRepresented) {
-        return YES_VALUE.equalsIgnoreCase((String) caseData.get(corespondentRepresented));
+    private static boolean isRepresented(Map<String, Object> caseData, String field) {
+        return YES_VALUE.equalsIgnoreCase((String) caseData.get(field));
     }
 }
