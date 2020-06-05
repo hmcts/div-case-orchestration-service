@@ -25,8 +25,6 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_COMPANY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_RESPONDENT_GENDER;
@@ -53,12 +51,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRelationshipTermByGender;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
 
 @Component
 @Slf4j
@@ -82,7 +80,7 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         final String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         final String caseState = ccdCallbackRequest.getCaseDetails().getState();
 
-        if (usingRespondentSolicitor(caseData)) {
+        if (isRespondentRepresented(caseData)) {
             log.info("Attempting to queue solicitor AoS submission for case {}, case state: {}", caseId, caseState);
             tasks.add(queueAosSolicitorSubmitTask);
 
@@ -162,17 +160,6 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         }
 
         return new GenericEmailContext(emailToBeSentTo, template, notificationTemplateVars);
-    }
-
-    private boolean usingRespondentSolicitor(Map<String, Object> caseData) {
-        final String respondentSolicitorRepresented = (String) caseData.get(RESP_SOL_REPRESENTED);
-
-        // temporary fix until we implement setting respondentSolicitorRepresented from CCD for RespSols
-        final String respondentSolicitorName = (String) caseData.get(D8_RESPONDENT_SOLICITOR_NAME);
-        final String respondentSolicitorCompany = (String) caseData.get(D8_RESPONDENT_SOLICITOR_COMPANY);
-
-        return YES_VALUE.equalsIgnoreCase(respondentSolicitorRepresented)
-            || respondentSolicitorName != null && respondentSolicitorCompany != null;
     }
 
     private boolean respondentIsDefending(CaseDetails caseDetails) {

@@ -8,12 +8,25 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentRepresented;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerRepresented;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
 
 public class PartyRepresentationCheckerTest {
+
+    @Test
+    public void isPetitionerRepresentedReturnsTrue() {
+        assertThat(isPetitionerRepresented(ImmutableMap.of(PET_SOL_EMAIL, "I-represent@petitioner.com")), is(true));
+    }
+
+    @Test
+    public void isPetitionerRepresentedReturnsFalse() {
+        assertThat(isPetitionerRepresented(ImmutableMap.of(PET_SOL_EMAIL, "")), is(false));
+        assertThat(isPetitionerRepresented(EMPTY_MAP), is(false));
+    }
 
     @Test
     public void isRespondentRepresentedReturnsTrue() {

@@ -76,8 +76,8 @@ public class SendDaGrantedNotificationEmailTaskTest {
     @InjectMocks
     SendDaGrantedNotificationEmailTask sendDaGrantedNotificationEmail;
 
-    private static String DA_GRANTED_NOTIFICATION_EMAIL_DESC = "Decree Absolute Notification - Decree Absolute Granted";
-    private static String SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC = "Decree Absolute Notification To Solicitor - Decree Absolute Granted";
+    private static final String DA_GRANTED_NOTIFICATION_EMAIL_DESC = "Decree Absolute Notification - Decree Absolute Granted";
+    private static final String SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC = "Decree Absolute Notification To Solicitor - Decree Absolute Granted";
     private TaskContext context;
     private Map<String, Object> testData;
     private Map<String, String> expectedPetitionerTemplateVars;

@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_COMPANY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
@@ -41,9 +39,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerRepresented;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
 
 @Component
@@ -63,7 +61,7 @@ public class SendDaGrantedNotificationEmailTask implements Task<Map<String, Obje
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
 
-        if (isSolicitorRepresentingPetitioner(caseData)) {
+        if (isPetitionerRepresented(caseData)) {
             String petSolEmail = getMandatoryPropertyValueAsString(caseData, PET_SOL_EMAIL);
             String petSolName = getMandatoryPropertyValueAsString(caseData, PET_SOL_NAME);
 
@@ -72,7 +70,7 @@ public class SendDaGrantedNotificationEmailTask implements Task<Map<String, Obje
             sendEmailToPetitioner(caseData);
         }
 
-        if (isSolicitorRepresentingRespondent(caseData)) {
+        if (isRespondentRepresented(caseData)) {
             String respSolEmail = getMandatoryPropertyValueAsString(caseData, D8_RESPONDENT_SOLICITOR_EMAIL);
             String respSolName = getMandatoryPropertyValueAsString(caseData, D8_RESPONDENT_SOLICITOR_NAME);
 
@@ -104,20 +102,20 @@ public class SendDaGrantedNotificationEmailTask implements Task<Map<String, Obje
         templateVars.put(NOTIFICATION_RESP_NAME, respFirstName + " " + respLastName);
 
         emailService.sendEmail(
-                solicitorEmail,
-                EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name(),
-                templateVars,
-                SOL_EMAIL_DESC);
+            solicitorEmail,
+            EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name(),
+            templateVars,
+            SOL_EMAIL_DESC);
     }
 
     private void sendEmailToPetitioner(Map<String, Object> caseData) throws TaskException {
         try {
             sendEmail(
-                    getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME),
-                    getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME),
-                    getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL),
-                    caseData,
-                    getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE)
+                getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME),
+                getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME),
+                getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL),
+                caseData,
+                getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE)
             );
         } catch (NotificationClientException e) {
             log.error("Error sending DA Granted notification email to petitioner", e);
@@ -128,11 +126,11 @@ public class SendDaGrantedNotificationEmailTask implements Task<Map<String, Obje
     private void sendEmailToRespondent(Map<String, Object> caseData) throws TaskException {
         try {
             sendEmail(
-                    getMandatoryPropertyValueAsString(caseData, RESP_FIRST_NAME_CCD_FIELD),
-                    getMandatoryPropertyValueAsString(caseData, RESP_LAST_NAME_CCD_FIELD),
-                    getMandatoryPropertyValueAsString(caseData, RESPONDENT_EMAIL_ADDRESS),
-                    caseData,
-                    getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE)
+                getMandatoryPropertyValueAsString(caseData, RESP_FIRST_NAME_CCD_FIELD),
+                getMandatoryPropertyValueAsString(caseData, RESP_LAST_NAME_CCD_FIELD),
+                getMandatoryPropertyValueAsString(caseData, RESPONDENT_EMAIL_ADDRESS),
+                caseData,
+                getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE)
             );
         } catch (NotificationClientException e) {
             log.error("Error sending DA Granted notification email to respondent", e);
@@ -141,7 +139,7 @@ public class SendDaGrantedNotificationEmailTask implements Task<Map<String, Obje
     }
 
     private void sendEmail(String firstName, String lastName, String emailAddress,
-                           Map<String, Object> caseData, String ccdReference) throws NotificationClientException  {
+                           Map<String, Object> caseData, String ccdReference) throws NotificationClientException {
 
         String daGrantedDataCcdField = (String) caseData.get(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD);
         LocalDate daGrantedDate = LocalDateTime.parse(daGrantedDataCcdField).toLocalDate();
@@ -157,27 +155,10 @@ public class SendDaGrantedNotificationEmailTask implements Task<Map<String, Obje
             templateVars.put(NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE, daLimitDownloadDate);
 
             emailService.sendEmailAndReturnExceptionIfFails(
-                    emailAddress,
-                    EmailTemplateNames.DA_GRANTED_NOTIFICATION.name(),
-                    templateVars,
-                    EMAIL_DESC);
+                emailAddress,
+                EmailTemplateNames.DA_GRANTED_NOTIFICATION.name(),
+                templateVars,
+                EMAIL_DESC);
         }
-    }
-
-    private boolean isSolicitorRepresentingPetitioner(Map<String, Object> caseData) {
-        final String petSolicitorEmail = (String) caseData.get(PET_SOL_EMAIL);
-
-        return !Strings.isNullOrEmpty(petSolicitorEmail);
-    }
-
-    private boolean isSolicitorRepresentingRespondent(Map<String, Object> caseData) {
-        final String respSolRepresented = (String) caseData.get(RESP_SOL_REPRESENTED);
-
-        // temporary fix until we implement setting respondentSolicitorRepresented from CCD for RespSols
-        final String respondentSolicitorName = (String) caseData.get(D8_RESPONDENT_SOLICITOR_NAME);
-        final String respondentSolicitorCompany = (String) caseData.get(D8_RESPONDENT_SOLICITOR_COMPANY);
-
-        return YES_VALUE.equalsIgnoreCase(respSolRepresented)
-                || respondentSolicitorName != null && respondentSolicitorCompany != null;
     }
 }
