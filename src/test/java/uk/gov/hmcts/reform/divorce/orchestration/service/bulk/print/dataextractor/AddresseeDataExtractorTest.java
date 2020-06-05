@@ -20,9 +20,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 public class AddresseeDataExtractorTest {
 
     public static String RESPONDENTS_ADDRESS = "123 Respondent Str\nRespondent\ncounty\nRE5 P0N";
-    public static String RESPONDENTS_SOLICITOR_ADDRESS = "321 Resp Solicitor\ntown\ncounty\npostcode";
+    public static String RESPONDENT_SOLICITORS_ADDRESS = "321 Resp Solicitor\ntown\ncounty\npostcode";
     public static String RESPONDENTS_EXPECTED_NAME = FIRST_NAME + " " + LAST_NAME;
-    public static String RESPONDENTS_SOLICITOR_EXPECTED_NAME = "Sol" + FIRST_NAME + " " + LAST_NAME;
+    public static String RESPONDENT_SOLICITORS_EXPECTED_NAME = "Sol" + FIRST_NAME + " " + LAST_NAME;
 
     @Test
     public void getRespondentShouldReturnValidValues() {
@@ -47,8 +47,8 @@ public class AddresseeDataExtractorTest {
 
         Addressee addressee = AddresseeDataExtractor.getRespondentSolicitor(caseData);
 
-        assertThat(addressee.getFormattedAddress(), is(RESPONDENTS_ADDRESS));
-        assertThat(addressee.getName(), is(RESPONDENTS_SOLICITOR_EXPECTED_NAME));
+        assertThat(addressee.getFormattedAddress(), is(RESPONDENT_SOLICITORS_ADDRESS));
+        assertThat(addressee.getName(), is(RESPONDENT_SOLICITORS_EXPECTED_NAME));
     }
 
     @Test(expected = InvalidDataForTaskException.class)
@@ -66,8 +66,8 @@ public class AddresseeDataExtractorTest {
     }
 
     public static Map<String, Object> buildCaseDataWithRespondentSolicitorAsAddressee() {
-        Map<String, Object> caseData = buildCaseDataWithRespondentSolicitorNames(RESPONDENTS_SOLICITOR_EXPECTED_NAME);
-        caseData.put(RESPONDENT_SOLICITOR_ADDRESS, RESPONDENTS_SOLICITOR_ADDRESS);
+        Map<String, Object> caseData = buildCaseDataWithRespondentSolicitorNames(RESPONDENT_SOLICITORS_EXPECTED_NAME);
+        caseData.put(RESPONDENT_SOLICITOR_ADDRESS, RESPONDENT_SOLICITORS_ADDRESS);
         caseData.put(RESP_SOL_REPRESENTED, YES_VALUE);
 
         return caseData;
