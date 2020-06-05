@@ -4,10 +4,12 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
@@ -18,6 +20,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_COSTS_OPTIONS_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED_OLD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
@@ -145,6 +148,43 @@ public class CaseDataUtilsTest {
         Map<String, Object> returnedCaseData = CaseDataUtils.removeDocumentByDocumentType(caseData, "myDocType");
 
         assertThat(returnedCaseData.get(D8DOCUMENTS_GENERATED), is(emptyList()));
+    }
+
+    @Test
+    public void ensureDocumentIsNotRemovedByDifferentDocumentType() {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(D8DOCUMENTS_GENERATED, asList(
+            createCollectionMemberDocumentAsMap("testUrl", "myDocType", "filename"),
+            createCollectionMemberDocumentAsMap("testUrl", "myDocTypeY", "filename")
+            ));
+
+        Map<String, Object> returnedCaseData = CaseDataUtils.removeDocumentByDocumentType(caseData, "myDocType");
+
+        List<Map<String, Object>> documents = (List) returnedCaseData.get(D8DOCUMENTS_GENERATED);
+        Map<String, Object> remainingDocument = (Map<String, Object>) documents.get(0).get(VALUE_KEY);
+
+        assertThat(documents, hasSize(1));
+        assertThat(remainingDocument.get(DOCUMENT_TYPE_JSON_KEY),  is("myDocTypeY"));
+    }
+
+    @Test
+    public void ensureDocumentIsNotRemovedByDifferentDocumentTypeWhenMany() {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(D8DOCUMENTS_GENERATED, asList(
+            createCollectionMemberDocumentAsMap("testUrl", "myDocTypeY", "filename"),
+            createCollectionMemberDocumentAsMap("testUrl", "myDocType", "filename"),
+            createCollectionMemberDocumentAsMap("testUrl", "myDocTypeZ", "filename")
+        ));
+
+        Map<String, Object> returnedCaseData = CaseDataUtils.removeDocumentByDocumentType(caseData, "myDocType");
+
+        List<Map<String, Object>> documents = (List) returnedCaseData.get(D8DOCUMENTS_GENERATED);
+        Map<String, Object> firstDocument = (Map<String, Object>) documents.get(0).get(VALUE_KEY);
+        Map<String, Object> secondDocument = (Map<String, Object>) documents.get(1).get(VALUE_KEY);
+
+        assertThat(documents, hasSize(2));
+        assertThat(firstDocument.get(DOCUMENT_TYPE_JSON_KEY),  is("myDocTypeY"));
+        assertThat(secondDocument.get(DOCUMENT_TYPE_JSON_KEY),  is("myDocTypeZ"));
     }
 
 }
