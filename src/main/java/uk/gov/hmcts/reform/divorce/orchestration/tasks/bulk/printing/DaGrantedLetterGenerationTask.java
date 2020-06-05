@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.Docmosi
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.DocumentContentFetcherService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
@@ -18,28 +17,25 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextracto
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 
 @Component
-public class DaGrantedLetterGenerationTask extends PrepareDataForDocumentGenerationTask {
+public class DaGrantedLetterGenerationTask extends BasePayloadSpecificDocumentGenerationTask {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FileMetadata {
         public static final String TEMPLATE_ID = "FL-DIV-GOR-ENG-00355.docx";
-        public static final String DOCUMENT_TYPE = "daGrantedLetter";
-        public static final String FILE_NAME = "da-granted-letter.pdf";
+        public static final String DOCUMENT_TYPE = DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE;
     }
 
     private final PdfDocumentGenerationService pdfDocumentGenerationService;
-    private final DocumentContentFetcherService documentContentFetcherService;
 
     public DaGrantedLetterGenerationTask(
         CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
-        PdfDocumentGenerationService pdfDocumentGenerationService,
-        DocumentContentFetcherService documentContentFetcherService) {
+        PdfDocumentGenerationService pdfDocumentGenerationService) {
         super(ctscContactDetailsDataProviderService);
         this.pdfDocumentGenerationService = pdfDocumentGenerationService;
-        this.documentContentFetcherService = documentContentFetcherService;
     }
 
     @Override
@@ -57,14 +53,8 @@ public class DaGrantedLetterGenerationTask extends PrepareDataForDocumentGenerat
     @Override
     protected GeneratedDocumentInfo populateMetadataForGeneratedDocument(GeneratedDocumentInfo generatedDocumentInfo) {
         generatedDocumentInfo.setDocumentType(FileMetadata.DOCUMENT_TYPE);
-        generatedDocumentInfo.setFileName(FileMetadata.FILE_NAME);
 
         return generatedDocumentInfo;
-    }
-
-    @Override
-    protected GeneratedDocumentInfo populateContentOfDocument(GeneratedDocumentInfo generatedDocumentInfo) {
-        return documentContentFetcherService.fetchPrintContent(generatedDocumentInfo);
     }
 
     @Override
