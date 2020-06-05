@@ -20,6 +20,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
 
 @Component
 public class DaGrantedLetterGenerationTask extends BasePayloadSpecificDocumentGenerationTask {
@@ -44,7 +45,7 @@ public class DaGrantedLetterGenerationTask extends BasePayloadSpecificDocumentGe
         return BasicCoverLetter.builder()
             .caseReference(getCaseId(context))
             .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
-            .addressee(getRespondentOrSolicitorIfRepresented(caseData))
+            .addressee(getAddresseeRespondentOrSolicitorIfRepresented(caseData))
             .letterDate(DaGrantedLetterDataExtractor.getDaGrantedDate(caseData))
             .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
             .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
@@ -67,7 +68,11 @@ public class DaGrantedLetterGenerationTask extends BasePayloadSpecificDocumentGe
         );
     }
 
-    private Addressee getRespondentOrSolicitorIfRepresented(Map<String, Object> caseData) {
+    private Addressee getAddresseeRespondentOrSolicitorIfRepresented(Map<String, Object> caseData) {
+        if (isRespondentRepresented(caseData)) {
+            return AddresseeDataExtractor.getRespondentSolicitor(caseData);
+        }
+
         return AddresseeDataExtractor.getRespondent(caseData);
     }
 }
