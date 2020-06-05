@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CORESPONDENT_REPRESENTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
@@ -17,7 +17,7 @@ public class PartyRepresentationChecker {
     }
 
     public static boolean isCoRespondentRepresented(Map<String, Object> caseData) {
-        return isRepresented(caseData, CORESPONDENT_REPRESENTED);
+        return isRepresented(caseData, CO_RESPONDENT_REPRESENTED);
     }
 
     private static boolean isRepresented(Map<String, Object> caseData, String corespondentRepresented) {

@@ -103,7 +103,7 @@ public class OrchestrationConstants {
     public static final String UPDATE_BULK_DN_PRONOUNCEMENT_DETAILS_EVENT = "dnPronouncedBulk";
     public static final String WHO_PAYS_COSTS_CCD_FIELD = "WhoPaysCosts";
     public static final String WHO_PAYS_CCD_CODE_FOR_RESPONDENT = "respondent";
-    public static final String WHO_PAYS_CCD_CODE_FOR_CORESPONDENT = "coRespondent";
+    public static final String WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT = "coRespondent";
     public static final String WHO_PAYS_CCD_CODE_FOR_BOTH = "respondentAndCoRespondent";
     public static final String TYPE_COSTS_DECISION_CCD_FIELD = "TypeCostsDecision";
     public static final String COSTS_ORDER_ADDITIONAL_INFO_CCD_FIELD = "CostsOrderAdditionalInfo";
@@ -350,7 +350,7 @@ public class OrchestrationConstants {
     public static final String SOLICITOR_REFERENCE_JSON_KEY = "D8SolicitorReference";
     public static final String SOLICITOR_STATEMENT_OF_TRUTH = "solSignStatementofTruth";
     public static final String RESP_SOL_REPRESENTED = "respondentSolicitorRepresented";
-    public static final String CORESPONDENT_REPRESENTED = "CoRespondentSolicitorRepresented";
+    public static final String CO_RESPONDENT_REPRESENTED = "CoRespondentSolicitorRepresented";
     public static final String D8_RESPONDENT_SOLICITOR_EMAIL = "D8RespondentSolicitorEmail";
     public static final String D8_RESPONDENT_SOLICITOR_COMPANY = "D8RespondentSolicitorCompany";
     public static final String D8_RESPONDENT_SOLICITOR_PHONE = "D8RespondentSolicitorPhone";
