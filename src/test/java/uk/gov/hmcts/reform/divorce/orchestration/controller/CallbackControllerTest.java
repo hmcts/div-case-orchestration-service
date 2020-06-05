@@ -34,7 +34,10 @@ import static java.util.Collections.singletonMap;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.junit.Assert.assertEquals;
@@ -732,6 +735,22 @@ public class CallbackControllerTest {
 
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
+        assertThat(response.getBody().getErrors(), is(not(hasSize(greaterThan(0)))));
+        verify(caseOrchestrationService).handleDaGranted(callbackRequest, AUTH_TOKEN);
+    }
+
+    @Test
+    public void testServiceMethodReturnsErros_IfWorkflowExceptionIsThrown() throws WorkflowException {
+        when(caseOrchestrationService.handleDaGranted(any(), anyString())).thenThrow(new WorkflowException("This is an error."));
+
+        CcdCallbackRequest callbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder().caseData(singletonMap("incomingKey", "incomingValue")).build())
+            .build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.handleDaGranted(AUTH_TOKEN, callbackRequest);
+
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody().getErrors(), hasItem("This is an error."));
         verify(caseOrchestrationService).handleDaGranted(callbackRequest, AUTH_TOKEN);
     }
 

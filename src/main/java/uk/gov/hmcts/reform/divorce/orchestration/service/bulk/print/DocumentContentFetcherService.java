@@ -47,6 +47,7 @@ public class DocumentContentFetcherService {
 
     private ResponseEntity<byte[]> callDocStore(GeneratedDocumentInfo document) {
         HttpEntity<RestRequest> httpEntity = getRequestHeaderForCaseWorker();
+
         ResponseEntity<byte[]> response = restTemplate.exchange(document.getUrl(), HttpMethod.GET, httpEntity, byte[].class);
 
         log.info("Try to fetch content of document from DM {}, {}", document.getFileName(), document.getUrl());

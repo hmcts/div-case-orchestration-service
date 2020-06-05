@@ -174,6 +174,13 @@ public class FullNamesDataExtractorTest {
         return caseData;
     }
 
+    static Map<String, Object> buildCaseDataWithRespondentSolicitorNames(String name) {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(RESPONDENT_SOLICITOR_NAME, name);
+
+        return caseData;
+    }
+
     static Map<String, Object> buildCaseDataWithCoRespondentNames(String firstName, String lastName) {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(CORESPONDENT_FIRST_NAME, firstName);

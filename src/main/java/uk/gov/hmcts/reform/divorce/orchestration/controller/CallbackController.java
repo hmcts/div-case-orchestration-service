@@ -615,11 +615,20 @@ public class CallbackController {
     public ResponseEntity<CcdCallbackResponse> handleDaGranted(
         @RequestHeader(value = AUTHORIZATION_HEADER)
         @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
-        return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .data(caseOrchestrationService.handleDaGranted(ccdCallbackRequest, authorizationToken))
-            .build());
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            callbackResponseBuilder.data(caseOrchestrationService.handleDaGranted(ccdCallbackRequest, authorizationToken));
+            log.info("Handled DA granted for case ID: {}.", caseId);
+        } catch (WorkflowException exception) {
+            log.error("DA granted handling has failed for case ID: {}", caseId, exception);
+            callbackResponseBuilder.errors(singletonList(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
     @PostMapping(path = "/aos-received")
