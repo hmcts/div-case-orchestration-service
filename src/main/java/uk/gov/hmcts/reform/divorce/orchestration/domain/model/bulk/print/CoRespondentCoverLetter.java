@@ -13,13 +13,11 @@ import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-public class CoRespondentCoverLetter extends DocmosisTemplateVars {
-    @JsonProperty("addressee")
-    private Addressee addressee;
+public class CoRespondentCoverLetter extends BasicCoverLetter {
     @JsonProperty("CoRespondentFullName")
     private String coRespondentFullName;
 
-    @Builder
+    @Builder(builderMethodName = "builder1")
     public CoRespondentCoverLetter(
         CtscContactDetails ctscContactDetails,
         String caseReference,
@@ -28,8 +26,7 @@ public class CoRespondentCoverLetter extends DocmosisTemplateVars {
         String respondentFullName,
         Addressee addressee,
         String coRespondentFullName) {
-        super(ctscContactDetails, caseReference, letterDate, petitionerFullName, respondentFullName);
-        this.addressee = addressee;
+        super(ctscContactDetails, caseReference, letterDate, petitionerFullName, respondentFullName, addressee);
         this.coRespondentFullName = coRespondentFullName;
     }
 }
