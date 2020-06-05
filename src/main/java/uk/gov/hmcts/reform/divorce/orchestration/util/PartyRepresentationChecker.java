@@ -20,7 +20,6 @@ public class PartyRepresentationChecker {
         return !Strings.isNullOrEmpty(petitionerSolicitorEmail);
     }
 
-
     public static boolean isRespondentRepresented(Map<String, Object> caseData) {
         return isRepresented(caseData, RESP_SOL_REPRESENTED);
     }
