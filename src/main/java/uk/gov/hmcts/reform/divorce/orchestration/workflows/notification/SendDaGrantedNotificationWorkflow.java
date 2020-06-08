@@ -59,7 +59,7 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
             ImmutablePair.of(DOCUMENT_TYPES_TO_PRINT, getDocumentTypesToPrint())
         );
 
-        return removeDocumentByDocumentType(caseDataToReturn, DaGrantedLetterGenerationTask.FileMetadata.DOCUMENT_TYPE);
+        return removeDocumentByDocumentType(caseDataToReturn, daGrantedLetterGenerationTask.getDocumentType());
     }
 
     private List<String> getDocumentTypesToPrint() {

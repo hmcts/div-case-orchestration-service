@@ -26,11 +26,13 @@ public class AosPackOfflineAnswersWorkflow extends DefaultWorkflow<Map<String, O
     private final CoRespondentAosAnswersProcessorTask coRespondentAosAnswersProcessor;
 
     public Map<String, Object> run(Map<String, Object> payload, DivorceParty divorceParty) throws WorkflowException {
-        return execute(getTasks(divorceParty), payload);
+        Task[] tasks = getTasks(divorceParty);
+
+        return execute(tasks, payload);
     }
 
-    private Task<Map<String, Object>>[] getTasks(DivorceParty divorceParty) {
-        List<Task<Map<String, Object>>> tasks = new ArrayList<>();
+    private Task[] getTasks(DivorceParty divorceParty) {
+        List<Task> tasks = new ArrayList<>();
 
         tasks.add(formFieldValuesToCoreFieldsRelay);
 
@@ -41,9 +43,7 @@ public class AosPackOfflineAnswersWorkflow extends DefaultWorkflow<Map<String, O
             tasks.add(coRespondentAosAnswersProcessor);
         }
 
-        Task<Map<String, Object>>[] arr = new Task[tasks.size()];
-
-        return tasks.toArray(arr);
+        return tasks.toArray(new Task[] {});
     }
 
     private boolean isRespondent(DivorceParty divorceParty) {

@@ -39,4 +39,6 @@ public abstract class BasePayloadSpecificDocumentGenerationTask implements Task<
 
     protected abstract GeneratedDocumentInfo populateMetadataForGeneratedDocument(GeneratedDocumentInfo documentInfo);
 
+    protected abstract String getDocumentType();
+
 }
