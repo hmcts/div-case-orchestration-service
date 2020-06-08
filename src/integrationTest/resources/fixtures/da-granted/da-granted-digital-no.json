@@ -1,0 +1,43 @@
+{
+  "token": "token",
+  "jurisdiction": "DIVORCE",
+  "state": "DivorceGranted",
+  "version": 53,
+  "case_type_id": "DIVORCE",
+  "created_date": "2020-05-28T08:19:47.181",
+  "last_modified": "2020-05-29T10:20:08.689",
+  "last_state_modified_date": "2020-05-29T10:20:08.689",
+  "security_classification": "PUBLIC",
+  "case_details": {
+    "id": "1590653987162971",
+    "jurisdiction": "DIVORCE",
+    "state": "DARequested",
+    "case_type_id": "DIVORCE",
+    "case_data": {
+      "RespContactMethodIsDigital": "No",
+      "D8RespondentFirstName": "James",
+      "D8RespondentLastName": "Doe",
+      "D8PetitionerFirstName": "Jane",
+      "D8PetitionerLastName": "Doe-Smith",
+      "D8DerivedRespondentCorrespondenceAddr": "10 Baker Street\nAnnex B1\nBakersville\nBakershire\nBK13 B34",
+      "D8DocumentsGenerated": [
+        {
+          "id": "6233e5eb-15d7-4f35-8576-d9713a343ab5",
+          "value": {
+            "DocumentLink": {
+              "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/7d10126d-0e88-4f0e-b475-628b54a87ca6",
+              "document_filename": "decreeAbsolute1590653987162971.pdf",
+              "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/7d10126d-0e88-4f0e-b475-628b54a87ca6/binary"
+            },
+            "DocumentType": "daGranted",
+            "DocumentComment": null,
+            "DocumentFileName": "decreeAbsolute1590653987162971",
+            "DocumentDateAdded": null,
+            "DocumentEmailContent": null
+          }
+        }
+      ],
+      "DecreeAbsoluteGrantedDate": "27 May 2020"
+    }
+  }
+}

@@ -17,6 +17,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 public class CaseFormatterAddDocuments implements Task<Map<String, Object>> {
+
     private final CaseFormatterClient caseFormatterClient;
 
     @Autowired
@@ -40,4 +41,5 @@ public class CaseFormatterAddDocuments implements Task<Map<String, Object>> {
         return caseData;
 
     }
+
 }
