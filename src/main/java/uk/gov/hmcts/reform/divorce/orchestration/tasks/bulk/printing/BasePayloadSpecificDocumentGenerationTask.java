@@ -8,11 +8,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 
-import java.util.HashSet;
 import java.util.Map;
 
-import static com.google.common.collect.Sets.newHashSet;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContextHelper.addToContextDocumentCollection;
 
 /*
  * It should be used as a base class to prepare data models with set of data needed to generate pdfs
@@ -30,7 +28,7 @@ public abstract class BasePayloadSpecificDocumentGenerationTask implements Task<
         GeneratedDocumentInfo documentInfo = generatePdf(context, templateModel);
         GeneratedDocumentInfo documentInfoWithMetadata = populateMetadataForGeneratedDocument(documentInfo);
 
-        context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new HashSet<>()).addAll(newHashSet(documentInfoWithMetadata));
+        addToContextDocumentCollection(context, documentInfoWithMetadata);
 
         return caseData;
     }
