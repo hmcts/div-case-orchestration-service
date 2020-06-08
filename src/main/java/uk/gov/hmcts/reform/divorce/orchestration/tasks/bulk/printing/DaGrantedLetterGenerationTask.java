@@ -68,6 +68,11 @@ public class DaGrantedLetterGenerationTask extends BasePayloadSpecificDocumentGe
         );
     }
 
+    @Override
+    public String getDocumentType() {
+        return FileMetadata.DOCUMENT_TYPE;
+    }
+
     private Addressee getAddresseeRespondentOrSolicitorIfRepresented(Map<String, Object> caseData) {
         if (isRespondentRepresented(caseData)) {
             return AddresseeDataExtractor.getRespondentSolicitor(caseData);
