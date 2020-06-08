@@ -15,8 +15,7 @@ import java.util.Optional;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRelationshipTermByGender;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.DateUtils.TEMPLATE_FORMAT;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.DateUtils.formatDate;
+import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
 
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -33,19 +32,18 @@ public class CertificateOfEntitlementLetterDataExtractor {
         public static final String PETITIONER_GENDER = OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
         public static final String SOLICITOR_REFERENCE = OrchestrationConstants.D8_RESPONDENT_SOLICITOR_REFERENCE;
         public static final String IS_RESPONDENT_REPRESENTED = OrchestrationConstants.RESP_SOL_REPRESENTED;
-        public static final String DATES_FORMAT = TEMPLATE_FORMAT;
         public static final Period PERIOD_FOR_CONTACTING_COURT = OrchestrationConstants.PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT;
     }
 
     public static String getHearingDate(Map<String, Object> caseData) throws TaskException {
         LocalDate dateOfHearing = CaseDataUtils.getLatestCourtHearingDateFromCaseData(caseData);
-        return formatDate(dateOfHearing, CaseDataKeys.DATES_FORMAT);
+        return formatDateWithCustomerFacingFormat(dateOfHearing);
     }
 
     public static String getLimitDateToContactCourt(Map<String, Object> caseData) throws TaskException {
         LocalDate dateOfHearing = CaseDataUtils.getLatestCourtHearingDateFromCaseData(caseData);
         LocalDate limitDateToContactCourt = dateOfHearing.minus(CaseDataKeys.PERIOD_FOR_CONTACTING_COURT);
-        return formatDate(limitDateToContactCourt, CaseDataKeys.DATES_FORMAT);
+        return formatDateWithCustomerFacingFormat(limitDateToContactCourt);
     }
 
     public static String getHusbandOrWife(Map<String, Object> caseData) throws TaskException {

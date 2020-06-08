@@ -8,6 +8,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
@@ -52,5 +53,11 @@ public class PartyRepresentationChecker {
 
     private static boolean isRepresented(Map<String, Object> caseData, String field) {
         return YES_VALUE.equalsIgnoreCase((String) caseData.get(field));
+    }
+
+    public static boolean isCoRespondentNamed(Map<String, Object> caseData) {
+        String coRespEmail = (String) caseData.get(CO_RESP_EMAIL_ADDRESS);
+
+        return !Strings.isNullOrEmpty(coRespEmail);
     }
 }

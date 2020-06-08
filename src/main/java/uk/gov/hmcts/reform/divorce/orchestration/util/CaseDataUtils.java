@@ -124,27 +124,29 @@ public class CaseDataUtils {
             && (YES_VALUE.equalsIgnoreCase(coRespondentNamed) || YES_VALUE.equalsIgnoreCase(coRespondentNamedOld));
     }
 
-    public static Map<String, Object> removeDocumentByDocumentType(Map<String, Object> caseData, String documentType) {
+    public static Map<String, Object> removeDocumentsByDocumentType(Map<String, Object> caseData, String ...documentTypes) {
         List<?> generatedDocuments = Optional.ofNullable(caseData.get(D8DOCUMENTS_GENERATED))
             .map(i -> (List<?>) i)
             .orElse(new ArrayList<>());
 
         Map<String, Object> newCaseData = new HashMap<>(caseData);
-        if (!generatedDocuments.isEmpty()) {
-            List<?> filteredDocumentsList = generatedDocuments.stream()
-                .filter(item -> {
-                    CollectionMember<Document> document = objectMapper.convertValue(item, new TypeReference<CollectionMember<Document>>() {
-                    });
-                    return !documentType.equals(document.getValue().getDocumentType());
-                })
-                .collect(Collectors.toList());
+        for (String documentType: documentTypes) {
+            if (!generatedDocuments.isEmpty()) {
+                List<?> filteredDocumentsList = generatedDocuments.stream()
+                    .filter(item -> {
+                        CollectionMember<Document> document = objectMapper.convertValue(item, new TypeReference<CollectionMember<Document>>() {
+                        });
+                        return !documentType.equals(document.getValue().getDocumentType());
+                    })
+                    .collect(Collectors.toList());
 
-            if (filteredDocumentsList.isEmpty()) {
-                newCaseData.remove(D8DOCUMENTS_GENERATED);
-            } else {
-                newCaseData.replace(D8DOCUMENTS_GENERATED, filteredDocumentsList);
+                if (filteredDocumentsList.isEmpty()) {
+                    newCaseData.remove(D8DOCUMENTS_GENERATED);
+                } else {
+                    newCaseData.replace(D8DOCUMENTS_GENERATED, filteredDocumentsList);
+                }
+
             }
-
         }
 
         return newCaseData;

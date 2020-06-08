@@ -9,19 +9,14 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-<<<<<<< HEAD
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerCoENotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentCoENotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CertificateOfEntitlementLetterGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoECoRespondentCoverLetterGenerationTask;
-=======
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmailTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerCertificateOfEntitlementNotificationEmailTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentCertificateOfEntitlementNotificationEmailTask;
->>>>>>> adding tests and refactoring
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,11 +28,15 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COE_OFFLINE_PACK_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_COE;
+import static com.google.common.base.Strings.nullToEmpty;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentConstants.CERTIFICATE_OF_ENTITLEMENT_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentConstants.CERTIFICATE_OF_ENTITLEMENT_LETTER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.BULK_PRINT_LETTER_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.DOCUMENT_TYPES_TO_PRINT;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.removeDocumentByDocumentType;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.removeDocumentsByDocumentType;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentNamed;
 
 @Component
 @Slf4j
@@ -48,6 +47,7 @@ public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Ob
     private final SendRespondentCoENotificationEmailTask sendRespondentCoENotificationEmailTask;
     private final SendCoRespondentGenericUpdateNotificationEmailTask sendCoRespondentGenericUpdateNotificationEmailTask;
 
+    private final CertificateOfEntitlementLetterGenerationTask certificateOfEntitlementLetterGenerationTask;
     private final CoECoRespondentCoverLetterGenerationTask coECoRespondentCoverLetterGenerationTask;
     private final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
     private final BulkPrinterTask bulkPrinterTask;
@@ -64,26 +64,46 @@ public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Ob
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseDetails.getCaseId()),
             ImmutablePair.of(BULK_PRINT_LETTER_TYPE, COE_OFFLINE_PACK_RESPONDENT),
-            ImmutablePair.of(DOCUMENT_TYPES_TO_PRINT, getDocumentTypesToPrint())
+            ImmutablePair.of(DOCUMENT_TYPES_TO_PRINT, getDocumentTypesToPrint(caseDetails.getCaseData()))
         );
 
-        return removeDocumentByDocumentType(caseDataToReturn, coECoRespondentCoverLetterGenerationTask.getDocumentType());
+        return removeCoverLettesFrom(caseDataToReturn);
     }
 
     private Task<Map<String, Object>>[] getTasks(CaseDetails caseDetails) {
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
         Map<String, Object> caseData = caseDetails.getCaseData();
+        boolean oneOrMorePartyUsesPaperUpdates = false;
 
-        tasks.add(sendPetitionerCoENotificationEmailTask);
-        tasks.add(sendRespondentCoENotificationEmailTask);
-
-        if (isCoRespContactMethodDigital(caseData)) {
-            log.info("For case {} co-respondent uses digital contact", caseDetails.getCaseId());
-            tasks.add(sendCoRespondentGenericUpdateNotificationEmailTask);
+        if (isRespondentUsingDigitalContact(caseData)) {
+            log.info("For case {} respondent uses digital contact", caseDetails.getCaseId());
+            tasks.add(sendPetitionerCoENotificationEmailTask);
+            tasks.add(sendRespondentCoENotificationEmailTask);
         } else {
-            log.info("For case {} co-respondent uses traditional letters", caseDetails.getCaseId());
+            log.info("For case {} respondent uses traditional letters", caseDetails.getCaseId());
+            oneOrMorePartyUsesPaperUpdates = true;
             if (featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)) {
-                tasks.add(coECoRespondentCoverLetterGenerationTask);
+                tasks.add(certificateOfEntitlementLetterGenerationTask);
+                tasks.add(fetchPrintDocsFromDmStore);
+                tasks.add(bulkPrinterTask);
+            }
+        }
+
+        if (isCoRespondentNamed(caseData)) {
+            if (isCoRespContactMethodDigital(caseData)) {
+                log.info("For case {} co-respondent uses digital contact", caseDetails.getCaseId());
+                tasks.add(sendCoRespondentGenericUpdateNotificationEmailTask);
+            } else {
+                log.info("For case {} co-respondent uses traditional letters", caseDetails.getCaseId());
+                oneOrMorePartyUsesPaperUpdates = true;
+                if (featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)) {
+                    tasks.add(coECoRespondentCoverLetterGenerationTask);
+                }
+            }
+        }
+
+        if (oneOrMorePartyUsesPaperUpdates) {
+            if (featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)) {
                 tasks.add(fetchPrintDocsFromDmStore);
                 tasks.add(bulkPrinterTask);
             } else {
@@ -94,14 +114,28 @@ public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Ob
         return tasks.toArray(new Task[0]);
     }
 
-    private List<String> getDocumentTypesToPrint() {
-        return asList(
-            coECoRespondentCoverLetterGenerationTask.getDocumentType(),
-            DOCUMENT_TYPE_COE
+    private Map<String, Object> removeCoverLettesFrom(Map<String, Object> caseDataToReturn) {
+        return removeDocumentsByDocumentType(caseDataToReturn,
+            certificateOfEntitlementLetterGenerationTask.getDocumentType(),
+            coECoRespondentCoverLetterGenerationTask.getDocumentType());
+    }
+
+    private List<String> getDocumentTypesToPrint(Map<String, Object> caseData) {
+        List<String> documentTypes = asList(
+            CERTIFICATE_OF_ENTITLEMENT_LETTER_DOCUMENT_TYPE,
+            CERTIFICATE_OF_ENTITLEMENT_DOCUMENT_TYPE
         );
+        if (isCoRespondentNamed(caseData)) {
+            documentTypes.add(coECoRespondentCoverLetterGenerationTask.getDocumentType())
+        }
+        return documentTypes;
     }
 
     private boolean isCoRespContactMethodDigital(Map<String, Object> caseData) {
         return YES_VALUE.equalsIgnoreCase((String) caseData.get(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL));
+    }
+
+    private boolean isRespondentUsingDigitalContact(Map<String, Object> caseData) {
+        return YES_VALUE.equalsIgnoreCase(nullToEmpty((String) caseData.get(RESP_IS_USING_DIGITAL_CHANNEL)));
     }
 }
