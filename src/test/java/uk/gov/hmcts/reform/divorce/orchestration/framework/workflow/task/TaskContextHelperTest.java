@@ -45,11 +45,6 @@ public class TaskContextHelperTest  {
             .url("url")
             .documentType("docType2")
             .build();
-        GeneratedDocumentInfo generatedDocumentInfo3 = GeneratedDocumentInfo
-            .builder()
-            .url("url")
-            .documentType("docType2")
-            .build();
 
         List<GeneratedDocumentInfo> generatedDocumentInfos = Arrays.asList(generatedDocumentInfo1, generatedDocumentInfo2);
 
