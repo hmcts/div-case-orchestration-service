@@ -33,4 +33,12 @@ public class DocumentConstants {
     public static final String DECREE_ABSOLUTE_GRANTED_LETTER_TEMPLATE_ID = "FL-DIV-GOR-ENG-00355.docx";
 
     public static final String CERTIFICATE_OF_ENTITLEMENT_DOCUMENT_TYPE = "coe";
+    public static final String CERTIFICATE_OF_ENTITLEMENT_FILENAME = "certificateOfEntitlement";
+
+    public static final String CERTIFICATE_OF_ENTITLEMENT_LETTER_DOCUMENT_TYPE = "coeLetter";
+
+    //Bulk print letter types
+    public static final String CERTIFICATE_OF_ENTITLEMENT_OFFLINE_PACK_RESPONDENT = "certificate-of-entitlement-offline-pack-respondent";
+    public static final String CERTIFICATE_OF_ENTITLEMENT_OFFLINE_PACK_RESPONDENT_SOLICITOR =
+        "certificate-of-entitlement-offline-pack-respondent-solicitor";
 }

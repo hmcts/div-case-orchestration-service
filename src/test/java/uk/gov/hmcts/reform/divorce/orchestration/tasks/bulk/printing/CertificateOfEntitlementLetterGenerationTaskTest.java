@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,20 +12,21 @@ import uk.gov.hmcts.reform.bsp.common.model.document.Addressee;
 import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CertificateOfEntitlementCoverLetter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Gender;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.DocumentContentFetcherService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -33,14 +35,30 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.*;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CertificateOfEntitlementLetterDataExtractor.CaseDataKeys.*;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CertificateOfEntitlementLetterDataExtractor.CaseDataKeys.COURT_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CertificateOfEntitlementLetterDataExtractor.CaseDataKeys.HEARING_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CertificateOfEntitlementLetterDataExtractor.CaseDataKeys.HEARING_DATE_TIME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CertificateOfEntitlementLetterDataExtractor.CaseDataKeys.IS_COSTS_CLAIM_GRANTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CertificateOfEntitlementLetterDataExtractor.CaseDataKeys.IS_RESPONDENT_REPRESENTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CertificateOfEntitlementLetterDataExtractor.CaseDataKeys.PETITIONER_GENDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CertificateOfEntitlementLetterDataExtractor.CaseDataKeys.RESPONDENT_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CertificateOfEntitlementLetterDataExtractor.CaseDataKeys.SOLICITOR_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CertificateOfEntitlementLetterDataExtractor.CaseDataKeys.SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CertificateOfEntitlementLetterGenerationTask.FileMetadata.TEMPLATE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.PrepareDataForDocumentGenerationTaskTest.document;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CertificateOfEntitlementLetterGenerationTask.FileMetadata.DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CertificateOfEntitlementLetterGenerationTask.FileMetadata.TEMPLATE_ID_RESPONDENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CertificateOfEntitlementLetterGenerationTask.FileMetadata.TEMPLATE_ID_SOLICITOR;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DateUtils.todaysDate;
+import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CertificateOfEntitlementLetterGenerationTaskTest {
@@ -54,26 +72,24 @@ public class CertificateOfEntitlementLetterGenerationTaskTest {
     private static final String RESPONDENTS_ADDRESS = "10 Respondent Street\nAnnex B1\nRespondentville\nRespondentshire\nB13 B34";
     private static final String SOLICITORS_ADDRESS = "10 Solicitor Street\nAnnex B1\nSolicitorville\nSolicitorshire\nB13 B33";
 
-    private static final String CASE_ID = "It's mandatory field in context";
-    private static final LocalDate today = LocalDate.now();
-    private static final String LETTER_DATE = today.format(DateTimeFormatter.ofPattern("dd-MMM-yy"));
-
+    private static final String CASE_ID = "12345678910";
+    private static final String LETTER_DATE = formatDateWithCustomerFacingFormat(todaysDate());
     private static final String HEARING_DATE_VALUE = "2020-06-20";
     private static final String HEARING_DATE_FORMATTED = "20 June 2020";
+    private static final List<Map<String, Object>> DATE_TIME_OF_HEARINGS = singletonList(singletonMap("value", ImmutableMap.of(
+        HEARING_DATE, HEARING_DATE_VALUE
+    )));
+    private static final String PETITIONER_GENDER_VALUE = Gender.MALE.getValue();
     private static final String HUSBAND_OR_WIFE = "husband";
     private static final String COURT_NAME_VALUE = "The Family Court at Southampton" ;
-    private static final String LIMIT_DATE_TO_CONTACT_COURT_FORMATTED = "06 June 2020";
+    private static final String LIMIT_DATE_TO_CONTACT_COURT_FORMATTED = "6 June 2020";
     private static final String SOLICITOR_REF_VALUE = "solRef123";
-    private static final boolean IS_COSTS_CLAIM_GRANTED_VALUE = true;
+    private static final String IS_COSTS_CLAIM_GRANTED_STRING_VALUE = YES_VALUE;
+    private static final boolean IS_COSTS_CLAIM_GRANTED_BOOL_VALUE = true;
     private static final Addressee ADDRESSEE_RESPONDENT = getRespondentAddressee();
     private static final Addressee ADDRESSEE_SOLICITOR = getSolicitorAddressee();
 
     private static final CtscContactDetails CTSC_CONTACT = CtscContactDetails.builder().build();
-    private static final GeneratedDocumentInfo DOCUMENT = GeneratedDocumentInfo
-        .builder()
-        .documentType(CertificateOfEntitlementLetterGenerationTask.FileMetadata.DOCUMENT_TYPE)
-        .fileName(CertificateOfEntitlementLetterGenerationTask.FileMetadata.FILE_NAME)
-        .build();
 
     @Mock
     private CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService;
@@ -81,73 +97,74 @@ public class CertificateOfEntitlementLetterGenerationTaskTest {
     @Mock
     private PdfDocumentGenerationService pdfDocumentGenerationService;
 
-    @Mock
-    private DocumentContentFetcherService documentContentFetcherService;
 
     @InjectMocks
     private CertificateOfEntitlementLetterGenerationTask certificateOfEntitlementLetterGenerationTask;
 
+    private GeneratedDocumentInfo createdDoc;
+
     @Before
     public void setup() {
-        GeneratedDocumentInfo createdDoc = document();
+        createdDoc = createDocument();
         when(ctscContactDetailsDataProviderService.getCtscContactDetails()).thenReturn(CTSC_CONTACT);
-        when(pdfDocumentGenerationService.generatePdf(any(DocmosisTemplateVars.class), eq(TEMPLATE_ID), eq(AUTH_TOKEN)))
+        when(pdfDocumentGenerationService.generatePdf(any(DocmosisTemplateVars.class), eq(TEMPLATE_ID_RESPONDENT), eq(AUTH_TOKEN)))
             .thenReturn(createdDoc);
-        when(documentContentFetcherService.fetchPrintContent(createdDoc)).thenReturn(DOCUMENT);
+        when(pdfDocumentGenerationService.generatePdf(any(DocmosisTemplateVars.class), eq(TEMPLATE_ID_SOLICITOR), eq(AUTH_TOKEN)))
+            .thenReturn(createdDoc);
     }
 
     @Test
     public void executeShouldPopulateFieldInContextForRespondent() throws TaskException {
-        TaskContext context = prepareTaskContext();
-        boolean respondentHasSolicitor = false;
-
-        certificateOfEntitlementLetterGenerationTask.execute(context, buildCaseData(respondentHasSolicitor));
-
-        Map<String, GeneratedDocumentInfo> documents = PrepareDataForDocumentGenerationTask.getDocumentsToBulkPrint(context);
-
-        assertThat(documents.size(), is(1));
-        assertThat(documents.get(DOCUMENT.getDocumentType()), is(DOCUMENT));
-        verify(ctscContactDetailsDataProviderService, times(1)).getCtscContactDetails();
-        verifyPdfDocumentGenerationCallIsCorrect(respondentHasSolicitor);
+        boolean isRespondentRepresented = false;
+        executeShouldPopulateFieldInContext(isRespondentRepresented);
     }
 
     @Test
     public void executeShouldPopulateFieldInContextForRespondentSolicitor() throws TaskException {
-        TaskContext context = prepareTaskContext();
-        boolean respondentHasSolicitor = true;
+        boolean isRespondentRepresented = true;
+        executeShouldPopulateFieldInContext(isRespondentRepresented);
 
-        certificateOfEntitlementLetterGenerationTask.execute(context, buildCaseData(respondentHasSolicitor));
-
-        Map<String, GeneratedDocumentInfo> documents = PrepareDataForDocumentGenerationTask.getDocumentsToBulkPrint(context);
-
-        assertThat(documents.size(), is(1));
-        assertThat(documents.get(DOCUMENT.getDocumentType()), is(DOCUMENT));
-        verify(ctscContactDetailsDataProviderService, times(1)).getCtscContactDetails();
-        verifyPdfDocumentGenerationCallIsCorrect(respondentHasSolicitor);
     }
 
-    private void verifyPdfDocumentGenerationCallIsCorrect(boolean respondentHasSolicitor) {
-        final ArgumentCaptor<CertificateOfEntitlementCoverLetter> certificateOfEntitlementLetterArgumentCaptor = ArgumentCaptor.forClass(CertificateOfEntitlementCoverLetter.class);
+    private void executeShouldPopulateFieldInContext(boolean isRespondentRepresented) throws TaskException {
+        TaskContext context = prepareTaskContext();
+
+        certificateOfEntitlementLetterGenerationTask.execute(context, buildCaseData(isRespondentRepresented));
+
+        Set<GeneratedDocumentInfo> documents = context.getTransientObject(DOCUMENT_COLLECTION);
+        assertThat(documents.size(), is(1));
+        GeneratedDocumentInfo generatedDocumentInfo = documents.stream().findFirst().get();
+        assertThat(generatedDocumentInfo.getDocumentType(), is(DOCUMENT_TYPE));
+        assertThat(generatedDocumentInfo.getFileName(), is(createdDoc.getFileName()));
+
+        verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
+        verifyPdfDocumentGenerationCallIsCorrect(isRespondentRepresented);
+    }
+
+    private void verifyPdfDocumentGenerationCallIsCorrect(boolean isRespondentRepresented) {
+        final ArgumentCaptor<CertificateOfEntitlementCoverLetter> certificateOfEntitlementLetterArgumentCaptor =
+            ArgumentCaptor.forClass(CertificateOfEntitlementCoverLetter.class);
+        String templateId = isRespondentRepresented ? TEMPLATE_ID_SOLICITOR : TEMPLATE_ID_RESPONDENT;
         verify(pdfDocumentGenerationService, times(1))
-            .generatePdf(certificateOfEntitlementLetterArgumentCaptor.capture(), eq(TEMPLATE_ID), eq(AUTH_TOKEN));
-        verify(documentContentFetcherService, times(1)).fetchPrintContent(eq(DOCUMENT));
+            .generatePdf(certificateOfEntitlementLetterArgumentCaptor.capture(), eq(templateId), eq(AUTH_TOKEN));
 
         final CertificateOfEntitlementCoverLetter certificateOfEntitlementCoverLetter = certificateOfEntitlementLetterArgumentCaptor.getValue();
 
-        if (respondentHasSolicitor) {
+        if (isRespondentRepresented) {
             assertThat(certificateOfEntitlementCoverLetter.getAddressee(), is(ADDRESSEE_SOLICITOR));
+            assertThat(certificateOfEntitlementCoverLetter.getSolicitorReference(), is(SOLICITOR_REF_VALUE));
         } else {
             assertThat(certificateOfEntitlementCoverLetter.getHusbandOrWife(), is(HUSBAND_OR_WIFE));
-            assertThat(certificateOfEntitlementCoverLetter.getCourtName(), is(COURT_NAME));
+            assertThat(certificateOfEntitlementCoverLetter.getCourtName(), is(COURT_NAME_VALUE));
             assertThat(certificateOfEntitlementCoverLetter.getAddressee(), is(ADDRESSEE_RESPONDENT));
         }
-        assertThat(certificateOfEntitlementCoverLetter.getPetitionerFullName(), is("petFirstname petLastname"));
-        assertThat(certificateOfEntitlementCoverLetter.getRespondentFullName(), is("resFirstname resLastname"));
+        assertThat(certificateOfEntitlementCoverLetter.getPetitionerFullName(), is(PETITIONERS_FIRST_NAME + " " + PETITIONERS_LAST_NAME));
+        assertThat(certificateOfEntitlementCoverLetter.getRespondentFullName(), is(RESPONDENTS_FIRST_NAME + " " + RESPONDENTS_LAST_NAME));
         assertThat(certificateOfEntitlementCoverLetter.getCaseReference(), is(CASE_ID));
         assertThat(certificateOfEntitlementCoverLetter.getLetterDate(), is(LETTER_DATE));
         assertThat(certificateOfEntitlementCoverLetter.getCtscContactDetails(), is(CTSC_CONTACT));
         assertThat(certificateOfEntitlementCoverLetter.getHearingDate(), is(HEARING_DATE_FORMATTED));
-        assertThat(certificateOfEntitlementCoverLetter.isCostClaimGranted(), is(IS_COSTS_CLAIM_GRANTED_VALUE));
+        assertThat(certificateOfEntitlementCoverLetter.isCostClaimGranted(), is(IS_COSTS_CLAIM_GRANTED_BOOL_VALUE));
         assertThat(certificateOfEntitlementCoverLetter.getDeadlineToContactCourtBy(), is(LIMIT_DATE_TO_CONTACT_COURT_FORMATTED));
     }
 
@@ -160,19 +177,20 @@ public class CertificateOfEntitlementLetterGenerationTaskTest {
     }
 
     private Map<String, Object> buildCaseData(boolean respondentHasSolicitor) {
-        Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithRespondentAsAddressee();
+        Map<String, Object> caseData = new HashMap<>();
         String respondentIsRepresented = respondentHasSolicitor ? YES_VALUE : NO_VALUE;
-        caseData.put(DaGrantedLetterDataExtractor.CaseDataKeys.DA_GRANTED_DATE, LETTER_DATE);
 
         caseData.put(PETITIONER_FIRST_NAME, PETITIONERS_FIRST_NAME);
         caseData.put(PETITIONER_LAST_NAME, PETITIONERS_LAST_NAME);
+        caseData.put(PETITIONER_GENDER, PETITIONER_GENDER_VALUE);
         caseData.put(RESPONDENT_FIRST_NAME, RESPONDENTS_FIRST_NAME);
         caseData.put(RESPONDENT_LAST_NAME, RESPONDENTS_LAST_NAME);
         caseData.put(RESPONDENT_ADDRESS, RESPONDENTS_ADDRESS);
+        caseData.put(RESPONDENT_SOLICITOR_NAME, SOLICITORS_FIRST_NAME + " " + SOLICITORS_LAST_NAME);
         caseData.put(SOLICITOR_ADDRESS, SOLICITORS_ADDRESS);
-        caseData.put(HEARING_DATE, HEARING_DATE_VALUE);
+        caseData.put(HEARING_DATE_TIME, DATE_TIME_OF_HEARINGS);
         caseData.put(COURT_NAME, COURT_NAME_VALUE);
-        caseData.put(IS_COSTS_CLAIM_GRANTED, IS_COSTS_CLAIM_GRANTED_VALUE);
+        caseData.put(IS_COSTS_CLAIM_GRANTED, IS_COSTS_CLAIM_GRANTED_STRING_VALUE);
         caseData.put(SOLICITOR_REFERENCE, SOLICITOR_REF_VALUE);
         caseData.put(IS_RESPONDENT_REPRESENTED, respondentIsRepresented);
 
@@ -190,6 +208,12 @@ public class CertificateOfEntitlementLetterGenerationTaskTest {
         return Addressee.builder()
             .name(SOLICITORS_FIRST_NAME + " " + SOLICITORS_LAST_NAME)
             .formattedAddress(SOLICITORS_ADDRESS)
+            .build();
+    }
+
+    private GeneratedDocumentInfo createDocument() {
+        return GeneratedDocumentInfo.builder()
+            .fileName("myFile.pdf")
             .build();
     }
 }

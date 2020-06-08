@@ -32,6 +32,9 @@ public class CertificateOfEntitlementCoverLetter extends DocmosisTemplateVars {
     @JsonProperty("addressee")
     private Addressee addressee;
 
+    @JsonProperty("solicitorReference")
+    private String solicitorReference;
+
     @Builder
     public CertificateOfEntitlementCoverLetter(
         CtscContactDetails ctscContactDetails,
@@ -43,6 +46,7 @@ public class CertificateOfEntitlementCoverLetter extends DocmosisTemplateVars {
         String husbandOrWife,
         String courtName,
         String deadlineToContactCourtBy,
+        String solicitorReference,
         boolean costClaimGranted,
         Addressee addressee) {
         super(ctscContactDetails, caseReference, letterDate, petitionerFullName, respondentFullName);
@@ -52,5 +56,6 @@ public class CertificateOfEntitlementCoverLetter extends DocmosisTemplateVars {
         this.deadlineToContactCourtBy = deadlineToContactCourtBy;
         this.costClaimGranted = costClaimGranted;
         this.addressee = addressee;
+        this.solicitorReference = solicitorReference;
     }
 }

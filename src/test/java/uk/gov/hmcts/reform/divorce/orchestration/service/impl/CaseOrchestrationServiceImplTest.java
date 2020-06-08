@@ -878,7 +878,7 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void testServiceCallsRightWorkflowWithRightData_ForProcessingCaseLinkedBackEvent()
         throws WorkflowException, CaseOrchestrationServiceException {
-        when(caseLinkedForHearingWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()), AUTH_TOKEN)).thenReturn(requestPayload);
+        when(caseLinkedForHearingWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()), eq(AUTH_TOKEN))).thenReturn(requestPayload);
 
         assertThat(classUnderTest.processCaseLinkedForHearingEvent(ccdCallbackRequest, AUTH_TOKEN), is(equalTo(requestPayload)));
     }
@@ -886,7 +886,7 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void shouldThrowException_ForProcessingCaseLinkedBackEvent_WhenWorkflowExceptionIsCaught()
         throws WorkflowException, CaseOrchestrationServiceException {
-        when(caseLinkedForHearingWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()), AUTH_TOKEN))
+        when(caseLinkedForHearingWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()), eq(AUTH_TOKEN)))
             .thenThrow(new WorkflowException("This operation threw an exception."));
 
         expectedException.expect(CaseOrchestrationServiceException.class);

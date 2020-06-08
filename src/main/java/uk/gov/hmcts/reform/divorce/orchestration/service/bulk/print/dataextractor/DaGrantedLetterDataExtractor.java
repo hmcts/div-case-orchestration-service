@@ -16,7 +16,7 @@ public class DaGrantedLetterDataExtractor {
     public static class CaseDataKeys {
         public static final String DA_GRANTED_DATE = OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
     }
-    
+
     public static String getDaGrantedDate(Map<String, Object> caseData) {
         return formatDateWithCustomerFacingFormat(getMandatoryStringValue(caseData, CaseDataKeys.DA_GRANTED_DATE));
     }
