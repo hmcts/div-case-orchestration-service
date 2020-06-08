@@ -51,13 +51,36 @@ public class TaskContextHelperTest  {
             .documentType("docType2")
             .build();
 
-        List<GeneratedDocumentInfo> generatedDocumentInfos = Arrays.asList(generatedDocumentInfo1, generatedDocumentInfo2, generatedDocumentInfo3);
+        List<GeneratedDocumentInfo> generatedDocumentInfos = Arrays.asList(generatedDocumentInfo1, generatedDocumentInfo2);
 
         addAllToContextDocumentCollection(context, generatedDocumentInfos);
 
         assertThat(context.getTransientObject(DOCUMENT_COLLECTION), hasSize(2));
         assertThat(context.getTransientObject(DOCUMENT_COLLECTION), containsInAnyOrder(generatedDocumentInfo1,generatedDocumentInfo2));
+    }
 
+    @Test(expected = InvalidDataForTaskException.class)
+    public void addAllToContextDocumentCollectionThrowsWhenAddingAlreadyExisting() {
+        TaskContext context = new DefaultTaskContext();
+        GeneratedDocumentInfo generatedDocumentInfo1 = GeneratedDocumentInfo
+            .builder()
+            .url("url")
+            .documentType("docType1")
+            .build();
+        GeneratedDocumentInfo generatedDocumentInfo2 = GeneratedDocumentInfo
+            .builder()
+            .url("url")
+            .documentType("docType2")
+            .build();
+        GeneratedDocumentInfo generatedDocumentInfo3 = GeneratedDocumentInfo
+            .builder()
+            .url("url")
+            .documentType("docType2")
+            .build();
+
+        List<GeneratedDocumentInfo> generatedDocumentInfos = Arrays.asList(generatedDocumentInfo1, generatedDocumentInfo2, generatedDocumentInfo3);
+
+        addAllToContextDocumentCollection(context, generatedDocumentInfos);
     }
 
 }
