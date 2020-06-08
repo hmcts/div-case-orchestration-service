@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 
@@ -14,7 +15,7 @@ public class TaskContextHelper {
 
     public static void addToContextDocumentCollection(TaskContext context,
                                                       GeneratedDocumentInfo documentInfoWithMetadata)  throws InvalidDataForTaskException {
-        HashSet<GeneratedDocumentInfo> documentCollection = context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new HashSet<>());
+        Set<GeneratedDocumentInfo> documentCollection = context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new HashSet<>());
 
         if (isExistingDocument(documentCollection, documentInfoWithMetadata)) {
             throw new InvalidDataForTaskException(new TaskException(documentInfoWithMetadata.getDocumentType()
@@ -28,7 +29,7 @@ public class TaskContextHelper {
         generatedDocumentInfoList.forEach(documentInfo -> addToContextDocumentCollection(context, documentInfo));
     }
 
-    private static boolean isExistingDocument(HashSet<GeneratedDocumentInfo> documentCollection, GeneratedDocumentInfo documentInfoWithMetadata) {
+    private static boolean isExistingDocument(Set<GeneratedDocumentInfo> documentCollection, GeneratedDocumentInfo documentInfoWithMetadata) {
         return documentCollection.contains(documentInfoWithMetadata);
     }
 
