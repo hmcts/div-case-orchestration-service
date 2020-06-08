@@ -19,7 +19,7 @@ public class TaskContextHelper {
 
         if (isExistingDocument(documentCollection, documentInfoWithMetadata)) {
             throw new InvalidDataForTaskException(new TaskException(documentInfoWithMetadata.getDocumentType()
-                + " already exists in context DOCUMENT_COLLECTION"));
+                + " already exists in context's DOCUMENT_COLLECTION"));
         }
 
         context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new HashSet<>()).add(documentInfoWithMetadata);
