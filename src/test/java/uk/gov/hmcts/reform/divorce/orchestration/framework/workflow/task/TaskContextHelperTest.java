@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task;
 
-import junit.framework.TestCase;
 import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 
