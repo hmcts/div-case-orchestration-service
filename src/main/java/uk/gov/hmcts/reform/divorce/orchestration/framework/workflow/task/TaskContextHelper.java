@@ -12,29 +12,24 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TaskContextHelper {
 
-    public static void addToContextDocumentCollection(TaskContext context, GeneratedDocumentInfo documentInfoWithMetadata) {
+    public static void addToContextDocumentCollection(TaskContext context,
+                                                      GeneratedDocumentInfo documentInfoWithMetadata)  throws InvalidDataForTaskException {
+        HashSet<GeneratedDocumentInfo> documentCollection = context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new HashSet<>());
+
+        if (isExistingDocument(documentCollection, documentInfoWithMetadata)) {
+            throw new InvalidDataForTaskException(new TaskException(documentInfoWithMetadata.getDocumentType()
+                + " already exists in context DOCUMENT_COLLECTION"));
+        }
+
         context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new HashSet<>()).add(documentInfoWithMetadata);
     }
 
-    public static void addAllToContextDocumentCollection(TaskContext context, List<GeneratedDocumentInfo> generatedDocumentInfoList)
-        throws InvalidDataForTaskException {
-        HashSet<GeneratedDocumentInfo> documentCollection = context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new HashSet<>());
-
-        generatedDocumentInfoList.forEach(documentInfo -> {
-            if (isNoneExistingDocument(documentCollection, documentInfo)) {
-                addToContextDocumentCollection(context, documentInfo);
-            }
-        });
-
+    public static void addAllToContextDocumentCollection(TaskContext context, List<GeneratedDocumentInfo> generatedDocumentInfoList) {
+        generatedDocumentInfoList.forEach(documentInfo -> addToContextDocumentCollection(context, documentInfo));
     }
 
-    private static boolean isNoneExistingDocument(HashSet<GeneratedDocumentInfo> documentCollection, GeneratedDocumentInfo documentInfoWithMetadata)
-        throws InvalidDataForTaskException {
-        if (documentCollection.contains(documentInfoWithMetadata)) {
-            throw new InvalidDataForTaskException(new TaskException(documentInfoWithMetadata.getDocumentType()
-                                                         + " already exists in context DOCUMENT_COLLECTION"));
-        }
-        return true;
+    private static boolean isExistingDocument(HashSet<GeneratedDocumentInfo> documentCollection, GeneratedDocumentInfo documentInfoWithMetadata) {
+        return documentCollection.contains(documentInfoWithMetadata);
     }
 
 }

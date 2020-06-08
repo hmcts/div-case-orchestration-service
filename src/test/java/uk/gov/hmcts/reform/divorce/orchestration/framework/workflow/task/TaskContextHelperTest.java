@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task;
 import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -16,26 +16,29 @@ import static uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.
 
 public class TaskContextHelperTest {
 
+    private static final String DOCUMENT_TYPE_1 = "docType1";
+    private static final String DOCUMENT_TYPE_2 = "docType2";
+    private static final String DOCUMENT_URL_1 = "url_1";
+    private static final String DOCUMENT_URL_2 = "url_2";
+
     @Test
     public void addToContextDocumentCollectionAddsGeneratedDocumentInfo() {
         TaskContext context = new DefaultTaskContext();
         GeneratedDocumentInfo generatedDocumentInfo = GeneratedDocumentInfo
             .builder()
-            .url("url")
-            .documentType("docType")
+            .url(DOCUMENT_URL_1)
+            .documentType(DOCUMENT_TYPE_1)
             .build();
 
         addToContextDocumentCollection(context, generatedDocumentInfo);
 
         assertThat(context.getTransientObject(DOCUMENT_COLLECTION), hasSize(1));
         assertThat(context.getTransientObject(DOCUMENT_COLLECTION), contains(generatedDocumentInfo));
-
     }
 
     @Test
     public void addAllToContextDocumentCollectionAddsGeneratedDocumentInfoWithoutDuplicates() {
         TaskContext context = new DefaultTaskContext();
-
         List<GeneratedDocumentInfo> generatedDocumentInfos = buildGeneratedDocuments();
 
         addAllToContextDocumentCollection(context, generatedDocumentInfos);
@@ -45,32 +48,32 @@ public class TaskContextHelperTest {
     }
 
     @Test(expected = InvalidDataForTaskException.class)
-    public void addAllToContextDocumentCollectionThrowsWhenAddingAlreadyExisting() {
+    public void addAllToContextDocumentCollectionThrowsWhenAlreadyExisting() {
         TaskContext context = new DefaultTaskContext();
-
         List<GeneratedDocumentInfo> generatedDocumentInfos = buildGeneratedDocuments();
         generatedDocumentInfos.add(GeneratedDocumentInfo
             .builder()
-            .url("url")
-            .documentType("docType2")
+            .url(DOCUMENT_URL_2)
+            .documentType(DOCUMENT_TYPE_2)
             .build());
 
         addAllToContextDocumentCollection(context, generatedDocumentInfos);
     }
 
     private List<GeneratedDocumentInfo> buildGeneratedDocuments() {
-        GeneratedDocumentInfo generatedDocumentInfo1 = GeneratedDocumentInfo
+        List<GeneratedDocumentInfo> generatedDocuments = new ArrayList<>();
+        generatedDocuments.add(GeneratedDocumentInfo
             .builder()
-            .url("url")
-            .documentType("docType1")
-            .build();
-        GeneratedDocumentInfo generatedDocumentInfo2 = GeneratedDocumentInfo
+            .url(DOCUMENT_URL_1)
+            .documentType(DOCUMENT_TYPE_1)
+            .build());
+        generatedDocuments.add(GeneratedDocumentInfo
             .builder()
-            .url("url")
-            .documentType("docType2")
-            .build();
+            .url(DOCUMENT_URL_2)
+            .documentType(DOCUMENT_TYPE_2)
+            .build());
 
-        return Arrays.asList(generatedDocumentInfo1, generatedDocumentInfo2);
+        return generatedDocuments;
     }
 
 }
