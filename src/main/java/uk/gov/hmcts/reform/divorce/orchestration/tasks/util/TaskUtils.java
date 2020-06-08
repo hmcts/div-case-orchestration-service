@@ -67,4 +67,5 @@ public class TaskUtils {
     private static TaskException buildTaskExceptionForMandatoryProperty(String key) {
         return new TaskException(format("Could not evaluate value of mandatory property \"%s\"", key));
     }
+
 }

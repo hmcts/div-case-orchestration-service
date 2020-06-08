@@ -24,9 +24,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.Divor
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.DESERTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
 
-public class RespondentAosAnswersProcessorTest {
+public class RespondentAosAnswersProcessorTaskTest {
 
-    private final RespondentAosAnswersProcessor respondentAosAnswersProcessor = new RespondentAosAnswersProcessor();
+    private final RespondentAosAnswersProcessorTask respondentAosAnswersProcessor = new RespondentAosAnswersProcessorTask();
 
     @Test
     public void shouldReturnNewField_AndState_WhenRespondentDefendsDivorce() throws TaskException {

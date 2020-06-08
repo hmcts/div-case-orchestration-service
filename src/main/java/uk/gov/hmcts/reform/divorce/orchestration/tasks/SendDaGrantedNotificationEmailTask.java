@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import com.google.common.base.Strings;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,9 +40,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerRepresented;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
 
 @Component
@@ -63,7 +62,7 @@ public class SendDaGrantedNotificationEmailTask implements Task<Map<String, Obje
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
 
-        if (isSolicitorRepresentingPetitioner(caseData)) {
+        if (isPetitionerRepresented(caseData)) {
             String petSolEmail = getMandatoryPropertyValueAsString(caseData, PET_SOL_EMAIL);
             String petSolName = getMandatoryPropertyValueAsString(caseData, PET_SOL_NAME);
 
@@ -164,20 +163,12 @@ public class SendDaGrantedNotificationEmailTask implements Task<Map<String, Obje
         }
     }
 
-    private boolean isSolicitorRepresentingPetitioner(Map<String, Object> caseData) {
-        final String petSolicitorEmail = (String) caseData.get(PET_SOL_EMAIL);
-
-        return !Strings.isNullOrEmpty(petSolicitorEmail);
-    }
-
     private boolean isSolicitorRepresentingRespondent(Map<String, Object> caseData) {
-        final String respSolRepresented = (String) caseData.get(RESP_SOL_REPRESENTED);
-
         // temporary fix until we implement setting respondentSolicitorRepresented from CCD for RespSols
         final String respondentSolicitorName = (String) caseData.get(D8_RESPONDENT_SOLICITOR_NAME);
         final String respondentSolicitorCompany = (String) caseData.get(D8_RESPONDENT_SOLICITOR_COMPANY);
 
-        return YES_VALUE.equalsIgnoreCase(respSolRepresented)
-                || respondentSolicitorName != null && respondentSolicitorCompany != null;
+        return isRespondentRepresented(caseData)
+            || respondentSolicitorName != null && respondentSolicitorCompany != null;
     }
 }
