@@ -52,7 +52,9 @@ public class OrchestrationConstants {
     public static final String D_8_REASON_FOR_DIVORCE = "D8ReasonForDivorce";
     public static final String D_8_CO_RESPONDENT_NAMED = "D8ReasonForDivorceAdulteryWishToName";
     public static final String D_8_CO_RESPONDENT_NAMED_OLD = "D8ReasonForDivorceAdulteryIsNamed";
-    public static final String D_8_CO_RESPONDENT_FULL_NAME = "CoRespondentFullName";
+    public static final String CO_RESPONDENT_SOLICITOR_NAME = "CoRespondentSolicitorName";
+    public static final String CO_RESPONDENT_SOLICITOR_EMAIL = "CoRespondentSolicitorEmail";
+    public static final String CO_RESPONDENT_SOLICITOR_ADDRESS = "DerivedCoRespondentSolicitorAddr";
     public static final String CCD_CASE_DATA_FIELD = "case_data";
     public static final String CCD_CASE_ID = "id";
     public static final String NOT_RECEIVED_AOS_EVENT_ID = "aosNotReceived";
