@@ -12,9 +12,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Optional;
 
-import static java.time.format.DateTimeFormatter.ofPattern;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DATE_FORMAT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_DATE_PATTERN;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 
 @SuppressWarnings("squid:S1118")
@@ -23,24 +20,25 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 public class CcdUtil {
 
     private static final String UK_HUMAN_READABLE_DATE_FORMAT = "dd/MM/yyyy";
+    private static final String PAYMENT_DATE_PATTERN = "ddMMyyyy";
 
     private final Clock clock;
 
     public String getCurrentDateCcdFormat() {
-        return LocalDate.now(clock).format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT));
+        return LocalDate.now(clock).format(DateUtils.Formatters.DEFAULT);
     }
 
     public String getCurrentDatePaymentFormat() {
-        return LocalDate.now(clock).format(DateTimeFormatter.ofPattern(PAYMENT_DATE_PATTERN));
+        return LocalDate.now(clock).format(DateTimeFormatter.ofPattern(PAYMENT_DATE_PATTERN, DateUtils.Settings.LOCALE));
     }
 
     public String mapCCDDateToDivorceDate(String date) {
-        return LocalDate.parse(date, DateTimeFormatter.ofPattern(CCD_DATE_FORMAT))
-            .format(DateTimeFormatter.ofPattern(PAYMENT_DATE_PATTERN));
+        return LocalDate.parse(date, DateUtils.Formatters.DEFAULT)
+            .format(DateTimeFormatter.ofPattern(PAYMENT_DATE_PATTERN, DateUtils.Settings.LOCALE));
     }
 
     public static String mapDivorceDateTimeToCCDDateTime(LocalDateTime dateTime) {
-        return dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"));
+        return DateUtils.formatDateTimeForCcd(dateTime);
     }
 
     public static LocalDateTime mapCCDDateTimeToLocalDateTime(String dateTime) {
@@ -48,7 +46,7 @@ public class CcdUtil {
     }
 
     public String getCurrentDateWithCustomerFacingFormat() {
-        return DateUtils.formatDateWithCustomerFacingFormat(java.time.LocalDate.now(clock));
+        return DateUtils.formatDateWithCustomerFacingFormat(LocalDate.now(clock));
     }
 
     public String getFormattedDueDate(Map<String, Object> caseData, String dateToFormat) throws TaskException {
@@ -68,16 +66,16 @@ public class CcdUtil {
     }
 
     public static LocalDate parseDateUsingCcdFormat(String date) {
-        return LocalDate.parse(date, ofPattern(CCD_DATE_FORMAT));
+        return LocalDate.parse(date, DateUtils.Formatters.DEFAULT);
     }
 
     public static String formatDateForCCD(LocalDate plus) {
-        return plus.format(ofPattern(CCD_DATE_FORMAT));
+        return plus.format(DateUtils.Formatters.DEFAULT);
     }
 
     public static String formatFromCCDFormatToHumanReadableFormat(String inputDate) {
         LocalDate localDate = parseDateUsingCcdFormat(inputDate);
-        return localDate.format(DateTimeFormatter.ofPattern(UK_HUMAN_READABLE_DATE_FORMAT));
+        return localDate.format(DateTimeFormatter.ofPattern(UK_HUMAN_READABLE_DATE_FORMAT, DateUtils.Settings.LOCALE));
     }
 
     public static String retrieveAndFormatCCDDateFieldIfPresent(String fieldName, Map<String, Object> caseData, String defaultValue) {

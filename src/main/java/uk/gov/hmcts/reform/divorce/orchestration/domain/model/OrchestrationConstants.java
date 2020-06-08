@@ -373,7 +373,6 @@ public class OrchestrationConstants {
     public static final String PAYMENT_SERVICE_REFERENCE = "reference";
     public static final String PAYMENT_FEE_ID = "FEE0002";
     public static final String PAYMENT_CHANNEL = "online";
-    public static final String PAYMENT_DATE_PATTERN = "ddMMyyyy";
     public static final String PAYMENT_CHANNEL_KEY = "PaymentChannel";
     public static final String PAYMENT_TRANSACTION_ID_KEY = "PaymentTransactionId";
     public static final String PAYMENT_REFERENCE_KEY = "PaymentReference";

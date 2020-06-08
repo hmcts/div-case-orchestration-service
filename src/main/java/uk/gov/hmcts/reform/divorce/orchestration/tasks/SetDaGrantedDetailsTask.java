@@ -6,10 +6,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
+import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Map;
 
 import static java.util.Objects.nonNull;
@@ -18,13 +18,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil.mapDivorceDateTimeToCCDDateTime;
 
 @Component
-public class SetDaGrantedDetailsTask implements Task<Map<String,Object>> {
+public class SetDaGrantedDetailsTask implements Task<Map<String, Object>> {
 
-    @Autowired CcdUtil ccdUtil;
+    @Autowired
+    CcdUtil ccdUtil;
 
-    @Autowired Clock clock;
-
-    public static final ZoneId LONDON_TIME_ZONE = ZoneId.of("Europe/London");
+    @Autowired
+    Clock clock;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
@@ -33,7 +33,7 @@ public class SetDaGrantedDetailsTask implements Task<Map<String,Object>> {
             throw new TaskException("Judge who pronounced field must be set.");
         }
 
-        LocalDateTime grantedDateTime = LocalDateTime.now(clock.withZone(LONDON_TIME_ZONE));
+        LocalDateTime grantedDateTime = LocalDateTime.now(clock.withZone(DateUtils.Settings.ZONE_ID));
         String formattedGrantedDateTime = mapDivorceDateTimeToCCDDateTime(grantedDateTime);
 
         caseData.put(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD, formattedGrantedDateTime);
