@@ -25,6 +25,8 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_COMPANY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_RESPONDENT_GENDER;
@@ -80,7 +82,7 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         final String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         final String caseState = ccdCallbackRequest.getCaseDetails().getState();
 
-        if (isRespondentRepresented(caseData)) {
+        if (usingRespondentSolicitor(caseData)) {
             log.info("Attempting to queue solicitor AoS submission for case {}, case state: {}", caseId, caseState);
             tasks.add(queueAosSolicitorSubmitTask);
 
@@ -160,6 +162,15 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         }
 
         return new GenericEmailContext(emailToBeSentTo, template, notificationTemplateVars);
+    }
+
+    private boolean usingRespondentSolicitor(Map<String, Object> caseData) {
+        // temporary fix until we implement setting respondentSolicitorRepresented from CCD for RespSols
+        final String respondentSolicitorName = (String) caseData.get(D8_RESPONDENT_SOLICITOR_NAME);
+        final String respondentSolicitorCompany = (String) caseData.get(D8_RESPONDENT_SOLICITOR_COMPANY);
+
+        return isRespondentRepresented(caseData)
+            || respondentSolicitorName != null && respondentSolicitorCompany != null;
     }
 
     private boolean respondentIsDefending(CaseDetails caseDetails) {
