@@ -55,7 +55,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
 
         // Scenario 3: Paper corespondent and the cost claim was not granted
 
-        // ~Scenario 4: Digital corespondent~
+        // Scenario 4: Digital corespondent~
 
 
          if (isPaperUpdateEnabled()) {
@@ -65,14 +65,13 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
 
                  if (isCostsClaimGranted(caseData)) {
 
-                     if (isCoRespondentRepresented(caseData)){
+                     if (isCoRespondentRepresented(caseData)) {
                          log.trace("Paper correspondent with cost claim was granted is represented. CaseID: {} ", caseId);
                          // Scenario 2: Paper corespondent with cost claim was granted and who is represented
-                         if (isCostsClaimGranted(caseData)) {
-                             log.trace("Paper correspondent with cost claim was granted is not represented. CaseID: {} ", caseId);
-                             // Scenario 1: Paper corespondent with cost claim was granted and who is not represented
+                     } else {
+                         log.trace("Paper correspondent with cost claim was granted is not represented. CaseID: {} ", caseId);
+                         // Scenario 1: Paper corespondent with cost claim was granted and who is not represented
                          }
-                     }
                  } else {
                      log.trace("Paper Correspondent and cost claim not granted. CaseID: {} ", caseId);
                      // Scenario 3: Paper correspondent and the cost claim was not granted
