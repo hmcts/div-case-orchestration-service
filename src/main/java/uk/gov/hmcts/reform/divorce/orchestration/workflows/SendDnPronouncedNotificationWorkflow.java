@@ -47,6 +47,8 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
     private Task[] getTasks(Map<String, Object> caseData) {
         List<Task> tasks = new ArrayList<>();
 
+        // Scenario 3 : isCoRespContactMethodIsDigital = no + isCostsClaimGranted = no
+
         if(isCoRespContactMethodIsDigital(caseData)) {
             tasks.add(sendPetitionerGenericUpdateNotificationEmail);
             tasks.add(sendRespondentGenericUpdateNotificationEmail);
