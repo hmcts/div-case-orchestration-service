@@ -20,7 +20,8 @@
       "D8RespondentFirstName":"Jane",
       "D8RespondentLastName":"Jamed",
       "RespEmailAddress": "respondent@justice.uk",
-      "D8InferredPetitionerGender": "male"
+      "D8InferredPetitionerGender": "male",
+      "RespContactMethodIsDigital": "Yes"
     }
   }
 }

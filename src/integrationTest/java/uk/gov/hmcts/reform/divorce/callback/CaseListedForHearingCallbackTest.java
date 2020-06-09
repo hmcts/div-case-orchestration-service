@@ -41,7 +41,17 @@ public class CaseListedForHearingCallbackTest extends IntegrationTest {
         );
 
         Map<String, Object> response = cosApiClient.caseLinkedForHearing(citizenUser.getAuthToken(), incomingPayload);
+        assertNotNull(response.get(DATA));
+        assertEquals(((Map<String, Object>) incomingPayload.get(CASE_DETAILS)).get(CASE_DATA), response.get(DATA));
+    }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    public void whenCaseLinkedForHearingIsCalledBack_thenReturnAOSData() {
+        Map<String, Object> aosCase = ResourceLoader.loadJsonToObject(BASE_CASE_RESPONSE, Map.class);
+        Map<String, Object> response = cosApiClient.caseLinkedForHearing(
+            createCaseWorkerUser().getAuthToken(),
+            aosCase);
         assertNotNull(response.get(DATA));
         assertEquals(((Map<String, Object>) incomingPayload.get(CASE_DETAILS)).get(CASE_DATA), response.get(DATA));
     }

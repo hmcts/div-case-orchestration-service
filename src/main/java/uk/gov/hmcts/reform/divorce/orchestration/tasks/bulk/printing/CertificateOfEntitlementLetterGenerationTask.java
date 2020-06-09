@@ -12,16 +12,15 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentG
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CertificateOfEntitlementLetterDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentConstants.CERTIFICATE_OF_ENTITLEMENT_LETTER_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.CERTIFICATE_OF_ENTITLEMENT_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.DateUtils.todaysDate;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
-import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
 
 @Component
 public class CertificateOfEntitlementLetterGenerationTask extends BasePayloadSpecificDocumentGenerationTask {
@@ -33,13 +32,11 @@ public class CertificateOfEntitlementLetterGenerationTask extends BasePayloadSpe
         public static final String DOCUMENT_TYPE = CERTIFICATE_OF_ENTITLEMENT_LETTER_DOCUMENT_TYPE;
     }
 
-    private final PdfDocumentGenerationService pdfDocumentGenerationService;
-
     public CertificateOfEntitlementLetterGenerationTask(
         CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
-        PdfDocumentGenerationService pdfDocumentGenerationService) {
-        super(ctscContactDetailsDataProviderService);
-        this.pdfDocumentGenerationService = pdfDocumentGenerationService;
+        PdfDocumentGenerationService pdfDocumentGenerationService,
+        CcdUtil ccdUtil) {
+        super(ctscContactDetailsDataProviderService, pdfDocumentGenerationService, ccdUtil);
     }
 
     @Override
@@ -49,11 +46,11 @@ public class CertificateOfEntitlementLetterGenerationTask extends BasePayloadSpe
                 .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
                 .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
                 .caseReference(getCaseId(context))
-                .letterDate(formatDateWithCustomerFacingFormat(todaysDate()))
+                .letterDate(DatesDataExtractor.getLetterDate())
                 .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
-                .hearingDate(CertificateOfEntitlementLetterDataExtractor.getHearingDate(caseData))
+                .hearingDate(DatesDataExtractor.getHearingDate(caseData))
                 .costClaimGranted(CertificateOfEntitlementLetterDataExtractor.isCostsClaimGranted(caseData))
-                .deadlineToContactCourtBy(CertificateOfEntitlementLetterDataExtractor.getLimitDateToContactCourt(caseData));
+                .deadlineToContactCourtBy(DatesDataExtractor.getDeadlineToContactCourtBy(caseData));
 
         if (isRespondentRepresented(caseData)) {
             coverLetter.addressee(AddresseeDataExtractor.getRespondentSolicitor(caseData));
@@ -75,13 +72,9 @@ public class CertificateOfEntitlementLetterGenerationTask extends BasePayloadSpe
     }
 
     @Override
-    protected GeneratedDocumentInfo generatePdf(TaskContext context, DocmosisTemplateVars templateModel, Map<String, Object> caseData) {
+    public String getTemplateId(Map<String, Object> caseData) {
         String templateId = isRespondentRepresented(caseData) ? FileMetadata.TEMPLATE_ID_SOLICITOR : FileMetadata.TEMPLATE_ID_RESPONDENT;
-        return pdfDocumentGenerationService.generatePdf(
-            templateModel,
-            templateId,
-            context.getTransientObject(AUTH_TOKEN_JSON_KEY)
-        );
+        return templateId;
     }
 
     @Override

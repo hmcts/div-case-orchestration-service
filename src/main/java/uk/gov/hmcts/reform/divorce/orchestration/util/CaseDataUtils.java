@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -130,23 +131,23 @@ public class CaseDataUtils {
             .orElse(new ArrayList<>());
 
         Map<String, Object> newCaseData = new HashMap<>(caseData);
-        for (String documentType: documentTypes) {
-            if (!generatedDocuments.isEmpty()) {
-                List<?> filteredDocumentsList = generatedDocuments.stream()
-                    .filter(item -> {
-                        CollectionMember<Document> document = objectMapper.convertValue(item, new TypeReference<CollectionMember<Document>>() {
-                        });
-                        return !documentType.equals(document.getValue().getDocumentType());
-                    })
-                    .collect(Collectors.toList());
+        List<String> docTypesList = Arrays.asList(documentTypes);
 
-                if (filteredDocumentsList.isEmpty()) {
-                    newCaseData.remove(D8DOCUMENTS_GENERATED);
-                } else {
-                    newCaseData.replace(D8DOCUMENTS_GENERATED, filteredDocumentsList);
-                }
+        if (!generatedDocuments.isEmpty()) {
+            List<?> filteredDocumentsList = generatedDocuments.stream()
+                .filter(item -> {
+                    CollectionMember<Document> document = objectMapper.convertValue(item, new TypeReference<CollectionMember<Document>>() {
+                    });
+                    return !docTypesList.contains(document.getValue().getDocumentType());
+                })
+                .collect(Collectors.toList());
 
+            if (filteredDocumentsList.isEmpty()) {
+                newCaseData.remove(D8DOCUMENTS_GENERATED);
+            } else {
+                newCaseData.replace(D8DOCUMENTS_GENERATED, filteredDocumentsList);
             }
+
         }
 
         return newCaseData;

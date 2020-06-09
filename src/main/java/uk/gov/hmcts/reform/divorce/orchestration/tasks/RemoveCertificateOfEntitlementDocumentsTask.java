@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentConstants.CERTIFICATE_OF_ENTITLEMENT_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_COE;
 
 @Component
 @RequiredArgsConstructor
@@ -18,6 +18,6 @@ public class RemoveCertificateOfEntitlementDocumentsTask implements Task<Map<Str
 
     @Override
     public Map<String, Object> execute(final TaskContext context, final Map<String, Object> caseData) {
-        return caseFormatterClient.removeAllDocumentsByType(CERTIFICATE_OF_ENTITLEMENT_DOCUMENT_TYPE, caseData);
+        return caseFormatterClient.removeAllDocumentsByType(DOCUMENT_TYPE_COE, caseData);
     }
 }

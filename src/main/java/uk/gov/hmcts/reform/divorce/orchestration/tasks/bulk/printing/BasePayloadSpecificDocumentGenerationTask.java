@@ -29,7 +29,7 @@ public abstract class BasePayloadSpecificDocumentGenerationTask implements Task<
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
         DocmosisTemplateVars templateModel = prepareDataForPdf(context, caseData);
-        GeneratedDocumentInfo documentInfo = generatePdf(context, templateModel);
+        GeneratedDocumentInfo documentInfo = generatePdf(context, templateModel, caseData);
         documentInfo = populateMetadataForGeneratedDocument(documentInfo);
 
         return ccdUtil.addNewDocumentsToCaseData(caseData, singletonList(documentInfo));
@@ -37,10 +37,10 @@ public abstract class BasePayloadSpecificDocumentGenerationTask implements Task<
 
     protected abstract DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) throws TaskException;
 
-    protected GeneratedDocumentInfo generatePdf(TaskContext context, DocmosisTemplateVars templateModel) {
+    protected GeneratedDocumentInfo generatePdf(TaskContext context, DocmosisTemplateVars templateModel, Map<String, Object> caseData) {
         return pdfDocumentGenerationService.generatePdf(
             templateModel,
-            getTemplateId(),
+            getTemplateId(caseData),
             context.getTransientObject(AUTH_TOKEN_JSON_KEY)
         );
     }
@@ -51,7 +51,7 @@ public abstract class BasePayloadSpecificDocumentGenerationTask implements Task<
         return documentInfo;
     }
 
-    protected abstract String getTemplateId();
+    protected abstract String getTemplateId(Map<String, Object> caseData);
 
     protected abstract String getDocumentType();
 }

@@ -1,49 +1,29 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Gender;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Relation;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
-import static java.util.Collections.singletonMap;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CertificateOfEntitlementLetterDataExtractor.CaseDataKeys.COURT_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CertificateOfEntitlementLetterDataExtractor.CaseDataKeys.HEARING_DATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CertificateOfEntitlementLetterDataExtractor.CaseDataKeys.HEARING_DATE_TIME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CertificateOfEntitlementLetterDataExtractor.CaseDataKeys.IS_COSTS_CLAIM_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CertificateOfEntitlementLetterDataExtractor.CaseDataKeys.PETITIONER_GENDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CertificateOfEntitlementLetterDataExtractor.CaseDataKeys.SOLICITOR_REFERENCE;
 
 public class CertificateOfEntitlementLetterDataExtractorTest {
 
-    private static final String VALID_HEARING_DATE = "2020-10-20";
-    private static final String VALID_HEARING_DATE_FORMATTED = "20 October 2020";
-    private static final String VALID_LIMIT_DATE_FORMATTED = "6 October 2020"; // hearing date minus 14 days
     private static final String VALID_COURT_NAME = "The Family Court at Southampton";
     private static final String VALID_SOLICITOR_REF = "solRef123";
-
-    @Test
-    public void getHearingDateReturnsValidFormattedValueWhenItExists() throws TaskException {
-        Map<String, Object> caseData = buildCaseDataWithHearingDate(VALID_HEARING_DATE);
-        assertThat(CertificateOfEntitlementLetterDataExtractor.getHearingDate(caseData), is(VALID_HEARING_DATE_FORMATTED));
-    }
-
-    @Test
-    public void getLimitDateToContactCourtReturnsValidFormattedValueWhenHearingDateExists() throws TaskException {
-        Map<String, Object> caseData = buildCaseDataWithHearingDate(VALID_HEARING_DATE);
-        assertThat(CertificateOfEntitlementLetterDataExtractor.getLimitDateToContactCourt(caseData), is(VALID_LIMIT_DATE_FORMATTED));
-    }
 
     @Test
     public void getHusbandOrWifeReturnsHusbandWhenPetitionerIsMale() throws TaskException {
@@ -84,42 +64,12 @@ public class CertificateOfEntitlementLetterDataExtractorTest {
     }
 
     @Test
-    public void getHearingDateThrowsExceptionsWhenItIsEmpty() {
-        try {
-            CertificateOfEntitlementLetterDataExtractor.getHearingDate(buildCaseDataWithHearingDate(""));
-            fail("Should have thrown exception");
-        } catch (TaskException e) {
-            thisTestPassed();
-        }
-    }
-
-    @Test
-    public void getHearingDateThrowsExceptionsWhenItDoesNotExist() {
-        try {
-            CertificateOfEntitlementLetterDataExtractor.getHearingDate(new HashMap<>());
-            fail("Should have thrown exception");
-        } catch (TaskException e) {
-            thisTestPassed();
-        }
-    }
-
-    @Test
-    public void getLimitDateToContactCourtThrowsExceptionsWhenHearingDateDoesNotExist() {
-        try {
-            CertificateOfEntitlementLetterDataExtractor.getLimitDateToContactCourt(buildCaseDataWithHearingDate(""));
-            fail("Should have thrown exception");
-        } catch (TaskException e) {
-            thisTestPassed();
-        }
-    }
-
-    @Test
     public void getHusbandOrWifeThrowsExceptionsPetitionerGenderDoesNotExist() {
         asList("", null).forEach(petitionerGenderValue -> {
             try {
                 CertificateOfEntitlementLetterDataExtractor.getHusbandOrWife(buildCaseDataWithPetitionerGender(petitionerGenderValue));
                 fail("Should have thrown exception");
-            } catch (TaskException e) {
+            } catch (InvalidDataForTaskException e) {
                 thisTestPassed();
             }
         });
@@ -131,7 +81,7 @@ public class CertificateOfEntitlementLetterDataExtractorTest {
             try {
                 CertificateOfEntitlementLetterDataExtractor.getCourtName(buildCaseDataWithCourtName(courtNameValue));
                 fail("Should have thrown exception");
-            } catch (TaskException e) {
+            } catch (InvalidDataForTaskException e) {
                 thisTestPassed();
             }
         });
@@ -143,20 +93,10 @@ public class CertificateOfEntitlementLetterDataExtractorTest {
             try {
                 CertificateOfEntitlementLetterDataExtractor.getSolicitorReference(buildCaseDataWithSolicitorReference(solicitorRefValue));
                 fail("Should have thrown exception");
-            } catch (TaskException e) {
+            } catch (InvalidDataForTaskException e) {
                 thisTestPassed();
             }
         });
-    }
-
-    private static Map<String, Object> buildCaseDataWithHearingDate(String date) {
-        List<Map<String, Object>> hearingDateAndTime = singletonList(singletonMap("value", ImmutableMap.of(
-            HEARING_DATE, date
-        )));
-        Map<String, Object> caseData = new HashMap<>();
-        caseData.put(HEARING_DATE_TIME, hearingDateAndTime);
-
-        return caseData;
     }
 
     private static Map<String, Object> buildCaseDataWithPetitionerGender(String gender) {

@@ -56,7 +56,7 @@ public class CostOrderCoRespondentSolicitorCoverLetterGenerationTask extends Bas
     }
 
     @Override
-    public String getTemplateId() {
+    public String getTemplateId(Map<String, Object> caseData) {
         return FileMetadata.TEMPLATE_ID;
     }
 }

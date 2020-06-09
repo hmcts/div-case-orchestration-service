@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
 import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
-import org.hamcrest.core.Is;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -23,41 +22,35 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUp
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerCoENotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentCoENotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoECoRespondentCoverLetterGenerationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerCertificateOfEntitlementNotificationEmailTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentCertificateOfEntitlementNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CertificateOfEntitlementLetterGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoECoRespondentCoverLetterGenerationTask;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.isNotNull;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.CERTIFICATE_OF_ENTITLEMENT_LETTER_CO_RESPONDENT_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.CERTIFICATE_OF_ENTITLEMENT_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_TYPE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentConstants.CERTIFICATE_OF_ENTITLEMENT_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentConstants.CERTIFICATE_OF_ENTITLEMENT_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentConstants.CERTIFICATE_OF_ENTITLEMENT_LETTER_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocumentAsMap;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -87,12 +80,6 @@ public class CaseLinkedForHearingWorkflowTest {
     private FeatureToggleService featureToggleService;
 
     @Mock
-    private SendPetitionerCertificateOfEntitlementNotificationEmailTask sendPetitionerCertificateOfEntitlementNotificationEmailTask;
-
-    @Mock
-    private SendRespondentCertificateOfEntitlementNotificationEmailTask sendRespondentCertificateOfEntitlementNotificationEmailTask;
-
-    @Mock
     private CertificateOfEntitlementLetterGenerationTask certificateOfEntitlementLetterGenerationTask;
 
     @InjectMocks
@@ -108,14 +95,16 @@ public class CaseLinkedForHearingWorkflowTest {
         when(sendPetitionerCoENotificationEmailTask.execute(notNull(), eq(payload))).thenReturn(payload);
         when(sendRespondentCoENotificationEmailTask.execute(notNull(), eq(payload))).thenReturn(payload);
         when(sendCoRespondentGenericUpdateNotificationEmailTask.execute(notNull(), eq(payload))).thenReturn(payload);
+        when(certificateOfEntitlementLetterGenerationTask.execute(isNotNull(), eq(payload))).thenReturn(payload);
         when(coECoRespondentCoverLetterGenerationTask.execute(notNull(), eq(payload))).thenReturn(payload);
+        when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
         when(fetchPrintDocsFromDmStore.execute(notNull(), eq(payload))).thenReturn(payload);
         when(bulkPrinterTask.execute(notNull(), eq(payload))).thenReturn(payload);
     }
 
     @Test
-    public void sendOnlyEmailsWhenCoRespondentIsUsingDigitalChannel() throws TaskException, WorkflowException {
-        CaseDetails caseDetails = createCaseDetails(payload, true);
+    public void sendOnlyEmailsWhenRespondentAndCoRespondentAreUsingDigitalChannel() throws TaskException, WorkflowException {
+        CaseDetails caseDetails = createCaseDetails(payload, true,true,true);
 
         Map<String, Object> returnedPayload = caseLinkedForHearingWorkflow.run(caseDetails, AUTH_TOKEN);
 
@@ -131,6 +120,7 @@ public class CaseLinkedForHearingWorkflowTest {
         inOrder.verify(sendRespondentCoENotificationEmailTask).execute(contextCaptor.capture(), eq(payload));
         inOrder.verify(sendCoRespondentGenericUpdateNotificationEmailTask).execute(contextCaptor.capture(), eq(payload));
 
+        verifyNotCalled(certificateOfEntitlementLetterGenerationTask);
         verifyNotCalled(coECoRespondentCoverLetterGenerationTask);
         verifyNotCalled(fetchPrintDocsFromDmStore);
         verifyNotCalled(bulkPrinterTask);
@@ -139,28 +129,9 @@ public class CaseLinkedForHearingWorkflowTest {
     }
 
     @Test
-    public void sendEmailsToPetitionerAndRespondentWhenCoRespondentIsNotUsingDigitalChannel() throws Exception {
-        CaseDetails caseDetails = createCaseDetails(payload, false);
-
-        Map<String, Object> returnedPayload = caseLinkedForHearingWorkflow.run(caseDetails, AUTH_TOKEN);
-
-        assertThat(returnedPayload, is(equalTo(payload)));
-
-        final InOrder inOrder = inOrder(
-            sendPetitionerCoENotificationEmailTask,
-            sendRespondentCoENotificationEmailTask
-        );
-
-        inOrder.verify(sendPetitionerCoENotificationEmailTask).execute(contextCaptor.capture(), eq(payload));
-        inOrder.verify(sendRespondentCoENotificationEmailTask).execute(contextCaptor.capture(), eq(payload));
-        verifyNotCalled(sendCoRespondentGenericUpdateNotificationEmailTask);
-        assertThat(contextCaptor.getValue().getTransientObject(CASE_ID_JSON_KEY), is(equalTo(TEST_CASE_ID)));
-    }
-
-    @Test
-    public void sendEmailsToPetitionerAndRespondentWhenPaperUpdateFeatureToggledOff() throws Exception {
-        when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
-        CaseDetails caseDetails = createCaseDetails(payload, false);
+    public void sendEmailsToPetitionerAndRespondentAndLetterToCoRespondentWhenRespondentIsUsingDigitalChannelAndCoRespondentIsNotUsingDigitalChannel()
+        throws Exception {
+        CaseDetails caseDetails = createCaseDetails(payload, true, true,false);
 
         Map<String, Object> returnedPayload = caseLinkedForHearingWorkflow.run(caseDetails, AUTH_TOKEN);
 
@@ -180,149 +151,189 @@ public class CaseLinkedForHearingWorkflowTest {
         inOrder.verify(fetchPrintDocsFromDmStore).execute(contextCaptor.capture(), eq(payload));
         inOrder.verify(bulkPrinterTask).execute(contextCaptor.capture(), eq(payload));
 
-        assertThat(contextCaptor.getValue().getTransientObject(CASE_ID_JSON_KEY), is(equalTo(TEST_CASE_ID)));
         verifyNotCalled(sendCoRespondentGenericUpdateNotificationEmailTask);
+        verifyNotCalled(certificateOfEntitlementLetterGenerationTask);
+
+        assertThat(contextCaptor.getValue().getTransientObject(CASE_ID_JSON_KEY), is(equalTo(TEST_CASE_ID)));
+    }
+
+    @Test
+    public void sendEmailsOnlyToPetitionerAndRespondentWhenRespondentIsUsingDigitalChannelAndCoRespondentIsNotNamed() throws Exception {
+        CaseDetails caseDetails = createCaseDetails(payload, true, false,true);
+
+        Map<String, Object> returnedPayload = caseLinkedForHearingWorkflow.run(caseDetails, AUTH_TOKEN);
+
+        assertThat(returnedPayload, is(equalTo(payload)));
+
+        final InOrder inOrder = inOrder(
+            sendPetitionerCoENotificationEmailTask,
+            sendRespondentCoENotificationEmailTask
+        );
+
+        inOrder.verify(sendPetitionerCoENotificationEmailTask).execute(contextCaptor.capture(), eq(payload));
+        inOrder.verify(sendRespondentCoENotificationEmailTask).execute(contextCaptor.capture(), eq(payload));
+
+        verifyNotCalled(sendCoRespondentGenericUpdateNotificationEmailTask);
+        verifyNotCalled(certificateOfEntitlementLetterGenerationTask);
+        verifyNotCalled(coECoRespondentCoverLetterGenerationTask);
+        verifyNotCalled(fetchPrintDocsFromDmStore);
+        verifyNotCalled(bulkPrinterTask);
+
+        assertThat(contextCaptor.getValue().getTransientObject(CASE_ID_JSON_KEY), is(equalTo(TEST_CASE_ID)));
+    }
+
+    @Test
+    public void sendLetterToRespondentAndEmailToPetitionerAndCorespondentWhenRespondentIsNotUsingDigitalChannelAndCoRespondentIsUsingDigitalChannel()
+        throws Exception {
+        CaseDetails caseDetails = createCaseDetails(payload, false, true,true);
+
+        Map<String, Object> returnedPayload = caseLinkedForHearingWorkflow.run(caseDetails, AUTH_TOKEN);
+
+        assertThat(returnedPayload, is(equalTo(payload)));
+
+        final InOrder inOrder = inOrder(
+            sendPetitionerCoENotificationEmailTask,
+            certificateOfEntitlementLetterGenerationTask,
+            sendCoRespondentGenericUpdateNotificationEmailTask,
+            fetchPrintDocsFromDmStore,
+            bulkPrinterTask
+        );
+
+        inOrder.verify(sendPetitionerCoENotificationEmailTask).execute(contextCaptor.capture(), eq(payload));
+        inOrder.verify(certificateOfEntitlementLetterGenerationTask).execute(contextCaptor.capture(), eq(payload));
+        inOrder.verify(sendCoRespondentGenericUpdateNotificationEmailTask).execute(contextCaptor.capture(), eq(payload));
+        inOrder.verify(fetchPrintDocsFromDmStore).execute(contextCaptor.capture(), eq(payload));
+        inOrder.verify(bulkPrinterTask).execute(contextCaptor.capture(), eq(payload));
+
+        verifyNotCalled(sendRespondentCoENotificationEmailTask);
+
+        assertThat(contextCaptor.getValue().getTransientObject(CASE_ID_JSON_KEY), is(equalTo(TEST_CASE_ID)));
+    }
+
+    @Test
+    public void sendEmailToPetitionerAndLettersToRespondentAndCoRespondentWhenRespondentAndCoRespondentAreNotUsingDigitalChannel()
+        throws Exception {
+        CaseDetails caseDetails = createCaseDetails(payload, false, true,false);
+
+        Map<String, Object> returnedPayload = caseLinkedForHearingWorkflow.run(caseDetails, AUTH_TOKEN);
+
+        assertThat(returnedPayload, is(equalTo(payload)));
+
+        final InOrder inOrder = inOrder(
+            sendPetitionerCoENotificationEmailTask,
+            certificateOfEntitlementLetterGenerationTask,
+            coECoRespondentCoverLetterGenerationTask,
+            fetchPrintDocsFromDmStore,
+            bulkPrinterTask
+        );
+
+        inOrder.verify(sendPetitionerCoENotificationEmailTask).execute(contextCaptor.capture(), eq(payload));
+        inOrder.verify(certificateOfEntitlementLetterGenerationTask).execute(contextCaptor.capture(), eq(payload));
+        inOrder.verify(coECoRespondentCoverLetterGenerationTask).execute(contextCaptor.capture(), eq(payload));
+        inOrder.verify(fetchPrintDocsFromDmStore).execute(contextCaptor.capture(), eq(payload));
+        inOrder.verify(bulkPrinterTask).execute(contextCaptor.capture(), eq(payload));
+
+        verifyNotCalled(sendRespondentCoENotificationEmailTask);
+        verifyNotCalled(sendCoRespondentGenericUpdateNotificationEmailTask);
+
+        assertThat(contextCaptor.getValue().getTransientObject(CASE_ID_JSON_KEY), is(equalTo(TEST_CASE_ID)));
+    }
+
+    @Test
+    public void sendEmailToPetitionerAndLetterOnlyToRespondentWhenRespondentIsNotUsingDigitalChannelAndCoRespondentIsNotNamed() throws Exception {
+        CaseDetails caseDetails = createCaseDetails(payload, false, false,true);
+
+        Map<String, Object> returnedPayload = caseLinkedForHearingWorkflow.run(caseDetails, AUTH_TOKEN);
+
+        assertThat(returnedPayload, is(equalTo(payload)));
+
+        final InOrder inOrder = inOrder(
+            sendPetitionerCoENotificationEmailTask,
+            certificateOfEntitlementLetterGenerationTask,
+            fetchPrintDocsFromDmStore,
+            bulkPrinterTask
+        );
+
+        inOrder.verify(sendPetitionerCoENotificationEmailTask).execute(contextCaptor.capture(), eq(payload));
+        inOrder.verify(certificateOfEntitlementLetterGenerationTask).execute(contextCaptor.capture(), eq(payload));
+        inOrder.verify(fetchPrintDocsFromDmStore).execute(contextCaptor.capture(), eq(payload));
+        inOrder.verify(bulkPrinterTask).execute(contextCaptor.capture(), eq(payload));
+
+        verifyNotCalled(sendRespondentCoENotificationEmailTask);
+        verifyNotCalled(sendCoRespondentGenericUpdateNotificationEmailTask);
+        verifyNotCalled(coECoRespondentCoverLetterGenerationTask);
+
+        assertThat(contextCaptor.getValue().getTransientObject(CASE_ID_JSON_KEY), is(equalTo(TEST_CASE_ID)));
+    }
+
+    @Test
+    public void runRemoveCertificateOfEntitlementLettersFromCaseData() throws Exception {
+        Map<String, Object> casePayload = new HashMap<>(ImmutableMap.of(
+            D8DOCUMENTS_GENERATED, asList(
+                createCollectionMemberDocumentAsMap("http://coeLetter.com",
+                    CERTIFICATE_OF_ENTITLEMENT_LETTER_DOCUMENT_TYPE, "certificateOfEntitlementCoverLetterForRespondent.pdf"),
+                createCollectionMemberDocumentAsMap("http://coeCoRespLetter.com",
+                    CERTIFICATE_OF_ENTITLEMENT_LETTER_CO_RESPONDENT_DOCUMENT_TYPE, "certificateOfEntitlementCoverLetterForCoRespondent.pdf"))
+        ));
+
+        when(sendPetitionerCoENotificationEmailTask.execute(notNull(), eq(casePayload))).thenReturn(casePayload);
+        when(certificateOfEntitlementLetterGenerationTask.getDocumentType()).thenReturn(CERTIFICATE_OF_ENTITLEMENT_LETTER_DOCUMENT_TYPE);
+        when(certificateOfEntitlementLetterGenerationTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
+        when(coECoRespondentCoverLetterGenerationTask.getDocumentType()).thenReturn(CERTIFICATE_OF_ENTITLEMENT_LETTER_CO_RESPONDENT_DOCUMENT_TYPE);
+        when(coECoRespondentCoverLetterGenerationTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
+        when(fetchPrintDocsFromDmStore.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
+        when(bulkPrinterTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
+
+        Map<String, Object> returnedCaseData = caseLinkedForHearingWorkflow.run(
+            createCaseDetails(casePayload, false, true, false), AUTH_TOKEN);
+
+        assertThat(returnedCaseData.get(D8DOCUMENTS_GENERATED), is(equalTo(null)));
+    }
+
+    @Test
+    public void runShouldSkipBulkPrintingTasksWhenFeatureToggleOffAndOnlySendEmails() throws Exception {
+
+        when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(false);
+
+        CaseDetails caseDetails = createCaseDetails(payload, false, true,false);
+
+        Map<String, Object> returnedPayload = caseLinkedForHearingWorkflow.run(caseDetails, AUTH_TOKEN);
+
+        assertThat(returnedPayload, is(equalTo(payload)));
+
+        final InOrder inOrder = inOrder(
+            sendPetitionerCoENotificationEmailTask,
+            sendRespondentCoENotificationEmailTask,
+            sendCoRespondentGenericUpdateNotificationEmailTask
+        );
+
+        inOrder.verify(sendPetitionerCoENotificationEmailTask).execute(contextCaptor.capture(), eq(payload));
+        inOrder.verify(sendRespondentCoENotificationEmailTask).execute(contextCaptor.capture(), eq(payload));
+        inOrder.verify(sendCoRespondentGenericUpdateNotificationEmailTask).execute(contextCaptor.capture(), eq(payload));
+
+        verifyNotCalled(certificateOfEntitlementLetterGenerationTask);
+        verifyNotCalled(coECoRespondentCoverLetterGenerationTask);
+        verifyNotCalled(fetchPrintDocsFromDmStore);
+        verifyNotCalled(bulkPrinterTask);
+
+        assertThat(contextCaptor.getValue().getTransientObject(CASE_ID_JSON_KEY), is(equalTo(TEST_CASE_ID)));
     }
 
     private void verifyNotCalled(Task<Map<String, Object>> task) throws TaskException {
         verify(task, times(0)).execute(contextCaptor.capture(), anyMap());
     }
 
-    private CaseDetails createCaseDetails(Map<String, Object> testPayload, boolean coRespContactMethodIsDigital) {
-        testPayload.put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, coRespContactMethodIsDigital ? YES_VALUE:NO_VALUE);
+    private CaseDetails createCaseDetails(Map<String, Object> testPayload, boolean respContactMethodIsDigital,
+                                          boolean isCoRespondentNamed, boolean coRespContactMethodIsDigital) {
+        testPayload.put(RESP_IS_USING_DIGITAL_CHANNEL, respContactMethodIsDigital ? YES_VALUE : NO_VALUE);
+        if (isCoRespondentNamed) {
+            testPayload.put(CO_RESP_EMAIL_ADDRESS, TEST_USER_EMAIL);
+            testPayload.put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, coRespContactMethodIsDigital ? YES_VALUE : NO_VALUE);
+        }
 
         return CaseDetails.builder()
             .caseId(TEST_CASE_ID)
             .caseData(testPayload)
             .build();
-    }
-
-    @Test
-    public void runShouldCallSendCertificateOfEntitlementNotificationEmailTasksWhenDigitalCommunication() throws TaskException, WorkflowException {
-        Map<String, Object> casePayload = buildCaseData(YES_VALUE);
-        setupTasksToReturn(casePayload);
-
-        Map<String, Object> returnedPayload = caseLinkedForHearingWorkflow.run(buildCaseDetails(casePayload), AUTH_TOKEN);
-
-        assertThat(returnedPayload, is(equalTo(casePayload)));
-
-        verify(sendPetitionerCertificateOfEntitlementNotificationEmailTask)
-                .execute(contextCaptor.capture(), eq(casePayload));
-        verify(sendRespondentCertificateOfEntitlementNotificationEmailTask)
-                .execute(contextCaptor.capture(), eq(casePayload));
-        verify(sendCoRespondentGenericUpdateNotificationEmailTask)
-                .execute(contextCaptor.capture(), eq(casePayload));
-
-        verify(certificateOfEntitlementLetterGenerationTask, never()).execute(any(TaskContext.class), eq(casePayload));
-        verify(fetchPrintDocsFromDmStore, never()).execute(any(TaskContext.class), eq(casePayload));
-        verify(bulkPrinterTask, never()).execute(any(TaskContext.class), eq(casePayload));
-
-        assertThat(contextCaptor.getValue().getTransientObject(CASE_ID_JSON_KEY), is(equalTo(CASE_TYPE_ID)));
-
-    }
-
-    @Test
-    public void runShouldCallBulkPrintingWhenNoDigitalCommunication() throws Exception {
-        Map<String, Object> casePayload = buildCaseData(NO_VALUE);
-
-        when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
-        when(certificateOfEntitlementLetterGenerationTask.getDocumentType()).thenReturn(CERTIFICATE_OF_ENTITLEMENT_LETTER_DOCUMENT_TYPE);
-        when(certificateOfEntitlementLetterGenerationTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
-        when(fetchPrintDocsFromDmStore.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
-        when(bulkPrinterTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
-
-        Map<String, Object> result = caseLinkedForHearingWorkflow.run(buildCaseDetails(casePayload), AUTH_TOKEN);
-
-        assertEquals(result, casePayload);
-
-        InOrder inOrder = inOrder(
-            certificateOfEntitlementLetterGenerationTask,
-            fetchPrintDocsFromDmStore,
-            bulkPrinterTask
-        );
-
-        inOrder.verify(certificateOfEntitlementLetterGenerationTask).execute(any(TaskContext.class), eq(casePayload));
-        inOrder.verify(fetchPrintDocsFromDmStore).execute(any(TaskContext.class), eq(casePayload));
-        inOrder.verify(bulkPrinterTask).execute(any(TaskContext.class), eq(casePayload));
-
-        verify(sendPetitionerCertificateOfEntitlementNotificationEmailTask, never()).execute(any(TaskContext.class), eq(casePayload));
-        verify(sendRespondentCertificateOfEntitlementNotificationEmailTask, never()).execute(any(TaskContext.class), eq(casePayload));
-        verify(sendCoRespondentGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(casePayload));
-    }
-
-    @Test
-    public void runRemoveCertificateOfEntitlementLetterFromCaseData() throws Exception {
-        Map<String, Object> casePayload = ImmutableMap.of(
-            RESP_IS_USING_DIGITAL_CHANNEL, NO_VALUE,
-            D8DOCUMENTS_GENERATED, asList(createCollectionMemberDocumentAsMap("http://coeLetter.com", CERTIFICATE_OF_ENTITLEMENT_LETTER_DOCUMENT_TYPE, "certificateOfEntitlementCoverLetterForRespondent.pdf"))
-        );
-
-        when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
-        when(certificateOfEntitlementLetterGenerationTask.getDocumentType()).thenReturn(CERTIFICATE_OF_ENTITLEMENT_LETTER_DOCUMENT_TYPE);
-        when(certificateOfEntitlementLetterGenerationTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
-        when(fetchPrintDocsFromDmStore.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
-        when(bulkPrinterTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
-
-        Map<String, Object> returnedCaseData = caseLinkedForHearingWorkflow.run(buildCaseDetails(casePayload), AUTH_TOKEN);
-
-        assertThat(returnedCaseData.get(D8DOCUMENTS_GENERATED), Is.is(emptyList()));
-        InOrder inOrder = inOrder(
-            certificateOfEntitlementLetterGenerationTask,
-            fetchPrintDocsFromDmStore,
-            bulkPrinterTask
-        );
-        inOrder.verify(certificateOfEntitlementLetterGenerationTask).execute(any(TaskContext.class), eq(casePayload));
-        inOrder.verify(fetchPrintDocsFromDmStore).execute(any(TaskContext.class), eq(casePayload));
-        inOrder.verify(bulkPrinterTask).execute(any(TaskContext.class), eq(casePayload));
-
-        verify(sendPetitionerCertificateOfEntitlementNotificationEmailTask, never()).execute(any(TaskContext.class), eq(casePayload));
-        verify(sendRespondentCertificateOfEntitlementNotificationEmailTask, never()).execute(any(TaskContext.class), eq(casePayload));
-        verify(sendCoRespondentGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(casePayload));
-    }
-
-    @Test
-    public void runShouldSkipBulkPrintingTasksWhenFeatureToggleOff() throws Exception {
-        Map<String, Object> casePayload = buildCaseData(NO_VALUE);
-
-        when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(false);
-        when(certificateOfEntitlementLetterGenerationTask.getDocumentType()).thenReturn(CERTIFICATE_OF_ENTITLEMENT_LETTER_DOCUMENT_TYPE);
-
-        Map<String, Object> result = caseLinkedForHearingWorkflow.run(buildCaseDetails(casePayload), AUTH_TOKEN);
-
-        assertEquals(casePayload, result);
-
-        verify(certificateOfEntitlementLetterGenerationTask, never()).execute(any(TaskContext.class), eq(casePayload));
-        verify(fetchPrintDocsFromDmStore, never()).execute(any(TaskContext.class), eq(casePayload));
-        verify(bulkPrinterTask, never()).execute(any(TaskContext.class), eq(casePayload));
-
-        verify(sendPetitionerCertificateOfEntitlementNotificationEmailTask, never()).execute(any(TaskContext.class), eq(casePayload));
-        verify(sendRespondentCertificateOfEntitlementNotificationEmailTask, never()).execute(any(TaskContext.class), eq(casePayload));
-        verify(sendCoRespondentGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(casePayload));
-    }
-
-    private Map<String, Object> buildCaseData(String value) {
-        return ImmutableMap.of(
-            RESP_IS_USING_DIGITAL_CHANNEL, value,
-            D8DOCUMENTS_GENERATED, asList(createCollectionMemberDocumentAsMap("http://certificateOfEntitlement.com", CERTIFICATE_OF_ENTITLEMENT_DOCUMENT_TYPE, CERTIFICATE_OF_ENTITLEMENT_FILENAME))
-        );
-    }
-
-    private CaseDetails buildCaseDetails(Map<String, Object> casePayload) {
-        return CaseDetails.builder()
-            .caseId(CASE_TYPE_ID)
-            .caseData(casePayload)
-            .build();
-    }
-
-    private void setupTasksToReturn(Map<String, Object> casePayload) throws TaskException {
-        when(sendPetitionerCertificateOfEntitlementNotificationEmailTask.execute(notNull(), eq(casePayload)))
-            .thenReturn(casePayload);
-
-        when(sendRespondentCertificateOfEntitlementNotificationEmailTask.execute(notNull(), eq(casePayload)))
-            .thenReturn(casePayload);
-
-        when(sendCoRespondentGenericUpdateNotificationEmailTask.execute(notNull(), eq(casePayload)))
-            .thenReturn(casePayload);
-        when(certificateOfEntitlementLetterGenerationTask.getDocumentType()).thenReturn(CERTIFICATE_OF_ENTITLEMENT_LETTER_DOCUMENT_TYPE);
     }
 }

@@ -15,7 +15,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.DUMMY_CASE_DATA;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentConstants.CERTIFICATE_OF_ENTITLEMENT_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_COE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RemoveCertificateOfEntitlementDocumentsTaskTest {
@@ -32,7 +32,7 @@ public class RemoveCertificateOfEntitlementDocumentsTaskTest {
 
         final Map<String, Object> expected = DUMMY_CASE_DATA;
         //given
-        when(caseFormatterClient.removeAllDocumentsByType(CERTIFICATE_OF_ENTITLEMENT_DOCUMENT_TYPE, payload)).thenReturn(expected);
+        when(caseFormatterClient.removeAllDocumentsByType(DOCUMENT_TYPE_COE, payload)).thenReturn(expected);
 
         //when
         assertThat(classToTest.execute(new DefaultTaskContext(), payload), Is.is(expected));

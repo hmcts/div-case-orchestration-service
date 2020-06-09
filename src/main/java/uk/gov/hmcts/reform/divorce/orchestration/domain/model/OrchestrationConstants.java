@@ -332,6 +332,7 @@ public class OrchestrationConstants {
     public static final String COE_OFFLINE_PACK_RESPONDENT = "coe-offline-pack-respondent";
     public static final String COST_ORDER_OFFLINE_PACK_CO_RESPONDENT = "co-respondent-offline-pack-respondent";
 
+    public static final String DOCUMENT_TYPE_COE = "coe";
     public static final String DOCUMENT_TYPE_OTHER = "other";
 
     public static final String DOCUMENT_DRAFT_LINK_FIELD = "DocumentDraftLinkFieldName";
