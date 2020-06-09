@@ -41,6 +41,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DaGrantedLetterGenerationTask.FileMetadata.DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DaGrantedLetterGenerationTask.FileMetadata.TEMPLATE_ID;
+import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DaGrantedLetterGenerationTaskTest {
@@ -51,7 +52,8 @@ public class DaGrantedLetterGenerationTaskTest {
     private static final String RESPONDENTS_LAST_NAME = "Wozniak";
 
     private static final String CASE_ID = "It's mandatory field in context";
-    private static final String LETTER_DATE = LocalDate.now().toString();
+    private static final String LETTER_DATE_FROM_CCD = LocalDate.now().toString();
+    private static final String LETTER_DATE_EXPECTED = formatDateWithCustomerFacingFormat(LocalDate.now());
 
     private static final CtscContactDetails CTSC_CONTACT = CtscContactDetails.builder().build();
 
@@ -121,7 +123,7 @@ public class DaGrantedLetterGenerationTaskTest {
         assertThat(daGrantedLetter.getPetitionerFullName(), is(PETITIONERS_FIRST_NAME + " " + PETITIONERS_LAST_NAME));
         assertThat(daGrantedLetter.getRespondentFullName(), is(RESPONDENTS_FIRST_NAME + " " + RESPONDENTS_LAST_NAME));
         assertThat(daGrantedLetter.getCaseReference(), is(CASE_ID));
-        assertThat(daGrantedLetter.getLetterDate(), is(LETTER_DATE));
+        assertThat(daGrantedLetter.getLetterDate(), is(LETTER_DATE_EXPECTED));
         assertThat(daGrantedLetter.getCtscContactDetails(), is(CTSC_CONTACT));
     }
 
@@ -145,7 +147,7 @@ public class DaGrantedLetterGenerationTaskTest {
         Map<String, Object> caseData = isRespondentRepresented
             ? AddresseeDataExtractorTest.buildCaseDataWithRespondentSolicitorAsAddressee()
             : AddresseeDataExtractorTest.buildCaseDataWithRespondentAsAddressee();
-        caseData.put(DaGrantedLetterDataExtractor.CaseDataKeys.DA_GRANTED_DATE, LETTER_DATE);
+        caseData.put(DaGrantedLetterDataExtractor.CaseDataKeys.DA_GRANTED_DATE, LETTER_DATE_FROM_CCD);
 
         caseData.put(PETITIONER_FIRST_NAME, PETITIONERS_FIRST_NAME);
         caseData.put(PETITIONER_LAST_NAME, PETITIONERS_LAST_NAME);
