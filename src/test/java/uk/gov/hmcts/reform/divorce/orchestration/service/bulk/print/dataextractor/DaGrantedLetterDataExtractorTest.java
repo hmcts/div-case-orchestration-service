@@ -14,12 +14,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 
 public class DaGrantedLetterDataExtractorTest {
 
-    private static final String VALID_DATE = "2010-10-10";
+    private static final String VALID_DATE_FROM_CCD = "2010-10-01";
+    private static final String EXPECTED_DATE = "1 October 2010";
 
     @Test
     public void getDaGrantedDateReturnsValidValueWhenItExists() {
-        Map<String, Object> caseData = buildCaseDataWithDaGrantedDate(VALID_DATE);
-        assertThat(DaGrantedLetterDataExtractor.getDaGrantedDate(caseData), is(VALID_DATE));
+        Map<String, Object> caseData = buildCaseDataWithDaGrantedDate(VALID_DATE_FROM_CCD);
+        assertThat(DaGrantedLetterDataExtractor.getDaGrantedDate(caseData), is(EXPECTED_DATE));
     }
 
     @Test

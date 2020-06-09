@@ -79,7 +79,7 @@ public class SubmitCoRespondentAosCase implements Task<Map<String, Object>> {
         }
 
         submissionData.put(RECEIVED_AOS_FROM_CO_RESP, YES_VALUE);
-        submissionData.put(RECEIVED_AOS_FROM_CO_RESP_DATE, LocalDate.now(clock).format(DateUtils.Formatters.DEFAULT));
+        submissionData.put(RECEIVED_AOS_FROM_CO_RESP_DATE, LocalDate.now(clock).format(DateUtils.Formatters.CCD_DATE));
 
         final Map<String, Object> updateCase = caseMaintenanceClient.updateCase(
             authToken,
@@ -132,6 +132,6 @@ public class SubmitCoRespondentAosCase implements Task<Map<String, Object>> {
     }
 
     private String getDueDateForCoRespondent() {
-        return LocalDate.now(clock).plusDays(DAYS_ALLOWED_FOR_DEFENCE).format(DateUtils.Formatters.DEFAULT);
+        return LocalDate.now(clock).plusDays(DAYS_ALLOWED_FOR_DEFENCE).format(DateUtils.Formatters.CCD_DATE);
     }
 }
