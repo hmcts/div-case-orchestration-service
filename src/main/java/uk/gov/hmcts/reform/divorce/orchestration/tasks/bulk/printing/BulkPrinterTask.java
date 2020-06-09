@@ -53,6 +53,11 @@ public class BulkPrinterTask implements Task<Map<String, Object>> {
         //Make sure every requested document type was found
         if (documentTypesToPrint.size() == documentsToPrint.size()) {
             try {
+                log.info(
+                    "Case ID {}, {} document(s) sent to bulk print: {}",
+                    caseDetails.getCaseId(), documentsToPrint.size(), documentsToPrint
+                );
+
                 bulkPrintService.send(caseDetails.getCaseId(), bulkPrintLetterType, documentsToPrint);
             } catch (final Exception e) {
                 context.setTaskFailed(true);
