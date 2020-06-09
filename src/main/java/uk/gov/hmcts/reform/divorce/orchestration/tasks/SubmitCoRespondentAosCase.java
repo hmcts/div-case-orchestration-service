@@ -9,10 +9,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.Validati
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_AWAITING;
@@ -25,7 +25,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_LEGAL_ADVISOR_REFERRAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DATE_FORMAT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_DEFENDS_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_SUBMISSION_AOS_AWAITING_EVENT_ID;
@@ -80,7 +79,7 @@ public class SubmitCoRespondentAosCase implements Task<Map<String, Object>> {
         }
 
         submissionData.put(RECEIVED_AOS_FROM_CO_RESP, YES_VALUE);
-        submissionData.put(RECEIVED_AOS_FROM_CO_RESP_DATE, LocalDate.now(clock).format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT)));
+        submissionData.put(RECEIVED_AOS_FROM_CO_RESP_DATE, LocalDate.now(clock).format(DateUtils.Formatters.DEFAULT));
 
         final Map<String, Object> updateCase = caseMaintenanceClient.updateCase(
             authToken,
@@ -133,6 +132,6 @@ public class SubmitCoRespondentAosCase implements Task<Map<String, Object>> {
     }
 
     private String getDueDateForCoRespondent() {
-        return LocalDate.now(clock).plusDays(DAYS_ALLOWED_FOR_DEFENCE).format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT));
+        return LocalDate.now(clock).plusDays(DAYS_ALLOWED_FOR_DEFENCE).format(DateUtils.Formatters.DEFAULT);
     }
 }
