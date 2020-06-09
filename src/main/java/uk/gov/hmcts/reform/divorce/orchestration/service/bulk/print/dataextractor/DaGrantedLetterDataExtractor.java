@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConst
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
+import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DaGrantedLetterDataExtractor {
@@ -17,6 +18,6 @@ public class DaGrantedLetterDataExtractor {
     }
 
     public static String getDaGrantedDate(Map<String, Object> caseData) {
-        return getMandatoryStringValue(caseData, CaseDataKeys.DA_GRANTED_DATE);
+        return formatDateWithCustomerFacingFormat(getMandatoryStringValue(caseData, CaseDataKeys.DA_GRANTED_DATE));
     }
 }

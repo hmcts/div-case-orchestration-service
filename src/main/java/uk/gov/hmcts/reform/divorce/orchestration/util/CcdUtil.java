@@ -25,7 +25,7 @@ public class CcdUtil {
     private final Clock clock;
 
     public String getCurrentDateCcdFormat() {
-        return LocalDate.now(clock).format(DateUtils.Formatters.DEFAULT);
+        return LocalDate.now(clock).format(DateUtils.Formatters.CCD_DATE);
     }
 
     public String getCurrentDatePaymentFormat() {
@@ -33,7 +33,7 @@ public class CcdUtil {
     }
 
     public String mapCCDDateToDivorceDate(String date) {
-        return LocalDate.parse(date, DateUtils.Formatters.DEFAULT)
+        return LocalDate.parse(date, DateUtils.Formatters.CCD_DATE)
             .format(DateTimeFormatter.ofPattern(PAYMENT_DATE_PATTERN, DateUtils.Settings.LOCALE));
     }
 
@@ -66,11 +66,11 @@ public class CcdUtil {
     }
 
     public static LocalDate parseDateUsingCcdFormat(String date) {
-        return LocalDate.parse(date, DateUtils.Formatters.DEFAULT);
+        return LocalDate.parse(date, DateUtils.Formatters.CCD_DATE);
     }
 
     public static String formatDateForCCD(LocalDate plus) {
-        return plus.format(DateUtils.Formatters.DEFAULT);
+        return plus.format(DateUtils.Formatters.CCD_DATE);
     }
 
     public static String formatFromCCDFormatToHumanReadableFormat(String inputDate) {
