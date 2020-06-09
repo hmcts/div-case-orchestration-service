@@ -50,8 +50,8 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
 
-        // Scenario 1: Paper corespondent with cost claim was granted and who is not represented
-        // Scenario 2: Paper corespondent with cost claim was granted and who is represented
+        // Scenario 1: Paper corespondent with cost claim was granted and who is not represented -  FL-DIV-LET-ENG-00358.docx
+        // Scenario 2: Paper corespondent with cost claim was granted and who is represented - FL-DIV-GNO-ENG-00423.docx
 
         // Scenario 3: Paper corespondent and the cost claim was not granted
 
