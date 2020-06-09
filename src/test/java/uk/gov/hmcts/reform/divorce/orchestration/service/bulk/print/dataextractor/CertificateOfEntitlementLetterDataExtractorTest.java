@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Gender;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Relation;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.HashMap;
@@ -119,7 +120,7 @@ public class CertificateOfEntitlementLetterDataExtractorTest {
             try {
                 CertificateOfEntitlementLetterDataExtractor.getHusbandOrWife(buildCaseDataWithPetitionerGender(petitionerGenderValue));
                 fail("Should have thrown exception");
-            } catch (TaskException e) {
+            } catch (InvalidDataForTaskException e) {
                 thisTestPassed();
             }
         });
@@ -131,7 +132,7 @@ public class CertificateOfEntitlementLetterDataExtractorTest {
             try {
                 CertificateOfEntitlementLetterDataExtractor.getCourtName(buildCaseDataWithCourtName(courtNameValue));
                 fail("Should have thrown exception");
-            } catch (TaskException e) {
+            } catch (InvalidDataForTaskException e) {
                 thisTestPassed();
             }
         });
@@ -143,7 +144,7 @@ public class CertificateOfEntitlementLetterDataExtractorTest {
             try {
                 CertificateOfEntitlementLetterDataExtractor.getSolicitorReference(buildCaseDataWithSolicitorReference(solicitorRefValue));
                 fail("Should have thrown exception");
-            } catch (TaskException e) {
+            } catch (InvalidDataForTaskException e) {
                 thisTestPassed();
             }
         });

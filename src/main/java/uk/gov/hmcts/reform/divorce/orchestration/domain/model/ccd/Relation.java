@@ -16,4 +16,12 @@ public enum Relation {
     public String getValue() {
         return value;
     }
+
+    public static Relation from(Gender gender) {
+        switch (gender) {
+            case MALE: return HUSBAND;
+            case FEMALE: return WIFE;
+            default: return null;
+        }
+    }
 }

@@ -2,6 +2,8 @@ package uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import java.util.Locale;
+
 public enum Gender {
     FEMALE("female"),
     MALE("male");
@@ -15,5 +17,20 @@ public enum Gender {
     @JsonValue
     public String getValue() {
         return value;
+    }
+
+    public static Gender from(String gender) {
+        if (gender == null) {
+            return null;
+        }
+        gender = gender.toLowerCase(Locale.ENGLISH);
+
+        if (gender.equals(MALE.getValue())) {
+            return Gender.MALE;
+        } else if (gender.equals(FEMALE.getValue())) {
+            return Gender.FEMALE;
+        } else {
+            return null;
+        }
     }
 }

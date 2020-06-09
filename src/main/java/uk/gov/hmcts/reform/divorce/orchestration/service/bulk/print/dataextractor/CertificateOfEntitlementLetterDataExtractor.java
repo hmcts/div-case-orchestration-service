@@ -4,17 +4,17 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseFieldConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Gender;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Relation;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRelationshipTermByGender;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
 
 
@@ -46,24 +46,21 @@ public class CertificateOfEntitlementLetterDataExtractor {
         return formatDateWithCustomerFacingFormat(limitDateToContactCourt);
     }
 
-    public static String getHusbandOrWife(Map<String, Object> caseData) throws TaskException {
-        String petitionerInferredGender = getMandatoryPropertyValueAsString(caseData, CaseDataKeys.PETITIONER_GENDER);
-        String petitionerRelationshipToRespondent = getRelationshipTermByGender(petitionerInferredGender);
-        return petitionerRelationshipToRespondent;
+    public static String getHusbandOrWife(Map<String, Object> caseData) {
+        Gender petitionerInferredGender = Gender.from(getMandatoryStringValue(caseData, CaseDataKeys.PETITIONER_GENDER));
+        Relation petitionerRelationshipToRespondent = Relation.from(petitionerInferredGender);
+        return petitionerRelationshipToRespondent.getValue();
     }
 
-    public static String getCourtName(Map<String, Object> caseData) throws TaskException {
-        return getMandatoryPropertyValueAsString(caseData, CaseDataKeys.COURT_NAME);
+    public static String getCourtName(Map<String, Object> caseData) {
+        return getMandatoryStringValue(caseData, CaseDataKeys.COURT_NAME);
     }
 
     public static boolean isCostsClaimGranted(Map<String, Object> caseData) {
-        return Optional.ofNullable(caseData.get(CaseDataKeys.IS_COSTS_CLAIM_GRANTED))
-            .map(String.class::cast)
-            .map(YES_VALUE::equalsIgnoreCase)
-            .orElse(false);
+        return YES_VALUE.equalsIgnoreCase((String) caseData.get(CaseDataKeys.IS_COSTS_CLAIM_GRANTED));
     }
 
-    public static String getSolicitorReference(Map<String, Object> caseData) throws TaskException {
-        return getMandatoryPropertyValueAsString(caseData, CaseDataKeys.SOLICITOR_REFERENCE);
+    public static String getSolicitorReference(Map<String, Object> caseData) {
+        return getMandatoryStringValue(caseData, CaseDataKeys.SOLICITOR_REFERENCE);
     }
 }
