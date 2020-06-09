@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
@@ -60,7 +61,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDaGrantedDetailsTask.LONDON_TIME_ZONE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class DaAboutToBeGrantedDocumentsGeneration extends MockedFunctionalTest {
@@ -81,7 +81,9 @@ public class DaAboutToBeGrantedDocumentsGeneration extends MockedFunctionalTest 
         .put(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD, TEST_DECREE_ABSOLUTE_GRANTED_DATE)
         .build();
 
-    private final LocalDateTime grantedDate = LocalDateTime.parse(TEST_DECREE_ABSOLUTE_GRANTED_DATE);
+    private final LocalDateTime grantedDate = LocalDateTime.parse(
+        TEST_DECREE_ABSOLUTE_GRANTED_DATE, DateUtils.Formatters.CCD_DATE_TIME
+    );
 
     private static final CaseDetails CASE_DETAILS = CaseDetails.builder()
         .caseData(CASE_DATA)
@@ -105,7 +107,7 @@ public class DaAboutToBeGrantedDocumentsGeneration extends MockedFunctionalTest 
     public void setup() {
         when(clock.instant()).thenReturn(grantedDate.toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(UTC);
-        when(clock.withZone(LONDON_TIME_ZONE)).thenReturn(clock);
+        when(clock.withZone(DateUtils.Settings.ZONE_ID)).thenReturn(clock);
     }
 
     @Test

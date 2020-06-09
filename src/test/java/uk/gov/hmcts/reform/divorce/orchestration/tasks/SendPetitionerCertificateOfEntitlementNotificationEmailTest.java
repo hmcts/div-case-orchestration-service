@@ -289,7 +289,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
                     hasEntry(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, "Johnson"),
                     optionalTextParametersMatcher,
                     hasEntry(DATE_OF_HEARING, "21 April 2019"),
-                    hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "07 April 2019"),
+                    hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "7 April 2019"),
                     hasEntry(COURT_NAME_TEMPLATE_ID, "Court Name")
                 )
             )));
@@ -308,7 +308,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
                     hasEntry(NOTIFICATION_SOLICITOR_NAME, "Petitioner Solicitor name"),
                     optionalTextParametersMatcher,
                     hasEntry(DATE_OF_HEARING, "21 April 2019"),
-                    hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "07 April 2019"),
+                    hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "7 April 2019"),
                     hasEntry(COURT_NAME_TEMPLATE_ID, "Court Name")
                 )
             )));

@@ -22,6 +22,6 @@ public class CoRespondentAosAnswersProcessorTaskTest {
         Map<String, Object> returnedPayload = coRespondentAosAnswersProcessor.execute(null, payload);
 
         assertNotEquals("Should not be empty", payload.size(), 0);
-        assertEquals("Should have set 'RECEIVED_AOS_FROM_CO_RESP' field to Yes", returnedPayload.get(RECEIVED_AOS_FROM_CO_RESP), YES_VALUE);
+        assertEquals("Should have set 'RECEIVED_AOS_FROM_CO_RESP' field to Yes", YES_VALUE, returnedPayload.get(RECEIVED_AOS_FROM_CO_RESP));
     }
 }

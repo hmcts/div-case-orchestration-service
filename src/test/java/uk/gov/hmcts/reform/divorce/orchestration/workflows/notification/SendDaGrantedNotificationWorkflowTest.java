@@ -72,6 +72,7 @@ public class SendDaGrantedNotificationWorkflowTest {
         Map<String, Object> casePayload = buildCaseData(YES_VALUE);
 
         when(sendDaGrantedNotificationEmailTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
+        when(daGrantedLetterGenerationTask.getDocumentType()).thenReturn(DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE);
 
         Map<String, Object> result = sendDaGrantedNotificationWorkflow.run(buildCaseDetails(casePayload), AUTH_TOKEN);
 
@@ -90,6 +91,7 @@ public class SendDaGrantedNotificationWorkflowTest {
         Map<String, Object> incomingCaseData = buildCaseData(NO_VALUE);
 
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
+        when(daGrantedLetterGenerationTask.getDocumentType()).thenReturn(DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE);
         when(daGrantedLetterGenerationTask.execute(isNotNull(), eq(incomingCaseData))).thenReturn(incomingCaseData);
         when(caseFormatterAddDocuments.execute(isNotNull(), eq(incomingCaseData))).thenReturn(incomingCaseData);
         when(fetchPrintDocsFromDmStore.execute(isNotNull(), eq(incomingCaseData))).thenReturn(incomingCaseData);
@@ -119,6 +121,7 @@ public class SendDaGrantedNotificationWorkflowTest {
         );
 
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
+        when(daGrantedLetterGenerationTask.getDocumentType()).thenReturn(DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE);
         when(daGrantedLetterGenerationTask.execute(isNotNull(), eq(incomingCaseData))).thenReturn(incomingCaseData);
         when(caseFormatterAddDocuments.execute(isNotNull(), eq(incomingCaseData))).thenReturn(incomingCaseData);
         when(fetchPrintDocsFromDmStore.execute(isNotNull(), eq(incomingCaseData))).thenReturn(incomingCaseData);
@@ -145,6 +148,7 @@ public class SendDaGrantedNotificationWorkflowTest {
         Map<String, Object> casePayload = buildCaseData(NO_VALUE);
 
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(false);
+        when(daGrantedLetterGenerationTask.getDocumentType()).thenReturn(DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE);
 
         Map<String, Object> result = sendDaGrantedNotificationWorkflow.run(buildCaseDetails(casePayload), AUTH_TOKEN);
 
