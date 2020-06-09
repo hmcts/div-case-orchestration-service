@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentGenericUpda
 
 import java.util.Map;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -30,10 +32,18 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_TYPE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_FILENAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_BOTH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_COSTS_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocumentAsMap;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SendDnPronouncedNotificationWorkflowTest {
@@ -54,7 +64,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
     private TaskContext context;
 
     @Before
-    public void setup() {
+    public void setup() { //TODO use same casedata for all
         CaseDetails caseDetails = CaseDetails.builder()
                 .caseId(TEST_CASE_ID)
                 .state(TEST_STATE)
@@ -152,5 +162,73 @@ public class SendDnPronouncedNotificationWorkflowTest {
         verify(sendPetitionerGenericUpdateNotificationEmail).execute(context, testPayload);
         verify(sendRespondentGenericUpdateNotificationEmail).execute(context, testPayload);
         verify(sendCoRespondentGenericUpdateNotificationEmail).execute(context, testPayload);
+    }
+
+    @Test
+    public void genericEmailTaskShouldExecuteAndReturnPayloadWhenCoRespondentIsDigital() throws Exception {
+
+        Map<String, Object> caseData = buildCaseData(YES_VALUE);
+        CaseDetails caseDetails = buildCaseDetails(caseData);
+
+        ccdCallbackRequestRequest.setCaseDetails(caseDetails);
+        String caseId = ccdCallbackRequestRequest.getCaseDetails().getCaseId();
+
+        TaskContext context = new DefaultTaskContext();
+        context.setTransientObject(CASE_ID_JSON_KEY, caseId);
+
+        when(sendPetitionerGenericUpdateNotificationEmail.execute(notNull(), eq(caseData)))
+            .thenReturn(caseData);
+
+        when(sendRespondentGenericUpdateNotificationEmail.execute(notNull(), eq(caseData)))
+            .thenReturn(caseData);
+
+        Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(ccdCallbackRequestRequest);
+        assertThat(returnedPayload, is(equalTo(caseData)));
+
+        verify(sendPetitionerGenericUpdateNotificationEmail).execute(context, caseData);
+        verify(sendRespondentGenericUpdateNotificationEmail).execute(context, caseData);
+        verify(sendCoRespondentGenericUpdateNotificationEmail, never()).execute(context, caseData);
+    }
+
+    @Test
+    public void genericEmailTaskShouldNotExecuteWhenCoRespondentIsNotDigital() throws Exception {
+
+        Map<String, Object> caseData = buildCaseData(NO_VALUE);
+        CaseDetails caseDetails = buildCaseDetails(caseData);
+
+        ccdCallbackRequestRequest.setCaseDetails(caseDetails);
+        String caseId = ccdCallbackRequestRequest.getCaseDetails().getCaseId();
+
+        TaskContext context = new DefaultTaskContext();
+        context.setTransientObject(CASE_ID_JSON_KEY, caseId);
+
+        when(sendPetitionerGenericUpdateNotificationEmail.execute(notNull(), eq(caseData)))
+            .thenReturn(caseData);
+
+        when(sendRespondentGenericUpdateNotificationEmail.execute(notNull(), eq(caseData)))
+            .thenReturn(caseData);
+
+        Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(ccdCallbackRequestRequest);
+        assertThat(returnedPayload, is(equalTo(caseData)));
+
+        verify(sendPetitionerGenericUpdateNotificationEmail, never()).execute(context, caseData);
+        verify(sendRespondentGenericUpdateNotificationEmail, never()).execute(context, caseData);
+        verify(sendCoRespondentGenericUpdateNotificationEmail, never()).execute(context, caseData);
+    }
+
+    private Map<String, Object> buildCaseData(String isDigital) {
+        return ImmutableMap.of(
+            CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, isDigital,
+            D8DOCUMENTS_GENERATED, asList( // TODO change generated document to DNPronouned...
+                createCollectionMemberDocumentAsMap("http://dn-pronounced.com", DECREE_ABSOLUTE_DOCUMENT_TYPE, DECREE_ABSOLUTE_FILENAME)
+            )
+        );
+    }
+
+    private CaseDetails buildCaseDetails(Map<String, Object> casePayload) {
+        return CaseDetails.builder()
+            .caseId(CASE_TYPE_ID)
+            .caseData(casePayload)
+            .build();
     }
 }
