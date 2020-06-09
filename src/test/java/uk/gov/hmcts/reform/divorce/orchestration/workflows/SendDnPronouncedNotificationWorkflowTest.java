@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerGenericUpdateNotificationEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentGenericUpdateNotificationEmail;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.SendCostOrderGenerationTask;
 
 import java.util.Map;
 
@@ -33,10 +34,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_TYPE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_CLAIM_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_FILENAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_BOTH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT;
@@ -57,6 +60,9 @@ public class SendDnPronouncedNotificationWorkflowTest {
     @Mock
     private SendCoRespondentGenericUpdateNotificationEmail sendCoRespondentGenericUpdateNotificationEmail;
 
+    @Mock
+    private SendCostOrderGenerationTask sendCostOrderGenerationTask;
+
     @InjectMocks
     private SendDnPronouncedNotificationWorkflow sendDnPronouncedNotificationWorkflow;
 
@@ -64,9 +70,10 @@ public class SendDnPronouncedNotificationWorkflowTest {
     private TaskContext context;
 
     @Before
-    public void setup() { //TODO use same casedata for all
+    public void setup() { // TODO use same casedata for all
         CaseDetails caseDetails = CaseDetails.builder()
                 .caseId(TEST_CASE_ID)
+                .caseData(buildCaseData(YES_VALUE, NO_VALUE))
                 .state(TEST_STATE)
                 .build();
         ccdCallbackRequestRequest =
@@ -167,7 +174,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
     @Test
     public void genericEmailTaskShouldExecuteAndReturnPayloadWhenCoRespondentIsDigital() throws Exception {
 
-        Map<String, Object> caseData = buildCaseData(YES_VALUE);
+        Map<String, Object> caseData = buildCaseData(YES_VALUE, NO_VALUE);
         CaseDetails caseDetails = buildCaseDetails(caseData);
 
         ccdCallbackRequestRequest.setCaseDetails(caseDetails);
@@ -193,7 +200,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
     @Test
     public void genericEmailTaskShouldNotExecuteWhenCoRespondentIsNotDigital() throws Exception {
 
-        Map<String, Object> caseData = buildCaseData(NO_VALUE);
+        Map<String, Object> caseData = buildCaseData(NO_VALUE, NO_VALUE);
         CaseDetails caseDetails = buildCaseDetails(caseData);
 
         ccdCallbackRequestRequest.setCaseDetails(caseDetails);
@@ -216,9 +223,39 @@ public class SendDnPronouncedNotificationWorkflowTest {
         verify(sendCoRespondentGenericUpdateNotificationEmail, never()).execute(context, caseData);
     }
 
-    private Map<String, Object> buildCaseData(String isDigital) {
+    @Test
+    public void givenCoRespondentIsNotDigitalAndCostsClaimIsNotGranted_thenBulkPrintIsNotCalled() throws Exception {
+        Map<String, Object> caseData = buildCaseData(NO_VALUE, NO_VALUE);
+
+        CaseDetails caseDetails = buildCaseDetails(caseData);
+
+        ccdCallbackRequestRequest.setCaseDetails(caseDetails);
+        String caseId = ccdCallbackRequestRequest.getCaseDetails().getCaseId();
+
+        TaskContext context = new DefaultTaskContext();
+        context.setTransientObject(CASE_ID_JSON_KEY, caseId);
+
+        when(sendPetitionerGenericUpdateNotificationEmail.execute(notNull(), eq(caseData)))
+            .thenReturn(caseData);
+
+        when(sendRespondentGenericUpdateNotificationEmail.execute(notNull(), eq(caseData)))
+            .thenReturn(caseData);
+
+        Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(ccdCallbackRequestRequest);
+        assertThat(returnedPayload, is(equalTo(caseData)));
+
+        verify(sendPetitionerGenericUpdateNotificationEmail, never()).execute(context, caseData);
+        verify(sendRespondentGenericUpdateNotificationEmail, never()).execute(context, caseData);
+        verify(sendCoRespondentGenericUpdateNotificationEmail, never()).execute(context, caseData);
+        verify(sendCostOrderGenerationTask, never()).execute(context, caseData);
+        // TODO add solicitor task
+    }
+
+
+    private Map<String, Object> buildCaseData(String isDigital, String isCostClaimGranted) {
         return ImmutableMap.of(
             CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, isDigital,
+            DIVORCE_COSTS_CLAIM_CCD_FIELD, isCostClaimGranted,
             D8DOCUMENTS_GENERATED, asList( // TODO change generated document to DNPronouned...
                 createCollectionMemberDocumentAsMap("http://dn-pronounced.com", DECREE_ABSOLUTE_DOCUMENT_TYPE, DECREE_ABSOLUTE_FILENAME)
             )
