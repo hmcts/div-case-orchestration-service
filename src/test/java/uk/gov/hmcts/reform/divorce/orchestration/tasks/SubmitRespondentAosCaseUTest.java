@@ -102,8 +102,8 @@ public class SubmitRespondentAosCaseUTest {
         verify(caseMaintenanceClient)
             .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(AWAITING_ANSWER_AOS_EVENT_ID), eq(expectedData));
 
-        verify(welshNextEventUtil).evaluateAOSEventId(isWelsh.capture(), eq(caseDetails.getCaseData()),
-            eq(AWAITING_ANSWER_AOS_EVENT_ID),  eq(BO_WELSH_AOS_SUBMITTED_DEFENDED_EVENT_ID));
+        verify(welshNextEventUtil).storeNextEventAndReturnStopEvent(isWelsh.capture(), eq(caseDetails.getCaseData()),
+            eq(AWAITING_ANSWER_AOS_EVENT_ID),  eq(BO_WELSH_AOS_SUBMITTED_DEFENDED_EVENT_ID), eq(BO_WELSH_REVIEW));
         assertThat(isWelsh.getValue().getAsBoolean(), equalTo(false));
     }
 
@@ -126,8 +126,8 @@ public class SubmitRespondentAosCaseUTest {
         verify(caseMaintenanceClient)
             .updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_ANSWER_AOS_EVENT_ID, expectedData);
 
-        verify(welshNextEventUtil).evaluateAOSEventId(isWelsh.capture(), eq(caseDetails.getCaseData()),
-            eq(AWAITING_ANSWER_AOS_EVENT_ID), eq(BO_WELSH_AOS_SUBMITTED_DEFENDED_EVENT_ID));
+        verify(welshNextEventUtil).storeNextEventAndReturnStopEvent(isWelsh.capture(), eq(caseDetails.getCaseData()),
+            eq(AWAITING_ANSWER_AOS_EVENT_ID), eq(BO_WELSH_AOS_SUBMITTED_DEFENDED_EVENT_ID), eq(BO_WELSH_REVIEW));
         assertThat(isWelsh.getValue().getAsBoolean(), equalTo(false));
 
     }
@@ -153,8 +153,8 @@ public class SubmitRespondentAosCaseUTest {
 
         // we let the case proceed to awaiting DN for unreasonable behaviour regardless of whether they admit or not
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, expectedData);
-        verify(welshNextEventUtil).evaluateAOSEventId(isWelsh.capture(), any(),
-            eq(AWAITING_DN_AOS_EVENT_ID), eq(BO_WELSH_AOS_SUBMITTED_UNDEFENDED_EVENT_ID));
+        verify(welshNextEventUtil).storeNextEventAndReturnStopEvent(isWelsh.capture(), any(),
+            eq(AWAITING_DN_AOS_EVENT_ID), eq(BO_WELSH_AOS_SUBMITTED_UNDEFENDED_EVENT_ID), eq(BO_WELSH_REVIEW));
         assertThat(isWelsh.getValue().getAsBoolean(), equalTo(false));
     }
 
@@ -178,8 +178,8 @@ public class SubmitRespondentAosCaseUTest {
 
         // we let the case proceed to awaiting DN for unreasonable behaviour regardless of whether they admit or not
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, BO_WELSH_REVIEW, expectedData);
-        verify(welshNextEventUtil).evaluateAOSEventId(isWelsh.capture(),
-            any(), eq(AWAITING_DN_AOS_EVENT_ID), eq(BO_WELSH_AOS_SUBMITTED_UNDEFENDED_EVENT_ID));
+        verify(welshNextEventUtil).storeNextEventAndReturnStopEvent(isWelsh.capture(),
+            any(), eq(AWAITING_DN_AOS_EVENT_ID), eq(BO_WELSH_AOS_SUBMITTED_UNDEFENDED_EVENT_ID), eq(BO_WELSH_REVIEW));
         assertThat(isWelsh.getValue().getAsBoolean(), equalTo(true));
     }
 
@@ -203,8 +203,8 @@ public class SubmitRespondentAosCaseUTest {
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETED_AOS_EVENT_ID, expectedData);
-        verify(welshNextEventUtil).evaluateAOSEventId(isWelsh.capture(),
-            any(), eq(COMPLETED_AOS_EVENT_ID), eq(BO_WELSH_AOS_RECEIVED_NO_AD_CON_STARTED_EVENT_ID));
+        verify(welshNextEventUtil).storeNextEventAndReturnStopEvent(isWelsh.capture(),
+            any(), eq(COMPLETED_AOS_EVENT_ID), eq(BO_WELSH_AOS_RECEIVED_NO_AD_CON_STARTED_EVENT_ID), eq(BO_WELSH_REVIEW));
         assertThat(isWelsh.getValue().getAsBoolean(), equalTo(false));
     }
 
@@ -228,8 +228,8 @@ public class SubmitRespondentAosCaseUTest {
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, COMPLETED_AOS_EVENT_ID, expectedData);
-        verify(welshNextEventUtil).evaluateAOSEventId(isWelsh.capture(),
-            any(), eq(COMPLETED_AOS_EVENT_ID), eq(BO_WELSH_AOS_RECEIVED_NO_AD_CON_STARTED_EVENT_ID));
+        verify(welshNextEventUtil).storeNextEventAndReturnStopEvent(isWelsh.capture(),
+            any(), eq(COMPLETED_AOS_EVENT_ID), eq(BO_WELSH_AOS_RECEIVED_NO_AD_CON_STARTED_EVENT_ID), eq(BO_WELSH_REVIEW));
         assertThat(isWelsh.getValue().getAsBoolean(), equalTo(Boolean.FALSE));
     }
 
@@ -250,8 +250,8 @@ public class SubmitRespondentAosCaseUTest {
         assertEquals(EXPECTED_OUTPUT, classUnderTest.execute(TASK_CONTEXT, divorceSession));
 
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AWAITING_DN_AOS_EVENT_ID, expectedData);
-        verify(welshNextEventUtil).evaluateAOSEventId(isWelsh.capture(), any(),
-            eq(AWAITING_DN_AOS_EVENT_ID),eq(BO_WELSH_AOS_SUBMITTED_UNDEFENDED_EVENT_ID));
+        verify(welshNextEventUtil).storeNextEventAndReturnStopEvent(isWelsh.capture(), any(),
+            eq(AWAITING_DN_AOS_EVENT_ID),eq(BO_WELSH_AOS_SUBMITTED_UNDEFENDED_EVENT_ID), eq(BO_WELSH_REVIEW));
         assertThat(isWelsh.getValue().getAsBoolean(), equalTo(false));
 
     }
@@ -282,8 +282,8 @@ public class SubmitRespondentAosCaseUTest {
 
         verify(caseMaintenanceClient)
                 .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(BO_WELSH_REVIEW), eq(expectedData));
-        verify(welshNextEventUtil).evaluateAOSEventId(isWelsh.capture(), any(),
-            eq(AWAITING_ANSWER_AOS_EVENT_ID), eq(BO_WELSH_AOS_SUBMITTED_DEFENDED_EVENT_ID));
+        verify(welshNextEventUtil).storeNextEventAndReturnStopEvent(isWelsh.capture(), any(),
+            eq(AWAITING_ANSWER_AOS_EVENT_ID), eq(BO_WELSH_AOS_SUBMITTED_DEFENDED_EVENT_ID), eq(BO_WELSH_REVIEW));
         assertThat(isWelsh.getValue().getAsBoolean(), equalTo(true));
 
     }

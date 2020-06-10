@@ -458,7 +458,7 @@ template:
       12: "Rhagfyr"
 
 ignore:
-  states: WelshResponseAwaitingReview,WelshDNisRefused
+  states: WelshResponseAwaitingReview,WelshDNisRefused,WelshDNReceived
 
 issueAosPackOffLine:
   SEPARATION_TWO_YEARS:

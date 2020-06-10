@@ -21,6 +21,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BO_WELSH_AOS_RECEIVED_NO_AD_CON_STARTED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BO_WELSH_AOS_SUBMITTED_DEFENDED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BO_WELSH_AOS_SUBMITTED_UNDEFENDED_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BO_WELSH_REVIEW;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COMPLETED_AOS_EVENT_ID;
@@ -92,7 +93,7 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
             return CaseDataUtils.isLanguagePreferenceWelsh(currentCasedata);
         };
 
-        return welshNextEventUtil.evaluateAOSEventId(isWelsh, submissionData, eventId, welshEventId);
+        return welshNextEventUtil.storeNextEventAndReturnStopEvent(isWelsh, submissionData, eventId, welshEventId, BO_WELSH_REVIEW);
     }
 
     private boolean isSolicitorRepresentingRespondent(Map<String, Object> submissionData) {
