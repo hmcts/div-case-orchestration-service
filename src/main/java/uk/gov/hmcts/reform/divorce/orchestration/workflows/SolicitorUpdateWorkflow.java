@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 
 import java.util.Map;
 
@@ -19,14 +19,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final AddMiniPetitionDraftTask addMiniPetitionDraftTask;
-    private final CaseFormatterAddDocuments caseFormatterAddDocuments;
+    private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     @Autowired
     public SolicitorUpdateWorkflow(
             AddMiniPetitionDraftTask addMiniPetitionDraftTask,
-            CaseFormatterAddDocuments caseFormatterAddDocuments) {
+            AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask) {
         this.addMiniPetitionDraftTask = addMiniPetitionDraftTask;
-        this.caseFormatterAddDocuments = caseFormatterAddDocuments;
+        this.addNewDocumentsToCaseDataTask = addNewDocumentsToCaseDataTask;
     }
 
     public Map<String, Object> run(
@@ -36,7 +36,7 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
         return this.execute(
                 new Task[]{
                     addMiniPetitionDraftTask,
-                    caseFormatterAddDocuments
+                    addNewDocumentsToCaseDataTask
                 }, caseDetails.getCaseData(),
                 ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
                 ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails)

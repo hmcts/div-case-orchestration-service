@@ -2,9 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DocumentLink;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -20,17 +18,18 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_LINK;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getObjectMapperInstance;
 
-@RunWith(MockitoJUnitRunner.class)
 public class PopulateDocLinkTest {
 
-    @InjectMocks
     private PopulateDocLink populateDocLink;
 
     private TaskContext taskContext;
 
     @Before
     public void setup() {
+        populateDocLink = new PopulateDocLink(getObjectMapperInstance());
+
         taskContext = new DefaultTaskContext();
         taskContext.setTransientObject(DOCUMENT_TYPE, DOCUMENT_TYPE_PETITION);
         taskContext.setTransientObject(DOCUMENT_DRAFT_LINK_FIELD, MINI_PETITION_LINK);
@@ -52,9 +51,10 @@ public class PopulateDocLinkTest {
 
         assertThat(result, is(payload));
 
-        Map<String, Object> miniPetitionLink = (Map<String, Object>) result.get(MINI_PETITION_LINK);
-        assertThat(miniPetitionLink.get("document_url"), is("https://localhost:8080/documents/1234"));
-        assertThat(miniPetitionLink.get("document_filename"), is("d8petition1513951627081724.pdf"));
-        assertThat(miniPetitionLink.get("document_binary_url"), is("https://localhost:8080/documents/1234/binary"));
+        DocumentLink miniPetitionLink = (DocumentLink) result.get(MINI_PETITION_LINK);
+        assertThat(miniPetitionLink.getDocumentUrl(), is("https://localhost:8080/documents/1234"));
+        assertThat(miniPetitionLink.getDocumentFilename(), is("d8petition1513951627081724.pdf"));
+        assertThat(miniPetitionLink.getDocumentBinaryUrl(), is("https://localhost:8080/documents/1234/binary"));
     }
+
 }

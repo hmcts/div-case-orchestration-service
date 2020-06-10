@@ -1,17 +1,30 @@
 package uk.gov.hmcts.reform.divorce.orchestration.util;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.util.mapper.CcdMappers;
 import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_OTHER;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 
 @SuppressWarnings("squid:S1118")
@@ -23,6 +36,7 @@ public class CcdUtil {
     private static final String PAYMENT_DATE_PATTERN = "ddMMyyyy";
 
     private final Clock clock;
+    private final ObjectMapper objectMapper;
 
     public String getCurrentDateCcdFormat() {
         return LocalDate.now(clock).format(DateUtils.Formatters.CCD_DATE);
@@ -88,4 +102,45 @@ public class CcdUtil {
     public LocalDateTime getCurrentLocalDateTime() {
         return LocalDateTime.now(clock);
     }
+
+    public Map<String, Object> addNewDocumentsToCaseData(Map<String, Object> existingCaseData, List<GeneratedDocumentInfo> newDocumentsToAdd) {
+        if (existingCaseData == null) {
+            throw new IllegalArgumentException("Existing case data must not be null.");
+        }
+
+        if (CollectionUtils.isNotEmpty(newDocumentsToAdd)) {
+            Set<String> newDocumentsTypes = newDocumentsToAdd.stream()
+                .map(GeneratedDocumentInfo::getDocumentType)
+                .collect(Collectors.toSet());
+
+            List<CollectionMember<Document>> documentsGenerated = Optional.ofNullable(existingCaseData.get(D8DOCUMENTS_GENERATED))
+                .map(i -> objectMapper.convertValue(i, new TypeReference<List<CollectionMember<Document>>>() {
+                }))
+                .orElse(new ArrayList<>());
+
+            List<CollectionMember<Document>> resultDocuments = new ArrayList<>();
+
+            if (CollectionUtils.isNotEmpty(documentsGenerated)) {
+                List<CollectionMember<Document>> existingDocuments = documentsGenerated.stream()
+                    .filter(documentCollectionMember ->
+                        DOCUMENT_TYPE_OTHER.equals(documentCollectionMember.getValue().getDocumentType())
+                            || !newDocumentsTypes.contains(documentCollectionMember.getValue().getDocumentType())
+                    )
+                    .collect(Collectors.toList());
+
+                resultDocuments.addAll(existingDocuments);
+            }
+
+            List<CollectionMember<Document>> newDocuments =
+                newDocumentsToAdd.stream()
+                    .map(CcdMappers::mapDocumentInfoToCcdDocument)
+                    .collect(Collectors.toList());
+            resultDocuments.addAll(newDocuments);
+
+            existingCaseData.put(D8DOCUMENTS_GENERATED, resultDocuments);
+        }
+
+        return existingCaseData;
+    }
+
 }

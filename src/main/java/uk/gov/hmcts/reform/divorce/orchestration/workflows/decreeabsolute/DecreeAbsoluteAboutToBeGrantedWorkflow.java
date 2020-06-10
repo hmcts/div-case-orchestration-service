@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDaGrantedDetailsTask;
 
@@ -34,7 +34,7 @@ public class DecreeAbsoluteAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<
     DocumentGenerationTask documentGenerationTask;
 
     @Autowired
-    CaseFormatterAddDocuments caseFormatterAddDocuments;
+    AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     public Map<String, Object> run(final CcdCallbackRequest ccdCallbackRequest, final String authToken) throws WorkflowException {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
@@ -43,7 +43,7 @@ public class DecreeAbsoluteAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<
             new Task[] {
                 setDaGrantedDetailsTask,
                 documentGenerationTask,
-                caseFormatterAddDocuments
+                addNewDocumentsToCaseDataTask
             },
             caseDetails.getCaseData(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
