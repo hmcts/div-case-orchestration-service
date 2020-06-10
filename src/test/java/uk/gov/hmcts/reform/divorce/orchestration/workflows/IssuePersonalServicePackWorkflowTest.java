@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PersonalServiceValidationTask;
 
@@ -45,7 +45,7 @@ public class IssuePersonalServicePackWorkflowTest {
     DocumentGenerationTask documentGenerationTask;
 
     @Mock
-    CaseFormatterAddDocuments caseFormatterAddDocuments;
+    AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     @InjectMocks
     IssuePersonalServicePackWorkflow issuePersonalServicePackWorkflow;
@@ -78,7 +78,7 @@ public class IssuePersonalServicePackWorkflowTest {
         //when
         when(personalServiceValidationTask.execute(context, caseData)).thenReturn(caseData);
         when(documentGenerationTask.execute(context, caseData)).thenReturn(caseData);
-        when(caseFormatterAddDocuments.execute(context, caseData)).thenReturn(caseData);
+        when(addNewDocumentsToCaseDataTask.execute(context, caseData)).thenReturn(caseData);
         Map<String, Object> response = issuePersonalServicePackWorkflow.run(request, TEST_TOKEN);
 
         //then
@@ -86,10 +86,10 @@ public class IssuePersonalServicePackWorkflowTest {
         InOrder inOrder = inOrder(
                 personalServiceValidationTask,
                 documentGenerationTask,
-                caseFormatterAddDocuments
+            addNewDocumentsToCaseDataTask
         );
         inOrder.verify(personalServiceValidationTask).execute(context, caseData);
         inOrder.verify(documentGenerationTask).execute(context, caseData);
-        inOrder.verify(caseFormatterAddDocuments).execute(context, caseData);
+        inOrder.verify(addNewDocumentsToCaseDataTask).execute(context, caseData);
     }
 }

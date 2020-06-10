@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetFormattedDnCourtDetails;
 
@@ -26,22 +26,22 @@ public class DocumentGenerationWorkflow extends DefaultWorkflow<Map<String, Obje
 
     private final DocumentGenerationTask documentGenerationTask;
 
-    private final CaseFormatterAddDocuments caseFormatterAddDocuments;
+    private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     @Autowired
     public DocumentGenerationWorkflow(final SetFormattedDnCourtDetails setFormattedDnCourtDetails,
                                       final DocumentGenerationTask documentGenerationTask,
-                                      final CaseFormatterAddDocuments caseFormatterAddDocuments) {
+                                      final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask) {
         this.setFormattedDnCourtDetails = setFormattedDnCourtDetails;
         this.documentGenerationTask = documentGenerationTask;
-        this.caseFormatterAddDocuments = caseFormatterAddDocuments;
+        this.addNewDocumentsToCaseDataTask = addNewDocumentsToCaseDataTask;
     }
 
     public Map<String, Object> run(final CcdCallbackRequest ccdCallbackRequest, final String authToken, final String templateId,
                                    final String documentType, final String filename) throws WorkflowException {
 
         return this.execute(
-            new Task[] {setFormattedDnCourtDetails, documentGenerationTask, caseFormatterAddDocuments},
+            new Task[] {setFormattedDnCourtDetails, documentGenerationTask, addNewDocumentsToCaseDataTask},
             ccdCallbackRequest.getCaseDetails().getCaseData(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, ccdCallbackRequest.getCaseDetails()),

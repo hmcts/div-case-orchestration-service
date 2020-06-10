@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DecreeNisiAnswersGeneratorTask;
 
 import java.util.ArrayList;
@@ -21,13 +21,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class DNSubmittedWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final DecreeNisiAnswersGeneratorTask decreeNisiAnswersGenerator;
-    private final CaseFormatterAddDocuments caseFormatterAddDocuments;
+    private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     @Autowired
     public DNSubmittedWorkflow(DecreeNisiAnswersGeneratorTask decreeNisiAnswersGenerator,
-                               CaseFormatterAddDocuments caseFormatterAddDocuments) {
+                               AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask) {
         this.decreeNisiAnswersGenerator = decreeNisiAnswersGenerator;
-        this.caseFormatterAddDocuments = caseFormatterAddDocuments;
+        this.addNewDocumentsToCaseDataTask = addNewDocumentsToCaseDataTask;
     }
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest,
@@ -36,7 +36,7 @@ public class DNSubmittedWorkflow extends DefaultWorkflow<Map<String, Object>> {
         final List<Task> tasks = new ArrayList<>();
 
         tasks.add(decreeNisiAnswersGenerator);
-        tasks.add(caseFormatterAddDocuments);
+        tasks.add(addNewDocumentsToCaseDataTask);
 
         Task[] taskArr = new Task[tasks.size()];
 

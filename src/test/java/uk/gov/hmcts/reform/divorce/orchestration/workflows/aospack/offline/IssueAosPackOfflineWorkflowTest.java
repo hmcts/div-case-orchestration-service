@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorcePar
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MarkJourneyAsOffline;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
@@ -53,8 +53,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.Div
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.BULK_PRINT_LETTER_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.DOCUMENT_TYPES_TO_PRINT;
-import static uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline.IssueAosPackOfflineWorkflow.AOS_PACK_OFFLINE_CO_RESPONDENT_LETTER_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline.IssueAosPackOfflineWorkflow.AOS_PACK_OFFLINE_RESPONDENT_LETTER_TYPE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IssueAosPackOfflineWorkflowTest {
@@ -104,7 +102,7 @@ public class IssueAosPackOfflineWorkflowTest {
     private MultipleDocumentGenerationTask documentsGenerationTask;
 
     @Mock
-    private CaseFormatterAddDocuments caseFormatterAddDocuments;
+    private AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     @Mock
     private FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
@@ -132,7 +130,7 @@ public class IssueAosPackOfflineWorkflowTest {
         Map<String, Object> payload = new HashMap<>();
         payload.put("testKey", "testValue");
         when(documentsGenerationTask.execute(any(), any())).thenReturn(singletonMap("returnedKey1", "returnedValue1"));
-        when(caseFormatterAddDocuments.execute(any(), any())).thenReturn(singletonMap("returnedKey2", "returnedValue2"));
+        when(addNewDocumentsToCaseDataTask.execute(any(), any())).thenReturn(singletonMap("returnedKey2", "returnedValue2"));
         when(fetchPrintDocsFromDmStore.execute(any(), any())).thenReturn(singletonMap("returnedKey3", "returnedValue3"));
         when(bulkPrinterTask.execute(any(), any())).thenReturn(singletonMap("returnedKey4", "returnedValue4"));
         when(markJourneyAsOffline.execute(any(), any())).thenReturn(singletonMap("returnedKey5", "returnedValue5"));
@@ -301,7 +299,7 @@ public class IssueAosPackOfflineWorkflowTest {
     }
 
     private void verifyTasksAreCalledInOrder() {
-        verify(caseFormatterAddDocuments).execute(any(), argThat(allOf(
+        verify(addNewDocumentsToCaseDataTask).execute(any(), argThat(allOf(
             Matchers.<String, Object>hasEntry("returnedKey1", "returnedValue1")
         )));
 

@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.time.LocalDate;
@@ -30,7 +31,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_COSTS_ENDCLAIM_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_COSTS_OPTIONS_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED_OLD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
@@ -96,16 +96,12 @@ public class CaseDataUtils {
             .orElse(null);
     }
 
-    public static Map<String, Object> getFieldAsStringObjectMap(Map<String, ? extends Object> caseData, String fieldName) {
+    public static Map<String, Object> getFieldAsStringObjectMap(Map<String, ?> caseData, String fieldName) {
         return (Map<String, Object>) caseData.get(fieldName);
     }
 
     public static Map<String, Object> createCaseLinkField(String fieldName, String linkId) {
         return ImmutableMap.of(fieldName, ImmutableMap.of(CASE_REFERENCE_FIELD, linkId));
-    }
-
-    public static Map<String, Object> getElementFromCollection(Map<String, ? extends Object> collectionEntry) {
-        return getFieldAsStringObjectMap(collectionEntry, VALUE_KEY);
     }
 
     public static boolean isPetitionerClaimingCosts(Map<String, Object> caseData) {
@@ -125,16 +121,24 @@ public class CaseDataUtils {
     }
 
     public static Map<String, Object> removeDocumentByDocumentType(Map<String, Object> caseData, String documentType) {
-        List<Map<String, Map<String, Object>>> listWithoutNewDocument = Optional.ofNullable(caseData.get(D8DOCUMENTS_GENERATED))
-            .map(i -> (List<Map<String, Map<String, Object>>>) i)
+        List<?> listWithoutNewDocument = Optional.ofNullable(caseData.get(D8DOCUMENTS_GENERATED))
+            .map(i -> (List<?>) i)
             .orElse(new ArrayList<>())
             .stream()
-            .filter(documentCollectionMember -> !documentType.equals(getElementFromCollection(documentCollectionMember).get(DOCUMENT_TYPE_JSON_KEY)))
+            .filter(item -> {
+                CollectionMember<Document> document = objectMapper.convertValue(item, new TypeReference<CollectionMember<Document>>() {});
+                return !documentType.equals(document.getValue().getDocumentType());
+            })
             .collect(Collectors.toList());
 
         Map<String, Object> newCaseData = new HashMap<>(caseData);
         newCaseData.replace(D8DOCUMENTS_GENERATED, listWithoutNewDocument);
+
         return newCaseData;
+    }
+
+    public static Map<String, Object> getElementFromCollection(Map<String, ?> collectionEntry) {
+        return getFieldAsStringObjectMap(collectionEntry, VALUE_KEY);
     }
 
 }

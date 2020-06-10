@@ -33,7 +33,15 @@ public class ObjectMapperTestUtil {
     }
 
     public static <T> T convertObject(Object objectToConvert, TypeReference<T> clazz) {
-        return new ObjectMapper().convertValue(objectToConvert, clazz);
+        return objectMapper.convertValue(objectToConvert, clazz);
+    }
+
+    public static <T> T convertObject(Object objectToConvert, Class<T> clazz) {
+        return objectMapper.convertValue(objectToConvert, clazz);
+    }
+
+    public static ObjectMapper getObjectMapperInstance() {
+        return objectMapper;
     }
 
 }

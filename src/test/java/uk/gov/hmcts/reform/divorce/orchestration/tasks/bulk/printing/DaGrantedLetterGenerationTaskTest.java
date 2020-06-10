@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -18,11 +19,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentG
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,13 +37,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DaGrantedLetterGenerationTask.FileMetadata.DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DaGrantedLetterGenerationTask.FileMetadata.TEMPLATE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskTestHelper.createGeneratedDocument;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -63,14 +66,20 @@ public class DaGrantedLetterGenerationTaskTest {
     @Mock
     private PdfDocumentGenerationService pdfDocumentGenerationService;
 
+    @Mock
+    private CcdUtil ccdUtil;
+
     @InjectMocks
     private DaGrantedLetterGenerationTask daGrantedLetterGenerationTask;
+
+    @Captor
+    private ArgumentCaptor<List<GeneratedDocumentInfo>> newDocumentInfoListCaptor;
 
     private GeneratedDocumentInfo createdDoc;
 
     @Before
     public void setup() {
-        createdDoc = createDocument();
+        createdDoc = createGeneratedDocument("myUrl", "myDocumentType", "myFile.pdf");
         when(ctscContactDetailsDataProviderService.getCtscContactDetails()).thenReturn(CTSC_CONTACT);
         when(pdfDocumentGenerationService.generatePdf(any(DocmosisTemplateVars.class), eq(TEMPLATE_ID), eq(AUTH_TOKEN))).thenReturn(createdDoc);
     }
@@ -79,15 +88,16 @@ public class DaGrantedLetterGenerationTaskTest {
     public void executeShouldPopulateFieldInContext() throws TaskException {
         TaskContext context = prepareTaskContext();
 
-        daGrantedLetterGenerationTask.execute(context, buildCaseDataRespondentNotRepresented());
-
-        Set<GeneratedDocumentInfo> documents = context.getTransientObject(DOCUMENT_COLLECTION);
-        assertThat(documents.size(), is(1));
-        GeneratedDocumentInfo generatedDocumentInfo = documents.stream().findFirst().get();
-        assertThat(generatedDocumentInfo.getDocumentType(), is(DOCUMENT_TYPE));
-        assertThat(generatedDocumentInfo.getFileName(), is(createdDoc.getFileName()));
+        Map<String, Object> caseData = buildCaseDataRespondentNotRepresented();
+        daGrantedLetterGenerationTask.execute(context, caseData);
 
         verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
+        verify(ccdUtil).addNewDocumentsToCaseData(eq(caseData), newDocumentInfoListCaptor.capture());
+        List<GeneratedDocumentInfo> newDocumentInfoList = newDocumentInfoListCaptor.getValue();
+        assertThat(newDocumentInfoList, hasSize(1));
+        GeneratedDocumentInfo generatedDocumentInfo = newDocumentInfoList.get(0);
+        assertThat(generatedDocumentInfo.getDocumentType(), is(DOCUMENT_TYPE));
+        assertThat(generatedDocumentInfo.getFileName(), is(createdDoc.getFileName()));
         verifyPdfDocumentGenerationCallIsCorrect();
     }
 
@@ -95,14 +105,15 @@ public class DaGrantedLetterGenerationTaskTest {
     public void executeShouldPopulateFieldInContextWhenRespondentIsRepresented() throws TaskException {
         TaskContext context = prepareTaskContext();
 
-        daGrantedLetterGenerationTask.execute(context, buildCaseDataRespondentRepresented());
+        Map<String, Object> caseData = buildCaseDataRespondentRepresented();
+        daGrantedLetterGenerationTask.execute(context, caseData);
 
-        Set<GeneratedDocumentInfo> documents = context.getTransientObject(DOCUMENT_COLLECTION);
-        assertThat(documents.size(), is(1));
-        GeneratedDocumentInfo generatedDocumentInfo = documents.stream().findFirst().get();
+        verify(ccdUtil).addNewDocumentsToCaseData(eq(caseData), newDocumentInfoListCaptor.capture());
+        List<GeneratedDocumentInfo> newDocumentInfoList = newDocumentInfoListCaptor.getValue();
+        assertThat(newDocumentInfoList, hasSize(1));
+        GeneratedDocumentInfo generatedDocumentInfo = newDocumentInfoList.get(0);
         assertThat(generatedDocumentInfo.getDocumentType(), is(DOCUMENT_TYPE));
         assertThat(generatedDocumentInfo.getFileName(), is(createdDoc.getFileName()));
-
         verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
         verifyPdfDocumentGenerationCallIsCorrect();
     }
@@ -157,9 +168,4 @@ public class DaGrantedLetterGenerationTaskTest {
         return caseData;
     }
 
-    private GeneratedDocumentInfo createDocument() {
-        return GeneratedDocumentInfo.builder()
-            .fileName("myFile.pdf")
-            .build();
-    }
 }

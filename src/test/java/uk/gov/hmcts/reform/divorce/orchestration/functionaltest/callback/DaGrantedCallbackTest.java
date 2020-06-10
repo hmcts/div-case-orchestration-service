@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.callback;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -28,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -43,9 +41,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.ALL_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -59,6 +54,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.DECREE_ABSOLUTE_GRANTED_LETTER_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_FILENAME;
@@ -75,7 +71,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.DocumentContentFetcherService.Headers.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocument;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
@@ -83,12 +78,8 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
 
     private static final String API_URL = "/handle-post-da-granted";
 
-    private static final String DGS_MOCK_ENDPOINT = "http://localhost:4020/documents/";
-    private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
-    private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
     private static final String SERVICE_AUTH_CONTEXT_PATH = "/lease";
 
-    private static final String DECREE_ABSOLUTE_LETTER_ID = "f1029b24-0a3f-4e74-82df-c7d2c33189e0";
     private static final String DECREE_ABSOLUTE_ID = "7d10126d-0e88-4f0e-b475-628b54a87ca6";
 
     private static final Map<String, Object> BASE_CASE_DATA = ImmutableMap.<String, Object>builder()
@@ -120,7 +111,10 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
 
     @Test
     public void givenOnlineRespondentDetails_ThenOkResponse() throws Exception {
-        Map caseData = ImmutableMap.builder().putAll(BASE_CASE_DATA).put(RESP_IS_USING_DIGITAL_CHANNEL, YES_VALUE).build();
+        Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
+            .putAll(BASE_CASE_DATA)
+            .put(RESP_IS_USING_DIGITAL_CHANNEL, YES_VALUE)
+            .build();
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(BASE_CASE_DATA).build();
         webClient.perform(post(API_URL)
@@ -141,37 +135,25 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
     @Test
     public void givenOfflineRespondentDetails_ThenOkResponse() throws Exception {
         //Given
-        byte[] decreeAbsoluteLetterBytes = new byte[] {1, 2, 3};
-        byte[] decreeAbsoluteBytes = new byte[] {4, 5, 6};
-        stubDMStore("/documents/" + DECREE_ABSOLUTE_LETTER_ID + "/binary", decreeAbsoluteLetterBytes);
-        stubDMStore("/documents/" + DECREE_ABSOLUTE_ID + "/binary", decreeAbsoluteBytes);
-
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
         stubServiceAuthProvider(TEST_SERVICE_AUTH_TOKEN);
 
         //Newly generated document
-        String daGrantedLetterUrl = DGS_MOCK_ENDPOINT + DECREE_ABSOLUTE_LETTER_ID;
-        CollectionMember<Document> daGrantedLetterDocument = createCollectionMemberDocument(daGrantedLetterUrl,
-            DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE,
-            "daLetter.pdf");
-        GeneratedDocumentInfo daGrantedLetter = GeneratedDocumentInfo.builder()
-            .documentType(DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE)
-            .fileName("DA-granted-letter.pdf")
-            .url(daGrantedLetterUrl)
-            .build();
-        stubDocumentGeneratorServerEndpoint(daGrantedLetter);
+        byte[] decreeAbsoluteLetterBytes = new byte[] {1, 2, 3};
+        String daGrantedLetterDocumentId =
+            stubDocumentGeneratorService(DECREE_ABSOLUTE_GRANTED_LETTER_TEMPLATE_ID, DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE);
+        stubDMStore(daGrantedLetterDocumentId, decreeAbsoluteLetterBytes);
 
         //Existing document
-        CollectionMember<Document> daGrantedDocument = createCollectionMemberDocument(DGS_MOCK_ENDPOINT + DECREE_ABSOLUTE_ID,
+        byte[] decreeAbsoluteBytes = new byte[] {4, 5, 6};
+        stubDMStore(DECREE_ABSOLUTE_ID, decreeAbsoluteBytes);
+        CollectionMember<Document> daGrantedDocument = createCollectionMemberDocument(getDocumentStoreTestUrl(DECREE_ABSOLUTE_ID),
             DECREE_ABSOLUTE_DOCUMENT_TYPE,
             DECREE_ABSOLUTE_FILENAME);
         Map<String, Object> caseData = new ImmutableMap.Builder<String, Object>().putAll(BASE_CASE_DATA)
             .put(RESP_IS_USING_DIGITAL_CHANNEL, NO_VALUE)
             .put(D8DOCUMENTS_GENERATED, asList(daGrantedDocument))
             .build();
-
-        //Mocking CFS returns formatted document
-        mockCfsToRespondWithNewDocument(daGrantedLetter, asList(daGrantedDocument, daGrantedLetterDocument));
 
         //When
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(BASE_CASE_DATA).build();
@@ -201,7 +183,10 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         doThrow(new NotificationClientException("This has failed."))
             .when(mockEmailService).sendEmailAndReturnExceptionIfFails(anyString(), anyString(), anyMap(), anyString());
 
-        Map caseData = ImmutableMap.builder().putAll(BASE_CASE_DATA).put(RESP_IS_USING_DIGITAL_CHANNEL, YES_VALUE).build();
+        Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
+            .putAll(BASE_CASE_DATA)
+            .put(RESP_IS_USING_DIGITAL_CHANNEL, YES_VALUE)
+            .build();
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
@@ -237,48 +222,11 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
             .andExpect(status().isBadRequest());
     }
 
-    private void stubDocumentGeneratorServerEndpoint(GeneratedDocumentInfo response) {
-        documentGeneratorServiceServer.stubFor(WireMock.post(GENERATE_DOCUMENT_CONTEXT_PATH)
-            .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
-            .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withStatus(HttpStatus.OK.value())
-                .withBody(convertObjectToJsonString(response))));
-    }
-
-    private void stubDMStore(String binaryUrl, byte[] fileBytes) {
-        documentStore.stubFor(WireMock.get(binaryUrl)
-            .withHeader(SERVICE_AUTHORIZATION, new EqualToPattern("Bearer " + TEST_SERVICE_AUTH_TOKEN))
-            .withHeader("user-roles", new EqualToPattern("caseworker-divorce"))
-            .willReturn(aResponse()
-                .withStatus(HttpStatus.OK.value())
-                .withHeader(CONTENT_TYPE, ALL_VALUE)
-                .withBody(fileBytes)));
-    }
-
     private void stubServiceAuthProvider(String response) {
         serviceAuthProviderServer.stubFor(WireMock.post(SERVICE_AUTH_CONTEXT_PATH)
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withBody(response)));
-    }
-
-    private void mockCfsToRespondWithNewDocument(GeneratedDocumentInfo newDocumentInfo, List<CollectionMember<Document>> listOfDocumentsToReturn) {
-        Map<String, Object> cfsMockResponse = new ImmutableMap.Builder<String, Object>().putAll(BASE_CASE_DATA)
-            .put(RESP_IS_USING_DIGITAL_CHANNEL, NO_VALUE)
-            .put(D8DOCUMENTS_GENERATED, listOfDocumentsToReturn)
-            .build();
-        stubFormatterServerEndpoint(newDocumentInfo, cfsMockResponse);
-    }
-
-    private void stubFormatterServerEndpoint(GeneratedDocumentInfo generatedDocumentInfo,
-                                             Map<String, Object> response) {
-        formatterServiceServer.stubFor(WireMock.post(ADD_DOCUMENTS_CONTEXT_PATH)
-            .withRequestBody(containing(convertObjectToJsonString(generatedDocumentInfo)))
-            .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withStatus(HttpStatus.OK.value())
-                .withBody(convertObjectToJsonString(response))));
     }
 
 }

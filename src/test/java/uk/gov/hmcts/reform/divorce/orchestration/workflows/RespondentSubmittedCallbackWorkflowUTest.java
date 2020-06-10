@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.TestConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentAnswersGenerator;
 
 import java.util.HashMap;
@@ -25,7 +25,7 @@ public class RespondentSubmittedCallbackWorkflowUTest {
     @Mock
     private RespondentAnswersGenerator respondentAnswersGenerator;
     @Mock
-    private CaseFormatterAddDocuments caseFormatterAddDocuments;
+    private AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     @InjectMocks
     private RespondentSubmittedCallbackWorkflow classToTest;
@@ -41,7 +41,7 @@ public class RespondentSubmittedCallbackWorkflowUTest {
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
         when(respondentAnswersGenerator.execute(any(), any())).thenReturn(caseDetails.getCaseData());
-        when(caseFormatterAddDocuments.execute(any(), any())).thenReturn(caseDetails.getCaseData());
+        when(addNewDocumentsToCaseDataTask.execute(any(), any())).thenReturn(caseDetails.getCaseData());
 
         Map<String, Object> response = classToTest.run(ccdCallbackRequest, TestConstants.TEST_TOKEN);
         assertEquals(caseDetails.getCaseData(), response);
