@@ -9,7 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmail;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCostOrderGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CostOrderLetterGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerGenericUpdateNotificationEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentGenericUpdateNotificationEmail;
 
@@ -32,8 +32,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_BOTH;
@@ -56,7 +54,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
     private SendCoRespondentGenericUpdateNotificationEmail sendCoRespondentGenericUpdateNotificationEmail;
 
     @Mock
-    private SendCostOrderGenerationTask sendCostOrderGenerationTask;
+    private CostOrderLetterGenerationTask costOrderLetterGenerationTask;
 
     @InjectMocks
     private SendDnPronouncedNotificationWorkflow sendDnPronouncedNotificationWorkflow;
@@ -198,7 +196,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
         verify(sendPetitionerGenericUpdateNotificationEmail, never()).execute(any(TaskContext.class), eq(caseData));
         verify(sendRespondentGenericUpdateNotificationEmail, never()).execute(any(TaskContext.class), eq(caseData));
         verify(sendCoRespondentGenericUpdateNotificationEmail, never()).execute(any(TaskContext.class), eq(caseData));
-        verify(sendCostOrderGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
+        verify(costOrderLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
     }
 
     @Test
@@ -206,7 +204,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
         Map<String, Object> caseData = buildCoRespondentNotDigitalAndCostsClaimGrantedCaseData();
         CaseDetails caseDetails = buildCaseDetails(caseData);
 
-        when(sendCostOrderGenerationTask.execute(notNull(), eq(caseData))).thenReturn(caseData);
+        when(costOrderLetterGenerationTask.execute(notNull(), eq(caseData))).thenReturn(caseData);
 
         Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(caseDetails);
         assertThat(returnedPayload, is(equalTo(caseData)));
@@ -214,7 +212,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
         verify(sendPetitionerGenericUpdateNotificationEmail, never()).execute(any(TaskContext.class), eq(caseData));
         verify(sendRespondentGenericUpdateNotificationEmail, never()).execute(any(TaskContext.class), eq(caseData));
         verify(sendCoRespondentGenericUpdateNotificationEmail, never()).execute(any(TaskContext.class), eq(caseData));
-        verify(sendCostOrderGenerationTask, times(1)).execute(any(TaskContext.class), eq(caseData));
+        verify(costOrderLetterGenerationTask, times(1)).execute(any(TaskContext.class), eq(caseData));
     }
 
 

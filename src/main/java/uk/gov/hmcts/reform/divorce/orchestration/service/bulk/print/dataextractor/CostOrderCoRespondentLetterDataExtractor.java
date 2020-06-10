@@ -20,10 +20,6 @@ public class CostOrderCoRespondentLetterDataExtractor {
         public static final String CO_RESPONDENT_LAST_NAME = OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME;
     }
 
-    public static String getLetterDate() {
-        return LocalDate.now().toString();
-    }
-
     public static String getCoRespondentFullName(Map<String, Object> caseData) {
         return buildFullName(caseData, CaseDataKeys.CO_RESPONDENT_FIRST_NAME, CaseDataKeys.CO_RESPONDENT_LAST_NAME);
     }
