@@ -30,9 +30,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COST_ORDER_COVER_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COST_ORDER_OFFLINE_PACK_CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_COE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_BOTH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_COSTS_CCD_FIELD;
@@ -82,7 +79,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
     private Task<Map<String, Object>>[] getTasks(Map<String, Object> caseData) {
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
-        if(isCoRespContactMethodIsDigital(caseData)) {
+        if (isCoRespContactMethodIsDigital(caseData)) {
             tasks.add(sendPetitionerGenericUpdateNotificationEmailTask);
             tasks.add(sendRespondentGenericUpdateNotificationEmailTask);
 
@@ -90,12 +87,12 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
                 tasks.add(sendCoRespondentGenericUpdateNotificationEmail);
             }
         } else {
-           if(isPaperUpdateEnabled()) {
-               tasks.add(sendCostOrderGenerationTask);
-               tasks.add(caseFormatterAddDocuments);
-               tasks.add(fetchPrintDocsFromDmStore);
-               tasks.add(bulkPrinterTask);
-           }
+            if (isPaperUpdateEnabled()) {
+                tasks.add(sendCostOrderGenerationTask);
+                tasks.add(caseFormatterAddDocuments);
+                tasks.add(fetchPrintDocsFromDmStore);
+                tasks.add(bulkPrinterTask);
+            }
         }
 
         Task<Map<String, Object>>[] arr = new Task[tasks.size()];
@@ -113,7 +110,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
             || WHO_PAYS_CCD_CODE_FOR_BOTH.equalsIgnoreCase(whoPaysCosts);
     }
 
-    private boolean isPaperUpdateEnabled(){
+    private boolean isPaperUpdateEnabled() {
         return featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE);
     }
 }

@@ -233,7 +233,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
         CaseDetails caseDetails = buildCaseDetails(caseData);
 
         Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(caseDetails, AUTH_TOKEN);
-        assertThat(returnedPayload, is(notNullValue())); //TODO review
+        assertThat(returnedPayload, is(notNullValue()));
 
         verify(sendPetitionerGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(caseData));
         verify(sendRespondentGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(caseData));
