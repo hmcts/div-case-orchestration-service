@@ -36,6 +36,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.BULK_PRINT_LETTER_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.DOCUMENT_TYPES_TO_PRINT;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.removeDocumentByDocumentType;
 
 @Component
 @AllArgsConstructor
@@ -45,6 +46,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
     private final SendPetitionerGenericUpdateNotificationEmailTask sendPetitionerGenericUpdateNotificationEmailTask;
     private final SendRespondentGenericUpdateNotificationEmailTask sendRespondentGenericUpdateNotificationEmailTask;
     private final SendCoRespondentGenericUpdateNotificationEmail sendCoRespondentGenericUpdateNotificationEmail;
+
     private final CostOrderLetterGenerationTask costOrderLetterGenerationTask;
     private final CaseFormatterAddDocuments caseFormatterAddDocuments;
     private final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
@@ -65,13 +67,13 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
             ImmutablePair.of(BULK_PRINT_LETTER_TYPE, COST_ORDER_OFFLINE_PACK_CO_RESPONDENT),
             ImmutablePair.of(DOCUMENT_TYPES_TO_PRINT, getDocumentTypesToPrint())
         );
-        // TODO remove letters from casedata before return
-        return returnCaseData;
+
+        return removeDocumentByDocumentType(returnCaseData, costOrderLetterGenerationTask.getDocumentType());
     }
 
     private List<String> getDocumentTypesToPrint() {
         return asList(
-            COST_ORDER_COVER_LETTER_DOCUMENT_TYPE,
+            CostOrderLetterGenerationTask.FileMetadata.DOCUMENT_TYPE,
             COSTS_ORDER_DOCUMENT_TYPE
         );
     }
