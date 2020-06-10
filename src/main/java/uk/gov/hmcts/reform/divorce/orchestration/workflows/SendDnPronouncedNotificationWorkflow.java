@@ -80,11 +80,11 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         List<Task> tasks = new ArrayList<>();
 
         if(isCoRespContactMethodIsDigital(caseData)) {
-            tasks.add(sendPetitionerGenericUpdateNotificationEmailTask); // TODO: rename, add task suffix
-            tasks.add(sendRespondentGenericUpdateNotificationEmailTask); // TODO: rename, add task suffix
+            tasks.add(sendPetitionerGenericUpdateNotificationEmailTask);
+            tasks.add(sendRespondentGenericUpdateNotificationEmailTask);
 
             if (isCoRespondentLiableForCosts(caseData)) {
-                tasks.add(sendCoRespondentGenericUpdateNotificationEmail); // TODO: rename, add task suffix
+                tasks.add(sendCoRespondentGenericUpdateNotificationEmail);
             }
         } else {
            if(isPaperUpdateEnabled()) {
