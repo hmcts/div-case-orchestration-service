@@ -53,13 +53,11 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
     private final FeatureToggleService featureToggleService;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
-
         String caseId = caseDetails.getCaseId();
-        Map<String, Object> caseData = caseDetails.getCaseData();
 
         Map<String, Object> returnCaseData = this.execute(
-            getTasks(caseData),
-            caseData,
+            getTasks(caseDetails),
+            caseDetails.getCaseData(),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseId),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
@@ -77,8 +75,9 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         );
     }
 
-    private Task<Map<String, Object>>[] getTasks(Map<String, Object> caseData) {
+    private Task<Map<String, Object>>[] getTasks(CaseDetails caseDetails) {
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
+        Map<String, Object> caseData = caseDetails.getCaseData();
 
         if (isCoRespContactMethodIsDigital(caseData)) {
             tasks.add(sendPetitionerGenericUpdateNotificationEmailTask);
@@ -87,12 +86,16 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
             if (isCoRespondentLiableForCosts(caseData)) {
                 tasks.add(sendCoRespondentGenericUpdateNotificationEmail);
             }
+            log.info("For case {} co-respondent uses digital contact", caseDetails.getCaseId());
         } else {
+            log.info("For case {} co-respondent uses traditional letters", caseDetails.getCaseId());
             if (isPaperUpdateEnabled()) {
                 tasks.add(costOrderLetterGenerationTask);
                 tasks.add(caseFormatterAddDocuments);
                 tasks.add(fetchPrintDocsFromDmStore);
                 tasks.add(bulkPrinterTask);
+            } else {
+                log.info("Features.PAPER_UPDATE = off. Nothing was sent to bulk print");
             }
         }
 
