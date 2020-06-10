@@ -157,6 +157,9 @@ public class OrchestrationConstants {
     public static final String AWAITING_ANSWER_AOS_EVENT_ID = "aosSubmittedDefended";
     public static final String COMPLETED_AOS_EVENT_ID = "aosReceivedNoAdConStarted";
     public static final String BO_WELSH_AOS_SUBMITTED_DEFENDED_EVENT_ID = "boWelshAosSubmittedDefended";
+    public static final String BO_WELSH_DN_RECEIVED_EVENT_ID = "boDnReceived";
+    public static final String BO_WELSH_DN_RECEIVED_AOS_COMPLETED_EVENT_ID = "boDnReceivedAosCompleted";
+    public static final String BO_WELSH_SUBMIT_DN_CLARIFICATION_EVENT_ID = "boSubmitDnClarification";
     public static final String BO_WELSH_AOS_RECEIVED_NO_AD_CON_STARTED_EVENT_ID = "boWelshAosReceivedNoAdConStarted";
     public static final String BO_WELSH_AOS_SUBMITTED_UNDEFENDED_EVENT_ID = "boWelshAosSubmittedUndefended";
     public static final String AOS_NOMINATE_SOLICITOR = "aosNominateSol";
@@ -170,6 +173,7 @@ public class OrchestrationConstants {
     public static final String MAKE_CASE_DA_OVERDUE_EVENT_ID = "DecreeAbsoluteOverdue";
     public static final String SOLICITOR_SUBMIT_EVENT = "solicitorStatementOfTruthPaySubmit";
     public static final String BO_WELSH_REVIEW = "boWelshReview";
+    public static final String BO_WELSH_DN_RECEIVED_REVIEW = "boWelshDnReceivedReview";
     public static final String BO_WELSH_GRANT_DN_MAKE_DECISION = "boWelshGrantDnMakeDecision";
 
     // CCD Case States
