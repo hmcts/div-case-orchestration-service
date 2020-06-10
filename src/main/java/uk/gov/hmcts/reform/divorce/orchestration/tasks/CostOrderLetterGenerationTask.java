@@ -91,13 +91,15 @@ public class CostOrderLetterGenerationTask extends BasePayloadSpecificDocumentGe
 
     // TODO re-home these or find already existing functionality
     private String getHearingDate(Map<String, Object> caseData) throws TaskException {
-        return returnFormattedDate( caseData, DATETIME_OF_HEARING_CCD_FIELD);
+        return returnFormattedDate(caseData, DATETIME_OF_HEARING_CCD_FIELD);
     }
+
     private String getLetterDate() {
         return DateUtils.formatDateWithCustomerFacingFormat(LocalDate.now().toString());
     }
+
     private String returnFormattedDate(Map<String, Object> caseData, String dateProperty)
         throws TaskException {
-            return DateUtils.formatDateWithCustomerFacingFormat(getMandatoryPropertyValueAsString(caseData, dateProperty));
+        return DateUtils.formatDateWithCustomerFacingFormat(getMandatoryPropertyValueAsString(caseData, dateProperty));
     }
 }

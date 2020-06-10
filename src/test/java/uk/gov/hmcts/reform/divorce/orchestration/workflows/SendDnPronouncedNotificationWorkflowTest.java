@@ -44,6 +44,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_TYPE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_TEMPLATE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
@@ -247,6 +248,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
 
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
         when(costOrderLetterGenerationTask.execute(notNull(), eq(caseData))).thenReturn(caseData);
+        when(costOrderLetterGenerationTask.getDocumentType()).thenReturn(COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE);
         when(caseFormatterAddDocuments.execute(notNull(), eq(caseData))).thenReturn(caseData);
         when(fetchPrintDocsFromDmStore.execute(notNull(), eq(caseData))).thenReturn(caseData);
         when(bulkPrinterTask.execute(notNull(), eq(caseData))).thenReturn(caseData);
@@ -272,6 +274,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
 
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
         when(costOrderLetterGenerationTask.execute(notNull(), eq(caseData))).thenReturn(caseData);
+        when(costOrderLetterGenerationTask.getDocumentType()).thenReturn(COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE);
         when(caseFormatterAddDocuments.execute(notNull(), eq(caseData))).thenReturn(caseData);
         when(fetchPrintDocsFromDmStore.execute(notNull(), eq(caseData))).thenReturn(caseData);
         when(bulkPrinterTask.execute(notNull(), eq(caseData))).thenReturn(caseData);
@@ -291,6 +294,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
         CaseDetails caseDetails = buildCaseDetails(caseData);
 
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(false);
+        when(costOrderLetterGenerationTask.getDocumentType()).thenReturn(COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE);
 
         Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(caseDetails, AUTH_TOKEN);
         assertThat(returnedPayload, is(notNullValue()));

@@ -101,7 +101,7 @@ public class CostOrderLetterGenerationTaskTest {
     }
 
     @Test
-    @Ignore
+    @Ignore // TODO this is just not a good practice, but in process of separating second letter, test will pass somewhere else
     public void executeShouldPopulateFieldInContextWhenCoRespondentIsRepresented() throws TaskException {
         TaskContext context = prepareTaskContext();
 
@@ -147,7 +147,7 @@ public class CostOrderLetterGenerationTaskTest {
     }
 
     private Map<String, Object> buildCaseDataCoRespondentNotRepresented() {
-       return buildCaseData(false);
+        return buildCaseData(false);
     }
 
     private Map<String, Object> buildCaseData(boolean isCoRespondentRepresented) {
