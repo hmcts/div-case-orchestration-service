@@ -44,7 +44,7 @@ public class SendCostOrderGenerationTask extends BasePayloadSpecificDocumentGene
 
     @Override
     protected DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        return BasicCoverLetter.builder()
+        return BasicCoverLetter.builder() //TODO verify no references to DA Granted, this is DN Pronounced letter
             .caseReference(getCaseId(context))
             .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
             .addressee(getAddresseeRespondentOrSolicitorIfRepresented(caseData))

@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmail;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCostOrderGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerGenericUpdateNotificationEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentGenericUpdateNotificationEmail;
 
@@ -32,17 +33,20 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
     private final SendPetitionerGenericUpdateNotificationEmail sendPetitionerGenericUpdateNotificationEmail;
     private final SendRespondentGenericUpdateNotificationEmail sendRespondentGenericUpdateNotificationEmail;
     private final SendCoRespondentGenericUpdateNotificationEmail sendCoRespondentGenericUpdateNotificationEmail;
+    private final SendCostOrderGenerationTask sendCostOrderGenerationTask;
 
     public Map<String, Object> run(CaseDetails caseDetails) throws WorkflowException {
 
         String caseId = caseDetails.getCaseId();
         Map<String, Object> caseData = caseDetails.getCaseData();
 
-        return this.execute(
+        Map<String, Object> caseDataToReturn = this.execute(
             getTasks(caseData),
             caseData,
             ImmutablePair.of(CASE_ID_JSON_KEY, caseId)
         );
+
+        return caseDataToReturn;
     }
 
     private Task[] getTasks(Map<String, Object> caseData) {
@@ -57,16 +61,17 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
             }
         } else {
             // TODO make sure feature toggle is in play
+            tasks.add(sendCostOrderGenerationTask);
         }
 
         return tasks.toArray(new Task[0]);
     }
 
-    private boolean isCoRespContactMethodIsDigital(Map<String, Object> caseData) {
+    private boolean isCoRespContactMethodIsDigital(Map<String, Object> caseData) { //TODO maybe move to PartyRepresentedChecker so can be tested?
         return YES_VALUE.equalsIgnoreCase(String.valueOf(caseData.get(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL)));
     }
 
-    private boolean isCoRespondentLiableForCosts(Map<String, Object> caseData) {
+    private boolean isCoRespondentLiableForCosts(Map<String, Object> caseData) { //TODO maybe move to PartyRepresentedChecker so can be tested?
         String whoPaysCosts = String.valueOf(caseData.get(WHO_PAYS_COSTS_CCD_FIELD));
 
         return WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT.equalsIgnoreCase(whoPaysCosts)
