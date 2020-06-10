@@ -7,9 +7,11 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCostOrderGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerGenericUpdateNotificationEmail;
@@ -61,6 +63,9 @@ public class SendDnPronouncedNotificationWorkflowTest {
 
     @Mock
     private SendCostOrderGenerationTask sendCostOrderGenerationTask;
+
+    @Mock
+    private FeatureToggleService featureToggleService;
 
     @InjectMocks
     private SendDnPronouncedNotificationWorkflow sendDnPronouncedNotificationWorkflow;
@@ -210,7 +215,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
         verify(sendPetitionerGenericUpdateNotificationEmail, never()).execute(any(TaskContext.class), eq(caseData));
         verify(sendRespondentGenericUpdateNotificationEmail, never()).execute(any(TaskContext.class), eq(caseData));
         verify(sendCoRespondentGenericUpdateNotificationEmail, never()).execute(any(TaskContext.class), eq(caseData));
-//        verify(sendCostOrderGenerationTask, never()).execute(any(TaskContext.class), eq(caseData)); //TODO reiview
+        // TODO review verify(sendCostOrderGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
     }
 
     @Test
@@ -227,6 +232,34 @@ public class SendDnPronouncedNotificationWorkflowTest {
         verify(sendRespondentGenericUpdateNotificationEmail, never()).execute(any(TaskContext.class), eq(caseData));
         verify(sendCoRespondentGenericUpdateNotificationEmail, never()).execute(any(TaskContext.class), eq(caseData));
         verify(sendCostOrderGenerationTask, times(1)).execute(any(TaskContext.class), eq(caseData));
+    }
+
+    @Test
+    public void givenCoRespondentIsNotDigitalAndCostsClaimIsGranted_thenNoBulkPrintTasksAreCalled_whenFeatureToggleIsOn() throws Exception {
+        Map<String, Object> caseData = buildCoRespondentNotDigitalAndCostsClaimIsGrantedCaseData();
+        CaseDetails caseDetails = buildCaseDetails(caseData);
+
+        when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
+        when(sendCostOrderGenerationTask.execute(notNull(), eq(caseData))).thenReturn(caseData);
+
+        Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(caseDetails);
+        assertEquals(returnedPayload, caseData);
+
+        verify(sendCostOrderGenerationTask, times(1)).execute(any(TaskContext.class), eq(caseData));
+    }
+
+    @Test
+    public void givenCoRespondentIsNotDigitalAndCostsClaimIsGranted_thenNoBulkPrintTasksAreCalled_whenFeatureToggleIsOff() throws Exception {
+        Map<String, Object> caseData = buildCoRespondentNotDigitalAndCostsClaimIsGrantedCaseData();
+        CaseDetails caseDetails = buildCaseDetails(caseData);
+
+        when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(false);
+        when(sendCostOrderGenerationTask.execute(notNull(), eq(caseData))).thenReturn(caseData);
+
+        Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(caseDetails);
+        assertThat(returnedPayload, is(notNullValue()));
+
+        verify(sendCostOrderGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
     }
 
 

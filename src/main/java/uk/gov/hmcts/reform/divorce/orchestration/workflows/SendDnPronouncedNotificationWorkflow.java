@@ -4,11 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCostOrderGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerGenericUpdateNotificationEmail;
@@ -34,6 +36,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
     private final SendRespondentGenericUpdateNotificationEmail sendRespondentGenericUpdateNotificationEmail;
     private final SendCoRespondentGenericUpdateNotificationEmail sendCoRespondentGenericUpdateNotificationEmail;
     private final SendCostOrderGenerationTask sendCostOrderGenerationTask;
+    private final FeatureToggleService featureToggleService;
 
     public Map<String, Object> run(CaseDetails caseDetails) throws WorkflowException {
 
@@ -60,8 +63,9 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
                 tasks.add(sendCoRespondentGenericUpdateNotificationEmail); // TODO: rename, add task suffix
             }
         } else {
-            // TODO make sure feature toggle is in play
-            tasks.add(sendCostOrderGenerationTask);
+           if(isPaperUpdateEnabled()) {
+               tasks.add(sendCostOrderGenerationTask);
+           }
         }
 
         return tasks.toArray(new Task[0]);
@@ -76,5 +80,9 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
 
         return WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT.equalsIgnoreCase(whoPaysCosts)
             || WHO_PAYS_CCD_CODE_FOR_BOTH.equalsIgnoreCase(whoPaysCosts);
+    }
+
+    private boolean isPaperUpdateEnabled(){
+        return featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE);
     }
 }
