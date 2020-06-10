@@ -11,9 +11,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CostOrderLetterGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmail;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCostOrderGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
@@ -45,7 +45,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
     private final SendPetitionerGenericUpdateNotificationEmailTask sendPetitionerGenericUpdateNotificationEmailTask;
     private final SendRespondentGenericUpdateNotificationEmailTask sendRespondentGenericUpdateNotificationEmailTask;
     private final SendCoRespondentGenericUpdateNotificationEmail sendCoRespondentGenericUpdateNotificationEmail;
-    private final SendCostOrderGenerationTask sendCostOrderGenerationTask;
+    private final CostOrderLetterGenerationTask costOrderLetterGenerationTask;
     private final CaseFormatterAddDocuments caseFormatterAddDocuments;
     private final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
     private final BulkPrinterTask bulkPrinterTask;
@@ -88,7 +88,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
             }
         } else {
             if (isPaperUpdateEnabled()) {
-                tasks.add(sendCostOrderGenerationTask);
+                tasks.add(costOrderLetterGenerationTask);
                 tasks.add(caseFormatterAddDocuments);
                 tasks.add(fetchPrintDocsFromDmStore);
                 tasks.add(bulkPrinterTask);

@@ -55,7 +55,6 @@ public class OrchestrationConstants {
     public static final String CO_RESPONDENT_SOLICITOR_NAME = "CoRespondentSolicitorName";
     public static final String CO_RESPONDENT_SOLICITOR_EMAIL = "CoRespondentSolicitorEmail";
     public static final String CO_RESPONDENT_SOLICITOR_ADDRESS = "DerivedCoRespondentSolicitorAddr";
-    public static final String COST_ORDER_COVER_LETTER_FOR_CO_RESPONDENT_TEMPLATE_ID = "FL-DIV-LET-ENG-00358.docx";
     public static final String COST_ORDER_COVER_LETTER_DOCUMENT_TYPE = "costOrderLetter";
     public static final String CCD_CASE_DATA_FIELD = "case_data";
     public static final String CCD_CASE_ID = "id";

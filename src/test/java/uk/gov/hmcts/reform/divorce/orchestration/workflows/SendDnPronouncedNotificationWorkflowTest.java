@@ -14,9 +14,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CostOrderLetterGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmail;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCostOrderGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
@@ -69,7 +69,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
     private SendCoRespondentGenericUpdateNotificationEmail sendCoRespondentGenericUpdateNotificationEmail;
 
     @Mock
-    private SendCostOrderGenerationTask sendCostOrderGenerationTask;
+    private CostOrderLetterGenerationTask costOrderLetterGenerationTask;
 
     @Mock
     private CaseFormatterAddDocuments caseFormatterAddDocuments;
@@ -238,7 +238,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
         verify(sendPetitionerGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(caseData));
         verify(sendRespondentGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(caseData));
         verify(sendCoRespondentGenericUpdateNotificationEmail, never()).execute(any(TaskContext.class), eq(caseData));
-        verify(sendCostOrderGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
+        verify(costOrderLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
     }
 
     @Test
@@ -246,7 +246,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
         Map<String, Object> caseData = buildCoRespondentNotDigitalAndCostsClaimIsGrantedCaseData();
 
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
-        when(sendCostOrderGenerationTask.execute(notNull(), eq(caseData))).thenReturn(caseData);
+        when(costOrderLetterGenerationTask.execute(notNull(), eq(caseData))).thenReturn(caseData);
         when(caseFormatterAddDocuments.execute(notNull(), eq(caseData))).thenReturn(caseData);
         when(fetchPrintDocsFromDmStore.execute(notNull(), eq(caseData))).thenReturn(caseData);
         when(bulkPrinterTask.execute(notNull(), eq(caseData))).thenReturn(caseData);
@@ -259,7 +259,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
         verify(sendRespondentGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(caseData));
         verify(sendCoRespondentGenericUpdateNotificationEmail, never()).execute(any(TaskContext.class), eq(caseData));
 
-        verify(sendCostOrderGenerationTask, times(1)).execute(any(TaskContext.class), eq(caseData));
+        verify(costOrderLetterGenerationTask, times(1)).execute(any(TaskContext.class), eq(caseData));
         verify(caseFormatterAddDocuments, times(1)).execute(any(TaskContext.class), eq(caseData));
         verify(fetchPrintDocsFromDmStore, times(1)).execute(any(TaskContext.class), eq(caseData));
         verify(bulkPrinterTask, times(1)).execute(any(TaskContext.class), eq(caseData));
@@ -271,7 +271,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
         CaseDetails caseDetails = buildCaseDetails(caseData);
 
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
-        when(sendCostOrderGenerationTask.execute(notNull(), eq(caseData))).thenReturn(caseData);
+        when(costOrderLetterGenerationTask.execute(notNull(), eq(caseData))).thenReturn(caseData);
         when(caseFormatterAddDocuments.execute(notNull(), eq(caseData))).thenReturn(caseData);
         when(fetchPrintDocsFromDmStore.execute(notNull(), eq(caseData))).thenReturn(caseData);
         when(bulkPrinterTask.execute(notNull(), eq(caseData))).thenReturn(caseData);
@@ -279,7 +279,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
         Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(caseDetails, AUTH_TOKEN);
         assertEquals(returnedPayload, caseData);
 
-        verify(sendCostOrderGenerationTask, times(1)).execute(any(TaskContext.class), eq(caseData));
+        verify(costOrderLetterGenerationTask, times(1)).execute(any(TaskContext.class), eq(caseData));
         verify(caseFormatterAddDocuments, times(1)).execute(any(TaskContext.class), eq(caseData));
         verify(fetchPrintDocsFromDmStore, times(1)).execute(any(TaskContext.class), eq(caseData));
         verify(bulkPrinterTask, times(1)).execute(any(TaskContext.class), eq(caseData));
@@ -295,7 +295,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
         Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(caseDetails, AUTH_TOKEN);
         assertThat(returnedPayload, is(notNullValue()));
 
-        verify(sendCostOrderGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
+        verify(costOrderLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
         verify(caseFormatterAddDocuments, never()).execute(any(TaskContext.class), eq(caseData));
         verify(fetchPrintDocsFromDmStore, never()).execute(any(TaskContext.class), eq(caseData));
         verify(bulkPrinterTask, never()).execute(any(TaskContext.class), eq(caseData));

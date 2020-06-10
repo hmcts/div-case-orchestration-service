@@ -116,9 +116,11 @@ public class CostOrderLetterGenerationTaskTest {
     }
 
     private void verifyPdfDocumentGenerationCallIsCorrect() {
-        final ArgumentCaptor<CoRespondentCoverLetter> costOrderCoRespondentLetterArgumentCaptor = ArgumentCaptor.forClass(CoRespondentCoverLetter.class);
+        final ArgumentCaptor<CoRespondentCoverLetter> costOrderCoRespondentLetterArgumentCaptor =
+            ArgumentCaptor.forClass(CoRespondentCoverLetter.class);
         verify(pdfDocumentGenerationService, times(1))
-            .generatePdf(costOrderCoRespondentLetterArgumentCaptor.capture(), eq(CostOrderLetterGenerationTask.FileMetadata.TEMPLATE_ID), eq(AUTH_TOKEN));
+            .generatePdf(costOrderCoRespondentLetterArgumentCaptor.capture(), eq(CostOrderLetterGenerationTask.FileMetadata.TEMPLATE_ID),
+                eq(AUTH_TOKEN));
 
         final CoRespondentCoverLetter coRespondentCoverLetter = costOrderCoRespondentLetterArgumentCaptor.getValue();
         assertThat(coRespondentCoverLetter.getPetitionerFullName(), is(PETITIONERS_FIRST_NAME + " " + PETITIONERS_LAST_NAME));
