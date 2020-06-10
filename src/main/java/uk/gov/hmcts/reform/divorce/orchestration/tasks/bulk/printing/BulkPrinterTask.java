@@ -102,6 +102,7 @@ public class BulkPrinterTask implements Task<Map<String, Object>> {
     private List<GeneratedDocumentInfo> withoutBytes(List<GeneratedDocumentInfo> docs) {
         return docs.stream()
             .map(doc -> GeneratedDocumentInfo.builder()
+                .url(doc.getUrl())
                 .documentType(doc.getDocumentType())
                 .fileName(doc.getFileName())
                 .createdOn(doc.getCreatedOn())
