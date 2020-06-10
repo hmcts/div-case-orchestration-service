@@ -26,6 +26,7 @@ import static java.util.Arrays.asList;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COST_ORDER_COVER_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COST_ORDER_OFFLINE_PACK_CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
@@ -74,7 +75,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
     private List<String> getDocumentTypesToPrint() {
         return asList(
             COST_ORDER_COVER_LETTER_DOCUMENT_TYPE,
-            DOCUMENT_TYPE_COE
+            COSTS_ORDER_DOCUMENT_TYPE
         );
     }
 
