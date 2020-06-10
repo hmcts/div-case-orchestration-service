@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.bsp.common.model.document.Addressee;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.BasicCoverLetter;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CoRespondentCoverLetter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -43,13 +44,16 @@ public class CostOrderLetterGenerationTask extends BasePayloadSpecificDocumentGe
 
     @Override
     protected DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        return BasicCoverLetter.builder() //TODO verify no references to DA Granted, this is DN Pronounced letter
+        return CoRespondentCoverLetter.builder()
             .caseReference(getCaseId(context))
             .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
+            // you have this method ready in DIV-6339, talk to Victor
+            // see: https://github.com/hmcts/div-case-orchestration-service/pull/827/files#diff-8857f3693c309259561a21f0ccba7d34R96
             .addressee(getAddresseeRespondentOrSolicitorIfRepresented(caseData))
             .letterDate(LocalDate.now().toString())
             .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
             .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
+            .coRespondentFullName(FullNamesDataExtractor.getCoRespondentFullName(caseData))
             .build();
     }
 
@@ -69,6 +73,7 @@ public class CostOrderLetterGenerationTask extends BasePayloadSpecificDocumentGe
         );
     }
 
+    // you have this method ready in DIV-6339, talk to Victor
     private Addressee getAddresseeRespondentOrSolicitorIfRepresented(Map<String, Object> caseData) {
         if (isRespondentRepresented(caseData)) {
             return AddresseeDataExtractor.getRespondentSolicitor(caseData);

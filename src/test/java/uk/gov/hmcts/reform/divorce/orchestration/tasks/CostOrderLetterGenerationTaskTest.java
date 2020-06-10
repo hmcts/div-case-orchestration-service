@@ -43,7 +43,6 @@ import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomer
 @RunWith(MockitoJUnitRunner.class)
 public class CostOrderLetterGenerationTaskTest {
 
-
     private static final String PETITIONERS_FIRST_NAME = "Anna";
     private static final String PETITIONERS_LAST_NAME = "Nowak";
     private static final String RESPONDENTS_FIRST_NAME = "John";
@@ -54,7 +53,6 @@ public class CostOrderLetterGenerationTaskTest {
     private static final String CASE_ID = "It's mandatory field in context";
     private static final String LETTER_DATE_FROM_CCD = LocalDate.now().toString();
     private static final String LETTER_DATE_EXPECTED = formatDateWithCustomerFacingFormat(LocalDate.now());
-
 
     private static final CtscContactDetails CTSC_CONTACT = CtscContactDetails.builder().build();
 
