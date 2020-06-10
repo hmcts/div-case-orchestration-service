@@ -20,6 +20,7 @@ public interface CaseFormatterClient {
     @ApiOperation("Add documents to case")
     @PostMapping(value = "/caseformatter/version/1/add-documents",
         headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE)
+    @Deprecated
     Map<String, Object> addDocuments(
         @RequestBody DocumentUpdateRequest documentUpdateRequest
     );
@@ -66,7 +67,7 @@ public interface CaseFormatterClient {
     @PostMapping(value = "/caseformatter/version/1/to-dn-submit-format",
         headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE)
     Map<String, Object> transformToDnCaseFormat(
-            @RequestBody Map<String, Object> divorceSession
+        @RequestBody Map<String, Object> divorceSession
     );
 
     @ApiOperation("Transform data to DA Submit Format")

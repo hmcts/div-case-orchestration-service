@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetClaimCostsFrom;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
 
@@ -36,7 +36,7 @@ public class SolicitorCreateWorkflowTest {
     AddMiniPetitionDraftTask addMiniPetitionDraftTask;
 
     @Mock
-    CaseFormatterAddDocuments caseFormatterAddDocuments;
+    AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     @Mock
     SetSolicitorCourtDetailsTask setSolicitorCourtDetailsTask;
@@ -62,11 +62,11 @@ public class SolicitorCreateWorkflowTest {
 
         assertEquals(payload, solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN));
 
-        InOrder inOrder = inOrder(setSolicitorCourtDetailsTask, addMiniPetitionDraftTask, caseFormatterAddDocuments);
+        InOrder inOrder = inOrder(setSolicitorCourtDetailsTask, addMiniPetitionDraftTask, addNewDocumentsToCaseDataTask);
 
         inOrder.verify(setSolicitorCourtDetailsTask).execute(context, payload);
         inOrder.verify(addMiniPetitionDraftTask).execute(context, payload);
-        inOrder.verify(caseFormatterAddDocuments).execute(context, payload);
+        inOrder.verify(addNewDocumentsToCaseDataTask).execute(context, payload);
     }
 
     @Test
@@ -86,11 +86,11 @@ public class SolicitorCreateWorkflowTest {
 
         assertEquals(Collections.emptyMap(), solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN));
 
-        InOrder inOrder = inOrder(setClaimCostsFrom, setSolicitorCourtDetailsTask, addMiniPetitionDraftTask, caseFormatterAddDocuments);
+        InOrder inOrder = inOrder(setClaimCostsFrom, setSolicitorCourtDetailsTask, addMiniPetitionDraftTask, addNewDocumentsToCaseDataTask);
 
         inOrder.verify(setClaimCostsFrom).execute(context, payload);
         inOrder.verify(setSolicitorCourtDetailsTask).execute(context, payload);
         inOrder.verify(addMiniPetitionDraftTask).execute(context, payload);
-        inOrder.verify(caseFormatterAddDocuments).execute(context, payload);
+        inOrder.verify(addNewDocumentsToCaseDataTask).execute(context, payload);
     }
 }

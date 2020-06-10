@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentLetterGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetPetitionIssueFee;
@@ -43,7 +43,7 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
     private final CoRespondentPinGenerator coRespondentPinGenerator;
     private final RespondentLetterGenerator respondentLetterGenerator;
     private final CoRespondentLetterGenerator coRespondentLetterGenerator;
-    private final CaseFormatterAddDocuments caseFormatterAddDocuments;
+    private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
     private final GetPetitionIssueFee getPetitionIssueFee;
     private final ResetRespondentLinkingFields resetRespondentLinkingFields;
     private final ResetCoRespondentLinkingFields resetCoRespondentLinkingFields;
@@ -75,7 +75,7 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
             }
         }
 
-        tasks.add(caseFormatterAddDocuments);
+        tasks.add(addNewDocumentsToCaseDataTask);
         tasks.add(resetRespondentLinkingFields);
         tasks.add(resetCoRespondentLinkingFields);
 

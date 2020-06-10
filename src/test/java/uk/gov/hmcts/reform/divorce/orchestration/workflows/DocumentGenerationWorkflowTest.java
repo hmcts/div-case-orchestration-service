@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetFormattedDnCourtDetails;
 
@@ -41,7 +41,7 @@ public class DocumentGenerationWorkflowTest {
     private DocumentGenerationTask documentGenerationTask;
 
     @Mock
-    private CaseFormatterAddDocuments caseFormatterAddDocuments;
+    private AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     @InjectMocks
     private DocumentGenerationWorkflow documentGenerationWorkflow;
@@ -67,16 +67,16 @@ public class DocumentGenerationWorkflowTest {
 
         when(setFormattedDnCourtDetails.execute(context, payload)).thenReturn(payload);
         when(documentGenerationTask.execute(context, payload)).thenReturn(payload);
-        when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
+        when(addNewDocumentsToCaseDataTask.execute(context, payload)).thenReturn(payload);
 
         final Map<String, Object> result = documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c");
 
         assertThat(result, is(payload));
 
-        final InOrder inOrder = inOrder(setFormattedDnCourtDetails, documentGenerationTask, caseFormatterAddDocuments);
+        final InOrder inOrder = inOrder(setFormattedDnCourtDetails, documentGenerationTask, addNewDocumentsToCaseDataTask);
 
         inOrder.verify(setFormattedDnCourtDetails).execute(context, payload);
         inOrder.verify(documentGenerationTask).execute(context, payload);
-        inOrder.verify(caseFormatterAddDocuments).execute(context, payload);
+        inOrder.verify(addNewDocumentsToCaseDataTask).execute(context, payload);
     }
 }

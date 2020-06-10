@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentLetterGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetPetitionIssueFee;
@@ -67,7 +67,7 @@ public class IssueEventWorkflowTest {
     private CoRespondentPinGenerator coRespondentPinGenerator;
 
     @Mock
-    private CaseFormatterAddDocuments caseFormatterAddDocuments;
+    private AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     @Mock
     private GetPetitionIssueFee getPetitionIssueFee;
@@ -125,7 +125,7 @@ public class IssueEventWorkflowTest {
         when(getPetitionIssueFee.execute(context, payload)).thenReturn(payload);
         when(coRespondentPinGenerator.execute(context, payload)).thenReturn(payload);
         when(coRespondentLetterGenerator.execute(context, payload)).thenReturn(payload);
-        when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
+        when(addNewDocumentsToCaseDataTask.execute(context, payload)).thenReturn(payload);
         when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
         when(resetCoRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
         when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(true);
@@ -147,7 +147,7 @@ public class IssueEventWorkflowTest {
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
-        when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
+        when(addNewDocumentsToCaseDataTask.execute(context, payload)).thenReturn(payload);
         when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
         when(resetCoRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
         when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(false);
@@ -173,7 +173,7 @@ public class IssueEventWorkflowTest {
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
-        when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
+        when(addNewDocumentsToCaseDataTask.execute(context, payload)).thenReturn(payload);
         when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
         when(resetCoRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
         when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(false);
@@ -195,7 +195,7 @@ public class IssueEventWorkflowTest {
         when(validateCaseDataTask.execute(context, payload)).thenReturn(payload);
         when(setIssueDate.execute(context, payload)).thenReturn(payload);
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
-        when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
+        when(addNewDocumentsToCaseDataTask.execute(context, payload)).thenReturn(payload);
         when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
 
         //When
@@ -217,7 +217,7 @@ public class IssueEventWorkflowTest {
         when(validateCaseDataTask.execute(context, payload)).thenReturn(payload);
         when(setIssueDate.execute(context, payload)).thenReturn(payload);
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
-        when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
+        when(addNewDocumentsToCaseDataTask.execute(context, payload)).thenReturn(payload);
         when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
 
         //When

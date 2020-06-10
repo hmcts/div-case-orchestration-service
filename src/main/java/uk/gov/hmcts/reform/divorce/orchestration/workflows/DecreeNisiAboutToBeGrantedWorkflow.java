@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddDecreeNisiDecisionDateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddDnOutcomeFlagFieldTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DecreeNisiRefusalDocumentGeneratorTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DefineWhoPaysCostsOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetAmendPetitionFeeTask;
@@ -45,7 +45,7 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
 
     private final DecreeNisiRefusalDocumentGeneratorTask decreeNisiRefusalDocumentGeneratorTask;
 
-    private final CaseFormatterAddDocuments caseFormatterAddDocuments;
+    private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     private final GetAmendPetitionFeeTask getAmendPetitionFeeTask;
 
@@ -70,7 +70,7 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
         } else if (featureToggleService.isFeatureEnabled(DN_REFUSAL) && !isDNApproval(caseData)) {
             tasksToRun.add(getAmendPetitionFeeTask);
             tasksToRun.add(decreeNisiRefusalDocumentGeneratorTask);
-            tasksToRun.add(caseFormatterAddDocuments);
+            tasksToRun.add(addNewDocumentsToCaseDataTask);
             tasksToRun.add(populateDocLink);
         }
 

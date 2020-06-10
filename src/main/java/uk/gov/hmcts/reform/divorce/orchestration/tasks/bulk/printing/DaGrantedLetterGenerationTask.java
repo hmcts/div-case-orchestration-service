@@ -14,10 +14,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextracto
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.DECREE_ABSOLUTE_GRANTED_LETTER_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
@@ -27,17 +28,14 @@ public class DaGrantedLetterGenerationTask extends BasePayloadSpecificDocumentGe
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FileMetadata {
-        public static final String TEMPLATE_ID = "FL-DIV-GOR-ENG-00355.docx";
+        public static final String TEMPLATE_ID = DECREE_ABSOLUTE_GRANTED_LETTER_TEMPLATE_ID;
         public static final String DOCUMENT_TYPE = DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE;
     }
 
-    private final PdfDocumentGenerationService pdfDocumentGenerationService;
-
-    public DaGrantedLetterGenerationTask(
-        CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
-        PdfDocumentGenerationService pdfDocumentGenerationService) {
-        super(ctscContactDetailsDataProviderService);
-        this.pdfDocumentGenerationService = pdfDocumentGenerationService;
+    public DaGrantedLetterGenerationTask(CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
+                                         PdfDocumentGenerationService pdfDocumentGenerationService,
+                                         CcdUtil ccdUtil) {
+        super(ctscContactDetailsDataProviderService, pdfDocumentGenerationService, ccdUtil);
     }
 
     @Override
@@ -60,12 +58,8 @@ public class DaGrantedLetterGenerationTask extends BasePayloadSpecificDocumentGe
     }
 
     @Override
-    protected GeneratedDocumentInfo generatePdf(TaskContext context, DocmosisTemplateVars templateModel) {
-        return pdfDocumentGenerationService.generatePdf(
-            templateModel,
-            FileMetadata.TEMPLATE_ID,
-            context.getTransientObject(AUTH_TOKEN_JSON_KEY)
-        );
+    public String getTemplateId() {
+        return FileMetadata.TEMPLATE_ID;
     }
 
     @Override
