@@ -432,7 +432,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     @Override
     public Map<String, Object> sendDnPronouncedNotification(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        return sendDnPronouncedNotificationWorkflow.run(ccdCallbackRequest);
+        return sendDnPronouncedNotificationWorkflow.run(ccdCallbackRequest.getCaseDetails());
     }
 
     @Override

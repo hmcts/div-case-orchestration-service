@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
@@ -32,10 +33,10 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
     private final SendRespondentGenericUpdateNotificationEmail sendRespondentGenericUpdateNotificationEmail;
     private final SendCoRespondentGenericUpdateNotificationEmail sendCoRespondentGenericUpdateNotificationEmail;
 
-    public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        // TODO make sure feature toggle is in play
-        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
-        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+    public Map<String, Object> run(CaseDetails caseDetails) throws WorkflowException {
+
+        String caseId = caseDetails.getCaseId();
+        Map<String, Object> caseData = caseDetails.getCaseData();
 
         return this.execute(
             getTasks(caseData),
@@ -47,15 +48,15 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
     private Task[] getTasks(Map<String, Object> caseData) {
         List<Task> tasks = new ArrayList<>();
 
-        // Scenario 3 : isCoRespContactMethodIsDigital = no + isCostsClaimGranted = no
-
         if(isCoRespContactMethodIsDigital(caseData)) {
-            tasks.add(sendPetitionerGenericUpdateNotificationEmail);
-            tasks.add(sendRespondentGenericUpdateNotificationEmail);
+            tasks.add(sendPetitionerGenericUpdateNotificationEmail); // TODO: rename, add task suffix
+            tasks.add(sendRespondentGenericUpdateNotificationEmail); // TODO: rename, add task suffix
 
             if (isCoRespondentLiableForCosts(caseData)) {
-                tasks.add(sendCoRespondentGenericUpdateNotificationEmail);
+                tasks.add(sendCoRespondentGenericUpdateNotificationEmail); // TODO: rename, add task suffix
             }
+        } else {
+            // TODO make sure feature toggle is in play
         }
 
         return tasks.toArray(new Task[0]);
