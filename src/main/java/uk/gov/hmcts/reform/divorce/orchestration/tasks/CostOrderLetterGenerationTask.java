@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.bsp.common.model.document.Addressee;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.BasicCoverLetter;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CoRespondentCoverLetter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -14,14 +14,18 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextracto
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BasePayloadSpecificDocumentGenerationTask;
+import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
 import java.time.LocalDate;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getCoRespondentFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentRepresented;
 
 @Component
 public class CostOrderLetterGenerationTask extends BasePayloadSpecificDocumentGenerationTask {
@@ -43,11 +47,13 @@ public class CostOrderLetterGenerationTask extends BasePayloadSpecificDocumentGe
 
     @Override
     protected DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        return BasicCoverLetter.builder() //TODO verify no references to DA Granted, this is DN Pronounced letter
+        return CoRespondentCoverLetter.builder()
             .caseReference(getCaseId(context))
             .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
-            .addressee(getAddresseeRespondentOrSolicitorIfRepresented(caseData))
-            .letterDate(LocalDate.now().toString())
+            .addressee(getAddresseeCoRespondentOrSolicitorIfRepresented(caseData))
+            .coRespondentFullName(getCoRespondentFullName(caseData))
+            .letterDate(getLetterDate())
+            .hearingDate(getHearingDate(caseData))
             .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
             .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
             .build();
@@ -69,16 +75,29 @@ public class CostOrderLetterGenerationTask extends BasePayloadSpecificDocumentGe
         );
     }
 
-    private Addressee getAddresseeRespondentOrSolicitorIfRepresented(Map<String, Object> caseData) {
-        if (isRespondentRepresented(caseData)) {
-            return AddresseeDataExtractor.getRespondentSolicitor(caseData);
+    private Addressee getAddresseeCoRespondentOrSolicitorIfRepresented(Map<String, Object> caseData) {
+        if (isCoRespondentRepresented(caseData)) {
+            return AddresseeDataExtractor.getCoRespondentSolicitor(caseData);
         }
 
-        return AddresseeDataExtractor.getRespondent(caseData);
+        return AddresseeDataExtractor.getCoRespondent(caseData);
     }
 
     @Override
     public String getDocumentType() {
         return FileMetadata.DOCUMENT_TYPE;
+    }
+
+
+    // TODO re-home these or find already existing functionality
+    private String getHearingDate(Map<String, Object> caseData) throws TaskException {
+        return returnFormattedDate( caseData, DATETIME_OF_HEARING_CCD_FIELD);
+    }
+    private String getLetterDate() {
+        return DateUtils.formatDateWithCustomerFacingFormat(LocalDate.now().toString());
+    }
+    private String returnFormattedDate(Map<String, Object> caseData, String dateProperty)
+        throws TaskException {
+            return DateUtils.formatDateWithCustomerFacingFormat(getMandatoryPropertyValueAsString(caseData, dateProperty));
     }
 }

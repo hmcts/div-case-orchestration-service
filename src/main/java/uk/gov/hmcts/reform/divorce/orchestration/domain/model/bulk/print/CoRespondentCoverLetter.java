@@ -18,12 +18,15 @@ public class CoRespondentCoverLetter extends DocmosisTemplateVars {
     private Addressee addressee;
     @JsonProperty("CoRespondentFullName")
     private String coRespondentFullName;
+    @JsonProperty("hearingDate")
+    private String hearingDate;
 
     @Builder
     public CoRespondentCoverLetter(
         CtscContactDetails ctscContactDetails,
         String caseReference,
         String letterDate,
+        String hearingDate,
         String petitionerFullName,
         String respondentFullName,
         Addressee addressee,
@@ -31,5 +34,6 @@ public class CoRespondentCoverLetter extends DocmosisTemplateVars {
         super(ctscContactDetails, caseReference, letterDate, petitionerFullName, respondentFullName);
         this.addressee = addressee;
         this.coRespondentFullName = coRespondentFullName;
+        this.hearingDate = hearingDate;
     }
 }

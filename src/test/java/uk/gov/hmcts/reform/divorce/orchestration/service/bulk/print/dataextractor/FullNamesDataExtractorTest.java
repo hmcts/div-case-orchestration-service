@@ -10,6 +10,7 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.CORESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.CORESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.CORESPONDENT_SOLICITOR_NAME;
@@ -24,6 +25,8 @@ public class FullNamesDataExtractorTest {
 
     static final String FIRST_NAME = "John";
     static final String LAST_NAME = "Smith";
+    static final String CO_REP_FIRST_NAME = "Jane";
+    static final String CO_REP_LAST_NAME = "Sam";
 
     @Test
     public void getPetitionerFullNameReturnsValidStringWhenAllFieldsPopulated() {
@@ -185,6 +188,13 @@ public class FullNamesDataExtractorTest {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(CORESPONDENT_FIRST_NAME, firstName);
         caseData.put(CORESPONDENT_LAST_NAME, lastName);
+
+        return caseData;
+    }
+
+    static Map<String, Object> buildCaseDataWithCoRespondentSolicitorNames(String coRespondentSolicitorName) {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(CO_RESPONDENT_SOLICITOR_NAME, coRespondentSolicitorName);
 
         return caseData;
     }
