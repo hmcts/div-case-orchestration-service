@@ -330,6 +330,7 @@ public class OrchestrationConstants {
 
     //Bulk print letter types
     public static final String DA_GRANTED_OFFLINE_PACK_RESPONDENT = "da-granted-offline-pack-respondent";
+    public static final String COST_ORDER_OFFLINE_PACK_CO_RESPONDENT = "co-respondent-offline-pack-respondent";
 
     public static final String DOCUMENT_TYPE_COE = "coe";
     public static final String DOCUMENT_TYPE_OTHER = "other";
