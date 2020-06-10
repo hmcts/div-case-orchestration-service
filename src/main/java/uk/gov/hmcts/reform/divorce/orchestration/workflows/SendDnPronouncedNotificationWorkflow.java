@@ -58,7 +58,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         String caseId = caseDetails.getCaseId();
         Map<String, Object> caseData = caseDetails.getCaseData();
 
-        Map<String, Object> caseDataToReturn = this.execute(
+        Map<String, Object> returnCaseData = this.execute(
             getTasks(caseData),
             caseData,
             ImmutablePair.of(CASE_ID_JSON_KEY, caseId),
@@ -67,8 +67,8 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
             ImmutablePair.of(BULK_PRINT_LETTER_TYPE, COST_ORDER_OFFLINE_PACK_CO_RESPONDENT),
             ImmutablePair.of(DOCUMENT_TYPES_TO_PRINT, getDocumentTypesToPrint())
         );
-
-        return caseDataToReturn;
+        // TODO remove letters from casedata before return
+        return returnCaseData;
     }
 
     private List<String> getDocumentTypesToPrint() {
@@ -78,8 +78,8 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         );
     }
 
-    private Task[] getTasks(Map<String, Object> caseData) {
-        List<Task> tasks = new ArrayList<>();
+    private Task<Map<String, Object>>[] getTasks(Map<String, Object> caseData) {
+        List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
         if(isCoRespContactMethodIsDigital(caseData)) {
             tasks.add(sendPetitionerGenericUpdateNotificationEmailTask);
@@ -97,7 +97,8 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
            }
         }
 
-        return tasks.toArray(new Task[0]);
+        Task<Map<String, Object>>[] arr = new Task[tasks.size()];
+        return tasks.toArray(arr);
     }
 
     private boolean isCoRespContactMethodIsDigital(Map<String, Object> caseData) { //TODO maybe move to PartyRepresentedChecker so can be tested?
