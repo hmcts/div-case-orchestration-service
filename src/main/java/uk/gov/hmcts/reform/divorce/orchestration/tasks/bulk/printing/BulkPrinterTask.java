@@ -53,12 +53,19 @@ public class BulkPrinterTask implements Task<Map<String, Object>> {
         //Make sure every requested document type was found
         if (documentTypesToPrint.size() == documentsToPrint.size()) {
             try {
-                log.info(
-                    "Case ID {}, {} document(s) sent to bulk print: {}",
-                    caseDetails.getCaseId(), documentsToPrint.size(), withoutBytes(documentsToPrint)
+                log.info("Sending {} document(s) to bulk print for case ID {}. Documents are {}",
+                    documentsToPrint.size(),
+                    caseDetails.getCaseId(),
+                    documentsToPrint
                 );
 
                 bulkPrintService.send(caseDetails.getCaseId(), bulkPrintLetterType, documentsToPrint);
+
+                log.info("Sent {} document(s) to bulk print for case ID {}. Documents are {}",
+                    documentsToPrint.size(),
+                    caseDetails.getCaseId(),
+                    documentsToPrint
+                );
             } catch (final Exception e) {
                 context.setTaskFailed(true);
                 log.error("Respondent pack bulk print failed for case {}", caseDetails.getCaseId(), e);
@@ -92,18 +99,6 @@ public class BulkPrinterTask implements Task<Map<String, Object>> {
         context.setTransientObject(DOCUMENT_TYPES_TO_PRINT, originalDocumentTypesToPrint);
 
         return returnedPayload;
-    }
-
-    private List<GeneratedDocumentInfo> withoutBytes(List<GeneratedDocumentInfo> docs) {
-        return docs.stream()
-            .map(doc -> GeneratedDocumentInfo.builder()
-                .url(doc.getUrl())
-                .documentType(doc.getDocumentType())
-                .fileName(doc.getFileName())
-                .createdOn(doc.getCreatedOn())
-                .mimeType(doc.getMimeType())
-                .build())
-            .collect(Collectors.toList());
     }
 
 }
