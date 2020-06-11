@@ -124,7 +124,7 @@ public interface CosApiClient {
 
     @ApiOperation("Handle callback to link a case to a hearing")
     @PostMapping(value = "/case-linked-for-hearing")
-    Map<String, Object> caseLinkedForHearing(
+    ResponseEntity<CcdCallbackResponse> caseLinkedForHearing(
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestBody Map<String, Object> caseDataContent
     );

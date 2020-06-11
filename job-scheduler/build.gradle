@@ -23,7 +23,7 @@ def versions = [
   flyway            : '5.2.4',
   jacksonDatabind   : '2.10.0',
   lombok            : '1.16.16',
-  postgresql        : '42.2.8',
+  postgresql        : '42.2.14',
   quartz            : '2.3.2',
   reformJavaLogging : '5.0.1'
 ]

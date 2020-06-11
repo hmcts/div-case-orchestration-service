@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerCertificateOfEntitlementNotificationEmailTask;
@@ -68,9 +67,6 @@ public class CaseLinkedForHearingWorkflowTest {
     private CertificateOfEntitlementLetterGenerationTask certificateOfEntitlementLetterGenerationTask;
 
     @Mock
-    private CaseFormatterAddDocuments caseFormatterAddDocuments;
-
-    @Mock
     private FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
 
     @Mock
@@ -103,7 +99,6 @@ public class CaseLinkedForHearingWorkflowTest {
                 .execute(contextCaptor.capture(), eq(casePayload));
 
         verify(certificateOfEntitlementLetterGenerationTask, never()).execute(any(TaskContext.class), eq(casePayload));
-        verify(caseFormatterAddDocuments, never()).execute(any(TaskContext.class), eq(casePayload));
         verify(fetchPrintDocsFromDmStore, never()).execute(any(TaskContext.class), eq(casePayload));
         verify(bulkPrinterTask, never()).execute(any(TaskContext.class), eq(casePayload));
 
@@ -118,7 +113,6 @@ public class CaseLinkedForHearingWorkflowTest {
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
         when(certificateOfEntitlementLetterGenerationTask.getDocumentType()).thenReturn(CERTIFICATE_OF_ENTITLEMENT_LETTER_DOCUMENT_TYPE);
         when(certificateOfEntitlementLetterGenerationTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
-        when(caseFormatterAddDocuments.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
         when(fetchPrintDocsFromDmStore.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
         when(bulkPrinterTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
 
@@ -128,13 +122,11 @@ public class CaseLinkedForHearingWorkflowTest {
 
         InOrder inOrder = inOrder(
             certificateOfEntitlementLetterGenerationTask,
-            caseFormatterAddDocuments,
             fetchPrintDocsFromDmStore,
             bulkPrinterTask
         );
 
         inOrder.verify(certificateOfEntitlementLetterGenerationTask).execute(any(TaskContext.class), eq(casePayload));
-        inOrder.verify(caseFormatterAddDocuments).execute(any(TaskContext.class), eq(casePayload));
         inOrder.verify(fetchPrintDocsFromDmStore).execute(any(TaskContext.class), eq(casePayload));
         inOrder.verify(bulkPrinterTask).execute(any(TaskContext.class), eq(casePayload));
 
@@ -153,7 +145,6 @@ public class CaseLinkedForHearingWorkflowTest {
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
         when(certificateOfEntitlementLetterGenerationTask.getDocumentType()).thenReturn(CERTIFICATE_OF_ENTITLEMENT_LETTER_DOCUMENT_TYPE);
         when(certificateOfEntitlementLetterGenerationTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
-        when(caseFormatterAddDocuments.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
         when(fetchPrintDocsFromDmStore.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
         when(bulkPrinterTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
 
@@ -162,12 +153,10 @@ public class CaseLinkedForHearingWorkflowTest {
         assertThat(returnedCaseData.get(D8DOCUMENTS_GENERATED), Is.is(emptyList()));
         InOrder inOrder = inOrder(
             certificateOfEntitlementLetterGenerationTask,
-            caseFormatterAddDocuments,
             fetchPrintDocsFromDmStore,
             bulkPrinterTask
         );
         inOrder.verify(certificateOfEntitlementLetterGenerationTask).execute(any(TaskContext.class), eq(casePayload));
-        inOrder.verify(caseFormatterAddDocuments).execute(any(TaskContext.class), eq(casePayload));
         inOrder.verify(fetchPrintDocsFromDmStore).execute(any(TaskContext.class), eq(casePayload));
         inOrder.verify(bulkPrinterTask).execute(any(TaskContext.class), eq(casePayload));
 
@@ -188,7 +177,6 @@ public class CaseLinkedForHearingWorkflowTest {
         assertEquals(casePayload, result);
 
         verify(certificateOfEntitlementLetterGenerationTask, never()).execute(any(TaskContext.class), eq(casePayload));
-        verify(caseFormatterAddDocuments, never()).execute(any(TaskContext.class), eq(casePayload));
         verify(fetchPrintDocsFromDmStore, never()).execute(any(TaskContext.class), eq(casePayload));
         verify(bulkPrinterTask, never()).execute(any(TaskContext.class), eq(casePayload));
 

@@ -29,6 +29,8 @@ import java.util.Map;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
+import static java.util.Collections.singletonMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
@@ -46,7 +48,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_DECREE_ABSOLUTE_GRANTED_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INFERRED_GENDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
@@ -54,13 +57,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentConstants.DECREE_ABSOLUTE_GRANTED_LETTER_TEMPLATE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseFieldConstants.COURT_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentConstants.CERTIFICATE_OF_ENTITLEMENT_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentConstants.CERTIFICATE_OF_ENTITLEMENT_FILENAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentConstants.CERTIFICATE_OF_ENTITLEMENT_LETTER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentConstants.CERTIFICATE_OF_ENTITLEMENT_LETTER_TEMPLATE_ID_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
@@ -71,27 +77,35 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CertificateOfEntitlementLetterDataExtractor.CaseDataKeys.HEARING_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocument;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
-public class DaGrantedCallbackTest extends MockedFunctionalTest {
+public class CaseListedForHearingCallbackTest extends MockedFunctionalTest {
 
-    private static final String API_URL = "/handle-post-da-granted";
+    private static final String API_URL = "/case-linked-for-hearing";
 
     private static final String SERVICE_AUTH_CONTEXT_PATH = "/lease";
 
-    private static final String DECREE_ABSOLUTE_ID = "7d10126d-0e88-4f0e-b475-628b54a87ca6";
+    private static final String CERTIFICATE_OF_ENTITLEMENT_ID = "7d10123a-0t88-4e0e-b475-528b54t87ca6";
+
+    private static final List<Map<String, Object>> DATE_TIME_OF_HEARINGS = singletonList(singletonMap("value", ImmutableMap.of(
+        HEARING_DATE, "2020-06-20"
+    )));
 
     private static final Map<String, Object> BASE_CASE_DATA = ImmutableMap.<String, Object>builder()
         .put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME)
         .put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME)
         .put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL)
+        .put(D_8_INFERRED_PETITIONER_GENDER, TEST_INFERRED_GENDER)
         .put(RESP_FIRST_NAME_CCD_FIELD, TEST_RESPONDENT_FIRST_NAME)
         .put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME)
         .put(RESPONDENT_EMAIL_ADDRESS, TEST_RESPONDENT_EMAIL)
         .put(RESPONDENT_DERIVED_CORRESPONDENCE_ADDRESS, "221B Baker Street")
         .put(D_8_CASE_REFERENCE, TEST_CASE_ID)
-        .put(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD, TEST_DECREE_ABSOLUTE_GRANTED_DATE)
+        .put(DATETIME_OF_HEARING_CCD_FIELD, DATE_TIME_OF_HEARINGS)
+        .put(COURT_NAME, TEST_COURT)
+        .put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE)
         .build();
 
     @Captor
@@ -139,20 +153,20 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         stubServiceAuthProvider(TEST_SERVICE_AUTH_TOKEN);
 
         //Newly generated document
-        byte[] decreeAbsoluteLetterBytes = new byte[] {1, 2, 3};
-        String daGrantedLetterDocumentId =
-            stubDocumentGeneratorService(DECREE_ABSOLUTE_GRANTED_LETTER_TEMPLATE_ID, DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE);
-        stubDMStore(daGrantedLetterDocumentId, decreeAbsoluteLetterBytes);
+        byte[] coeLetterBytes = new byte[] {1, 2, 3};
+        String coeLetterDocumentId =
+            stubDocumentGeneratorService(CERTIFICATE_OF_ENTITLEMENT_LETTER_TEMPLATE_ID_RESPONDENT, CERTIFICATE_OF_ENTITLEMENT_LETTER_DOCUMENT_TYPE);
+        stubDMStore(coeLetterDocumentId, coeLetterBytes);
 
         //Existing document
-        byte[] decreeAbsoluteBytes = new byte[] {4, 5, 6};
-        stubDMStore(DECREE_ABSOLUTE_ID, decreeAbsoluteBytes);
-        CollectionMember<Document> daGrantedDocument = createCollectionMemberDocument(getDocumentStoreTestUrl(DECREE_ABSOLUTE_ID),
-            DECREE_ABSOLUTE_DOCUMENT_TYPE,
-            DECREE_ABSOLUTE_FILENAME);
+        byte[] coeDocumentBytes = new byte[] {4, 5, 6};
+        stubDMStore(CERTIFICATE_OF_ENTITLEMENT_ID, coeDocumentBytes);
+        CollectionMember<Document> coeDocument = createCollectionMemberDocument(getDocumentStoreTestUrl(CERTIFICATE_OF_ENTITLEMENT_ID),
+            CERTIFICATE_OF_ENTITLEMENT_DOCUMENT_TYPE,
+            CERTIFICATE_OF_ENTITLEMENT_FILENAME);
         Map<String, Object> caseData = new ImmutableMap.Builder<String, Object>().putAll(BASE_CASE_DATA)
             .put(RESP_IS_USING_DIGITAL_CHANNEL, NO_VALUE)
-            .put(D8DOCUMENTS_GENERATED, asList(daGrantedDocument))
+            .put(D8DOCUMENTS_GENERATED, asList(coeDocument))
             .build();
 
         //When
@@ -173,8 +187,8 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         verify(bulkPrintService).send(eq(TEST_CASE_ID), anyString(), documentsToPrintCaptor.capture());
         List<GeneratedDocumentInfo> documentsSentToBulkPrint = documentsToPrintCaptor.getValue();
         assertThat(documentsSentToBulkPrint, hasSize(2));
-        assertThat(documentsSentToBulkPrint.get(0).getBytes(), is(decreeAbsoluteLetterBytes));
-        assertThat(documentsSentToBulkPrint.get(1).getBytes(), is(decreeAbsoluteBytes));
+        assertThat(documentsSentToBulkPrint.get(0).getBytes(), is(coeLetterBytes));
+        assertThat(documentsSentToBulkPrint.get(1).getBytes(), is(coeDocumentBytes));
         verifyZeroInteractions(mockEmailService);
     }
 

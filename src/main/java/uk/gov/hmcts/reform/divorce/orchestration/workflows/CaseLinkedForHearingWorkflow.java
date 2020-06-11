@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerCertificateOfEntitlementNotificationEmailTask;
@@ -55,9 +54,6 @@ public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Ob
     private CertificateOfEntitlementLetterGenerationTask certificateOfEntitlementLetterGenerationTask;
 
     @Autowired
-    private CaseFormatterAddDocuments caseFormatterAddDocuments;
-
-    @Autowired
     private FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
 
     @Autowired
@@ -100,7 +96,6 @@ public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Ob
         } else {
             if (featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)) {
                 tasks.add(certificateOfEntitlementLetterGenerationTask);
-                tasks.add(caseFormatterAddDocuments);
                 tasks.add(fetchPrintDocsFromDmStore);
                 tasks.add(bulkPrinterTask);
             }

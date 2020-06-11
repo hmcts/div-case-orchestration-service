@@ -13,11 +13,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextracto
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CertificateOfEntitlementLetterDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentConstants.CERTIFICATE_OF_ENTITLEMENT_LETTER_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentConstants.CERTIFICATE_OF_ENTITLEMENT_LETTER_TEMPLATE_ID_RESPONDENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentConstants.CERTIFICATE_OF_ENTITLEMENT_LETTER_TEMPLATE_ID_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.DateUtils.todaysDate;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
@@ -28,18 +30,16 @@ public class CertificateOfEntitlementLetterGenerationTask extends BasePayloadSpe
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FileMetadata {
-        public static final String TEMPLATE_ID_RESPONDENT = "FL-DIV-LET-ENG-00360.docx";
-        public static final String TEMPLATE_ID_SOLICITOR = "FL-DIV-GNO-ENG-00370.docx";
+        public static final String TEMPLATE_ID_RESPONDENT = CERTIFICATE_OF_ENTITLEMENT_LETTER_TEMPLATE_ID_RESPONDENT;
+        public static final String TEMPLATE_ID_SOLICITOR = CERTIFICATE_OF_ENTITLEMENT_LETTER_TEMPLATE_ID_SOLICITOR;
         public static final String DOCUMENT_TYPE = CERTIFICATE_OF_ENTITLEMENT_LETTER_DOCUMENT_TYPE;
     }
 
-    private final PdfDocumentGenerationService pdfDocumentGenerationService;
-
     public CertificateOfEntitlementLetterGenerationTask(
         CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
-        PdfDocumentGenerationService pdfDocumentGenerationService) {
-        super(ctscContactDetailsDataProviderService);
-        this.pdfDocumentGenerationService = pdfDocumentGenerationService;
+        PdfDocumentGenerationService pdfDocumentGenerationService,
+        CcdUtil ccdUtil) {
+        super(ctscContactDetailsDataProviderService, pdfDocumentGenerationService, ccdUtil);
     }
 
     @Override
@@ -75,13 +75,9 @@ public class CertificateOfEntitlementLetterGenerationTask extends BasePayloadSpe
     }
 
     @Override
-    protected GeneratedDocumentInfo generatePdf(TaskContext context, DocmosisTemplateVars templateModel, Map<String, Object> caseData) {
+    public String getTemplateId(Map<String, Object> caseData) {
         String templateId = isRespondentRepresented(caseData) ? FileMetadata.TEMPLATE_ID_SOLICITOR : FileMetadata.TEMPLATE_ID_RESPONDENT;
-        return pdfDocumentGenerationService.generatePdf(
-            templateModel,
-            templateId,
-            context.getTransientObject(AUTH_TOKEN_JSON_KEY)
-        );
+        return templateId;
     }
 
     @Override

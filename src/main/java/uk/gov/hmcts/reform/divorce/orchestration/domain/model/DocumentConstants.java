@@ -36,6 +36,8 @@ public class DocumentConstants {
     public static final String CERTIFICATE_OF_ENTITLEMENT_FILENAME = "certificateOfEntitlement";
 
     public static final String CERTIFICATE_OF_ENTITLEMENT_LETTER_DOCUMENT_TYPE = "coeLetter";
+    public static final String CERTIFICATE_OF_ENTITLEMENT_LETTER_TEMPLATE_ID_RESPONDENT = "FL-DIV-LET-ENG-00360.docx";
+    public static final String CERTIFICATE_OF_ENTITLEMENT_LETTER_TEMPLATE_ID_SOLICITOR = "FL-DIV-GNO-ENG-00370.docx";
 
     //Bulk print letter types
     public static final String CERTIFICATE_OF_ENTITLEMENT_OFFLINE_PACK_RESPONDENT = "certificate-of-entitlement-offline-pack-respondent";

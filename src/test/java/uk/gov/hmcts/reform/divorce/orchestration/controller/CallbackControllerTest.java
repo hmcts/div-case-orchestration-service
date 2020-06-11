@@ -740,7 +740,7 @@ public class CallbackControllerTest {
     }
 
     @Test
-    public void testServiceMethodReturnsErros_IfWorkflowExceptionIsThrown() throws WorkflowException {
+    public void testServiceMethodReturnsError_IfWorkflowExceptionIsThrown() throws WorkflowException {
         when(caseOrchestrationService.handleDaGranted(any(), anyString())).thenThrow(new WorkflowException("This is an error."));
 
         CcdCallbackRequest callbackRequest = CcdCallbackRequest.builder()

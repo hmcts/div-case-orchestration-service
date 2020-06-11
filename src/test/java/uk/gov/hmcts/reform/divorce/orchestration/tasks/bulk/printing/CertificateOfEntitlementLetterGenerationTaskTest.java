@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -19,14 +20,15 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -35,9 +37,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentConstants.CERTIFICATE_OF_ENTITLEMENT_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CertificateOfEntitlementLetterDataExtractor.CaseDataKeys.COURT_NAME;
@@ -97,9 +99,15 @@ public class CertificateOfEntitlementLetterGenerationTaskTest {
     @Mock
     private PdfDocumentGenerationService pdfDocumentGenerationService;
 
+    @Mock
+    private CcdUtil ccdUtil;
+
 
     @InjectMocks
     private CertificateOfEntitlementLetterGenerationTask certificateOfEntitlementLetterGenerationTask;
+
+    @Captor
+    private ArgumentCaptor<List<GeneratedDocumentInfo>> newDocumentInfoListCaptor;
 
     private GeneratedDocumentInfo createdDoc;
 
@@ -126,18 +134,28 @@ public class CertificateOfEntitlementLetterGenerationTaskTest {
 
     }
 
+    @Test
+    public void getDocumentType() {
+        String documentType = certificateOfEntitlementLetterGenerationTask.getDocumentType();
+
+        assertThat(documentType, is(CERTIFICATE_OF_ENTITLEMENT_LETTER_DOCUMENT_TYPE));
+    }
+
     private void executeShouldPopulateFieldInContext(boolean isRespondentRepresented) throws TaskException {
         TaskContext context = prepareTaskContext();
 
-        certificateOfEntitlementLetterGenerationTask.execute(context, buildCaseData(isRespondentRepresented));
+        Map<String, Object> caseData = buildCaseData(isRespondentRepresented);
+        certificateOfEntitlementLetterGenerationTask.execute(context, caseData);
 
-        Set<GeneratedDocumentInfo> documents = context.getTransientObject(DOCUMENT_COLLECTION);
-        assertThat(documents.size(), is(1));
-        GeneratedDocumentInfo generatedDocumentInfo = documents.stream().findFirst().get();
+        verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
+        verify(ccdUtil).addNewDocumentsToCaseData(eq(caseData), newDocumentInfoListCaptor.capture());
+
+        List<GeneratedDocumentInfo> newDocumentInfoList = newDocumentInfoListCaptor.getValue();
+        assertThat(newDocumentInfoList, hasSize(1));
+        GeneratedDocumentInfo generatedDocumentInfo = newDocumentInfoList.get(0);
         assertThat(generatedDocumentInfo.getDocumentType(), is(DOCUMENT_TYPE));
         assertThat(generatedDocumentInfo.getFileName(), is(createdDoc.getFileName()));
 
-        verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
         verifyPdfDocumentGenerationCallIsCorrect(isRespondentRepresented);
     }
 

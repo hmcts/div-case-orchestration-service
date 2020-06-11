@@ -58,7 +58,7 @@ public class DaGrantedLetterGenerationTask extends BasePayloadSpecificDocumentGe
     }
 
     @Override
-    public String getTemplateId() {
+    public String getTemplateId(Map<String, Object> caseData) {
         return FileMetadata.TEMPLATE_ID;
     }
 
