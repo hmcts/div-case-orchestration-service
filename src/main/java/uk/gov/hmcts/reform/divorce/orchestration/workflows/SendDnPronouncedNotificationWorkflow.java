@@ -57,23 +57,24 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
         String caseId = caseDetails.getCaseId();
+        Map<String, Object> caseData = caseDetails.getCaseData();
 
         Map<String, Object> returnCaseData = this.execute(
             getTasks(caseDetails),
-            caseDetails.getCaseData(),
+            caseData,
             ImmutablePair.of(CASE_ID_JSON_KEY, caseId),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
             ImmutablePair.of(BULK_PRINT_LETTER_TYPE, COST_ORDER_OFFLINE_PACK_CO_RESPONDENT),
-            ImmutablePair.of(DOCUMENT_TYPES_TO_PRINT, getDocumentTypesToPrint())
+            ImmutablePair.of(DOCUMENT_TYPES_TO_PRINT, getDocumentTypesToPrint(caseData))
         );
 
         return removeDocumentByDocumentType(returnCaseData, documentToRemove(returnCaseData));
     }
 
-    private List<String> getDocumentTypesToPrint() {
+    private List<String> getDocumentTypesToPrint(Map<String, Object> caseData) {
         return asList(
-            CostOrderLetterGenerationTask.FileMetadata.DOCUMENT_TYPE,
+            documentToRemove(caseData),
             COSTS_ORDER_DOCUMENT_TYPE
         );
     }
@@ -132,4 +133,5 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
             ? costOrderNotificationLetterGenerationTask.getDocumentType()
             : costOrderLetterGenerationTask.getDocumentType();
     }
+
 }
