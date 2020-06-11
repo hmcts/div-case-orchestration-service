@@ -125,18 +125,27 @@ public class CaseDataUtils {
     }
 
     public static Map<String, Object> removeDocumentByDocumentType(Map<String, Object> caseData, String documentType) {
-        List<?> listWithoutNewDocument = Optional.ofNullable(caseData.get(D8DOCUMENTS_GENERATED))
+        List<?> generatedDocuments = Optional.ofNullable(caseData.get(D8DOCUMENTS_GENERATED))
             .map(i -> (List<?>) i)
-            .orElse(new ArrayList<>())
-            .stream()
-            .filter(item -> {
-                CollectionMember<Document> document = objectMapper.convertValue(item, new TypeReference<CollectionMember<Document>>() {});
-                return !documentType.equals(document.getValue().getDocumentType());
-            })
-            .collect(Collectors.toList());
+            .orElse(new ArrayList<>());
 
         Map<String, Object> newCaseData = new HashMap<>(caseData);
-        newCaseData.replace(D8DOCUMENTS_GENERATED, listWithoutNewDocument);
+        if (!generatedDocuments.isEmpty()) {
+            List<?> filteredDocumentsList = generatedDocuments.stream()
+                .filter(item -> {
+                    CollectionMember<Document> document = objectMapper.convertValue(item, new TypeReference<CollectionMember<Document>>() {
+                    });
+                    return !documentType.equals(document.getValue().getDocumentType());
+                })
+                .collect(Collectors.toList());
+
+            if (filteredDocumentsList.isEmpty()) {
+                newCaseData.remove(D8DOCUMENTS_GENERATED);
+            } else {
+                newCaseData.replace(D8DOCUMENTS_GENERATED, filteredDocumentsList);
+            }
+
+        }
 
         return newCaseData;
     }
