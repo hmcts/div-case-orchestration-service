@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmail;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerGenericUpdateNotificationEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentGenericUpdateNotificationEmail;
 
@@ -45,7 +45,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
     private SendRespondentGenericUpdateNotificationEmail sendRespondentGenericUpdateNotificationEmail;
 
     @Mock
-    private SendCoRespondentGenericUpdateNotificationEmail sendCoRespondentGenericUpdateNotificationEmail;
+    private SendCoRespondentGenericUpdateNotificationEmailTask sendCoRespondentGenericUpdateNotificationEmailTask;
 
     @InjectMocks
     private SendDnPronouncedNotificationWorkflow sendDnPronouncedNotificationWorkflow;
@@ -88,7 +88,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
 
         verify(sendPetitionerGenericUpdateNotificationEmail).execute(context, testPayload);
         verify(sendRespondentGenericUpdateNotificationEmail).execute(context, testPayload);
-        verify(sendCoRespondentGenericUpdateNotificationEmail, never()).execute(context, testPayload);
+        verify(sendCoRespondentGenericUpdateNotificationEmailTask, never()).execute(context, testPayload);
     }
 
     @Test
@@ -107,7 +107,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
 
         verify(sendPetitionerGenericUpdateNotificationEmail).execute(context, testPayload);
         verify(sendRespondentGenericUpdateNotificationEmail).execute(context, testPayload);
-        verify(sendCoRespondentGenericUpdateNotificationEmail, never()).execute(context, testPayload);
+        verify(sendCoRespondentGenericUpdateNotificationEmailTask, never()).execute(context, testPayload);
     }
 
     @Test
@@ -121,7 +121,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
         when(sendRespondentGenericUpdateNotificationEmail.execute(notNull(), eq(testPayload)))
                 .thenReturn(testPayload);
 
-        when(sendCoRespondentGenericUpdateNotificationEmail.execute(notNull(), eq(testPayload)))
+        when(sendCoRespondentGenericUpdateNotificationEmailTask.execute(notNull(), eq(testPayload)))
                 .thenReturn(testPayload);
 
         Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(ccdCallbackRequestRequest);
@@ -129,7 +129,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
 
         verify(sendPetitionerGenericUpdateNotificationEmail).execute(context, testPayload);
         verify(sendRespondentGenericUpdateNotificationEmail).execute(context, testPayload);
-        verify(sendCoRespondentGenericUpdateNotificationEmail).execute(context, testPayload);
+        verify(sendCoRespondentGenericUpdateNotificationEmailTask).execute(context, testPayload);
     }
 
     @Test
@@ -143,7 +143,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
         when(sendRespondentGenericUpdateNotificationEmail.execute(notNull(), eq(testPayload)))
                 .thenReturn(testPayload);
 
-        when(sendCoRespondentGenericUpdateNotificationEmail.execute(notNull(), eq(testPayload)))
+        when(sendCoRespondentGenericUpdateNotificationEmailTask.execute(notNull(), eq(testPayload)))
                 .thenReturn(testPayload);
 
         Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(ccdCallbackRequestRequest);
@@ -151,6 +151,6 @@ public class SendDnPronouncedNotificationWorkflowTest {
 
         verify(sendPetitionerGenericUpdateNotificationEmail).execute(context, testPayload);
         verify(sendRespondentGenericUpdateNotificationEmail).execute(context, testPayload);
-        verify(sendCoRespondentGenericUpdateNotificationEmail).execute(context, testPayload);
+        verify(sendCoRespondentGenericUpdateNotificationEmailTask).execute(context, testPayload);
     }
 }

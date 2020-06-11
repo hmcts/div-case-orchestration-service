@@ -25,7 +25,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DA_GRANTED_OFFLINE_PACK_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.BULK_PRINT_LETTER_TYPE;
@@ -62,7 +61,7 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
 
     private List<String> getDocumentTypesToPrint() {
         return asList(
-            DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE,
+            DaGrantedLetterGenerationTask.FileMetadata.DOCUMENT_TYPE,
             DECREE_ABSOLUTE_DOCUMENT_TYPE
         );
     }
@@ -87,5 +86,4 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
     private boolean isRespondentUsingDigitalContact(Map<String, Object> caseData) {
         return YES_VALUE.equalsIgnoreCase(nullToEmpty((String) caseData.get(RESP_IS_USING_DIGITAL_CHANNEL)));
     }
-
 }

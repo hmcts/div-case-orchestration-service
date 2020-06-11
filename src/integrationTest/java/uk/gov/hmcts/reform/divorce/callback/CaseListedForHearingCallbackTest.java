@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.callback;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
+import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.cos.CosApiClient;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 
@@ -21,8 +22,9 @@ public class CaseListedForHearingCallbackTest extends IntegrationTest {
     @SuppressWarnings("unchecked")
     @Test
     public void whenCaseLinkedForHearingIsCalledBack_thenReturnAOSData() {
+        UserDetails citizenUser = createCitizenUser();
         Map<String, Object> aosCase = ResourceLoader.loadJsonToObject(BASE_CASE_RESPONSE, Map.class);
-        Map<String, Object> response = cosApiClient.caseLinkedForHearing(null, aosCase);
+        Map<String, Object> response = cosApiClient.caseLinkedForHearing(citizenUser.getAuthToken(), aosCase);
         assertNotNull(response.get(DATA));
         assertEquals(((Map<String, Object>)aosCase.get(CASE_DETAILS)).get(CASE_DATA), response.get(DATA));
     }
