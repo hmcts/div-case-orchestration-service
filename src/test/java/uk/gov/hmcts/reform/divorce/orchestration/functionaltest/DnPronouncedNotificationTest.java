@@ -21,8 +21,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMemb
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.service.BulkPrintService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderLetterGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderNotificationLetterGenerationTask;
 
 import java.util.List;
 import java.util.Map;
@@ -49,6 +51,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CO_RESPONDENTS_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CO_RESPONDENTS_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CO_RESPONDENT_SOLICITOR_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CO_RESPONDENT_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_D8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_D8_DERIVED_3RD_PARTY_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EXPECTED_DUE_DATE;
@@ -61,12 +65,15 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_SOLICITOR_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_DERIVED_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS;
@@ -83,6 +90,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_BOTH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_RESPONDENT;
@@ -116,6 +124,9 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
 
     @Autowired
     private EmailTemplatesConfig emailTemplatesConfig;
+
+    @MockBean
+    private EmailService mockEmailService;
 
     @Autowired
     private MockMvc webClient;
@@ -263,40 +274,6 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
             .build();
     }
 
-    private Map<String, Object> buildCaseDataForEmailNotifications(Map<String, Object> extraData) {
-        return ImmutableMap.<String, Object>builder()
-            .putAll(extraData)
-            .put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL)
-            .put(D_8_CASE_REFERENCE, TEST_CASE_FAMILY_MAN_ID)
-            .put(RESPONDENT_EMAIL_ADDRESS, TEST_RESPONDENT_EMAIL)
-            .put(CO_RESP_EMAIL_ADDRESS, TEST_USER_EMAIL)
-            .put(D_8_PETITIONER_FIRST_NAME, TEST_FIRST_NAME)
-            .put(D_8_PETITIONER_LAST_NAME, TEST_LAST_NAME)
-            .put(RESP_FIRST_NAME_CCD_FIELD, TEST_FIRST_NAME)
-            .put(RESP_LAST_NAME_CCD_FIELD, TEST_LAST_NAME)
-            .put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME, TEST_FIRST_NAME)
-            .put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME, TEST_LAST_NAME)
-            .put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, YES_VALUE)
-            .build();
-    }
-
-    private Map<String, Object> buildCaseDataForCoRespondentNotRepresented() {
-        return ImmutableMap.<String, Object>builder()
-            .put(D8_DERIVED_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS, TEST_D8_DERIVED_3RD_PARTY_ADDRESS)
-            .put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE)
-            .put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE)
-            .put(CO_RESPONDENT_REPRESENTED, NO_VALUE)
-            .put(D_8_CASE_REFERENCE, TEST_D8_CASE_REFERENCE)
-            .put(DATETIME_OF_HEARING_CCD_FIELD, TEST_EXPECTED_DUE_DATE)
-            .put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME)
-            .put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME)
-            .put(RESPONDENT_FIRST_NAME, TEST_RESPONDENT_FIRST_NAME)
-            .put(RESPONDENT_LAST_NAME, TEST_RESPONDENT_LAST_NAME)
-            .put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME, TEST_CO_RESPONDENTS_FIRST_NAME)
-            .put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME, TEST_CO_RESPONDENTS_LAST_NAME)
-            .build();
-    }
-
     // Offline journeys
     @Test
     public void givenOfflineCoRespondent_CostsClaimGranted_NotRepresented_ThenOkResponse() throws Exception {
@@ -350,11 +327,141 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
         verifyZeroInteractions(emailClient);
     }
 
+    @Test
+    public void givenOfflineCoRespondent_CostsClaimGranted_Represented_ThenOkResponse() throws Exception {
+        //Given
+        when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
+        stubServiceAuthProvider(TEST_SERVICE_AUTH_TOKEN);
+
+        //Newly generated document cover letter
+        byte[] coRespondentCoverLetterBytes = new byte[] {1, 2, 3};
+        String daGrantedLetterDocumentId =
+            stubDocumentGeneratorService(
+                CostOrderNotificationLetterGenerationTask.FileMetadata.TEMPLATE_ID,
+                CostOrderNotificationLetterGenerationTask.FileMetadata.DOCUMENT_TYPE);
+        stubDMStore(daGrantedLetterDocumentId, coRespondentCoverLetterBytes);
+
+        //Existing document
+        byte[] costOrderBytes = new byte[] {4, 5, 6};
+        stubDMStore(COST_ORDER_ID, costOrderBytes);
+        Map<String, Object> coRespCaseData = buildCaseDataForCoRespondentRepresented();
+        CollectionMember<Document> costOrderDocument = createCollectionMemberDocument(getDocumentStoreTestUrl(COST_ORDER_ID),
+            COSTS_ORDER_DOCUMENT_TYPE,
+            COSTS_ORDER_TEMPLATE_ID);
+        Map<String, Object> caseData = new ImmutableMap.Builder<String, Object>()
+            .putAll(coRespCaseData)
+            .put(RESP_IS_USING_DIGITAL_CHANNEL, NO_VALUE)
+            .put(D8DOCUMENTS_GENERATED, asList(costOrderDocument))
+            .build();
+
+        //When
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
+            .data(coRespCaseData)
+            .build();
+        webClient.perform(post(API_URL)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(convertObjectToJsonString(
+                CcdCallbackRequest.builder()
+                    .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build())
+                    .build()
+            ))
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
+
+        //Then
+        verify(bulkPrintService).send(eq(TEST_CASE_ID), anyString(), documentsToPrintCaptor.capture());
+        List<GeneratedDocumentInfo> documentsSentToBulkPrint = documentsToPrintCaptor.getValue();
+        assertThat(documentsSentToBulkPrint, hasSize(2));
+        assertThat(documentsSentToBulkPrint.get(0).getBytes(), is(coRespondentCoverLetterBytes));
+        assertThat(documentsSentToBulkPrint.get(1).getBytes(), is(costOrderBytes));
+        verifyZeroInteractions(emailClient);
+    }
+
+    @Test
+    public void givenBodyIsNull_whenEndpointInvoked_thenReturnBadRequest() throws Exception {
+        webClient.perform(post(API_URL)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void givenAuthHeaderIsNull_whenEndpointInvoked_thenReturnBadRequest() throws Exception {
+        Map<String, Object> baseCaseData = buildCaseDataForEmailNotifications(ImmutableMap.<String, Object>builder().build());
+
+        webClient.perform(post(API_URL)
+            .content(convertObjectToJsonString(
+                CcdCallbackRequest.builder()
+                    .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(baseCaseData).build())
+                    .build()
+            ))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
+    }
+
     private void stubServiceAuthProvider(String response) {
         serviceAuthProviderServer.stubFor(WireMock.post(SERVICE_AUTH_CONTEXT_PATH)
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withBody(response)));
+    }
+
+    private Map<String, Object> buildCaseDataForEmailNotifications(Map<String, Object> extraData) {
+        return ImmutableMap.<String, Object>builder()
+            .putAll(extraData)
+            .put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL)
+            .put(D_8_CASE_REFERENCE, TEST_CASE_FAMILY_MAN_ID)
+            .put(RESPONDENT_EMAIL_ADDRESS, TEST_RESPONDENT_EMAIL)
+            .put(CO_RESP_EMAIL_ADDRESS, TEST_USER_EMAIL)
+            .put(D_8_PETITIONER_FIRST_NAME, TEST_FIRST_NAME)
+            .put(D_8_PETITIONER_LAST_NAME, TEST_LAST_NAME)
+            .put(RESP_FIRST_NAME_CCD_FIELD, TEST_FIRST_NAME)
+            .put(RESP_LAST_NAME_CCD_FIELD, TEST_LAST_NAME)
+            .put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME, TEST_FIRST_NAME)
+            .put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME, TEST_LAST_NAME)
+            .put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, YES_VALUE)
+            .build();
+    }
+
+    private Map<String, Object> buildCaseDataForCoRespondentNotRepresented() {
+        return ImmutableMap.<String, Object>builder()
+            .put(D8_DERIVED_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS, TEST_D8_DERIVED_3RD_PARTY_ADDRESS)
+            .put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE)
+            .put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE)
+            .put(CO_RESPONDENT_REPRESENTED, NO_VALUE)
+            .put(D_8_CASE_REFERENCE, TEST_D8_CASE_REFERENCE)
+            .put(DATETIME_OF_HEARING_CCD_FIELD, TEST_EXPECTED_DUE_DATE)
+            .put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME)
+            .put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME)
+            .put(RESPONDENT_FIRST_NAME, TEST_RESPONDENT_FIRST_NAME)
+            .put(RESPONDENT_LAST_NAME, TEST_RESPONDENT_LAST_NAME)
+            .put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME, TEST_CO_RESPONDENTS_FIRST_NAME)
+            .put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME, TEST_CO_RESPONDENTS_LAST_NAME)
+            .build();
+    }
+
+    private Map<String, Object> buildCaseDataForCoRespondentRepresented() {
+        return ImmutableMap.<String, Object>builder()
+            .put(D8_DERIVED_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS, TEST_D8_DERIVED_3RD_PARTY_ADDRESS)
+            .put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE)
+            .put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE)
+            .put(CO_RESPONDENT_REPRESENTED, YES_VALUE)
+            .put(D_8_CASE_REFERENCE, TEST_D8_CASE_REFERENCE)
+            .put(DATETIME_OF_HEARING_CCD_FIELD, TEST_EXPECTED_DUE_DATE)
+            .put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME)
+            .put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME)
+            .put(RESPONDENT_FIRST_NAME, TEST_RESPONDENT_FIRST_NAME)
+            .put(RESPONDENT_LAST_NAME, TEST_RESPONDENT_LAST_NAME)
+            .put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME, TEST_CO_RESPONDENTS_FIRST_NAME)
+            .put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME, TEST_CO_RESPONDENTS_LAST_NAME)
+            .put(CO_RESPONDENT_SOLICITOR_NAME, TEST_CO_RESPONDENT_SOLICITOR_NAME)
+            .put(SOLICITOR_REFERENCE_JSON_KEY, TEST_SOLICITOR_REFERENCE)
+            .put(CO_RESPONDENT_SOLICITOR_ADDRESS, TEST_CO_RESPONDENT_SOLICITOR_ADDRESS)
+            .build();
     }
 
 }
