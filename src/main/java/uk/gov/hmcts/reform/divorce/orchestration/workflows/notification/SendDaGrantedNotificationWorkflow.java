@@ -61,7 +61,7 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
 
     private List<String> getDocumentTypesToPrint() {
         return asList(
-            DaGrantedLetterGenerationTask.FileMetadata.DOCUMENT_TYPE,
+            daGrantedLetterGenerationTask.getDocumentType(),
             DECREE_ABSOLUTE_DOCUMENT_TYPE
         );
     }

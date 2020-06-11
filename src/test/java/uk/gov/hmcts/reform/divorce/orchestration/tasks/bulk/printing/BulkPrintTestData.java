@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing;
 
 import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
@@ -24,12 +23,6 @@ public class BulkPrintTestData {
 
     public static final CtscContactDetails CTSC_CONTACT = CtscContactDetails.builder().build();
 
-    public static GeneratedDocumentInfo createDocument() {
-        return GeneratedDocumentInfo.builder()
-            .fileName("myFile.pdf")
-            .build();
-    }
-
     public static TaskContext prepareTaskContext() {
         TaskContext context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, CASE_ID);
@@ -37,4 +30,5 @@ public class BulkPrintTestData {
 
         return context;
     }
+
 }

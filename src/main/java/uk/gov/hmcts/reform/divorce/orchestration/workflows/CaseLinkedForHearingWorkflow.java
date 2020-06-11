@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerCoENotificationEmailTask;
@@ -44,7 +43,6 @@ public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Ob
     private final SendCoRespondentGenericUpdateNotificationEmailTask sendCoRespondentGenericUpdateNotificationEmailTask;
 
     private final CoECoRespondentCoverLetterGenerationTask coECoRespondentCoverLetterGenerationTask;
-    private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
     private final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
     private final BulkPrinterTask bulkPrinterTask;
 
@@ -80,7 +78,6 @@ public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Ob
             log.info("For case {} co-respondent uses traditional letters", caseDetails.getCaseId());
             if (featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)) {
                 tasks.add(coECoRespondentCoverLetterGenerationTask);
-                tasks.add(addNewDocumentsToCaseDataTask);
                 tasks.add(fetchPrintDocsFromDmStore);
                 tasks.add(bulkPrinterTask);
             } else {
@@ -93,7 +90,7 @@ public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Ob
 
     private List<String> getDocumentTypesToPrint() {
         return asList(
-            CoECoRespondentCoverLetterGenerationTask.FileMetadata.DOCUMENT_TYPE,
+            coECoRespondentCoverLetterGenerationTask.getDocumentType(),
             DOCUMENT_TYPE_COE
         );
     }
