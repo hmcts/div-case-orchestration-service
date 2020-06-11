@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetClaimCostsFrom;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
 
@@ -28,18 +28,18 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
 
     private final SetSolicitorCourtDetailsTask setSolicitorCourtDetailsTask;
     private final AddMiniPetitionDraftTask addMiniPetitionDraftTask;
-    private final CaseFormatterAddDocuments caseFormatterAddDocuments;
+    private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
     private final SetClaimCostsFrom setClaimCostsFrom;
 
     @Autowired
     public SolicitorCreateWorkflow(
         SetSolicitorCourtDetailsTask setSolicitorCourtDetailsTask,
         AddMiniPetitionDraftTask addMiniPetitionDraftTask,
-        CaseFormatterAddDocuments caseFormatterAddDocuments,
+        AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask,
         SetClaimCostsFrom setClaimCostsFrom) {
         this.setSolicitorCourtDetailsTask = setSolicitorCourtDetailsTask;
         this.addMiniPetitionDraftTask = addMiniPetitionDraftTask;
-        this.caseFormatterAddDocuments = caseFormatterAddDocuments;
+        this.addNewDocumentsToCaseDataTask = addNewDocumentsToCaseDataTask;
         this.setClaimCostsFrom = setClaimCostsFrom;
     }
 
@@ -50,7 +50,7 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
         }
         tasks.add(setSolicitorCourtDetailsTask);
         tasks.add(addMiniPetitionDraftTask);
-        tasks.add(caseFormatterAddDocuments);
+        tasks.add(addNewDocumentsToCaseDataTask);
         return this.execute(tasks.toArray(new Task[0]),
             caseDetails.getCaseData(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
