@@ -42,7 +42,7 @@ public class SetDNDecisionStateTask implements Task<Map<String, Object>> {
         String newCaseEndState = AWAITING_CLARIFICATION;
 
         if (isDnGranted(caseData)) {
-            newCaseEndState = AWAITING_PRONOUNCEMENT;
+            newCaseEndState = evaluateStop(caseData, payload, AWAITING_PRONOUNCEMENT);
 
         } else {
             if (featureToggleService.isFeatureEnabled(DN_REFUSAL)) {

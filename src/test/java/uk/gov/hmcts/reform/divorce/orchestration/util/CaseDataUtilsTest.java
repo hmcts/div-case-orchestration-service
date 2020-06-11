@@ -169,6 +169,17 @@ public class CaseDataUtilsTest {
     }
 
     @Test
+    public void givenRejectRefusalReasonWithAdditionalInfo_isCostOrderGranted_returns_true() {
+
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
+        caseData.put(OrchestrationConstants.COSTS_ORDER_ADDITIONAL_INFO, "some additional info that requires translation");
+
+        caseData.put(LANGUAGE_PREFERENCE_WELSH, YES_VALUE);
+        assertThat(CaseDataUtils.isRejectReasonAddInfoAwaitingTranslation(caseData), is(true));
+    }
+
+    @Test
     public void givenRejectRefusalReasonWithAdditionalInfoAndWelshAddInfo_isRejectReasonAddInfoAwaitingTranslation_returns_false() {
 
         Map<String, Object> caseData = new HashMap<>();
@@ -186,6 +197,17 @@ public class CaseDataUtilsTest {
         caseData.put(OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD, OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE);
         caseData.put(OrchestrationConstants.REFUSAL_CLARIFICATION_ADDITIONAL_INFO, "some additional info that requires translation");
         caseData.put(OrchestrationConstants.REFUSAL_CLARIFICATION_ADDITIONAL_INFO_WELSH, "some welsh additional info");
+        caseData.put(LANGUAGE_PREFERENCE_WELSH, YES_VALUE);
+        assertThat(CaseDataUtils.isRejectReasonAddInfoAwaitingTranslation(caseData), is(false));
+    }
+
+    @Test
+    public void givenRejectRefusalReasonWithAdditionalInfoAndWelshAddInfo_isCostOrderGranted_returns_false() {
+
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
+        caseData.put(OrchestrationConstants.COSTS_ORDER_ADDITIONAL_INFO, "some additional info that requires translation");
+        caseData.put(OrchestrationConstants.COSTS_ORDER_ADDITIONAL_INFO_WELSH, "some welsh additional info");
         caseData.put(LANGUAGE_PREFERENCE_WELSH, YES_VALUE);
         assertThat(CaseDataUtils.isRejectReasonAddInfoAwaitingTranslation(caseData), is(false));
     }

@@ -22,6 +22,8 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_REFERENCE_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.VALUE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DATE_FORMAT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_ADDITIONAL_INFO;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_ADDITIONAL_INFO_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATE_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
@@ -141,8 +143,11 @@ public class CaseDataUtils {
                     REFUSAL_REJECTION_ADDITIONAL_INFO, REFUSAL_REJECTION_ADDITIONAL_INFO_WELSH);
                 boolean isRefusalClarificationStop = shouldStopValidation(caseData,
                     REFUSAL_CLARIFICATION_ADDITIONAL_INFO, REFUSAL_CLARIFICATION_ADDITIONAL_INFO_WELSH);
-
-                return (isRefusalReject && isRefusalRejectionStop) || (isAwaitingClarification && isRefusalClarificationStop) ;
+                boolean isCostClaimGranted = Optional.ofNullable(caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD))
+                    .map(String.class::cast).filter(value -> value.equals(YES_VALUE)).isPresent();
+                boolean isCostOrderStop = shouldStopValidation(caseData, COSTS_ORDER_ADDITIONAL_INFO, COSTS_ORDER_ADDITIONAL_INFO_WELSH);
+                return ((isRefusalReject && isRefusalRejectionStop) || (isAwaitingClarification
+                    && isRefusalClarificationStop) || (isCostClaimGranted && isCostOrderStop));
             })
             .orElse(false);
     }
