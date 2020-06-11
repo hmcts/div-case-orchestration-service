@@ -15,10 +15,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextracto
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BasePayloadSpecificDocumentGenerationTask;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_CO_RESPONDENT_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_CO_RESPONDENT_SOLICITOR_TEMPLATE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_CO_RESPONDENT_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CostOrderCoRespondentLetterDataExtractor.getHearingDate;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CostOrderCoRespondentLetterDataExtractor.getLetterDate;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getCoRespondentFullName;
@@ -30,8 +33,8 @@ public class CostOrderLetterGenerationTask extends BasePayloadSpecificDocumentGe
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FileMetadata {
-        public static final String TEMPLATE_ID = "FL-DIV-LET-ENG-00358.docx";
-        public static final String DOCUMENT_TYPE = COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE;
+        public static String TEMPLATE_ID = getTemplateID();
+        public static String DOCUMENT_TYPE = COSTS_ORDER_CO_RESPONDENT_DOCUMENT_TYPE;
     }
 
     private final PdfDocumentGenerationService pdfDocumentGenerationService;
@@ -60,7 +63,7 @@ public class CostOrderLetterGenerationTask extends BasePayloadSpecificDocumentGe
     protected GeneratedDocumentInfo generatePdf(TaskContext context, DocmosisTemplateVars templateModel) {
         return pdfDocumentGenerationService.generatePdf(
             templateModel,
-            FileMetadata.TEMPLATE_ID,
+            getTemplateID(),
             context.getTransientObject(AUTH_TOKEN_JSON_KEY)
         );
     }
@@ -76,6 +79,12 @@ public class CostOrderLetterGenerationTask extends BasePayloadSpecificDocumentGe
     @Override
     public String getDocumentType() {
         return FileMetadata.DOCUMENT_TYPE;
+    }
+
+    public static String getTemplateID() {
+        Map<String, Object> caseData = new HashMap<>();
+        return FileMetadata.TEMPLATE_ID = isCoRespondentRepresented(caseData) ?
+            COSTS_ORDER_CO_RESPONDENT_SOLICITOR_TEMPLATE_ID : COSTS_ORDER_CO_RESPONDENT_TEMPLATE_ID;
     }
 
     private DocmosisTemplateVars getCoRespondentCostOrderCoverLetter(TaskContext context, Map<String, Object> caseData) throws TaskException {
