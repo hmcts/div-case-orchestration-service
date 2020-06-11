@@ -11,6 +11,7 @@ import lombok.EqualsAndHashCode;
 @Builder
 @EqualsAndHashCode
 public class GeneratedDocumentInfo {
+
     private String url;
     private String documentType;
     private String mimeType;
@@ -18,4 +19,10 @@ public class GeneratedDocumentInfo {
     private String fileName;
     @JsonIgnore
     private byte[] bytes;
+
+    @Override
+    public String toString() {
+        return String.format("GeneratedDocumentInfo{url='%s', documentType='%s'}", url, documentType);
+    }
+
 }
