@@ -8,7 +8,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CoRespondentCostOrderCoverLetter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CoRespondentCostOrderNotificationCoverLetter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
@@ -108,7 +107,8 @@ public class CostOrderNotificationLetterGenerationTaskTest {
             ArgumentCaptor.forClass(CoRespondentCostOrderNotificationCoverLetter.class);
 
         verify(pdfDocumentGenerationService, times(1))
-            .generatePdf(costOrderCoRespondentNotificationLetterArgumentCaptor.capture(), eq(CostOrderNotificationLetterGenerationTask.FileMetadata.TEMPLATE_ID),
+            .generatePdf(costOrderCoRespondentNotificationLetterArgumentCaptor.capture(),
+                eq(CostOrderNotificationLetterGenerationTask.FileMetadata.TEMPLATE_ID),
                 eq(AUTH_TOKEN));
 
         final CoRespondentCostOrderNotificationCoverLetter coRespondentCoverLetter = costOrderCoRespondentNotificationLetterArgumentCaptor.getValue();
@@ -150,7 +150,8 @@ public class CostOrderNotificationLetterGenerationTaskTest {
             ArgumentCaptor.forClass(CoRespondentCostOrderNotificationCoverLetter.class);
 
         verify(pdfDocumentGenerationService, times(1))
-            .generatePdf(costOrderNotificationCoverLetterArgumentCaptor.capture(), eq(CostOrderNotificationLetterGenerationTask.FileMetadata.TEMPLATE_ID),
+            .generatePdf(costOrderNotificationCoverLetterArgumentCaptor.capture(),
+                eq(CostOrderNotificationLetterGenerationTask.FileMetadata.TEMPLATE_ID),
                 eq(AUTH_TOKEN));
 
         final CoRespondentCostOrderNotificationCoverLetter coRespondentCostOrderNotificationCoverLetter
