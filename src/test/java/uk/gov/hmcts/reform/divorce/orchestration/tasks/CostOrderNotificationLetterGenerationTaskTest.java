@@ -150,7 +150,7 @@ public class CostOrderNotificationLetterGenerationTaskTest {
             ArgumentCaptor.forClass(CoRespondentCostOrderNotificationCoverLetter.class);
 
         verify(pdfDocumentGenerationService, times(1))
-            .generatePdf(costOrderNotificationCoverLetterArgumentCaptor.capture(), eq(CostOrderLetterGenerationTask.FileMetadata.TEMPLATE_ID),
+            .generatePdf(costOrderNotificationCoverLetterArgumentCaptor.capture(), eq(CostOrderNotificationLetterGenerationTask.FileMetadata.TEMPLATE_ID),
                 eq(AUTH_TOKEN));
 
         final CoRespondentCostOrderNotificationCoverLetter coRespondentCostOrderNotificationCoverLetter
@@ -159,8 +159,6 @@ public class CostOrderNotificationLetterGenerationTaskTest {
             is(PETITIONERS_FIRST_NAME + " " + PETITIONERS_LAST_NAME));
         assertThat(coRespondentCostOrderNotificationCoverLetter.getRespondentFullName(),
             is(RESPONDENTS_FIRST_NAME + " " + RESPONDENTS_LAST_NAME));
-        assertThat(coRespondentCostOrderNotificationCoverLetter.getCoRespondentFullName(),
-            is(CO_RESPONDENTS_FIRST_NAME + " " + CO_RESPONDENTS_LAST_NAME));
         assertThat(coRespondentCostOrderNotificationCoverLetter.getCaseReference(), is(CASE_ID));
         assertThat(coRespondentCostOrderNotificationCoverLetter.getLetterDate(), is(LETTER_DATE_EXPECTED));
         assertThat(coRespondentCostOrderNotificationCoverLetter.getCtscContactDetails(), is(CTSC_CONTACT));
