@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CostOrderLetterGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CostOrderNotificationLetterGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerGenericUpdateNotificationEmailTask;
@@ -36,6 +37,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.BULK_PRINT_LETTER_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.DOCUMENT_TYPES_TO_PRINT;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.removeDocumentByDocumentType;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentRepresented;
 
 @Component
 @AllArgsConstructor
@@ -47,6 +49,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
     private final SendCoRespondentGenericUpdateNotificationEmail sendCoRespondentGenericUpdateNotificationEmail;
 
     private final CostOrderLetterGenerationTask costOrderLetterGenerationTask;
+    private final CostOrderNotificationLetterGenerationTask costOrderNotificationLetterGenerationTask;
     private final CaseFormatterAddDocuments caseFormatterAddDocuments;
     private final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
     private final BulkPrinterTask bulkPrinterTask;
@@ -65,7 +68,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
             ImmutablePair.of(DOCUMENT_TYPES_TO_PRINT, getDocumentTypesToPrint())
         );
 
-        return removeDocumentByDocumentType(returnCaseData, costOrderLetterGenerationTask.getDocumentType());
+        return removeDocumentByDocumentType(returnCaseData, documentToRemove(returnCaseData));
     }
 
     private List<String> getDocumentTypesToPrint() {
@@ -90,7 +93,13 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         } else {
             log.info("For case {} co-respondent uses traditional letters", caseDetails.getCaseId());
             if (isPaperUpdateEnabled()) {
-                tasks.add(costOrderLetterGenerationTask);
+
+                if (isCoRespondentRepresented(caseData)) {
+                    tasks.add(costOrderNotificationLetterGenerationTask);
+                } else {
+                    tasks.add(costOrderLetterGenerationTask);
+                }
+
                 tasks.add(caseFormatterAddDocuments);
                 tasks.add(fetchPrintDocsFromDmStore);
                 tasks.add(bulkPrinterTask);
@@ -116,5 +125,11 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
 
     private boolean isPaperUpdateEnabled() {
         return featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE);
+    }
+
+    private String documentToRemove(Map<String, Object> caseData) {
+        return isCoRespondentRepresented(caseData)
+            ? costOrderNotificationLetterGenerationTask.getDocumentType()
+            : costOrderLetterGenerationTask.getDocumentType();
     }
 }

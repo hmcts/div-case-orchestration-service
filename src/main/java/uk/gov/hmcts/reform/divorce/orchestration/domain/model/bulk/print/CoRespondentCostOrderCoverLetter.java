@@ -13,16 +13,16 @@ import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-public class CoRespondentCoverLetter extends DocmosisTemplateVars {
+public class CoRespondentCostOrderCoverLetter extends DocmosisTemplateVars {
     @JsonProperty("addressee")
     private Addressee addressee;
-    @JsonProperty("CoRespondentFullName")
+    @JsonProperty("coRespondentFullName")
     private String coRespondentFullName;
     @JsonProperty("hearingDate")
     private String hearingDate;
 
     @Builder
-    public CoRespondentCoverLetter(
+    public CoRespondentCostOrderCoverLetter(
         CtscContactDetails ctscContactDetails,
         String caseReference,
         String letterDate,

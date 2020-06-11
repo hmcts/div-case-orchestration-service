@@ -13,8 +13,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CostOrderLetterGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CostOrderNotificationLetterGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerGenericUpdateNotificationEmailTask;
@@ -45,8 +47,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COST_ORDER_CO_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
@@ -71,6 +73,9 @@ public class SendDnPronouncedNotificationWorkflowTest {
 
     @Mock
     private CostOrderLetterGenerationTask costOrderLetterGenerationTask;
+
+    @Mock
+    private CostOrderNotificationLetterGenerationTask costOrderNotificationLetterGenerationTask;
 
     @Mock
     private CaseFormatterAddDocuments caseFormatterAddDocuments;
@@ -243,8 +248,27 @@ public class SendDnPronouncedNotificationWorkflowTest {
     }
 
     @Test
-    public void givenCoRespondentIsNotDigitalAndCostsClaimIsGranted_thenNoBulkPrintTasksAreCalled() throws Exception {
-        Map<String, Object> caseData = buildCoRespondentNotDigitalAndCostsClaimIsGrantedCaseData();
+    public void givenToggleIsOff_thenNoBulkPrintTasksAreCalled() throws Exception {
+        Map<String, Object> caseData = buildCaseDataWithCoRespondentAsAddressee();
+        CaseDetails caseDetails = buildCaseDetails(caseData);
+
+        when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(false);
+        when(costOrderLetterGenerationTask.getDocumentType()).thenReturn(COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE);
+
+        Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(caseDetails, AUTH_TOKEN);
+        assertThat(returnedPayload, is(notNullValue()));
+
+        verify(costOrderNotificationLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
+        verify(costOrderLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
+        verify(caseFormatterAddDocuments, never()).execute(any(TaskContext.class), eq(caseData));
+        verify(fetchPrintDocsFromDmStore, never()).execute(any(TaskContext.class), eq(caseData));
+        verify(bulkPrinterTask, never()).execute(any(TaskContext.class), eq(caseData));
+    }
+
+    // Scenario 1
+    @Test
+    public void givenNotRepresentedCoRespondentIsNotDigitalAndCostsClaimIsGranted() throws Exception {
+        Map<String, Object> caseData = buildCaseDataWithCoRespondentAsAddressee();
 
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
         when(costOrderLetterGenerationTask.execute(notNull(), eq(caseData))).thenReturn(caseData);
@@ -260,6 +284,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
         verify(sendPetitionerGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(caseData));
         verify(sendRespondentGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(caseData));
         verify(sendCoRespondentGenericUpdateNotificationEmail, never()).execute(any(TaskContext.class), eq(caseData));
+        verify(costOrderNotificationLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
 
         verify(costOrderLetterGenerationTask, times(1)).execute(any(TaskContext.class), eq(caseData));
         verify(caseFormatterAddDocuments, times(1)).execute(any(TaskContext.class), eq(caseData));
@@ -267,55 +292,48 @@ public class SendDnPronouncedNotificationWorkflowTest {
         verify(bulkPrinterTask, times(1)).execute(any(TaskContext.class), eq(caseData));
     }
 
+    // Scenario 2
     @Test
-    public void givenCoRespondentIsNotDigitalAndCostsClaimIsGranted_thenNoBulkPrintTasksAreCalled_whenFeatureToggleIsOn() throws Exception {
-        Map<String, Object> caseData = buildCoRespondentNotDigitalAndCostsClaimIsGrantedCaseData();
-        CaseDetails caseDetails = buildCaseDetails(caseData);
+    public void givenRepresentedCoRespondentIsNotDigitalAndCostsClaimIsGranted() throws Exception {
+        Map<String, Object> caseData = buildCaseDataWithCoRespondentSolicitorAsAddressee();
 
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
-        when(costOrderLetterGenerationTask.execute(notNull(), eq(caseData))).thenReturn(caseData);
-        when(costOrderLetterGenerationTask.getDocumentType()).thenReturn(COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE);
+        when(costOrderNotificationLetterGenerationTask.execute(notNull(), eq(caseData))).thenReturn(caseData);
+        when(costOrderNotificationLetterGenerationTask.getDocumentType()).thenReturn(COST_ORDER_CO_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE);
         when(caseFormatterAddDocuments.execute(notNull(), eq(caseData))).thenReturn(caseData);
         when(fetchPrintDocsFromDmStore.execute(notNull(), eq(caseData))).thenReturn(caseData);
         when(bulkPrinterTask.execute(notNull(), eq(caseData))).thenReturn(caseData);
 
-        Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(caseDetails, AUTH_TOKEN);
-        assertEquals(returnedPayload, caseData);
+        Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(buildCaseDetails(caseData), AUTH_TOKEN);
 
-        verify(costOrderLetterGenerationTask, times(1)).execute(any(TaskContext.class), eq(caseData));
+        assertThat(returnedPayload, is(caseData));
+
+        verify(sendPetitionerGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(caseData));
+        verify(sendRespondentGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(caseData));
+        verify(sendCoRespondentGenericUpdateNotificationEmail, never()).execute(any(TaskContext.class), eq(caseData));
+        verify(costOrderLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
+
+        verify(costOrderNotificationLetterGenerationTask, times(1)).execute(any(TaskContext.class), eq(caseData));
         verify(caseFormatterAddDocuments, times(1)).execute(any(TaskContext.class), eq(caseData));
         verify(fetchPrintDocsFromDmStore, times(1)).execute(any(TaskContext.class), eq(caseData));
         verify(bulkPrinterTask, times(1)).execute(any(TaskContext.class), eq(caseData));
     }
 
-    @Test
-    public void givenCoRespondentIsNotDigitalAndCostsClaimIsGranted_thenNoBulkPrintTasksAreCalled_whenFeatureToggleIsOff() throws Exception {
-        Map<String, Object> caseData = buildCoRespondentNotDigitalAndCostsClaimIsGrantedCaseData();
-        CaseDetails caseDetails = buildCaseDetails(caseData);
 
-        when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(false);
-        when(costOrderLetterGenerationTask.getDocumentType()).thenReturn(COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE);
-
-        Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(caseDetails, AUTH_TOKEN);
-        assertThat(returnedPayload, is(notNullValue()));
-
-        verify(costOrderLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
-        verify(caseFormatterAddDocuments, never()).execute(any(TaskContext.class), eq(caseData));
-        verify(fetchPrintDocsFromDmStore, never()).execute(any(TaskContext.class), eq(caseData));
-        verify(bulkPrinterTask, never()).execute(any(TaskContext.class), eq(caseData));
+    public static Map<String, Object> buildCaseDataWithCoRespondentAsAddressee() {
+        Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithCoRespondentAsAddressee();
+        caseData.put(D8DOCUMENTS_GENERATED, asList(
+            createCollectionMemberDocumentAsMap("http://dn-pronounced.com", COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_TEMPLATE_ID)
+        ));
+        return caseData;
     }
 
-
-    // Scenario 1
-    private Map<String, Object> buildCoRespondentNotDigitalAndCostsClaimIsGrantedCaseData() {
-        return ImmutableMap.of(
-            CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE,
-            DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE,
-            CO_RESPONDENT_REPRESENTED, NO_VALUE,
-            D8DOCUMENTS_GENERATED, asList( // TODO change generated document to DNPronouned...
-                createCollectionMemberDocumentAsMap("http://dn-pronounced.com", COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_TEMPLATE_ID)
-            )
-        );
+    private Map<String, Object> buildCaseDataWithCoRespondentSolicitorAsAddressee() {
+        Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithCoRespondentSolicitorAsAddressee();
+        caseData.put(D8DOCUMENTS_GENERATED, asList(
+            createCollectionMemberDocumentAsMap("http://dn-pronounced.com", COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_TEMPLATE_ID)
+        ));
+        return caseData;
     }
 
     private CaseDetails buildCaseDetails(Map<String, Object> casePayload) {

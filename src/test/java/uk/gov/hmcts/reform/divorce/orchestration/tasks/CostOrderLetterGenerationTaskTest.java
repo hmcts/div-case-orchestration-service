@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -9,7 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CoRespondentCoverLetter;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CoRespondentCostOrderCoverLetter;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CoRespondentCostOrderNotificationCoverLetter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
@@ -97,35 +97,19 @@ public class CostOrderLetterGenerationTaskTest {
         assertThat(generatedDocumentInfo.getFileName(), is(createdDoc.getFileName()));
 
         verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
-        verifyPdfDocumentGenerationCallIsCorrect();
+        verifyPdfDocumentGenerationCallIsCorrectForCostOrderLetter();
     }
 
-    @Test
-    @Ignore // TODO this is just not a good practice, but in process of separating second letter, test will pass somewhere else
-    public void executeShouldPopulateFieldInContextWhenCoRespondentIsRepresented() throws TaskException {
-        TaskContext context = prepareTaskContext();
 
-        costOrderLetterGenerationTask.execute(context, buildCaseDataCoRespondentRepresented());
-
-        Set<GeneratedDocumentInfo> documents = context.getTransientObject(DOCUMENT_COLLECTION);
-        assertThat(documents.size(), is(1));
-        GeneratedDocumentInfo generatedDocumentInfo = documents.stream().findFirst().get();
-        assertThat(generatedDocumentInfo.getDocumentType(), is(DOCUMENT_TYPE));
-        assertThat(generatedDocumentInfo.getFileName(), is(createdDoc.getFileName()));
-
-        verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
-        verifyPdfDocumentGenerationCallIsCorrect();
-    }
-
-    private void verifyPdfDocumentGenerationCallIsCorrect() {
-        final ArgumentCaptor<CoRespondentCoverLetter> costOrderCoRespondentLetterArgumentCaptor =
-            ArgumentCaptor.forClass(CoRespondentCoverLetter.class);
+    private void verifyPdfDocumentGenerationCallIsCorrectForCostOrderLetter() {
+        final ArgumentCaptor<CoRespondentCostOrderCoverLetter> costOrderCoRespondentLetterArgumentCaptor =
+            ArgumentCaptor.forClass(CoRespondentCostOrderCoverLetter.class);
 
         verify(pdfDocumentGenerationService, times(1))
             .generatePdf(costOrderCoRespondentLetterArgumentCaptor.capture(), eq(CostOrderLetterGenerationTask.FileMetadata.TEMPLATE_ID),
                 eq(AUTH_TOKEN));
 
-        final CoRespondentCoverLetter coRespondentCoverLetter = costOrderCoRespondentLetterArgumentCaptor.getValue();
+        final CoRespondentCostOrderCoverLetter coRespondentCoverLetter = costOrderCoRespondentLetterArgumentCaptor.getValue();
         assertThat(coRespondentCoverLetter.getPetitionerFullName(), is(PETITIONERS_FIRST_NAME + " " + PETITIONERS_LAST_NAME));
         assertThat(coRespondentCoverLetter.getRespondentFullName(), is(RESPONDENTS_FIRST_NAME + " " + RESPONDENTS_LAST_NAME));
         assertThat(coRespondentCoverLetter.getCoRespondentFullName(), is(CO_RESPONDENTS_FIRST_NAME + " " + CO_RESPONDENTS_LAST_NAME));
@@ -142,18 +126,14 @@ public class CostOrderLetterGenerationTaskTest {
         return context;
     }
 
-    private Map<String, Object> buildCaseDataCoRespondentRepresented() {
-        return buildCaseData(true);
-    }
-
     private Map<String, Object> buildCaseDataCoRespondentNotRepresented() {
         return buildCaseData(false);
     }
 
     private Map<String, Object> buildCaseData(boolean isCoRespondentRepresented) {
-        Map<String, Object> caseData = !isCoRespondentRepresented
-            ? AddresseeDataExtractorTest.buildCaseDataWithCoRespondentAsAddressee()
-            : AddresseeDataExtractorTest.buildCaseDataWithCoRespondentSolicitorAsAddressee();
+        Map<String, Object> caseData = isCoRespondentRepresented
+            ? AddresseeDataExtractorTest.buildCaseDataWithCoRespondentSolicitorAsAddressee()
+            : AddresseeDataExtractorTest.buildCaseDataWithCoRespondentAsAddressee();
 
         caseData.put(PETITIONER_FIRST_NAME, PETITIONERS_FIRST_NAME);
         caseData.put(PETITIONER_LAST_NAME, PETITIONERS_LAST_NAME);
