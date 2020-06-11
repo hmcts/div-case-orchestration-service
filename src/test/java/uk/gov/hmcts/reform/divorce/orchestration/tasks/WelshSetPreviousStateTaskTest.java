@@ -44,20 +44,20 @@ public class WelshSetPreviousStateTaskTest {
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, "KEY");
         context.setTransientObject(CASE_ID_JSON_KEY, "CASEID");
         Set<String> ignoreStates = new HashSet<>();
-        ignoreStates.add("WelshDNisRefused");
-        ignoreStates.add("WelshResponseAwaitingReview");
-        ReflectionTestUtils.setField(welshSetPreviousStateTask, "ignoreStates", ignoreStates);
+        ignoreStates.add("Submitted");
+        ignoreStates.add("PendingRejection");
+        ReflectionTestUtils.setField(welshSetPreviousStateTask, "allowStates", ignoreStates);
     }
 
     @Test
     public void testExecuteSuccess() throws TaskException {
-        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).state("previous").build();
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).state("Submitted").build();
         when(caseMaintenanceClient.retrievePetitionById(context.getTransientObject(AUTH_TOKEN_JSON_KEY),
             context.getTransientObject(CASE_ID_JSON_KEY))).thenReturn(caseDetails);
 
         welshSetPreviousStateTask.execute(context, caseData);
 
-        assertThat(caseData).containsEntry(WELSH_PREVIOUS_STATE, "previous");
+        assertThat(caseData).containsEntry(WELSH_PREVIOUS_STATE, "Submitted");
     }
 
     @Test

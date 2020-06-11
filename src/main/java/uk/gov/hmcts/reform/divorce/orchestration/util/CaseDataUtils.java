@@ -38,9 +38,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_CLARIFICATION_ADDITIONAL_INFO;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_CLARIFICATION_ADDITIONAL_INFO_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO_WELSH;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_DN_REFUSED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_LA_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsObject;
@@ -132,16 +133,23 @@ public class CaseDataUtils {
     }
 
     public static boolean isRejectReasonAddInfoAwaitingTranslation(Map<String, Object> caseData) {
-        boolean isRefusalReject = Optional.ofNullable(caseData.get(REFUSAL_DECISION_CCD_FIELD))
-            .map(String.class::cast).filter(value -> value.equals(DN_REFUSED_REJECT_OPTION)).isPresent();
-
-        boolean isRefusalRejectionStop = shouldStopValidation(caseData,
-            REFUSAL_REJECTION_ADDITIONAL_INFO, REFUSAL_REJECTION_ADDITIONAL_INFO_WELSH);
-        boolean isRefusalClarificationStop = shouldStopValidation(caseData,
-            REFUSAL_CLARIFICATION_ADDITIONAL_INFO, REFUSAL_CLARIFICATION_ADDITIONAL_INFO_WELSH);
-        boolean isCostOrderStop = shouldStopValidation(caseData, COSTS_ORDER_ADDITIONAL_INFO, COSTS_ORDER_ADDITIONAL_INFO_WELSH);
-
-        return isLanguagePreferenceWelsh(caseData) && isRefusalReject && (isRefusalRejectionStop || isRefusalClarificationStop || isCostOrderStop);
+        return Optional.of(isLanguagePreferenceWelsh(caseData)).filter(Boolean::booleanValue)
+            .map(yes -> {
+                boolean isRefusalReject = Optional.ofNullable(caseData.get(REFUSAL_DECISION_CCD_FIELD))
+                    .map(String.class::cast).filter(value -> value.equals(DN_REFUSED_REJECT_OPTION)).isPresent();
+                boolean isAwaitingClarification = Optional.ofNullable(caseData.get(REFUSAL_DECISION_CCD_FIELD))
+                    .map(String.class::cast).filter(value -> value.equals(REFUSAL_DECISION_MORE_INFO_VALUE)).isPresent();
+                boolean isRefusalRejectionStop = shouldStopValidation(caseData,
+                    REFUSAL_REJECTION_ADDITIONAL_INFO, REFUSAL_REJECTION_ADDITIONAL_INFO_WELSH);
+                boolean isRefusalClarificationStop = shouldStopValidation(caseData,
+                    REFUSAL_CLARIFICATION_ADDITIONAL_INFO, REFUSAL_CLARIFICATION_ADDITIONAL_INFO_WELSH);
+                boolean isCostClaimGranted = Optional.ofNullable(caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD))
+                    .map(String.class::cast).filter(value -> value.equals(YES_VALUE)).isPresent();
+                boolean isCostOrderStop = shouldStopValidation(caseData, COSTS_ORDER_ADDITIONAL_INFO, COSTS_ORDER_ADDITIONAL_INFO_WELSH);
+                return ((isRefusalReject && isRefusalRejectionStop) || (isAwaitingClarification
+                    && isRefusalClarificationStop) || (isCostClaimGranted && isCostOrderStop));
+            })
+            .orElse(false);
     }
 
     private static boolean shouldStopValidation(Map<String, Object> caseData, String englishField, String welshField) {
@@ -152,17 +160,8 @@ public class CaseDataUtils {
         return englishPresent && !welshPresent;
     }
 
-    public static boolean isWelshTranslationRequiredForDnRefusal(CaseDetails caseDetails) {
-        Map<String, Object> caseData = caseDetails.getCaseData();
-
-        boolean refusalRejection = Optional.ofNullable(caseData.get(REFUSAL_REJECTION_ADDITIONAL_INFO_WELSH))
-            .filter(Objects::nonNull).map(String.class::cast).map(String::trim).filter(value -> !value.isEmpty()).isPresent();
-        boolean refusalClarification = Optional.ofNullable(caseData.get(REFUSAL_CLARIFICATION_ADDITIONAL_INFO_WELSH))
-            .filter(Objects::nonNull).map(String.class::cast).map(String::trim).filter(value -> !value.isEmpty()).isPresent();
-        boolean costOrder = Optional.ofNullable(caseData.get(COSTS_ORDER_ADDITIONAL_INFO_WELSH))
-            .filter(Objects::nonNull).map(String.class::cast).map(String::trim).filter(value -> !value.isEmpty()).isPresent();
-
-        return WELSH_DN_REFUSED.equals(caseDetails.getState()) && (!refusalRejection ||  !refusalClarification || !costOrder);
+    public static boolean isWelshLADecisionTranslationRequired(CaseDetails caseDetails) {
+        return WELSH_LA_DECISION.equals(caseDetails.getState());
     }
 
     public static boolean isLanguagePreferenceWelsh(Map<String, Object> caseData) {

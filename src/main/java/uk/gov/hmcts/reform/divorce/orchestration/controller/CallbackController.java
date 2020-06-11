@@ -840,7 +840,7 @@ public class CallbackController {
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
 
-        if (CaseDataUtils.isWelshTranslationRequiredForDnRefusal(ccdCallbackRequest.getCaseDetails())) {
+        if (CaseDataUtils.isWelshLADecisionTranslationRequired(ccdCallbackRequest.getCaseDetails())) {
             callbackResponseBuilder.data(ccdCallbackRequest.getCaseDetails().getCaseData());
             return ResponseEntity.ok(callbackResponseBuilder.build());
         }
