@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
@@ -39,7 +39,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.remov
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentRepresented;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Slf4j
 public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
