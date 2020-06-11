@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CostOrderLetterGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CostOrderNotificationLetterGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
@@ -50,7 +49,6 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
 
     private final CostOrderLetterGenerationTask costOrderLetterGenerationTask;
     private final CostOrderNotificationLetterGenerationTask costOrderNotificationLetterGenerationTask;
-    private final CaseFormatterAddDocuments caseFormatterAddDocuments;
     private final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
     private final BulkPrinterTask bulkPrinterTask;
     private final FeatureToggleService featureToggleService;
@@ -101,7 +99,6 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
                     tasks.add(costOrderLetterGenerationTask);
                 }
 
-                tasks.add(caseFormatterAddDocuments);
                 tasks.add(fetchPrintDocsFromDmStore);
                 tasks.add(bulkPrinterTask);
             } else {

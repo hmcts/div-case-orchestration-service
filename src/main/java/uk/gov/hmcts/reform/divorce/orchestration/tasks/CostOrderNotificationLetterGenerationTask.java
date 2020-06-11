@@ -14,6 +14,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextracto
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BasePayloadSpecificDocumentGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DaGrantedLetterGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.Map;
 
@@ -35,51 +37,14 @@ public class CostOrderNotificationLetterGenerationTask extends BasePayloadSpecif
         public static final String DOCUMENT_TYPE = COST_ORDER_CO_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE;
     }
 
-    private final PdfDocumentGenerationService pdfDocumentGenerationService;
-
-    public CostOrderNotificationLetterGenerationTask(
-        CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
-        PdfDocumentGenerationService pdfDocumentGenerationService) {
-        super(ctscContactDetailsDataProviderService);
-        this.pdfDocumentGenerationService = pdfDocumentGenerationService;
+    public CostOrderNotificationLetterGenerationTask(CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
+        PdfDocumentGenerationService pdfDocumentGenerationService,
+        CcdUtil ccdUtil) {
+        super(ctscContactDetailsDataProviderService, pdfDocumentGenerationService, ccdUtil);
     }
 
     @Override
     protected DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        return getCoRespondentCostOrderNotificationCoverLetter(context, caseData);
-    }
-
-    @Override
-    protected GeneratedDocumentInfo populateMetadataForGeneratedDocument(GeneratedDocumentInfo generatedDocumentInfo) {
-        generatedDocumentInfo.setDocumentType(FileMetadata.DOCUMENT_TYPE);
-
-        return generatedDocumentInfo;
-    }
-
-    @Override
-    protected GeneratedDocumentInfo generatePdf(TaskContext context, DocmosisTemplateVars templateModel) {
-        return pdfDocumentGenerationService.generatePdf(
-            templateModel,
-            FileMetadata.TEMPLATE_ID,
-            context.getTransientObject(AUTH_TOKEN_JSON_KEY)
-        );
-    }
-
-    private Addressee getAddresseeCoRespondentOrSolicitorIfRepresented(Map<String, Object> caseData) {
-        if (isCoRespondentRepresented(caseData)) {
-            return AddresseeDataExtractor.getCoRespondentSolicitor(caseData);
-        }
-
-        return AddresseeDataExtractor.getCoRespondent(caseData);
-    }
-
-    @Override
-    public String getDocumentType() {
-        return FileMetadata.DOCUMENT_TYPE;
-    }
-
-    private DocmosisTemplateVars getCoRespondentCostOrderNotificationCoverLetter(TaskContext context, Map<String, Object> caseData)
-        throws TaskException {
         return CoRespondentCostOrderNotificationCoverLetter.builder()
             .caseReference(getCaseId(context))
             .solicitorReference(getSolicitorReference(caseData))
@@ -91,6 +56,32 @@ public class CostOrderNotificationLetterGenerationTask extends BasePayloadSpecif
             .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
             .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
             .build();
+    }
+
+    @Override
+    protected GeneratedDocumentInfo populateMetadataForGeneratedDocument(GeneratedDocumentInfo generatedDocumentInfo) {
+        generatedDocumentInfo.setDocumentType(FileMetadata.DOCUMENT_TYPE);
+
+        return generatedDocumentInfo;
+    }
+
+    @Override
+    public String getDocumentType() {
+        return FileMetadata.DOCUMENT_TYPE;
+    }
+
+    @Override
+    public String getTemplateId() {
+        return FileMetadata.TEMPLATE_ID;
+    }
+
+
+    private Addressee getAddresseeCoRespondentOrSolicitorIfRepresented(Map<String, Object> caseData) {
+        if (isCoRespondentRepresented(caseData)) {
+            return AddresseeDataExtractor.getCoRespondentSolicitor(caseData);
+        }
+
+        return AddresseeDataExtractor.getCoRespondent(caseData);
     }
 
 }

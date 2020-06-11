@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CostOrderLetterGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CostOrderNotificationLetterGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
@@ -75,9 +74,6 @@ public class SendDnPronouncedNotificationWorkflowTest {
 
     @Mock
     private CostOrderNotificationLetterGenerationTask costOrderNotificationLetterGenerationTask;
-
-    @Mock
-    private CaseFormatterAddDocuments caseFormatterAddDocuments;
 
     @Mock
     private FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
@@ -259,7 +255,6 @@ public class SendDnPronouncedNotificationWorkflowTest {
 
         verify(costOrderNotificationLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
         verify(costOrderLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
-        verify(caseFormatterAddDocuments, never()).execute(any(TaskContext.class), eq(caseData));
         verify(fetchPrintDocsFromDmStore, never()).execute(any(TaskContext.class), eq(caseData));
         verify(bulkPrinterTask, never()).execute(any(TaskContext.class), eq(caseData));
     }
@@ -272,7 +267,6 @@ public class SendDnPronouncedNotificationWorkflowTest {
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
         when(costOrderLetterGenerationTask.execute(notNull(), eq(caseData))).thenReturn(caseData);
         when(costOrderLetterGenerationTask.getDocumentType()).thenReturn(COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE);
-        when(caseFormatterAddDocuments.execute(notNull(), eq(caseData))).thenReturn(caseData);
         when(fetchPrintDocsFromDmStore.execute(notNull(), eq(caseData))).thenReturn(caseData);
         when(bulkPrinterTask.execute(notNull(), eq(caseData))).thenReturn(caseData);
 
@@ -286,7 +280,6 @@ public class SendDnPronouncedNotificationWorkflowTest {
         verify(costOrderNotificationLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
 
         verify(costOrderLetterGenerationTask, times(1)).execute(any(TaskContext.class), eq(caseData));
-        verify(caseFormatterAddDocuments, times(1)).execute(any(TaskContext.class), eq(caseData));
         verify(fetchPrintDocsFromDmStore, times(1)).execute(any(TaskContext.class), eq(caseData));
         verify(bulkPrinterTask, times(1)).execute(any(TaskContext.class), eq(caseData));
     }
@@ -299,7 +292,6 @@ public class SendDnPronouncedNotificationWorkflowTest {
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
         when(costOrderNotificationLetterGenerationTask.execute(notNull(), eq(caseData))).thenReturn(caseData);
         when(costOrderNotificationLetterGenerationTask.getDocumentType()).thenReturn(COST_ORDER_CO_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE);
-        when(caseFormatterAddDocuments.execute(notNull(), eq(caseData))).thenReturn(caseData);
         when(fetchPrintDocsFromDmStore.execute(notNull(), eq(caseData))).thenReturn(caseData);
         when(bulkPrinterTask.execute(notNull(), eq(caseData))).thenReturn(caseData);
 
@@ -313,7 +305,6 @@ public class SendDnPronouncedNotificationWorkflowTest {
         verify(costOrderLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
 
         verify(costOrderNotificationLetterGenerationTask, times(1)).execute(any(TaskContext.class), eq(caseData));
-        verify(caseFormatterAddDocuments, times(1)).execute(any(TaskContext.class), eq(caseData));
         verify(fetchPrintDocsFromDmStore, times(1)).execute(any(TaskContext.class), eq(caseData));
         verify(bulkPrinterTask, times(1)).execute(any(TaskContext.class), eq(caseData));
     }

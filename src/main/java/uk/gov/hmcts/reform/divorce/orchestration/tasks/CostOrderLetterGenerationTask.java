@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextracto
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BasePayloadSpecificDocumentGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.Map;
 
@@ -34,19 +35,25 @@ public class CostOrderLetterGenerationTask extends BasePayloadSpecificDocumentGe
         public static String DOCUMENT_TYPE = COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE;
     }
 
-    private final PdfDocumentGenerationService pdfDocumentGenerationService;
-
     public CostOrderLetterGenerationTask(
         CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
-        PdfDocumentGenerationService pdfDocumentGenerationService) {
-        super(ctscContactDetailsDataProviderService);
-        this.pdfDocumentGenerationService = pdfDocumentGenerationService;
+        PdfDocumentGenerationService pdfDocumentGenerationService,
+        CcdUtil ccdUtil) {
+        super(ctscContactDetailsDataProviderService, pdfDocumentGenerationService, ccdUtil);
     }
 
     @Override
     protected DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        return getCoRespondentCostOrderCoverLetter(context, caseData);
-
+        return CoRespondentCostOrderCoverLetter.builder()
+            .caseReference(getCaseId(context))
+            .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
+            .addressee(getAddresseeCoRespondentOrSolicitorIfRepresented(caseData))
+            .coRespondentFullName(getCoRespondentFullName(caseData))
+            .letterDate(getLetterDate())
+            .hearingDate(getHearingDate(caseData))
+            .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
+            .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
+            .build();
     }
 
     @Override
@@ -54,15 +61,6 @@ public class CostOrderLetterGenerationTask extends BasePayloadSpecificDocumentGe
         generatedDocumentInfo.setDocumentType(FileMetadata.DOCUMENT_TYPE);
 
         return generatedDocumentInfo;
-    }
-
-    @Override
-    protected GeneratedDocumentInfo generatePdf(TaskContext context, DocmosisTemplateVars templateModel) {
-        return pdfDocumentGenerationService.generatePdf(
-            templateModel,
-            FileMetadata.TEMPLATE_ID,
-            context.getTransientObject(AUTH_TOKEN_JSON_KEY)
-        );
     }
 
     private Addressee getAddresseeCoRespondentOrSolicitorIfRepresented(Map<String, Object> caseData) {
@@ -78,17 +76,9 @@ public class CostOrderLetterGenerationTask extends BasePayloadSpecificDocumentGe
         return FileMetadata.DOCUMENT_TYPE;
     }
 
-    private DocmosisTemplateVars getCoRespondentCostOrderCoverLetter(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        return CoRespondentCostOrderCoverLetter.builder()
-            .caseReference(getCaseId(context))
-            .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
-            .addressee(getAddresseeCoRespondentOrSolicitorIfRepresented(caseData))
-            .coRespondentFullName(getCoRespondentFullName(caseData))
-            .letterDate(getLetterDate())
-            .hearingDate(getHearingDate(caseData))
-            .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
-            .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
-            .build();
+    @Override
+    public String getTemplateId() {
+        return CostOrderNotificationLetterGenerationTask.FileMetadata.TEMPLATE_ID;
     }
 
 }
