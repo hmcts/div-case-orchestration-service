@@ -201,6 +201,8 @@ public class OrchestrationConstants {
     public static final String CO_RESPONDENT_ANSWER_RECEIVED = "ReceivedAnswerFromCoResp";
     public static final String CO_RESPONDENT_ANSWER_RECEIVED_DATE = "ReceivedAnswerFromCoRespDate";
     public static final String CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL = "CoRespContactMethodIsDigital";
+    public static final String COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE = "coRespondentCostOrderLetter";
+    public static final String COST_ORDER_CO_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE = "coRespondentSolicitorCostOrderLetter";
     public static final String DN_DECISION_DATE_FIELD = "DNApprovalDate";
 
     // Divorce Session
@@ -307,10 +309,7 @@ public class OrchestrationConstants {
     public static final String DOCUMENT_FILENAME_FMT = "%s%s";
     public static final String DOCUMENTS_GENERATED = "DocumentsGenerated";
     public static final String COSTS_ORDER_DOCUMENT_TYPE = "costsOrder";
-    public static final String COSTS_ORDER_CO_RESPONDENT_DOCUMENT_TYPE = "costsOrderCoRespondent";
     public static final String COSTS_ORDER_TEMPLATE_ID = "FL-DIV-DEC-ENG-00060.docx";
-    public static final String COSTS_ORDER_CO_RESPONDENT_TEMPLATE_ID = "FL-DIV-LET-ENG-00358.docx";
-    public static final String COSTS_ORDER_CO_RESPONDENT_SOLICITOR_TEMPLATE_ID = "FL-DIV-GNO-ENG-00423.docx";
     public static final String DECREE_NISI_DOCUMENT_TYPE = "dnGranted";
     public static final String DECREE_NISI_FILENAME = "decreeNisi";
     public static final String DECREE_NISI_TEMPLATE_ID = "FL-DIV-GNO-ENG-00021.docx";

@@ -26,7 +26,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentRepresented;
 
 @Component
-public class CostOrderLetterGenerationTask extends BasePayloadSpecificDocumentGenerationTask {
+public class CostOrderLetterSolicitorGenerationTask extends BasePayloadSpecificDocumentGenerationTask {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FileMetadata {
@@ -36,7 +36,7 @@ public class CostOrderLetterGenerationTask extends BasePayloadSpecificDocumentGe
 
     private final PdfDocumentGenerationService pdfDocumentGenerationService;
 
-    public CostOrderLetterGenerationTask(
+    public CostOrderLetterSolicitorGenerationTask(
         CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
         PdfDocumentGenerationService pdfDocumentGenerationService) {
         super(ctscContactDetailsDataProviderService);
