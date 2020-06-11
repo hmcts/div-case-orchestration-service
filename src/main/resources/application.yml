@@ -457,8 +457,8 @@ template:
       11: "Tachwedd"
       12: "Rhagfyr"
 
-ignore:
-  states: WelshResponseAwaitingReview,WelshDNisRefused,WelshDNReceived
+allow:
+  states: Submitted,PendingRejection
 
 issueAosPackOffLine:
   SEPARATION_TWO_YEARS:

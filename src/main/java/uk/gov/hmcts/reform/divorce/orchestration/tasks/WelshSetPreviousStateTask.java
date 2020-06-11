@@ -20,8 +20,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class WelshSetPreviousStateTask implements Task<Map<String, Object>> {
     private final CaseMaintenanceClient caseMaintenanceClient;
 
-    @Value("#{'${ignore.states}'.split(',')}")
-    private Set<String> ignoreStates;
+    @Value("#{'${allow.states}'.split(',')}")
+    private Set<String> allowStates;
 
     @Override
     public Map<String, Object> execute(TaskContext context, final Map<String, Object> payload) throws TaskException {
@@ -31,7 +31,7 @@ public class WelshSetPreviousStateTask implements Task<Map<String, Object>> {
             context.<String>getTransientObject(CASE_ID_JSON_KEY))
             .getState();
 
-        if (!ignoreStates.contains(previousState)) {
+        if (allowStates.contains(previousState)) {
             payload.put(WELSH_PREVIOUS_STATE, previousState);
         }
         return payload;

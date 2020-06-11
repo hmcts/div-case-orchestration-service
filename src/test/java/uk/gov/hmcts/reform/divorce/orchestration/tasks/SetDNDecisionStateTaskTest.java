@@ -27,11 +27,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_REJECT_OPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_CLARIFICATION_ADDITIONAL_INFO;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.STATE_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_DN_REFUSED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_LA_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_NEXT_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
@@ -104,9 +106,26 @@ public class SetDNDecisionStateTaskTest {
         Map<String, Object> returnedPayload = classToTest.execute(taskContext, caseData);
 
         assertThat(returnedPayload, allOf(
-            hasEntry(STATE_CCD_FIELD, WELSH_DN_REFUSED),
+            hasEntry(STATE_CCD_FIELD, WELSH_LA_DECISION),
             hasEntry(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE),
             hasEntry(REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION),
+            hasEntry(WELSH_NEXT_EVENT, BO_WELSH_GRANT_DN_MAKE_DECISION)
+        ));
+    }
+
+    @Test
+    public void givenDnAdditionalClarification_whenSetDnDecisionState_withAddInfo_andWelshLanguage_thenReturnWelshDnRefusedState() {
+        Map<String, Object> caseData = ImmutableMap.of(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE,
+            REFUSAL_DECISION_CCD_FIELD, REFUSAL_DECISION_MORE_INFO_VALUE,
+            LANGUAGE_PREFERENCE_WELSH, YES_VALUE,
+            REFUSAL_CLARIFICATION_ADDITIONAL_INFO, "some additional info");
+
+        Map<String, Object> returnedPayload = classToTest.execute(taskContext, caseData);
+
+        assertThat(returnedPayload, allOf(
+            hasEntry(STATE_CCD_FIELD, WELSH_LA_DECISION),
+            hasEntry(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE),
+            hasEntry(REFUSAL_DECISION_CCD_FIELD, REFUSAL_DECISION_MORE_INFO_VALUE),
             hasEntry(WELSH_NEXT_EVENT, BO_WELSH_GRANT_DN_MAKE_DECISION)
         ));
     }

@@ -193,7 +193,7 @@ public class OrchestrationConstants {
     public static final String DN_PRONOUNCED = "DNPronounced";
     public static final String AWAITING_DA = "AwaitingDecreeAbsolute";
     public static final String DN_REFUSED = "DNisRefused";
-    public static final String WELSH_DN_REFUSED = "WelshDNisRefused";
+    public static final String WELSH_LA_DECISION = "WelshLADecision";
     public static final String AWAITING_ADMIN_CLARIFICATION = "AwaitingAdminClarification";
     public static final String DA_REQUESTED = "DARequested";
     public static final String DA_OVERDUE = "DAOverdue";

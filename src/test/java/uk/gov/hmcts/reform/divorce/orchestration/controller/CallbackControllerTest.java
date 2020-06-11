@@ -968,7 +968,7 @@ public class CallbackControllerTest {
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .caseData(inputPayload)
-                .state(OrchestrationConstants.WELSH_DN_REFUSED)
+                .state(OrchestrationConstants.WELSH_LA_DECISION)
                 .build())
             .build();
 

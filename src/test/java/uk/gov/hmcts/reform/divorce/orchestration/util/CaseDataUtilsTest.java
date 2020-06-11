@@ -18,12 +18,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseCon
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_COSTS_OPTIONS_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED_OLD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_DN_REFUSED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_LA_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.DESERTION;
@@ -151,8 +152,17 @@ public class CaseDataUtilsTest {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD, OrchestrationConstants.DN_REFUSED_REJECT_OPTION);
         caseData.put(OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO, "some additional info that requires translation");
+
+        caseData.put(LANGUAGE_PREFERENCE_WELSH, YES_VALUE);
+        assertThat(CaseDataUtils.isRejectReasonAddInfoAwaitingTranslation(caseData), is(true));
+    }
+
+    @Test
+    public void givenRejectRefusalReasonWithAdditionalInfo_isAdditionalClarification_returns_true() {
+
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD, OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE);
         caseData.put(OrchestrationConstants.REFUSAL_CLARIFICATION_ADDITIONAL_INFO, "some additional info that requires translation");
-        caseData.put(OrchestrationConstants.COSTS_ORDER_ADDITIONAL_INFO, "some additional info that requires translation");
 
         caseData.put(LANGUAGE_PREFERENCE_WELSH, YES_VALUE);
         assertThat(CaseDataUtils.isRejectReasonAddInfoAwaitingTranslation(caseData), is(true));
@@ -165,10 +175,17 @@ public class CaseDataUtilsTest {
         caseData.put(OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD, OrchestrationConstants.DN_REFUSED_REJECT_OPTION);
         caseData.put(OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO, "some additional info that requires translation");
         caseData.put(OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO_WELSH, "some welsh additional info");
+        caseData.put(LANGUAGE_PREFERENCE_WELSH, YES_VALUE);
+        assertThat(CaseDataUtils.isRejectReasonAddInfoAwaitingTranslation(caseData), is(false));
+    }
+
+    @Test
+    public void givenRejectRefusalReasonWithAdditionalInfoAndWelshAddInfo_isAdditionalClarificationAwaitingTranslation_returns_false() {
+
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD, OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE);
         caseData.put(OrchestrationConstants.REFUSAL_CLARIFICATION_ADDITIONAL_INFO, "some additional info that requires translation");
         caseData.put(OrchestrationConstants.REFUSAL_CLARIFICATION_ADDITIONAL_INFO_WELSH, "some welsh additional info");
-        caseData.put(OrchestrationConstants.COSTS_ORDER_ADDITIONAL_INFO, "some additional info that requires translation");
-        caseData.put(OrchestrationConstants.COSTS_ORDER_ADDITIONAL_INFO_WELSH, "some welsh additional info");
         caseData.put(LANGUAGE_PREFERENCE_WELSH, YES_VALUE);
         assertThat(CaseDataUtils.isRejectReasonAddInfoAwaitingTranslation(caseData), is(false));
     }
@@ -176,37 +193,17 @@ public class CaseDataUtilsTest {
     @Test
     public void givenWelshDnRefusedAndNoWelshAddtionalInfo_isWelshTranslationRequiredForDnRefusal_returns_true() {
         Map<String, Object> caseData = new HashMap<>();
-        CaseDetails caseDetails = CaseDetails.builder().state(WELSH_DN_REFUSED).caseData(caseData).build();
-        assertThat(CaseDataUtils.isWelshTranslationRequiredForDnRefusal(caseDetails), is(true));
-    }
-
-    @Test
-    public void givenWelshDnRefusedAndWelshAddtionalInfo_isWelshTranslationRequiredForDnRefusal_returns_false() {
-        Map<String, Object> caseData = new HashMap<>();
-        caseData.put(OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO_WELSH, "Welhs add info");
-        caseData.put(OrchestrationConstants.REFUSAL_CLARIFICATION_ADDITIONAL_INFO_WELSH, "Welhs add info");
-        caseData.put(OrchestrationConstants.COSTS_ORDER_ADDITIONAL_INFO_WELSH, "Welhs add info");
-        CaseDetails caseDetails = CaseDetails.builder().state(WELSH_DN_REFUSED).caseData(caseData).build();
-        assertThat(CaseDataUtils.isWelshTranslationRequiredForDnRefusal(caseDetails), is(false));
+        CaseDetails caseDetails = CaseDetails.builder().state(WELSH_LA_DECISION).caseData(caseData).build();
+        assertThat(CaseDataUtils.isWelshLADecisionTranslationRequired(caseDetails), is(true));
     }
 
     @Test
     public void givenWelshDnRefusedAndWelshAddtionalInfo_empty_string_returns_true() {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO_WELSH, " ");
-        caseData.put(OrchestrationConstants.REFUSAL_CLARIFICATION_ADDITIONAL_INFO_WELSH, " ");
-        caseData.put(OrchestrationConstants.COSTS_ORDER_ADDITIONAL_INFO_WELSH, " ");
-        CaseDetails caseDetails = CaseDetails.builder().state(WELSH_DN_REFUSED).caseData(caseData).build();
-        assertThat(CaseDataUtils.isWelshTranslationRequiredForDnRefusal(caseDetails), is(true));
+        CaseDetails caseDetails = CaseDetails.builder().state(DN_REFUSED).caseData(caseData).build();
+        assertThat(CaseDataUtils.isWelshLADecisionTranslationRequired(caseDetails), is(false));
     }
 
-    @Test
-    public void givenWelshDnRefusedAndWelshAddtionalInfo_clarification_string_returns_true() {
-        Map<String, Object> caseData = new HashMap<>();
-        caseData.put(OrchestrationConstants.REFUSAL_CLARIFICATION_ADDITIONAL_INFO_WELSH, "Welhs add info");
-        CaseDetails caseDetails = CaseDetails.builder().state(WELSH_DN_REFUSED).caseData(caseData).build();
-        assertThat(CaseDataUtils.isWelshTranslationRequiredForDnRefusal(caseDetails), is(true));
-    }
 
     @Test
     public void shouldReturnAdequateResultsFor_isAdulteryCaseWithCoRespondent() {
