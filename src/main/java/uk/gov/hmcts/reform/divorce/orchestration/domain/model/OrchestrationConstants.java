@@ -201,7 +201,7 @@ public class OrchestrationConstants {
     public static final String CO_RESPONDENT_ANSWER_RECEIVED = "ReceivedAnswerFromCoResp";
     public static final String CO_RESPONDENT_ANSWER_RECEIVED_DATE = "ReceivedAnswerFromCoRespDate";
     public static final String CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL = "CoRespContactMethodIsDigital";
-    public static final String COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE = "coRespondentCostOrderLetterTemplateID";
+    public static final String COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE = "coRespondentCostOrderLetter";
     public static final String COST_ORDER_CO_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE = "coRespondentSolicitorCostOrderLetter";
     public static final String DN_DECISION_DATE_FIELD = "DNApprovalDate";
 

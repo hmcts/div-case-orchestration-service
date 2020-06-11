@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DaGrantedLetterGenerationTask;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -53,7 +54,6 @@ public class CostOrderLetterGenerationTaskTest {
     private static final String CO_RESPONDENTS_LAST_NAME = "Sam";
 
     private static final String CASE_ID = "It's mandatory field in context";
-    private static final String LETTER_DATE_FROM_CCD = LocalDate.now().toString();
     private static final String LETTER_DATE_EXPECTED = formatDateWithCustomerFacingFormat(LocalDate.now());
 
     private static final CtscContactDetails CTSC_CONTACT = CtscContactDetails.builder().build();
@@ -84,10 +84,10 @@ public class CostOrderLetterGenerationTaskTest {
     }
 
     @Test
-    public void executeShouldPopulateFieldInContext() throws TaskException {
+    public void executeShouldPopulateFieldInContextWhenCoRespondentIsNotRepresented() throws TaskException {
         TaskContext context = prepareTaskContext();
 
-        costOrderLetterGenerationTask.execute(context, buildCaseDataCoRespondentNotRepresented());
+        costOrderLetterGenerationTask.execute(context, buildCaseDataWhenCoRespondentNotRepresented());
 
         Set<GeneratedDocumentInfo> documents = context.getTransientObject(DOCUMENT_COLLECTION);
         assertThat(documents.size(), is(1));
@@ -99,6 +99,23 @@ public class CostOrderLetterGenerationTaskTest {
         verifyPdfDocumentGenerationCallIsCorrectForCostOrderLetter();
     }
 
+    @Test
+    public void executeShouldPopulateFieldInContextWhenCoRespondentIsRepresented() throws TaskException {
+        TaskContext context = prepareTaskContext();
+
+        costOrderLetterGenerationTask.execute(context, buildCaseDataWhenCoRespondentRepresented());
+
+        Set<GeneratedDocumentInfo> documents = context.getTransientObject(DOCUMENT_COLLECTION);
+        assertThat(documents.size(), is(1));
+        GeneratedDocumentInfo generatedDocumentInfo = documents.stream().findFirst().get();
+        assertThat(generatedDocumentInfo.getDocumentType(), is(DaGrantedLetterGenerationTask.FileMetadata.DOCUMENT_TYPE));
+        assertThat(generatedDocumentInfo.getFileName(), is(createdDoc.getFileName()));
+
+        verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
+        costOrderLetterGenerationTask.getDocumentType();
+
+        verifyPdfDocumentGenerationCallIsCorrectForCostOrderLetter();
+    }
 
     private void verifyPdfDocumentGenerationCallIsCorrectForCostOrderLetter() {
         final ArgumentCaptor<CoRespondentCostOrderCoverLetter> costOrderCoRespondentLetterArgumentCaptor =
@@ -125,8 +142,12 @@ public class CostOrderLetterGenerationTaskTest {
         return context;
     }
 
-    private Map<String, Object> buildCaseDataCoRespondentNotRepresented() {
+    private Map<String, Object> buildCaseDataWhenCoRespondentNotRepresented() {
         return buildCaseData(false);
+    }
+
+    private Map<String, Object> buildCaseDataWhenCoRespondentRepresented() {
+        return buildCaseData(true);
     }
 
     private Map<String, Object> buildCaseData(boolean isCoRespondentRepresented) {
@@ -138,6 +159,8 @@ public class CostOrderLetterGenerationTaskTest {
         caseData.put(PETITIONER_LAST_NAME, PETITIONERS_LAST_NAME);
         caseData.put(RESPONDENT_FIRST_NAME, RESPONDENTS_FIRST_NAME);
         caseData.put(RESPONDENT_LAST_NAME, RESPONDENTS_LAST_NAME);
+        caseData.put(CO_RESPONDENTS_FIRST_NAME, CO_RESPONDENTS_FIRST_NAME);
+        caseData.put(CO_RESPONDENTS_LAST_NAME, CO_RESPONDENTS_LAST_NAME);
 
         return caseData;
     }
