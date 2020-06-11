@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.BulkPrintService;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
@@ -21,7 +22,6 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_PRINT_ERROR_KEY;
@@ -29,6 +29,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.BULK_PRINT_LETTER_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.DOCUMENT_TYPES_TO_PRINT;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskTestHelper.createGeneratedDocument;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BulkPrinterTaskTest {
@@ -57,8 +58,8 @@ public class BulkPrinterTaskTest {
 
     @Test
     public void happyPath() {
-        final GeneratedDocumentInfo secondDocument = mock(GeneratedDocumentInfo.class);
-        final GeneratedDocumentInfo firstDocument = mock(GeneratedDocumentInfo.class);
+        final GeneratedDocumentInfo firstDocument = generateRandomDocument();
+        final GeneratedDocumentInfo secondDocument = generateRandomDocument();
         final Map<String, GeneratedDocumentInfo> generatedDocuments = new HashMap<>();
         generatedDocuments.put(TEST_SECOND_DOCUMENT_TYPE, secondDocument);
         generatedDocuments.put(TEST_FIRST_DOCUMENT_TYPE, firstDocument);
@@ -72,10 +73,10 @@ public class BulkPrinterTaskTest {
 
     @Test
     public void shouldAddNecessaryInfoToContextWhenPrintingSpecifiedDocuments() {
-        final GeneratedDocumentInfo firstDocument = mock(GeneratedDocumentInfo.class);
-        final GeneratedDocumentInfo secondDocument = mock(GeneratedDocumentInfo.class);
-        final GeneratedDocumentInfo thirdDocument = mock(GeneratedDocumentInfo.class);
-        final GeneratedDocumentInfo fourthDocument = mock(GeneratedDocumentInfo.class);
+        final GeneratedDocumentInfo firstDocument = generateRandomDocument();
+        final GeneratedDocumentInfo secondDocument = generateRandomDocument();
+        final GeneratedDocumentInfo thirdDocument = generateRandomDocument();
+        final GeneratedDocumentInfo fourthDocument = generateRandomDocument();
         final Map<String, GeneratedDocumentInfo> generatedDocuments = new HashMap<>();
         generatedDocuments.put(TEST_FIRST_DOCUMENT_TYPE, firstDocument);
         generatedDocuments.put(TEST_SECOND_DOCUMENT_TYPE, secondDocument);
@@ -98,8 +99,8 @@ public class BulkPrinterTaskTest {
 
     @Test
     public void errorsFromBulkPrintServiceAreReported() {
-        final GeneratedDocumentInfo miniPetition = mock(GeneratedDocumentInfo.class);
-        final GeneratedDocumentInfo respondentAosLetter = mock(GeneratedDocumentInfo.class);
+        final GeneratedDocumentInfo miniPetition = generateRandomDocument();
+        final GeneratedDocumentInfo respondentAosLetter = generateRandomDocument();
         final Map<String, GeneratedDocumentInfo> generatedDocuments = new HashMap<>();
         generatedDocuments.put(TEST_SECOND_DOCUMENT_TYPE, miniPetition);
         generatedDocuments.put(TEST_FIRST_DOCUMENT_TYPE, respondentAosLetter);
@@ -115,7 +116,7 @@ public class BulkPrinterTaskTest {
 
     @Test
     public void packCannotBePrintedWithoutTheFirstDocument() {
-        final GeneratedDocumentInfo miniPetition = mock(GeneratedDocumentInfo.class);
+        final GeneratedDocumentInfo miniPetition = generateRandomDocument();
         final Map<String, GeneratedDocumentInfo> generatedDocuments = new HashMap<>();
         generatedDocuments.put(TEST_SECOND_DOCUMENT_TYPE, miniPetition);
         context.setTransientObject(DOCUMENTS_GENERATED, generatedDocuments);
@@ -128,7 +129,7 @@ public class BulkPrinterTaskTest {
 
     @Test
     public void packCannotBePrintedWithoutTheSecondDocument() {
-        final GeneratedDocumentInfo respondentAosLetter = mock(GeneratedDocumentInfo.class);
+        final GeneratedDocumentInfo respondentAosLetter = generateRandomDocument();
         final Map<String, GeneratedDocumentInfo> generatedDocuments = new HashMap<>();
         generatedDocuments.put(TEST_FIRST_DOCUMENT_TYPE, respondentAosLetter);
         context.setTransientObject(DOCUMENTS_GENERATED, generatedDocuments);
@@ -137,6 +138,11 @@ public class BulkPrinterTaskTest {
 
         verifyZeroInteractions(bulkPrintService);
         assertThat(context.hasTaskFailed(), is(false));
+    }
+
+    private GeneratedDocumentInfo generateRandomDocument() {
+        String randomId = UUID.randomUUID().toString();
+        return createGeneratedDocument("http://" + randomId, "docType" + randomId, "filename" + randomId);
     }
 
 }
