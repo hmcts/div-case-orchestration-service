@@ -47,7 +47,6 @@ public class CostOrderNotificationLetterGenerationTask extends BasePayloadSpecif
             .solicitorReference(getSolicitorReference(caseData))
             .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
             .addressee(getAddresseeCoRespondentOrSolicitorIfRepresented(caseData))
-            .coRespondentFullName(getCoRespondentSolicitorFullName(caseData))
             .letterDate(getLetterDate())
             .hearingDate(getHearingDate(caseData))
             .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))

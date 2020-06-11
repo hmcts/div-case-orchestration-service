@@ -16,8 +16,6 @@ import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
 public class CoRespondentCostOrderCoverLetter extends DocmosisTemplateVars {
     @JsonProperty("addressee")
     private Addressee addressee;
-    @JsonProperty("coRespondentFullName")
-    private String coRespondentFullName;
     @JsonProperty("hearingDate")
     private String hearingDate;
 
@@ -29,11 +27,9 @@ public class CoRespondentCostOrderCoverLetter extends DocmosisTemplateVars {
         String hearingDate,
         String petitionerFullName,
         String respondentFullName,
-        Addressee addressee,
-        String coRespondentFullName) {
+        Addressee addressee) {
         super(ctscContactDetails, caseReference, letterDate, petitionerFullName, respondentFullName);
         this.addressee = addressee;
-        this.coRespondentFullName = coRespondentFullName;
         this.hearingDate = hearingDate;
     }
 }

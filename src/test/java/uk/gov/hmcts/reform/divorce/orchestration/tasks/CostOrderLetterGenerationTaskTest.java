@@ -109,26 +109,6 @@ public class CostOrderLetterGenerationTaskTest {
         verifyPdfDocumentGenerationCallIsCorrectForCostOrderLetter();
     }
 
-    @Test
-    public void executeShouldPopulateFieldInContextWhenCoRespondentIsRepresented() throws TaskException {
-        TaskContext context = prepareTaskContext();
-
-        Map<String, Object> caseData = buildCaseDataWhenCoRespondentNotRepresented();
-        costOrderLetterGenerationTask.execute(context, caseData);
-
-
-        verify(ccdUtil).addNewDocumentsToCaseData(eq(caseData), newDocumentInfoListCaptor.capture());
-        List<GeneratedDocumentInfo> newDocumentInfoList = newDocumentInfoListCaptor.getValue();
-
-        assertThat(newDocumentInfoList, hasSize(1));
-        GeneratedDocumentInfo generatedDocumentInfo = newDocumentInfoList.get(0);
-        assertThat(generatedDocumentInfo.getDocumentType(), is(DOCUMENT_TYPE));
-        assertThat(generatedDocumentInfo.getFileName(), is(createdDoc.getFileName()));
-
-        verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
-        verifyPdfDocumentGenerationCallIsCorrectForCostOrderLetter();
-    }
-
     private void verifyPdfDocumentGenerationCallIsCorrectForCostOrderLetter() {
         final ArgumentCaptor<CoRespondentCostOrderCoverLetter> costOrderCoRespondentLetterArgumentCaptor =
             ArgumentCaptor.forClass(CoRespondentCostOrderCoverLetter.class);
@@ -140,7 +120,6 @@ public class CostOrderLetterGenerationTaskTest {
         final CoRespondentCostOrderCoverLetter coRespondentCoverLetter = costOrderCoRespondentLetterArgumentCaptor.getValue();
         assertThat(coRespondentCoverLetter.getPetitionerFullName(), is(PETITIONERS_FIRST_NAME + " " + PETITIONERS_LAST_NAME));
         assertThat(coRespondentCoverLetter.getRespondentFullName(), is(RESPONDENTS_FIRST_NAME + " " + RESPONDENTS_LAST_NAME));
-        assertThat(coRespondentCoverLetter.getCoRespondentFullName(), is(CO_RESPONDENTS_FIRST_NAME + " " + CO_RESPONDENTS_LAST_NAME));
         assertThat(coRespondentCoverLetter.getCaseReference(), is(CASE_ID));
         assertThat(coRespondentCoverLetter.getLetterDate(), is(LETTER_DATE_EXPECTED));
         assertThat(coRespondentCoverLetter.getCtscContactDetails(), is(CTSC_CONTACT));

@@ -37,7 +37,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COST_ORDER_CO_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.CO_RESPONDENT_SOLICITORS_EXPECTED_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
@@ -53,12 +52,10 @@ public class CostOrderNotificationLetterGenerationTaskTest {
     private static final String PETITIONERS_LAST_NAME = "Nowak";
     private static final String RESPONDENTS_FIRST_NAME = "John";
     private static final String RESPONDENTS_LAST_NAME = "Wozniak";
-    private static final String CO_RESPONDENTS_FIRST_NAME = "Jane";
-    private static final String CO_RESPONDENTS_LAST_NAME = "Sam";
+
     private static final String SOLICITOR_REF = "SolRef1234";
 
     private static final String CASE_ID = "It's mandatory field in context";
-    private static final String LETTER_DATE_FROM_CCD = LocalDate.now().toString();
     private static final String LETTER_DATE_EXPECTED = formatDateWithCustomerFacingFormat(LocalDate.now());
 
     private static final CtscContactDetails CTSC_CONTACT = CtscContactDetails.builder().build();
@@ -80,6 +77,14 @@ public class CostOrderNotificationLetterGenerationTaskTest {
 
     private GeneratedDocumentInfo createdDoc;
 
+    public static TaskContext prepareTaskContext() {
+        TaskContext context = new DefaultTaskContext();
+        context.setTransientObject(CASE_ID_JSON_KEY, CASE_ID);
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+
+        return context;
+    }
+
     @Before
     public void setup() {
         createdDoc = createDocument();
@@ -92,53 +97,6 @@ public class CostOrderNotificationLetterGenerationTaskTest {
         String documentType = costOrderNotificationLetterGenerationTask.getDocumentType();
 
         assertThat(documentType, is(COST_ORDER_CO_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE));
-    }
-
-    @Test
-    public void executeShouldPopulateFieldInContext() throws TaskException {
-        TaskContext context = prepareTaskContext();
-
-        Map<String, Object> caseData = buildCaseDataCoRespondentRepresented();
-        costOrderNotificationLetterGenerationTask.execute(context, caseData);
-
-        verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
-        verify(ccdUtil).addNewDocumentsToCaseData(eq(caseData), newDocumentInfoListCaptor.capture());
-        List<GeneratedDocumentInfo> newDocumentInfoList = newDocumentInfoListCaptor.getValue();
-
-        assertThat(newDocumentInfoList, hasSize(1));
-        GeneratedDocumentInfo generatedDocumentInfo = newDocumentInfoList.get(0);
-        assertThat(generatedDocumentInfo.getDocumentType(), is(DOCUMENT_TYPE));
-        assertThat(generatedDocumentInfo.getFileName(), is(createdDoc.getFileName()));
-
-        verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
-        verifyPdfDocumentGenerationCallIsCorrectForCostOrderLetter();
-    }
-
-
-    private void verifyPdfDocumentGenerationCallIsCorrectForCostOrderLetter() {
-        final ArgumentCaptor<CoRespondentCostOrderNotificationCoverLetter> costOrderCoRespondentNotificationLetterArgumentCaptor =
-            ArgumentCaptor.forClass(CoRespondentCostOrderNotificationCoverLetter.class);
-
-        verify(pdfDocumentGenerationService, times(1))
-            .generatePdf(costOrderCoRespondentNotificationLetterArgumentCaptor.capture(),
-                eq(CostOrderNotificationLetterGenerationTask.FileMetadata.TEMPLATE_ID),
-                eq(AUTH_TOKEN));
-
-        final CoRespondentCostOrderNotificationCoverLetter coRespondentCoverLetter = costOrderCoRespondentNotificationLetterArgumentCaptor.getValue();
-        assertThat(coRespondentCoverLetter.getPetitionerFullName(), is(PETITIONERS_FIRST_NAME + " " + PETITIONERS_LAST_NAME));
-        assertThat(coRespondentCoverLetter.getRespondentFullName(), is(RESPONDENTS_FIRST_NAME + " " + RESPONDENTS_LAST_NAME));
-        assertThat(coRespondentCoverLetter.getCoRespondentFullName(), is(CO_RESPONDENT_SOLICITORS_EXPECTED_NAME));
-        assertThat(coRespondentCoverLetter.getCaseReference(), is(CASE_ID));
-        assertThat(coRespondentCoverLetter.getLetterDate(), is(LETTER_DATE_EXPECTED));
-        assertThat(coRespondentCoverLetter.getCtscContactDetails(), is(CTSC_CONTACT));
-    }
-
-    public static TaskContext prepareTaskContext() {
-        TaskContext context = new DefaultTaskContext();
-        context.setTransientObject(CASE_ID_JSON_KEY, CASE_ID);
-        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-
-        return context;
     }
 
     @Test
@@ -158,7 +116,6 @@ public class CostOrderNotificationLetterGenerationTaskTest {
         verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
         verifyPdfDocumentGenerationCallIsCorrectForCostOrderNotificationLetter();
     }
-
 
     private void verifyPdfDocumentGenerationCallIsCorrectForCostOrderNotificationLetter() {
         final ArgumentCaptor<CoRespondentCostOrderNotificationCoverLetter> costOrderNotificationCoverLetterArgumentCaptor =

@@ -46,7 +46,6 @@ public class CostOrderLetterGenerationTask extends BasePayloadSpecificDocumentGe
             .caseReference(getCaseId(context))
             .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
             .addressee(getAddresseeCoRespondentOrSolicitorIfRepresented(caseData))
-            .coRespondentFullName(getCoRespondentFullName(caseData))
             .letterDate(getLetterDate())
             .hearingDate(getHearingDate(caseData))
             .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
@@ -61,14 +60,6 @@ public class CostOrderLetterGenerationTask extends BasePayloadSpecificDocumentGe
         return generatedDocumentInfo;
     }
 
-    private Addressee getAddresseeCoRespondentOrSolicitorIfRepresented(Map<String, Object> caseData) {
-        if (isCoRespondentRepresented(caseData)) {
-            return AddresseeDataExtractor.getCoRespondentSolicitor(caseData);
-        }
-
-        return AddresseeDataExtractor.getCoRespondent(caseData);
-    }
-
     @Override
     public String getDocumentType() {
         return FileMetadata.DOCUMENT_TYPE;
@@ -79,4 +70,11 @@ public class CostOrderLetterGenerationTask extends BasePayloadSpecificDocumentGe
         return FileMetadata.TEMPLATE_ID;
     }
 
+    private Addressee getAddresseeCoRespondentOrSolicitorIfRepresented(Map<String, Object> caseData) {
+        if (isCoRespondentRepresented(caseData)) {
+            return AddresseeDataExtractor.getCoRespondentSolicitor(caseData);
+        }
+
+        return AddresseeDataExtractor.getCoRespondent(caseData);
+    }
 }
