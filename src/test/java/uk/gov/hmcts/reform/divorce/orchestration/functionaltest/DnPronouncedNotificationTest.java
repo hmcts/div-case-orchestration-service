@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.google.common.collect.ImmutableMap;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -108,10 +107,21 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
     private static final String GENERIC_UPDATE_RESPONDENT_TEMPLATE_ID = "dc47109d-95f0-4a55-a11f-de41a5201cbc";
     private static final String COST_ORDER_ID = "7d10126d-0e88-4f0e-b475-628b54a87ca6";
     private static final String SERVICE_AUTH_CONTEXT_PATH = "/lease";
-
+    private static final ImmutableMap<String, Object> BASE_CASE_DATA = ImmutableMap.<String, Object>builder()
+            .put(D8_DERIVED_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS, TEST_D8_DERIVED_3RD_PARTY_ADDRESS)
+            .put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE)
+            .put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE)
+            .put(D_8_CASE_REFERENCE, TEST_D8_CASE_REFERENCE)
+            .put(DATETIME_OF_HEARING_CCD_FIELD, TEST_EXPECTED_DUE_DATE)
+            .put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME)
+            .put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME)
+            .put(RESPONDENT_FIRST_NAME, TEST_RESPONDENT_FIRST_NAME)
+            .put(RESPONDENT_LAST_NAME, TEST_RESPONDENT_LAST_NAME)
+            .put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME, TEST_CO_RESPONDENTS_FIRST_NAME)
+            .put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME, TEST_CO_RESPONDENTS_LAST_NAME)
+            .build();
     private Map<String, Object> ccdCallbackResponse;
     private CcdCallbackRequest ccdCallbackRequest;
-    private ImmutableMap<String, Object> BASE_CASE_DATA;
 
     @MockBean
     private EmailClient emailClient;
@@ -131,22 +141,6 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
     @Captor
     private ArgumentCaptor<List<GeneratedDocumentInfo>> documentsToPrintCaptor;
 
-    @Before
-    public void setup() {
-        BASE_CASE_DATA = ImmutableMap.<String, Object>builder()
-            .put(D8_DERIVED_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS, TEST_D8_DERIVED_3RD_PARTY_ADDRESS)
-            .put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE)
-            .put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE)
-            .put(D_8_CASE_REFERENCE, TEST_D8_CASE_REFERENCE)
-            .put(DATETIME_OF_HEARING_CCD_FIELD, TEST_EXPECTED_DUE_DATE)
-            .put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME)
-            .put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME)
-            .put(RESPONDENT_FIRST_NAME, TEST_RESPONDENT_FIRST_NAME)
-            .put(RESPONDENT_LAST_NAME, TEST_RESPONDENT_LAST_NAME)
-            .put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME, TEST_CO_RESPONDENTS_FIRST_NAME)
-            .put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME, TEST_CO_RESPONDENTS_LAST_NAME)
-            .build();
-    }
 
     @Test
     public void givenCaseDataWithNoPaysCosts_whenDnPronounced_thenSendGenericNotifications() throws Exception {
