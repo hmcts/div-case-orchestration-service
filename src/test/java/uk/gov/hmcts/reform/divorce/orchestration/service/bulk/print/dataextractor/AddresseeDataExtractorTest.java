@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import uk.gov.hmcts.reform.bsp.common.model.document.Addressee;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
@@ -15,6 +16,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
@@ -55,8 +57,18 @@ public class AddresseeDataExtractorTest {
     }
 
     @Test
-    public void getCoRespondentShouldReturnValidValues() { // TODO sad path
+    public void getCoRespondentShouldReturnValidValues() {
         Map<String, Object> caseData = buildCaseDataWithCoRespondentAsAddressee();
+
+        Addressee addressee = AddresseeDataExtractor.getCoRespondent(caseData);
+
+        assertThat(addressee.getFormattedAddress(), is(CO_RESPONDENT_ADDRESS));
+        assertThat(addressee.getName(), is(CO_RESPONDENTS_EXPECTED_NAME));
+    }
+
+    @Test(expected = InvalidDataForTaskException.class)
+    public void getCoRespondentShouldThrow_InvalidData() {
+        Map<String, Object> caseData = ImmutableMap.of(D_8_PETITIONER_FIRST_NAME, "Finn");
 
         Addressee addressee = AddresseeDataExtractor.getCoRespondent(caseData);
 
@@ -82,8 +94,18 @@ public class AddresseeDataExtractorTest {
     }
 
     @Test
-    public void getCoRespondentSolicitorShouldReturnValidValues() { // TODO sad path
+    public void getCoRespondentSolicitorShouldReturnValidValues() {
         Map<String, Object> caseData = buildCaseDataWithCoRespondentSolicitorAsAddressee();
+
+        Addressee addressee = AddresseeDataExtractor.getCoRespondentSolicitor(caseData);
+
+        assertThat(addressee.getFormattedAddress(), is(CO_RESPONDENT_SOLICITOR_ADDRESS));
+        assertThat(addressee.getName(), is(CO_RESPONDENT_SOLICITORS_EXPECTED_NAME));
+    }
+
+    @Test(expected = InvalidDataForTaskException.class)
+    public void getCoRespondentSolicitorShouldThrow_InvalidData() {
+        Map<String, Object> caseData = ImmutableMap.of(CO_RESPONDENT_SOLICITOR_REF, "TestData");
 
         Addressee addressee = AddresseeDataExtractor.getCoRespondentSolicitor(caseData);
 
