@@ -144,6 +144,7 @@ public class OrchestrationConstants {
     public static final String DN_REFUSED_ADMIN_ERROR_OPTION = "adminError";
     public static final String DN_APPLICATION_SUBMITTED_DATE = "DNApplicationSubmittedDate";
     public static final String DN_REFUSAL_DRAFT = "DNRefusalDraft";
+    public static final String ADDITIONAL_INFRORMATION = "additionalInformation";
 
     // CCD Events
     public static final String DN_RECEIVED = "dnReceived";
