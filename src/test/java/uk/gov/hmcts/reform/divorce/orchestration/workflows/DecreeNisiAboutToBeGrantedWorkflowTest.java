@@ -349,7 +349,6 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
         verify(addDnOutcomeFlagFieldTask, never()).execute(any(), any());
         verify(defineWhoPaysCostsOrderTask, never()).execute(any(), any());
         verify(decreeNisiRefusalDocumentGeneratorTask, never()).execute(any(), any());
-        verify(caseFormatterAddDocuments, never()).execute(any(), any());
     }
 
 }

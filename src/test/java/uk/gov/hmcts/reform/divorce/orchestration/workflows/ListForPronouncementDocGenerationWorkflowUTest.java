@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetFormattedDnCourtDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SyncBulkCaseListTask;

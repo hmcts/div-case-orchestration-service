@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -116,11 +117,12 @@ public class SendPetitionerCoENotificationEmailTask implements Task<Map<String, 
 
         try {
             templateParameters.put(COURT_NAME_TEMPLATE_ID, taskCommons.getDnCourt(courtName).getName());
-
+            LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(payload);
             taskCommons.sendEmail(template,
                 EMAIL_DESCRIPTION,
                 emailToBeSentTo,
-                templateParameters);
+                templateParameters,
+                languagePreference);
             log.info("Petitioner notification sent for case {}", (String) context.getTransientObject(CASE_ID_JSON_KEY));
         } catch (TaskException exception) {
             log.error("Failed to send petitioner notification for case {}", (String) context.getTransientObject(CASE_ID_JSON_KEY));

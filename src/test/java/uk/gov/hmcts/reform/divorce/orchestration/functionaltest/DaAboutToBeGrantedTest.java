@@ -39,9 +39,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PRONO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType.DECREE_ABSOLUTE_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
@@ -92,10 +92,10 @@ public class DaAboutToBeGrantedTest extends MockedFunctionalTest {
 
     @Test
     public void givenCorrectRespondentDetails_ThenOkResponse() throws Exception {
-        stubDocumentGeneratorService(DECREE_ABSOLUTE_TEMPLATE_ID,
+        stubDocumentGeneratorService(DECREE_ABSOLUTE_TEMPLATE_ID.getTemplateName(),
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, ObjectMapperTestUtil.convertObject(ccdCallbackRequest.getCaseDetails(), Map.class)),
             DECREE_ABSOLUTE_DOCUMENT_TYPE);
-        when(mockEmailService.sendEmail(anyString(), anyString(), anyMap(), anyString())).thenReturn(null);
+        when(mockEmailService.sendEmail(anyString(), anyString(), anyMap(), anyString(), any())).thenReturn(null);
 
         String inputJson = convertObjectToJsonString(ccdCallbackRequest);
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(CASE_DATA).build();

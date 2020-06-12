@@ -108,7 +108,7 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
 
         String invitationLetterDocumentId = stubDocumentGeneratorService(RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
-            RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE
+            RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE.getValue()
         );
         String invitationLetterFilename = RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE.getValue() + caseDetails.getCaseId();
 

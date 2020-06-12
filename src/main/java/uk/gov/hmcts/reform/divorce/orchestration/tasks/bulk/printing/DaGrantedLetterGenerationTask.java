@@ -28,7 +28,7 @@ public class DaGrantedLetterGenerationTask extends BasePayloadSpecificDocumentGe
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FileMetadata {
-        public static final String TEMPLATE_ID = DECREE_ABSOLUTE_GRANTED_LETTER_TEMPLATE_ID;
+        public static final String TEMPLATE_ID = DECREE_ABSOLUTE_GRANTED_LETTER_TEMPLATE_ID.getValue();
         public static final String DOCUMENT_TYPE = DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE;
     }
 

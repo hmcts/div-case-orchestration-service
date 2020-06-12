@@ -11,7 +11,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.divorce.model.response.ValidationResponse;
-import uk.gov.hmcts.reform.divorce.models.response.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
