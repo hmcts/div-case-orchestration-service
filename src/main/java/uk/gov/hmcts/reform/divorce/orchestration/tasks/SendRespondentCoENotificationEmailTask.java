@@ -1,17 +1,14 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.TemplateConfigService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
-import uk.gov.hmcts.reform.divorce.orchestration.util.LocalDateToWelshStringConverter;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -42,27 +39,23 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_DATE_OF_HEARING;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_LIMIT_DATE_TO_CONTACT_COURT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRelationshipTermByGender;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
 
 @Component
-@AllArgsConstructor
 @Slf4j
-public class SendRespondentCertificateOfEntitlementNotificationEmail implements Task<Map<String, Object>> {
+public class SendRespondentCoENotificationEmailTask implements Task<Map<String, Object>> {
 
     private static final String EMAIL_DESCRIPTION = "Respondent Notification - Certificate of Entitlement";
 
+    @Autowired
     private TaskCommons taskCommons;
-    private TemplateConfigService templateConfigService;
-    private LocalDateToWelshStringConverter localDateToWelshStringConverter;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseDataPayload) throws TaskException {
@@ -76,7 +69,6 @@ public class SendRespondentCertificateOfEntitlementNotificationEmail implements 
         String respondentLastName = getMandatoryPropertyValueAsString(caseDataPayload, RESP_LAST_NAME_CCD_FIELD);
         String courtName = getMandatoryPropertyValueAsString(caseDataPayload, COURT_NAME_CCD_FIELD);
 
-
         LocalDate dateOfHearing = CaseDataUtils.getLatestCourtHearingDateFromCaseData(caseDataPayload);
 
         LocalDate limitDateToContactCourt = dateOfHearing.minus(PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT);
@@ -86,11 +78,8 @@ public class SendRespondentCertificateOfEntitlementNotificationEmail implements 
         String emailToBeSentTo;
 
         templateParameters.put(DATE_OF_HEARING, formatDateWithCustomerFacingFormat(dateOfHearing));
-        templateParameters.put(WELSH_DATE_OF_HEARING, localDateToWelshStringConverter.convert(dateOfHearing));
         templateParameters.put(LIMIT_DATE_TO_CONTACT_COURT,
             formatDateWithCustomerFacingFormat(limitDateToContactCourt));
-        templateParameters.put(WELSH_LIMIT_DATE_TO_CONTACT_COURT,
-                localDateToWelshStringConverter.convert(limitDateToContactCourt));
 
         if (wasCostsClaimGranted(caseDataPayload)) {
             templateParameters.put(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_YES_VALUE);
@@ -116,25 +105,21 @@ public class SendRespondentCertificateOfEntitlementNotificationEmail implements 
             } else {
                 String petitionerInferredGender = getMandatoryPropertyValueAsString(caseDataPayload,
                     D_8_INFERRED_PETITIONER_GENDER);
+                String petitionerRelationshipToRespondent = getRelationshipTermByGender(petitionerInferredGender);
 
-                String petRelToRespondent = templateConfigService.getRelationshipTermByGender(petitionerInferredGender, LanguagePreference.ENGLISH);
-                String welshPetRelToRespondent = templateConfigService.getRelationshipTermByGender(petitionerInferredGender,LanguagePreference.WELSH);
                 templateParameters.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, respondentFirstName);
                 templateParameters.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, respondentLastName);
                 templateParameters.put(NOTIFICATION_EMAIL, respondentEmail);
                 templateParameters.put(NOTIFICATION_CASE_NUMBER_KEY, familyManCaseId);
-                templateParameters.put(NOTIFICATION_HUSBAND_OR_WIFE, petRelToRespondent);
-                templateParameters.put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, welshPetRelToRespondent);
+                templateParameters.put(NOTIFICATION_HUSBAND_OR_WIFE, petitionerRelationshipToRespondent);
 
                 template = EmailTemplateNames.RESPONDENT_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION;
                 emailToBeSentTo = respondentEmail;
             }
 
             templateParameters.put(COURT_NAME_TEMPLATE_ID, taskCommons.getDnCourt(courtName).getName());
-            LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(
-                caseDataPayload);
 
-            taskCommons.sendEmail(template, EMAIL_DESCRIPTION, emailToBeSentTo, templateParameters, languagePreference);
+            taskCommons.sendEmail(template, EMAIL_DESCRIPTION, emailToBeSentTo, templateParameters);
             log.info("Respondent notification sent for case {}", (String) context.getTransientObject(CASE_ID_JSON_KEY));
         } catch (TaskException exception) {
             log.error("Failed to send Respondent notification for case {}", (String) context.getTransientObject(CASE_ID_JSON_KEY));

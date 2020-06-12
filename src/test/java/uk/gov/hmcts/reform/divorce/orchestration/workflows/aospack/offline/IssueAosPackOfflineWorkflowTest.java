@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MarkJourneyAsOffline;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
@@ -114,7 +115,7 @@ public class IssueAosPackOfflineWorkflowTest {
     private MultipleDocumentGenerationTask documentsGenerationTask;
 
     @Mock
-    private CaseFormatterAddDocuments caseFormatterAddDocuments;
+    private AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     @Mock
     private FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
@@ -148,7 +149,7 @@ public class IssueAosPackOfflineWorkflowTest {
         Map<String, Object> payload = new HashMap<>();
         payload.put("testKey", "testValue");
         when(documentsGenerationTask.execute(any(), any())).thenReturn(singletonMap("returnedKey1", "returnedValue1"));
-        when(caseFormatterAddDocuments.execute(any(), any())).thenReturn(singletonMap("returnedKey2", "returnedValue2"));
+        when(addNewDocumentsToCaseDataTask.execute(any(), any())).thenReturn(singletonMap("returnedKey2", "returnedValue2"));
         when(fetchPrintDocsFromDmStore.execute(any(), any())).thenReturn(singletonMap("returnedKey3", "returnedValue3"));
         when(bulkPrinterTask.execute(any(), any())).thenReturn(singletonMap("returnedKey4", "returnedValue4"));
         when(markJourneyAsOffline.execute(any(), any())).thenReturn(singletonMap("returnedKey5", "returnedValue5"));
@@ -410,7 +411,7 @@ public class IssueAosPackOfflineWorkflowTest {
     }
 
     private void verifyTasksAreCalledInOrder() {
-        verify(caseFormatterAddDocuments).execute(any(), argThat(allOf(
+        verify(addNewDocumentsToCaseDataTask).execute(any(), argThat(allOf(
             Matchers.<String, Object>hasEntry("returnedKey1", "returnedValue1")
         )));
 

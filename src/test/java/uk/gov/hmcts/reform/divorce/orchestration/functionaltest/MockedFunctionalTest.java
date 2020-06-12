@@ -14,11 +14,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
+import java.util.Map;
 import java.util.UUID;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.github.tomakehurst.wiremock.client.WireMock.matchingJsonPath;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.MediaType.ALL_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
@@ -30,6 +41,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public abstract class MockedFunctionalTest {
 
     private static final String APPLICATION_VND_UK_GOV_HMCTS_LETTER_SERVICE_IN_LETTER = "application/vnd.uk.gov.hmcts.letter-service.in.letter";
+    protected static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
 
     @ClassRule
     public static WireMockClassRule maintenanceServiceServer = new WireMockClassRule(buildWireMockConfig(4010));
@@ -79,6 +91,66 @@ public abstract class MockedFunctionalTest {
             .willReturn(aResponse()
                 .withStatus(status.value())
                 .withBody(convertObjectToJsonString(new SendLetterResponse(UUID.randomUUID())))));
+    }
+
+    public String stubDocumentGeneratorService(String templateName, Map<String, Object> templateValues, String documentTypeToReturn) {
+        String documentId = UUID.randomUUID().toString();
+
+        final GenerateDocumentRequest generateDocumentRequest =
+            GenerateDocumentRequest.builder()
+                .template(templateName)
+                .values(templateValues)
+                .build();
+
+        final GeneratedDocumentInfo dgsResponse =
+            GeneratedDocumentInfo.builder()
+                .documentType(documentTypeToReturn)
+                .url(getDocumentStoreTestUrl(documentId))
+                .build();
+
+        documentGeneratorServiceServer.stubFor(WireMock.post(GENERATE_DOCUMENT_CONTEXT_PATH)
+            .withRequestBody(equalToJson(convertObjectToJsonString(generateDocumentRequest)))
+            .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
+            .willReturn(aResponse()
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withStatus(HttpStatus.OK.value())
+                .withBody(convertObjectToJsonString(dgsResponse))));
+
+        return documentId;
+    }
+
+    public String stubDocumentGeneratorService(String templateName, String documentTypeToReturn) {
+        String documentId = UUID.randomUUID().toString();
+
+        final GeneratedDocumentInfo dgsResponse =
+            GeneratedDocumentInfo.builder()
+                .documentType(documentTypeToReturn)
+                .url(getDocumentStoreTestUrl(documentId))
+                .build();
+
+        documentGeneratorServiceServer.stubFor(WireMock.post(GENERATE_DOCUMENT_CONTEXT_PATH)
+            .withRequestBody(matchingJsonPath("$.template", equalTo(templateName)))
+            .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
+            .willReturn(aResponse()
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withStatus(HttpStatus.OK.value())
+                .withBody(convertObjectToJsonString(dgsResponse))));
+
+        return documentId;
+    }
+
+    protected String getDocumentStoreTestUrl(String documentId) {
+        return documentStore.baseUrl() + "/documents/" + documentId;
+    }
+
+    public void stubDMStore(String documentId, byte[] fileBytes) {
+        documentStore.stubFor(WireMock.get("/documents/" + documentId + "/binary")
+            .withHeader("ServiceAuthorization", new EqualToPattern("Bearer " + TEST_SERVICE_AUTH_TOKEN))
+            .withHeader("user-roles", new EqualToPattern("caseworker-divorce"))
+            .willReturn(aResponse()
+                .withStatus(HttpStatus.OK.value())
+                .withHeader(CONTENT_TYPE, ALL_VALUE)
+                .withBody(fileBytes)));
     }
 
 }

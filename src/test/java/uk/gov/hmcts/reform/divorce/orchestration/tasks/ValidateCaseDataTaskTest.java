@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.models.response.ValidationResponse;
+import uk.gov.hmcts.reform.divorce.model.response.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -28,6 +28,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getObjectMapperInstance;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ValidateCaseDataTaskTest {
@@ -42,7 +43,7 @@ public class ValidateCaseDataTaskTest {
 
     @Before
     public void setUp() {
-        validateCaseDataTask = new ValidateCaseDataTask(validationService);
+        validateCaseDataTask = new ValidateCaseDataTask(validationService, getObjectMapperInstance());
         validationResponse =
             ValidationResponse.builder()
                 .validationStatus("Pass")

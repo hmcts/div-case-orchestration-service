@@ -27,6 +27,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 public class DocumentContentFetcherServiceTest {
 
     public static final String URL = "dm-store-file-url";
+
     @Mock
     private RestTemplate restTemplate;
 

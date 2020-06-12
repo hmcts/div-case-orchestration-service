@@ -21,6 +21,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
@@ -46,6 +48,7 @@ public class CaseLinkedForHearingTest extends MockedFunctionalTest {
             .build();
 
         webClient.perform(post(API_URL)
+            .header(AUTHORIZATION_HEADER, AUTH_TOKEN)
             .content(convertObjectToJsonString(ccdCallbackRequest))
             .contentType(APPLICATION_JSON)
             .accept(APPLICATION_JSON))
@@ -56,13 +59,18 @@ public class CaseLinkedForHearingTest extends MockedFunctionalTest {
                 hasJsonPath("$.errors", nullValue())
             )));
 
-        verify(mockClient).sendEmail(eq(PETITIONER_COE_NOTIFICATION_EMAIL_TEMPLATE_ID),
+        verify(mockClient).sendEmail(
+            eq(PETITIONER_COE_NOTIFICATION_EMAIL_TEMPLATE_ID),
             eq("petitioner@justice.uk"),
-            any(), any());
+            any(),
+            any()
+        );
 
-        verify(mockClient).sendEmail(eq(RESPONDENT_COE_NOTIFICATION_EMAIL_TEMPLATE_ID),
-                eq("respondent@justice.uk"),
-                any(), any());
+        verify(mockClient).sendEmail(
+            eq(RESPONDENT_COE_NOTIFICATION_EMAIL_TEMPLATE_ID),
+            eq("respondent@justice.uk"),
+            any(),
+            any()
+        );
     }
-
 }

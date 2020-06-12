@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.reform.divorce.model.response.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.models.response.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
@@ -35,7 +36,10 @@ import static java.util.Collections.singletonMap;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.junit.Assert.assertEquals;
@@ -426,9 +430,10 @@ public class CallbackControllerTest {
                 .caseData(incomingPayload)
                 .build())
             .build();
-        when(caseOrchestrationService.processCaseLinkedForHearingEvent(incomingRequest)).thenReturn(incomingPayload);
+        when(caseOrchestrationService.processCaseLinkedForHearingEvent(incomingRequest, AUTH_TOKEN))
+            .thenReturn(incomingPayload);
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.caseLinkedForHearing(incomingRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.caseLinkedForHearing(AUTH_TOKEN, incomingRequest);
 
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), is(equalTo(incomingPayload)));
@@ -443,10 +448,10 @@ public class CallbackControllerTest {
                 .caseData(incomingPayload)
                 .build())
             .build();
-        when(caseOrchestrationService.processCaseLinkedForHearingEvent(incomingRequest))
+        when(caseOrchestrationService.processCaseLinkedForHearingEvent(incomingRequest, AUTH_TOKEN))
             .thenThrow(new CaseOrchestrationServiceException(new Exception("This is a test error message.")));
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.caseLinkedForHearing(incomingRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.caseLinkedForHearing(AUTH_TOKEN, incomingRequest);
 
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), is(nullValue()));
@@ -739,6 +744,22 @@ public class CallbackControllerTest {
 
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
+        assertThat(response.getBody().getErrors(), is(not(hasSize(greaterThan(0)))));
+        verify(caseOrchestrationService).handleDaGranted(callbackRequest, AUTH_TOKEN);
+    }
+
+    @Test
+    public void testServiceMethodReturnsErros_IfWorkflowExceptionIsThrown() throws WorkflowException {
+        when(caseOrchestrationService.handleDaGranted(any(), anyString())).thenThrow(new WorkflowException("This is an error."));
+
+        CcdCallbackRequest callbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder().caseData(singletonMap("incomingKey", "incomingValue")).build())
+            .build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.handleDaGranted(AUTH_TOKEN, callbackRequest);
+
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody().getErrors(), hasItem("This is an error."));
         verify(caseOrchestrationService).handleDaGranted(callbackRequest, AUTH_TOKEN);
     }
 

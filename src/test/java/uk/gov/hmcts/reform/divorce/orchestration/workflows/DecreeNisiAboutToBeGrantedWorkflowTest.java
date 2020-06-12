@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddDecreeNisiDecisionDateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddDnOutcomeFlagFieldTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DecreeNisiRefusalDocumentGeneratorTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DefineWhoPaysCostsOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetAmendPetitionFeeTask;
@@ -73,7 +73,7 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
     private DecreeNisiRefusalDocumentGeneratorTask decreeNisiRefusalDocumentGeneratorTask;
 
     @Mock
-    private CaseFormatterAddDocuments caseFormatterAddDocuments;
+    private AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     @Mock
     private GetAmendPetitionFeeTask getAmendPetitionFeeTask;
@@ -229,7 +229,7 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
 
         verify(defineWhoPaysCostsOrderTask, never()).execute(any(), any());
         verify(decreeNisiRefusalDocumentGeneratorTask, never()).execute(any(), any());
-        verify(caseFormatterAddDocuments, never()).execute(any(), any());
+        verify(addNewDocumentsToCaseDataTask, never()).execute(any(), any());
     }
 
     @Test
@@ -244,7 +244,7 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
         when(addDnOutcomeFlagFieldTask.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
         when(getAmendPetitionFeeTask.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
         when(decreeNisiRefusalDocumentGeneratorTask.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
-        when(caseFormatterAddDocuments.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
+        when(addNewDocumentsToCaseDataTask.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
         when(populateDocLink.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
 
         Map<String, Object> returnedPayload = workflow.run(CaseDetails.builder().caseData(inputPayload).build(), AUTH_TOKEN);
@@ -261,7 +261,7 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
             addDnOutcomeFlagFieldTask,
             getAmendPetitionFeeTask,
             decreeNisiRefusalDocumentGeneratorTask,
-            caseFormatterAddDocuments,
+            addNewDocumentsToCaseDataTask,
             populateDocLink
         );
 
@@ -272,7 +272,7 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
         inOrder.verify(addDnOutcomeFlagFieldTask).execute(any(TaskContext.class), eq(payloadReturnedByTask));
         inOrder.verify(getAmendPetitionFeeTask).execute(any(TaskContext.class), eq(payloadReturnedByTask));
         inOrder.verify(decreeNisiRefusalDocumentGeneratorTask).execute(any(TaskContext.class), eq(payloadReturnedByTask));
-        inOrder.verify(caseFormatterAddDocuments).execute(any(TaskContext.class), eq(payloadReturnedByTask));
+        inOrder.verify(addNewDocumentsToCaseDataTask).execute(any(TaskContext.class), eq(payloadReturnedByTask));
         inOrder.verify(populateDocLink).execute(any(TaskContext.class), eq(payloadReturnedByTask));
 
 
@@ -312,7 +312,7 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
 
         verify(defineWhoPaysCostsOrderTask, never()).execute(any(), any());
         verify(decreeNisiRefusalDocumentGeneratorTask, never()).execute(any(), any());
-        verify(caseFormatterAddDocuments, never()).execute(any(), any());
+        verify(addNewDocumentsToCaseDataTask, never()).execute(any(), any());
     }
 
     @Test

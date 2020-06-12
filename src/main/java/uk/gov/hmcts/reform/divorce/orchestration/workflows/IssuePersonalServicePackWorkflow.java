@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PersonalServiceValidationTask;
 
@@ -32,6 +33,7 @@ public class IssuePersonalServicePackWorkflow extends DefaultWorkflow<Map<String
 
     private final PersonalServiceValidationTask personalServiceValidationTask;
     private final DocumentGenerationTask documentGenerationTask;
+    private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
     private final CaseFormatterAddDocuments caseFormatterAddDocuments;
     private final DocumentTemplateService documentTemplateService;
 
@@ -46,7 +48,7 @@ public class IssuePersonalServicePackWorkflow extends DefaultWorkflow<Map<String
             new Task[]{
                 personalServiceValidationTask,
                 documentGenerationTask,
-                caseFormatterAddDocuments
+                addNewDocumentsToCaseDataTask
             },
             callbackRequest.getCaseDetails().getCaseData(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),

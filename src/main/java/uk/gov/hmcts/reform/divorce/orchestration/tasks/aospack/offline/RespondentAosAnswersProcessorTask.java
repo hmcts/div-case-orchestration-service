@@ -23,7 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.Divor
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 
 @Component
-public class RespondentAosAnswersProcessor implements Task<Map<String, Object>> {
+public class RespondentAosAnswersProcessorTask implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
@@ -67,7 +67,7 @@ public class RespondentAosAnswersProcessor implements Task<Map<String, Object>> 
     }
 
     private boolean isReasonAdulteryOrTwoYearsSeparation(String reasonForDivorce) {
-        return ADULTERY.getValue().equalsIgnoreCase(reasonForDivorce) || SEPARATION_TWO_YEARS.getValue().equalsIgnoreCase(reasonForDivorce);
+        return ADULTERY.equalsIgnoreCase(reasonForDivorce) || SEPARATION_TWO_YEARS.equalsIgnoreCase(reasonForDivorce);
     }
 
 }

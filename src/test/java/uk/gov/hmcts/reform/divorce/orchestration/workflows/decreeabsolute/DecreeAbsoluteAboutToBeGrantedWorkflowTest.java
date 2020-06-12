@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
@@ -47,7 +48,7 @@ public class DecreeAbsoluteAboutToBeGrantedWorkflowTest {
     private DocumentGenerationTask documentGenerationTask;
 
     @Mock
-    private CaseFormatterAddDocuments caseFormatterAddDocuments;
+    private AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     @Mock
     private DocumentTemplateService documentTemplateService;
@@ -87,11 +88,11 @@ public class DecreeAbsoluteAboutToBeGrantedWorkflowTest {
         final InOrder inOrder = inOrder(
             setDaGrantedDetailsTask,
             documentGenerationTask,
-            caseFormatterAddDocuments);
+            addNewDocumentsToCaseDataTask);
 
         inOrder.verify(setDaGrantedDetailsTask).execute(context, payload);
         inOrder.verify(documentGenerationTask).execute(context, payload);
-        inOrder.verify(caseFormatterAddDocuments).execute(context, payload);
+        inOrder.verify(addNewDocumentsToCaseDataTask).execute(context, payload);
     }
 
 }

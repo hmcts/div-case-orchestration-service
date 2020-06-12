@@ -8,16 +8,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.internal.hamcrest.HamcrestArgumentMatcher;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.DnCourt;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.util.LocalDateToWelshStringConverter;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -35,13 +32,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WESLH_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_CLAIM_GRANTED;
@@ -69,36 +64,32 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_DATE_OF_HEARING;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_LIMIT_DATE_TO_CONTACT_COURT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.PETITIONER_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.SOL_APPLICANT_COE_NOTIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
+public class SendPetitionerCoENotificationEmailTaskTest {
 
     private static final String PET_CASE_LISTED_FOR_HEARING_JSON = "/jsonExamples/payloads/caseListedForHearing.json";
     private static final String SOL_CASE_LISTED_FOR_HEARING_JSON = "/jsonExamples/payloads/solCaseListedForHearing.json";
 
     @Mock
     private TaskCommons taskCommons;
-    @Mock
-    private LocalDateToWelshStringConverter localDateToWelshStringConverter;
 
     @InjectMocks
-    private SendPetitionerCertificateOfEntitlementNotificationEmail sendPetitionerCertificateOfEntitlementNotificationEmail;
+    private SendPetitionerCoENotificationEmailTask sendPetitionerCoENotificationEmailTask;
 
     private DefaultTaskContext testContext;
 
-    private List<String> petMandatoryFields = asList(
+    private final List<String> petMandatoryFields = asList(
         D_8_CASE_REFERENCE,
         D_8_PETITIONER_FIRST_NAME,
         D_8_PETITIONER_LAST_NAME,
         DATETIME_OF_HEARING_CCD_FIELD,
         COURT_NAME_CCD_FIELD);
 
-    private List<String> solMandatoryFields = asList(
+    private final List<String> solMandatoryFields = asList(
         D_8_PETITIONER_FIRST_NAME,
         D_8_PETITIONER_LAST_NAME,
         RESP_FIRST_NAME_CCD_FIELD,
@@ -115,7 +106,6 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
         DnCourt dnCourt = new DnCourt();
         dnCourt.setName("Court Name");
         when(taskCommons.getDnCourt(anyString())).thenReturn(dnCourt);
-        when(localDateToWelshStringConverter.convert(isA(LocalDate.class))).thenReturn(TEST_WESLH_DATE);
     }
 
     @Test
@@ -123,7 +113,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
         Map<String, Object> incomingPayload = getJsonFromResourceFile(
             PET_CASE_LISTED_FOR_HEARING_JSON, CcdCallbackRequest.class).getCaseDetails().getCaseData();
 
-        Map<String, Object> returnedPayload = sendPetitionerCertificateOfEntitlementNotificationEmail.execute(testContext, incomingPayload);
+        Map<String, Object> returnedPayload = sendPetitionerCoENotificationEmailTask.execute(testContext, incomingPayload);
 
         verifyPetEmailParameters(allOf(
             hasEntry(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_YES_VALUE),
@@ -137,7 +127,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
         Map<String, Object> incomingPayload = getJsonFromResourceFile(
             SOL_CASE_LISTED_FOR_HEARING_JSON, CcdCallbackRequest.class).getCaseDetails().getCaseData();
 
-        Map<String, Object> returnedPayload = sendPetitionerCertificateOfEntitlementNotificationEmail.execute(testContext, incomingPayload);
+        Map<String, Object> returnedPayload = sendPetitionerCoENotificationEmailTask.execute(testContext, incomingPayload);
 
         verifySolEmailParameters(allOf(
             hasEntry(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_YES_VALUE),
@@ -152,7 +142,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
             PET_CASE_LISTED_FOR_HEARING_JSON, CcdCallbackRequest.class).getCaseDetails().getCaseData();
         incomingPayload.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "NO");
 
-        Map<String, Object> returnedPayload = sendPetitionerCertificateOfEntitlementNotificationEmail.execute(testContext, incomingPayload);
+        Map<String, Object> returnedPayload = sendPetitionerCoENotificationEmailTask.execute(testContext, incomingPayload);
 
         verifyPetEmailParameters(allOf(
             hasEntry(COSTS_CLAIM_NOT_GRANTED, NOTIFICATION_OPTIONAL_TEXT_YES_VALUE),
@@ -168,7 +158,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
             SOL_CASE_LISTED_FOR_HEARING_JSON, CcdCallbackRequest.class).getCaseDetails().getCaseData();
         incomingPayload.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "NO");
 
-        Map<String, Object> returnedPayload = sendPetitionerCertificateOfEntitlementNotificationEmail.execute(testContext, incomingPayload);
+        Map<String, Object> returnedPayload = sendPetitionerCoENotificationEmailTask.execute(testContext, incomingPayload);
 
         verifySolEmailParameters(allOf(
             hasEntry(COSTS_CLAIM_NOT_GRANTED, NOTIFICATION_OPTIONAL_TEXT_YES_VALUE),
@@ -184,7 +174,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
         incomingPayload.remove(DIVORCE_COSTS_CLAIM_CCD_FIELD);
         incomingPayload.remove(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD);
 
-        Map<String, Object> returnedPayload = sendPetitionerCertificateOfEntitlementNotificationEmail.execute(testContext, incomingPayload);
+        Map<String, Object> returnedPayload = sendPetitionerCoENotificationEmailTask.execute(testContext, incomingPayload);
 
         verifyPetEmailParameters(allOf(
             hasEntry(COSTS_CLAIM_NOT_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE),
@@ -200,7 +190,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
         incomingPayload.remove(DIVORCE_COSTS_CLAIM_CCD_FIELD);
         incomingPayload.remove(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD);
 
-        Map<String, Object> returnedPayload = sendPetitionerCertificateOfEntitlementNotificationEmail.execute(testContext, incomingPayload);
+        Map<String, Object> returnedPayload = sendPetitionerCoENotificationEmailTask.execute(testContext, incomingPayload);
 
         verifySolEmailParameters(allOf(
             hasEntry(COSTS_CLAIM_NOT_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE),
@@ -216,7 +206,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
         incomingPayload.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, NO_VALUE);
         incomingPayload.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, NO_VALUE);
 
-        Map<String, Object> returnedPayload = sendPetitionerCertificateOfEntitlementNotificationEmail.execute(testContext, incomingPayload);
+        Map<String, Object> returnedPayload = sendPetitionerCoENotificationEmailTask.execute(testContext, incomingPayload);
 
         verifyPetEmailParameters(allOf(
             hasEntry(COSTS_CLAIM_NOT_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE),
@@ -232,7 +222,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
         incomingPayload.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, NO_VALUE);
         incomingPayload.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, NO_VALUE);
 
-        Map<String, Object> returnedPayload = sendPetitionerCertificateOfEntitlementNotificationEmail.execute(testContext, incomingPayload);
+        Map<String, Object> returnedPayload = sendPetitionerCoENotificationEmailTask.execute(testContext, incomingPayload);
 
         verifySolEmailParameters(allOf(
             hasEntry(COSTS_CLAIM_NOT_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE),
@@ -251,7 +241,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
             payloadToBeModified.remove(mandatoryFieldToRemove);
 
             try {
-                sendPetitionerCertificateOfEntitlementNotificationEmail.execute(testContext, payloadToBeModified);
+                sendPetitionerCoENotificationEmailTask.execute(testContext, payloadToBeModified);
                 fail("Should have caught exception");
             } catch (TaskException taskException) {
                 assertThat(taskException.getMessage(), is(format("Could not evaluate value of mandatory property \"%s\"", mandatoryFieldToRemove)));
@@ -260,7 +250,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
                 fail("Should have caught TaskException, but got the following: " + throwable.getClass().getName());
             }
 
-            verify(taskCommons, never()).sendEmail(any(), any(), any(), any(), any());
+            verify(taskCommons, never()).sendEmail(any(), any(), any(), any());
         }
     }
 
@@ -274,7 +264,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
             payloadToBeModified.remove(mandatoryFieldToRemove);
 
             try {
-                sendPetitionerCertificateOfEntitlementNotificationEmail.execute(testContext, payloadToBeModified);
+                sendPetitionerCoENotificationEmailTask.execute(testContext, payloadToBeModified);
                 fail("Should have caught exception");
             } catch (TaskException taskException) {
                 assertThat(taskException.getMessage(), is(format("Could not evaluate value of mandatory property \"%s\"", mandatoryFieldToRemove)));
@@ -283,7 +273,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
                 fail("Should have caught TaskException, but got the following: " + throwable.getClass().getName());
             }
 
-            verify(taskCommons, never()).sendEmail(any(), any(), any(), any(), any());
+            verify(taskCommons, never()).sendEmail(any(), any(), any(), any());
         }
     }
 
@@ -299,13 +289,10 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
                     hasEntry(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, "Johnson"),
                     optionalTextParametersMatcher,
                     hasEntry(DATE_OF_HEARING, "21 April 2019"),
-                    hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "07 April 2019"),
-                    hasEntry(WELSH_LIMIT_DATE_TO_CONTACT_COURT, TEST_WESLH_DATE),
-                    hasEntry(WELSH_DATE_OF_HEARING, TEST_WESLH_DATE),
+                    hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "7 April 2019"),
                     hasEntry(COURT_NAME_TEMPLATE_ID, "Court Name")
                 )
-            )),
-            eq(LanguagePreference.ENGLISH));
+            )));
     }
 
     private void verifySolEmailParameters(Matcher<Map<? extends String, ?>> optionalTextParametersMatcher) throws TaskException {
@@ -321,13 +308,10 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmailTest {
                     hasEntry(NOTIFICATION_SOLICITOR_NAME, "Petitioner Solicitor name"),
                     optionalTextParametersMatcher,
                     hasEntry(DATE_OF_HEARING, "21 April 2019"),
-                    hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "07 April 2019"),
-                    hasEntry(WELSH_LIMIT_DATE_TO_CONTACT_COURT, TEST_WESLH_DATE),
-                    hasEntry(WELSH_DATE_OF_HEARING, TEST_WESLH_DATE),
+                    hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "7 April 2019"),
                     hasEntry(COURT_NAME_TEMPLATE_ID, "Court Name")
                 )
-            )),
-            eq(LanguagePreference.ENGLISH));
+            )));
     }
 
 }

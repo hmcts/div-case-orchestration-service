@@ -10,9 +10,9 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.CORESPONDENT_FIRST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.CORESPONDENT_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.CORESPONDENT_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.CO_RESPONDENT_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.CO_RESPONDENT_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.CO_RESPONDENT_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_SOLICITOR_NAME;
@@ -137,7 +137,7 @@ public class FullNamesDataExtractorTest {
 
     @Test
     public void getCoRespondentSolicitorFullNameReturnsValidStringWhensPopulated() {
-        Map<String, Object> caseData = new HashMap<>(ImmutableMap.of(CORESPONDENT_SOLICITOR_NAME, "John Smith"));
+        Map<String, Object> caseData = new HashMap<>(ImmutableMap.of(CO_RESPONDENT_SOLICITOR_NAME, "John Smith"));
 
         Assert.assertThat(FullNamesDataExtractor.getCoRespondentSolicitorFullName(caseData), is("John Smith"));
     }
@@ -145,7 +145,7 @@ public class FullNamesDataExtractorTest {
     @Test
     public void getCoRespondentSolicitorFullNameReturnsEmptyString() {
         asList("", "      ", null).forEach(value -> {
-            Map<String, Object> caseData = buildCaseDataWithField(CORESPONDENT_SOLICITOR_NAME, value);
+            Map<String, Object> caseData = buildCaseDataWithField(CO_RESPONDENT_SOLICITOR_NAME, value);
 
             assertThat(FullNamesDataExtractor.getCoRespondentSolicitorFullName(caseData), is(""));
         });
@@ -183,8 +183,8 @@ public class FullNamesDataExtractorTest {
 
     static Map<String, Object> buildCaseDataWithCoRespondentNames(String firstName, String lastName) {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(CORESPONDENT_FIRST_NAME, firstName);
-        caseData.put(CORESPONDENT_LAST_NAME, lastName);
+        caseData.put(CO_RESPONDENT_FIRST_NAME, firstName);
+        caseData.put(CO_RESPONDENT_LAST_NAME, lastName);
 
         return caseData;
     }

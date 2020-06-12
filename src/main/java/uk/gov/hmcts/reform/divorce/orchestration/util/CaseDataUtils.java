@@ -8,19 +8,24 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_REFERENCE_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.VALUE_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADDITIONAL_INFRORMATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DATE_FORMAT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_ADDITIONAL_INFO;
@@ -89,14 +94,19 @@ public class CaseDataUtils {
     }
 
     public static LocalDate getLatestCourtHearingDateFromCaseData(Map<String, Object> caseData) throws TaskException {
-        List<CollectionMember> courtHearingCollection = objectMapper.convertValue(
-            getMandatoryPropertyValueAsObject(caseData, DATETIME_OF_HEARING_CCD_FIELD), new TypeReference<List<CollectionMember>>() {
-            });
+        List<CollectionMember<Map<String, Object>>> courtHearingCollection = objectMapper.convertValue(
+            getMandatoryPropertyValueAsObject(caseData, DATETIME_OF_HEARING_CCD_FIELD),
+            new TypeReference<List<CollectionMember<Map<String, Object>>>>() {
+            }
+        );
+
         // Last element of list is the latest updated Court Hearing Date
         CollectionMember<Map<String, Object>> hearingDateTime = courtHearingCollection.get(courtHearingCollection.size() - 1);
 
-        return LocalDate.parse(getMandatoryPropertyValueAsString(hearingDateTime.getValue(), DATE_OF_HEARING_CCD_FIELD),
-            ofPattern(CCD_DATE_FORMAT));
+        return LocalDate.parse(
+            getMandatoryPropertyValueAsString(hearingDateTime.getValue(), DATE_OF_HEARING_CCD_FIELD),
+            DateUtils.Formatters.CCD_DATE
+        );
     }
 
     public static String getCaseLinkValue(Map<String, Object> caseData, String fieldName) {
@@ -106,16 +116,12 @@ public class CaseDataUtils {
             .orElse(null);
     }
 
-    public static Map<String, Object> getFieldAsStringObjectMap(Map<String, Object> caseData, String fieldName) {
+    public static Map<String, Object> getFieldAsStringObjectMap(Map<String, ?> caseData, String fieldName) {
         return (Map<String, Object>) caseData.get(fieldName);
     }
 
     public static Map<String, Object> createCaseLinkField(String fieldName, String linkId) {
         return ImmutableMap.of(fieldName, ImmutableMap.of(CASE_REFERENCE_FIELD, linkId));
-    }
-
-    public static Map<String, Object> getElementFromCollection(Map<String, Object> collectionEntry) {
-        return getFieldAsStringObjectMap(collectionEntry, VALUE_KEY);
     }
 
     public static boolean isPetitionerClaimingCosts(Map<String, Object> caseData) {
@@ -187,4 +193,34 @@ public class CaseDataUtils {
             .map(languagePreferenceWelsh -> LanguagePreference.WELSH)
             .orElse(LanguagePreference.ENGLISH);
     }
+    public static Map<String, Object> removeDocumentByDocumentType(Map<String, Object> caseData, String documentType) {
+        List<?> generatedDocuments = Optional.ofNullable(caseData.get(D8DOCUMENTS_GENERATED))
+            .map(i -> (List<?>) i)
+            .orElse(new ArrayList<>());
+
+        Map<String, Object> newCaseData = new HashMap<>(caseData);
+        if (!generatedDocuments.isEmpty()) {
+            List<?> filteredDocumentsList = generatedDocuments.stream()
+                .filter(item -> {
+                    CollectionMember<Document> document = objectMapper.convertValue(item, new TypeReference<CollectionMember<Document>>() {
+                    });
+                    return !documentType.equals(document.getValue().getDocumentType());
+                })
+                .collect(Collectors.toList());
+
+            if (filteredDocumentsList.isEmpty()) {
+                newCaseData.remove(D8DOCUMENTS_GENERATED);
+            } else {
+                newCaseData.replace(D8DOCUMENTS_GENERATED, filteredDocumentsList);
+            }
+
+        }
+
+        return newCaseData;
+    }
+
+    public static Map<String, Object> getElementFromCollection(Map<String, ?> collectionEntry) {
+        return getFieldAsStringObjectMap(collectionEntry, VALUE_KEY);
+    }
+
 }

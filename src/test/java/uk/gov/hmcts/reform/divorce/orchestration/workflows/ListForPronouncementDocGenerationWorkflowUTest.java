@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
@@ -58,7 +59,7 @@ public class ListForPronouncementDocGenerationWorkflowUTest {
     private DocumentGenerationTask documentGenerationTask;
 
     @Mock
-    private CaseFormatterAddDocuments caseFormatterAddDocuments;
+    private AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     @Mock
     private SyncBulkCaseListTask syncBulkCaseListTask;
@@ -88,7 +89,7 @@ public class ListForPronouncementDocGenerationWorkflowUTest {
         when(syncBulkCaseListTask.execute(context, payload)).thenReturn(payload);
         when(setFormattedDnCourtDetails.execute(context, payload)).thenReturn(payload);
         when(documentGenerationTask.execute(context, payload)).thenReturn(payload);
-        when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
+        when(addNewDocumentsToCaseDataTask.execute(context, payload)).thenReturn(payload);
         when(removePronouncementDetailsTask.execute(context, payload)).thenReturn(payload);
         when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.BULK_LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID))
                 .thenReturn(LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID);
@@ -101,14 +102,14 @@ public class ListForPronouncementDocGenerationWorkflowUTest {
                 syncBulkCaseListTask,
                 setFormattedDnCourtDetails,
                 documentGenerationTask,
-                caseFormatterAddDocuments,
+            addNewDocumentsToCaseDataTask,
                 removePronouncementDetailsTask
         );
 
         inOrder.verify(syncBulkCaseListTask).execute(context, payload);
         inOrder.verify(setFormattedDnCourtDetails).execute(context, payload);
         inOrder.verify(documentGenerationTask).execute(context, payload);
-        inOrder.verify(caseFormatterAddDocuments).execute(context, payload);
+        inOrder.verify(addNewDocumentsToCaseDataTask).execute(context, payload);
         inOrder.verify(removePronouncementDetailsTask).execute(context, payload);
         verify(documentTemplateService).getTemplateId(eq(LanguagePreference.ENGLISH),
                 eq(DocumentType.BULK_LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID));
@@ -138,7 +139,7 @@ public class ListForPronouncementDocGenerationWorkflowUTest {
         verify(syncBulkCaseListTask, times(1)).execute(context, payload);
         verify(setFormattedDnCourtDetails, never()).execute(context, payload);
         verify(documentGenerationTask, never()).execute(context, payload);
-        verify(caseFormatterAddDocuments, never()).execute(context, payload);
+        verify(addNewDocumentsToCaseDataTask, never()).execute(context, payload);
         verify(removePronouncementDetailsTask, times(1)).execute(context, payload);
         verify(documentTemplateService).getTemplateId(eq(LanguagePreference.ENGLISH),
                 eq(DocumentType.BULK_LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID));
