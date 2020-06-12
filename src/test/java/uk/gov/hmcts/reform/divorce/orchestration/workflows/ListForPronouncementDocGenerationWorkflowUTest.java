@@ -14,8 +14,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetFormattedDnCourtDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SyncBulkCaseListTask;
@@ -113,7 +113,7 @@ public class ListForPronouncementDocGenerationWorkflowUTest {
         verify(documentTemplateService).getTemplateId(eq(LanguagePreference.ENGLISH),
                 eq(DocumentType.BULK_LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID));
     }
-    
+
     @Test
     public void givenCaseWithoutJudge_notCallDocumentGenerator() throws TaskException, WorkflowException {
         final Map<String, Object> payload = new HashMap<>();

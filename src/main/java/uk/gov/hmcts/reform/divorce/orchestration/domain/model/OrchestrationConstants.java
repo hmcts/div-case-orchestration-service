@@ -136,14 +136,11 @@ public class OrchestrationConstants {
     public static final String REFUSAL_REJECTION_ADDITIONAL_INFO_WELSH = "RefusalRejectionAdditionalInfoWelsh";
     public static final String REFUSAL_CLARIFICATION_ADDITIONAL_INFO = "RefusalClarificationAdditionalInfo";
     public static final String REFUSAL_CLARIFICATION_ADDITIONAL_INFO_WELSH = "RefusalClarificationAdditionalInfoWelsh";
-    public static final String COSTS_ORDER_ADDITIONAL_INFO = "CostsOrderAdditionalInfo";
-    public static final String COSTS_ORDER_ADDITIONAL_INFO_WELSH = "CostsOrderAdditionalInfoWelsh";
     public static final String REFUSAL_DECISION_MORE_INFO_VALUE = "moreInfo";
     public static final String DN_REFUSED_REJECT_OPTION = "reject";
     public static final String DN_REFUSED_ADMIN_ERROR_OPTION = "adminError";
     public static final String DN_APPLICATION_SUBMITTED_DATE = "DNApplicationSubmittedDate";
     public static final String DN_REFUSAL_DRAFT = "DNRefusalDraft";
-    public static final String ADDITIONAL_INFRORMATION = "additionalInformation";
 
     // CCD Events
     public static final String DN_RECEIVED = "dnReceived";
@@ -357,6 +354,9 @@ public class OrchestrationConstants {
     public static final String SERVICE = "DIVORCE";
 
     // Solicitors - Suggest refactoring into a common model library for all JSON keys
+    public static final String COSTS_ORDER_ADDITIONAL_INFO = "CostsOrderAdditionalInfo";
+    public static final String COSTS_ORDER_ADDITIONAL_INFO_WELSH = "CostsOrderAdditionalInfoWelsh";
+    public static final String ADDITIONAL_INFRORMATION = "additionalInformation";
     public static final String SOLICITOR_HOW_TO_PAY_JSON_KEY = "SolPaymentHowToPay";
     public static final String SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY = "SolicitorFeeAccountNumber";
     public static final String SOLICITOR_FIRM_JSON_KEY = "PetitionerSolicitorFirm";
