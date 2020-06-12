@@ -19,8 +19,6 @@ public class CostOrderCoRespondentLetterDataExtractor {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class CaseDataKeys {
-        public static final String COSTS_CLAIM_GRANTED = OrchestrationConstants.COSTS_CLAIM_GRANTED;
-
         public static final String CO_RESPONDENT_FIRST_NAME = OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME;
         public static final String CO_RESPONDENT_LAST_NAME = OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME;
         public static final String SOLICITOR_REFERENCE = OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
@@ -30,7 +28,6 @@ public class CostOrderCoRespondentLetterDataExtractor {
         return buildFullName(caseData, CaseDataKeys.CO_RESPONDENT_FIRST_NAME, CaseDataKeys.CO_RESPONDENT_LAST_NAME);
     }
 
-    // TODO all below moved here, needs tests
     public static String getHearingDate(Map<String, Object> caseData) throws TaskException {
         return returnFormattedDate(caseData, DATETIME_OF_HEARING_CCD_FIELD);
     }
@@ -47,5 +44,4 @@ public class CostOrderCoRespondentLetterDataExtractor {
     public static String getSolicitorReference(Map<String, Object> caseData) {
         return getMandatoryStringValue(caseData, CostOrderCoRespondentLetterDataExtractor.CaseDataKeys.SOLICITOR_REFERENCE);
     }
-
 }
