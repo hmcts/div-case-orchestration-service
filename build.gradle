@@ -91,6 +91,7 @@ allprojects {
 
     checkstyle.toolVersion = '8.32'
     checkstyle.configFile = new File(rootDir, "checkstyle.xml")
+    checkstyle.maxWarnings(0)
 
     // https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration.html
     dependencyCheck {
@@ -453,6 +454,10 @@ sonarqube {
         property "sonar.pitest.mode", "reuseReport"
         property "sonar.pitest.reportsDirectory", "build/reports/pitest"
     }
+}
+
+wrapper {
+    distributionType = Wrapper.DistributionType.ALL
 }
 
 def debug = System.getProperty("debug")
