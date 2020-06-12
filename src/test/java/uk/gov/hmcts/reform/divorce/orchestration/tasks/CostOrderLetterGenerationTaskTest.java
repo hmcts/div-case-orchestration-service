@@ -37,6 +37,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.CO_RESPONDENTS_EXPECTED_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.CO_RESPONDENT_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
@@ -100,6 +102,7 @@ public class CostOrderLetterGenerationTaskTest {
 
         verify(ccdUtil).addNewDocumentsToCaseData(eq(caseData), newDocumentInfoListCaptor.capture());
         List<GeneratedDocumentInfo> newDocumentInfoList = newDocumentInfoListCaptor.getValue();
+
         assertThat(newDocumentInfoList, hasSize(1));
         GeneratedDocumentInfo generatedDocumentInfo = newDocumentInfoList.get(0);
         assertThat(generatedDocumentInfo.getDocumentType(), is(DOCUMENT_TYPE));
@@ -123,6 +126,9 @@ public class CostOrderLetterGenerationTaskTest {
         assertThat(coRespondentCoverLetter.getCaseReference(), is(CASE_ID));
         assertThat(coRespondentCoverLetter.getLetterDate(), is(LETTER_DATE_EXPECTED));
         assertThat(coRespondentCoverLetter.getCtscContactDetails(), is(CTSC_CONTACT));
+        assertThat(coRespondentCoverLetter.getHearingDate(), is("20 October 2020"));
+        assertThat(coRespondentCoverLetter.getAddressee().getFormattedAddress(), is(CO_RESPONDENT_ADDRESS));
+        assertThat(coRespondentCoverLetter.getAddressee().getName(), is(CO_RESPONDENTS_EXPECTED_NAME));
     }
 
     public static TaskContext prepareTaskContext() {
