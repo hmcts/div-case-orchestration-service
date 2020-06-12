@@ -74,7 +74,7 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
             .caseData(caseData)
             .build();
 
-        String documentId = stubDocumentGeneratorService(RESPONDENT_INVITATION_TEMPLATE_NAME,
+        String documentId = stubDocumentGeneratorServiceBaseOnContextPath(RESPONDENT_INVITATION_TEMPLATE_NAME,
             ImmutableMap.of(
                 DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails,
                 ACCESS_CODE, TEST_PIN_CODE

@@ -147,7 +147,8 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
         final Map<String, Object> formattedCaseData = emptyMap();
 
-        stubDocumentGeneratorService(MINI_PETITION_TEMPLATE_NAME, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS), DOCUMENT_TYPE_PETITION);
+        stubDocumentGeneratorServiceBaseOnContextPath(MINI_PETITION_TEMPLATE_NAME,
+            singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS), DOCUMENT_TYPE_PETITION);
         when(validationService.validate(any())).thenReturn(VALIDATION_RESPONSE);
 
         webClient.perform(post(API_URL)
@@ -163,7 +164,8 @@ public class PetitionIssuedITest extends IdamTestSupport {
     public void givenGenerateAOSInvitationIsFalse_whenPetitionIssued_thenReturnCaseExpectedChanges() throws Exception {
         final Map<String, Object> formattedCaseData = emptyMap();
 
-        stubDocumentGeneratorService(MINI_PETITION_TEMPLATE_NAME, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS), DOCUMENT_TYPE_PETITION);
+        stubDocumentGeneratorServiceBaseOnContextPath(MINI_PETITION_TEMPLATE_NAME,
+            singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS), DOCUMENT_TYPE_PETITION);
         when(validationService.validate(any())).thenReturn(VALIDATION_RESPONSE);
 
         webClient.perform(post(API_URL)
@@ -190,7 +192,8 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
         stubSignIn();
         stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
-        stubDocumentGeneratorService(MINI_PETITION_TEMPLATE_NAME, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS), DOCUMENT_TYPE_PETITION);
+        stubDocumentGeneratorServiceBaseOnContextPath(MINI_PETITION_TEMPLATE_NAME,
+            singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS), DOCUMENT_TYPE_PETITION);
         when(validationService.validate(any())).thenReturn(VALIDATION_RESPONSE);
 
         webClient.perform(post(API_URL)
@@ -220,10 +223,10 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
         stubSignIn();
         stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
-        stubDocumentGeneratorService(MINI_PETITION_TEMPLATE_NAME,
+        stubDocumentGeneratorServiceBaseOnContextPath(MINI_PETITION_TEMPLATE_NAME,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequestWithServiceCentre.getCaseDetails()),
             DOCUMENT_TYPE_RESPONDENT_INVITATION);
-        stubDocumentGeneratorService(RESPONDENT_INVITATION_TEMPLATE_NAME,
+        stubDocumentGeneratorServiceBaseOnContextPath(RESPONDENT_INVITATION_TEMPLATE_NAME,
             ImmutableMap.of(
                 DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequestWithServiceCentre.getCaseDetails(),
                 ACCESS_CODE, TEST_PIN_CODE
@@ -261,9 +264,9 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
         stubSignIn();
         stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
-        stubDocumentGeneratorService(MINI_PETITION_TEMPLATE_NAME, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
+        stubDocumentGeneratorServiceBaseOnContextPath(MINI_PETITION_TEMPLATE_NAME, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
             ccdCallbackRequestWithServiceCentre.getCaseDetails()), DOCUMENT_TYPE_PETITION);
-        stubDocumentGeneratorService(RESPONDENT_INVITATION_TEMPLATE_NAME,
+        stubDocumentGeneratorServiceBaseOnContextPath(RESPONDENT_INVITATION_TEMPLATE_NAME,
             ImmutableMap.of(
                 DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequestWithServiceCentre.getCaseDetails(),
                 ACCESS_CODE, TEST_PIN_CODE),
@@ -275,7 +278,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
         stubGetFeeFromFeesAndPayments(HttpStatus.OK, feeResponse);
 
-        stubDocumentGeneratorService(CO_RESPONDENT_INVITATION_TEMPLATE_NAME,
+        stubDocumentGeneratorServiceBaseOnContextPath(CO_RESPONDENT_INVITATION_TEMPLATE_NAME,
             ImmutableMap.of(
                 DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequestWithServiceCentre.getCaseDetails(),
                 ACCESS_CODE, TEST_PIN_CODE,

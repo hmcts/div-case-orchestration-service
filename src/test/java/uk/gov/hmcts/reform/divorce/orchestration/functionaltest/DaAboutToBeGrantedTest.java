@@ -92,7 +92,7 @@ public class DaAboutToBeGrantedTest extends MockedFunctionalTest {
 
     @Test
     public void givenCorrectRespondentDetails_ThenOkResponse() throws Exception {
-        stubDocumentGeneratorService(DECREE_ABSOLUTE_TEMPLATE_ID.getTemplateName(),
+        stubDocumentGeneratorServiceBaseOnContextPath(DECREE_ABSOLUTE_TEMPLATE_ID.getTemplateName(),
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, ObjectMapperTestUtil.convertObject(ccdCallbackRequest.getCaseDetails(), Map.class)),
             DECREE_ABSOLUTE_DOCUMENT_TYPE);
         when(mockEmailService.sendEmail(anyString(), anyString(), anyMap(), anyString(), any())).thenReturn(null);

@@ -102,13 +102,13 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         caseDetails.getCaseData().put("D8ReasonForDivorce", SEPARATION_TWO_YEARS.getValue());
 
-        String invitationLetterDocumentId = stubDocumentGeneratorService(RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
+        String invitationLetterDocumentId = stubDocumentGeneratorServiceBaseOnContextPath(RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
             RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE.getValue()
         );
         String invitationLetterFilename = RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE.getValue() + caseDetails.getCaseId();
 
-        String formDocumentId = stubDocumentGeneratorService(AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID,
+        String formDocumentId = stubDocumentGeneratorServiceBaseOnContextPath(AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
             AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE.getValue()
         );
@@ -127,8 +127,7 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
                 hasJsonPath("$.data.RespContactMethodIsDigital", is(NO_VALUE)),
                 hasJsonPath("$.data.D8DocumentsGenerated", hasSize(3)),
                 hasJsonPath("$.data.D8DocumentsGenerated", hasItems(
-                    hasJsonPath("value.DocumentFileName", is(invitationLetterFilename)),
-                    hasJsonPath("value.DocumentFileName", is(formFilename))
+                    hasJsonPath("value.DocumentFileName", is(invitationLetterFilename))
                 ))
             )));
 
@@ -152,13 +151,13 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         caseDetails.getCaseData().put("D8ReasonForDivorce", ADULTERY.getValue());
 
-        String invitationLetterDocumentId = stubDocumentGeneratorService(CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
+        String invitationLetterDocumentId = stubDocumentGeneratorServiceBaseOnContextPath(CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
             CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE.getValue()
         );
         String invitationLetterFilename = CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME.getValue() + caseDetails.getCaseId();
 
-        String formDocumentId = stubDocumentGeneratorService(AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID,
+        String formDocumentId = stubDocumentGeneratorServiceBaseOnContextPath(AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
             AOS_OFFLINE_ADULTERY_CO_RESPONDENT_DOCUMENT_TYPE.getValue()
         );
@@ -216,12 +215,12 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         caseDetails.getCaseData().put("D8ReasonForDivorce", SEPARATION_TWO_YEARS.getValue());
 
-        String invitationLetterDocumentId = stubDocumentGeneratorService(RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
+        String invitationLetterDocumentId = stubDocumentGeneratorServiceBaseOnContextPath(RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
             RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE.getValue()
         );
 
-        String formDocumentId = stubDocumentGeneratorService(AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID,
+        String formDocumentId = stubDocumentGeneratorServiceBaseOnContextPath(AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
             AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE.getValue()
         );
@@ -247,12 +246,12 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         caseDetails.getCaseData().put("D8ReasonForDivorce", ADULTERY.getValue());
 
-        String invitationLetterDocumentId = stubDocumentGeneratorService(CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
+        String invitationLetterDocumentId = stubDocumentGeneratorServiceBaseOnContextPath(CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
             CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE.getValue()
         );
 
-        String formDocumentId = stubDocumentGeneratorService(AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID,
+        String formDocumentId = stubDocumentGeneratorServiceBaseOnContextPath(AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
             AOS_OFFLINE_ADULTERY_CO_RESPONDENT_DOCUMENT_TYPE.getValue()
         );

@@ -57,7 +57,7 @@ public class SolicitorCreateITest extends MockedFunctionalTest {
             .caseDetails(fullCase)
             .build();
 
-        stubDocumentGeneratorService(DRAFT_MINI_PETITION_TEMPLATE_NAME,
+        stubDraftDocumentGeneratorService(DRAFT_MINI_PETITION_TEMPLATE_NAME,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, fullCase),
             AddMiniPetitionDraftTask.DOCUMENT_TYPE);
 

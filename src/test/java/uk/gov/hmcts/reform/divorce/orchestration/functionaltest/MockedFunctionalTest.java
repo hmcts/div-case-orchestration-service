@@ -42,6 +42,7 @@ public abstract class MockedFunctionalTest {
 
     private static final String APPLICATION_VND_UK_GOV_HMCTS_LETTER_SERVICE_IN_LETTER = "application/vnd.uk.gov.hmcts.letter-service.in.letter";
     protected static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
+    protected static final String GENERATE_DRAFT_DOCUMENT_CONTEXT_PATH = "/version/1/generateDraftPDF";
 
     @ClassRule
     public static WireMockClassRule maintenanceServiceServer = new WireMockClassRule(buildWireMockConfig(4010));
@@ -93,7 +94,34 @@ public abstract class MockedFunctionalTest {
                 .withBody(convertObjectToJsonString(new SendLetterResponse(UUID.randomUUID())))));
     }
 
-    public String stubDocumentGeneratorService(String templateName, Map<String, Object> templateValues, String documentTypeToReturn) {
+    public String stubDraftDocumentGeneratorService(String templateName, Map<String, Object> templateValues, String documentTypeToReturn) {
+        String documentId = UUID.randomUUID().toString();
+
+        final GenerateDocumentRequest generateDocumentRequest =
+            GenerateDocumentRequest.builder()
+                .template(templateName)
+                .values(templateValues)
+                .build();
+
+        final GeneratedDocumentInfo dgsResponse =
+            GeneratedDocumentInfo.builder()
+                .documentType(documentTypeToReturn)
+                .url(getDocumentStoreTestUrl(documentId))
+                .build();
+
+        documentGeneratorServiceServer.stubFor(WireMock.post(GENERATE_DRAFT_DOCUMENT_CONTEXT_PATH)
+            .withRequestBody(equalToJson(convertObjectToJsonString(generateDocumentRequest)))
+            .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
+            .willReturn(aResponse()
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withStatus(HttpStatus.OK.value())
+                .withBody(convertObjectToJsonString(dgsResponse))));
+
+        return documentId;
+    }
+
+    public String stubDocumentGeneratorServiceBaseOnContextPath(String templateName, Map<String, Object> templateValues,
+                                                                String documentTypeToReturn) {
         String documentId = UUID.randomUUID().toString();
 
         final GenerateDocumentRequest generateDocumentRequest =
@@ -119,7 +147,7 @@ public abstract class MockedFunctionalTest {
         return documentId;
     }
 
-    public String stubDocumentGeneratorService(String templateName, String documentTypeToReturn) {
+    public String stubDocumentGeneratorServiceBaseOnContextPath(String templateName, String documentTypeToReturn) {
         String documentId = UUID.randomUUID().toString();
 
         final GeneratedDocumentInfo dgsResponse =

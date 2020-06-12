@@ -142,7 +142,8 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         //Newly generated document
         byte[] decreeAbsoluteLetterBytes = new byte[] {1, 2, 3};
         String daGrantedLetterDocumentId =
-            stubDocumentGeneratorService(DECREE_ABSOLUTE_GRANTED_LETTER_TEMPLATE_ID.getValue(), DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE);
+            stubDocumentGeneratorServiceBaseOnContextPath(DECREE_ABSOLUTE_GRANTED_LETTER_TEMPLATE_ID.getValue(),
+                DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE);
         stubDMStore(daGrantedLetterDocumentId, decreeAbsoluteLetterBytes);
 
         //Existing document
