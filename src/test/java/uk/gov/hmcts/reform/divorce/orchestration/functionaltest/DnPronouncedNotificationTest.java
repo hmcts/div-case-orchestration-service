@@ -133,7 +133,7 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
 
     @Before
     public void setup() {
-        BASE_CO_RESPONDENT_CASE = ImmutableMap.<String, Object>builder()
+        BASE_CASE_DATA = ImmutableMap.<String, Object>builder()
             .put(D8_DERIVED_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS, TEST_D8_DERIVED_3RD_PARTY_ADDRESS)
             .put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE)
             .put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE)
