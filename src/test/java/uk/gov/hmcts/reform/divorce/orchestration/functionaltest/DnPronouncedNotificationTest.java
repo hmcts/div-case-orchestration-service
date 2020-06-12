@@ -111,7 +111,7 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
 
     private Map<String, Object> ccdCallbackResponse;
     private CcdCallbackRequest ccdCallbackRequest;
-    private ImmutableMap<String, Object> BASE_CO_RESPONDENT_CASE_DATA;
+    private ImmutableMap<String, Object> BASE_CASE_DATA;
 
     @MockBean
     private EmailClient emailClient;
@@ -133,7 +133,7 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
 
     @Before
     public void setup() {
-        BASE_CO_RESPONDENT_CASE_DATA = ImmutableMap.<String, Object>builder()
+        BASE_CO_RESPONDENT_CASE = ImmutableMap.<String, Object>builder()
             .put(D8_DERIVED_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS, TEST_D8_DERIVED_3RD_PARTY_ADDRESS)
             .put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE)
             .put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE)
@@ -437,14 +437,14 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
 
     private Map<String, Object> buildCaseDataForCoRespondentNotRepresented() {
         return ImmutableMap.<String, Object>builder()
-            .putAll(BASE_CO_RESPONDENT_CASE_DATA)
+            .putAll(BASE_CASE_DATA)
             .put(CO_RESPONDENT_REPRESENTED, NO_VALUE)
             .build();
     }
 
     private Map<String, Object> buildCaseDataForCoRespondentRepresented() {
         return ImmutableMap.<String, Object>builder()
-            .putAll(BASE_CO_RESPONDENT_CASE_DATA)
+            .putAll(BASE_CASE_DATA)
             .put(CO_RESPONDENT_REPRESENTED, YES_VALUE)
             .put(CO_RESPONDENT_SOLICITOR_NAME, TEST_CO_RESPONDENT_SOLICITOR_NAME)
             .put(SOLICITOR_REFERENCE_JSON_KEY, TEST_SOLICITOR_REFERENCE)
