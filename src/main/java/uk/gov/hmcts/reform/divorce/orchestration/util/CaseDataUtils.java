@@ -21,6 +21,7 @@ import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_REFERENCE_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.VALUE_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADDITIONAL_INFRORMATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DATE_FORMAT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_ADDITIONAL_INFO;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_ADDITIONAL_INFO_WELSH;
@@ -41,6 +42,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO_WELSH;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.TYPE_COSTS_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_LA_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
@@ -145,9 +147,11 @@ public class CaseDataUtils {
                     REFUSAL_CLARIFICATION_ADDITIONAL_INFO, REFUSAL_CLARIFICATION_ADDITIONAL_INFO_WELSH);
                 boolean isCostClaimGranted = Optional.ofNullable(caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD))
                     .map(String.class::cast).filter(value -> value.equals(YES_VALUE)).isPresent();
+                boolean isTypeCostDecision = Optional.ofNullable(caseData.get(TYPE_COSTS_DECISION_CCD_FIELD))
+                    .map(String.class::cast).filter(value -> value.equals(ADDITIONAL_INFRORMATION)).isPresent();
                 boolean isCostOrderStop = shouldStopValidation(caseData, COSTS_ORDER_ADDITIONAL_INFO, COSTS_ORDER_ADDITIONAL_INFO_WELSH);
                 return ((isRefusalReject && isRefusalRejectionStop) || (isAwaitingClarification
-                    && isRefusalClarificationStop) || (isCostClaimGranted && isCostOrderStop));
+                    && isRefusalClarificationStop) || (isCostClaimGranted && isTypeCostDecision && isCostOrderStop));
             })
             .orElse(false);
     }

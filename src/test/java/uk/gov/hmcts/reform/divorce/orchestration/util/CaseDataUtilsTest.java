@@ -15,6 +15,7 @@ import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.DUMMY_CASE_DATA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_REFERENCE_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.VALUE_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADDITIONAL_INFRORMATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_COSTS_OPTIONS_CCD_FIELD;
@@ -173,6 +174,7 @@ public class CaseDataUtilsTest {
 
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
+        caseData.put(OrchestrationConstants.TYPE_COSTS_DECISION_CCD_FIELD, ADDITIONAL_INFRORMATION);
         caseData.put(OrchestrationConstants.COSTS_ORDER_ADDITIONAL_INFO, "some additional info that requires translation");
 
         caseData.put(LANGUAGE_PREFERENCE_WELSH, YES_VALUE);
