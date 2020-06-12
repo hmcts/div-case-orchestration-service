@@ -9,7 +9,12 @@ import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.singletonMap;
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
@@ -141,22 +146,12 @@ public class CaseDataUtilsTest {
     }
 
     @Test
-    public void ensureDocumentIsRemovedByDocumentType() {
-        Map<String, Object> caseData = new HashMap<>();
-        caseData.put(D8DOCUMENTS_GENERATED, asList(createCollectionMemberDocumentAsMap("testUrl", "myDocType", "filename")));
-
-        Map<String, Object> returnedCaseData = CaseDataUtils.removeDocumentByDocumentType(caseData, "myDocType");
-
-        assertThat(returnedCaseData.get(D8DOCUMENTS_GENERATED), is(emptyList()));
-    }
-
-    @Test
     public void ensureDocumentIsNotRemovedByDifferentDocumentType() {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(D8DOCUMENTS_GENERATED, asList(
             createCollectionMemberDocumentAsMap("testUrl", "myDocType", "filename"),
             createCollectionMemberDocumentAsMap("testUrl", "myDocTypeY", "filename")
-            ));
+        ));
 
         Map<String, Object> returnedCaseData = CaseDataUtils.removeDocumentByDocumentType(caseData, "myDocType");
 
@@ -164,7 +159,7 @@ public class CaseDataUtilsTest {
         Map<String, Object> remainingDocument = (Map<String, Object>) documents.get(0).get(VALUE_KEY);
 
         assertThat(documents, hasSize(1));
-        assertThat(remainingDocument.get(DOCUMENT_TYPE_JSON_KEY),  is("myDocTypeY"));
+        assertThat(remainingDocument.get(DOCUMENT_TYPE_JSON_KEY), is("myDocTypeY"));
     }
 
     @Test
@@ -183,8 +178,35 @@ public class CaseDataUtilsTest {
         Map<String, Object> secondDocument = (Map<String, Object>) documents.get(1).get(VALUE_KEY);
 
         assertThat(documents, hasSize(2));
-        assertThat(firstDocument.get(DOCUMENT_TYPE_JSON_KEY),  is("myDocTypeY"));
-        assertThat(secondDocument.get(DOCUMENT_TYPE_JSON_KEY),  is("myDocTypeZ"));
+        assertThat(firstDocument.get(DOCUMENT_TYPE_JSON_KEY), is("myDocTypeY"));
+        assertThat(secondDocument.get(DOCUMENT_TYPE_JSON_KEY), is("myDocTypeZ"));
+    }
+
+    @Test
+    public void ensureDocumentIsRemovedByDocumentType() {
+        Map<String, Object> caseData =
+            singletonMap(D8DOCUMENTS_GENERATED, asList(createCollectionMemberDocumentAsMap("testUrl", "myDocType", "filename")));
+
+        Map<String, Object> returnedCaseData = CaseDataUtils.removeDocumentByDocumentType(caseData, "myDocType");
+
+        assertThat(returnedCaseData, not(hasKey(D8DOCUMENTS_GENERATED)));
+    }
+
+    @Test
+    public void ensureDocumentArrayReturnsNullWhenThereAreNoIncomingDocuments() {
+        Map<String, Object> returnedCaseData = CaseDataUtils.removeDocumentByDocumentType(emptyMap(), "myDocType");
+
+        assertThat(returnedCaseData, not(hasKey(D8DOCUMENTS_GENERATED)));
+    }
+
+    @Test
+    public void ensureDocumentArrayReturnsNull_WhenThereIsAnEmptyListOfIncomingDocuments() {
+        Map<String, Object> caseData = singletonMap(D8DOCUMENTS_GENERATED, emptyList());
+
+        Map<String, ?> returnedCaseData = CaseDataUtils.removeDocumentByDocumentType(caseData, "myDocType");
+
+        List<?> returnedGeneratedDocumentsList = (List<?>) returnedCaseData.get(D8DOCUMENTS_GENERATED);
+        assertThat(returnedGeneratedDocumentsList, is(empty()));
     }
 
 }

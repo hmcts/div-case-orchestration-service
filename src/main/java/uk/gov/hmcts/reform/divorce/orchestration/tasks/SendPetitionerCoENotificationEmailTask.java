@@ -49,7 +49,7 @@ import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomer
 
 @Component
 @Slf4j
-public class SendPetitionerCertificateOfEntitlementNotificationEmail implements Task<Map<String, Object>> {
+public class SendPetitionerCoENotificationEmailTask implements Task<Map<String, Object>> {
 
     private static final String EMAIL_DESCRIPTION = "Petitioner Notification - Certificate of Entitlement";
 
@@ -133,7 +133,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmail implements 
         return payload;
     }
 
-    private Boolean wasDivorceCostsClaimed(Map<String, Object> payload) {
+    private boolean wasDivorceCostsClaimed(Map<String, Object> payload) {
         return Optional.ofNullable(payload.get(DIVORCE_COSTS_CLAIM_CCD_FIELD))
             .map(String.class::cast)
             .map(YES_VALUE::equalsIgnoreCase)

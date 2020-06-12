@@ -46,7 +46,7 @@ public class SendCoRespondentNotificationEmailTest {
     EmailService emailService;
 
     @InjectMocks
-    SendCoRespondentGenericUpdateNotificationEmail sendCoRespondentGenericUpdateNotificationEmail;
+    SendCoRespondentGenericUpdateNotificationEmailTask sendCoRespondentGenericUpdateNotificationEmailTask;
 
 
     @Before
@@ -73,7 +73,7 @@ public class SendCoRespondentNotificationEmailTest {
 
         testData.put(CO_RESP_EMAIL_ADDRESS, TEST_USER_EMAIL);
 
-        Map returnPayload = sendCoRespondentGenericUpdateNotificationEmail.execute(context, testData);
+        Map returnPayload = sendCoRespondentGenericUpdateNotificationEmailTask.execute(context, testData);
 
         assertEquals(testData, returnPayload);
 
@@ -87,7 +87,7 @@ public class SendCoRespondentNotificationEmailTest {
     @Test
     public void shouldNotCallEmailServiceForCoRespGenericUpdateIfCoRespEmailDoesNotExist() throws TaskException {
 
-        Map returnPayload = sendCoRespondentGenericUpdateNotificationEmail.execute(context, testData);
+        Map returnPayload = sendCoRespondentGenericUpdateNotificationEmailTask.execute(context, testData);
 
         assertEquals(testData, returnPayload);
 

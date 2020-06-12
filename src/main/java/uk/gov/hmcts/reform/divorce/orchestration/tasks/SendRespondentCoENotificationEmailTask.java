@@ -50,7 +50,7 @@ import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomer
 
 @Component
 @Slf4j
-public class SendRespondentCertificateOfEntitlementNotificationEmail implements Task<Map<String, Object>> {
+public class SendRespondentCoENotificationEmailTask implements Task<Map<String, Object>> {
 
     private static final String EMAIL_DESCRIPTION = "Respondent Notification - Certificate of Entitlement";
 
