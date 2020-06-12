@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.util;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
@@ -51,12 +50,12 @@ public class CcdUtilUTest {
 
     private CcdUtil ccdUtil;
 
-    @Mock
     private LocalDateToWelshStringConverter localDateToWelshStringConverter;
 
     @Before
     public void before() {
         clock = mock(Clock.class);
+        localDateToWelshStringConverter = mock(LocalDateToWelshStringConverter.class);
         when(clock.instant()).thenReturn(FIXED_DATE_TIME.toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(UTC);
 
