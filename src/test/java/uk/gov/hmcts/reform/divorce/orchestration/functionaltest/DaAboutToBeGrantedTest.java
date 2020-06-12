@@ -39,7 +39,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PRONO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType.DECREE_ABSOLUTE_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
@@ -56,6 +55,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class DaAboutToBeGrantedTest extends MockedFunctionalTest {
 
     private static final String API_URL = "/da-about-to-be-granted";
+    private static final String DECREE_ABSOLUTE_TEMPLATE_ID = "FL-DIV-GOR-ENG-00062.docx";
 
     private static final Map<String, Object> CASE_DATA = ImmutableMap.<String, Object>builder()
         .put(PRONOUNCEMENT_JUDGE_CCD_FIELD, TEST_PRONOUNCEMENT_JUDGE)
@@ -92,7 +92,7 @@ public class DaAboutToBeGrantedTest extends MockedFunctionalTest {
 
     @Test
     public void givenCorrectRespondentDetails_ThenOkResponse() throws Exception {
-        stubDocumentGeneratorServiceBaseOnContextPath(DECREE_ABSOLUTE_TEMPLATE_ID.getTemplateName(),
+        stubDocumentGeneratorServiceBaseOnContextPath(DECREE_ABSOLUTE_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, ObjectMapperTestUtil.convertObject(ccdCallbackRequest.getCaseDetails(), Map.class)),
             DECREE_ABSOLUTE_DOCUMENT_TYPE);
         when(mockEmailService.sendEmail(anyString(), anyString(), anyMap(), anyString(), any())).thenReturn(null);
