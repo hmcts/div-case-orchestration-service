@@ -64,12 +64,12 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
             ImmutablePair.of(DOCUMENT_TYPES_TO_PRINT, getDocumentTypesToPrint(caseData))
         );
 
-        return removeDocumentByDocumentType(returnCaseData, documentToRemove(returnCaseData));
+        return removeDocumentByDocumentType(returnCaseData, coverLetterDocument(returnCaseData));
     }
 
     private List<String> getDocumentTypesToPrint(Map<String, Object> caseData) {
         return asList(
-            documentToRemove(caseData),
+            coverLetterDocument(caseData),
             COSTS_ORDER_DOCUMENT_TYPE
         );
     }
@@ -113,7 +113,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         return featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE);
     }
 
-    private String documentToRemove(Map<String, Object> caseData) {
+    private String coverLetterDocument(Map<String, Object> caseData) {
         return isCoRespondentRepresented(caseData)
             ? costOrderNotificationLetterGenerationTask.getDocumentType()
             : costOrderLetterGenerationTask.getDocumentType();
