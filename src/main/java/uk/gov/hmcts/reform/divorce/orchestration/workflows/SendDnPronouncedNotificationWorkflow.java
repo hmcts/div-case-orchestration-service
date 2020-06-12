@@ -28,14 +28,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COST_ORDER_OFFLINE_PACK_CO_RESPONDENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_BOTH;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_COSTS_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.BULK_PRINT_LETTER_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.DOCUMENT_TYPES_TO_PRINT;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.removeDocumentByDocumentType;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespContactMethodNotDigital;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentLiableForCosts;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentRepresented;
 
 @Component
@@ -81,16 +78,9 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
         Map<String, Object> caseData = caseDetails.getCaseData();
 
-        if (isCoRespContactMethodIsDigital(caseData)) {
-            tasks.add(sendPetitionerGenericUpdateNotificationEmailTask);
-            tasks.add(sendRespondentGenericUpdateNotificationEmailTask);
-
-            if (isCoRespondentLiableForCosts(caseData)) {
-                tasks.add(sendCoRespondentGenericUpdateNotificationEmail);
-            }
-            log.info("For case {} co-respondent uses digital contact", caseDetails.getCaseId());
-        } else {
+        if (isCoRespContactMethodNotDigital(caseData)) {
             log.info("For case {} co-respondent uses traditional letters", caseDetails.getCaseId());
+
             if (isPaperUpdateEnabled()) {
 
                 if (isCoRespondentRepresented(caseData)) {
@@ -104,21 +94,19 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
             } else {
                 log.info("Features.PAPER_UPDATE = off. Nothing was sent to bulk print");
             }
+        } else {
+            log.info("For case {} co-respondent uses digital contact", caseDetails.getCaseId());
+
+            tasks.add(sendPetitionerGenericUpdateNotificationEmailTask);
+            tasks.add(sendRespondentGenericUpdateNotificationEmailTask);
+
+            if (isCoRespondentLiableForCosts(caseData)) {
+                tasks.add(sendCoRespondentGenericUpdateNotificationEmail);
+            }
         }
 
         Task<Map<String, Object>>[] arr = new Task[tasks.size()];
         return tasks.toArray(arr);
-    }
-
-    private boolean isCoRespContactMethodIsDigital(Map<String, Object> caseData) { //TODO maybe move to PartyRepresentedChecker so can be tested?
-        return YES_VALUE.equalsIgnoreCase(String.valueOf(caseData.get(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL)));
-    }
-
-    private boolean isCoRespondentLiableForCosts(Map<String, Object> caseData) { //TODO maybe move to PartyRepresentedChecker so can be tested?
-        String whoPaysCosts = String.valueOf(caseData.get(WHO_PAYS_COSTS_CCD_FIELD));
-
-        return WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT.equalsIgnoreCase(whoPaysCosts)
-            || WHO_PAYS_CCD_CODE_FOR_BOTH.equalsIgnoreCase(whoPaysCosts);
     }
 
     private boolean isPaperUpdateEnabled() {

@@ -109,7 +109,7 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
     private static final String COST_ORDER_ID = "7d10126d-0e88-4f0e-b475-628b54a87ca6";
     private static final String SERVICE_AUTH_CONTEXT_PATH = "/lease";
 
-    private Map<String, Object> caseData;
+    private Map<String, Object> ccdCallbackResponse;
     private CcdCallbackRequest ccdCallbackRequest;
 
     @MockBean
@@ -137,12 +137,12 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
 
     @Test
     public void givenCaseDataWithNoPaysCosts_whenDnPronounced_thenSendGenericNotifications() throws Exception {
-        ImmutableMap<String, Object> extraData = ImmutableMap.<String, Object>builder().build();
-        caseData = buildCaseDataForEmailNotifications(extraData);
-        ccdCallbackRequest = buildCallbackRequestForEmailNotifications(extraData);
+        ImmutableMap<String, Object> additionalEntries = ImmutableMap.<String, Object>builder().build();
+        ccdCallbackResponse = buildCaseDataForEmailNotifications(additionalEntries);
+        ccdCallbackRequest = buildCallbackRequestForEmailNotifications(additionalEntries);
 
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
-            .data(caseData)
+            .data(ccdCallbackResponse)
             .build();
 
         webClient.perform(post(API_URL)
@@ -166,14 +166,14 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
 
     @Test
     public void givenCaseDataWithRespondentPaysCosts_whenDnPronounced_thenSendGenericNotifications() throws Exception {
-        ImmutableMap<String, Object> extraData = ImmutableMap.<String, Object>builder()
+        ImmutableMap<String, Object> additionalEntries = ImmutableMap.<String, Object>builder()
             .put(WHO_PAYS_COSTS_CCD_FIELD, WHO_PAYS_CCD_CODE_FOR_RESPONDENT)
             .build();
-        caseData = buildCaseDataForEmailNotifications(extraData);
-        ccdCallbackRequest = buildCallbackRequestForEmailNotifications(extraData);
+        ccdCallbackResponse = buildCaseDataForEmailNotifications(additionalEntries);
+        ccdCallbackRequest = buildCallbackRequestForEmailNotifications(additionalEntries);
 
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
-            .data(caseData)
+            .data(ccdCallbackResponse)
             .build();
 
         webClient.perform(post(API_URL)
@@ -197,14 +197,14 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
 
     @Test
     public void givenCaseDataWithCoRespondentPaysCosts_whenDnPronounced_thenSendGenericNotifications() throws Exception {
-        Map<String, Object> extraData = ImmutableMap.<String, Object>builder()
+        Map<String, Object> additionalEntries = ImmutableMap.<String, Object>builder()
             .put(WHO_PAYS_COSTS_CCD_FIELD, WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT)
             .build();
-        caseData = buildCaseDataForEmailNotifications(extraData);
-        ccdCallbackRequest = buildCallbackRequestForEmailNotifications(extraData);
+        ccdCallbackResponse = buildCaseDataForEmailNotifications(additionalEntries);
+        ccdCallbackRequest = buildCallbackRequestForEmailNotifications(additionalEntries);
 
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
-            .data(caseData)
+            .data(ccdCallbackResponse)
             .build();
 
         webClient.perform(post(API_URL)
@@ -228,14 +228,14 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
 
     @Test
     public void givenCaseDataWithBothPaysCosts_whenDnPronounced_thenSendGenericNotifications() throws Exception {
-        ImmutableMap<String, Object> extraData = ImmutableMap.<String, Object>builder()
+        ImmutableMap<String, Object> additionalEntries = ImmutableMap.<String, Object>builder()
             .put(WHO_PAYS_COSTS_CCD_FIELD, WHO_PAYS_CCD_CODE_FOR_BOTH)
             .build();
-        caseData = buildCaseDataForEmailNotifications(extraData);
-        ccdCallbackRequest = buildCallbackRequestForEmailNotifications(extraData);
+        ccdCallbackResponse = buildCaseDataForEmailNotifications(additionalEntries);
+        ccdCallbackRequest = buildCallbackRequestForEmailNotifications(additionalEntries);
 
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
-            .data(caseData)
+            .data(ccdCallbackResponse)
             .build();
 
         webClient.perform(post(API_URL)
@@ -257,8 +257,8 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
             any(), any());
     }
 
-    private CcdCallbackRequest buildCallbackRequestForEmailNotifications(Map<String, Object> extraData) {
-        Map<String, Object> caseData = buildCaseDataForEmailNotifications(extraData);
+    private CcdCallbackRequest buildCallbackRequestForEmailNotifications(Map<String, Object> additionalEntries) {
+        Map<String, Object> caseData = buildCaseDataForEmailNotifications(additionalEntries);
         CaseDetails caseDetails = CaseDetails.builder()
             .caseId(TEST_CASE_ID)
             .state(TEST_STATE)
@@ -419,7 +419,6 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
             .put(RESP_LAST_NAME_CCD_FIELD, TEST_LAST_NAME)
             .put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME, TEST_FIRST_NAME)
             .put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME, TEST_LAST_NAME)
-            .put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, YES_VALUE)
             .build();
     }
 
