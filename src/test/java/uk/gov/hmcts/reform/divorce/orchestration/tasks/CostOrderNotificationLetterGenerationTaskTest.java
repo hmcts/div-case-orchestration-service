@@ -37,6 +37,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COST_ORDER_CO_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.CO_RESPONDENT_SOLICITORS_EXPECTED_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.CO_RESPONDENT_SOLICITOR_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
@@ -54,7 +56,6 @@ public class CostOrderNotificationLetterGenerationTaskTest {
     private static final String RESPONDENTS_LAST_NAME = "Wozniak";
 
     private static final String SOLICITOR_REF = "SolRef1234";
-
     private static final String CASE_ID = "It's mandatory field in context";
     private static final String LETTER_DATE_EXPECTED = formatDateWithCustomerFacingFormat(LocalDate.now());
 
@@ -136,6 +137,8 @@ public class CostOrderNotificationLetterGenerationTaskTest {
         assertThat(coRespondentCostOrderNotificationCoverLetter.getLetterDate(), is(LETTER_DATE_EXPECTED));
         assertThat(coRespondentCostOrderNotificationCoverLetter.getCtscContactDetails(), is(CTSC_CONTACT));
         assertThat(coRespondentCostOrderNotificationCoverLetter.getSolicitorReference(), is(SOLICITOR_REF));
+        assertThat(coRespondentCostOrderNotificationCoverLetter.getAddressee().getFormattedAddress(), is(CO_RESPONDENT_SOLICITOR_ADDRESS));
+        assertThat(coRespondentCostOrderNotificationCoverLetter.getAddressee().getName(), is(CO_RESPONDENT_SOLICITORS_EXPECTED_NAME));
     }
 
     private Map<String, Object> buildCaseDataCoRespondentRepresented() {
