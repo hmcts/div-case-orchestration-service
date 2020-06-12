@@ -132,7 +132,7 @@ uk:
   gov:
     notify:
       api:
-        key: ${UK_GOV_NOTIFY_API_KEY:divorce_preprod_live_key-b86e6469-4927-4f50-a029-6ddb523330cf-2409ba37-b5e6-4f03-b052-7d0f0986888d}
+        key: ${UK_GOV_NOTIFY_API_KEY:dummy}
         baseUrl: https://api.notifications.service.gov.uk
       email:
         templateVars:
