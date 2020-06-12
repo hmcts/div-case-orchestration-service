@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DaGrantedLe
 import java.util.Map;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
@@ -121,7 +121,7 @@ public class SendDaGrantedNotificationWorkflowTest {
 
         Map<String, Object> returnedCaseData = sendDaGrantedNotificationWorkflow.run(buildCaseDetails(incomingCaseData), AUTH_TOKEN);
 
-        assertThat(returnedCaseData.get(D8DOCUMENTS_GENERATED), is(emptyList()));
+        assertThat(returnedCaseData.get(D8DOCUMENTS_GENERATED), is(nullValue()));
         InOrder inOrder = inOrder(
             daGrantedLetterGenerationTask,
             fetchPrintDocsFromDmStore,
