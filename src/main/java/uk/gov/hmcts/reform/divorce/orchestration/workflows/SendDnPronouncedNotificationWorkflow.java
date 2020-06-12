@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmail;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
@@ -42,7 +42,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
 
     private final SendPetitionerGenericUpdateNotificationEmailTask sendPetitionerGenericUpdateNotificationEmailTask;
     private final SendRespondentGenericUpdateNotificationEmailTask sendRespondentGenericUpdateNotificationEmailTask;
-    private final SendCoRespondentGenericUpdateNotificationEmail sendCoRespondentGenericUpdateNotificationEmail;
+    private final SendCoRespondentGenericUpdateNotificationEmailTask sendCoRespondentGenericUpdateNotificationEmailTask;
 
     private final CostOrderLetterGenerationTask costOrderLetterGenerationTask;
     private final CostOrderNotificationLetterGenerationTask costOrderNotificationLetterGenerationTask;
@@ -101,7 +101,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
             tasks.add(sendRespondentGenericUpdateNotificationEmailTask);
 
             if (isCoRespondentLiableForCosts(caseData)) {
-                tasks.add(sendCoRespondentGenericUpdateNotificationEmail);
+                tasks.add(sendCoRespondentGenericUpdateNotificationEmailTask);
             }
         }
 
@@ -118,5 +118,4 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
             ? costOrderNotificationLetterGenerationTask.getDocumentType()
             : costOrderLetterGenerationTask.getDocumentType();
     }
-
 }

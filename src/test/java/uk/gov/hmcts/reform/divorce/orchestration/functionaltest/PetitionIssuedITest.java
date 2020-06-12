@@ -17,11 +17,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRes
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.Pin;
+import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 import uk.gov.hmcts.reform.divorce.validation.service.ValidationService;
 import uk.gov.hmcts.reform.idam.client.models.GeneratePinRequest;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -47,7 +47,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN_C
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ACCESS_CODE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DATE_FORMAT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_INVITATION_TEMPLATE_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
@@ -99,7 +98,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
         CASE_DATA.put(D_8_PETITIONER_LAST_NAME, TEST_USER_LAST_NAME);
         CASE_DATA.put(RESPONDENT_LETTER_HOLDER_ID, TEST_LETTER_HOLDER_ID_CODE);
         CASE_DATA.put(CO_RESPONDENT_LETTER_HOLDER_ID, TEST_LETTER_HOLDER_ID_CODE);
-        CASE_DATA.put(ISSUE_DATE, LocalDate.now().format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT)));
+        CASE_DATA.put(ISSUE_DATE, LocalDate.now().format(DateUtils.Formatters.CCD_DATE));
     }
 
     @Test

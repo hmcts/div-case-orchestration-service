@@ -23,14 +23,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 
 @Component
-public class SendCoRespondentGenericUpdateNotificationEmail implements Task<Map<String, Object>> {
+public class SendCoRespondentGenericUpdateNotificationEmailTask implements Task<Map<String, Object>> {
 
     private static final String EMAIL_DESC = "Generic Update Notification - CoRespondent";
 
     private final EmailService emailService;
 
     @Autowired
-    public SendCoRespondentGenericUpdateNotificationEmail(EmailService emailService) {
+    public SendCoRespondentGenericUpdateNotificationEmailTask(EmailService emailService) {
         this.emailService = emailService;
     }
 

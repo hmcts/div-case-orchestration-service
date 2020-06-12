@@ -15,12 +15,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helpe
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class AddresseeDataExtractor {
 
-
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class CaseDataKeys {
-        public static final String RESPONDENT_CORRESPONDENCE_ADDRESS = "D8DerivedRespondentCorrespondenceAddr";
+        public static final String RESPONDENT_ADDRESS = "D8DerivedRespondentCorrespondenceAddr";
         public static final String RESPONDENT_SOLICITOR_ADDRESS = "D8DerivedRespondentSolicitorAddr";
-        public static final String D8_DERIVED_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS = "D8DerivedReasonForDivorceAdultery3rdAddr";
+        public static final String CO_RESPONDENT_ADDRESS = "D8DerivedReasonForDivorceAdultery3rdAddr";
         public static final String CO_RESPONDENT_SOLICITOR_ADDRESS = "DerivedCoRespondentSolicitorAddr";
     }
 
@@ -53,11 +52,11 @@ public class AddresseeDataExtractor {
     }
 
     private static String getRespondentFormattedAddress(Map<String, Object> caseData) {
-        return getMandatoryStringValue(caseData, CaseDataKeys.RESPONDENT_CORRESPONDENCE_ADDRESS);
+        return getMandatoryStringValue(caseData, CaseDataKeys.RESPONDENT_ADDRESS);
     }
 
     private static String getCoRespondentFormattedAddress(Map<String, Object> caseData) {
-        return getMandatoryStringValue(caseData, CaseDataKeys.D8_DERIVED_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS);
+        return getMandatoryStringValue(caseData, CaseDataKeys.CO_RESPONDENT_ADDRESS);
     }
 
     private static String getRespondentSolicitorFormattedAddress(Map<String, Object> caseData) {
