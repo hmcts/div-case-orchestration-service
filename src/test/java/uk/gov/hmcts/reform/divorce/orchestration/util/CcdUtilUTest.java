@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.util;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
@@ -59,7 +60,7 @@ public class CcdUtilUTest {
         when(clock.instant()).thenReturn(FIXED_DATE_TIME.toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(UTC);
 
-        ccdUtil = new CcdUtil(clock, getObjectMapperInstance());
+        ccdUtil = new CcdUtil(clock, getObjectMapperInstance(), localDateToWelshStringConverter);
         when(localDateToWelshStringConverter.convert(isA(LocalDate.class)))
                 .thenReturn(EXPECTED_WELSH_DATE_WITH_CUSTOMER_FORMAT);
     }
