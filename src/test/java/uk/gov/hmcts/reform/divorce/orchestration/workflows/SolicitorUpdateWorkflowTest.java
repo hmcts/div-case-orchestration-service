@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 
 import java.util.Collections;
 import java.util.Map;
@@ -29,7 +29,7 @@ public class SolicitorUpdateWorkflowTest {
     AddMiniPetitionDraftTask addMiniPetitionDraftTask;
 
     @Mock
-    CaseFormatterAddDocuments caseFormatterAddDocuments;
+    AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     @InjectMocks
     SolicitorUpdateWorkflow solicitorUpdateWorkflow;
@@ -48,9 +48,9 @@ public class SolicitorUpdateWorkflowTest {
 
         assertEquals(payload, solicitorUpdateWorkflow.run(caseDetails, AUTH_TOKEN));
 
-        InOrder inOrder = inOrder(addMiniPetitionDraftTask, caseFormatterAddDocuments);
+        InOrder inOrder = inOrder(addMiniPetitionDraftTask, addNewDocumentsToCaseDataTask);
 
         inOrder.verify(addMiniPetitionDraftTask).execute(context, payload);
-        inOrder.verify(caseFormatterAddDocuments).execute(context, payload);
+        inOrder.verify(addNewDocumentsToCaseDataTask).execute(context, payload);
     }
 }

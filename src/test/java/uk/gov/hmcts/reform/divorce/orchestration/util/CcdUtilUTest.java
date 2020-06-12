@@ -2,10 +2,9 @@ package uk.gov.hmcts.reform.divorce.orchestration.util;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.time.Clock;
@@ -13,44 +12,54 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneOffset;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static java.time.ZoneOffset.UTC;
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.core.IsCollectionContaining.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EXPECTED_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EXPECTED_DUE_DATE_FORMATTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_DUE_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocument;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getObjectMapperInstance;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskTestHelper.createGeneratedDocument;
 
-@RunWith(MockitoJUnitRunner.class)
 public class CcdUtilUTest {
 
     private static final String CURRENT_DATE = "2018-01-01";
     private static final String PAYMENT_DATE = "01012018";
-    private static final String EXPECTED_DATE_WITH_CUSTOMER_FORMAT = "01 January 2018";
+    private static final String EXPECTED_DATE_WITH_CUSTOMER_FORMAT = "1 January 2018";
     private static final String EXPECTED_WELSH_DATE_WITH_CUSTOMER_FORMAT = "27 Ionawr 2018";
     private static final LocalDateTime FIXED_DATE_TIME = LocalDate.parse(CURRENT_DATE).atStartOfDay();
+    private static final String D8_DOCUMENTS_GENERATED_CCD_FIELD = "D8DocumentsGenerated";
 
-    @InjectMocks
-    private CcdUtil ccdUtil;
-
-    @Mock
     private Clock clock;
 
-    @Mock
+    private CcdUtil ccdUtil;
+
     private LocalDateToWelshStringConverter localDateToWelshStringConverter;
 
     @Before
     public void before() {
+        clock = mock(Clock.class);
+        localDateToWelshStringConverter = mock(LocalDateToWelshStringConverter.class);
         when(clock.instant()).thenReturn(FIXED_DATE_TIME.toInstant(ZoneOffset.UTC));
         when(clock.getZone()).thenReturn(UTC);
+
+        ccdUtil = new CcdUtil(clock, getObjectMapperInstance(), localDateToWelshStringConverter);
         when(localDateToWelshStringConverter.convert(isA(LocalDate.class)))
                 .thenReturn(EXPECTED_WELSH_DATE_WITH_CUSTOMER_FORMAT);
     }
@@ -149,4 +158,115 @@ public class CcdUtilUTest {
     public void shouldReturnCurrentLocalDateTime() {
         assertEquals(FIXED_DATE_TIME, ccdUtil.getCurrentLocalDateTime());
     }
+
+    @Test
+    public void givenNoGeneratedDocumentsInCaseData_whenAddNewDocuments_thenDocumentsAreAddedToCaseData() {
+        final String url1 = "url1";
+        final String documentType1 = "petition";
+        final String fileName1 = "fileName1";
+        final String url2 = "url1";
+        final String documentType2 = "aos";
+        final String fileName2 = "fileName2";
+        final GeneratedDocumentInfo generatedDocumentInfo1 = createGeneratedDocument(url1, documentType1, fileName1);
+        final GeneratedDocumentInfo generatedDocumentInfo2 = createGeneratedDocument(url2, documentType2, fileName2);
+
+        Map<String, Object> actual = ccdUtil.addNewDocumentsToCaseData(new HashMap<>(), asList(generatedDocumentInfo1, generatedDocumentInfo2));
+
+        assertThat((List<CollectionMember<Document>>) actual.get(D8_DOCUMENTS_GENERATED_CCD_FIELD), hasItems(
+            createCollectionMemberDocument(url1, documentType1, fileName1),
+            createCollectionMemberDocument(url2, documentType2, fileName2)
+        ));
+    }
+
+    @Test
+    public void givenConflictingD8DocumentsExistsInCaseData_whenAddDocuments_thenAddDocuments() {
+        final String url1 = "url1";
+        final String documentType1 = "petition";
+        final String fileName1 = "fileName1";
+        final String url2 = "url2";
+        final String documentType2 = "aos";
+        final String fileName2 = "fileName2";
+        final String url3 = "url3";
+        final String documentType3 = "aos1";
+        final String fileName3 = "fileName3";
+        final String url4 = "url4";
+        final String documentType4 = "aos";
+        final String fileName4 = "fileName4";
+        final GeneratedDocumentInfo generatedDocumentInfo1 = createGeneratedDocument(url1, documentType1, fileName1);
+        final GeneratedDocumentInfo generatedDocumentInfo2 = createGeneratedDocument(url2, documentType2, fileName2);
+
+        final CollectionMember<Document> document1 = createCollectionMemberDocument(url1, documentType1, fileName1);
+        final CollectionMember<Document> document2 = createCollectionMemberDocument(url2, documentType2, fileName2);
+        final CollectionMember<Document> document3 = createCollectionMemberDocument(url3, documentType3, fileName3);
+        final CollectionMember<Document> document4 = createCollectionMemberDocument(url4, documentType4, fileName4);
+
+        final Map<String, Object> input = new HashMap<>();
+        input.put(D8_DOCUMENTS_GENERATED_CCD_FIELD, asList(document3, document4));
+
+        Map<String, Object> actual = ccdUtil.addNewDocumentsToCaseData(input, asList(generatedDocumentInfo1, generatedDocumentInfo2));
+
+        assertThat((List<CollectionMember<Document>>) actual.get(D8_DOCUMENTS_GENERATED_CCD_FIELD), hasItems(document3, document1, document2));
+    }
+
+    @Test
+    public void givenMultipleGenericD8DocumentsExistsInCaseData_whenAddDocuments_thenAddDocuments() {
+        final String url1 = "url1";
+        final String documentType1 = "petition";
+        final String fileName1 = "fileName1";
+        final String url2 = "url2";
+        final String documentType2 = "aos";
+        final String fileName2 = "fileName2";
+        final String url3 = "url3";
+        final String documentType3 = "other";
+        final String fileName3 = "fileName3";
+        final String url4 = "url4";
+        final String documentType4 = "aos";
+        final String fileName4 = "fileName4";
+        final String url5 = "url5";
+        final String documentType5 = "other";
+        final String fileName5 = "fileName5";
+
+        final GeneratedDocumentInfo generatedDocumentInfo1 = createGeneratedDocument(url1, documentType1, fileName1);
+        final GeneratedDocumentInfo generatedDocumentInfo2 = createGeneratedDocument(url2, documentType2, fileName2);
+        final GeneratedDocumentInfo generatedDocumentInfo3 = createGeneratedDocument(url3, documentType3, fileName3);
+
+        final CollectionMember<Document> document1 = createCollectionMemberDocument(url1, documentType1, fileName1);
+        final CollectionMember<Document> document2 = createCollectionMemberDocument(url2, documentType2, fileName2);
+        final CollectionMember<Document> document3 = createCollectionMemberDocument(url3, documentType3, fileName3);
+        final CollectionMember<Document> document4 = createCollectionMemberDocument(url4, documentType4, fileName4);
+        final CollectionMember<Document> document5 = createCollectionMemberDocument(url5, documentType5, fileName5);
+
+        final Map<String, Object> input = new HashMap<>();
+        input.put(D8_DOCUMENTS_GENERATED_CCD_FIELD, asList(document4, document5));
+
+        Map<String, Object> actual =
+            ccdUtil.addNewDocumentsToCaseData(input, asList(generatedDocumentInfo1, generatedDocumentInfo2, generatedDocumentInfo3));
+
+        List<CollectionMember<Document>> generatedDocuments = (List<CollectionMember<Document>>) actual.get(D8_DOCUMENTS_GENERATED_CCD_FIELD);
+        assertThat(generatedDocuments, hasItems(document5, document1, document2, document3));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void givenCoreCaseDataIsNull_whenAddDocuments_thenReturnThrowException() {
+        ccdUtil.addNewDocumentsToCaseData(null, singletonList(GeneratedDocumentInfo.builder().build()));
+    }
+
+    @Test
+    public void givenGeneratedDocumentInfoIsNull_whenAddDocuments_thenReturnSameCaseData() {
+        final Map<String, Object> input = Collections.emptyMap();
+
+        Map<String, Object> actual = ccdUtil.addNewDocumentsToCaseData(input, null);
+
+        assertEquals(input, actual);
+    }
+
+    @Test
+    public void givenGeneratedDocumentInfoIsEmpty_whenAddDocuments_thenReturnSameCaseData() {
+        final Map<String, Object> input = Collections.emptyMap();
+
+        Map<String, Object> actual = ccdUtil.addNewDocumentsToCaseData(input, Collections.emptyList());
+
+        assertEquals(input, actual);
+    }
+
 }

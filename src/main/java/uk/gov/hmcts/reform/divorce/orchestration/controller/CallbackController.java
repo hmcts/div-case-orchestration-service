@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.divorce.models.response.ValidationResponse;
+import uk.gov.hmcts.reform.divorce.model.response.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -389,6 +389,7 @@ public class CallbackController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> caseLinkedForHearing(
+        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
@@ -398,7 +399,7 @@ public class CallbackController {
 
         try {
             callbackResponseBuilder.data(
-                caseOrchestrationService.processCaseLinkedForHearingEvent(ccdCallbackRequest));
+                caseOrchestrationService.processCaseLinkedForHearingEvent(ccdCallbackRequest, authorizationToken));
         } catch (CaseOrchestrationServiceException exception) {
             log.error(format("Failed to execute service to process case linked for hearing. Case id:  %s", caseId),
                 exception);
@@ -638,11 +639,20 @@ public class CallbackController {
     public ResponseEntity<CcdCallbackResponse> handleDaGranted(
         @RequestHeader(value = AUTHORIZATION_HEADER)
         @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
-        return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .data(caseOrchestrationService.handleDaGranted(ccdCallbackRequest, authorizationToken))
-            .build());
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            callbackResponseBuilder.data(caseOrchestrationService.handleDaGranted(ccdCallbackRequest, authorizationToken));
+            log.info("Handled DA granted for case ID: {}.", caseId);
+        } catch (WorkflowException exception) {
+            log.error("DA granted handling has failed for case ID: {}", caseId, exception);
+            callbackResponseBuilder.errors(singletonList(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
     @PostMapping(path = "/aos-received")

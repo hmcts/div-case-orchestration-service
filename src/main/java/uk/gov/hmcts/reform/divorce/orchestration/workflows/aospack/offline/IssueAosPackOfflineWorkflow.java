@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MarkJourneyAsOffline;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
@@ -56,7 +56,7 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
     private MultipleDocumentGenerationTask documentsGenerationTask;
 
     @Autowired
-    private CaseFormatterAddDocuments caseFormatterAddDocuments;
+    private AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     @Autowired
     private FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
@@ -95,7 +95,7 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
         log.warn("documentTypesToPrint = {}", documentTypesToPrint);
 
         tasks.add(documentsGenerationTask);
-        tasks.add(caseFormatterAddDocuments);
+        tasks.add(addNewDocumentsToCaseDataTask);
         tasks.add(fetchPrintDocsFromDmStore);
         tasks.add(bulkPrinterTask);
         tasks.add(markJourneyAsOffline);

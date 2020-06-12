@@ -53,7 +53,19 @@ public class BulkPrinterTask implements Task<Map<String, Object>> {
         //Make sure every requested document type was found
         if (documentTypesToPrint.size() == documentsToPrint.size()) {
             try {
+                log.info("Sending {} document(s) to bulk print for case ID {}. Documents are {}",
+                    documentsToPrint.size(),
+                    caseDetails.getCaseId(),
+                    documentsToPrint
+                );
+
                 bulkPrintService.send(caseDetails.getCaseId(), bulkPrintLetterType, documentsToPrint);
+
+                log.info("Sent {} document(s) to bulk print for case ID {}. Documents are {}",
+                    documentsToPrint.size(),
+                    caseDetails.getCaseId(),
+                    documentsToPrint
+                );
             } catch (final Exception e) {
                 context.setTaskFailed(true);
                 log.error("Respondent pack bulk print failed for case {}", caseDetails.getCaseId(), e);
@@ -66,11 +78,6 @@ public class BulkPrinterTask implements Task<Map<String, Object>> {
                 documentTypesToPrint,
                 documentsToPrint
             );
-            //TODO - uncomment these lines (and their relevant unit tests) if we don't get the above warning
-            // in the production logs in a week or so from 20/05/2020
-
-            //context.setTaskFailed(true);
-            //context.setTransientObject(BULK_PRINT_ERROR_KEY, "Bulk print didn't kick off for " + bulkPrintLetterType);
         }
 
         return payload;

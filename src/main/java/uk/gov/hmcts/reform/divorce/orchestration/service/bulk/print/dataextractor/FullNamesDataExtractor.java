@@ -20,10 +20,9 @@ public class FullNamesDataExtractor {
         public static final String RESPONDENT_FIRST_NAME = OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
         public static final String RESPONDENT_LAST_NAME = OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
         public static final String RESPONDENT_SOLICITOR_NAME = OrchestrationConstants.D8_RESPONDENT_SOLICITOR_NAME;
-        public static final String CORESPONDENT_FIRST_NAME = OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME;
-        public static final String CORESPONDENT_LAST_NAME = OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME;
-        public static final String CORESPONDENT_SOLICITOR_NAME = "CoRespondentSolicitorName";
-
+        public static final String CO_RESPONDENT_FIRST_NAME = OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME;
+        public static final String CO_RESPONDENT_LAST_NAME = OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME;
+        public static final String CO_RESPONDENT_SOLICITOR_NAME = "CoRespondentSolicitorName";
     }
 
     public static String getPetitionerFullName(Map<String, Object> caseData) {
@@ -43,10 +42,10 @@ public class FullNamesDataExtractor {
     }
 
     public static String getCoRespondentFullName(Map<String, Object> caseData) {
-        return buildFullName(caseData, CaseDataKeys.CORESPONDENT_FIRST_NAME, CaseDataKeys.CORESPONDENT_LAST_NAME);
+        return buildFullName(caseData, CaseDataKeys.CO_RESPONDENT_FIRST_NAME, CaseDataKeys.CO_RESPONDENT_LAST_NAME);
     }
 
     public static String getCoRespondentSolicitorFullName(Map<String, Object> caseData) {
-        return nullToEmpty((String) (caseData.get(CaseDataKeys.CORESPONDENT_SOLICITOR_NAME))).trim();
+        return nullToEmpty((String) (caseData.get(CaseDataKeys.CO_RESPONDENT_SOLICITOR_NAME))).trim();
     }
 }

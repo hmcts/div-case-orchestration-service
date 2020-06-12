@@ -1,7 +1,8 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.rest.RestRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -12,13 +13,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DocumentLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -31,16 +34,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Slf4j
 public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
 
-    private static final String DOCUMENT_LINK = "DocumentLink";
-
-    private static final String VALUE = "value";
-
-    private static final String DOCUMENT_URL = "document_binary_url";
-
-    private static final String DOCUMENT_TYPE = "DocumentType";
-
-    private static final String DOCUMENT_FILENAME = "document_filename";
-
     private static final String CASEWORKER_DIVORCE = "caseworker-divorce";
 
     private static final String USER_ROLES = "user-roles";
@@ -48,11 +41,14 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
     private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
 
     private AuthTokenGenerator authTokenGenerator;
-    private final RestTemplate restTemplate;
 
-    public FetchPrintDocsFromDmStore(AuthTokenGenerator authTokenGenerator, RestTemplate restTemplate) {
+    private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper;
+
+    public FetchPrintDocsFromDmStore(AuthTokenGenerator authTokenGenerator, RestTemplate restTemplate, ObjectMapper objectMapper) {
         this.authTokenGenerator = authTokenGenerator;
         this.restTemplate = restTemplate;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -70,20 +66,23 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
      */
     @SuppressWarnings("unchecked")
     private Map<String, GeneratedDocumentInfo> extractGeneratedDocumentList(Map<String, Object> caseData) {
-        List<Map> documentList =
-            ofNullable(caseData.get(D8DOCUMENTS_GENERATED)).map(i -> (List<Map>) i).orElse(new ArrayList<>());
+        List<CollectionMember<Document>> documentList = ofNullable(caseData.get(D8DOCUMENTS_GENERATED))
+            .map(i -> objectMapper.convertValue(i, new TypeReference<List<CollectionMember<Document>>>() {
+            }))
+            .orElse(new ArrayList<>());
         Map<String, GeneratedDocumentInfo> generatedDocumentInfoList = new HashMap<>();
-        for (Map<String, Object> document : documentList) {
-            Map<String, Object> value = ((Map) document.get(VALUE));
-            String documentType = getStringValue(value, DOCUMENT_TYPE);
-            Map<String, Object> documentLink = (Map) ofNullable(getValue(value, DOCUMENT_LINK)).orElse(null);
 
-            if (ofNullable(documentLink).isPresent()) {
+        for (CollectionMember<Document> document : documentList) {
+            Document value = document.getValue();
+            String documentType = value.getDocumentType();
+            DocumentLink documentLink = value.getDocumentLink();
+
+            if (documentLink != null) {
                 GeneratedDocumentInfo gdi = GeneratedDocumentInfo.builder()
-                    .documentType(getStringValue(value, DOCUMENT_TYPE))
-                    .url(getStringValue(documentLink, DOCUMENT_URL))
+                    .documentType(value.getDocumentType())
+                    .url(documentLink.getDocumentBinaryUrl())
                     .documentType(documentType)
-                    .fileName(getStringValue(documentLink, DOCUMENT_FILENAME))
+                    .fileName(documentLink.getDocumentFilename())
                     .build();
                 generatedDocumentInfoList.put(documentType, gdi);
             }
@@ -103,27 +102,11 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
             ResponseEntity<byte[]> response = restTemplate.exchange(generatedDocumentInfo.getUrl(), HttpMethod.GET, httpEntity, byte[].class);
             if (response.getStatusCode() != HttpStatus.OK) {
                 log.error("Failed to get bytes from document store for document {} in case Id {}",
-                        generatedDocumentInfo.getUrl(), caseDetails.getCaseId());
+                    generatedDocumentInfo.getUrl(), caseDetails.getCaseId());
                 throw new RuntimeException(String.format("Unexpected code from DM store: %s ", response.getStatusCode()));
             }
             generatedDocumentInfo.setBytes(response.getBody());
         }
-    }
-
-    private Object getValue(Map<String, Object> objectMap, String key) {
-        Iterator<Map.Entry<String, Object>> iterator = objectMap.entrySet().iterator();
-        Object result = null;
-        while (iterator.hasNext()) {
-            Map.Entry map = iterator.next();
-            if (map.getKey().equals(key)) {
-                result = map.getValue();
-            }
-        }
-        return result;
-    }
-
-    private String getStringValue(Map<String, Object> objectMap, String key) {
-        return ofNullable(getValue(objectMap, key)).map(Object::toString).orElse(StringUtils.EMPTY);
     }
 
 }

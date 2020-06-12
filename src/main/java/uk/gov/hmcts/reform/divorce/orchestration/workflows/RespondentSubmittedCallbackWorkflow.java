@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentAnswersGenerator;
 
 import java.util.ArrayList;
@@ -20,20 +20,20 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class RespondentSubmittedCallbackWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final RespondentAnswersGenerator respondentAnswersGenerator;
-    private final CaseFormatterAddDocuments caseFormatterAddDocuments;
+    private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     @Autowired
     public RespondentSubmittedCallbackWorkflow(RespondentAnswersGenerator respondentAnswersGenerator,
-                                               CaseFormatterAddDocuments caseFormatterAddDocuments) {
+                                               AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask) {
         this.respondentAnswersGenerator = respondentAnswersGenerator;
-        this.caseFormatterAddDocuments = caseFormatterAddDocuments;
+        this.addNewDocumentsToCaseDataTask = addNewDocumentsToCaseDataTask;
     }
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
         final List<Task> tasks = new ArrayList<>();
 
         tasks.add(respondentAnswersGenerator);
-        tasks.add(caseFormatterAddDocuments);
+        tasks.add(addNewDocumentsToCaseDataTask);
 
         Task[] taskArr = new Task[tasks.size()];
 

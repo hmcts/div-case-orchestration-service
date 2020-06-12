@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetFormattedDnCourtDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SyncBulkCaseListTask;
@@ -39,7 +39,7 @@ public class ListForPronouncementDocGenerationWorkflow extends DefaultWorkflow<M
 
     private final DocumentGenerationTask documentGenerationTask;
 
-    private final CaseFormatterAddDocuments caseFormatterAddDocuments;
+    private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     private final SyncBulkCaseListTask syncBulkCaseListTask;
 
@@ -61,7 +61,7 @@ public class ListForPronouncementDocGenerationWorkflow extends DefaultWorkflow<M
         if (StringUtils.isNotBlank(judgeName)) {
             taskList.add(setFormattedDnCourtDetails);
             taskList.add(documentGenerationTask);
-            taskList.add(caseFormatterAddDocuments);
+            taskList.add(addNewDocumentsToCaseDataTask);
         }
         taskList.add(removePronouncementDetailsTask);
 

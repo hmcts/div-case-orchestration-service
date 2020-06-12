@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmail;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerGenericUpdateNotificationEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentGenericUpdateNotificationEmail;
 
@@ -17,7 +17,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_BOTH;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_CORESPONDENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_COSTS_CCD_FIELD;
 
 @Component
@@ -30,7 +30,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
     SendRespondentGenericUpdateNotificationEmail sendRespondentGenericUpdateNotificationEmail;
 
     @Autowired
-    SendCoRespondentGenericUpdateNotificationEmail sendCoRespondentGenericUpdateNotificationEmail;
+    SendCoRespondentGenericUpdateNotificationEmailTask sendCoRespondentGenericUpdateNotificationEmailTask;
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
@@ -40,7 +40,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         tasks.add(sendRespondentGenericUpdateNotificationEmail);
 
         if (isCoRespondentLiableForCosts(ccdCallbackRequest.getCaseDetails().getCaseData())) {
-            tasks.add(sendCoRespondentGenericUpdateNotificationEmail);
+            tasks.add(sendCoRespondentGenericUpdateNotificationEmailTask);
         }
 
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
@@ -55,7 +55,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
     private boolean isCoRespondentLiableForCosts(Map<String, Object> caseData) {
         String whoPaysCosts = String.valueOf(caseData.get(WHO_PAYS_COSTS_CCD_FIELD));
 
-        return WHO_PAYS_CCD_CODE_FOR_CORESPONDENT.equalsIgnoreCase(whoPaysCosts)
+        return WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT.equalsIgnoreCase(whoPaysCosts)
             || WHO_PAYS_CCD_CODE_FOR_BOTH.equalsIgnoreCase(whoPaysCosts);
     }
 }

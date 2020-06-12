@@ -31,7 +31,9 @@ public enum AOSPackOfflineConstants {
 
     AOS_OFFLINE_ADULTERY_CO_RESPONDENT_DOCUMENT_TYPE("adultery-co-respondent-aos-form"),
     AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME("adultery-aos-form-co-resp"),
-    AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID("FL-DIV-APP-ENG-00084.docx");
+    AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID("FL-DIV-APP-ENG-00084.docx"),
+
+    DECREE_ABSOLUTE_GRANTED_LETTER_TEMPLATE_ID("FL-DIV-GOR-ENG-00355.docx");
 
     private final String value;
     AOSPackOfflineConstants(String value) {

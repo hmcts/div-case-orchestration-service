@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import com.google.common.collect.ImmutableMap;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -12,30 +11,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.service.impl.FeatureToggleServiceImpl;
-import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static java.time.ZoneOffset.UTC;
-import static java.util.Collections.singletonList;
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonMap;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.hamcrest.Matchers.allOf;
@@ -51,7 +44,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_AMOUNT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.VALUE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PRONOUNCEMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
@@ -61,7 +53,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_REJECTION_DOCUMENT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_DECISION_DATE_FIELD;
@@ -69,11 +60,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_REJECT_OPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_EXTENSION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_LINK_FILENAME_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_LINK_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_OTHER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_TO_PAY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
@@ -84,18 +70,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_COSTS_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocument;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
 
     private static final String API_URL = "/dn-about-to-be-granted";
-    private static final String CCD_RESPONSE_DATA_FIELD = "data";
 
-    private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
-    private static final String AMEND_PETITION_FEE_CONTEXT_PATH =  "/fees-and-payments/version/1/amend-fee";
-    private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
-
+    private static final String AMEND_PETITION_FEE_CONTEXT_PATH = "/fees-and-payments/version/1/amend-fee";
     private static final String FIXED_DATE = "2010-10-10";
+    private static final String CCD_RESPONSE_DATA_FIELD = "data";
     private static final String DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00088.docx";
     private static final String DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00098.docx";
 
@@ -189,9 +173,6 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
 
     @Test
     public void shouldReturnCaseDataPlusClarificationDocument_AndState_WhenDN_NotGranted_AndDnRefusedForMoreInfo() throws Exception {
-        final Map<String, Object> expectedCfsResponse = ObjectMapperTestUtil
-            .getJsonFromResourceFile("/jsonExamples/payloads/documentGeneratedCase.json", Map.class);
-
         Map<String, Object> caseData = ImmutableMap.of(
             DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE,
             REFUSAL_DECISION_CCD_FIELD, REFUSAL_DECISION_MORE_INFO_VALUE
@@ -207,38 +188,10 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(expectedRequestData).build();
 
-        final GenerateDocumentRequest documentGenerationRequest =
-            GenerateDocumentRequest.builder()
-                .template(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID)
-                .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
-                .build();
-
-        final GeneratedDocumentInfo documentGenerationResponse =
-            GeneratedDocumentInfo.builder()
-                .documentType(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE)
-                .fileName(DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME + TEST_CASE_ID)
-                .build();
-
-        Map<String, Object> dataInput = new HashMap<>();
-        dataInput.putAll(caseData);
-        // Additional fields
-        dataInput.putAll(ImmutableMap.of(
-            DN_OUTCOME_FLAG_CCD_FIELD, YES_VALUE,
-            STATE_CCD_FIELD, AWAITING_CLARIFICATION,
-            DN_DECISION_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat()
-        ));
-
-        expectedCfsResponse.putAll(dataInput);
-
-        final DocumentUpdateRequest documentUpdateRequest =
-            DocumentUpdateRequest.builder()
-                .documents(singletonList(documentGenerationResponse))
-                .caseData(dataInput)
-                .build();
-
         stubGetFeeFromFeesAndPayments(HttpStatus.OK, FeeResponse.builder().amount(TEST_FEE_AMOUNT).build());
-        stubDocumentGeneratorServerEndpoint(documentGenerationRequest, documentGenerationResponse);
-        stubFormatterServerEndpoint(documentUpdateRequest, expectedCfsResponse);
+        stubDocumentGeneratorServiceBaseOnContextPath(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID,
+            singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
+            DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE);
 
         String inputJson = JSONObject.valueToString(singletonMap(CASE_DETAILS_JSON_KEY,
             ImmutableMap.of(
@@ -263,11 +216,8 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
 
     @Test
     public void shouldReturnCaseDataPlusClarificationDocument_AndState_WhenDN_NotGranted_AndDnRefusedForMoreInfoWithExistingDocs() throws Exception {
-        List<Map<String, Object>> existingDocuments =
+        List<?> existingDocuments =
             buildDocumentCollection(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE, DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME);
-
-        final Map<String, Object> expectedCfsResponse = ObjectMapperTestUtil
-            .getJsonFromResourceFile("/jsonExamples/payloads/documentGeneratedCase.json", Map.class);
 
         Map<String, Object> caseData = ImmutableMap.of(
             DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE,
@@ -278,50 +228,19 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
         Map<String, Object> documentGenerationRequestCaseData = new HashMap<>();
         documentGenerationRequestCaseData.putAll(caseData);
         documentGenerationRequestCaseData.putAll(ImmutableMap.of(
-            D8DOCUMENTS_GENERATED, buildDocumentCollection(DOCUMENT_TYPE_OTHER,
-            DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD + FIXED_DATE),
+            D8DOCUMENTS_GENERATED, buildDocumentCollection(DOCUMENT_TYPE_OTHER, DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD + FIXED_DATE),
             STATE_CCD_FIELD, AWAITING_CLARIFICATION,
             DN_DECISION_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat(),
             DN_OUTCOME_FLAG_CCD_FIELD, YES_VALUE
         ));
-
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(documentGenerationRequestCaseData).build();
 
-        final GenerateDocumentRequest documentGenerationRequest =
-            GenerateDocumentRequest.builder()
-                .template(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID)
-                .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
-                .build();
-
-        final GeneratedDocumentInfo documentGenerationResponse =
-            GeneratedDocumentInfo.builder()
-                .documentType(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE)
-                .fileName(DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME + TEST_CASE_ID)
-                .build();
-
-        Map<String, Object> inputData = new HashMap<>();
-        inputData.putAll(documentGenerationRequestCaseData);
-        // Additional fields
-        inputData.putAll(ImmutableMap.of(
-            STATE_CCD_FIELD, AWAITING_CLARIFICATION,
-            DN_DECISION_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat()
-        ));
-
-        final DocumentUpdateRequest documentUpdateRequest =
-            DocumentUpdateRequest.builder()
-                .documents(singletonList(documentGenerationResponse))
-                .caseData(inputData)
-                .build();
-
-        expectedCfsResponse.putAll(inputData.entrySet().stream()
-            .filter(x -> !x.getKey().equals("D8DocumentsGenerated"))
-            .collect(Collectors.toMap(x -> x.getKey(), x -> x.getValue())));
-
         stubGetFeeFromFeesAndPayments(HttpStatus.OK, FeeResponse.builder().amount(TEST_FEE_AMOUNT).build());
-        stubDocumentGeneratorServerEndpoint(documentGenerationRequest, documentGenerationResponse);
-        stubFormatterServerEndpoint(documentUpdateRequest, expectedCfsResponse);
+        stubDocumentGeneratorServiceBaseOnContextPath(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID,
+            singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
+            DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE);
 
-        String inputJson = JSONObject.valueToString(singletonMap(CASE_DETAILS_JSON_KEY,
+        String inputJson = convertObjectToJsonString(singletonMap(CASE_DETAILS_JSON_KEY,
             ImmutableMap.of(
                 ID, TEST_CASE_ID,
                 CCD_CASE_DATA_FIELD, caseData
@@ -347,8 +266,8 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
         String inputJson = JSONObject.valueToString(singletonMap(CASE_DETAILS_JSON_KEY,
             singletonMap(CCD_CASE_DATA_FIELD,
                 ImmutableMap.of(DIVORCE_COSTS_CLAIM_CCD_FIELD, NO_VALUE,
-                DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE,
-                DECREE_NISI_GRANTED_CCD_FIELD, YES_VALUE)
+                    DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE,
+                    DECREE_NISI_GRANTED_CCD_FIELD, YES_VALUE)
             ))
         );
         webClient.perform(post(API_URL).header(AUTHORIZATION, AUTH_TOKEN).content(inputJson).contentType(APPLICATION_JSON))
@@ -381,9 +300,6 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
     public void givenRejection_whenMakeDecision_thenReturnRightState() throws Exception {
         FeeResponse amendFee = FeeResponse.builder().amount(TEST_FEE_AMOUNT).build();
 
-        final Map<String, Object> expectedCfsResponse = ObjectMapperTestUtil
-            .getJsonFromResourceFile("/jsonExamples/payloads/documentGeneratedCase.json", Map.class);
-
         Map<String, Object> caseData = ImmutableMap.of(
             DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE,
             REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION
@@ -404,29 +320,10 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
             .caseData(expectedDocumentRequestData)
             .build();
 
-        final GenerateDocumentRequest documentGenerationRequest =
-            GenerateDocumentRequest.builder()
-                .template(DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID)
-                .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
-                .build();
-
-        final GeneratedDocumentInfo documentGenerationResponse =
-            GeneratedDocumentInfo.builder()
-                .documentType(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE)
-                .fileName(DECREE_NISI_REFUSAL_REJECTION_DOCUMENT_NAME + TEST_CASE_ID)
-                .build();
-
-        expectedCfsResponse.putAll(expectedRequestData);
-
-        final DocumentUpdateRequest documentUpdateRequest =
-            DocumentUpdateRequest.builder()
-                .documents(singletonList(documentGenerationResponse))
-                .caseData(expectedRequestData)
-                .build();
-
         stubGetFeeFromFeesAndPayments(HttpStatus.OK, amendFee);
-        stubDocumentGeneratorServerEndpoint(documentGenerationRequest, documentGenerationResponse);
-        stubFormatterServerEndpoint(documentUpdateRequest, expectedCfsResponse);
+        stubDocumentGeneratorServiceBaseOnContextPath(DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID,
+            singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
+            DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE);
 
         String inputJson = JSONObject.valueToString(singletonMap(CASE_DETAILS_JSON_KEY,
             ImmutableMap.of(
@@ -471,27 +368,6 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
             )));
     }
 
-    private void stubDocumentGeneratorServerEndpoint(GenerateDocumentRequest generateDocumentRequest,
-                                                     GeneratedDocumentInfo response) {
-        documentGeneratorServiceServer.stubFor(WireMock.post(GENERATE_DOCUMENT_CONTEXT_PATH)
-                .withRequestBody(equalToJson(convertObjectToJsonString(generateDocumentRequest)))
-                .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
-                .willReturn(aResponse()
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                        .withStatus(HttpStatus.OK.value())
-                        .withBody(convertObjectToJsonString(response))));
-    }
-
-    private void stubFormatterServerEndpoint(DocumentUpdateRequest documentUpdateRequest,
-                                             Map<String, Object> response) {
-        formatterServiceServer.stubFor(WireMock.post(ADD_DOCUMENTS_CONTEXT_PATH)
-                .withRequestBody(equalToJson(convertObjectToJsonString(documentUpdateRequest)))
-                .willReturn(aResponse()
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                        .withStatus(HttpStatus.OK.value())
-                        .withBody(convertObjectToJsonString(response))));
-    }
-
     private void stubGetFeeFromFeesAndPayments(HttpStatus status, FeeResponse feeResponse) {
         feesAndPaymentsServer.stubFor(WireMock.get(AMEND_PETITION_FEE_CONTEXT_PATH)
             .willReturn(aResponse()
@@ -504,19 +380,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
         featureToggleService.getToggle().put(Features.DN_REFUSAL.getName(), enableFeature.toString());
     }
 
-    private List<Map<String, Object>> buildDocumentCollection(String documentType, String documentName) {
-        Map<String, Object> document = new HashMap<>();
-        document.put(DOCUMENT_TYPE_JSON_KEY, documentType);
-        document.put(DOCUMENT_FILENAME_JSON_KEY, documentName);
-        document.put(DOCUMENT_LINK_JSON_KEY,
-            Collections.singletonMap(DOCUMENT_LINK_FILENAME_JSON_KEY, documentName + DOCUMENT_EXTENSION));
-
-        Map<String, Object> documentMember = new HashMap<>();
-        documentMember.put(VALUE_KEY, document);
-
-        List<Map<String, Object>> existingDocuments = new ArrayList<>();
-        existingDocuments.add(documentMember);
-
-        return existingDocuments;
+    private List<CollectionMember<Document>> buildDocumentCollection(String documentType, String documentName) {
+        return asList(createCollectionMemberDocument("testUrl", documentType, documentName));
     }
 }

@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
-import uk.gov.hmcts.reform.divorce.orchestration.util.LocalDateToWelshStringConverter;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -45,23 +44,18 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_DATE_OF_HEARING;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_LIMIT_DATE_TO_CONTACT_COURT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
 
 @Component
 @Slf4j
-public class SendPetitionerCertificateOfEntitlementNotificationEmail implements Task<Map<String, Object>> {
+public class SendPetitionerCoENotificationEmailTask implements Task<Map<String, Object>> {
 
     private static final String EMAIL_DESCRIPTION = "Petitioner Notification - Certificate of Entitlement";
 
     @Autowired
     private TaskCommons taskCommons;
-
-    @Autowired
-    private LocalDateToWelshStringConverter localDateToWelshStringConverter;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
@@ -75,13 +69,12 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmail implements 
         String petitionerFirstName = getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_FIRST_NAME);
         String petitionerLastName = getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_LAST_NAME);
         String courtName = getMandatoryPropertyValueAsString(payload, COURT_NAME_CCD_FIELD);
-        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(payload);
-        EmailTemplateNames template = null;
-        String emailToBeSentTo = null;
+        EmailTemplateNames template;
+        String emailToBeSentTo;
 
-        final LocalDate dateOfHearing = CaseDataUtils.getLatestCourtHearingDateFromCaseData(payload);
+        LocalDate dateOfHearing = CaseDataUtils.getLatestCourtHearingDateFromCaseData(payload);
 
-        final LocalDate limitDateToContactCourt = dateOfHearing.minus(PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT);
+        LocalDate limitDateToContactCourt = dateOfHearing.minus(PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT);
 
         Map<String, String> templateParameters = new HashMap<>();
 
@@ -106,12 +99,8 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmail implements 
             emailToBeSentTo = petitionerEmail;
         }
         templateParameters.put(DATE_OF_HEARING, formatDateWithCustomerFacingFormat(dateOfHearing));
-        templateParameters.put(WELSH_DATE_OF_HEARING, localDateToWelshStringConverter.convert(dateOfHearing));
-
         templateParameters.put(LIMIT_DATE_TO_CONTACT_COURT,
             formatDateWithCustomerFacingFormat(limitDateToContactCourt));
-        templateParameters.put(WELSH_LIMIT_DATE_TO_CONTACT_COURT,
-                localDateToWelshStringConverter.convert(limitDateToContactCourt));
 
         if (wasDivorceCostsClaimed(payload)) {
             if (wasCostsClaimGranted(payload)) {
@@ -128,7 +117,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmail implements 
 
         try {
             templateParameters.put(COURT_NAME_TEMPLATE_ID, taskCommons.getDnCourt(courtName).getName());
-
+            LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(payload);
             taskCommons.sendEmail(template,
                 EMAIL_DESCRIPTION,
                 emailToBeSentTo,
@@ -146,7 +135,7 @@ public class SendPetitionerCertificateOfEntitlementNotificationEmail implements 
         return payload;
     }
 
-    private Boolean wasDivorceCostsClaimed(Map<String, Object> payload) {
+    private boolean wasDivorceCostsClaimed(Map<String, Object> payload) {
         return Optional.ofNullable(payload.get(DIVORCE_COSTS_CLAIM_CCD_FIELD))
             .map(String.class::cast)
             .map(YES_VALUE::equalsIgnoreCase)

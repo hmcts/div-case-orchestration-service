@@ -87,7 +87,6 @@ public class OrchestrationConstants {
     public static final String YES_VALUE = "Yes";
     public static final String NO_VALUE = "No";
     public static final String ISSUE_DATE = "IssueDate";
-    public static final String CCD_DATE_FORMAT = "yyyy-MM-dd";
     public static final String CCD_DUE_DATE = "dueDate";
     public static final String D_8_PAYMENTS = "Payments";
     public static final String BULK_LISTING_CASE_ID_FIELD = "BulkListingCaseId";
@@ -103,7 +102,7 @@ public class OrchestrationConstants {
     public static final String UPDATE_BULK_DN_PRONOUNCEMENT_DETAILS_EVENT = "dnPronouncedBulk";
     public static final String WHO_PAYS_COSTS_CCD_FIELD = "WhoPaysCosts";
     public static final String WHO_PAYS_CCD_CODE_FOR_RESPONDENT = "respondent";
-    public static final String WHO_PAYS_CCD_CODE_FOR_CORESPONDENT = "coRespondent";
+    public static final String WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT = "coRespondent";
     public static final String WHO_PAYS_CCD_CODE_FOR_BOTH = "respondentAndCoRespondent";
     public static final String TYPE_COSTS_DECISION_CCD_FIELD = "TypeCostsDecision";
     public static final String COSTS_ORDER_ADDITIONAL_INFO_CCD_FIELD = "CostsOrderAdditionalInfo";
@@ -137,14 +136,11 @@ public class OrchestrationConstants {
     public static final String REFUSAL_REJECTION_ADDITIONAL_INFO_WELSH = "RefusalRejectionAdditionalInfoWelsh";
     public static final String REFUSAL_CLARIFICATION_ADDITIONAL_INFO = "RefusalClarificationAdditionalInfo";
     public static final String REFUSAL_CLARIFICATION_ADDITIONAL_INFO_WELSH = "RefusalClarificationAdditionalInfoWelsh";
-    public static final String COSTS_ORDER_ADDITIONAL_INFO = "CostsOrderAdditionalInfo";
-    public static final String COSTS_ORDER_ADDITIONAL_INFO_WELSH = "CostsOrderAdditionalInfoWelsh";
     public static final String REFUSAL_DECISION_MORE_INFO_VALUE = "moreInfo";
     public static final String DN_REFUSED_REJECT_OPTION = "reject";
     public static final String DN_REFUSED_ADMIN_ERROR_OPTION = "adminError";
     public static final String DN_APPLICATION_SUBMITTED_DATE = "DNApplicationSubmittedDate";
     public static final String DN_REFUSAL_DRAFT = "DNRefusalDraft";
-    public static final String ADDITIONAL_INFRORMATION = "additionalInformation";
 
     // CCD Events
     public static final String DN_RECEIVED = "dnReceived";
@@ -285,6 +281,7 @@ public class OrchestrationConstants {
     public static final String RECEIVED_AOS_FROM_RESP = "ReceivedAOSfromResp";
     public static final String RECEIVED_AOS_FROM_RESP_DATE = "ReceivedAOSfromRespDate";
     public static final String RESPONDENT_EMAIL_ADDRESS = "RespEmailAddress";
+    public static final String RESPONDENT_DERIVED_CORRESPONDENCE_ADDRESS = "D8DerivedRespondentCorrespondenceAddr";
     public static final String RESPONDENT_SOLICITOR_EMAIL_ADDRESS = "D8RespondentSolicitorEmail";
     public static final String RESPONDENT_LETTER_HOLDER_ID = "AosLetterHolderId";
     public static final String SEND_VIA_EMAIL_OR_POST = "SendViaEmailOrPost";
@@ -329,6 +326,7 @@ public class OrchestrationConstants {
     public static final String DECREE_NISI_REFUSAL_REJECTION_DOCUMENT_NAME = "rejectionDnRefusalOrder";
     public static final String DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD = "PreviousDNClarificationRefusalOrder";
     public static final String DECREE_ABSOLUTE_DOCUMENT_TYPE = "daGranted";
+    public static final String DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE = "daGrantedLetter";
     public static final String DECREE_ABSOLUTE_FILENAME = "decreeAbsolute";
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_FILENAME = "solicitor-personal-service-";
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE = "personalService";
@@ -336,6 +334,7 @@ public class OrchestrationConstants {
 
     //Bulk print letter types
     public static final String DA_GRANTED_OFFLINE_PACK_RESPONDENT = "da-granted-offline-pack-respondent";
+    public static final String COE_OFFLINE_PACK_RESPONDENT = "coe-offline-pack-respondent";
 
     public static final String DOCUMENT_TYPE_COE = "coe";
     public static final String DOCUMENT_TYPE_OTHER = "other";
@@ -355,12 +354,16 @@ public class OrchestrationConstants {
     public static final String SERVICE = "DIVORCE";
 
     // Solicitors - Suggest refactoring into a common model library for all JSON keys
+    public static final String COSTS_ORDER_ADDITIONAL_INFO = "CostsOrderAdditionalInfo";
+    public static final String COSTS_ORDER_ADDITIONAL_INFO_WELSH = "CostsOrderAdditionalInfoWelsh";
+    public static final String ADDITIONAL_INFRORMATION = "additionalInformation";
     public static final String SOLICITOR_HOW_TO_PAY_JSON_KEY = "SolPaymentHowToPay";
     public static final String SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY = "SolicitorFeeAccountNumber";
     public static final String SOLICITOR_FIRM_JSON_KEY = "PetitionerSolicitorFirm";
     public static final String SOLICITOR_REFERENCE_JSON_KEY = "D8SolicitorReference";
     public static final String SOLICITOR_STATEMENT_OF_TRUTH = "solSignStatementofTruth";
     public static final String RESP_SOL_REPRESENTED = "respondentSolicitorRepresented";
+    public static final String CO_RESPONDENT_REPRESENTED = "CoRespondentSolicitorRepresented";
     public static final String D8_RESPONDENT_SOLICITOR_EMAIL = "D8RespondentSolicitorEmail";
     public static final String D8_RESPONDENT_SOLICITOR_COMPANY = "D8RespondentSolicitorCompany";
     public static final String D8_RESPONDENT_SOLICITOR_PHONE = "D8RespondentSolicitorPhone";
@@ -383,7 +386,6 @@ public class OrchestrationConstants {
     public static final String PAYMENT_SERVICE_REFERENCE = "reference";
     public static final String PAYMENT_FEE_ID = "FEE0002";
     public static final String PAYMENT_CHANNEL = "online";
-    public static final String PAYMENT_DATE_PATTERN = "ddMMyyyy";
     public static final String PAYMENT_CHANNEL_KEY = "PaymentChannel";
     public static final String PAYMENT_TRANSACTION_ID_KEY = "PaymentTransactionId";
     public static final String PAYMENT_REFERENCE_KEY = "PaymentReference";
