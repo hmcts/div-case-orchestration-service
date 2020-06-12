@@ -154,7 +154,7 @@ public class AddresseeDataExtractorTest {
         caseData.put(CO_RESPONDENT_REPRESENTED, YES_VALUE);
         caseData.put(D_8_CASE_REFERENCE, D8_CASE_REFERENCE);
         caseData.put(SOLICITOR_REFERENCE_JSON_KEY, CO_RESPONDENT_SOLICITOR_REF);
-        caseData.put(DATETIME_OF_HEARING_CCD_FIELD, VALID_HEARING_DATE); //TODO remove if/when cover letters are seperated
+        caseData.put(DATETIME_OF_HEARING_CCD_FIELD, VALID_HEARING_DATE);
         return caseData;
     }
 }
