@@ -35,7 +35,7 @@ public class PartyRepresentationChecker {
 
     public static boolean isCoRespondentDigital(Map<String, Object> caseData) {
         String value = (String) caseData.get(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL);
-        return YES_VALUE.equalsIgnoreCase(value);
+        return Strings.isNullOrEmpty(value) || YES_VALUE.equalsIgnoreCase(value);
     }
 
     public static boolean isCostsClaimGranted(Map<String, Object> caseData) {

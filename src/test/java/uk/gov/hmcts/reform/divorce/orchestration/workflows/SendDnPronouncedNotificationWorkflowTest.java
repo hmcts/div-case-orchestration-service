@@ -235,7 +235,6 @@ public class SendDnPronouncedNotificationWorkflowTest {
         verify(bulkPrinterTask, never()).execute(any(TaskContext.class), eq(caseData));
     }
 
-    // Scenario 1
     @Test
     public void givenNotRepresentedCoRespondentIsNotDigitalAndCostsClaimIsGranted() throws Exception {
         Map<String, Object> caseData = buildCaseDataWithCoRespondentAsAddressee();
@@ -260,7 +259,6 @@ public class SendDnPronouncedNotificationWorkflowTest {
         verify(bulkPrinterTask, times(1)).execute(any(TaskContext.class), eq(caseData));
     }
 
-    // Scenario 2
     @Test
     public void givenRepresentedCoRespondentIsNotDigitalAndCostsClaimIsGranted() throws Exception {
         Map<String, Object> caseData = buildCaseDataWithCoRespondentSolicitorAsAddressee();
@@ -285,7 +283,6 @@ public class SendDnPronouncedNotificationWorkflowTest {
         verify(bulkPrinterTask, times(1)).execute(any(TaskContext.class), eq(caseData));
     }
 
-    // scenario 3
     @Test
     public void givenCoRespondentIsNotDigitalAndCostsClaimIsNotGranted_thenNoBulkPrintTasksAreCalled() throws Exception {
         Map<String, Object> caseData = ImmutableMap.of(

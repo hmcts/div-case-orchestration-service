@@ -13,7 +13,6 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.StringHelper.buildFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 
 @Slf4j
@@ -39,7 +38,7 @@ public class CostOrderCoRespondentLetterDataExtractor {
         try {
             String date = getMandatoryPropertyValueAsString(caseData, dateProperty);
             return DateUtils.formatDateWithCustomerFacingFormat(date);
-        } catch(TaskException e) {
+        } catch (TaskException e) {
             log.error("Date {} was in invalid format", dateProperty);
             throw new InvalidDataForTaskException(e);
         }
