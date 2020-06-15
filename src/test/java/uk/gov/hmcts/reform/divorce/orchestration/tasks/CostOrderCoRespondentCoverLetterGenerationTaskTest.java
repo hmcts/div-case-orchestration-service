@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CoRespondentCostOrderCoverLetter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
@@ -34,9 +33,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.CO_RESPONDENTS_EXPECTED_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.CO_RESPONDENT_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
@@ -47,6 +43,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.Bulk
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.PETITIONERS_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.RESPONDENTS_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.RESPONDENTS_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.createDocument;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.prepareTaskContext;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderCoRespondentCoverLetterGenerationTask.FileMetadata.DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderCoRespondentCoverLetterGenerationTask.FileMetadata.TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
@@ -83,14 +81,15 @@ public class CostOrderCoRespondentCoverLetterGenerationTaskTest {
     public void setup() {
         createdDoc = createDocument();
         when(ctscContactDetailsDataProviderService.getCtscContactDetails()).thenReturn(CTSC_CONTACT);
-        when(pdfDocumentGenerationService.generatePdf(any(DocmosisTemplateVars.class), eq(TEMPLATE_ID), eq(AUTH_TOKEN))).thenReturn(createdDoc);
+        when(pdfDocumentGenerationService.generatePdf(any(DocmosisTemplateVars.class), eq(TEMPLATE_ID), eq(AUTH_TOKEN)))
+            .thenReturn(createdDoc);
     }
 
     @Test
     public void getDocumentType() {
         String documentType = costOrderCoRespondentCoverLetterGenerationTask.getDocumentType();
 
-        assertThat(documentType, is(COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE));
+        assertThat(documentType, is(DOCUMENT_TYPE));
     }
 
     @Test
@@ -134,14 +133,6 @@ public class CostOrderCoRespondentCoverLetterGenerationTaskTest {
         assertThat(coRespondentCoverLetter.getAddressee().getName(), is(CO_RESPONDENTS_EXPECTED_NAME));
     }
 
-    public static TaskContext prepareTaskContext() {
-        TaskContext context = new DefaultTaskContext();
-        context.setTransientObject(CASE_ID_JSON_KEY, CASE_ID);
-        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-
-        return context;
-    }
-
     private Map<String, Object> buildCaseDataWhenCoRespondentNotRepresented() {
         return buildCaseData(false);
     }
@@ -159,11 +150,5 @@ public class CostOrderCoRespondentCoverLetterGenerationTaskTest {
         caseData.put(CO_RESPONDENTS_LAST_NAME, CO_RESPONDENTS_LAST_NAME);
 
         return caseData;
-    }
-
-    private GeneratedDocumentInfo createDocument() {
-        return GeneratedDocumentInfo.builder()
-            .fileName("myFile.pdf")
-            .build();
     }
 }
