@@ -29,7 +29,8 @@ public class CostOrderCoRespondentLetterDataExtractorTest {
     public void getPetitionerFullNameIsValid() {
         Map<String, Object> caseData = buildCaseDataWithCoRespondentNames(FIRST_NAME, LAST_NAME);
 
-        assertThat(CostOrderCoRespondentLetterDataExtractor.getCoRespondentFullName(caseData), is(EXPECTED_FULL_NAME));
+        assertThat(FullNamesDataExtractor.getCoRespondentFullName(caseData), is(EXPECTED_FULL_NAME));
+        assertThat(FullNamesDataExtractor.getCoRespondentFullName(caseData), is(EXPECTED_FULL_NAME));
     }
 
     @Test
@@ -46,7 +47,7 @@ public class CostOrderCoRespondentLetterDataExtractorTest {
             String expected = values.get(2);
             Map<String, Object> caseData = buildCaseDataWithCoRespondentNames(values.get(0), values.get(1));
 
-            assertThat(CostOrderCoRespondentLetterDataExtractor.getCoRespondentFullName(caseData), is(expected));
+            assertThat(FullNamesDataExtractor.getCoRespondentFullName(caseData), is(expected));
         });
 
     }
@@ -55,7 +56,7 @@ public class CostOrderCoRespondentLetterDataExtractorTest {
     public void getRespondentFullNameReturnsValidStringWhenAllFieldsPopulated() {
         Map<String, Object> caseData = buildCaseDataWithCoRespondentNames(FIRST_NAME, LAST_NAME);
 
-        assertThat(CostOrderCoRespondentLetterDataExtractor.getCoRespondentFullName(caseData), is("Finn Mertens"));
+        assertThat(FullNamesDataExtractor.getCoRespondentFullName(caseData), is("Finn Mertens"));
     }
 
     @Test

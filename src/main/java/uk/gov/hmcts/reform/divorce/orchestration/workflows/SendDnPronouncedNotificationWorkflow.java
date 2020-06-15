@@ -79,13 +79,13 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
         Map<String, Object> caseData = caseDetails.getCaseData();
 
-        if (!isCoRespondentDigital(caseData)) {
-            log.info("For case {} co-respondent uses traditional letters", caseDetails.getCaseId());
-            addCoRespondentPaperTasks(tasks, caseData);
-
-        } else {
+        if (isCoRespondentDigital(caseData)) {
             log.info("For case {} co-respondent uses digital contact", caseDetails.getCaseId());
             addGenericUpdateNotificationEmailTask(tasks, caseData);
+
+        } else {
+            log.info("For case {} co-respondent uses traditional letters", caseDetails.getCaseId());
+            addCoRespondentPaperTasks(tasks, caseData);
         }
 
         Task<Map<String, Object>>[] arr = new Task[tasks.size()];
@@ -116,7 +116,6 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
             tasks.add(sendCoRespondentGenericUpdateNotificationEmailTask);
         }
     }
-
 
     private boolean isPaperUpdateEnabled() {
         return featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE);

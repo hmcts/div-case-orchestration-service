@@ -76,7 +76,6 @@ public class PartyRepresentationCheckerTest {
 
     @Test
     public void isCoRespondentDigitalReturnsFalseWhenNone() {
-        // if nothing at all then digital journey continues
         Map<String, Object> caseData = createCaseData(WHO_PAYS_COSTS_CCD_FIELD, WHO_PAYS_CCD_CODE_FOR_RESPONDENT);
         assertThat(isCoRespondentDigital(caseData), is(true));
     }

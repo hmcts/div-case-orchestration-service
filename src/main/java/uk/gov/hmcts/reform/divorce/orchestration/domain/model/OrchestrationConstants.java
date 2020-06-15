@@ -53,9 +53,7 @@ public class OrchestrationConstants {
     public static final String D_8_CO_RESPONDENT_NAMED = "D8ReasonForDivorceAdulteryWishToName";
     public static final String D_8_CO_RESPONDENT_NAMED_OLD = "D8ReasonForDivorceAdulteryIsNamed";
     public static final String CO_RESPONDENT_SOLICITOR_NAME = "CoRespondentSolicitorName";
-    public static final String CO_RESPONDENT_SOLICITOR_EMAIL = "CoRespondentSolicitorEmail";
     public static final String CO_RESPONDENT_SOLICITOR_ADDRESS = "DerivedCoRespondentSolicitorAddr";
-    public static final String COST_ORDER_COVER_LETTER_DOCUMENT_TYPE = "costOrderLetter";
     public static final String CCD_CASE_DATA_FIELD = "case_data";
     public static final String CCD_CASE_ID = "id";
     public static final String NOT_RECEIVED_AOS_EVENT_ID = "aosNotReceived";
@@ -200,7 +198,6 @@ public class OrchestrationConstants {
     public static final String CO_RESPONDENT_ANSWER_RECEIVED = "ReceivedAnswerFromCoResp";
     public static final String CO_RESPONDENT_ANSWER_RECEIVED_DATE = "ReceivedAnswerFromCoRespDate";
     public static final String CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL = "CoRespContactMethodIsDigital";
-    public static final String COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE = "coRespondentCostOrderLetter";
     public static final String COST_ORDER_CO_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE = "coRespondentSolicitorCostOrderLetter";
     public static final String DN_DECISION_DATE_FIELD = "DNApprovalDate";
 
