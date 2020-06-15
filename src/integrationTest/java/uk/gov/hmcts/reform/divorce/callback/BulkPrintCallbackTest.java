@@ -64,7 +64,7 @@ public class BulkPrintCallbackTest extends IntegrationTest {
     @Test
     @SuppressWarnings("unchecked")
     public void givenNonAdulteryCase_whenReceivedBulkPrint_thenDueDatePopulated() throws Exception {
-        Map response = callApiToGenerateAos(NON_ADULTERY_CASE);
+        Map<String, Object> response = callApiToGenerateAos(NON_ADULTERY_CASE);
 
         CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
         ccdCallbackRequest.setCaseDetails(CaseDetails.builder().caseData((Map) response.get("data")).caseId("323").state("submitted").build());
@@ -126,7 +126,9 @@ public class BulkPrintCallbackTest extends IntegrationTest {
         log.info("ccdCallbackRequest {}", ccdCallbackRequest);
 
         Response response = postToRestService(
-            serverUrl + bulkPrintContextPath, caseworkerHeaders, ccdCallbackRequest
+            serverUrl + bulkPrintContextPath,
+            caseworkerHeaders,
+            ccdCallbackRequest
         );
 
         log.info("Bulk print response {}", response);
