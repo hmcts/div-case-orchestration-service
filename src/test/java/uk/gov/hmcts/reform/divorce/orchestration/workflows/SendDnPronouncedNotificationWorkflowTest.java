@@ -98,9 +98,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
     @Test
     public void genericEmailTaskShouldExecuteAndReturnPayload() throws Exception {
         Map<String, Object> testPayload = ImmutableMap.of("testKey",
-            "testValue",
-            CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL,
-            YES_VALUE);
+            "testValue");
 
         when(sendPetitionerGenericUpdateNotificationEmailTask.execute(notNull(), eq(testPayload)))
             .thenReturn(testPayload);
@@ -120,9 +118,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
     public void givenWhoPaysCostsIsRespondent_whenWorkflowExecutes_thenSendGenericEmails() throws Exception {
         Map<String, Object> testPayload = ImmutableMap.of(
             WHO_PAYS_COSTS_CCD_FIELD,
-            WHO_PAYS_CCD_CODE_FOR_RESPONDENT,
-            CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL,
-            YES_VALUE);
+            WHO_PAYS_CCD_CODE_FOR_RESPONDENT);
 
         when(sendPetitionerGenericUpdateNotificationEmailTask.execute(notNull(), eq(testPayload)))
             .thenReturn(testPayload);
@@ -142,9 +138,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
     public void givenWhoPaysCostsIsCoRespondent_whenWorkflowExecutes_thenSendGenericEmails() throws Exception {
         Map<String, Object> testPayload = ImmutableMap.of(
             WHO_PAYS_COSTS_CCD_FIELD,
-            WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT,
-            CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL,
-            YES_VALUE);
+            WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT);
 
         when(sendPetitionerGenericUpdateNotificationEmailTask.execute(notNull(), eq(testPayload)))
             .thenReturn(testPayload);
@@ -167,9 +161,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
     public void givenWhoPaysCostsIsRespondentAndCoRespondent_whenWorkflowExecutes_thenSendGenericEmails() throws Exception {
         Map<String, Object> testPayload = ImmutableMap.of(
             WHO_PAYS_COSTS_CCD_FIELD,
-            WHO_PAYS_CCD_CODE_FOR_BOTH,
-            CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL,
-            YES_VALUE);
+            WHO_PAYS_CCD_CODE_FOR_BOTH);
 
         when(sendPetitionerGenericUpdateNotificationEmailTask.execute(notNull(), eq(testPayload)))
             .thenReturn(testPayload);
@@ -225,22 +217,6 @@ public class SendDnPronouncedNotificationWorkflowTest {
         return tasks.toArray(arr);
     }
 
-    @Test
-    public void givenCoRespondentIsNotDigitalAndCostsClaimIsNotGranted_thenNoBulkPrintTasksAreCalled() throws Exception {
-        Map<String, Object> caseData = ImmutableMap.of(
-            CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE,
-            DIVORCE_COSTS_CLAIM_CCD_FIELD, NO_VALUE
-        );
-        CaseDetails caseDetails = buildCaseDetails(caseData);
-
-        Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(caseDetails, AUTH_TOKEN);
-        assertThat(returnedPayload, is(notNullValue()));
-
-        verify(sendPetitionerGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(caseData));
-        verify(sendRespondentGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(caseData));
-        verify(sendCoRespondentGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(caseData));
-        verify(costOrderLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
-    }
 
     @Test
     public void givenToggleIsOff_thenNoBulkPrintTasksAreCalled() throws Exception {
@@ -307,6 +283,24 @@ public class SendDnPronouncedNotificationWorkflowTest {
         verify(costOrderNotificationLetterGenerationTask, times(1)).execute(any(TaskContext.class), eq(caseData));
         verify(fetchPrintDocsFromDmStore, times(1)).execute(any(TaskContext.class), eq(caseData));
         verify(bulkPrinterTask, times(1)).execute(any(TaskContext.class), eq(caseData));
+    }
+
+    // scenario 3
+    @Test
+    public void givenCoRespondentIsNotDigitalAndCostsClaimIsNotGranted_thenNoBulkPrintTasksAreCalled() throws Exception {
+        Map<String, Object> caseData = ImmutableMap.of(
+            CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE,
+            DIVORCE_COSTS_CLAIM_CCD_FIELD, NO_VALUE
+        );
+        CaseDetails caseDetails = buildCaseDetails(caseData);
+        when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
+
+        Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(caseDetails, AUTH_TOKEN);
+        assertThat(returnedPayload, is(notNullValue()));
+
+        verify(costOrderNotificationLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
+        verify(costOrderLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
+        verify(bulkPrinterTask, never()).execute(any(TaskContext.class), eq(caseData));
     }
 
 

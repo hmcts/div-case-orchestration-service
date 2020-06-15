@@ -31,9 +31,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.BULK_PRINT_LETTER_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.DOCUMENT_TYPES_TO_PRINT;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.removeDocumentByDocumentType;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespContactMethodNotDigital;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentDigital;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentLiableForCosts;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentRepresented;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCostsClaimGranted;
 
 @Component
 @RequiredArgsConstructor
@@ -78,36 +79,44 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
         Map<String, Object> caseData = caseDetails.getCaseData();
 
-        if (isCoRespContactMethodNotDigital(caseData)) {
+        if (!isCoRespondentDigital(caseData)) {
             log.info("For case {} co-respondent uses traditional letters", caseDetails.getCaseId());
+            addCoRespondentPaperTasks(tasks, caseData);
 
-            if (isPaperUpdateEnabled()) {
-
-                if (isCoRespondentRepresented(caseData)) {
-                    tasks.add(costOrderNotificationLetterGenerationTask);
-                } else {
-                    tasks.add(costOrderLetterGenerationTask);
-                }
-
-                tasks.add(fetchPrintDocsFromDmStore);
-                tasks.add(bulkPrinterTask);
-            } else {
-                log.info("Features.PAPER_UPDATE = off. Nothing was sent to bulk print");
-            }
         } else {
             log.info("For case {} co-respondent uses digital contact", caseDetails.getCaseId());
-
-            tasks.add(sendPetitionerGenericUpdateNotificationEmailTask);
-            tasks.add(sendRespondentGenericUpdateNotificationEmailTask);
-
-            if (isCoRespondentLiableForCosts(caseData)) {
-                tasks.add(sendCoRespondentGenericUpdateNotificationEmailTask);
-            }
+            addGenericUpdateNotificationEmailTask(tasks, caseData);
         }
 
         Task<Map<String, Object>>[] arr = new Task[tasks.size()];
         return tasks.toArray(arr);
     }
+
+    private void addCoRespondentPaperTasks(List<Task<Map<String, Object>>> tasks, Map<String, Object> caseData) {
+        if (isPaperUpdateEnabled() && isCostsClaimGranted(caseData)) {
+
+            if (isCoRespondentRepresented(caseData)) {
+                tasks.add(costOrderNotificationLetterGenerationTask);
+            } else {
+                tasks.add(costOrderLetterGenerationTask);
+            }
+
+            tasks.add(fetchPrintDocsFromDmStore);
+            tasks.add(bulkPrinterTask);
+        } else {
+            log.info("Features.PAPER_UPDATE = off. Nothing was sent to bulk print");
+        }
+    }
+
+    private void addGenericUpdateNotificationEmailTask(List<Task<Map<String, Object>>> tasks, Map<String, Object> caseData) {
+        tasks.add(sendPetitionerGenericUpdateNotificationEmailTask);
+        tasks.add(sendRespondentGenericUpdateNotificationEmailTask);
+
+        if (isCoRespondentLiableForCosts(caseData)) {
+            tasks.add(sendCoRespondentGenericUpdateNotificationEmailTask);
+        }
+    }
+
 
     private boolean isPaperUpdateEnabled() {
         return featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE);
