@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderNotificationLetterGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderCoRespondentSolicitorCoverLetterGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.time.LocalDate;
@@ -43,12 +43,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderNotificationLetterGenerationTask.FileMetadata.DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderNotificationLetterGenerationTask.FileMetadata.TEMPLATE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderCoRespondentSolicitorCoverLetterGenerationTask.FileMetadata.DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderCoRespondentSolicitorCoverLetterGenerationTask.FileMetadata.TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CostOrderNotificationLetterGenerationTaskTest {
+public class CostOrderCoRespondentSolicitorCoverLetterGenerationTaskTest {
 
     private static final String PETITIONERS_FIRST_NAME = "Anna";
     private static final String PETITIONERS_LAST_NAME = "Nowak";
@@ -71,7 +71,7 @@ public class CostOrderNotificationLetterGenerationTaskTest {
     private CcdUtil ccdUtil;
 
     @InjectMocks
-    private CostOrderNotificationLetterGenerationTask costOrderNotificationLetterGenerationTask;
+    private CostOrderCoRespondentSolicitorCoverLetterGenerationTask costOrderNotificationLetterGenerationTask;
 
     @Captor
     private ArgumentCaptor<List<GeneratedDocumentInfo>> newDocumentInfoListCaptor;
@@ -124,7 +124,7 @@ public class CostOrderNotificationLetterGenerationTaskTest {
 
         verify(pdfDocumentGenerationService, times(1))
             .generatePdf(costOrderNotificationCoverLetterArgumentCaptor.capture(),
-                eq(CostOrderNotificationLetterGenerationTask.FileMetadata.TEMPLATE_ID),
+                eq(CostOrderCoRespondentSolicitorCoverLetterGenerationTask.FileMetadata.TEMPLATE_ID),
                 eq(AUTH_TOKEN));
 
         final CoRespondentCostOrderNotificationCoverLetter coRespondentCostOrderNotificationCoverLetter

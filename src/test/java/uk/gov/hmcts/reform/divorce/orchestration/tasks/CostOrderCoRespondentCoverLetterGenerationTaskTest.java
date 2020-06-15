@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderLetterGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderCoRespondentCoverLetterGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.time.LocalDate;
@@ -47,12 +47,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.Bulk
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.PETITIONERS_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.RESPONDENTS_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.RESPONDENTS_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderLetterGenerationTask.FileMetadata.DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderLetterGenerationTask.FileMetadata.TEMPLATE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderCoRespondentCoverLetterGenerationTask.FileMetadata.DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderCoRespondentCoverLetterGenerationTask.FileMetadata.TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CostOrderLetterGenerationTaskTest {
+public class CostOrderCoRespondentCoverLetterGenerationTaskTest {
 
     private static final String CO_RESPONDENTS_FIRST_NAME = "Jane";
     private static final String CO_RESPONDENTS_LAST_NAME = "Sam";
@@ -72,7 +72,7 @@ public class CostOrderLetterGenerationTaskTest {
     private CcdUtil ccdUtil;
 
     @InjectMocks
-    private CostOrderLetterGenerationTask costOrderLetterGenerationTask;
+    private CostOrderCoRespondentCoverLetterGenerationTask costOrderCoRespondentCoverLetterGenerationTask;
 
     @Captor
     private ArgumentCaptor<List<GeneratedDocumentInfo>> newDocumentInfoListCaptor;
@@ -88,7 +88,7 @@ public class CostOrderLetterGenerationTaskTest {
 
     @Test
     public void getDocumentType() {
-        String documentType = costOrderLetterGenerationTask.getDocumentType();
+        String documentType = costOrderCoRespondentCoverLetterGenerationTask.getDocumentType();
 
         assertThat(documentType, is(COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE));
     }
@@ -98,7 +98,7 @@ public class CostOrderLetterGenerationTaskTest {
         TaskContext context = prepareTaskContext();
 
         Map<String, Object> caseData = buildCaseDataWhenCoRespondentNotRepresented();
-        costOrderLetterGenerationTask.execute(context, caseData);
+        costOrderCoRespondentCoverLetterGenerationTask.execute(context, caseData);
 
         verify(ccdUtil).addNewDocumentsToCaseData(eq(caseData), newDocumentInfoListCaptor.capture());
         List<GeneratedDocumentInfo> newDocumentInfoList = newDocumentInfoListCaptor.getValue();
@@ -117,8 +117,11 @@ public class CostOrderLetterGenerationTaskTest {
             ArgumentCaptor.forClass(CoRespondentCostOrderCoverLetter.class);
 
         verify(pdfDocumentGenerationService, times(1))
-            .generatePdf(costOrderCoRespondentLetterArgumentCaptor.capture(), eq(CostOrderLetterGenerationTask.FileMetadata.TEMPLATE_ID),
-                eq(AUTH_TOKEN));
+            .generatePdf(
+                costOrderCoRespondentLetterArgumentCaptor.capture(),
+                eq(CostOrderCoRespondentCoverLetterGenerationTask.FileMetadata.TEMPLATE_ID),
+                eq(AUTH_TOKEN)
+            );
 
         final CoRespondentCostOrderCoverLetter coRespondentCoverLetter = costOrderCoRespondentLetterArgumentCaptor.getValue();
         assertThat(coRespondentCoverLetter.getPetitionerFullName(), is(PETITIONERS_FIRST_NAME + " " + PETITIONERS_LAST_NAME));

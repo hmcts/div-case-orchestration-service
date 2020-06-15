@@ -21,8 +21,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.service.BulkPrintService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderLetterGenerationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderNotificationLetterGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderCoRespondentCoverLetterGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderCoRespondentSolicitorCoverLetterGenerationTask;
 
 import java.util.List;
 import java.util.Map;
@@ -288,8 +288,8 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
         byte[] coRespondentCoverLetterBytes = new byte[] {1, 2, 3};
         String daGrantedLetterDocumentId =
             stubDocumentGeneratorService(
-                CostOrderLetterGenerationTask.FileMetadata.TEMPLATE_ID,
-                CostOrderLetterGenerationTask.FileMetadata.DOCUMENT_TYPE);
+                CostOrderCoRespondentCoverLetterGenerationTask.FileMetadata.TEMPLATE_ID,
+                CostOrderCoRespondentCoverLetterGenerationTask.FileMetadata.DOCUMENT_TYPE);
         stubDMStore(daGrantedLetterDocumentId, coRespondentCoverLetterBytes);
 
         //Existing document
@@ -340,8 +340,8 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
         byte[] coRespondentCoverLetterBytes = new byte[] {1, 2, 3};
         String daGrantedLetterDocumentId =
             stubDocumentGeneratorService(
-                CostOrderNotificationLetterGenerationTask.FileMetadata.TEMPLATE_ID,
-                CostOrderNotificationLetterGenerationTask.FileMetadata.DOCUMENT_TYPE);
+                CostOrderCoRespondentSolicitorCoverLetterGenerationTask.FileMetadata.TEMPLATE_ID,
+                CostOrderCoRespondentSolicitorCoverLetterGenerationTask.FileMetadata.DOCUMENT_TYPE);
         stubDMStore(daGrantedLetterDocumentId, coRespondentCoverLetterBytes);
 
         //Existing document

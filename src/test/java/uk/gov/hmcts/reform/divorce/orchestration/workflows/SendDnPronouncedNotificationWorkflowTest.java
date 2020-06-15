@@ -20,8 +20,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUp
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderLetterGenerationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderNotificationLetterGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderCoRespondentCoverLetterGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderCoRespondentSolicitorCoverLetterGenerationTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,10 +73,10 @@ public class SendDnPronouncedNotificationWorkflowTest {
     private SendCoRespondentGenericUpdateNotificationEmailTask sendCoRespondentGenericUpdateNotificationEmailTask;
 
     @Mock
-    private CostOrderLetterGenerationTask costOrderLetterGenerationTask;
+    private CostOrderCoRespondentCoverLetterGenerationTask costOrderCoRespondentCoverLetterGenerationTask;
 
     @Mock
-    private CostOrderNotificationLetterGenerationTask costOrderNotificationLetterGenerationTask;
+    private CostOrderCoRespondentSolicitorCoverLetterGenerationTask costOrderCoRespondentSolicitorCoverLetterGenerationTask;
 
     @Mock
     private FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
@@ -118,32 +118,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
     }
 
     @Test
-    public void givenWhoPaysCostsIsRespondent_whenWorkflowExecutes_thenSendGenericEmails() throws Exception {
-        Map<String, Object> testPayload = ImmutableMap.of(
-            WHO_PAYS_COSTS_CCD_FIELD,
-            WHO_PAYS_CCD_CODE_FOR_RESPONDENT);
-
-        when(sendPetitionerGenericUpdateNotificationEmailTask.execute(notNull(), eq(testPayload)))
-            .thenReturn(testPayload);
-
-        when(sendRespondentGenericUpdateNotificationEmailTask.execute(notNull(), eq(testPayload)))
-            .thenReturn(testPayload);
-
-        Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(buildCaseDetails(testPayload), AUTH_TOKEN);
-        assertThat(returnedPayload, is(equalTo(testPayload)));
-
-        final InOrder inOrder = inOrder(
-            sendPetitionerGenericUpdateNotificationEmailTask,
-            sendRespondentGenericUpdateNotificationEmailTask
-        );
-
-        inOrder.verify(sendPetitionerGenericUpdateNotificationEmailTask).execute(any(TaskContext.class), eq(testPayload));
-        inOrder.verify(sendRespondentGenericUpdateNotificationEmailTask).execute(any(TaskContext.class), eq(testPayload));
-        verify(sendCoRespondentGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(testPayload));
-    }
-
-    @Test
-    public void givenWhoPaysCostsIsCoRespondent_whenWorkflowExecutes_thenSendGenericEmails() throws Exception {
+    public void givenDigitalCaseAndCoRespondentAreLiableForCosts_thenEmailsAreSent() throws Exception {
         Map<String, Object> testPayload = ImmutableMap.of(
             WHO_PAYS_COSTS_CCD_FIELD,
             WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT);
@@ -172,7 +147,32 @@ public class SendDnPronouncedNotificationWorkflowTest {
     }
 
     @Test
-    public void givenWhoPaysCostsIsRespondentAndCoRespondent_whenWorkflowExecutes_thenSendGenericEmails() throws Exception {
+    public void givenDigitalCaseAndCoRespondentNotLiableForCosts_thenEmailsAreSent() throws Exception {
+        Map<String, Object> testPayload = ImmutableMap.of(
+            WHO_PAYS_COSTS_CCD_FIELD,
+            WHO_PAYS_CCD_CODE_FOR_RESPONDENT);
+
+        when(sendPetitionerGenericUpdateNotificationEmailTask.execute(notNull(), eq(testPayload)))
+            .thenReturn(testPayload);
+
+        when(sendRespondentGenericUpdateNotificationEmailTask.execute(notNull(), eq(testPayload)))
+            .thenReturn(testPayload);
+
+        Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(buildCaseDetails(testPayload), AUTH_TOKEN);
+        assertThat(returnedPayload, is(equalTo(testPayload)));
+
+        final InOrder inOrder = inOrder(
+            sendPetitionerGenericUpdateNotificationEmailTask,
+            sendRespondentGenericUpdateNotificationEmailTask
+        );
+
+        inOrder.verify(sendPetitionerGenericUpdateNotificationEmailTask).execute(any(TaskContext.class), eq(testPayload));
+        inOrder.verify(sendRespondentGenericUpdateNotificationEmailTask).execute(any(TaskContext.class), eq(testPayload));
+        verify(sendCoRespondentGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(testPayload));
+    }
+
+    @Test
+    public void givenDigitalCaseAndRespondentAndCoRespondentAreLiableForCosts_thenEmailsAreSent() throws Exception {
         Map<String, Object> testPayload = ImmutableMap.of(
             WHO_PAYS_COSTS_CCD_FIELD,
             WHO_PAYS_CCD_CODE_FOR_BOTH);
@@ -201,32 +201,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
     }
 
     @Test
-    public void genericEmailTaskShouldExecuteAndReturnPayloadWhenCoRespondentIsDigital() throws Exception {
-        Map<String, Object> caseData = ImmutableMap.of(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, YES_VALUE);
-
-        when(sendPetitionerGenericUpdateNotificationEmailTask.execute(notNull(), eq(caseData)))
-            .thenReturn(caseData);
-
-        when(sendRespondentGenericUpdateNotificationEmailTask.execute(notNull(), eq(caseData)))
-            .thenReturn(caseData);
-
-        Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(buildCaseDetails(caseData), AUTH_TOKEN);
-        assertThat(returnedPayload, is(equalTo(caseData)));
-
-        final InOrder inOrder = inOrder(
-            sendPetitionerGenericUpdateNotificationEmailTask,
-            sendRespondentGenericUpdateNotificationEmailTask,
-            sendCoRespondentGenericUpdateNotificationEmailTask
-        );
-
-        inOrder.verify(sendPetitionerGenericUpdateNotificationEmailTask).execute(any(TaskContext.class), eq(caseData));
-        inOrder.verify(sendRespondentGenericUpdateNotificationEmailTask).execute(any(TaskContext.class), eq(caseData));
-
-        verify(sendCoRespondentGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(caseData));
-    }
-
-    @Test
-    public void genericEmailTaskShouldNotExecuteWhenCoRespondentIsNotDigital() throws Exception {
+    public void givenPaperBased_EmailTasksAreNotCalled() throws Exception {
         Map<String, Object> caseData = ImmutableMap.of(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE);
         Task<Map<String, Object>>[] emptyTasks = getEmptyTaskList();
 
@@ -238,37 +213,30 @@ public class SendDnPronouncedNotificationWorkflowTest {
         verify(sendCoRespondentGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(caseData));
     }
 
-    private Task<Map<String, Object>>[] getEmptyTaskList() {
-        List<Task<Map<String, Object>>> tasks = new ArrayList<>();
-        Task<Map<String, Object>>[] arr = new Task[tasks.size()];
-        return tasks.toArray(arr);
-    }
-
-
     @Test
-    public void givenToggleIsOff_thenNoBulkPrintTasksAreCalled() throws Exception {
+    public void givenPaperUpdateToggleIsOff_thenNoBulkPrintTasksAreCalled() throws Exception {
         Map<String, Object> caseData = buildCaseDataWithCoRespondentAsAddressee();
         CaseDetails caseDetails = buildCaseDetails(caseData);
 
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(false);
-        when(costOrderLetterGenerationTask.getDocumentType()).thenReturn(COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE);
+        when(costOrderCoRespondentCoverLetterGenerationTask.getDocumentType()).thenReturn(COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE);
 
         Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(caseDetails, AUTH_TOKEN);
         assertThat(returnedPayload, is(notNullValue()));
 
-        verify(costOrderNotificationLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
-        verify(costOrderLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
+        verify(costOrderCoRespondentSolicitorCoverLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
+        verify(costOrderCoRespondentCoverLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
         verify(fetchPrintDocsFromDmStore, never()).execute(any(TaskContext.class), eq(caseData));
         verify(bulkPrinterTask, never()).execute(any(TaskContext.class), eq(caseData));
     }
 
     @Test
-    public void givenNotRepresentedCoRespondentIsNotDigitalAndCostsClaimIsGranted() throws Exception {
+    public void givenPaperBasedAndPaperUpdateToggledOnAndCostClaimGrantedAndIsNotRepresented_SendCoRespondentCoverLetter() throws Exception {
         Map<String, Object> caseData = buildCaseDataWithCoRespondentAsAddressee();
 
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
-        when(costOrderLetterGenerationTask.execute(notNull(), eq(caseData))).thenReturn(caseData);
-        when(costOrderLetterGenerationTask.getDocumentType()).thenReturn(COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE);
+        when(costOrderCoRespondentCoverLetterGenerationTask.execute(notNull(), eq(caseData))).thenReturn(caseData);
+        when(costOrderCoRespondentCoverLetterGenerationTask.getDocumentType()).thenReturn(COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE);
         when(fetchPrintDocsFromDmStore.execute(notNull(), eq(caseData))).thenReturn(caseData);
         when(bulkPrinterTask.execute(notNull(), eq(caseData))).thenReturn(caseData);
 
@@ -277,23 +245,23 @@ public class SendDnPronouncedNotificationWorkflowTest {
         assertThat(returnedPayload, is(caseData));
 
         final InOrder inOrder = inOrder(
-            costOrderLetterGenerationTask,
+            costOrderCoRespondentCoverLetterGenerationTask,
             fetchPrintDocsFromDmStore,
             bulkPrinterTask
         );
 
-        inOrder.verify(costOrderLetterGenerationTask, times(1)).execute(any(TaskContext.class), eq(caseData));
+        inOrder.verify(costOrderCoRespondentCoverLetterGenerationTask, times(1)).execute(any(TaskContext.class), eq(caseData));
         inOrder.verify(fetchPrintDocsFromDmStore, times(1)).execute(any(TaskContext.class), eq(caseData));
         inOrder.verify(bulkPrinterTask, times(1)).execute(any(TaskContext.class), eq(caseData));
 
         verify(sendPetitionerGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(caseData));
         verify(sendRespondentGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(caseData));
         verify(sendCoRespondentGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(caseData));
-        verify(costOrderNotificationLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
+        verify(costOrderCoRespondentSolicitorCoverLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
     }
 
     @Test
-    public void givenRepresentedCoRespondentIsPaperBasedAndCostsClaimIsGranted() throws Exception {
+    public void givenPaperBasedAndPaperUpdateToggledOnAndCostClaimGrantedAndIsRepresented_SendCoRespondentSolicitorCoverLetter() throws Exception {
         Map<String, Object> caseData = ImmutableMap.of(
             CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE,
             DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE,
@@ -301,7 +269,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
         );
         CaseDetails caseDetails = buildCaseDetails(caseData);
 
-        when(costOrderNotificationLetterGenerationTask.execute(any(TaskContext.class), eq(caseData))).thenReturn(caseData);
+        when(costOrderCoRespondentSolicitorCoverLetterGenerationTask.execute(any(TaskContext.class), eq(caseData))).thenReturn(caseData);
         when(fetchPrintDocsFromDmStore.execute(any(TaskContext.class), eq(caseData))).thenReturn(caseData);
         when(bulkPrinterTask.execute(any(TaskContext.class), eq(caseData))).thenReturn(caseData);
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
@@ -309,18 +277,25 @@ public class SendDnPronouncedNotificationWorkflowTest {
         Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(caseDetails, AUTH_TOKEN);
         assertThat(returnedPayload, is(notNullValue()));
 
-        verify(costOrderNotificationLetterGenerationTask, times(1)).execute(any(TaskContext.class), eq(caseData));
-        verify(fetchPrintDocsFromDmStore, times(1)).execute(any(TaskContext.class), eq(caseData));
-        verify(bulkPrinterTask, times(1)).execute(any(TaskContext.class), eq(caseData));
-
         verify(sendPetitionerGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), anyMap());
         verify(sendRespondentGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), anyMap());
         verify(sendCoRespondentGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), anyMap());
-        verify(costOrderNotificationLetterGenerationTask, never()).execute(any(TaskContext.class), anyMap());
+
+
+        final InOrder inOrder = inOrder(
+            costOrderCoRespondentSolicitorCoverLetterGenerationTask,
+            fetchPrintDocsFromDmStore,
+            bulkPrinterTask
+        );
+
+        inOrder.verify(costOrderCoRespondentSolicitorCoverLetterGenerationTask, times(1)).execute(any(TaskContext.class), eq(caseData));
+        inOrder.verify(fetchPrintDocsFromDmStore, times(1)).execute(any(TaskContext.class), eq(caseData));
+        inOrder.verify(bulkPrinterTask, times(1)).execute(any(TaskContext.class), eq(caseData));
+
     }
 
     @Test
-    public void givenCoRespondentIsNotDigitalAndCostsClaimIsNotGranted_thenNoBulkPrintTasksAreCalled() throws Exception {
+    public void givenPaperBasedAndPaperUpdateToggledOnAndCostClaimNotGranted_thenNoBulkPrintTasksAreCalled() throws Exception {
         Map<String, Object> caseData = ImmutableMap.of(
             CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE,
             DIVORCE_COSTS_CLAIM_CCD_FIELD, NO_VALUE
@@ -331,13 +306,26 @@ public class SendDnPronouncedNotificationWorkflowTest {
         Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(caseDetails, AUTH_TOKEN);
         assertThat(returnedPayload, is(notNullValue()));
 
-        verify(costOrderNotificationLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
-        verify(costOrderLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
+        verify(costOrderCoRespondentSolicitorCoverLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
+        verify(costOrderCoRespondentCoverLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
         verify(bulkPrinterTask, never()).execute(any(TaskContext.class), eq(caseData));
     }
 
+    @Test
+    public void givenPaperBasedAndPaperUpdateToggledOff_thenNoBulkPrintTasksAreCalled() throws Exception {
+        Map<String, Object> caseData = ImmutableMap.of(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE);
+        CaseDetails caseDetails = buildCaseDetails(caseData);
+        when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(false);
 
-    public static Map<String, Object> buildCaseDataWithCoRespondentAsAddressee() {
+        Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(caseDetails, AUTH_TOKEN);
+        assertThat(returnedPayload, is(notNullValue()));
+
+        verify(costOrderCoRespondentSolicitorCoverLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
+        verify(costOrderCoRespondentCoverLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
+        verify(bulkPrinterTask, never()).execute(any(TaskContext.class), eq(caseData));
+    }
+
+    private Map<String, Object> buildCaseDataWithCoRespondentAsAddressee() {
         Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithCoRespondentAsAddressee();
         caseData.put(D8DOCUMENTS_GENERATED, asList(
             createCollectionMemberDocumentAsMap("http://dn-pronounced.com", COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_TEMPLATE_ID)
@@ -345,13 +333,12 @@ public class SendDnPronouncedNotificationWorkflowTest {
         return caseData;
     }
 
-    private Map<String, Object> buildCaseDataWithCoRespondentSolicitorAsAddressee() {
-        Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithCoRespondentSolicitorAsAddressee();
-        caseData.put(D8DOCUMENTS_GENERATED, asList(
-            createCollectionMemberDocumentAsMap("http://dn-pronounced.com", COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_TEMPLATE_ID)
-        ));
-        return caseData;
+    private Task<Map<String, Object>>[] getEmptyTaskList() {
+        List<Task<Map<String, Object>>> tasks = new ArrayList<>();
+        Task<Map<String, Object>>[] arr = new Task[tasks.size()];
+        return tasks.toArray(arr);
     }
+
 
     private CaseDetails buildCaseDetails(Map<String, Object> casePayload) {
         return CaseDetails.builder()

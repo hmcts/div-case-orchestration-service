@@ -15,8 +15,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUp
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderLetterGenerationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderNotificationLetterGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderCoRespondentCoverLetterGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderCoRespondentSolicitorCoverLetterGenerationTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,8 +45,8 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
     private final SendRespondentGenericUpdateNotificationEmailTask sendRespondentGenericUpdateNotificationEmailTask;
     private final SendCoRespondentGenericUpdateNotificationEmailTask sendCoRespondentGenericUpdateNotificationEmailTask;
 
-    private final CostOrderLetterGenerationTask costOrderLetterGenerationTask;
-    private final CostOrderNotificationLetterGenerationTask costOrderNotificationLetterGenerationTask;
+    private final CostOrderCoRespondentCoverLetterGenerationTask costOrderCoRespondentCoverLetterGenerationTask;
+    private final CostOrderCoRespondentSolicitorCoverLetterGenerationTask costOrderCoRespondentSolicitorCoverLetterGenerationTask;
     private final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
     private final BulkPrinterTask bulkPrinterTask;
     private final FeatureToggleService featureToggleService;
@@ -95,9 +95,9 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         if (isPaperUpdateEnabled() && isCostsClaimGranted(caseData)) {
 
             if (isCoRespondentRepresented(caseData)) {
-                tasks.add(costOrderNotificationLetterGenerationTask);
+                tasks.add(costOrderCoRespondentSolicitorCoverLetterGenerationTask);
             } else {
-                tasks.add(costOrderLetterGenerationTask);
+                tasks.add(costOrderCoRespondentCoverLetterGenerationTask);
             }
 
             tasks.add(fetchPrintDocsFromDmStore);
@@ -122,7 +122,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
 
     private String coverLetterDocument(Map<String, Object> caseData) {
         return isCoRespondentRepresented(caseData)
-            ? costOrderNotificationLetterGenerationTask.getDocumentType()
-            : costOrderLetterGenerationTask.getDocumentType();
+            ? costOrderCoRespondentSolicitorCoverLetterGenerationTask.getDocumentType()
+            : costOrderCoRespondentCoverLetterGenerationTask.getDocumentType();
     }
 }
