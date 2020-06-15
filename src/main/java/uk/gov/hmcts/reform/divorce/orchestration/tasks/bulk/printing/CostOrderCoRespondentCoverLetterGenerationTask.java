@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.bsp.common.model.document.Addressee;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CoRespondentCostOrderCoverLetter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -19,15 +18,14 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentRepresented;
 
 @Component
 public class CostOrderCoRespondentCoverLetterGenerationTask extends BasePayloadSpecificDocumentGenerationTask {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FileMetadata {
-        public static String TEMPLATE_ID = "FL-DIV-LET-ENG-00358.docx";
-        public static String DOCUMENT_TYPE = COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE;
+        public static final String TEMPLATE_ID = "FL-DIV-LET-ENG-00358.docx";
+        public static final String DOCUMENT_TYPE = COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE;
     }
 
     public CostOrderCoRespondentCoverLetterGenerationTask(
@@ -42,7 +40,7 @@ public class CostOrderCoRespondentCoverLetterGenerationTask extends BasePayloadS
         return CoRespondentCostOrderCoverLetter.builder()
             .caseReference(getCaseId(context))
             .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
-            .addressee(getAddresseeCoRespondentOrSolicitorIfRepresented(caseData))
+            .addressee(AddresseeDataExtractor.getCoRespondent(caseData))
             .letterDate(DatesDataExtractor.getLetterDate())
             .hearingDate(DatesDataExtractor.getHearingDate(caseData))
             .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
@@ -58,13 +56,5 @@ public class CostOrderCoRespondentCoverLetterGenerationTask extends BasePayloadS
     @Override
     public String getTemplateId() {
         return FileMetadata.TEMPLATE_ID;
-    }
-
-    private Addressee getAddresseeCoRespondentOrSolicitorIfRepresented(Map<String, Object> caseData) {
-        if (isCoRespondentRepresented(caseData)) {
-            return AddresseeDataExtractor.getCoRespondentSolicitor(caseData);
-        }
-
-        return AddresseeDataExtractor.getCoRespondent(caseData);
     }
 }
