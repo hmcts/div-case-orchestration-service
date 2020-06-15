@@ -21,20 +21,18 @@ public class CostOrderCoRespondentLetterDataExtractor {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class CaseDataKeys {
-        public static final String CO_RESPONDENT_FIRST_NAME = OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME;
-        public static final String CO_RESPONDENT_LAST_NAME = OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME;
         public static final String SOLICITOR_REFERENCE = OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
     }
 
     public static String getHearingDate(Map<String, Object> caseData) throws TaskException {
-        return returnFormattedDate(caseData, DATETIME_OF_HEARING_CCD_FIELD);
+        return getFormattedDate(caseData, DATETIME_OF_HEARING_CCD_FIELD);
     }
 
     public static String getLetterDate() {
         return DateUtils.formatDateWithCustomerFacingFormat(LocalDate.now().toString());
     }
 
-    private static String returnFormattedDate(Map<String, Object> caseData, String dateProperty) {
+    private static String getFormattedDate(Map<String, Object> caseData, String dateProperty) {
         try {
             String date = getMandatoryPropertyValueAsString(caseData, dateProperty);
             return DateUtils.formatDateWithCustomerFacingFormat(date);

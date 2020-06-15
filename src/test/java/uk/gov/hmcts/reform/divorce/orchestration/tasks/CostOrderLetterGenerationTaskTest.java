@@ -43,6 +43,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.PETITIONERS_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.PETITIONERS_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.RESPONDENTS_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.RESPONDENTS_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderLetterGenerationTask.FileMetadata.DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderLetterGenerationTask.FileMetadata.TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
@@ -50,10 +54,6 @@ import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomer
 @RunWith(MockitoJUnitRunner.class)
 public class CostOrderLetterGenerationTaskTest {
 
-    private static final String PETITIONERS_FIRST_NAME = "Anna";
-    private static final String PETITIONERS_LAST_NAME = "Nowak";
-    private static final String RESPONDENTS_FIRST_NAME = "John";
-    private static final String RESPONDENTS_LAST_NAME = "Wozniak";
     private static final String CO_RESPONDENTS_FIRST_NAME = "Jane";
     private static final String CO_RESPONDENTS_LAST_NAME = "Sam";
 
