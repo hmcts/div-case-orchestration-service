@@ -53,7 +53,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CO_RE
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CO_RESPONDENT_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_D8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_D8_DERIVED_3RD_PARTY_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EXPECTED_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_EMAIL;
@@ -94,6 +93,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_COSTS_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractorTest.createHearingDatesList;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
@@ -112,7 +112,7 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
         .put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE)
         .put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE)
         .put(D_8_CASE_REFERENCE, TEST_D8_CASE_REFERENCE)
-        .put(DATETIME_OF_HEARING_CCD_FIELD, TEST_EXPECTED_DUE_DATE)
+        .put(DATETIME_OF_HEARING_CCD_FIELD, createHearingDatesList())
         .put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME)
         .put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME)
         .put(RESPONDENT_FIRST_NAME, TEST_RESPONDENT_FIRST_NAME)

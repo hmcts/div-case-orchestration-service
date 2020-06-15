@@ -33,8 +33,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.CO_RESPONDENTS_EXPECTED_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.CO_RESPONDENT_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractorTest.HEARING_DATE_FORMATTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractorTest.createHearingDatesList;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
@@ -128,7 +131,7 @@ public class CostOrderCoRespondentCoverLetterGenerationTaskTest {
         assertThat(coRespondentCoverLetter.getCaseReference(), is(CASE_ID));
         assertThat(coRespondentCoverLetter.getLetterDate(), is(LETTER_DATE_EXPECTED));
         assertThat(coRespondentCoverLetter.getCtscContactDetails(), is(CTSC_CONTACT));
-        assertThat(coRespondentCoverLetter.getHearingDate(), is("20 October 2020"));
+        assertThat(coRespondentCoverLetter.getHearingDate(), is(HEARING_DATE_FORMATTED));
         assertThat(coRespondentCoverLetter.getAddressee().getFormattedAddress(), is(CO_RESPONDENT_ADDRESS));
         assertThat(coRespondentCoverLetter.getAddressee().getName(), is(CO_RESPONDENTS_EXPECTED_NAME));
     }
@@ -148,6 +151,8 @@ public class CostOrderCoRespondentCoverLetterGenerationTaskTest {
         caseData.put(RESPONDENT_LAST_NAME, RESPONDENTS_LAST_NAME);
         caseData.put(CO_RESPONDENTS_FIRST_NAME, CO_RESPONDENTS_FIRST_NAME);
         caseData.put(CO_RESPONDENTS_LAST_NAME, CO_RESPONDENTS_LAST_NAME);
+
+        caseData.put(DATETIME_OF_HEARING_CCD_FIELD, createHearingDatesList());
 
         return caseData;
     }
