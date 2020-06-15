@@ -108,10 +108,8 @@ public class BulkPrintCallbackTest extends IntegrationTest {
         );
 
         String jsonResponse = postToRestService(serverUrl + bulkPrintContextPath, caseworkerHeaders, ccdCallbackRequest).getBody().asString();
-        assertThat(jsonResponse, allOf(
-            isJson(),
-            hasJsonPath("data.dueDate", equalTo(expectedDueDate))
-        ));
+        assertThat("Response from bulk print is not JSON", jsonResponse, isJson());
+        assertThat("dueDate is as expected", jsonResponse, hasJsonPath("data.dueDate", equalTo(expectedDueDate)));
     }
 
 }
