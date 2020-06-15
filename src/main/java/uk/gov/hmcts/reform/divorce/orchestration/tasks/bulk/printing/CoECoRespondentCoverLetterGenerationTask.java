@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentG
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.impl.CourtLookupService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
@@ -56,8 +57,8 @@ public class CoECoRespondentCoverLetterGenerationTask extends BasePayloadSpecifi
             .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
             .costClaimGranted(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData))
             .courtName(getCourtName(caseData))
-            .deadlineToContactCourtBy(CoECoverLetterDataExtractor.getDeadlineToContactCourtBy(caseData))
-            .hearingDate(CoECoverLetterDataExtractor.getHearingDate(caseData))
+            .deadlineToContactCourtBy(DatesDataExtractor.getDeadlineToContactCourtBy(caseData))
+            .hearingDate(DatesDataExtractor.getHearingDate(caseData))
             .build();
     }
 
