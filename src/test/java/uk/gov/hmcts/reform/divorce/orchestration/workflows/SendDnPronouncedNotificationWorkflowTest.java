@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -34,6 +35,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -129,8 +131,13 @@ public class SendDnPronouncedNotificationWorkflowTest {
         Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(buildCaseDetails(testPayload), AUTH_TOKEN);
         assertThat(returnedPayload, is(equalTo(testPayload)));
 
-        verify(sendPetitionerGenericUpdateNotificationEmailTask).execute(any(TaskContext.class), eq(testPayload));
-        verify(sendRespondentGenericUpdateNotificationEmailTask).execute(any(TaskContext.class), eq(testPayload));
+        final InOrder inOrder = inOrder(
+            sendPetitionerGenericUpdateNotificationEmailTask,
+            sendRespondentGenericUpdateNotificationEmailTask
+        );
+
+        inOrder.verify(sendPetitionerGenericUpdateNotificationEmailTask).execute(any(TaskContext.class), eq(testPayload));
+        inOrder.verify(sendRespondentGenericUpdateNotificationEmailTask).execute(any(TaskContext.class), eq(testPayload));
         verify(sendCoRespondentGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(testPayload));
     }
 
@@ -152,9 +159,15 @@ public class SendDnPronouncedNotificationWorkflowTest {
         Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(buildCaseDetails(testPayload), AUTH_TOKEN);
         assertThat(returnedPayload, is(equalTo(testPayload)));
 
-        verify(sendPetitionerGenericUpdateNotificationEmailTask).execute(any(TaskContext.class), eq(testPayload));
-        verify(sendRespondentGenericUpdateNotificationEmailTask).execute(any(TaskContext.class), eq(testPayload));
-        verify(sendCoRespondentGenericUpdateNotificationEmailTask).execute(any(TaskContext.class), eq(testPayload));
+        final InOrder inOrder = inOrder(
+            sendPetitionerGenericUpdateNotificationEmailTask,
+            sendRespondentGenericUpdateNotificationEmailTask,
+            sendCoRespondentGenericUpdateNotificationEmailTask
+        );
+
+        inOrder.verify(sendPetitionerGenericUpdateNotificationEmailTask).execute(any(TaskContext.class), eq(testPayload));
+        inOrder.verify(sendRespondentGenericUpdateNotificationEmailTask).execute(any(TaskContext.class), eq(testPayload));
+        inOrder.verify(sendCoRespondentGenericUpdateNotificationEmailTask).execute(any(TaskContext.class), eq(testPayload));
     }
 
     @Test
@@ -175,9 +188,15 @@ public class SendDnPronouncedNotificationWorkflowTest {
         Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(buildCaseDetails(testPayload), AUTH_TOKEN);
         assertThat(returnedPayload, is(equalTo(testPayload)));
 
-        verify(sendPetitionerGenericUpdateNotificationEmailTask).execute(any(TaskContext.class), eq(testPayload));
-        verify(sendRespondentGenericUpdateNotificationEmailTask).execute(any(TaskContext.class), eq(testPayload));
-        verify(sendCoRespondentGenericUpdateNotificationEmailTask).execute(any(TaskContext.class), eq(testPayload));
+        final InOrder inOrder = inOrder(
+            sendPetitionerGenericUpdateNotificationEmailTask,
+            sendRespondentGenericUpdateNotificationEmailTask,
+            sendCoRespondentGenericUpdateNotificationEmailTask
+        );
+
+        inOrder.verify(sendPetitionerGenericUpdateNotificationEmailTask).execute(any(TaskContext.class), eq(testPayload));
+        inOrder.verify(sendRespondentGenericUpdateNotificationEmailTask).execute(any(TaskContext.class), eq(testPayload));
+        inOrder.verify(sendCoRespondentGenericUpdateNotificationEmailTask).execute(any(TaskContext.class), eq(testPayload));
     }
 
     @Test
@@ -193,8 +212,15 @@ public class SendDnPronouncedNotificationWorkflowTest {
         Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(buildCaseDetails(caseData), AUTH_TOKEN);
         assertThat(returnedPayload, is(equalTo(caseData)));
 
-        verify(sendPetitionerGenericUpdateNotificationEmailTask).execute(any(TaskContext.class), eq(caseData));
-        verify(sendRespondentGenericUpdateNotificationEmailTask).execute(any(TaskContext.class), eq(caseData));
+        final InOrder inOrder = inOrder(
+            sendPetitionerGenericUpdateNotificationEmailTask,
+            sendRespondentGenericUpdateNotificationEmailTask,
+            sendCoRespondentGenericUpdateNotificationEmailTask
+        );
+
+        inOrder.verify(sendPetitionerGenericUpdateNotificationEmailTask).execute(any(TaskContext.class), eq(caseData));
+        inOrder.verify(sendRespondentGenericUpdateNotificationEmailTask).execute(any(TaskContext.class), eq(caseData));
+
         verify(sendCoRespondentGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(caseData));
     }
 
@@ -249,34 +275,33 @@ public class SendDnPronouncedNotificationWorkflowTest {
 
         assertThat(returnedPayload, is(caseData));
 
+        final InOrder inOrder = inOrder(
+            costOrderLetterGenerationTask,
+            fetchPrintDocsFromDmStore,
+            bulkPrinterTask
+        );
+
+        inOrder.verify(costOrderLetterGenerationTask, times(1)).execute(any(TaskContext.class), eq(caseData));
+        inOrder.verify(fetchPrintDocsFromDmStore, times(1)).execute(any(TaskContext.class), eq(caseData));
+        inOrder.verify(bulkPrinterTask, times(1)).execute(any(TaskContext.class), eq(caseData));
+
         verify(sendPetitionerGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(caseData));
         verify(sendRespondentGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(caseData));
         verify(sendCoRespondentGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(caseData));
         verify(costOrderNotificationLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
-
-        verify(costOrderLetterGenerationTask, times(1)).execute(any(TaskContext.class), eq(caseData));
-        verify(fetchPrintDocsFromDmStore, times(1)).execute(any(TaskContext.class), eq(caseData));
-        verify(bulkPrinterTask, times(1)).execute(any(TaskContext.class), eq(caseData));
     }
 
     @Test
-    public void givenRepresentedCoRespondentIsNotDigitalAndCostsClaimIsGranted() throws Exception {
-        Map<String, Object> caseData = buildCaseDataWithCoRespondentSolicitorAsAddressee();
-
+    public void givenRepresentedCoRespondentIsPaperBasedAndCostsClaimIsGranted() throws Exception {
+        Map<String, Object> caseData = ImmutableMap.of(
+            CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE,
+            DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE
+        );
+        CaseDetails caseDetails = buildCaseDetails(caseData);
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
-        when(costOrderNotificationLetterGenerationTask.execute(notNull(), eq(caseData))).thenReturn(caseData);
-        when(costOrderNotificationLetterGenerationTask.getDocumentType()).thenReturn(COST_ORDER_CO_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE);
-        when(fetchPrintDocsFromDmStore.execute(notNull(), eq(caseData))).thenReturn(caseData);
-        when(bulkPrinterTask.execute(notNull(), eq(caseData))).thenReturn(caseData);
 
-        Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(buildCaseDetails(caseData), AUTH_TOKEN);
-
-        assertThat(returnedPayload, is(caseData));
-
-        verify(sendPetitionerGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(caseData));
-        verify(sendRespondentGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(caseData));
-        verify(sendCoRespondentGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), eq(caseData));
-        verify(costOrderLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
+        Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(caseDetails, AUTH_TOKEN);
+        assertThat(returnedPayload, is(notNullValue()));
 
         verify(costOrderNotificationLetterGenerationTask, times(1)).execute(any(TaskContext.class), eq(caseData));
         verify(fetchPrintDocsFromDmStore, times(1)).execute(any(TaskContext.class), eq(caseData));
