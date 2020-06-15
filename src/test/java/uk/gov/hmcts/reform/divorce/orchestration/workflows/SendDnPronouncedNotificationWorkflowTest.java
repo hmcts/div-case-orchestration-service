@@ -244,7 +244,6 @@ public class SendDnPronouncedNotificationWorkflowTest {
         return tasks.toArray(arr);
     }
 
-
     @Test
     public void givenToggleIsOff_thenNoBulkPrintTasksAreCalled() throws Exception {
         Map<String, Object> caseData = buildCaseDataWithCoRespondentAsAddressee();
@@ -316,7 +315,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
         verify(sendPetitionerGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), anyMap());
         verify(sendRespondentGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), anyMap());
         verify(sendCoRespondentGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), anyMap());
-        verify(costOrderNotificationLetterGenerationTask, never()).execute(any(TaskContext.class), anyMap());
+        verify(costOrderLetterGenerationTask, never()).execute(any(TaskContext.class), anyMap());
     }
 
     @Test
@@ -331,6 +330,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
         Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(caseDetails, AUTH_TOKEN);
         assertThat(returnedPayload, is(notNullValue()));
 
+        verify(fetchPrintDocsFromDmStore, never()).execute(any(TaskContext.class), eq(caseData));
         verify(costOrderNotificationLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
         verify(costOrderLetterGenerationTask, never()).execute(any(TaskContext.class), eq(caseData));
         verify(bulkPrinterTask, never()).execute(any(TaskContext.class), eq(caseData));
