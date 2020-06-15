@@ -88,8 +88,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
             addCoRespondentPaperTasks(tasks, caseData);
         }
 
-        Task<Map<String, Object>>[] arr = new Task[tasks.size()];
-        return tasks.toArray(arr);
+        return tasks.toArray(new Task[0]);
     }
 
     private void addCoRespondentPaperTasks(List<Task<Map<String, Object>>> tasks, Map<String, Object> caseData) {

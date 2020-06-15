@@ -33,6 +33,7 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.inOrder;
@@ -48,6 +49,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
@@ -294,9 +296,14 @@ public class SendDnPronouncedNotificationWorkflowTest {
     public void givenRepresentedCoRespondentIsPaperBasedAndCostsClaimIsGranted() throws Exception {
         Map<String, Object> caseData = ImmutableMap.of(
             CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE,
-            DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE
+            DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE,
+            CO_RESPONDENT_REPRESENTED, YES_VALUE
         );
         CaseDetails caseDetails = buildCaseDetails(caseData);
+
+        when(costOrderNotificationLetterGenerationTask.execute(any(TaskContext.class), eq(caseData))).thenReturn(caseData);
+        when(fetchPrintDocsFromDmStore.execute(any(TaskContext.class), eq(caseData))).thenReturn(caseData);
+        when(bulkPrinterTask.execute(any(TaskContext.class), eq(caseData))).thenReturn(caseData);
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
 
         Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(caseDetails, AUTH_TOKEN);
@@ -305,6 +312,11 @@ public class SendDnPronouncedNotificationWorkflowTest {
         verify(costOrderNotificationLetterGenerationTask, times(1)).execute(any(TaskContext.class), eq(caseData));
         verify(fetchPrintDocsFromDmStore, times(1)).execute(any(TaskContext.class), eq(caseData));
         verify(bulkPrinterTask, times(1)).execute(any(TaskContext.class), eq(caseData));
+
+        verify(sendPetitionerGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), anyMap());
+        verify(sendRespondentGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), anyMap());
+        verify(sendCoRespondentGenericUpdateNotificationEmailTask, never()).execute(any(TaskContext.class), anyMap());
+        verify(costOrderNotificationLetterGenerationTask, never()).execute(any(TaskContext.class), anyMap());
     }
 
     @Test
