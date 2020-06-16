@@ -4,7 +4,6 @@ import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Gender;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Relation;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,35 +21,35 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 
 public class CertificateOfEntitlementLetterDataExtractorTest {
 
-    private static final String VALID_COURT_NAME = "The Family Court at Southampton";
+    private static final String VALID_COURT_ID = "birmingham";
     private static final String VALID_SOLICITOR_REF = "solRef123";
 
     @Test
-    public void getHusbandOrWifeReturnsHusbandWhenPetitionerIsMale() throws TaskException {
+    public void getHusbandOrWifeReturnsHusbandWhenPetitionerIsMale() {
         Map<String, Object> caseData = buildCaseDataWithPetitionerGender(Gender.MALE.getValue());
         assertThat(CertificateOfEntitlementLetterDataExtractor.getHusbandOrWife(caseData), is(Relation.HUSBAND.getValue()));
     }
 
     @Test
-    public void getHusbandOrWifeReturnsWifeWhenPetitionerIsFemale() throws TaskException {
+    public void getHusbandOrWifeReturnsWifeWhenPetitionerIsFemale() {
         Map<String, Object> caseData = buildCaseDataWithPetitionerGender(Gender.FEMALE.getValue());
         assertThat(CertificateOfEntitlementLetterDataExtractor.getHusbandOrWife(caseData), is(Relation.WIFE.getValue()));
     }
 
     @Test
-    public void getCourtNameReturnsValidValueWhenItExists() throws TaskException {
-        Map<String, Object> caseData = buildCaseDataWithCourtName(VALID_COURT_NAME);
-        assertThat(CertificateOfEntitlementLetterDataExtractor.getCourtName(caseData), is(VALID_COURT_NAME));
+    public void getCourtIdReturnsValidValueWhenItExists() {
+        Map<String, Object> caseData = buildCaseDataWithCourt(VALID_COURT_ID);
+        assertThat(CertificateOfEntitlementLetterDataExtractor.getCourtId(caseData), is(VALID_COURT_ID));
     }
 
     @Test
-    public void isCostsClaimGrantedReturnsTrueWhenValueIsYes() throws TaskException {
+    public void isCostsClaimGrantedReturnsTrueWhenValueIsYes() {
         Map<String, Object> caseData = buildCaseDataWithIsCostsClaimGranted(YES_VALUE);
         assertThat(CertificateOfEntitlementLetterDataExtractor.isCostsClaimGranted(caseData), is(true));
     }
 
     @Test
-    public void isCostsClaimGrantedReturnsFalseWhenItValueIsNoOrItDoesNotExist() throws TaskException {
+    public void isCostsClaimGrantedReturnsFalseWhenItValueIsNoOrItDoesNotExist() {
         asList("", null, NO_VALUE).forEach(isCostsClaimGrantedValue -> {
             Map<String, Object> caseData = buildCaseDataWithIsCostsClaimGranted(isCostsClaimGrantedValue);
             assertThat(CertificateOfEntitlementLetterDataExtractor.isCostsClaimGranted(caseData), is(false));
@@ -58,7 +57,7 @@ public class CertificateOfEntitlementLetterDataExtractorTest {
     }
 
     @Test
-    public void getSolicitorReferenceReturnsValidValueWhenItExists() throws TaskException {
+    public void getSolicitorReferenceReturnsValidValueWhenItExists() {
         Map<String, Object> caseData = buildCaseDataWithSolicitorReference(VALID_SOLICITOR_REF);
         assertThat(CertificateOfEntitlementLetterDataExtractor.getSolicitorReference(caseData), is(VALID_SOLICITOR_REF));
     }
@@ -76,10 +75,10 @@ public class CertificateOfEntitlementLetterDataExtractorTest {
     }
 
     @Test
-    public void getCourtNameThrowsExceptionsWhenItDoesNotExist() {
-        asList("", null).forEach(courtNameValue -> {
+    public void getCourtIdThrowsExceptionsWhenItDoesNotExist() {
+        asList("", null).forEach(courtIdValue -> {
             try {
-                CertificateOfEntitlementLetterDataExtractor.getCourtName(buildCaseDataWithCourtName(courtNameValue));
+                CertificateOfEntitlementLetterDataExtractor.getCourtId(buildCaseDataWithCourt(courtIdValue));
                 fail("Should have thrown exception");
             } catch (InvalidDataForTaskException e) {
                 thisTestPassed();
@@ -106,9 +105,9 @@ public class CertificateOfEntitlementLetterDataExtractorTest {
         return caseData;
     }
 
-    private static Map<String, Object> buildCaseDataWithCourtName(String courtName) {
+    private static Map<String, Object> buildCaseDataWithCourt(String courtId) {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(COURT_NAME, courtName);
+        caseData.put(COURT_NAME, courtId);
 
         return caseData;
     }

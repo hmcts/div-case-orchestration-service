@@ -5,7 +5,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CertificateOfEntitlementCoverLetter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
+import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextracto
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.service.impl.CourtLookupService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.Map;
@@ -32,11 +34,15 @@ public class CertificateOfEntitlementLetterGenerationTask extends BasePayloadSpe
         public static final String DOCUMENT_TYPE = CERTIFICATE_OF_ENTITLEMENT_LETTER_DOCUMENT_TYPE;
     }
 
+    private final CourtLookupService courtLookupService;
+
     public CertificateOfEntitlementLetterGenerationTask(
         CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
         PdfDocumentGenerationService pdfDocumentGenerationService,
-        CcdUtil ccdUtil) {
+        CcdUtil ccdUtil,
+        CourtLookupService courtLookupService) {
         super(ctscContactDetailsDataProviderService, pdfDocumentGenerationService, ccdUtil);
+        this.courtLookupService = courtLookupService;
     }
 
     @Override
@@ -58,18 +64,20 @@ public class CertificateOfEntitlementLetterGenerationTask extends BasePayloadSpe
         } else {
             coverLetter.addressee(AddresseeDataExtractor.getRespondent(caseData));
             coverLetter.husbandOrWife(CertificateOfEntitlementLetterDataExtractor.getHusbandOrWife(caseData));
-            coverLetter.courtName(CertificateOfEntitlementLetterDataExtractor.getCourtName(caseData));
+            coverLetter.courtName(getCourtName(caseData));
         }
 
         return coverLetter.build();
     }
 
-    @Override
-    protected GeneratedDocumentInfo populateMetadataForGeneratedDocument(GeneratedDocumentInfo generatedDocumentInfo) {
-        generatedDocumentInfo.setDocumentType(FileMetadata.DOCUMENT_TYPE);
-
-        return generatedDocumentInfo;
+    private String getCourtName(Map<String, Object> caseData) {
+        try {
+            return courtLookupService.getDnCourtByKey(CertificateOfEntitlementLetterDataExtractor.getCourtId(caseData)).getName();
+        } catch (CourtDetailsNotFound e) {
+            throw new InvalidDataForTaskException(e);
+        }
     }
+
 
     @Override
     public String getTemplateId(Map<String, Object> caseData) {

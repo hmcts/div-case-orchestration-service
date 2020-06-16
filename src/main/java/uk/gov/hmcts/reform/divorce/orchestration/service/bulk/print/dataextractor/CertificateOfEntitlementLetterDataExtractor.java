@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextract
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseFieldConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Gender;
@@ -17,7 +18,7 @@ public class CertificateOfEntitlementLetterDataExtractor {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class CaseDataKeys {
-        public static final String COURT_NAME = CaseFieldConstants.COURT_NAME;
+        public static final String COURT_NAME = BulkCaseConstants.COURT_NAME_CCD_FIELD;
         public static final String HEARING_DATE = OrchestrationConstants.DATE_OF_HEARING_CCD_FIELD;
         public static final String HEARING_DATE_TIME = OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
         public static final String IS_COSTS_CLAIM_GRANTED = OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
@@ -34,7 +35,7 @@ public class CertificateOfEntitlementLetterDataExtractor {
         return petitionerRelationshipToRespondent.getValue();
     }
 
-    public static String getCourtName(Map<String, Object> caseData) {
+    public static String getCourtId(Map<String, Object> caseData) {
         return getMandatoryStringValue(caseData, CaseDataKeys.COURT_NAME);
     }
 

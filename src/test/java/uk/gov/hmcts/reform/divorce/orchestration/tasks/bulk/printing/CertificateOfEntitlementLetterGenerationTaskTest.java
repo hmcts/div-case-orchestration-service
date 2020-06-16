@@ -14,12 +14,15 @@ import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CertificateOfEntitlementCoverLetter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Gender;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.DnCourt;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
+import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.impl.CourtLookupService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
@@ -84,6 +87,7 @@ public class CertificateOfEntitlementLetterGenerationTaskTest {
     )));
     private static final String PETITIONER_GENDER_VALUE = Gender.MALE.getValue();
     private static final String HUSBAND_OR_WIFE = "husband";
+    private static final String COURT_ID = "southampton";
     private static final String COURT_NAME_VALUE = "The Family Court at Southampton" ;
     private static final String LIMIT_DATE_TO_CONTACT_COURT_FORMATTED = "6 June 2020";
     private static final String SOLICITOR_REF_VALUE = "solRef123";
@@ -103,6 +107,9 @@ public class CertificateOfEntitlementLetterGenerationTaskTest {
     @Mock
     private CcdUtil ccdUtil;
 
+    @Mock
+    private CourtLookupService courtLookupService;
+
 
     @InjectMocks
     private CertificateOfEntitlementLetterGenerationTask certificateOfEntitlementLetterGenerationTask;
@@ -113,13 +120,14 @@ public class CertificateOfEntitlementLetterGenerationTaskTest {
     private GeneratedDocumentInfo createdDoc;
 
     @Before
-    public void setup() {
+    public void setup() throws CourtDetailsNotFound {
         createdDoc = createRandomGeneratedDocument();
         when(ctscContactDetailsDataProviderService.getCtscContactDetails()).thenReturn(CTSC_CONTACT);
         when(pdfDocumentGenerationService.generatePdf(any(DocmosisTemplateVars.class), eq(TEMPLATE_ID_RESPONDENT), eq(AUTH_TOKEN)))
             .thenReturn(createdDoc);
         when(pdfDocumentGenerationService.generatePdf(any(DocmosisTemplateVars.class), eq(TEMPLATE_ID_SOLICITOR), eq(AUTH_TOKEN)))
             .thenReturn(createdDoc);
+        when(courtLookupService.getDnCourtByKey(eq(COURT_ID))).thenReturn(getCourt());
     }
 
     @Test
@@ -225,7 +233,7 @@ public class CertificateOfEntitlementLetterGenerationTaskTest {
         caseData.put(RESPONDENT_SOLICITOR_NAME, SOLICITORS_FIRST_NAME + " " + SOLICITORS_LAST_NAME);
         caseData.put(SOLICITOR_ADDRESS, SOLICITORS_ADDRESS);
         caseData.put(HEARING_DATE_TIME, DATE_TIME_OF_HEARINGS);
-        caseData.put(COURT_NAME, COURT_NAME_VALUE);
+        caseData.put(COURT_NAME, COURT_ID);
         caseData.put(IS_COSTS_CLAIM_GRANTED, IS_COSTS_CLAIM_GRANTED_STRING_VALUE);
         caseData.put(SOLICITOR_REFERENCE, SOLICITOR_REF_VALUE);
         caseData.put(IS_RESPONDENT_REPRESENTED, respondentIsRepresented);
@@ -245,5 +253,11 @@ public class CertificateOfEntitlementLetterGenerationTaskTest {
             .name(SOLICITORS_FIRST_NAME + " " + SOLICITORS_LAST_NAME)
             .formattedAddress(SOLICITORS_ADDRESS)
             .build();
+    }
+
+    private static DnCourt getCourt() {
+        DnCourt court = new DnCourt();
+        court.setName(COURT_NAME_VALUE);
+        return court;
     }
 }
