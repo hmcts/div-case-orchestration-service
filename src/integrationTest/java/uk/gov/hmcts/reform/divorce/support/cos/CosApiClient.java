@@ -163,6 +163,13 @@ public interface CosApiClient {
         @RequestBody CcdCallbackRequest ccdCallbackRequest
     );
 
+    @ApiOperation("Trigger notifications to Petitioner, Respondent and Co-Respondent when the Decree Nisi has been pronounced")
+    @PostMapping(value = "/dn-pronounced")
+    Map<String, Object> triggerCostOrderNotification(
+        @RequestHeader(AUTHORIZATION) String authorisation,
+        @RequestBody CcdCallbackRequest ccdCallbackRequest
+    );
+
     @ApiOperation("Handle callback to process Applicants' DA eligibility")
     @PostMapping(value = "/process-applicant-da-eligibility")
     CcdCallbackResponse processApplicantDAEligibility(

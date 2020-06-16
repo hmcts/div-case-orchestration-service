@@ -100,7 +100,7 @@ public class CallbackController {
     }
 
     @PostMapping(path = "/dn-pronounced", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
-    @ApiOperation(value = "Trigger notification email to Petitioner and Respondent when the Decree Nisi has been pronounced")
+    @ApiOperation(value = "Trigger notifications to Petitioner, Respondent and Co-Respondent when the Decree Nisi has been pronounced")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "An email notification has been generated and dispatched",
             response = CcdCallbackResponse.class),
