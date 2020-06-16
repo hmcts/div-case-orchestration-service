@@ -113,28 +113,9 @@ public class FullNamesDataExtractorTest {
 
     @Test
     public void getCoRespondentFullNameReturnsValidStringWhenAllFieldsPopulated() {
-        Map<String, Object> caseData = buildCaseDataWithCoRespondentNames(FIRST_NAME, LAST_NAME);
+        Map<String, Object> caseData = buildCaseDataWithCoRespondentNames();
 
-        assertThat(FullNamesDataExtractor.getCoRespondentFullName(caseData), is("John Smith"));
-    }
-
-    @Test
-    public void getCoRespondentFullNameReturnsValidStringWhenFieldsMissing() {
-        // fistName, lastName, expected
-        asList(
-            asList(FIRST_NAME, "", "John"),
-            asList(FIRST_NAME, null, "John"),
-            asList("", "", ""),
-            asList(null, "", ""),
-            asList(null, null, ""),
-            asList(null, LAST_NAME, "Smith"),
-            asList("", LAST_NAME, "Smith")
-        ).forEach(values -> {
-            String expected = values.get(2);
-            Map<String, Object> caseData = buildCaseDataWithCoRespondentNames(values.get(0), values.get(1));
-
-            assertThat(FullNamesDataExtractor.getCoRespondentFullName(caseData), is(expected));
-        });
+        assertThat(FullNamesDataExtractor.getCoRespondentFullName(caseData), is("Jane Sam"));
     }
 
     @Test
@@ -183,10 +164,10 @@ public class FullNamesDataExtractorTest {
         return caseData;
     }
 
-    static Map<String, Object> buildCaseDataWithCoRespondentNames(String firstName, String lastName) {
+    static Map<String, Object> buildCaseDataWithCoRespondentNames() {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(CO_RESPONDENT_FIRST_NAME, firstName);
-        caseData.put(CO_RESPONDENT_LAST_NAME, lastName);
+        caseData.put(CO_RESPONDENT_FIRST_NAME, CO_REP_FIRST_NAME);
+        caseData.put(CO_RESPONDENT_LAST_NAME, CO_REP_LAST_NAME);
 
         return caseData;
     }
@@ -197,4 +178,5 @@ public class FullNamesDataExtractorTest {
 
         return caseData;
     }
+
 }

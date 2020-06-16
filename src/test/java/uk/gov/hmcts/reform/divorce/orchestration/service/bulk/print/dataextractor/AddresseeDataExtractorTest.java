@@ -136,7 +136,7 @@ public class AddresseeDataExtractorTest {
     }
 
     public static Map<String, Object> buildCaseDataWithCoRespondentAsAddressee() {
-        Map<String, Object> caseData = buildCaseDataWithCoRespondentNames(CO_REP_FIRST_NAME, CO_REP_LAST_NAME);
+        Map<String, Object> caseData = buildCaseDataWithCoRespondentNames();
         caseData.put(D8_DERIVED_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS, CO_RESPONDENT_ADDRESS);
         caseData.put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE);
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
