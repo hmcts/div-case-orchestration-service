@@ -7,7 +7,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.CoRespondentAosAnswersProcessorTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.FormFieldValuesToCoreFieldsRelay;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.CoRespondentAosDerivedAddressFormatterTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.FormFieldValuesToCoreFieldsRelayTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.RespondentAosAnswersProcessorTask;
 
 import java.util.ArrayList;
@@ -22,8 +23,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.Div
 public class AosPackOfflineAnswersWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final RespondentAosAnswersProcessorTask respondentAosAnswersProcessor;
-    private final FormFieldValuesToCoreFieldsRelay formFieldValuesToCoreFieldsRelay;
+    private final FormFieldValuesToCoreFieldsRelayTask formFieldValuesToCoreFieldsRelay;
     private final CoRespondentAosAnswersProcessorTask coRespondentAosAnswersProcessor;
+    private final CoRespondentAosDerivedAddressFormatterTask coRespondentAosDerivedAddressFormatter;
 
     public Map<String, Object> run(Map<String, Object> payload, DivorceParty divorceParty) throws WorkflowException {
         Task[] tasks = getTasks(divorceParty);
@@ -42,6 +44,8 @@ public class AosPackOfflineAnswersWorkflow extends DefaultWorkflow<Map<String, O
         if (isCoRespondent(divorceParty)) {
             tasks.add(coRespondentAosAnswersProcessor);
         }
+
+        tasks.add(coRespondentAosDerivedAddressFormatter);
 
         return tasks.toArray(new Task[] {});
     }

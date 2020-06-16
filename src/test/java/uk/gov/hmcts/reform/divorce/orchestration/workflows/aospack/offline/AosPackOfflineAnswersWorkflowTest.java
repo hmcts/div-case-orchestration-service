@@ -9,7 +9,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.CoRespondentAosAnswersProcessorTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.FormFieldValuesToCoreFieldsRelay;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.CoRespondentAosDerivedAddressFormatterTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.FormFieldValuesToCoreFieldsRelayTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.RespondentAosAnswersProcessorTask;
 
 import java.util.HashMap;
@@ -17,7 +18,6 @@ import java.util.Map;
 
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -26,8 +26,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
 
@@ -41,7 +39,10 @@ public class AosPackOfflineAnswersWorkflowTest {
     private CoRespondentAosAnswersProcessorTask coRespondentAosAnswersProcessor;
 
     @Mock
-    private FormFieldValuesToCoreFieldsRelay formFieldValuesToCoreFieldsRelay;
+    private FormFieldValuesToCoreFieldsRelayTask formFieldValuesToCoreFieldsRelay;
+
+    @Mock
+    private CoRespondentAosDerivedAddressFormatterTask coRespondentAosDerivedAddressFormatter;
 
     @InjectMocks
     private AosPackOfflineAnswersWorkflow classUnderTest;
@@ -49,48 +50,62 @@ public class AosPackOfflineAnswersWorkflowTest {
     @Test
     public void shouldCallRespondentTask_ForRespondent() throws WorkflowException, TaskException {
         Map<String, Object> payload = singletonMap("testKey", "testValue");
-        when(respondentAosAnswersProcessor.execute(any(), eq(payload))).thenReturn(singletonMap("returnedKey", "returnedValue"));
-        when(formFieldValuesToCoreFieldsRelay.execute(any(), eq(payload))).thenReturn(payload);
+        Map<String, Object> returnCaseData = singletonMap("returnedKey", "returnedValue");
+
+        when(respondentAosAnswersProcessor.execute(any(TaskContext.class), eq(payload))).thenReturn(returnCaseData);
+        when(formFieldValuesToCoreFieldsRelay.execute(any(TaskContext.class), eq(payload))).thenReturn(payload);
+        when(coRespondentAosDerivedAddressFormatter.execute(any(TaskContext.class), anyMap())).thenReturn(returnCaseData);
 
         Map<String, Object> returnedPayload = classUnderTest.run(payload, RESPONDENT);
 
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
 
+        // TODO use inorder
         verify(formFieldValuesToCoreFieldsRelay, times(1)).execute(any(), eq(payload));
         verify(respondentAosAnswersProcessor, times(1)).execute(any(), eq(payload));
         verify(coRespondentAosAnswersProcessor, never()).execute(any(), eq(payload));
+        verify(coRespondentAosDerivedAddressFormatter, times(1)).execute(any(), anyMap());
     }
 
     @Test
     public void shouldCallCoRespondentTask_ForCoRespondent() throws WorkflowException, TaskException {
         Map<String, Object> payload = singletonMap("testKey", "testValue");
+        Map<String, Object> returnedCaseData = singletonMap("returnedKey", "returnedValue");
+
         when(formFieldValuesToCoreFieldsRelay.execute(any(), eq(payload))).thenReturn(payload);
-        when(coRespondentAosAnswersProcessor.execute(any(), eq(payload))).thenReturn(singletonMap("returnedKey", "returnedValue"));
+        when(coRespondentAosAnswersProcessor.execute(any(), eq(payload))).thenReturn(returnedCaseData);
+        when(coRespondentAosDerivedAddressFormatter.execute(any(), anyMap())).thenReturn(returnedCaseData);
+
 
         Map<String, Object> returnedPayload = classUnderTest.run(payload, CO_RESPONDENT);
 
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
 
+        // TODO use inorder
         verify(formFieldValuesToCoreFieldsRelay, times(1)).execute(any(), eq(payload));
         verify(respondentAosAnswersProcessor, never()).execute(any(), any());
         verify(coRespondentAosAnswersProcessor, times(1)).execute(any(), eq(payload));
+        verify(coRespondentAosDerivedAddressFormatter, times(1)).execute(any(), anyMap());
     }
 
     @Test
     public void shouldCallCoRespondentTask_and_Update_ReceivedAosFromCoResp_to_Yes() throws WorkflowException, TaskException {
-        Map<String, Object> caseData = new HashMap<>();
+        Map<String, Object> payload = new HashMap<>();
+        Map<String, Object> returnedCaseData = singletonMap("returnedKey", "returnedValue");
 
-        when(coRespondentAosAnswersProcessor.execute(any(TaskContext.class), anyMap())).thenCallRealMethod();
+        when(coRespondentAosAnswersProcessor.execute(any(), anyMap())).thenReturn(payload);
+        when(coRespondentAosDerivedAddressFormatter.execute(any(), anyMap())).thenReturn(returnedCaseData);
 
-        Map<String, Object> returnedPayload = classUnderTest.run(caseData, CO_RESPONDENT);
+        Map<String, Object> returnedPayload = classUnderTest.run(payload, CO_RESPONDENT);
 
-        String coRespValue = (String) returnedPayload.get(RECEIVED_AOS_FROM_CO_RESP);
+        assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
 
-        assertEquals(RECEIVED_AOS_FROM_CO_RESP + " value should have been set to Yes", YES_VALUE, coRespValue);
 
-        verify(formFieldValuesToCoreFieldsRelay, times(1)).execute(any(TaskContext.class), anyMap());
-        verify(respondentAosAnswersProcessor, never()).execute(any(), any());
-        verify(coRespondentAosAnswersProcessor, times(1)).execute(any(TaskContext.class), anyMap());
+        // TODO use inorder
+        verify(formFieldValuesToCoreFieldsRelay, times(1)).execute(any(), anyMap());
+        verify(respondentAosAnswersProcessor, never()).execute(any(), anyMap());
+        verify(coRespondentAosAnswersProcessor, times(1)).execute(any(), anyMap());
+        verify(coRespondentAosDerivedAddressFormatter, times(1)).execute(any(), anyMap());
     }
 
 }
