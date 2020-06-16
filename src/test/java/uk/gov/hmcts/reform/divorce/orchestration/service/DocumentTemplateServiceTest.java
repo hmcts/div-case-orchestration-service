@@ -109,6 +109,12 @@ public class DocumentTemplateServiceTest {
 
         templateId = service.getTemplateId(LanguagePreference.ENGLISH, DocumentType.AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID);
         assertEquals("FL-DIV-APP-ENG-00084.docx", templateId);
+
+        templateId = service.getTemplateId(LanguagePreference.ENGLISH, DocumentType.COE);
+        assertEquals("FL-DIV-GNO-ENG-00020.docx", templateId);
+
+        templateId = service.getTemplateId(LanguagePreference.ENGLISH, DocumentType.CASE_LIST_FOR_PRONOUNCEMENT);
+        assertEquals("FL-DIV-GNO-ENG-00059.docx", templateId);
     }
 
     @Test
@@ -173,5 +179,11 @@ public class DocumentTemplateServiceTest {
 
         templateId = service.getTemplateId(LanguagePreference.WELSH, DocumentType.AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID);
         assertEquals("FL-DIV-APP-WEL-00250.docx", templateId);
+
+        templateId = service.getTemplateId(LanguagePreference.WELSH, DocumentType.COE);
+        assertEquals("FL-DIV-GNO-WEL-00238.docx", templateId);
+
+        templateId = service.getTemplateId(LanguagePreference.WELSH, DocumentType.CASE_LIST_FOR_PRONOUNCEMENT);
+        assertEquals("FL-DIV-GNO-ENG-00059.docx", templateId);
     }
 }

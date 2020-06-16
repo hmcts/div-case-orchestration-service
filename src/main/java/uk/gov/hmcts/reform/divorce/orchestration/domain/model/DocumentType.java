@@ -2,6 +2,9 @@ package uk.gov.hmcts.reform.divorce.orchestration.domain.model;
 
 import lombok.Getter;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 @Getter
 public enum DocumentType {
     DIVORCE_MINI_PETITION("divorceMiniPetition"),
@@ -24,7 +27,9 @@ public enum DocumentType {
     AOS_OFFLINE_UNREASONABLE_BEHAVIOUR_AND_DESERTION_TEMPLATE_ID("aosOfflineUnreasonableBehaviourAndDesertionTemplateId"),
     AOS_OFFLINE_ADULTERY_RESPONDENT_TEMPLATE_ID("aosOfflineAdulteryRespondentTemplateId"),
     AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID("aosOfflineAdulteryCORespondentTemplateId"),
-    RESPONDENT_ANSWERS("respondentAnswers");
+    RESPONDENT_ANSWERS("respondentAnswers"),
+    COE("coe"),
+    CASE_LIST_FOR_PRONOUNCEMENT("caseListForPronouncement");
     
 
     private final String templateName;
@@ -32,5 +37,11 @@ public enum DocumentType {
     DocumentType(String templateName) {
         this.templateName = templateName;
     }
+
+    public static Optional<DocumentType> getEnum(String value) {
+        return Arrays.stream(DocumentType.values())
+            .filter(enumValue -> enumValue.getTemplateName().equals(value)).findAny();
+    }
+
 }
 
