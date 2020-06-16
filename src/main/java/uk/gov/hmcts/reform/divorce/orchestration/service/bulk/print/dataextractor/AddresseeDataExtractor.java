@@ -30,17 +30,17 @@ public class AddresseeDataExtractor {
             .build();
     }
 
-    public static Addressee getRespondentSolicitor(Map<String, Object> caseData) {
-        return Addressee.builder()
-            .name(getRespondentSolicitorFullName(caseData))
-            .formattedAddress(getRespondentSolicitorFormattedAddress(caseData))
-            .build();
-    }
-
     public static Addressee getCoRespondent(Map<String, Object> caseData) {
         return Addressee.builder()
             .name(getCoRespondentFullName(caseData))
             .formattedAddress(getCoRespondentFormattedAddress(caseData))
+            .build();
+    }
+
+    public static Addressee getRespondentSolicitor(Map<String, Object> caseData) {
+        return Addressee.builder()
+            .name(getRespondentSolicitorFullName(caseData))
+            .formattedAddress(getRespondentSolicitorFormattedAddress(caseData))
             .build();
     }
 
@@ -55,15 +55,15 @@ public class AddresseeDataExtractor {
         return getMandatoryStringValue(caseData, CaseDataKeys.RESPONDENT_ADDRESS);
     }
 
+    private static String getCoRespondentFormattedAddress(Map<String, Object> caseData) {
+        return getMandatoryStringValue(caseData, CaseDataKeys.CO_RESPONDENT_ADDRESS);
+    }
+
     private static String getRespondentSolicitorFormattedAddress(Map<String, Object> caseData) {
         return getMandatoryStringValue(caseData, CaseDataKeys.RESPONDENT_SOLICITOR_ADDRESS);
     }
 
     private static String getCoRespondentSolicitorFormattedAddress(Map<String, Object> caseData) {
         return getMandatoryStringValue(caseData, CaseDataKeys.CO_RESPONDENT_SOLICITOR_ADDRESS);
-    }
-
-    private static String getCoRespondentFormattedAddress(Map<String, Object> caseData) {
-        return getMandatoryStringValue(caseData, CaseDataKeys.CO_RESPONDENT_ADDRESS);
     }
 }

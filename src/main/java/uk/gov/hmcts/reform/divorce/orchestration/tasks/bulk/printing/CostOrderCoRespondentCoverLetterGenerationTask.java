@@ -3,8 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.bsp.common.model.document.Addressee;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.BasicCoverLetter;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CoRespondentCostOrderCoverLetter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -17,41 +16,36 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.DECREE_ABSOLUTE_GRANTED_LETTER_TEMPLATE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
 
 @Component
-public class DaGrantedLetterGenerationTask extends BasePayloadSpecificDocumentGenerationTask {
+public class CostOrderCoRespondentCoverLetterGenerationTask extends BasePayloadSpecificDocumentGenerationTask {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FileMetadata {
-        public static final String TEMPLATE_ID = DECREE_ABSOLUTE_GRANTED_LETTER_TEMPLATE_ID;
-        public static final String DOCUMENT_TYPE = DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE;
+        public static final String TEMPLATE_ID = "FL-DIV-LET-ENG-00358.docx";
+        public static final String DOCUMENT_TYPE = COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE;
     }
 
-    public DaGrantedLetterGenerationTask(CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
-                                         PdfDocumentGenerationService pdfDocumentGenerationService,
-                                         CcdUtil ccdUtil) {
+    public CostOrderCoRespondentCoverLetterGenerationTask(
+        CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
+        PdfDocumentGenerationService pdfDocumentGenerationService,
+        CcdUtil ccdUtil) {
         super(ctscContactDetailsDataProviderService, pdfDocumentGenerationService, ccdUtil);
     }
 
     @Override
     protected DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        return BasicCoverLetter.builder()
+        return CoRespondentCostOrderCoverLetter.builder()
             .caseReference(getCaseId(context))
             .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
-            .addressee(getAddresseeRespondentOrSolicitorIfRepresented(caseData))
-            .letterDate(DatesDataExtractor.getDaGrantedDate(caseData))
+            .addressee(AddresseeDataExtractor.getCoRespondent(caseData))
+            .letterDate(DatesDataExtractor.getLetterDate())
+            .hearingDate(DatesDataExtractor.getHearingDate(caseData))
             .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
             .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
             .build();
-    }
-
-    @Override
-    public String getTemplateId() {
-        return FileMetadata.TEMPLATE_ID;
     }
 
     @Override
@@ -59,11 +53,8 @@ public class DaGrantedLetterGenerationTask extends BasePayloadSpecificDocumentGe
         return FileMetadata.DOCUMENT_TYPE;
     }
 
-    private Addressee getAddresseeRespondentOrSolicitorIfRepresented(Map<String, Object> caseData) {
-        if (isRespondentRepresented(caseData)) {
-            return AddresseeDataExtractor.getRespondentSolicitor(caseData);
-        }
-
-        return AddresseeDataExtractor.getRespondent(caseData);
+    @Override
+    public String getTemplateId() {
+        return FileMetadata.TEMPLATE_ID;
     }
 }

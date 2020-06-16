@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.Docmosi
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.DnCourt;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
@@ -36,9 +37,9 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractorTest.CONTACT_COURT_BY_DATE_FORMATTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractorTest.HEARING_DATE_FORMATTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractorTest.createHearingDatesList;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractorTest.CONTACT_COURT_BY_DATE_FORMATTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractorTest.HEARING_DATE_FORMATTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractorTest.createHearingDatesList;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
@@ -91,12 +92,6 @@ public class CoECoRespondentCoverLetterGenerationTaskTest {
         when(courtLookupService.getDnCourtByKey(COURT_LOCATION)).thenReturn(createDnCourt());
     }
 
-    private DnCourt createDnCourt() {
-        DnCourt court = new DnCourt();
-        court.setName(COURT_NAME);
-        return court;
-    }
-
     @Test
     public void executeShouldPopulateFieldInContext() throws TaskException {
         TaskContext context = prepareTaskContext();
@@ -138,6 +133,18 @@ public class CoECoRespondentCoverLetterGenerationTaskTest {
         assertThat(documentType, is(DOCUMENT_TYPE));
     }
 
+    @Test(expected = InvalidDataForTaskException.class)
+    public void executeShouldThrowCourtDetailsNotFound() throws TaskException, CourtDetailsNotFound {
+        final String invalidCourtLocation = "you will not find this court";
+        TaskContext context = prepareTaskContext();
+        when(courtLookupService.getDnCourtByKey(invalidCourtLocation)).thenThrow(CourtDetailsNotFound.class);
+
+        Map<String, Object> caseData = buildCaseDataCoRespondentNotRepresented();
+        caseData.put(COURT_NAME_CCD_FIELD, invalidCourtLocation);
+
+        coECoRespondentCoverLetterGenerationTask.execute(context, caseData);
+    }
+
     private void verifyPdfDocumentGenerationCallIsCorrect() {
         final ArgumentCaptor<CoECoverLetter> coECoverLetterArgumentCaptor = ArgumentCaptor.forClass(CoECoverLetter.class);
         verify(pdfDocumentGenerationService, times(1))
@@ -176,5 +183,11 @@ public class CoECoRespondentCoverLetterGenerationTaskTest {
         caseData.put(DATETIME_OF_HEARING_CCD_FIELD, createHearingDatesList());
 
         return caseData;
+    }
+
+    private DnCourt createDnCourt() {
+        DnCourt court = new DnCourt();
+        court.setName(COURT_NAME);
+        return court;
     }
 }

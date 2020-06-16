@@ -75,11 +75,6 @@ public class BasePayloadSpecificDocumentGenerationTaskTest {
                 }
 
                 @Override
-                protected GeneratedDocumentInfo populateMetadataForGeneratedDocument(GeneratedDocumentInfo documentInfo) {
-                    return documentInfo;
-                }
-
-                @Override
                 protected String getDocumentType() {
                     return null;
                 }

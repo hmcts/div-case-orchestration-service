@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.bsp.common.model.document.Addressee;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CoECoverLetter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -15,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentG
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.impl.CourtLookupService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
@@ -56,8 +56,8 @@ public class CoECoRespondentCoverLetterGenerationTask extends BasePayloadSpecifi
             .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
             .costClaimGranted(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData))
             .courtName(getCourtName(caseData))
-            .deadlineToContactCourtBy(CoECoverLetterDataExtractor.getDeadlineToContactCourtBy(caseData))
-            .hearingDate(CoECoverLetterDataExtractor.getHearingDate(caseData))
+            .deadlineToContactCourtBy(DatesDataExtractor.getDeadlineToContactCourtBy(caseData))
+            .hearingDate(DatesDataExtractor.getHearingDate(caseData))
             .build();
     }
 
@@ -67,13 +67,6 @@ public class CoECoRespondentCoverLetterGenerationTask extends BasePayloadSpecifi
         } catch (CourtDetailsNotFound e) {
             throw new InvalidDataForTaskException(e);
         }
-    }
-
-    @Override
-    protected GeneratedDocumentInfo populateMetadataForGeneratedDocument(GeneratedDocumentInfo generatedDocumentInfo) {
-        generatedDocumentInfo.setDocumentType(FileMetadata.DOCUMENT_TYPE);
-
-        return generatedDocumentInfo;
     }
 
     @Override
