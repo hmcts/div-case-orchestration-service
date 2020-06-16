@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DaGrantedLetterDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.List;
@@ -141,7 +141,7 @@ public class DaGrantedLetterGenerationTaskTest {
         Map<String, Object> caseData = isRespondentRepresented
             ? AddresseeDataExtractorTest.buildCaseDataWithRespondentSolicitorAsAddressee()
             : AddresseeDataExtractorTest.buildCaseDataWithRespondentAsAddressee();
-        caseData.put(DaGrantedLetterDataExtractor.CaseDataKeys.DA_GRANTED_DATE, LETTER_DATE_FROM_CCD);
+        caseData.put(DatesDataExtractor.CaseDataKeys.DA_GRANTED_DATE, LETTER_DATE_FROM_CCD);
 
         caseData.put(PETITIONER_FIRST_NAME, PETITIONERS_FIRST_NAME);
         caseData.put(PETITIONER_LAST_NAME, PETITIONERS_LAST_NAME);
@@ -150,5 +150,4 @@ public class DaGrantedLetterGenerationTaskTest {
 
         return caseData;
     }
-
 }

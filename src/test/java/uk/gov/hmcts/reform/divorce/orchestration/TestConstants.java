@@ -80,4 +80,11 @@ public class TestConstants {
     public static final String AUTH_CLIENT_ID = "authClientId";
     public static final String AUTH_CLIENT_SECRET = "authClientSecret";
     public static final String AUTH_REDIRECT_URL = "authRedirectUrl";
+    public static final String TEST_VALID_HEARING_DATE = "2020-10-20";
+    public static final String TEST_D8_DERIVED_3RD_PARTY_ADDRESS = "456 CoRespondent Str\nCoRespondent\nCounty\nRE5 P0N";
+    public static final String TEST_D8_CASE_REFERENCE = "LV17D80102";
+    public static final String TEST_CO_RESPONDENTS_FIRST_NAME = "Hohn";
+    public static final String TEST_CO_RESPONDENTS_LAST_NAME = "Wan";
+    public static final String TEST_CO_RESPONDENT_SOLICITOR_NAME = "CoResp Solicitor";
+    public static final String TEST_CO_RESPONDENT_SOLICITOR_ADDRESS = "789 CoRespondent Solicitor Str\nCoRespondent\nCounty\nRE5 P0N";
 }
