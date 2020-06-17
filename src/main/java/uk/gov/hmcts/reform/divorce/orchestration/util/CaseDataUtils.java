@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -124,18 +125,20 @@ public class CaseDataUtils {
             && (YES_VALUE.equalsIgnoreCase(coRespondentNamed) || YES_VALUE.equalsIgnoreCase(coRespondentNamedOld));
     }
 
-    public static Map<String, Object> removeDocumentByDocumentType(Map<String, Object> caseData, String documentType) {
+    public static Map<String, Object> removeDocumentsByDocumentType(Map<String, Object> caseData, String ...documentTypes) {
         List<?> generatedDocuments = Optional.ofNullable(caseData.get(D8DOCUMENTS_GENERATED))
             .map(i -> (List<?>) i)
             .orElse(new ArrayList<>());
 
         Map<String, Object> newCaseData = new HashMap<>(caseData);
+        List<String> docTypesList = Arrays.asList(documentTypes);
+
         if (!generatedDocuments.isEmpty()) {
             List<?> filteredDocumentsList = generatedDocuments.stream()
                 .filter(item -> {
                     CollectionMember<Document> document = objectMapper.convertValue(item, new TypeReference<CollectionMember<Document>>() {
                     });
-                    return !documentType.equals(document.getValue().getDocumentType());
+                    return !docTypesList.contains(document.getValue().getDocumentType());
                 })
                 .collect(Collectors.toList());
 

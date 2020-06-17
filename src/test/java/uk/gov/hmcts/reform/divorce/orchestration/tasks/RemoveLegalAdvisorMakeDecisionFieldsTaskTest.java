@@ -16,7 +16,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_COSTS_CCD_FIELD;
 
 public class RemoveLegalAdvisorMakeDecisionFieldsTaskTest {
-    
+
     private RemoveLegalAdvisorMakeDecisionFieldsTask classToTest = new RemoveLegalAdvisorMakeDecisionFieldsTask();
 
     @Test

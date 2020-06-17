@@ -14,6 +14,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_DERIVED_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
@@ -33,6 +34,7 @@ public class AddresseeDataExtractorTest {
 
     public static final String RESPONDENTS_ADDRESS = "123 Respondent Str\nRespondent\ncounty\nRE5 P0N";
     public static final String RESPONDENT_SOLICITORS_ADDRESS = "321 Resp Solicitor\ntown\ncounty\npostcode";
+    public static final String RESPONDENT_SOLICITOR_REF = "SolRef4567";
     public static final String RESPONDENT_SOLICITORS_EXPECTED_NAME = "Sol" + TestConstants.TEST_RESPONDENTS_FULL_NAME;
     public static final String CO_RESPONDENT_SOLICITORS_EXPECTED_NAME = "CoSol" + TestConstants.TEST_CO_RESPONDENTS_FULL_NAME;
     public static final String CO_RESPONDENT_ADDRESS = "456 CoRespondent Str\nCoRespondent\nCounty\nRE5 P0N";
@@ -127,6 +129,7 @@ public class AddresseeDataExtractorTest {
 
         caseData.put(RESPONDENT_SOLICITOR_NAME, RESPONDENT_SOLICITORS_EXPECTED_NAME);
         caseData.put(RESPONDENT_SOLICITOR_ADDRESS, RESPONDENT_SOLICITORS_ADDRESS);
+        caseData.put(D8_RESPONDENT_SOLICITOR_REFERENCE, RESPONDENT_SOLICITOR_REF);
         caseData.put(RESP_SOL_REPRESENTED, YES_VALUE);
 
         return caseData;

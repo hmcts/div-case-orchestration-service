@@ -1,0 +1,80 @@
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CoERespondentCoverLetter;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
+import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoELetterDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.service.impl.CourtLookupService;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
+
+import java.util.Map;
+
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.COE_RESPONDENT_LETTER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
+
+@Component
+public class CoERespondentLetterGenerationTask extends BasePayloadSpecificDocumentGenerationTask {
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class FileMetadata {
+        public static final String TEMPLATE_ID = "FL-DIV-LET-ENG-00360.docx";
+        public static final String DOCUMENT_TYPE = COE_RESPONDENT_LETTER_DOCUMENT_TYPE;
+    }
+
+    private final CourtLookupService courtLookupService;
+
+    public CoERespondentLetterGenerationTask(
+        CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
+        PdfDocumentGenerationService pdfDocumentGenerationService,
+        CcdUtil ccdUtil,
+        CourtLookupService courtLookupService) {
+        super(ctscContactDetailsDataProviderService, pdfDocumentGenerationService, ccdUtil);
+        this.courtLookupService = courtLookupService;
+    }
+
+    @Override
+    protected DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) throws TaskException {
+        return CoERespondentCoverLetter.builder()
+                .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
+                .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
+                .caseReference(getCaseId(context))
+                .letterDate(DatesDataExtractor.getLetterDate())
+                .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
+                .hearingDate(DatesDataExtractor.getHearingDate(caseData))
+                .costClaimGranted(CoELetterDataExtractor.isCostsClaimGranted(caseData))
+                .deadlineToContactCourtBy(DatesDataExtractor.getDeadlineToContactCourtBy(caseData))
+                .addressee(AddresseeDataExtractor.getRespondent(caseData))
+                .husbandOrWife(CoELetterDataExtractor.getHusbandOrWife(caseData))
+                .courtName(getCourtName(caseData))
+                .build();
+    }
+
+    private String getCourtName(Map<String, Object> caseData) {
+        try {
+            return courtLookupService.getDnCourtByKey(CoELetterDataExtractor.getCourtId(caseData)).getName();
+        } catch (CourtDetailsNotFound e) {
+            throw new InvalidDataForTaskException(e);
+        }
+    }
+
+    @Override
+    public String getTemplateId() {
+        return FileMetadata.TEMPLATE_ID;
+    }
+
+    @Override
+    public String getDocumentType() {
+        return FileMetadata.DOCUMENT_TYPE;
+    }
+}
