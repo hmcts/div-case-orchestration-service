@@ -139,7 +139,7 @@ public class BulkCaseServiceImpl implements BulkCaseService {
         updateBulkCaseWorkflow.run(emptyMap(), context.getTransientObject(AUTH_TOKEN_JSON_KEY), bulkCaseId, PRONOUNCED_EVENT);
         log.info("Completed bulk case id {} pronounced state update", bulkCaseId);
     }
-  
+
     private List<Map<String, Object>> filterBulkCases(Map<String, Object> bulkCaseDetails, Set<String> removableCaseIds) {
         Map<String, Object> bulkCaseData = (Map<String, Object>) bulkCaseDetails.getOrDefault(CCD_CASE_DATA_FIELD, emptyMap());
         List<Map<String, Object>> bulkCaseList =

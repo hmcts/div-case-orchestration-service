@@ -32,4 +32,10 @@ public class AOSPackOfflineConstants {
 
     public static final String DECREE_ABSOLUTE_GRANTED_LETTER_TEMPLATE_ID = "FL-DIV-GOR-ENG-00355.docx";
 
+    public static final String COE_RESPONDENT_LETTER_DOCUMENT_TYPE = "coeRespondentLetter";
+
+    public static final String COE_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE = "coeRespondentSolicitorLetter";
+
+    public static final String CERTIFICATE_OF_ENTITLEMENT_LETTER_CO_RESPONDENT_DOCUMENT_TYPE = "coe-cover-letter";
+    public static final String CERTIFICATE_OF_ENTITLEMENT_LETTER_CO_RESPONDENT_FILENAME = "FL-DIV-GNO-ENG-00449.docx";
 }

@@ -73,7 +73,7 @@ public class DnDecisionMadeCallbackITest extends MockedFunctionalTest {
     @Test
     public void givenCase_whenDnDecisionMade_thenCleanState() throws Exception {
         String caseId = "1500234567891209";
-        
+
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .caseId(caseId)
