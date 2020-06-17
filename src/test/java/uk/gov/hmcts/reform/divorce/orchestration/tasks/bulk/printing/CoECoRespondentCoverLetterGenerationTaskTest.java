@@ -21,7 +21,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.CO_RESPONDENTS_EXPECTED_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CO_RESPONDENTS_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.CO_RESPONDENT_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.CO_RESPONDENT_SOLICITORS_EXPECTED_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.CO_RESPONDENT_SOLICITOR_ADDRESS;
@@ -76,7 +76,7 @@ public class CoECoRespondentCoverLetterGenerationTaskTest extends BasePayloadSpe
             .courtName(COURT_NAME)
             .hearingDate(HEARING_DATE_FORMATTED)
             .deadlineToContactCourtBy(CONTACT_COURT_BY_DATE_FORMATTED)
-            .addressee(Addressee.builder().name(CO_RESPONDENTS_EXPECTED_NAME).formattedAddress(CO_RESPONDENT_ADDRESS).build())
+            .addressee(Addressee.builder().name(TEST_CO_RESPONDENTS_FULL_NAME).formattedAddress(CO_RESPONDENT_ADDRESS).build())
             .build();
 
         verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
@@ -127,8 +127,8 @@ public class CoECoRespondentCoverLetterGenerationTaskTest extends BasePayloadSpe
 
     private Map<String, Object> buildCaseData(boolean isCoRespondentRepresented) {
         Map<String, Object> caseData = isCoRespondentRepresented
-            ? AddresseeDataExtractorTest.buildCaseDataWithCoRespondentSolicitorAsAddressee()
-            : AddresseeDataExtractorTest.buildCaseDataWithCoRespondentAsAddressee();
+            ? AddresseeDataExtractorTest.buildCaseDataWithCoRespondentSolicitor()
+            : AddresseeDataExtractorTest.buildCaseDataWithCoRespondent();
 
         caseData.put(PETITIONER_FIRST_NAME, PETITIONERS_FIRST_NAME);
         caseData.put(PETITIONER_LAST_NAME, PETITIONERS_LAST_NAME);

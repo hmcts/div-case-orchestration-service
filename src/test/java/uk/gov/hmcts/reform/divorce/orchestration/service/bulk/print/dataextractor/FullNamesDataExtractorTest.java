@@ -10,8 +10,16 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CO_RESPONDENTS_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CO_RESPONDENTS_FULL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CO_RESPONDENTS_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FULL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENTS_FULL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_SOLICITOR_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.RESPONDENT_SOLICITORS_EXPECTED_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.CO_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.CO_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
@@ -23,20 +31,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 
 public class FullNamesDataExtractorTest {
 
-    static final String FIRST_NAME = "John";
-    static final String LAST_NAME = "Smith";
-
-    static final String TEST_RESPONDENT_FIRST_NAME = "Brian";
-    static final String TEST_RESPONDENT_LAST_NAME = "Adams";
-
-    static final String TEST_CO_RESPONDENT_FIRST_NAME = "Jane";
-    static final String TEST_CO_RESPONDENT_LAST_NAME = "Sam";
-
     @Test
     public void getPetitionerFullNameReturnsValidStringWhenAllFieldsPopulated() {
-        Map<String, Object> caseData = buildCaseDataWithPetitionerNames(FIRST_NAME, LAST_NAME);
+        Map<String, Object> caseData = buildCaseDataWithPetitionerNames();
 
-        Assert.assertThat(FullNamesDataExtractor.getPetitionerFullName(caseData), is("John Smith"));
+        Assert.assertThat(FullNamesDataExtractor.getPetitionerFullName(caseData), is(TEST_PETITIONER_FULL_NAME));
     }
 
     @Test
@@ -56,48 +55,10 @@ public class FullNamesDataExtractorTest {
     }
 
     @Test
-    public void getPetitionerFullNameReturnsValidStringWhenFieldsMissing() {
-        // fistName, lastName, expected
-        asList(
-            asList(FIRST_NAME, "", "John"),
-            asList(FIRST_NAME, null, "John"),
-            asList("", "", ""),
-            asList(null, "", ""),
-            asList(null, null, ""),
-            asList(null, LAST_NAME, "Smith"),
-            asList("", LAST_NAME, "Smith")
-        ).forEach(values -> {
-            String expected = values.get(2);
-            Map<String, Object> caseData = buildCaseDataWithPetitionerNames(values.get(0), values.get(1));
-
-            Assert.assertThat(FullNamesDataExtractor.getPetitionerFullName(caseData), is(expected));
-        });
-    }
-
-    @Test
     public void getRespondentFullNameReturnsValidStringWhenAllFieldsPopulated() {
         Map<String, Object> caseData = buildCaseDataWithRespondentNames();
 
-        assertThat(FullNamesDataExtractor.getRespondentFullName(caseData), is("John Smith"));
-    }
-
-    @Test
-    public void getRespondentFullNameReturnsValidStringWhenFieldsMissing() {
-        // fistName, lastName, expected
-        asList(
-            asList(FIRST_NAME, "", "John"),
-            asList(FIRST_NAME, null, "John"),
-            asList("", "", ""),
-            asList(null, "", ""),
-            asList(null, null, ""),
-            asList(null, LAST_NAME, "Smith"),
-            asList("", LAST_NAME, "Smith")
-        ).forEach(values -> {
-            String expected = values.get(2);
-            Map<String, Object> caseData = buildCaseDataWithRespondentNames();
-
-            assertThat(FullNamesDataExtractor.getRespondentFullName(caseData), is(expected));
-        });
+        assertThat(FullNamesDataExtractor.getRespondentFullName(caseData), is(TEST_RESPONDENTS_FULL_NAME));
     }
 
     @Test
@@ -120,7 +81,7 @@ public class FullNamesDataExtractorTest {
     public void getCoRespondentFullNameReturnsValidStringWhenAllFieldsPopulated() {
         Map<String, Object> caseData = buildCaseDataWithCoRespondentNames();
 
-        assertThat(FullNamesDataExtractor.getCoRespondentFullName(caseData), is("Jane Sam"));
+        assertThat(FullNamesDataExtractor.getCoRespondentFullName(caseData), is(TEST_CO_RESPONDENTS_FULL_NAME));
     }
 
     @Test
@@ -146,10 +107,10 @@ public class FullNamesDataExtractorTest {
         return caseData;
     }
 
-    private static Map<String, Object> buildCaseDataWithPetitionerNames(String firstName, String lastName) {
+    private static Map<String, Object> buildCaseDataWithPetitionerNames() {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(PETITIONER_FIRST_NAME, firstName);
-        caseData.put(PETITIONER_LAST_NAME, lastName);
+        caseData.put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
+        caseData.put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
 
         return caseData;
     }
@@ -164,8 +125,8 @@ public class FullNamesDataExtractorTest {
 
     static Map<String, Object> buildCaseDataWithCoRespondentNames() {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(CO_RESPONDENT_FIRST_NAME, TEST_CO_RESPONDENT_FIRST_NAME);
-        caseData.put(CO_RESPONDENT_LAST_NAME, TEST_CO_RESPONDENT_LAST_NAME);
+        caseData.put(CO_RESPONDENT_FIRST_NAME, TEST_CO_RESPONDENTS_FIRST_NAME);
+        caseData.put(CO_RESPONDENT_LAST_NAME, TEST_CO_RESPONDENTS_LAST_NAME);
 
         return caseData;
     }

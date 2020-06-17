@@ -82,7 +82,7 @@ public class CostOrderCoRespondentSolicitorCoverLetterGenerationTaskTest extends
     }
 
     private Map<String, Object> buildCaseDataCoRespondentRepresented() {
-        Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithCoRespondentSolicitorAsAddressee();
+        Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithCoRespondentSolicitor();
 
         caseData.put(PETITIONER_FIRST_NAME, PETITIONERS_FIRST_NAME);
         caseData.put(PETITIONER_LAST_NAME, PETITIONERS_LAST_NAME);

@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextract
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import uk.gov.hmcts.reform.bsp.common.model.document.Addressee;
+import uk.gov.hmcts.reform.divorce.orchestration.TestConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
 
@@ -24,12 +25,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.CaseDataKeys.RESPONDENT_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.CaseDataKeys.RESPONDENT_SOLICITOR_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_SOLICITOR_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.FIRST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.TEST_CO_RESPONDENT_FIRST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.TEST_CO_RESPONDENT_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.TEST_RESPONDENT_FIRST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.buildCaseDataWithCoRespondentNames;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.buildCaseDataWithCoRespondentSolicitorNames;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.buildCaseDataWithRespondentNames;
@@ -38,10 +33,8 @@ public class AddresseeDataExtractorTest {
 
     public static final String RESPONDENTS_ADDRESS = "123 Respondent Str\nRespondent\ncounty\nRE5 P0N";
     public static final String RESPONDENT_SOLICITORS_ADDRESS = "321 Resp Solicitor\ntown\ncounty\npostcode";
-    public static final String RESPONDENTS_EXPECTED_NAME = TEST_RESPONDENT_FIRST_NAME + " " + TEST_RESPONDENT_LAST_NAME;//TODO - use existing constants?
-    public static final String RESPONDENT_SOLICITORS_EXPECTED_NAME = "Sol" + FIRST_NAME + " " + LAST_NAME;
-    public static final String CO_RESPONDENTS_EXPECTED_NAME = TEST_CO_RESPONDENT_FIRST_NAME + " " + TEST_CO_RESPONDENT_LAST_NAME;
-    public static final String CO_RESPONDENT_SOLICITORS_EXPECTED_NAME = "CoSol" + FIRST_NAME + " " + LAST_NAME;
+    public static final String RESPONDENT_SOLICITORS_EXPECTED_NAME = "Sol" + TestConstants.TEST_RESPONDENTS_FULL_NAME;
+    public static final String CO_RESPONDENT_SOLICITORS_EXPECTED_NAME = "CoSol" + TestConstants.TEST_CO_RESPONDENTS_FULL_NAME;
     public static final String CO_RESPONDENT_ADDRESS = "456 CoRespondent Str\nCoRespondent\nCounty\nRE5 P0N";
     public static final String CO_RESPONDENT_SOLICITOR_ADDRESS = "456 CoRespondent Solicitor Str\nCoRespondent Solicitor\nCounty\nRE5 P0N";
     public static final String D8_CASE_REFERENCE = "LV17D80102";
@@ -50,22 +43,22 @@ public class AddresseeDataExtractorTest {
 
     @Test
     public void getRespondentShouldReturnValidValues() {
-        Map<String, Object> caseData = buildCaseDataWithRespondentAsAddressee();
+        Map<String, Object> caseData = buildCaseDataWithRespondentWithAddress();
 
         Addressee addressee = AddresseeDataExtractor.getRespondent(caseData);
 
         assertThat(addressee.getFormattedAddress(), is(RESPONDENTS_ADDRESS));
-        assertThat(addressee.getName(), is(RESPONDENTS_EXPECTED_NAME));
+        assertThat(addressee.getName(), is(TestConstants.TEST_RESPONDENTS_FULL_NAME));
     }
 
     @Test
     public void getCoRespondentShouldReturnValidValues() {
-        Map<String, Object> caseData = buildCaseDataWithCoRespondentAsAddressee();
+        Map<String, Object> caseData = buildCaseDataWithCoRespondent();
 
         Addressee addressee = AddresseeDataExtractor.getCoRespondent(caseData);
 
         assertThat(addressee.getFormattedAddress(), is(CO_RESPONDENT_ADDRESS));
-        assertThat(addressee.getName(), is(CO_RESPONDENTS_EXPECTED_NAME));
+        assertThat(addressee.getName(), is(TestConstants.TEST_CO_RESPONDENTS_FULL_NAME));
     }
 
     @Test(expected = InvalidDataForTaskException.class)
@@ -75,7 +68,7 @@ public class AddresseeDataExtractorTest {
         Addressee addressee = AddresseeDataExtractor.getCoRespondent(caseData);
 
         assertThat(addressee.getFormattedAddress(), is(CO_RESPONDENT_ADDRESS));
-        assertThat(addressee.getName(), is(CO_RESPONDENTS_EXPECTED_NAME));
+        assertThat(addressee.getName(), is(TestConstants.TEST_CO_RESPONDENTS_FULL_NAME));
     }
 
     @Test(expected = InvalidDataForTaskException.class)
@@ -87,7 +80,7 @@ public class AddresseeDataExtractorTest {
 
     @Test
     public void getRespondentSolicitorShouldReturnValidValues() {
-        Map<String, Object> caseData = buildCaseDataWithRespondentSolicitorAsAddressee();
+        Map<String, Object> caseData = buildCaseDataWithRespondentSolicitor();
 
         Addressee addressee = AddresseeDataExtractor.getRespondentSolicitor(caseData);
 
@@ -97,7 +90,7 @@ public class AddresseeDataExtractorTest {
 
     @Test
     public void getCoRespondentSolicitorShouldReturnValidValues() {
-        Map<String, Object> caseData = buildCaseDataWithCoRespondentSolicitorAsAddressee();
+        Map<String, Object> caseData = buildCaseDataWithCoRespondentSolicitor();
 
         Addressee addressee = AddresseeDataExtractor.getCoRespondentSolicitor(caseData);
 
@@ -117,19 +110,19 @@ public class AddresseeDataExtractorTest {
 
     @Test(expected = InvalidDataForTaskException.class)
     public void getRespondentSolicitorShouldThrowInvalidDataForTaskException() {
-        Map<String, Object> caseData = buildCaseDataWithRespondentSolicitorAsAddressee();
+        Map<String, Object> caseData = buildCaseDataWithRespondentSolicitor();
 
         AddresseeDataExtractor.getRespondent(caseData);
     }
 
-    public static Map<String, Object> buildCaseDataWithRespondentAsAddressee() {
+    public static Map<String, Object> buildCaseDataWithRespondentWithAddress() {
         Map<String, Object> caseData = buildCaseDataWithRespondentNames();
         caseData.put(RESPONDENT_ADDRESS, RESPONDENTS_ADDRESS);
 
         return caseData;
     }
 
-    public static Map<String, Object> buildCaseDataWithRespondentSolicitorAsAddressee() {//TODO - this is not really the addressee. This is decided by the task/extractor
+    public static Map<String, Object> buildCaseDataWithRespondentSolicitor() {
         Map<String, Object> caseData = buildCaseDataWithRespondentNames();
 
         caseData.put(RESPONDENT_SOLICITOR_NAME, RESPONDENT_SOLICITORS_EXPECTED_NAME);
@@ -139,7 +132,7 @@ public class AddresseeDataExtractorTest {
         return caseData;
     }
 
-    public static Map<String, Object> buildCaseDataWithCoRespondentAsAddressee() {
+    public static Map<String, Object> buildCaseDataWithCoRespondent() {
         Map<String, Object> caseData = buildCaseDataWithCoRespondentNames();
         caseData.put(D8_DERIVED_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS, CO_RESPONDENT_ADDRESS);
         caseData.put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE);
@@ -150,7 +143,7 @@ public class AddresseeDataExtractorTest {
         return caseData;
     }
 
-    public static Map<String, Object> buildCaseDataWithCoRespondentSolicitorAsAddressee() {
+    public static Map<String, Object> buildCaseDataWithCoRespondentSolicitor() {
         Map<String, Object> caseData = buildCaseDataWithCoRespondentSolicitorNames(CO_RESPONDENT_SOLICITORS_EXPECTED_NAME);
         caseData.put(OrchestrationConstants.CO_RESPONDENT_SOLICITOR_ADDRESS, CO_RESPONDENT_SOLICITOR_ADDRESS);
         caseData.put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE);

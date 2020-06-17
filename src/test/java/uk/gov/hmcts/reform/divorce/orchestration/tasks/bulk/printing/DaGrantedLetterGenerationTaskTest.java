@@ -17,7 +17,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.RESPONDENTS_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.RESPONDENTS_EXPECTED_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENTS_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.RESPONDENT_SOLICITORS_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.RESPONDENT_SOLICITORS_EXPECTED_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
@@ -51,11 +51,11 @@ public class DaGrantedLetterGenerationTaskTest extends BasePayloadSpecificDocume
         verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
         final DocmosisTemplateVars expectedDocmosisTemplateVars = BasicCoverLetter.builder()
             .petitionerFullName(PETITIONERS_FIRST_NAME + " " + PETITIONERS_LAST_NAME)
-            .respondentFullName(RESPONDENTS_EXPECTED_NAME)
+            .respondentFullName(TEST_RESPONDENTS_FULL_NAME)
             .caseReference(CASE_ID)
             .letterDate(LETTER_DATE_EXPECTED)
             .ctscContactDetails(CTSC_CONTACT)
-            .addressee(Addressee.builder().name(RESPONDENTS_EXPECTED_NAME).formattedAddress(RESPONDENTS_ADDRESS).build())
+            .addressee(Addressee.builder().name(TEST_RESPONDENTS_FULL_NAME).formattedAddress(RESPONDENTS_ADDRESS).build())
             .build();
         runCommonVerifications(caseData, returnedCaseData, DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE, TEMPLATE_ID, expectedDocmosisTemplateVars);
     }
@@ -70,7 +70,7 @@ public class DaGrantedLetterGenerationTaskTest extends BasePayloadSpecificDocume
         verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
         final DocmosisTemplateVars expectedDocmosisTemplateVars = BasicCoverLetter.builder()
             .petitionerFullName(PETITIONERS_FIRST_NAME + " " + PETITIONERS_LAST_NAME)
-            .respondentFullName(RESPONDENTS_EXPECTED_NAME)
+            .respondentFullName(TEST_RESPONDENTS_FULL_NAME)
             .caseReference(CASE_ID)
             .letterDate(LETTER_DATE_EXPECTED)
             .ctscContactDetails(CTSC_CONTACT)
@@ -89,8 +89,8 @@ public class DaGrantedLetterGenerationTaskTest extends BasePayloadSpecificDocume
 
     private Map<String, Object> buildCaseData(boolean isRespondentRepresented) {
         Map<String, Object> caseData = isRespondentRepresented
-            ? AddresseeDataExtractorTest.buildCaseDataWithRespondentSolicitorAsAddressee()
-            : AddresseeDataExtractorTest.buildCaseDataWithRespondentAsAddressee();
+            ? AddresseeDataExtractorTest.buildCaseDataWithRespondentSolicitor()
+            : AddresseeDataExtractorTest.buildCaseDataWithRespondentWithAddress();
         caseData.put(DatesDataExtractor.CaseDataKeys.DA_GRANTED_DATE, LETTER_DATE_FROM_CCD);
 
         caseData.put(PETITIONER_FIRST_NAME, PETITIONERS_FIRST_NAME);

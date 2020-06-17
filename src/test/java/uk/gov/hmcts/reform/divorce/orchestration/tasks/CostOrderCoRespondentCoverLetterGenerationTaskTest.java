@@ -16,7 +16,7 @@ import java.util.Map;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.CO_RESPONDENTS_EXPECTED_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CO_RESPONDENTS_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.CO_RESPONDENT_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractorTest.HEARING_DATE_FORMATTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractorTest.createHearingDatesList;
@@ -60,13 +60,13 @@ public class CostOrderCoRespondentCoverLetterGenerationTaskTest extends BasePayl
             .letterDate(LETTER_DATE_EXPECTED)
             .ctscContactDetails(CTSC_CONTACT)
             .hearingDate(HEARING_DATE_FORMATTED)
-            .addressee(Addressee.builder().name(CO_RESPONDENTS_EXPECTED_NAME).formattedAddress(CO_RESPONDENT_ADDRESS).build())
+            .addressee(Addressee.builder().name(TEST_CO_RESPONDENTS_FULL_NAME).formattedAddress(CO_RESPONDENT_ADDRESS).build())
             .build();
         runCommonVerifications(caseData, returnedCaseData, DOCUMENT_TYPE, TEMPLATE_ID, coRespondentCoverLetter);
     }
 
     private Map<String, Object> buildCaseDataWhenCoRespondentNotRepresented() {
-        Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithCoRespondentAsAddressee();
+        Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithCoRespondent();
 
         caseData.put(PETITIONER_FIRST_NAME, PETITIONERS_FIRST_NAME);
         caseData.put(PETITIONER_LAST_NAME, PETITIONERS_LAST_NAME);
