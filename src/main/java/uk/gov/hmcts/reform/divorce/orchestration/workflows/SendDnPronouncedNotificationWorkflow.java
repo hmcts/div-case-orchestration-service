@@ -77,42 +77,55 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
 
     private Task<Map<String, Object>>[] getTasks(CaseDetails caseDetails) {
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
-        Map<String, Object> caseData = caseDetails.getCaseData();
 
-        if (isCoRespondentDigital(caseData)) {
-            log.info("For case {} co-respondent uses digital contact", caseDetails.getCaseId());
-            addGenericUpdateNotificationEmailTask(tasks, caseData);
-
+        if (isCoRespondentDigital(caseDetails.getCaseData())) {
+            addGenericUpdateNotificationEmailTask(tasks, caseDetails);
         } else {
-            log.info("For case {} co-respondent uses traditional letters", caseDetails.getCaseId());
-            addCoRespondentPaperTasks(tasks, caseData);
+            addCoRespondentPaperTasks(tasks, caseDetails);
         }
-
         return tasks.toArray(new Task[0]);
     }
 
-    private void addCoRespondentPaperTasks(List<Task<Map<String, Object>>> tasks, Map<String, Object> caseData) {
-        if (isPaperUpdateEnabled() && isCostsClaimGranted(caseData)) {
+    private void addCoRespondentPaperTasks(List<Task<Map<String, Object>>> tasks, CaseDetails caseDetails) {
+        log.info("For case {} co-respondent uses traditional letters", caseDetails.getCaseId());
 
-            if (isCoRespondentRepresented(caseData)) {
-                tasks.add(costOrderCoRespondentSolicitorCoverLetterGenerationTask);
+        if (isPaperUpdateEnabled()) {
+            log.info("Features.PAPER_UPDATE = on.");
+
+            if (isCostsClaimGranted(caseDetails.getCaseData())) {
+                log.info("CaseID: {} - Cost claim granted", caseDetails.getCaseId());
+
+                if (isCoRespondentRepresented(caseDetails.getCaseData())) {
+                    log.info("CaseID: {} - Send Cost Order Cover Letter to CoRespondent Solicitor", caseDetails.getCaseId());
+                    tasks.add(costOrderCoRespondentSolicitorCoverLetterGenerationTask);
+
+                } else {
+                    log.info("CaseID: {} - Send Cost Order Cover Letter to CoRespondent", caseDetails.getCaseId());
+                    tasks.add(costOrderCoRespondentCoverLetterGenerationTask);
+
+                }
+                log.info("CaseID: {} - Documents sent to bulk print", caseDetails.getCaseId());
+                tasks.add(fetchPrintDocsFromDmStore);
+                tasks.add(bulkPrinterTask);
+
             } else {
-                tasks.add(costOrderCoRespondentCoverLetterGenerationTask);
+                log.info("CaseID: {} - Cost claim not granted. Nothing was sent to bulk print", caseDetails.getCaseId());
             }
-
-            tasks.add(fetchPrintDocsFromDmStore);
-            tasks.add(bulkPrinterTask);
         } else {
             log.info("Features.PAPER_UPDATE = off. Nothing was sent to bulk print");
         }
     }
 
-    private void addGenericUpdateNotificationEmailTask(List<Task<Map<String, Object>>> tasks, Map<String, Object> caseData) {
+    private void addGenericUpdateNotificationEmailTask(List<Task<Map<String, Object>>> tasks, CaseDetails caseDetails) {
+        log.info("For case {} co-respondent uses digital contact", caseDetails.getCaseId());
         tasks.add(sendPetitionerGenericUpdateNotificationEmailTask);
         tasks.add(sendRespondentGenericUpdateNotificationEmailTask);
 
-        if (isCoRespondentLiableForCosts(caseData)) {
+        if (isCoRespondentLiableForCosts(caseDetails.getCaseData())) {
+            log.info("CaseID: {} - corespondent is liable for costs. Email sent", caseDetails.getCaseId());
             tasks.add(sendCoRespondentGenericUpdateNotificationEmailTask);
+        } else {
+            log.info("CaseID: {} - corespondent is not liable for costs. Email not sent", caseDetails.getCaseId());
         }
     }
 
