@@ -23,22 +23,24 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.CaseDataKeys.RESPONDENT_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.CaseDataKeys.RESPONDENT_SOLICITOR_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.CO_REP_FIRST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.CO_REP_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.TEST_CO_RESPONDENT_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.TEST_CO_RESPONDENT_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.TEST_RESPONDENT_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.buildCaseDataWithCoRespondentNames;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.buildCaseDataWithCoRespondentSolicitorNames;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.buildCaseDataWithRespondentNames;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.buildCaseDataWithRespondentSolicitorNames;
 
 public class AddresseeDataExtractorTest {
 
     public static final String RESPONDENTS_ADDRESS = "123 Respondent Str\nRespondent\ncounty\nRE5 P0N";
     public static final String RESPONDENT_SOLICITORS_ADDRESS = "321 Resp Solicitor\ntown\ncounty\npostcode";
-    public static final String RESPONDENTS_EXPECTED_NAME = FIRST_NAME + " " + LAST_NAME;
-    public static final String CO_RESPONDENTS_EXPECTED_NAME = CO_REP_FIRST_NAME + " " + CO_REP_LAST_NAME;
+    public static final String RESPONDENTS_EXPECTED_NAME = TEST_RESPONDENT_FIRST_NAME + " " + TEST_RESPONDENT_LAST_NAME;//TODO - use existing constants?
     public static final String RESPONDENT_SOLICITORS_EXPECTED_NAME = "Sol" + FIRST_NAME + " " + LAST_NAME;
+    public static final String CO_RESPONDENTS_EXPECTED_NAME = TEST_CO_RESPONDENT_FIRST_NAME + " " + TEST_CO_RESPONDENT_LAST_NAME;
     public static final String CO_RESPONDENT_SOLICITORS_EXPECTED_NAME = "CoSol" + FIRST_NAME + " " + LAST_NAME;
     public static final String CO_RESPONDENT_ADDRESS = "456 CoRespondent Str\nCoRespondent\nCounty\nRE5 P0N";
     public static final String CO_RESPONDENT_SOLICITOR_ADDRESS = "456 CoRespondent Solicitor Str\nCoRespondent Solicitor\nCounty\nRE5 P0N";
@@ -78,7 +80,7 @@ public class AddresseeDataExtractorTest {
 
     @Test(expected = InvalidDataForTaskException.class)
     public void getRespondentShouldThrowInvalidDataForTaskException() {
-        Map<String, Object> caseData = buildCaseDataWithRespondentNames(FIRST_NAME, LAST_NAME);
+        Map<String, Object> caseData = buildCaseDataWithRespondentNames();
 
         AddresseeDataExtractor.getRespondent(caseData);
     }
@@ -115,20 +117,22 @@ public class AddresseeDataExtractorTest {
 
     @Test(expected = InvalidDataForTaskException.class)
     public void getRespondentSolicitorShouldThrowInvalidDataForTaskException() {
-        Map<String, Object> caseData = buildCaseDataWithRespondentSolicitorNames(RESPONDENTS_EXPECTED_NAME);
+        Map<String, Object> caseData = buildCaseDataWithRespondentSolicitorAsAddressee();
 
         AddresseeDataExtractor.getRespondent(caseData);
     }
 
     public static Map<String, Object> buildCaseDataWithRespondentAsAddressee() {
-        Map<String, Object> caseData = buildCaseDataWithRespondentNames(FIRST_NAME, LAST_NAME);
+        Map<String, Object> caseData = buildCaseDataWithRespondentNames();
         caseData.put(RESPONDENT_ADDRESS, RESPONDENTS_ADDRESS);
 
         return caseData;
     }
 
-    public static Map<String, Object> buildCaseDataWithRespondentSolicitorAsAddressee() {
-        Map<String, Object> caseData = buildCaseDataWithRespondentSolicitorNames(RESPONDENT_SOLICITORS_EXPECTED_NAME);
+    public static Map<String, Object> buildCaseDataWithRespondentSolicitorAsAddressee() {//TODO - this is not really the addressee. This is decided by the task/extractor
+        Map<String, Object> caseData = buildCaseDataWithRespondentNames();
+
+        caseData.put(RESPONDENT_SOLICITOR_NAME, RESPONDENT_SOLICITORS_EXPECTED_NAME);
         caseData.put(RESPONDENT_SOLICITOR_ADDRESS, RESPONDENT_SOLICITORS_ADDRESS);
         caseData.put(RESP_SOL_REPRESENTED, YES_VALUE);
 

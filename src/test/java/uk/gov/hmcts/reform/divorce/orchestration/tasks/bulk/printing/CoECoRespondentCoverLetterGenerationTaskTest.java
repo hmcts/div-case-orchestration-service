@@ -2,10 +2,8 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.bsp.common.model.document.Addressee;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CoECoverLetter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.DnCourt;
@@ -19,8 +17,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.impl.CourtLookupService
 import java.time.LocalDate;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
@@ -47,7 +43,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoEC
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoECoRespondentCoverLetterGenerationTask.FileMetadata.TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
 
-@RunWith(MockitoJUnitRunner.class)
 public class CoECoRespondentCoverLetterGenerationTaskTest extends BasePayloadSpecificDocumentGenerationTaskTest {
 
     public static final String COURT_LOCATION = "liverpool";
@@ -108,13 +103,6 @@ public class CoECoRespondentCoverLetterGenerationTaskTest extends BasePayloadSpe
             .build();
         verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
         runCommonVerifications(caseData, returnedCaseData, DOCUMENT_TYPE, TEMPLATE_ID, expectedDocmosisTemplateVars);
-    }
-
-    @Test
-    public void getDocumentType() {
-        String documentType = coECoRespondentCoverLetterGenerationTask.getDocumentType();
-
-        assertThat(documentType, is(DOCUMENT_TYPE));
     }
 
     @Test(expected = InvalidDataForTaskException.class)
