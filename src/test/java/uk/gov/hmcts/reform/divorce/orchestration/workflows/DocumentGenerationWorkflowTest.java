@@ -92,7 +92,7 @@ public class DocumentGenerationWorkflowTest {
     }
 
     @Test
-    public void dynamicTemplate() throws WorkflowException {
+    public void testToPickTemplateIdFromConfiguration() throws WorkflowException {
         final TaskContext context = new DefaultTaskContext();
         final Map<String, Object> payload = new HashMap<>();
         payload.put(LANGUAGE_PREFERENCE_WELSH, YES_VALUE);
@@ -127,7 +127,7 @@ public class DocumentGenerationWorkflowTest {
     }
 
     @Test
-    public void dynamicTemplateMissing() throws WorkflowException {
+    public void testToContinueWithProvidedTempateId() throws WorkflowException {
         final TaskContext context = new DefaultTaskContext();
         final Map<String, Object> payload = new HashMap<>();
         payload.put(LANGUAGE_PREFERENCE_WELSH, YES_VALUE);
