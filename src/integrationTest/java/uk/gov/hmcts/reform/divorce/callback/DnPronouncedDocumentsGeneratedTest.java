@@ -16,16 +16,16 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COST_ORDER_CO_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_ANSWERS;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
 
 public class DnPronouncedDocumentsGeneratedTest extends IntegrationTest {
 
     private static final String BULK_CASE_LINK_CCD_CALLBACK_REQUEST = "fixtures/callback/basic-case-with-bulk-case-link.json";
     private static final String COSTS_CLAIM_CCD_CALLBACK_REQUEST = "fixtures/callback/costs-claim-granted.json";
-    private static final String COSTS_CLAIM_CO_RESPONDENT_CCD_CALLBACK_REQUEST =
+    private static final String COSTS_CLAIM_SOLICITOR_CO_RESPONDENT_CCD_CALLBACK_REQUEST =
         "fixtures/callback/costs-claim-granted-co-respondent-liable-with-solicitor.json";
     private static final String TEST_CASE_ID = "0123456789012345";
 
@@ -65,9 +65,9 @@ public class DnPronouncedDocumentsGeneratedTest extends IntegrationTest {
     }
 
     @Test
-    public void givenCase_whenPaperBasedAndCoRespondentResponsibleForClaimCosts_thenReturnCallbackResponseWithDecreeNisiDocumentAndCostsOrder() {
+    public void givenCase_whenPaperBasedAndCoRespondentResponsibleForClaimCostsWithSolicitor_thenReturnCallbackResponseWithDecreeNisiDocumentAndCostsOrder() {
         CcdCallbackRequest ccdCallbackRequest = ResourceLoader.loadJsonToObject(
-            COSTS_CLAIM_CO_RESPONDENT_CCD_CALLBACK_REQUEST,
+            COSTS_CLAIM_SOLICITOR_CO_RESPONDENT_CCD_CALLBACK_REQUEST,
             CcdCallbackRequest.class);
 
         Map<String, Object> response = cosApiClient.triggerCostOrderNotification(createCaseWorkerUser().getAuthToken(), ccdCallbackRequest);
@@ -80,4 +80,22 @@ public class DnPronouncedDocumentsGeneratedTest extends IntegrationTest {
                 Matchers.is(COST_ORDER_CO_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE + TEST_CASE_ID))))
         );
     }
+
+//    @Test
+//    public void givenCase_whenPaperBasedAndCoRespondentResponsibleForClaimCostsWithoutSolicitor_thenReturnCallbackResponseWithDecreeNisiDocumentAndCostsOrder() {
+//        CcdCallbackRequest ccdCallbackRequest = ResourceLoader.loadJsonToObject(
+//            COSTS_CLAIM_CO_RESPONDENT_CCD_CALLBACK_REQUEST,
+//            CcdCallbackRequest.class);
+//
+//        Map<String, Object> response = cosApiClient.triggerCostOrderNotification(createCaseWorkerUser().getAuthToken(), ccdCallbackRequest);
+//
+//        String jsonResponse = objectToJson(response);
+//
+//        assertThat(
+//            jsonResponse,
+//            hasJsonPath("$.data.D8DocumentsGenerated", hasItem(hasJsonPath("value.DocumentFileName",
+//                Matchers.is(COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE + TEST_CASE_ID))))
+//        );
+//    }
+    // TODO: Create a JSON file, named COSTS_CLAIM_CO_RESPONDENT_CCD_CALLBACK_REQUEST, that contains appropriate info for non solicitor flow
 }
