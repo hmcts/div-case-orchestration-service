@@ -29,7 +29,7 @@ public class CoERespondentLetterGenerationTask extends BasePayloadSpecificDocume
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FileMetadata {
         public static final String TEMPLATE_ID = "FL-DIV-LET-ENG-00360.docx";
-        public static final String DOCUMENT_TYPE = COE_RESPONDENT_LETTER_DOCUMENT_TYPE;
+        public static final String DOCUMENT_TYPE = COE_RESPONDENT_LETTER_DOCUMENT_TYPE.getValue();
     }
 
     private final CourtLookupService courtLookupService;

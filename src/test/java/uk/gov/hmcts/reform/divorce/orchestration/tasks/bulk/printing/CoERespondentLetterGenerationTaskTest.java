@@ -94,7 +94,7 @@ public class CoERespondentLetterGenerationTaskTest extends BasePayloadSpecificDo
             .build();
         runCommonVerifications(caseData,
             returnedCaseData,
-            COE_RESPONDENT_LETTER_DOCUMENT_TYPE,
+            COE_RESPONDENT_LETTER_DOCUMENT_TYPE.getValue(),
             CoERespondentLetterGenerationTask.FileMetadata.TEMPLATE_ID,
             expectedDocmosisTemplateVars);
     }

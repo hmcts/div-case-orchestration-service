@@ -26,7 +26,7 @@ public class CoERespondentSolicitorLetterGenerationTask extends BasePayloadSpeci
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FileMetadata {
         public static final String TEMPLATE_ID = "FL-DIV-GNO-ENG-00370.docx";
-        public static final String DOCUMENT_TYPE = COE_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE;
+        public static final String DOCUMENT_TYPE = COE_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE.getValue();
     }
 
     public CoERespondentSolicitorLetterGenerationTask(

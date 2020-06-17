@@ -36,6 +36,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -141,8 +142,8 @@ public class CaseListedForHearingCallbackTest extends MockedFunctionalTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
-        verify(mockEmailService).sendEmailAndReturnExceptionIfFails(eq(TEST_PETITIONER_EMAIL), anyString(), anyMap(), anyString());
-        verify(mockEmailService).sendEmailAndReturnExceptionIfFails(eq(TEST_RESPONDENT_EMAIL), anyString(), anyMap(), anyString());
+        verify(mockEmailService).sendEmailAndReturnExceptionIfFails(eq(TEST_PETITIONER_EMAIL), anyString(), anyMap(), anyString(), any());
+        verify(mockEmailService).sendEmailAndReturnExceptionIfFails(eq(TEST_RESPONDENT_EMAIL), anyString(), anyMap(), anyString(), any());;
     }
 
     @Test
@@ -154,7 +155,7 @@ public class CaseListedForHearingCallbackTest extends MockedFunctionalTest {
         //Newly generated document
         byte[] coeLetterBytes = new byte[] {1, 2, 3};
         String coeLetterDocumentId =
-            stubDocumentGeneratorService(TEMPLATE_ID, COE_RESPONDENT_LETTER_DOCUMENT_TYPE);
+            stubDocumentGeneratorService(TEMPLATE_ID, COE_RESPONDENT_LETTER_DOCUMENT_TYPE.getValue());
         stubDMStore(coeLetterDocumentId, coeLetterBytes);
 
         //Existing document
@@ -193,7 +194,7 @@ public class CaseListedForHearingCallbackTest extends MockedFunctionalTest {
     @Test
     public void responseShouldContainErrorsIfServiceFails() throws Exception {
         doThrow(new NotificationClientException("This has failed."))
-            .when(mockEmailService).sendEmailAndReturnExceptionIfFails(anyString(), anyString(), anyMap(), anyString());
+            .when(mockEmailService).sendEmailAndReturnExceptionIfFails(anyString(), anyString(), anyMap(), anyString(),  any());
 
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(BASE_CASE_DATA)

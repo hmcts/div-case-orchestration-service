@@ -357,16 +357,18 @@ public class CaseLinkedForHearingWorkflowTest {
         Map<String, Object> casePayload = new HashMap<>(ImmutableMap.of(
             D8DOCUMENTS_GENERATED, asList(
                 createCollectionMemberDocumentAsMap("http://coeLetter.com",
-                    COE_RESPONDENT_LETTER_DOCUMENT_TYPE, "certificateOfEntitlementCoverLetterForRespondent.pdf"),
+                    COE_RESPONDENT_LETTER_DOCUMENT_TYPE.getValue(), "certificateOfEntitlementCoverLetterForRespondent.pdf"),
                 createCollectionMemberDocumentAsMap("http://coeCoRespLetter.com",
-                    CERTIFICATE_OF_ENTITLEMENT_LETTER_CO_RESPONDENT_DOCUMENT_TYPE, "certificateOfEntitlementCoverLetterForCoRespondent.pdf"))
+                    CERTIFICATE_OF_ENTITLEMENT_LETTER_CO_RESPONDENT_DOCUMENT_TYPE.getValue(),
+                    "certificateOfEntitlementCoverLetterForCoRespondent.pdf"))
         ));
 
         when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(casePayload)).thenReturn(true);
         when(sendPetitionerCoENotificationEmailTask.execute(notNull(), eq(casePayload))).thenReturn(casePayload);
-        when(coERespondentLetterGenerationTask.getDocumentType()).thenReturn(COE_RESPONDENT_LETTER_DOCUMENT_TYPE);
+        when(coERespondentLetterGenerationTask.getDocumentType()).thenReturn(COE_RESPONDENT_LETTER_DOCUMENT_TYPE.getValue());
         when(coERespondentLetterGenerationTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
-        when(coECoRespondentCoverLetterGenerationTask.getDocumentType()).thenReturn(CERTIFICATE_OF_ENTITLEMENT_LETTER_CO_RESPONDENT_DOCUMENT_TYPE);
+        when(coECoRespondentCoverLetterGenerationTask.getDocumentType())
+            .thenReturn(CERTIFICATE_OF_ENTITLEMENT_LETTER_CO_RESPONDENT_DOCUMENT_TYPE.getValue());
         when(coECoRespondentCoverLetterGenerationTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
         when(fetchPrintDocsFromDmStore.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
         when(bulkPrinterTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);

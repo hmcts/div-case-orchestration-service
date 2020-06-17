@@ -33,8 +33,8 @@ public class CoECoRespondentCoverLetterGenerationTask extends BasePayloadSpecifi
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FileMetadata {
-        public static final String TEMPLATE_ID = CERTIFICATE_OF_ENTITLEMENT_LETTER_CO_RESPONDENT_FILENAME;
-        public static final String DOCUMENT_TYPE = CERTIFICATE_OF_ENTITLEMENT_LETTER_CO_RESPONDENT_DOCUMENT_TYPE;
+        public static final String TEMPLATE_ID = CERTIFICATE_OF_ENTITLEMENT_LETTER_CO_RESPONDENT_FILENAME.getValue();
+        public static final String DOCUMENT_TYPE = CERTIFICATE_OF_ENTITLEMENT_LETTER_CO_RESPONDENT_DOCUMENT_TYPE.getValue();
     }
 
     private final CourtLookupService courtLookupService;

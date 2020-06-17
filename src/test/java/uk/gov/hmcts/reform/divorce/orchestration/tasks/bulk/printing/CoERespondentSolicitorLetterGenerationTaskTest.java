@@ -79,7 +79,7 @@ public class CoERespondentSolicitorLetterGenerationTaskTest extends BasePayloadS
             .build();
         runCommonVerifications(caseData,
             returnedCaseData,
-            COE_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE,
+            COE_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE.getValue(),
             CoERespondentSolicitorLetterGenerationTask.FileMetadata.TEMPLATE_ID,
             expectedDocmosisTemplateVars);
     }
