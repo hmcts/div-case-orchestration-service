@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.callback;
 
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
@@ -11,11 +12,13 @@ import java.util.Map;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COST_ORDER_CO_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_FILENAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_ANSWERS;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
 
 public class DnPronouncedDocumentsGeneratedTest extends IntegrationTest {
@@ -73,10 +76,8 @@ public class DnPronouncedDocumentsGeneratedTest extends IntegrationTest {
 
         assertThat(
             jsonResponse,
-            hasJsonPath(
-                "$.data.D8DocumentsGenerated[0].value.DocumentFileName",
-                is(COST_ORDER_CO_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE + TEST_CASE_ID)
-            )
+            hasJsonPath("$.data.D8DocumentsGenerated", hasItem(hasJsonPath("value.DocumentFileName",
+                Matchers.is(COST_ORDER_CO_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE + TEST_CASE_ID))))
         );
     }
 }
