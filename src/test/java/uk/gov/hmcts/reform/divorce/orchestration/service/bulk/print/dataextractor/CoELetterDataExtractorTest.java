@@ -14,12 +14,12 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CertificateOfEntitlementLetterDataExtractor.CaseDataKeys.COURT_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CertificateOfEntitlementLetterDataExtractor.CaseDataKeys.IS_COSTS_CLAIM_GRANTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CertificateOfEntitlementLetterDataExtractor.CaseDataKeys.PETITIONER_GENDER;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CertificateOfEntitlementLetterDataExtractor.CaseDataKeys.SOLICITOR_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoELetterDataExtractor.CaseDataKeys.COURT_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoELetterDataExtractor.CaseDataKeys.IS_COSTS_CLAIM_GRANTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoELetterDataExtractor.CaseDataKeys.PETITIONER_GENDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoELetterDataExtractor.CaseDataKeys.SOLICITOR_REFERENCE;
 
-public class CertificateOfEntitlementLetterDataExtractorTest {
+public class CoELetterDataExtractorTest {
 
     private static final String VALID_COURT_ID = "birmingham";
     private static final String VALID_SOLICITOR_REF = "solRef123";
@@ -27,46 +27,46 @@ public class CertificateOfEntitlementLetterDataExtractorTest {
     @Test
     public void getHusbandOrWifeReturnsHusbandWhenPetitionerIsMale() {
         Map<String, Object> caseData = buildCaseDataWithPetitionerGender(Gender.MALE.getValue());
-        assertThat(CertificateOfEntitlementLetterDataExtractor.getHusbandOrWife(caseData), is(Relation.HUSBAND.getValue()));
+        assertThat(CoELetterDataExtractor.getHusbandOrWife(caseData), is(Relation.HUSBAND.getValue()));
     }
 
     @Test
     public void getHusbandOrWifeReturnsWifeWhenPetitionerIsFemale() {
         Map<String, Object> caseData = buildCaseDataWithPetitionerGender(Gender.FEMALE.getValue());
-        assertThat(CertificateOfEntitlementLetterDataExtractor.getHusbandOrWife(caseData), is(Relation.WIFE.getValue()));
+        assertThat(CoELetterDataExtractor.getHusbandOrWife(caseData), is(Relation.WIFE.getValue()));
     }
 
     @Test
     public void getCourtIdReturnsValidValueWhenItExists() {
         Map<String, Object> caseData = buildCaseDataWithCourt(VALID_COURT_ID);
-        assertThat(CertificateOfEntitlementLetterDataExtractor.getCourtId(caseData), is(VALID_COURT_ID));
+        assertThat(CoELetterDataExtractor.getCourtId(caseData), is(VALID_COURT_ID));
     }
 
     @Test
     public void isCostsClaimGrantedReturnsTrueWhenValueIsYes() {
         Map<String, Object> caseData = buildCaseDataWithIsCostsClaimGranted(YES_VALUE);
-        assertThat(CertificateOfEntitlementLetterDataExtractor.isCostsClaimGranted(caseData), is(true));
+        assertThat(CoELetterDataExtractor.isCostsClaimGranted(caseData), is(true));
     }
 
     @Test
     public void isCostsClaimGrantedReturnsFalseWhenItValueIsNoOrItDoesNotExist() {
         asList("", null, NO_VALUE).forEach(isCostsClaimGrantedValue -> {
             Map<String, Object> caseData = buildCaseDataWithIsCostsClaimGranted(isCostsClaimGrantedValue);
-            assertThat(CertificateOfEntitlementLetterDataExtractor.isCostsClaimGranted(caseData), is(false));
+            assertThat(CoELetterDataExtractor.isCostsClaimGranted(caseData), is(false));
         });
     }
 
     @Test
     public void getSolicitorReferenceReturnsValidValueWhenItExists() {
         Map<String, Object> caseData = buildCaseDataWithSolicitorReference(VALID_SOLICITOR_REF);
-        assertThat(CertificateOfEntitlementLetterDataExtractor.getSolicitorReference(caseData), is(VALID_SOLICITOR_REF));
+        assertThat(CoELetterDataExtractor.getSolicitorReference(caseData), is(VALID_SOLICITOR_REF));
     }
 
     @Test
     public void getHusbandOrWifeThrowsExceptionsPetitionerGenderDoesNotExist() {
         asList("", null).forEach(petitionerGenderValue -> {
             try {
-                CertificateOfEntitlementLetterDataExtractor.getHusbandOrWife(buildCaseDataWithPetitionerGender(petitionerGenderValue));
+                CoELetterDataExtractor.getHusbandOrWife(buildCaseDataWithPetitionerGender(petitionerGenderValue));
                 fail("Should have thrown exception");
             } catch (InvalidDataForTaskException e) {
                 thisTestPassed();
@@ -78,7 +78,7 @@ public class CertificateOfEntitlementLetterDataExtractorTest {
     public void getCourtIdThrowsExceptionsWhenItDoesNotExist() {
         asList("", null).forEach(courtIdValue -> {
             try {
-                CertificateOfEntitlementLetterDataExtractor.getCourtId(buildCaseDataWithCourt(courtIdValue));
+                CoELetterDataExtractor.getCourtId(buildCaseDataWithCourt(courtIdValue));
                 fail("Should have thrown exception");
             } catch (InvalidDataForTaskException e) {
                 thisTestPassed();
@@ -90,7 +90,7 @@ public class CertificateOfEntitlementLetterDataExtractorTest {
     public void getSolicitorReferenceThrowsExceptionsWhenItDoesNotExist() {
         asList("", null).forEach(solicitorRefValue -> {
             try {
-                CertificateOfEntitlementLetterDataExtractor.getSolicitorReference(buildCaseDataWithSolicitorReference(solicitorRefValue));
+                CoELetterDataExtractor.getSolicitorReference(buildCaseDataWithSolicitorReference(solicitorRefValue));
                 fail("Should have thrown exception");
             } catch (InvalidDataForTaskException e) {
                 thisTestPassed();

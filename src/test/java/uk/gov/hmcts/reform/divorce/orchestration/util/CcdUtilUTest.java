@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.util;
 
+import org.hamcrest.core.Is;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
@@ -159,6 +161,12 @@ public class CcdUtilUTest {
             createCollectionMemberDocument(url1, documentType1, fileName1),
             createCollectionMemberDocument(url2, documentType2, fileName2)
         ));
+    }
+
+    @Test
+    public void shouldConvertDateFromCCDFormat() {
+        String formattedDate = CcdUtil.formatFromCCDFormatToHumanReadableFormat("2017-08-15");
+        Assert.assertThat(formattedDate, Is.is("15/08/2017"));
     }
 
     @Test

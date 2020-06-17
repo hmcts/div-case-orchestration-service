@@ -54,7 +54,7 @@ public class CostOrderCoRespondentCoverLetterGenerationTask extends BasePayloadS
     }
 
     @Override
-    public String getTemplateId(Map<String, Object> caseData) {
+    public String getTemplateId() {
         return FileMetadata.TEMPLATE_ID;
     }
 }

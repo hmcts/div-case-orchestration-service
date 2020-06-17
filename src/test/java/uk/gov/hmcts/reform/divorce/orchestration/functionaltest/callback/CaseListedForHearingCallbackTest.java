@@ -41,7 +41,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -58,7 +57,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.CERTIFICATE_OF_ENTITLEMENT_LETTER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.COE_RESPONDENT_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
@@ -76,8 +75,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CertificateOfEntitlementLetterDataExtractor.CaseDataKeys.HEARING_DATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CertificateOfEntitlementLetterGenerationTask.FileMetadata.TEMPLATE_ID_RESPONDENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoELetterDataExtractor.CaseDataKeys.HEARING_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoERespondentLetterGenerationTask.FileMetadata.TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocument;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
@@ -155,7 +154,7 @@ public class CaseListedForHearingCallbackTest extends MockedFunctionalTest {
         //Newly generated document
         byte[] coeLetterBytes = new byte[] {1, 2, 3};
         String coeLetterDocumentId =
-            stubDocumentGeneratorService(TEMPLATE_ID_RESPONDENT, CERTIFICATE_OF_ENTITLEMENT_LETTER_DOCUMENT_TYPE);
+            stubDocumentGeneratorService(TEMPLATE_ID, COE_RESPONDENT_LETTER_DOCUMENT_TYPE);
         stubDMStore(coeLetterDocumentId, coeLetterBytes);
 
         //Existing document
@@ -189,7 +188,6 @@ public class CaseListedForHearingCallbackTest extends MockedFunctionalTest {
         assertThat(documentsSentToBulkPrint, hasSize(2));
         assertThat(documentsSentToBulkPrint.get(0).getBytes(), is(coeLetterBytes));
         assertThat(documentsSentToBulkPrint.get(1).getBytes(), is(coeDocumentBytes));
-        verifyZeroInteractions(mockEmailService);
     }
 
     @Test
@@ -211,7 +209,7 @@ public class CaseListedForHearingCallbackTest extends MockedFunctionalTest {
             ))
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(hasJsonPath("$.errors", hasItem("This has failed."))));
+            .andExpect(content().string(hasJsonPath("$.errors", hasItem("Failed to send e-mail"))));
     }
 
     @Test

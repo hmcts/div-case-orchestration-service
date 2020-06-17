@@ -13,15 +13,9 @@ import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-public class CertificateOfEntitlementCoverLetter extends DocmosisTemplateVars {
+public class CoERespondentSolicitorCoverLetter extends DocmosisTemplateVars {
     @JsonProperty("hearingDate")
     private String hearingDate;
-
-    @JsonProperty("husbandOrWife")
-    private String husbandOrWife;
-
-    @JsonProperty("courtName")
-    private String courtName;
 
     @JsonProperty("deadlineToContactCourtBy")
     private String deadlineToContactCourtBy;
@@ -36,23 +30,19 @@ public class CertificateOfEntitlementCoverLetter extends DocmosisTemplateVars {
     private String solicitorReference;
 
     @Builder
-    public CertificateOfEntitlementCoverLetter(
+    public CoERespondentSolicitorCoverLetter(
         CtscContactDetails ctscContactDetails,
         String caseReference,
         String letterDate,
         String petitionerFullName,
         String respondentFullName,
         String hearingDate,
-        String husbandOrWife,
-        String courtName,
         String deadlineToContactCourtBy,
         String solicitorReference,
         boolean costClaimGranted,
         Addressee addressee) {
         super(ctscContactDetails, caseReference, letterDate, petitionerFullName, respondentFullName);
         this.hearingDate = hearingDate;
-        this.husbandOrWife = husbandOrWife;
-        this.courtName = courtName;
         this.deadlineToContactCourtBy = deadlineToContactCourtBy;
         this.costClaimGranted = costClaimGranted;
         this.addressee = addressee;
