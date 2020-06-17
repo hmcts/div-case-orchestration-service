@@ -24,6 +24,7 @@ import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -68,12 +69,12 @@ public class AOSPackOfflineAnswersInputTest {
     private static final String LINE_1 = "AddyLine1";
     private static final String LINE_2 = "AddyLine2";
     private static final String LINE_3 = "AddyLine3";
-    private static final String ADR_COUNTY = "County";
-    private static final String ADR_COUNTRY = "Country";
-    private static final String ADR_TOWN = "PostTown";
-    private static final String ADR_POSTCODE = "Postcode";
-    private static final String CO_RESP = "CoResp-";
-    private static final String SOL = "Sol-";
+    private static final String ADY_COUNTY = "County";
+    private static final String ADY = "Country";
+    private static final String ADY_TOWN = "PostTown";
+    private static final String ADY_POSTCODE = "Postcode";
+    private static final String CO_RESP_PREFIX = "CoResp-";
+    private static final String SOLICITOR_PREFIX = "Sol-";
 
     @Autowired
     private MockMvc mockMvc;
@@ -160,8 +161,8 @@ public class AOSPackOfflineAnswersInputTest {
 
     @Test
     public void shouldReturnDerivedSolicitorAddress_ForRepresentedCoRespondent() throws Exception {
-        String derivedAddress = expectedDerivedAddress(CO_RESP, LINE_1, LINE_2, LINE_3,
-            ADR_COUNTY, ADR_COUNTRY, ADR_TOWN, ADR_POSTCODE);
+        String derivedAddress = expectedDerivedAddress(CO_RESP_PREFIX, LINE_1, LINE_2, LINE_3,
+            ADY_COUNTY, ADY, ADY_TOWN, ADY_POSTCODE);
         addDataForRepresentedCoRespondentToCallbackRequest(ccdCallbackRequest);
 
         mockMvc.perform(post("/processAosOfflineAnswers/parties/{party}", CO_RESPONDENT.getDescription())
@@ -178,8 +179,8 @@ public class AOSPackOfflineAnswersInputTest {
 
     @Test
     public void shouldReturnDerivedCoRespondentAddress_ForNonRepresentedCoRespondent() throws Exception {
-        String derivedAddress = expectedDerivedAddress(SOL, LINE_1, LINE_2, LINE_3,
-            ADR_COUNTY, ADR_COUNTRY, ADR_TOWN, ADR_POSTCODE);
+        String derivedAddress = expectedDerivedAddress(SOLICITOR_PREFIX, LINE_1, LINE_2, LINE_3,
+            ADY_COUNTY, ADY, ADY_TOWN, ADY_POSTCODE);
         addDataForNonRepresentedCoRespondentToCallbackRequest(ccdCallbackRequest);
 
         mockMvc.perform(post("/processAosOfflineAnswers/parties/{party}", CO_RESPONDENT.getDescription())
@@ -194,16 +195,31 @@ public class AOSPackOfflineAnswersInputTest {
             )));
     }
 
+    @Test
+    public void shouldReturnEmptyDerivedCoRespondentAddress_WhenInvalidDataIsProvided() throws Exception {
+        ccdCallbackRequest.getCaseDetails().getCaseData().put(CO_RESPONDENT_REPRESENTED, YES_VALUE);
+
+        mockMvc.perform(post("/processAosOfflineAnswers/parties/{party}", CO_RESPONDENT.getDescription())
+            .contentType(APPLICATION_JSON)
+            .content(convertObjectToJsonString(ccdCallbackRequest)))
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(
+                isJson(),
+                hasJsonPath("$.data.CoRespondentSolicitorRepresented", is(YES_VALUE)),
+                hasJsonPath("$.data.DerivedCoRespondentSolicitorAddr", is(nullValue()))
+            )));
+    }
+
     private void addDataForRepresentedCoRespondentToCallbackRequest(CcdCallbackRequest ccdCallbackRequest) {
         Map<String, Object> coRespondentAddress = new HashMap<String, Object>() {
             {
-                put(ADDRESS_LINE_1, appendPrefix(CO_RESP, LINE_1));
-                put(ADDRESS_LINE_2, appendPrefix(CO_RESP, LINE_2));
-                put(ADDRESS_LINE_3, appendPrefix(CO_RESP, LINE_3));
-                put(COUNTY, appendPrefix(CO_RESP, ADR_COUNTY));
-                put(COUNTRY, appendPrefix(CO_RESP, ADR_COUNTRY));
-                put(POST_TOWN, appendPrefix(CO_RESP, ADR_TOWN));
-                put(POST_CODE, appendPrefix(CO_RESP, ADR_POSTCODE));
+                put(ADDRESS_LINE_1, prependPrefix(CO_RESP_PREFIX, LINE_1));
+                put(ADDRESS_LINE_2, prependPrefix(CO_RESP_PREFIX, LINE_2));
+                put(ADDRESS_LINE_3, prependPrefix(CO_RESP_PREFIX, LINE_3));
+                put(COUNTY, prependPrefix(CO_RESP_PREFIX, ADY_COUNTY));
+                put(COUNTRY, prependPrefix(CO_RESP_PREFIX, ADY));
+                put(POST_TOWN, prependPrefix(CO_RESP_PREFIX, ADY_TOWN));
+                put(POST_CODE, prependPrefix(CO_RESP_PREFIX, ADY_POSTCODE));
             }
         };
         ccdCallbackRequest.getCaseDetails().getCaseData().put(D8_CO_RESPONDENT_SOLICITOR_ADDRESS, coRespondentAddress);
@@ -213,13 +229,13 @@ public class AOSPackOfflineAnswersInputTest {
     private void addDataForNonRepresentedCoRespondentToCallbackRequest(CcdCallbackRequest ccdCallbackRequest) {
         Map<String, Object> coRespondentSolicitorAddress = new HashMap<String, Object>() {
             {
-                put(ADDRESS_LINE_1, appendPrefix(SOL, LINE_1));
-                put(ADDRESS_LINE_2, appendPrefix(SOL, LINE_2));
-                put(ADDRESS_LINE_3, appendPrefix(SOL, LINE_3));
-                put(COUNTY, appendPrefix(SOL, ADR_COUNTY));
-                put(COUNTRY, appendPrefix(SOL, ADR_COUNTRY));
-                put(POST_TOWN, appendPrefix(SOL, ADR_TOWN));
-                put(POST_CODE, appendPrefix(SOL, ADR_POSTCODE));
+                put(ADDRESS_LINE_1, prependPrefix(SOLICITOR_PREFIX, LINE_1));
+                put(ADDRESS_LINE_2, prependPrefix(SOLICITOR_PREFIX, LINE_2));
+                put(ADDRESS_LINE_3, prependPrefix(SOLICITOR_PREFIX, LINE_3));
+                put(COUNTY, prependPrefix(SOLICITOR_PREFIX, ADY_COUNTY));
+                put(COUNTRY, prependPrefix(SOLICITOR_PREFIX, ADY));
+                put(POST_TOWN, prependPrefix(SOLICITOR_PREFIX, ADY_TOWN));
+                put(POST_CODE, prependPrefix(SOLICITOR_PREFIX, ADY_POSTCODE));
             }
         };
 
@@ -227,14 +243,14 @@ public class AOSPackOfflineAnswersInputTest {
         ccdCallbackRequest.getCaseDetails().getCaseData().put(CO_RESPONDENT_REPRESENTED, NO_VALUE);
     }
 
-    private String appendPrefix(String prefix, String value) {
+    private String prependPrefix(String prefix, String value) {
         return prefix + value;
     }
 
     private String expectedDerivedAddress(String prefixValue, String... addressValues) {
         List<String> addressList = Arrays.asList(addressValues)
             .stream()
-            .map(addressItem -> appendPrefix(prefixValue, addressItem))
+            .map(addressItem -> prependPrefix(prefixValue, addressItem))
             .collect(Collectors.toList());
 
         return String.join("\n", addressList);
