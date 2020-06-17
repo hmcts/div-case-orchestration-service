@@ -15,7 +15,6 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Map;
 
-// TODO: split those into well defined/reusable tasks instead of "common" methods
 @Component
 @Slf4j
 public class TaskCommons {

@@ -42,8 +42,6 @@ public class TestConstants {
     public static final String TEST_RESP_SOLICITOR_NAME = "Respondent Solicitor name";
     public static final String TEST_RESP_SOLICITOR_EMAIL = "testRespondentSolicitor@email.com";
     public static final String TEST_SERVICE_TOKEN = "testServiceToken";
-    public static final String TEST_PETITIONER_FIRST_NAME = "First";
-    public static final String TEST_PETITIONER_LAST_NAME = "Last";
     public static final String TEST_FIRST_NAME = "First";
     public static final String TEST_LAST_NAME = "Last";
     public static final String TEST_PETITIONER_EMAIL = "testPetitioner@email.com";
@@ -56,8 +54,6 @@ public class TestConstants {
     public static final String TEST_WELSH_MALE_GENDER_IN_RELATION = "gŵr";
     public static final String TEST_INFERRED_GENDER = "female";
     public static final String TEST_INFERRED_MALE_GENDER = "male";
-    public static final String TEST_RESPONDENT_FIRST_NAME = "First";
-    public static final String TEST_RESPONDENT_LAST_NAME = "Last";
     public static final String TEST_RESPONDENT_EMAIL = "testRespondent@email.com";
     public static final String TEST_RESPONDENT_SOLICITOR_EMAIL = "testRespondentSolicitor@example.com";
     public static final String TEST_REASON_ADULTERY = "adultery";
@@ -86,4 +82,19 @@ public class TestConstants {
     public static final String AUTH_CLIENT_ID = "authClientId";
     public static final String AUTH_CLIENT_SECRET = "authClientSecret";
     public static final String AUTH_REDIRECT_URL = "authRedirectUrl";
+    public static final String TEST_D8_DERIVED_3RD_PARTY_ADDRESS = "456 CoRespondent Str\nCoRespondent\nCounty\nRE5 P0N";
+    public static final String TEST_D8_CASE_REFERENCE = "LV17D80102";
+    public static final String TEST_CO_RESPONDENT_SOLICITOR_NAME = "CoResp Solicitor";
+    public static final String TEST_CO_RESPONDENT_SOLICITOR_ADDRESS = "789 CoRespondent Solicitor Str\nCoRespondent\nCounty\nRE5 P0N";
+
+    public static final String TEST_PETITIONER_FIRST_NAME = "Clark";
+    public static final String TEST_PETITIONER_LAST_NAME = "Kent";
+    public static final String TEST_PETITIONER_FULL_NAME = TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME;
+    public static final String TEST_RESPONDENT_FIRST_NAME = "Diana";
+    public static final String TEST_RESPONDENT_LAST_NAME = "Prince";
+    public static final String TEST_RESPONDENTS_FULL_NAME = TEST_RESPONDENT_FIRST_NAME + " " + TEST_RESPONDENT_LAST_NAME;
+    public static final String TEST_CO_RESPONDENTS_FIRST_NAME = "Bruce";
+    public static final String TEST_CO_RESPONDENTS_LAST_NAME = "Wayne";
+    public static final String TEST_CO_RESPONDENTS_FULL_NAME = TEST_CO_RESPONDENTS_FIRST_NAME + " " + TEST_CO_RESPONDENTS_LAST_NAME;
+
 }

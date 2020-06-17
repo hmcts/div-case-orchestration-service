@@ -250,9 +250,9 @@ public class CallbackControllerTest {
         final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
         ccdCallbackRequest.setCaseDetails(caseDetails);
 
-        when(caseOrchestrationService.sendDnPronouncedNotificationEmail(ccdCallbackRequest)).thenReturn(caseData);
+        when(caseOrchestrationService.sendDnPronouncedNotification(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(caseData);
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.dnPronounced(ccdCallbackRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.dnPronounced(AUTH_TOKEN, ccdCallbackRequest);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 

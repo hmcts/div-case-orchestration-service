@@ -110,11 +110,22 @@ public class CallbackController {
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> dnPronounced(
+        @RequestHeader(value = AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        caseOrchestrationService.sendDnPronouncedNotificationEmail(ccdCallbackRequest);
-        return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .data(ccdCallbackRequest.getCaseDetails().getCaseData())
-            .build());
+
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            callbackResponseBuilder.data(caseOrchestrationService.sendDnPronouncedNotification(ccdCallbackRequest, authorizationToken));
+            log.info("DN pronounced for case ID: {}.", caseId);
+        } catch (WorkflowException exception) {
+            log.error("DN pronounced handling has failed for case ID: {}", caseId, exception);
+            callbackResponseBuilder.errors(singletonList(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
     @PostMapping(path = "/clarification-submitted", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)

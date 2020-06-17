@@ -23,6 +23,7 @@ import java.util.Map;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -30,14 +31,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskTestHelper.createRandomGeneratedDocument;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BasePayloadSpecificDocumentGenerationTaskTest {
 
     private static final String TEST_TEMPLATE_ID = "TEST_TEMPLATE_ID";
+    private static final String TEST_DOCUMENT_TYPE = "TEST_DOCUMENT_TYPE";
 
     @Mock
-    private CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService;
+    protected CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService;
 
     @Mock
     private PdfDocumentGenerationService pdfDocumentGenerationService;
@@ -48,16 +51,17 @@ public class BasePayloadSpecificDocumentGenerationTaskTest {
     @Captor
     private ArgumentCaptor<List<GeneratedDocumentInfo>> newDocumentsCaptor;
 
-    private DocmosisTemplateVars testDocmosisTemplateVars;
     private GeneratedDocumentInfo newGeneratedDocument;
+    private DocmosisTemplateVars testDocmosisTemplateVars;
     private Map<String, Object> modifiedCaseData;
     private DefaultTaskContext taskContext;
 
     @Before
     public void setUp() {
         testDocmosisTemplateVars = new DocmosisTemplateVars();
-        newGeneratedDocument = GeneratedDocumentInfo.builder().build();
-        when(pdfDocumentGenerationService.generatePdf(any(), any(), any())).thenReturn(newGeneratedDocument);
+
+        newGeneratedDocument = createRandomGeneratedDocument();
+        when(pdfDocumentGenerationService.generatePdf(any(DocmosisTemplateVars.class), any(), eq(AUTH_TOKEN))).thenReturn(newGeneratedDocument);
 
         modifiedCaseData = Collections.singletonMap("modifiedKey", "modifiedValue");
         when(ccdUtil.addNewDocumentsToCaseData(any(), any())).thenReturn(modifiedCaseData);
@@ -75,13 +79,8 @@ public class BasePayloadSpecificDocumentGenerationTaskTest {
                 }
 
                 @Override
-                protected GeneratedDocumentInfo populateMetadataForGeneratedDocument(GeneratedDocumentInfo documentInfo) {
-                    return documentInfo;
-                }
-
-                @Override
                 protected String getDocumentType() {
-                    return null;
+                    return TEST_DOCUMENT_TYPE;
                 }
 
                 @Override
@@ -94,13 +93,33 @@ public class BasePayloadSpecificDocumentGenerationTaskTest {
         Map<String, Object> incomingCaseData = Collections.singletonMap("testKey", "testValue");
         Map<String, Object> returnedCaseData = testDocGenerationTask.execute(taskContext, incomingCaseData);
 
-        assertThat(returnedCaseData, equalTo(modifiedCaseData));
-        verify(pdfDocumentGenerationService).generatePdf(testDocmosisTemplateVars, TEST_TEMPLATE_ID, AUTH_TOKEN);
-        verify(ccdUtil).addNewDocumentsToCaseData(eq(incomingCaseData), newDocumentsCaptor.capture());
-        List<GeneratedDocumentInfo> newDocumentsToAdd = newDocumentsCaptor.getValue();
-        assertThat(newDocumentsToAdd, hasSize(1));
-        assertThat(newDocumentsToAdd.get(0), is(newGeneratedDocument));
+        runCommonVerifications(incomingCaseData, returnedCaseData, TEST_DOCUMENT_TYPE, TEST_TEMPLATE_ID, testDocmosisTemplateVars);
+    }
 
+    protected void runCommonVerifications(Map<String, Object> expectedIncomingCaseData,
+                                          Map<String, Object> returnedCaseData,
+                                          String expectedDocumentType,
+                                          String expectedTemplateId,
+                                          DocmosisTemplateVars expectedDocmosisTemplateVars) {
+        assertThat(returnedCaseData, equalTo(modifiedCaseData));
+        verifyNewDocumentWasAddedToCaseData(expectedIncomingCaseData, expectedDocumentType);
+        verifyPdfDocumentGenerationCallIsCorrect(expectedTemplateId, expectedDocmosisTemplateVars);
+    }
+
+    private void verifyNewDocumentWasAddedToCaseData(Map<String, Object> expectedIncomingCaseData, String expectedDocumentType) {
+        verify(ccdUtil).addNewDocumentsToCaseData(eq(expectedIncomingCaseData), newDocumentsCaptor.capture());
+        List<GeneratedDocumentInfo> newDocumentInfoList = newDocumentsCaptor.getValue();
+        assertThat(newDocumentInfoList, hasSize(1));
+        GeneratedDocumentInfo generatedDocumentInfo = newDocumentInfoList.get(0);
+        assertThat(generatedDocumentInfo.getDocumentType(), is(expectedDocumentType));
+        assertThat(generatedDocumentInfo.getFileName(), is(newGeneratedDocument.getFileName()));
+    }
+
+    private void verifyPdfDocumentGenerationCallIsCorrect(String expectedTemplateId, DocmosisTemplateVars expectedDocmosisTemplateVars) {
+        final ArgumentCaptor<DocmosisTemplateVars> docmosisTemplateVarsCaptor = ArgumentCaptor.forClass(DocmosisTemplateVars.class);
+        verify(pdfDocumentGenerationService).generatePdf(docmosisTemplateVarsCaptor.capture(), eq(expectedTemplateId), eq(AUTH_TOKEN));
+        final DocmosisTemplateVars docmosisTemplateVars = docmosisTemplateVarsCaptor.getValue();
+        assertEquals(expectedDocmosisTemplateVars, docmosisTemplateVars);
     }
 
 }

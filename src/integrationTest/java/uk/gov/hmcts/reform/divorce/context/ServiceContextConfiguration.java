@@ -64,11 +64,11 @@ public class ServiceContextConfiguration {
 
     @Bean("bulkScanValidatorTokenGenerator")
     public AuthTokenGenerator bulkScanAuthTokenGenerator(
-        @Value("${auth.provider.ccdsubmission.client.key}") final String secret,//TODO - possibly remove this
+        @Value("${auth.provider.ccdsubmission.client.key}") final String secret,
         @Value("${auth.provider.bulkscan.validate.microservice}") final String microService,
         @Value("${idam.s2s-auth.url}") final String s2sUrl
     ) {
-        //It seems this service doesn't use one time password - TODO confirm
+        //It seems this service doesn't use one time password
         final ServiceAuthorisationApi serviceAuthorisationApi = Feign.builder()
             .encoder(new JacksonEncoder())
             .contract(new SpringMvcContract())

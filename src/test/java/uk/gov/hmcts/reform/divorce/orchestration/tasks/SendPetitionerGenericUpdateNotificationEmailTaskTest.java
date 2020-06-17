@@ -48,12 +48,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 
 @RunWith(SpringRunner.class)
-public class SendPetitionerGenericUpdateNotificationEmailTest {
+public class SendPetitionerGenericUpdateNotificationEmailTaskTest {
 
     @Mock EmailService emailService;
 
     @InjectMocks
-    SendPetitionerGenericUpdateNotificationEmail sendPetitionerGenericUpdateNotificationEmail;
+    SendPetitionerGenericUpdateNotificationEmailTask sendPetitionerGenericUpdateNotificationEmailTask;
 
     private Map<String, Object> testData;
     private TaskContext context;
@@ -76,7 +76,7 @@ public class SendPetitionerGenericUpdateNotificationEmailTest {
 
     @Test
     public void shouldNotCallEmailServiceForGenericUpdateIfPetitionerEmailDoesNotExist() throws TaskException {
-        sendPetitionerGenericUpdateNotificationEmail.execute(context, testData);
+        sendPetitionerGenericUpdateNotificationEmailTask.execute(context, testData);
 
         verifyZeroInteractions(emailService);
     }
@@ -90,7 +90,7 @@ public class SendPetitionerGenericUpdateNotificationEmailTest {
         expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_PETITIONER_LAST_NAME);
         expectedTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, D8_CASE_ID);
 
-        Map returnPayload = sendPetitionerGenericUpdateNotificationEmail.execute(context, testData);
+        Map returnPayload = sendPetitionerGenericUpdateNotificationEmailTask.execute(context, testData);
 
         assertEquals(testData, returnPayload);
 
@@ -118,7 +118,7 @@ public class SendPetitionerGenericUpdateNotificationEmailTest {
         expectedTemplateVars.put(NOTIFICATION_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
         expectedTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, UNFORMATTED_CASE_ID);
 
-        Map returnPayload = sendPetitionerGenericUpdateNotificationEmail.execute(context, testData);
+        Map returnPayload = sendPetitionerGenericUpdateNotificationEmailTask.execute(context, testData);
 
         assertEquals(testData, returnPayload);
 

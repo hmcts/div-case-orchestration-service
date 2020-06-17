@@ -22,7 +22,7 @@ public class FullNamesDataExtractor {
         public static final String RESPONDENT_SOLICITOR_NAME = OrchestrationConstants.D8_RESPONDENT_SOLICITOR_NAME;
         public static final String CO_RESPONDENT_FIRST_NAME = OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME;
         public static final String CO_RESPONDENT_LAST_NAME = OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME;
-        public static final String CO_RESPONDENT_SOLICITOR_NAME = "CoRespondentSolicitorName";
+        public static final String CO_RESPONDENT_SOLICITOR_NAME = OrchestrationConstants.CO_RESPONDENT_SOLICITOR_NAME;
     }
 
     public static String getPetitionerFullName(Map<String, Object> caseData) {
