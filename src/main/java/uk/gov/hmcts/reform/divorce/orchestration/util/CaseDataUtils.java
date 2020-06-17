@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -82,10 +83,10 @@ public class CaseDataUtils {
     public static String formatCaseIdToReferenceNumber(String referenceId) {
         try {
             return String.format("%s-%s-%s-%s",
-                    referenceId.substring(0, 4),
-                    referenceId.substring(4, 8),
-                    referenceId.substring(8, 12),
-                    referenceId.substring(12));
+                referenceId.substring(0, 4),
+                referenceId.substring(4, 8),
+                referenceId.substring(8, 12),
+                referenceId.substring(12));
         } catch (Exception exception) {
             log.warn("Error formatting case reference {}", referenceId);
             return referenceId;
@@ -193,18 +194,20 @@ public class CaseDataUtils {
             .orElse(LanguagePreference.ENGLISH);
     }
 
-    public static Map<String, Object> removeDocumentByDocumentType(Map<String, Object> caseData, String documentType) {
+    public static Map<String, Object> removeDocumentsByDocumentType(Map<String, Object> caseData, String ...documentTypes) {
         List<?> generatedDocuments = Optional.ofNullable(caseData.get(D8DOCUMENTS_GENERATED))
             .map(i -> (List<?>) i)
             .orElse(new ArrayList<>());
 
         Map<String, Object> newCaseData = new HashMap<>(caseData);
+        List<String> docTypesList = Arrays.asList(documentTypes);
+
         if (!generatedDocuments.isEmpty()) {
             List<?> filteredDocumentsList = generatedDocuments.stream()
                 .filter(item -> {
                     CollectionMember<Document> document = objectMapper.convertValue(item, new TypeReference<CollectionMember<Document>>() {
                     });
-                    return !documentType.equals(document.getValue().getDocumentType());
+                    return !docTypesList.contains(document.getValue().getDocumentType());
                 })
                 .collect(Collectors.toList());
 

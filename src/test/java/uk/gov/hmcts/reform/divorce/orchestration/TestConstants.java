@@ -19,6 +19,7 @@ public class TestConstants {
     public static final String TEST_CUSTOMER_FACING_NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE = "30 June 2020";
     public static final String TEST_USER_ID = "test.user.id";
     public static final String TEST_COURT = "serviceCentre";
+    public static final String TEST_COURT_ID = "birmingham";
     public static final String TEST_ERROR = "test.error";
     public static final String TEST_ERROR_CONTENT = "test.error.content";
     public static final String TEST_PIN_CODE = "test.pin.code";

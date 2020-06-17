@@ -1,0 +1,64 @@
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CoERespondentSolicitorCoverLetter;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoELetterDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
+
+import java.util.Map;
+
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.COE_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
+
+@Component
+public class CoERespondentSolicitorLetterGenerationTask extends BasePayloadSpecificDocumentGenerationTask {
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class FileMetadata {
+        public static final String TEMPLATE_ID = "FL-DIV-GNO-ENG-00370.docx";
+        public static final String DOCUMENT_TYPE = COE_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE;
+    }
+
+    public CoERespondentSolicitorLetterGenerationTask(
+        CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
+        PdfDocumentGenerationService pdfDocumentGenerationService,
+        CcdUtil ccdUtil) {
+        super(ctscContactDetailsDataProviderService, pdfDocumentGenerationService, ccdUtil);
+    }
+
+    @Override
+    protected DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) throws TaskException {
+        return CoERespondentSolicitorCoverLetter.builder()
+                .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
+                .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
+                .caseReference(getCaseId(context))
+                .letterDate(DatesDataExtractor.getLetterDate())
+                .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
+                .hearingDate(DatesDataExtractor.getHearingDate(caseData))
+                .costClaimGranted(CoELetterDataExtractor.isCostsClaimGranted(caseData))
+                .deadlineToContactCourtBy(DatesDataExtractor.getDeadlineToContactCourtBy(caseData))
+                .addressee(AddresseeDataExtractor.getRespondentSolicitor(caseData))
+                .solicitorReference(CoELetterDataExtractor.getSolicitorReference(caseData))
+                .build();
+    }
+
+    @Override
+    public String getTemplateId() {
+        return FileMetadata.TEMPLATE_ID;
+    }
+
+    @Override
+    public String getDocumentType() {
+        return FileMetadata.DOCUMENT_TYPE;
+    }
+}

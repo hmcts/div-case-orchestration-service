@@ -280,7 +280,7 @@ public class CaseDataUtilsTest {
             createCollectionMemberDocumentAsMap("testUrl", "myDocTypeY", "filename")
         ));
 
-        Map<String, Object> returnedCaseData = CaseDataUtils.removeDocumentByDocumentType(caseData, "myDocType");
+        Map<String, Object> returnedCaseData = CaseDataUtils.removeDocumentsByDocumentType(caseData, "myDocType");
 
         List<Map<String, Object>> documents = (List) returnedCaseData.get(D8DOCUMENTS_GENERATED);
         Map<String, Object> remainingDocument = (Map<String, Object>) documents.get(0).get(VALUE_KEY);
@@ -298,7 +298,7 @@ public class CaseDataUtilsTest {
             createCollectionMemberDocumentAsMap("testUrl", "myDocTypeZ", "filename")
         ));
 
-        Map<String, Object> returnedCaseData = CaseDataUtils.removeDocumentByDocumentType(caseData, "myDocType");
+        Map<String, Object> returnedCaseData = CaseDataUtils.removeDocumentsByDocumentType(caseData, "myDocType");
 
         List<Map<String, Object>> documents = (List) returnedCaseData.get(D8DOCUMENTS_GENERATED);
         Map<String, Object> firstDocument = (Map<String, Object>) documents.get(0).get(VALUE_KEY);
@@ -314,14 +314,14 @@ public class CaseDataUtilsTest {
         Map<String, Object> caseData =
             singletonMap(D8DOCUMENTS_GENERATED, asList(createCollectionMemberDocumentAsMap("testUrl", "myDocType", "filename")));
 
-        Map<String, Object> returnedCaseData = CaseDataUtils.removeDocumentByDocumentType(caseData, "myDocType");
+        Map<String, Object> returnedCaseData = CaseDataUtils.removeDocumentsByDocumentType(caseData, "myDocType");
 
         assertThat(returnedCaseData, not(hasKey(D8DOCUMENTS_GENERATED)));
     }
 
     @Test
     public void ensureDocumentArrayReturnsNullWhenThereAreNoIncomingDocuments() {
-        Map<String, Object> returnedCaseData = CaseDataUtils.removeDocumentByDocumentType(emptyMap(), "myDocType");
+        Map<String, Object> returnedCaseData = CaseDataUtils.removeDocumentsByDocumentType(emptyMap(), "myDocType");
 
         assertThat(returnedCaseData, not(hasKey(D8DOCUMENTS_GENERATED)));
     }
@@ -330,7 +330,7 @@ public class CaseDataUtilsTest {
     public void ensureDocumentArrayReturnsNull_WhenThereIsAnEmptyListOfIncomingDocuments() {
         Map<String, Object> caseData = singletonMap(D8DOCUMENTS_GENERATED, emptyList());
 
-        Map<String, ?> returnedCaseData = CaseDataUtils.removeDocumentByDocumentType(caseData, "myDocType");
+        Map<String, ?> returnedCaseData = CaseDataUtils.removeDocumentsByDocumentType(caseData, "myDocType");
 
         List<?> returnedGeneratedDocumentsList = (List<?>) returnedCaseData.get(D8DOCUMENTS_GENERATED);
         assertThat(returnedGeneratedDocumentsList, is(empty()));
