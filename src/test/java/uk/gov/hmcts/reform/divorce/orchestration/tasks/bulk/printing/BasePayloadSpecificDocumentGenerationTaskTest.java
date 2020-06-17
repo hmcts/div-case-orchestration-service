@@ -7,7 +7,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CoECoverLetter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
@@ -24,6 +23,7 @@ import java.util.Map;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -40,7 +40,7 @@ public class BasePayloadSpecificDocumentGenerationTaskTest {
     private static final String TEST_DOCUMENT_TYPE = "TEST_DOCUMENT_TYPE";
 
     @Mock
-    CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService;
+    protected CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService;
 
     @Mock
     private PdfDocumentGenerationService pdfDocumentGenerationService;
@@ -116,10 +116,10 @@ public class BasePayloadSpecificDocumentGenerationTaskTest {
     }
 
     private void verifyPdfDocumentGenerationCallIsCorrect(String expectedTemplateId, DocmosisTemplateVars expectedDocmosisTemplateVars) {
-        final ArgumentCaptor<DocmosisTemplateVars> docmosisTemplateVarsCaptor = ArgumentCaptor.forClass(CoECoverLetter.class);
+        final ArgumentCaptor<DocmosisTemplateVars> docmosisTemplateVarsCaptor = ArgumentCaptor.forClass(DocmosisTemplateVars.class);
         verify(pdfDocumentGenerationService).generatePdf(docmosisTemplateVarsCaptor.capture(), eq(expectedTemplateId), eq(AUTH_TOKEN));
         final DocmosisTemplateVars docmosisTemplateVars = docmosisTemplateVarsCaptor.getValue();
-        assertThat(docmosisTemplateVars, equalTo(expectedDocmosisTemplateVars));
+        assertEquals(expectedDocmosisTemplateVars, docmosisTemplateVars);
     }
 
 }
