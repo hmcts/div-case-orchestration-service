@@ -211,36 +211,29 @@ public class AOSPackOfflineAnswersInputTest {
     }
 
     private void addDataForRepresentedCoRespondentToCallbackRequest(CcdCallbackRequest ccdCallbackRequest) {
-        Map<String, Object> coRespondentAddress = new HashMap<String, Object>() {
-            {
-                put(ADDRESS_LINE_1, prependPrefix(CO_RESP_PREFIX, LINE_1));
-                put(ADDRESS_LINE_2, prependPrefix(CO_RESP_PREFIX, LINE_2));
-                put(ADDRESS_LINE_3, prependPrefix(CO_RESP_PREFIX, LINE_3));
-                put(COUNTY, prependPrefix(CO_RESP_PREFIX, ADY_COUNTY));
-                put(COUNTRY, prependPrefix(CO_RESP_PREFIX, ADY));
-                put(POST_TOWN, prependPrefix(CO_RESP_PREFIX, ADY_TOWN));
-                put(POST_CODE, prependPrefix(CO_RESP_PREFIX, ADY_POSTCODE));
-            }
-        };
+        Map<String, Object> coRespondentAddress = buildAddress(CO_RESP_PREFIX);
         ccdCallbackRequest.getCaseDetails().getCaseData().put(D8_CO_RESPONDENT_SOLICITOR_ADDRESS, coRespondentAddress);
         ccdCallbackRequest.getCaseDetails().getCaseData().put(CO_RESPONDENT_REPRESENTED, YES_VALUE);
     }
 
     private void addDataForNonRepresentedCoRespondentToCallbackRequest(CcdCallbackRequest ccdCallbackRequest) {
-        Map<String, Object> coRespondentSolicitorAddress = new HashMap<String, Object>() {
-            {
-                put(ADDRESS_LINE_1, prependPrefix(SOLICITOR_PREFIX, LINE_1));
-                put(ADDRESS_LINE_2, prependPrefix(SOLICITOR_PREFIX, LINE_2));
-                put(ADDRESS_LINE_3, prependPrefix(SOLICITOR_PREFIX, LINE_3));
-                put(COUNTY, prependPrefix(SOLICITOR_PREFIX, ADY_COUNTY));
-                put(COUNTRY, prependPrefix(SOLICITOR_PREFIX, ADY));
-                put(POST_TOWN, prependPrefix(SOLICITOR_PREFIX, ADY_TOWN));
-                put(POST_CODE, prependPrefix(SOLICITOR_PREFIX, ADY_POSTCODE));
-            }
-        };
-
+        Map<String, Object> coRespondentSolicitorAddress = buildAddress(SOLICITOR_PREFIX);
         ccdCallbackRequest.getCaseDetails().getCaseData().put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS, coRespondentSolicitorAddress);
         ccdCallbackRequest.getCaseDetails().getCaseData().put(CO_RESPONDENT_REPRESENTED, NO_VALUE);
+    }
+
+    private HashMap<String, Object> buildAddress(String prefix) {
+        return new HashMap<String, Object>() {
+            {
+                put(ADDRESS_LINE_1, prependPrefix(prefix, LINE_1));
+                put(ADDRESS_LINE_2, prependPrefix(prefix, LINE_2));
+                put(ADDRESS_LINE_3, prependPrefix(prefix, LINE_3));
+                put(COUNTY, prependPrefix(prefix, ADY_COUNTY));
+                put(COUNTRY, prependPrefix(prefix, ADY));
+                put(POST_TOWN, prependPrefix(prefix, ADY_TOWN));
+                put(POST_CODE, prependPrefix(prefix, ADY_POSTCODE));
+            }
+        };
     }
 
     private String prependPrefix(String prefix, String value) {

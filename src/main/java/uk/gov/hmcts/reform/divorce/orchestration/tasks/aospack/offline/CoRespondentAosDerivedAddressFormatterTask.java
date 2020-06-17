@@ -33,13 +33,13 @@ public class CoRespondentAosDerivedAddressFormatterTask implements Task<Map<Stri
 
     String formatDerivedCoRespondentSolicitorAddr(Map<String, Object> caseData) {
         return Optional.ofNullable((Map<String, Object>) caseData.get(D8_CO_RESPONDENT_SOLICITOR_ADDRESS))
-            .map(address -> LetterAddressHelper.formatAddressForLetterPrinting(address))
+            .map(LetterAddressHelper::formatAddressForLetterPrinting)
             .orElse(null);
     }
 
     String formatDerivedReasonForDivorceAdultery3rdAddress(Map<String, Object> caseData) {
         return Optional.ofNullable((Map<String, Object>) caseData.get(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS))
-            .map(address -> LetterAddressHelper.formatAddressForLetterPrinting(address))
+            .map(LetterAddressHelper::formatAddressForLetterPrinting)
             .orElse(null);
     }
 
