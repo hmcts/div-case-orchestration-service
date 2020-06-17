@@ -56,7 +56,7 @@ public class CmsClientSupport {
         final String searchUrl = cmsBaseUrl + CMS_URL_SEARCH;
         log.debug("About to call [{}], auth token [{}]", searchUrl, authToken);
 
-        // todo: cmsClient.searchCases is not used here the main reason is different domain objects CaseDetails and
+        // cmsClient.searchCases is not used here the main reason is different domain objects CaseDetails and
         // SearchResult are defined in the COS and CMS (references ccd-store-client)
         Response response = RestUtil.postToRestService(searchUrl,
                 buildCommonHeaders(HttpHeaders.AUTHORIZATION, authToken,
