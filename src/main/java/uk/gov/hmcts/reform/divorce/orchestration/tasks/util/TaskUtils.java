@@ -60,7 +60,6 @@ public class TaskUtils {
         if (isNullOrEmpty(caseId)) {
             throw buildTaskExceptionForMandatoryProperty(CASE_ID_JSON_KEY);
         }
-
         return caseId;
     }
 
