@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -22,6 +23,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -60,11 +62,12 @@ public class AosPackOfflineAnswersWorkflowTest {
 
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
 
-        // TODO use inorder
-        verify(formFieldValuesToCoreFieldsRelay, times(1)).execute(any(), eq(payload));
-        verify(respondentAosAnswersProcessor, times(1)).execute(any(), eq(payload));
+        InOrder inOrder = inOrder(formFieldValuesToCoreFieldsRelay, respondentAosAnswersProcessor, coRespondentAosDerivedAddressFormatter);
+        inOrder.verify(formFieldValuesToCoreFieldsRelay, times(1)).execute(any(), eq(payload));
+        inOrder.verify(respondentAosAnswersProcessor, times(1)).execute(any(), eq(payload));
+        inOrder.verify(coRespondentAosDerivedAddressFormatter, times(1)).execute(any(), anyMap());
+
         verify(coRespondentAosAnswersProcessor, never()).execute(any(), eq(payload));
-        verify(coRespondentAosDerivedAddressFormatter, times(1)).execute(any(), anyMap());
     }
 
     @Test
@@ -76,16 +79,16 @@ public class AosPackOfflineAnswersWorkflowTest {
         when(coRespondentAosAnswersProcessor.execute(any(), eq(payload))).thenReturn(returnedCaseData);
         when(coRespondentAosDerivedAddressFormatter.execute(any(), anyMap())).thenReturn(returnedCaseData);
 
-
         Map<String, Object> returnedPayload = classUnderTest.run(payload, CO_RESPONDENT);
 
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
 
-        // TODO use inorder
-        verify(formFieldValuesToCoreFieldsRelay, times(1)).execute(any(), eq(payload));
+        InOrder inOrder = inOrder(formFieldValuesToCoreFieldsRelay, coRespondentAosAnswersProcessor, coRespondentAosDerivedAddressFormatter);
+        inOrder.verify(formFieldValuesToCoreFieldsRelay, times(1)).execute(any(), eq(payload));
+        inOrder.verify(coRespondentAosAnswersProcessor, times(1)).execute(any(), eq(payload));
+        inOrder.verify(coRespondentAosDerivedAddressFormatter, times(1)).execute(any(), anyMap());
+
         verify(respondentAosAnswersProcessor, never()).execute(any(), any());
-        verify(coRespondentAosAnswersProcessor, times(1)).execute(any(), eq(payload));
-        verify(coRespondentAosDerivedAddressFormatter, times(1)).execute(any(), anyMap());
     }
 
     @Test
@@ -100,12 +103,12 @@ public class AosPackOfflineAnswersWorkflowTest {
 
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
 
+        InOrder inOrder = inOrder(formFieldValuesToCoreFieldsRelay, coRespondentAosAnswersProcessor, coRespondentAosDerivedAddressFormatter);
+        inOrder.verify(formFieldValuesToCoreFieldsRelay, times(1)).execute(any(), anyMap());
+        inOrder.verify(coRespondentAosAnswersProcessor, times(1)).execute(any(), anyMap());
+        inOrder.verify(coRespondentAosDerivedAddressFormatter, times(1)).execute(any(), anyMap());
 
-        // TODO use inorder
-        verify(formFieldValuesToCoreFieldsRelay, times(1)).execute(any(), anyMap());
         verify(respondentAosAnswersProcessor, never()).execute(any(), anyMap());
-        verify(coRespondentAosAnswersProcessor, times(1)).execute(any(), anyMap());
-        verify(coRespondentAosDerivedAddressFormatter, times(1)).execute(any(), anyMap());
     }
 
 }

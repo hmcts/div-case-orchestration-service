@@ -15,7 +15,11 @@ public class CoRespondentAosAnswersProcessorTask implements Task<Map<String, Obj
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        caseData.put(RECEIVED_AOS_FROM_CO_RESP, YES_VALUE); // TODO refactor, use own method to extract data properly
+        addNewItemToCaseData(caseData, RECEIVED_AOS_FROM_CO_RESP, YES_VALUE);
         return caseData;
+    }
+
+    void addNewItemToCaseData(Map<String, Object> caseData, String name, Object value) {
+        caseData.put(name, value);
     }
 }
