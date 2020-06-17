@@ -66,4 +66,5 @@ public class DaGrantedLetterGenerationTask extends BasePayloadSpecificDocumentGe
 
         return AddresseeDataExtractor.getRespondent(caseData);
     }
+
 }

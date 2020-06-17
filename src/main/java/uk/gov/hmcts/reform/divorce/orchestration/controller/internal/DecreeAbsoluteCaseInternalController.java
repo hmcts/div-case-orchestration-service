@@ -21,10 +21,6 @@ public class DecreeAbsoluteCaseInternalController {
 
     private final DecreeAbsoluteService decreeAbsoluteService;
 
-    //TODO - ideally, we should be calling the job, not the service - otherwise we can't guarantee the job works.
-    // Note: if we call the job here and an assumed JobExecutionContext is required to be injected which might not be
-    // as useful as we thought
-
     @PostMapping(path = "/cases/da/make-eligible")
     @ApiOperation(value = "Make cases eligible for Decree Absolute")
     @ApiResponses(value = {

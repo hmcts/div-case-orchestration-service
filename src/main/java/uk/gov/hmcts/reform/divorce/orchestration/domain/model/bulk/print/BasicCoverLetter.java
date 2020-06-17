@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import uk.gov.hmcts.reform.bsp.common.model.document.Addressee;
 import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
 
@@ -13,7 +14,9 @@ import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
+@ToString(callSuper = true)
 public class BasicCoverLetter extends DocmosisTemplateVars {
+
     @JsonProperty("addressee")
     private Addressee addressee;
 
