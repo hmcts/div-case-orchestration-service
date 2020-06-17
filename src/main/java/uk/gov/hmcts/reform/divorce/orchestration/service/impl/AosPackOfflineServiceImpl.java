@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty;
@@ -19,13 +19,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.Divor
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class AosPackOfflineServiceImpl implements AosPackOfflineService {
 
-    @Autowired
-    private IssueAosPackOfflineWorkflow issueAosPackOfflineWorkflow;
-
-    @Autowired
-    private AosPackOfflineAnswersWorkflow aosPackOfflineAnswersWorkflow;
+    private final IssueAosPackOfflineWorkflow issueAosPackOfflineWorkflow;
+    private final AosPackOfflineAnswersWorkflow aosPackOfflineAnswersWorkflow;
 
     @Override
     public Map<String, Object> issueAosPackOffline(String authToken, CaseDetails caseDetails, DivorceParty divorceParty)
