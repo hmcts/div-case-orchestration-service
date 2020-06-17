@@ -287,7 +287,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
     }
 
     private Map<String, Object> buildCaseDataWithCoRespondentAsAddressee() {
-        Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithCoRespondentAsAddressee();
+        Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithCoRespondent();
         caseData.put(D8DOCUMENTS_GENERATED, asList(
             createCollectionMemberDocumentAsMap("http://dn-pronounced.com", COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_TEMPLATE_ID)
         ));
