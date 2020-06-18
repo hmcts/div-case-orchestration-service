@@ -21,10 +21,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderCo
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
@@ -72,9 +70,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
     }
 
     private List<String> getDocumentTypesToPrint(String coverLetterDocumentType, String caseId) {
-        List<String> documentTypesToPrint = Optional.ofNullable(coverLetterDocumentType).isPresent()
-            ? asList(coverLetterDocumentType, COSTS_ORDER_DOCUMENT_TYPE)
-            : singletonList(COSTS_ORDER_DOCUMENT_TYPE);
+        List<String> documentTypesToPrint = asList(coverLetterDocumentType, COSTS_ORDER_DOCUMENT_TYPE);
 
         log.info("Case {} has {} documents to print: {}", caseId, documentTypesToPrint.size(), documentTypesToPrint);
 
@@ -140,12 +136,8 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
     }
 
     private String coverLetterDocumentType(Map<String, Object> caseData) {
-        if (isPaperUpdateEnabled() && isCostsClaimGranted(caseData)) {
-            return isCoRespondentRepresented(caseData)
-                ? costOrderCoRespondentSolicitorCoverLetterGenerationTask.getDocumentType()
-                : costOrderCoRespondentCoverLetterGenerationTask.getDocumentType();
-        }
-
-        return null;
+        return isCoRespondentRepresented(caseData)
+            ? costOrderCoRespondentSolicitorCoverLetterGenerationTask.getDocumentType()
+            : costOrderCoRespondentCoverLetterGenerationTask.getDocumentType();
     }
 }
