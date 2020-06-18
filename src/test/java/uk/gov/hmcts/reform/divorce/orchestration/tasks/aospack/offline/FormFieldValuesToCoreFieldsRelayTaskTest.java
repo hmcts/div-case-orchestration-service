@@ -12,7 +12,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 
-public class FormFieldValuesToCoreFieldsRelayTest {
+public class FormFieldValuesToCoreFieldsRelayTaskTest {
 
     private static final String RESP_AOS_2_YR_CONSENT = "RespAOS2yrConsent";
     private static final String RESP_AOS_ADULTERY = "RespAOSAdultery";
@@ -22,11 +22,11 @@ public class FormFieldValuesToCoreFieldsRelayTest {
 
     private static final String TEST_VALUE = "testValue";
 
-    private FormFieldValuesToCoreFieldsRelay classUnderTest;
+    private FormFieldValuesToCoreFieldsRelayTask classUnderTest;
 
     @Before
     public void setUp() {
-        classUnderTest = new FormFieldValuesToCoreFieldsRelay();
+        classUnderTest = new FormFieldValuesToCoreFieldsRelayTask();
     }
 
     @Test

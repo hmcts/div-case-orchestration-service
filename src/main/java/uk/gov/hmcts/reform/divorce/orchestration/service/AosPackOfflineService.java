@@ -10,6 +10,6 @@ public interface AosPackOfflineService {
     Map<String, Object> issueAosPackOffline(String authToken, CaseDetails caseDetails, DivorceParty divorceParty)
         throws CaseOrchestrationServiceException;
 
-    Map<String, Object> processAosPackOfflineAnswers(Map<String, Object> incomingPayload, DivorceParty respondent)
+    Map<String, Object> processAosPackOfflineAnswers(CaseDetails caseDetails, DivorceParty respondent)
         throws CaseOrchestrationServiceException;
 }
