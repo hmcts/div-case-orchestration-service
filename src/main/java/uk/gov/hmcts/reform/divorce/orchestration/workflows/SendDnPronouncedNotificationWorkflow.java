@@ -21,8 +21,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderCo
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
@@ -54,6 +56,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
         String caseId = caseDetails.getCaseId();
         Map<String, Object> caseData = caseDetails.getCaseData();
+        final String documentType = coverLetterDocumentType(caseData);
 
         Map<String, Object> returnCaseData = this.execute(
             getTasks(caseDetails),
@@ -62,17 +65,20 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
             ImmutablePair.of(BULK_PRINT_LETTER_TYPE, COST_ORDER_OFFLINE_PACK_CO_RESPONDENT),
-            ImmutablePair.of(DOCUMENT_TYPES_TO_PRINT, getDocumentTypesToPrint(caseData))
+            ImmutablePair.of(DOCUMENT_TYPES_TO_PRINT, getDocumentTypesToPrint(documentType, caseId))
         );
 
-        return removeDocumentsByDocumentType(returnCaseData, coverLetterDocument(returnCaseData));
+        return removeDocumentsByDocumentType(returnCaseData, documentType);
     }
 
-    private List<String> getDocumentTypesToPrint(Map<String, Object> caseData) {
-        return asList(
-            coverLetterDocument(caseData),
-            COSTS_ORDER_DOCUMENT_TYPE
-        );
+    private List<String> getDocumentTypesToPrint(String coverLetterDocumentType, String caseId) {
+        List<String> documentTypesToPrint = Optional.ofNullable(coverLetterDocumentType).isPresent()
+            ? asList(coverLetterDocumentType, COSTS_ORDER_DOCUMENT_TYPE)
+            : singletonList(COSTS_ORDER_DOCUMENT_TYPE);
+
+        log.info("Case {} has {} documents to print: {}", caseId, documentTypesToPrint.size(), documentTypesToPrint);
+
+        return documentTypesToPrint;
     }
 
     private Task<Map<String, Object>>[] getTasks(CaseDetails caseDetails) {
@@ -133,9 +139,13 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         return featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE);
     }
 
-    private String coverLetterDocument(Map<String, Object> caseData) {
-        return isCoRespondentRepresented(caseData)
-            ? costOrderCoRespondentSolicitorCoverLetterGenerationTask.getDocumentType()
-            : costOrderCoRespondentCoverLetterGenerationTask.getDocumentType();
+    private String coverLetterDocumentType(Map<String, Object> caseData) {
+        if (isPaperUpdateEnabled() && isCostsClaimGranted(caseData)) {
+            return isCoRespondentRepresented(caseData)
+                ? costOrderCoRespondentSolicitorCoverLetterGenerationTask.getDocumentType()
+                : costOrderCoRespondentCoverLetterGenerationTask.getDocumentType();
+        }
+
+        return null;
     }
 }
