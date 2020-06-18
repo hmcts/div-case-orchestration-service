@@ -104,12 +104,12 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
                     tasks.add(costOrderCoRespondentCoverLetterGenerationTask);
 
                 }
-                log.info("CaseID: {} - Documents sent to bulk print", caseDetails.getCaseId());
+                log.info("CaseID: {} - Add tasks to send documents to bulk print", caseDetails.getCaseId());
                 tasks.add(fetchPrintDocsFromDmStore);
                 tasks.add(bulkPrinterTask);
 
             } else {
-                log.info("CaseID: {} - Cost claim not granted. Nothing was sent to bulk print", caseDetails.getCaseId());
+                log.info("CaseID: {} - Cost claim not granted. Nothing will be sent to bulk print", caseDetails.getCaseId());
             }
         } else {
             log.info("Features.PAPER_UPDATE = off. Nothing was sent to bulk print");

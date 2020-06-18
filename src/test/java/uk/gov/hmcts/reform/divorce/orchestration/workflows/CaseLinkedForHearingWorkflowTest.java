@@ -28,10 +28,14 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoEResponde
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyMap;
@@ -46,10 +50,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.CERTIFICATE_OF_ENTITLEMENT_LETTER_CO_RESPONDENT_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.COE_RESPONDENT_LETTER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.COE_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_COE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
@@ -105,8 +111,11 @@ public class CaseLinkedForHearingWorkflowTest {
         when(sendRespondentCoENotificationEmailTask.execute(notNull(), eq(payload))).thenReturn(payload);
         when(sendCoRespondentGenericUpdateNotificationEmailTask.execute(notNull(), eq(payload))).thenReturn(payload);
         when(coERespondentLetterGenerationTask.execute(isNotNull(), eq(payload))).thenReturn(payload);
+        when(coERespondentLetterGenerationTask.getDocumentType()).thenReturn(COE_RESPONDENT_LETTER_DOCUMENT_TYPE);
         when(coERespondentSolicitorLetterGenerationTask.execute(isNotNull(), eq(payload))).thenReturn(payload);
+        when(coERespondentSolicitorLetterGenerationTask.getDocumentType()).thenReturn(COE_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE);
         when(coECoRespondentCoverLetterGenerationTask.execute(notNull(), eq(payload))).thenReturn(payload);
+        when(coECoRespondentCoverLetterGenerationTask.getDocumentType()).thenReturn(CERTIFICATE_OF_ENTITLEMENT_LETTER_CO_RESPONDENT_DOCUMENT_TYPE);
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
         when(fetchPrintDocsFromDmStore.execute(notNull(), eq(payload))).thenReturn(payload);
         when(bulkPrinterTask.execute(notNull(), eq(payload))).thenReturn(payload);
@@ -364,9 +373,7 @@ public class CaseLinkedForHearingWorkflowTest {
 
         when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(casePayload)).thenReturn(true);
         when(sendPetitionerCoENotificationEmailTask.execute(notNull(), eq(casePayload))).thenReturn(casePayload);
-        when(coERespondentLetterGenerationTask.getDocumentType()).thenReturn(COE_RESPONDENT_LETTER_DOCUMENT_TYPE);
         when(coERespondentLetterGenerationTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
-        when(coECoRespondentCoverLetterGenerationTask.getDocumentType()).thenReturn(CERTIFICATE_OF_ENTITLEMENT_LETTER_CO_RESPONDENT_DOCUMENT_TYPE);
         when(coECoRespondentCoverLetterGenerationTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
         when(fetchPrintDocsFromDmStore.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
         when(bulkPrinterTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
@@ -408,6 +415,133 @@ public class CaseLinkedForHearingWorkflowTest {
         verifyNotCalled(bulkPrinterTask);
 
         assertThat(contextCaptor.getValue().getTransientObject(CASE_ID_JSON_KEY), is(equalTo(TEST_CASE_ID)));
+    }
+
+    @Test
+    public void doNotAddToDocumentTypesToPrintWhenRespondentIsUsingDigitalChannelAndCoRespondentIsNotNamed() {
+
+        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(false);
+
+        CaseDetails caseDetails = createCaseDetails(payload,
+            true,false, false,false);
+
+        List<String> returnedDocumentTypes = caseLinkedForHearingWorkflow.getDocumentTypesToPrint(caseDetails);
+
+        assertThat(returnedDocumentTypes, not(hasItems(
+            DOCUMENT_TYPE_COE,
+            COE_RESPONDENT_LETTER_DOCUMENT_TYPE
+        )));
+    }
+
+    @Test
+    public void doNotAddToDocumentTypesToPrintWhenRespondentIsRepresentedAndIsUsingDigitalChannelAndCoRespondentIsNotNamed() {
+
+        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(false);
+
+        CaseDetails caseDetails = createCaseDetails(payload,
+            true,true, false,false);
+
+        List<String> returnedDocumentTypes = caseLinkedForHearingWorkflow.getDocumentTypesToPrint(caseDetails);
+
+        assertThat(returnedDocumentTypes, not(hasItems(
+            DOCUMENT_TYPE_COE,
+            COE_RESPONDENT_LETTER_DOCUMENT_TYPE,
+            COE_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE
+        )));
+    }
+
+    @Test
+    public void doNotAddToDocumentTypesToPrintWhenCoRespondentIsUsingDigitalChannel() {
+
+        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(true);
+
+        CaseDetails caseDetails = createCaseDetails(payload,
+            true,false, true,true);
+
+        List<String> returnedDocumentTypes = caseLinkedForHearingWorkflow.getDocumentTypesToPrint(caseDetails);
+
+        assertThat(returnedDocumentTypes, not(hasItems(
+            CERTIFICATE_OF_ENTITLEMENT_LETTER_CO_RESPONDENT_DOCUMENT_TYPE
+        )));
+    }
+
+    @Test
+    public void addToDocumentTypesToPrintWhenRespondentIsNotUsingDigitalChannelAndCoRespondentIsNotNamed() {
+
+        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(false);
+
+        CaseDetails caseDetails = createCaseDetails(payload,
+            false,false, false,false);
+
+        List<String> returnedDocumentTypes = caseLinkedForHearingWorkflow.getDocumentTypesToPrint(caseDetails);
+
+        assertThat(returnedDocumentTypes, is(equalTo(asList(
+            COE_RESPONDENT_LETTER_DOCUMENT_TYPE,
+            DOCUMENT_TYPE_COE
+        ))));
+    }
+
+    @Test
+    public void addToDocumentTypesToPrintWhenRespondentIsRepresentedAndIsNotUsingDigitalChannelAndCoRespondentIsNotNamed() {
+
+        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(false);
+
+        CaseDetails caseDetails = createCaseDetails(payload,
+            false,true, false,false);
+
+        List<String> returnedDocumentTypes = caseLinkedForHearingWorkflow.getDocumentTypesToPrint(caseDetails);
+
+        assertThat(returnedDocumentTypes, is(equalTo(asList(
+            COE_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE,
+            DOCUMENT_TYPE_COE
+        ))));
+    }
+
+    @Test
+    public void addToDocumentTypesToPrintWhenRespondentAndCoRespondentAreNotUsingDigitalChannel() {
+
+        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(true);
+
+        CaseDetails caseDetails = createCaseDetails(payload,
+            false,false, true,false);
+
+        List<String> returnedDocumentTypes = caseLinkedForHearingWorkflow.getDocumentTypesToPrint(caseDetails);
+
+        assertThat(returnedDocumentTypes, is(equalTo(asList(
+            COE_RESPONDENT_LETTER_DOCUMENT_TYPE,
+            CERTIFICATE_OF_ENTITLEMENT_LETTER_CO_RESPONDENT_DOCUMENT_TYPE,
+            DOCUMENT_TYPE_COE
+        ))));
+    }
+
+    @Test
+    public void addToDocumentTypesToPrintWhenRespondentIsRepresentedAndRespondentAndCoRespondentAreNotUsingDigitalChannel() {
+
+        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(true);
+
+        CaseDetails caseDetails = createCaseDetails(payload,
+            false,true, true,false);
+
+        List<String> returnedDocumentTypes = caseLinkedForHearingWorkflow.getDocumentTypesToPrint(caseDetails);
+
+        assertThat(returnedDocumentTypes, is(equalTo(asList(
+            COE_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE,
+            CERTIFICATE_OF_ENTITLEMENT_LETTER_CO_RESPONDENT_DOCUMENT_TYPE,
+            DOCUMENT_TYPE_COE
+        ))));
+    }
+
+    @Test
+    public void doNotAddAnyToDocumentTypesToPrintWhenFeatureToggleOff() {
+
+        when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(false);
+
+        CaseDetails caseDetails = createCaseDetails(payload,
+            false,false, true,false);
+
+        List<String> returnedDocumentTypes = caseLinkedForHearingWorkflow.getDocumentTypesToPrint(caseDetails);
+
+        assertThat(returnedDocumentTypes, is(emptyList()));
     }
 
     private void verifyNotCalled(Task<Map<String, Object>> task) throws TaskException {
