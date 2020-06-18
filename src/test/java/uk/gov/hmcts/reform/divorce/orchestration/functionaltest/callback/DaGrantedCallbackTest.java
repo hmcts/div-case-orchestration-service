@@ -54,12 +54,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.DECREE_ABSOLUTE_GRANTED_LETTER_TEMPLATE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_TEMPLATE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER_TEMPLATE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseFieldConstants.RESPONDENT_SOLICITOR_DERIVED_CORRESPONDENCE_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_FILENAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
@@ -70,6 +74,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocument;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
@@ -90,6 +95,8 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         .put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME)
         .put(RESPONDENT_EMAIL_ADDRESS, TEST_RESPONDENT_EMAIL)
         .put(RESPONDENT_DERIVED_CORRESPONDENCE_ADDRESS, "221B Baker Street")
+        .put(RESPONDENT_SOLICITOR_DERIVED_CORRESPONDENCE_ADDRESS, "10 Solicitor Avenue")
+        .put(D8_RESPONDENT_SOLICITOR_REFERENCE, "123Sol")
         .put(D_8_CASE_REFERENCE, TEST_CASE_ID)
         .put(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD, TEST_DECREE_ABSOLUTE_GRANTED_DATE)
         .build();
@@ -141,7 +148,7 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         //Newly generated document
         byte[] decreeAbsoluteLetterBytes = new byte[] {1, 2, 3};
         String daGrantedLetterDocumentId =
-            stubDocumentGeneratorService(DECREE_ABSOLUTE_GRANTED_LETTER_TEMPLATE_ID, DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE);
+            stubDocumentGeneratorService(DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_TEMPLATE_ID, DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_DOCUMENT_TYPE);
         stubDMStore(daGrantedLetterDocumentId, decreeAbsoluteLetterBytes);
 
         //Existing document
@@ -152,6 +159,55 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
             DECREE_ABSOLUTE_FILENAME);
         Map<String, Object> caseData = new ImmutableMap.Builder<String, Object>().putAll(BASE_CASE_DATA)
             .put(RESP_IS_USING_DIGITAL_CHANNEL, NO_VALUE)
+            .put(D8DOCUMENTS_GENERATED, asList(daGrantedDocument))
+            .build();
+
+        //When
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(BASE_CASE_DATA).build();
+        webClient.perform(post(API_URL)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(convertObjectToJsonString(
+                CcdCallbackRequest.builder()
+                    .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build())
+                    .build()
+            ))
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
+
+        //Then
+        verify(bulkPrintService).send(eq(TEST_CASE_ID), anyString(), documentsToPrintCaptor.capture());
+        List<GeneratedDocumentInfo> documentsSentToBulkPrint = documentsToPrintCaptor.getValue();
+        assertThat(documentsSentToBulkPrint, hasSize(2));
+        assertThat(documentsSentToBulkPrint.get(0).getBytes(), is(decreeAbsoluteLetterBytes));
+        assertThat(documentsSentToBulkPrint.get(1).getBytes(), is(decreeAbsoluteBytes));
+        verifyZeroInteractions(mockEmailService);
+    }
+
+    @Test
+    public void givenOfflineRepresentedRespondentDetails_ThenOkResponse() throws Exception {
+        //Given
+        when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
+        stubServiceAuthProvider(TEST_SERVICE_AUTH_TOKEN);
+
+        //Newly generated document
+        byte[] decreeAbsoluteLetterBytes = new byte[] {1, 2, 3};
+        String daGrantedLetterDocumentId = stubDocumentGeneratorService(
+            DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER_TEMPLATE_ID,
+            DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER_DOCUMENT_TYPE
+        );
+        stubDMStore(daGrantedLetterDocumentId, decreeAbsoluteLetterBytes);
+
+        //Existing document
+        byte[] decreeAbsoluteBytes = new byte[] {4, 5, 6};
+        stubDMStore(DECREE_ABSOLUTE_ID, decreeAbsoluteBytes);
+        CollectionMember<Document> daGrantedDocument = createCollectionMemberDocument(getDocumentStoreTestUrl(DECREE_ABSOLUTE_ID),
+            DECREE_ABSOLUTE_DOCUMENT_TYPE,
+            DECREE_ABSOLUTE_FILENAME);
+        Map<String, Object> caseData = new ImmutableMap.Builder<String, Object>().putAll(BASE_CASE_DATA)
+            .put(RESP_IS_USING_DIGITAL_CHANNEL, NO_VALUE)
+            .put(RESP_SOL_REPRESENTED, YES_VALUE)
             .put(D8DOCUMENTS_GENERATED, asList(daGrantedDocument))
             .build();
 

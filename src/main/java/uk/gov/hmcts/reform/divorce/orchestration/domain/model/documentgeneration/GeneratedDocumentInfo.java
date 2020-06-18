@@ -2,14 +2,18 @@ package uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneratio
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
 public class GeneratedDocumentInfo {
 
     private String url;
@@ -17,6 +21,7 @@ public class GeneratedDocumentInfo {
     private String mimeType;
     private String createdOn;
     private String fileName;
+
     @JsonIgnore
     private byte[] bytes;
 

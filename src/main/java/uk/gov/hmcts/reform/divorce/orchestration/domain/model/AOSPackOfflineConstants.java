@@ -30,7 +30,8 @@ public class AOSPackOfflineConstants {
     public static final String AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME = "adultery-aos-form-co-resp";
     public static final String AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID = "FL-DIV-APP-ENG-00084.docx";
 
-    public static final String DECREE_ABSOLUTE_GRANTED_LETTER_TEMPLATE_ID = "FL-DIV-GOR-ENG-00355.docx";
+    public static final String DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_TEMPLATE_ID = "FL-DIV-GOR-ENG-00355.docx";
+    public static final String DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER_TEMPLATE_ID = "FL-DIV-GOR-ENG-00353.docx";
 
     public static final String COE_RESPONDENT_LETTER_DOCUMENT_TYPE = "coeRespondentLetter";
 

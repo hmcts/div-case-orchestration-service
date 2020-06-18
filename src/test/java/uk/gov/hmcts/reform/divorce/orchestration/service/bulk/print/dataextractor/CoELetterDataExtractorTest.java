@@ -17,12 +17,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoELetterDataExtractor.CaseDataKeys.COURT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoELetterDataExtractor.CaseDataKeys.IS_COSTS_CLAIM_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoELetterDataExtractor.CaseDataKeys.PETITIONER_GENDER;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoELetterDataExtractor.CaseDataKeys.SOLICITOR_REFERENCE;
 
 public class CoELetterDataExtractorTest {
 
     private static final String VALID_COURT_ID = "birmingham";
-    private static final String VALID_SOLICITOR_REF = "solRef123";
 
     @Test
     public void getHusbandOrWifeReturnsHusbandWhenPetitionerIsMale() {
@@ -57,12 +55,6 @@ public class CoELetterDataExtractorTest {
     }
 
     @Test
-    public void getSolicitorReferenceReturnsValidValueWhenItExists() {
-        Map<String, Object> caseData = buildCaseDataWithSolicitorReference(VALID_SOLICITOR_REF);
-        assertThat(CoELetterDataExtractor.getSolicitorReference(caseData), is(VALID_SOLICITOR_REF));
-    }
-
-    @Test
     public void getHusbandOrWifeThrowsExceptionsPetitionerGenderDoesNotExist() {
         asList("", null).forEach(petitionerGenderValue -> {
             try {
@@ -79,18 +71,6 @@ public class CoELetterDataExtractorTest {
         asList("", null).forEach(courtIdValue -> {
             try {
                 CoELetterDataExtractor.getCourtId(buildCaseDataWithCourt(courtIdValue));
-                fail("Should have thrown exception");
-            } catch (InvalidDataForTaskException e) {
-                thisTestPassed();
-            }
-        });
-    }
-
-    @Test
-    public void getSolicitorReferenceThrowsExceptionsWhenItDoesNotExist() {
-        asList("", null).forEach(solicitorRefValue -> {
-            try {
-                CoELetterDataExtractor.getSolicitorReference(buildCaseDataWithSolicitorReference(solicitorRefValue));
                 fail("Should have thrown exception");
             } catch (InvalidDataForTaskException e) {
                 thisTestPassed();
@@ -115,13 +95,6 @@ public class CoELetterDataExtractorTest {
     private static Map<String, Object> buildCaseDataWithIsCostsClaimGranted(String isCostsClaimGranted) {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(IS_COSTS_CLAIM_GRANTED, isCostsClaimGranted);
-
-        return caseData;
-    }
-
-    private static Map<String, Object> buildCaseDataWithSolicitorReference(String solicitorReference) {
-        Map<String, Object> caseData = new HashMap<>();
-        caseData.put(SOLICITOR_REFERENCE, solicitorReference);
 
         return caseData;
     }

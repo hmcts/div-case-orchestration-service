@@ -1,56 +1,20 @@
 package uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import uk.gov.hmcts.reform.bsp.common.model.document.Addressee;
-import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-public class CoERespondentCoverLetter extends DocmosisTemplateVars {
-    @JsonProperty("hearingDate")
-    private String hearingDate;
+@SuperBuilder
+public class CoERespondentCoverLetter extends CoECoverLetter {
 
     @JsonProperty("husbandOrWife")
     private String husbandOrWife;
 
-    @JsonProperty("courtName")
-    private String courtName;
-
-    @JsonProperty("deadlineToContactCourtBy")
-    private String deadlineToContactCourtBy;
-
-    @JsonProperty("costClaimGranted")
-    private boolean costClaimGranted;
-
-    @JsonProperty("addressee")
-    private Addressee addressee;
-
-    @Builder
-    public CoERespondentCoverLetter(
-        CtscContactDetails ctscContactDetails,
-        String caseReference,
-        String letterDate,
-        String petitionerFullName,
-        String respondentFullName,
-        String hearingDate,
-        String husbandOrWife,
-        String courtName,
-        String deadlineToContactCourtBy,
-        boolean costClaimGranted,
-        Addressee addressee) {
-        super(ctscContactDetails, caseReference, letterDate, petitionerFullName, respondentFullName);
-        this.hearingDate = hearingDate;
-        this.husbandOrWife = husbandOrWife;
-        this.courtName = courtName;
-        this.deadlineToContactCourtBy = deadlineToContactCourtBy;
-        this.costClaimGranted = costClaimGranted;
-        this.addressee = addressee;
-    }
 }

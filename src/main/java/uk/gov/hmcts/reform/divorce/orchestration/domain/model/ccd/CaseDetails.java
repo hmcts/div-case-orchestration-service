@@ -2,14 +2,18 @@ package uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Map;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder(toBuilder = true)
+@AllArgsConstructor
+@NoArgsConstructor
 public class CaseDetails {
 
     @JsonProperty("case_data")
@@ -19,4 +23,5 @@ public class CaseDetails {
     private String caseId;
 
     private String state;
+
 }

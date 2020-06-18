@@ -19,7 +19,11 @@ import java.util.Map;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CO_RESPONDENTS_FULL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CO_RESPONDENT_FULL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.CO_RESPONDENT_ADDRESS;
@@ -34,13 +38,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.CTSC_CONTACT;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.PETITIONERS_FIRST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.PETITIONERS_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.RESPONDENTS_FIRST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.RESPONDENTS_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.prepareTaskContext;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoECoRespondentCoverLetterGenerationTask.FileMetadata.DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoECoRespondentCoverLetterGenerationTask.FileMetadata.TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
 
 public class CoECoRespondentCoverLetterGenerationTaskTest extends BasePayloadSpecificDocumentGenerationTaskTest {
@@ -68,19 +66,19 @@ public class CoECoRespondentCoverLetterGenerationTaskTest extends BasePayloadSpe
         Map<String, Object> returnedCaseData = coECoRespondentCoverLetterGenerationTask.execute(context, caseData);
 
         CoECoverLetter expectedDocmosisTemplateVars = CoECoverLetter.builder()
-            .petitionerFullName(PETITIONERS_FIRST_NAME + " " + PETITIONERS_LAST_NAME)
-            .respondentFullName(RESPONDENTS_FIRST_NAME + " " + RESPONDENTS_LAST_NAME)
+            .petitionerFullName(TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME)
+            .respondentFullName(TEST_RESPONDENT_FIRST_NAME + " " + TEST_RESPONDENT_LAST_NAME)
             .caseReference(CASE_ID)
             .letterDate(formatDateWithCustomerFacingFormat(LocalDate.now()))
             .ctscContactDetails(CTSC_CONTACT)
             .courtName(COURT_NAME)
             .hearingDate(HEARING_DATE_FORMATTED)
             .deadlineToContactCourtBy(CONTACT_COURT_BY_DATE_FORMATTED)
-            .addressee(Addressee.builder().name(TEST_CO_RESPONDENTS_FULL_NAME).formattedAddress(CO_RESPONDENT_ADDRESS).build())
+            .addressee(Addressee.builder().name(TEST_CO_RESPONDENT_FULL_NAME).formattedAddress(CO_RESPONDENT_ADDRESS).build())
             .build();
 
         verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
-        runCommonVerifications(caseData, returnedCaseData, DOCUMENT_TYPE, TEMPLATE_ID, expectedDocmosisTemplateVars);
+        runCommonVerifications(caseData, returnedCaseData, "coe-cover-letter", "FL-DIV-GNO-ENG-00449.docx", expectedDocmosisTemplateVars);
     }
 
     @Test
@@ -91,8 +89,8 @@ public class CoECoRespondentCoverLetterGenerationTaskTest extends BasePayloadSpe
         Map<String, Object> returnedCaseData = coECoRespondentCoverLetterGenerationTask.execute(context, caseData);
 
         CoECoverLetter expectedDocmosisTemplateVars = CoECoverLetter.builder()
-            .petitionerFullName(PETITIONERS_FIRST_NAME + " " + PETITIONERS_LAST_NAME)
-            .respondentFullName(RESPONDENTS_FIRST_NAME + " " + RESPONDENTS_LAST_NAME)
+            .petitionerFullName(TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME)
+            .respondentFullName(TEST_RESPONDENT_FIRST_NAME + " " + TEST_RESPONDENT_LAST_NAME)
             .caseReference(CASE_ID)
             .letterDate(formatDateWithCustomerFacingFormat(LocalDate.now()))
             .ctscContactDetails(CTSC_CONTACT)
@@ -102,7 +100,7 @@ public class CoECoRespondentCoverLetterGenerationTaskTest extends BasePayloadSpe
             .addressee(Addressee.builder().name(CO_RESPONDENT_SOLICITORS_EXPECTED_NAME).formattedAddress(CO_RESPONDENT_SOLICITOR_ADDRESS).build())
             .build();
         verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
-        runCommonVerifications(caseData, returnedCaseData, DOCUMENT_TYPE, TEMPLATE_ID, expectedDocmosisTemplateVars);
+        runCommonVerifications(caseData, returnedCaseData, "coe-cover-letter", "FL-DIV-GNO-ENG-00449.docx", expectedDocmosisTemplateVars);
     }
 
     @Test(expected = InvalidDataForTaskException.class)
@@ -130,10 +128,10 @@ public class CoECoRespondentCoverLetterGenerationTaskTest extends BasePayloadSpe
             ? AddresseeDataExtractorTest.buildCaseDataWithCoRespondentSolicitor()
             : AddresseeDataExtractorTest.buildCaseDataWithCoRespondent();
 
-        caseData.put(PETITIONER_FIRST_NAME, PETITIONERS_FIRST_NAME);
-        caseData.put(PETITIONER_LAST_NAME, PETITIONERS_LAST_NAME);
-        caseData.put(RESPONDENT_FIRST_NAME, RESPONDENTS_FIRST_NAME);
-        caseData.put(RESPONDENT_LAST_NAME, RESPONDENTS_LAST_NAME);
+        caseData.put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
+        caseData.put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
+        caseData.put(RESPONDENT_FIRST_NAME, TEST_RESPONDENT_FIRST_NAME);
+        caseData.put(RESPONDENT_LAST_NAME, TEST_RESPONDENT_LAST_NAME);
 
         caseData.put(COURT_NAME_CCD_FIELD, COURT_LOCATION);
         caseData.put(DATETIME_OF_HEARING_CCD_FIELD, createHearingDatesList());

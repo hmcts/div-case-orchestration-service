@@ -5,16 +5,18 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Data
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
+@ToString(callSuper = true)
 @SuperBuilder
-public class CoERespondentSolicitorCoverLetter extends CoEBasicCoverLetter {
+public class DaGrantedRespondentSolicitorCoverLetter extends BasicCoverLetter {
 
-    @JsonProperty("solicitorReference")
-    private String solicitorReference;
+    @JsonProperty("recipientReference")
+    private String recipientReference;
 
 }

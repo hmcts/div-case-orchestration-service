@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextracto
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.SolicitorDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.Map;
@@ -48,7 +49,7 @@ public class CoERespondentSolicitorLetterGenerationTask extends BasePayloadSpeci
                 .costClaimGranted(CoELetterDataExtractor.isCostsClaimGranted(caseData))
                 .deadlineToContactCourtBy(DatesDataExtractor.getDeadlineToContactCourtBy(caseData))
                 .addressee(AddresseeDataExtractor.getRespondentSolicitor(caseData))
-                .solicitorReference(CoELetterDataExtractor.getSolicitorReference(caseData))
+                .solicitorReference(SolicitorDataExtractor.getSolicitorReference(caseData))
                 .build();
     }
 
