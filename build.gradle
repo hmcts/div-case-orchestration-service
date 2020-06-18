@@ -307,13 +307,13 @@ dependencies {
         force = true
     }
 
-    implementation(group: 'org.quartz-scheduler', name:'quartz', version: versions.quartz) {
+    implementation(group: 'org.quartz-scheduler', name: 'quartz', version: versions.quartz) {
         force = true
     }
 
     runtimeOnly('org.springframework.boot:spring-boot-devtools')
 
-    testImplementation group: 'org.awaitility', name:'awaitility', version: versions.awaitility
+    testImplementation group: 'org.awaitility', name: 'awaitility', version: versions.awaitility
     testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '2.1.5.RELEASE'
     testImplementation(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
         exclude(module: 'commons-logging')
@@ -372,8 +372,8 @@ task smoke(type: Test, description: 'Runs the smoke tests.', group: 'Verificatio
 
 task bootRunAat(type: BootRun, description: 'Runs the app using AAT config', dependsOn: 'classes', group: 'Application') {
     environment "http_proxy", "http://proxyout.reform.hmcts.net:8080"
+    main = bootJar.mainClassName
     doFirst() {
-        main = bootJar.mainClassName
         classpath = sourceSets.main.runtimeClasspath
         systemProperties = System.properties
         systemProperty 'spring.profiles.active', 'aat'
