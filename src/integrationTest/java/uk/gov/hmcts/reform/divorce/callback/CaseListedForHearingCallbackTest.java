@@ -34,6 +34,34 @@ public class CaseListedForHearingCallbackTest extends IntegrationTest {
 
     @SuppressWarnings("unchecked")
     @Test
+    public void whenCaseLinkedForHearingIsCalledBack_RespondentMethodIsDigital_thenReturnAOSData() {
+        addCustomValuesToPayload(
+            incomingPayload,
+            Collections.singletonMap("RespContactMethodIsDigital", "Yes")
+        );
+
+        Map<String, Object> response = cosApiClient.caseLinkedForHearing(citizenUser.getAuthToken(), incomingPayload);
+        assertNotNull(response.get(DATA));
+        assertEquals(((Map<String, Object>) incomingPayload.get(CASE_DETAILS)).get(CASE_DATA), response.get(DATA));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void whenCaseLinkedForHearingIsCalledBack_RespondentMethodIsNotDigital_thenReturnAOSData() {
+        addCustomValuesToPayload(
+            incomingPayload,
+            ImmutableMap.of(
+                "RespContactMethodIsDigital", "No",
+                "D8DerivedRespondentCorrespondenceAddr", "10 Baker Street\nAnnex B1\nBakersville\nBakershire\nBK13 B34")
+        );
+
+        Map<String, Object> response = cosApiClient.caseLinkedForHearing(citizenUser.getAuthToken(), incomingPayload);
+        assertNotNull(response.get(DATA));
+        assertEquals(((Map<String, Object>) incomingPayload.get(CASE_DETAILS)).get(CASE_DATA), response.get(DATA));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
     public void whenCaseLinkedForHearingIsCalledBack_CoRespondentMethodIsDigital_thenReturnAOSData() {
         addCustomValuesToPayload(
             incomingPayload,
@@ -41,7 +69,6 @@ public class CaseListedForHearingCallbackTest extends IntegrationTest {
         );
 
         Map<String, Object> response = cosApiClient.caseLinkedForHearing(citizenUser.getAuthToken(), incomingPayload);
-
         assertNotNull(response.get(DATA));
         assertEquals(((Map<String, Object>) incomingPayload.get(CASE_DETAILS)).get(CASE_DATA), response.get(DATA));
     }
@@ -59,6 +86,18 @@ public class CaseListedForHearingCallbackTest extends IntegrationTest {
 
         Map<String, Object> response = cosApiClient.caseLinkedForHearing(citizenUser.getAuthToken(), incomingPayload);
 
+        assertNotNull(response.get(DATA));
+        assertEquals(((Map<String, Object>) incomingPayload.get(CASE_DETAILS)).get(CASE_DATA), response.get(DATA));
+    }
+
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void whenCaseLinkedForHearingIsCalledBack_thenReturnAOSData() {
+        Map<String, Object> aosCase = ResourceLoader.loadJsonToObject(BASE_CASE_RESPONSE, Map.class);
+        Map<String, Object> response = cosApiClient.caseLinkedForHearing(
+            createCaseWorkerUser().getAuthToken(),
+            aosCase);
         assertNotNull(response.get(DATA));
         assertEquals(((Map<String, Object>) incomingPayload.get(CASE_DETAILS)).get(CASE_DATA), response.get(DATA));
     }

@@ -29,7 +29,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.BULK_PRINT_LETTER_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.DOCUMENT_TYPES_TO_PRINT;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.removeDocumentByDocumentType;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.removeDocumentsByDocumentType;
 
 @Component
 @RequiredArgsConstructor
@@ -56,7 +56,7 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
             ImmutablePair.of(DOCUMENT_TYPES_TO_PRINT, getDocumentTypesToPrint())
         );
 
-        return removeDocumentByDocumentType(caseDataToReturn, daGrantedLetterGenerationTask.getDocumentType());
+        return removeDocumentsByDocumentType(caseDataToReturn, daGrantedLetterGenerationTask.getDocumentType());
     }
 
     private List<String> getDocumentTypesToPrint() {
