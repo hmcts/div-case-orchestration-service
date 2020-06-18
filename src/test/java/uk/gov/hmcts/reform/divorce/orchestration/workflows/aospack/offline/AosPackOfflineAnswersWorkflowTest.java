@@ -6,6 +6,7 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -28,6 +29,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
 
@@ -51,14 +53,16 @@ public class AosPackOfflineAnswersWorkflowTest {
 
     @Test
     public void shouldCallRespondentTask_ForRespondent() throws WorkflowException, TaskException {
+
         Map<String, Object> payload = singletonMap("testKey", "testValue");
         Map<String, Object> returnCaseData = singletonMap("returnedKey", "returnedValue");
+        CaseDetails caseDetails = buildCaseDetail(payload);
 
         when(respondentAosAnswersProcessor.execute(any(TaskContext.class), eq(payload))).thenReturn(returnCaseData);
         when(formFieldValuesToCoreFieldsRelay.execute(any(TaskContext.class), eq(payload))).thenReturn(payload);
         when(coRespondentAosDerivedAddressFormatter.execute(any(TaskContext.class), anyMap())).thenReturn(returnCaseData);
 
-        Map<String, Object> returnedPayload = classUnderTest.run(payload, RESPONDENT);
+        Map<String, Object> returnedPayload = classUnderTest.run(caseDetails, RESPONDENT);
 
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
 
@@ -74,12 +78,13 @@ public class AosPackOfflineAnswersWorkflowTest {
     public void shouldCallCoRespondentTask_ForCoRespondent() throws WorkflowException, TaskException {
         Map<String, Object> payload = singletonMap("testKey", "testValue");
         Map<String, Object> returnedCaseData = singletonMap("returnedKey", "returnedValue");
+        CaseDetails caseDetails = buildCaseDetail(payload);
 
         when(formFieldValuesToCoreFieldsRelay.execute(any(), eq(payload))).thenReturn(payload);
         when(coRespondentAosAnswersProcessor.execute(any(), eq(payload))).thenReturn(returnedCaseData);
         when(coRespondentAosDerivedAddressFormatter.execute(any(), anyMap())).thenReturn(returnedCaseData);
 
-        Map<String, Object> returnedPayload = classUnderTest.run(payload, CO_RESPONDENT);
+        Map<String, Object> returnedPayload = classUnderTest.run(caseDetails, CO_RESPONDENT);
 
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
 
@@ -95,11 +100,12 @@ public class AosPackOfflineAnswersWorkflowTest {
     public void shouldCallCoRespondentTask_and_Update_ReceivedAosFromCoResp_to_Yes() throws WorkflowException, TaskException {
         Map<String, Object> payload = new HashMap<>();
         Map<String, Object> returnedCaseData = singletonMap("returnedKey", "returnedValue");
+        CaseDetails caseDetails = buildCaseDetail(payload);
 
         when(coRespondentAosAnswersProcessor.execute(any(), anyMap())).thenReturn(payload);
         when(coRespondentAosDerivedAddressFormatter.execute(any(), anyMap())).thenReturn(returnedCaseData);
 
-        Map<String, Object> returnedPayload = classUnderTest.run(payload, CO_RESPONDENT);
+        Map<String, Object> returnedPayload = classUnderTest.run(caseDetails, CO_RESPONDENT);
 
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
 
@@ -109,6 +115,10 @@ public class AosPackOfflineAnswersWorkflowTest {
         inOrder.verify(coRespondentAosDerivedAddressFormatter, times(1)).execute(any(), anyMap());
 
         verify(respondentAosAnswersProcessor, never()).execute(any(), anyMap());
+    }
+
+    private CaseDetails buildCaseDetail(Map<String, Object> payload) {
+        return CaseDetails.builder().caseId(TEST_CASE_ID).caseData(payload).build();
     }
 
 }

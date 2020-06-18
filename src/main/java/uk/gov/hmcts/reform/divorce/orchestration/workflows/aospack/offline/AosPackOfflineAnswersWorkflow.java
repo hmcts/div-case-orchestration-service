@@ -1,7 +1,10 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
@@ -15,11 +18,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class AosPackOfflineAnswersWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final RespondentAosAnswersProcessorTask respondentAosAnswersProcessor;
@@ -27,10 +32,13 @@ public class AosPackOfflineAnswersWorkflow extends DefaultWorkflow<Map<String, O
     private final CoRespondentAosAnswersProcessorTask coRespondentAosAnswersProcessor;
     private final CoRespondentAosDerivedAddressFormatterTask coRespondentAosDerivedAddressFormatter;
 
-    public Map<String, Object> run(Map<String, Object> payload, DivorceParty divorceParty) throws WorkflowException {
-        Task[] tasks = getTasks(divorceParty);
+    public Map<String, Object> run(CaseDetails caseDetails, DivorceParty divorceParty) throws WorkflowException {
+        Map<String, Object> caseData = caseDetails.getCaseData();
+        String caseId = caseDetails.getCaseId();
 
-        return execute(tasks, payload);
+        Task[] tasks = getTasks(divorceParty);
+        log.info("Processing AosPackOfflineAnswersWorkflow for Case ID: {}", caseId);
+        return execute(tasks, caseData, ImmutablePair.of(CASE_ID_JSON_KEY, caseId));
     }
 
     private Task[] getTasks(DivorceParty divorceParty) {

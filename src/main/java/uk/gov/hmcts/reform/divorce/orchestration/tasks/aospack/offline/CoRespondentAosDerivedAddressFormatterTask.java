@@ -14,6 +14,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.CaseDataKeys.CO_RESPONDENT_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.CaseDataKeys.CO_RESPONDENT_SOLICITOR_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentRepresented;
 
 @Slf4j
@@ -22,11 +23,14 @@ public class CoRespondentAosDerivedAddressFormatterTask implements Task<Map<Stri
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
+        String caseId = getCaseId(context);
 
         if (isCoRespondentRepresented(caseData)) {
             caseData.put(CO_RESPONDENT_SOLICITOR_ADDRESS, formatDerivedCoRespondentSolicitorAddress(caseData));
+            log.info("Derived CoRespondent Solicitor Address formatted for Case ID: {}", caseId);
         } else {
             caseData.put(CO_RESPONDENT_ADDRESS, formatDerivedReasonForDivorceAdultery3rdAddress(caseData));
+            log.info("Derived CoRespondent Address formatted for Case ID: {}", caseId);
         }
 
         return caseData;
