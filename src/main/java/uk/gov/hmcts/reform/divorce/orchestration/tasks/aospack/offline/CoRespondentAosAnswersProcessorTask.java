@@ -18,10 +18,9 @@ public class CoRespondentAosAnswersProcessorTask implements Task<Map<String, Obj
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        updateReceivedAosFromCoRespondent(caseData, RECEIVED_AOS_FROM_CO_RESP, YES_VALUE);
 
-        String caseId = getCaseId(context);
-        log.info("Updating Case data, setting {} to {} for Case ID:",RECEIVED_AOS_FROM_CO_RESP, YES_VALUE, caseId);
+        updateReceivedAosFromCoRespondent(caseData, RECEIVED_AOS_FROM_CO_RESP, YES_VALUE);
+        log.info("Updated Case data, setting {} to {} for Case ID:", RECEIVED_AOS_FROM_CO_RESP, YES_VALUE, getCaseId(context));
 
         return caseData;
     }
