@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.bsp.common.utils.LetterAddressHelper;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -15,6 +16,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.CaseDataKeys.CO_RESPONDENT_SOLICITOR_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentRepresented;
 
+@Slf4j
 @Component
 public class CoRespondentAosDerivedAddressFormatterTask implements Task<Map<String, Object>> {
 
@@ -22,7 +24,7 @@ public class CoRespondentAosDerivedAddressFormatterTask implements Task<Map<Stri
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
 
         if (isCoRespondentRepresented(caseData)) {
-            caseData.put(CO_RESPONDENT_SOLICITOR_ADDRESS, formatDerivedCoRespondentSolicitorAddr(caseData));
+            caseData.put(CO_RESPONDENT_SOLICITOR_ADDRESS, formatDerivedCoRespondentSolicitorAddress(caseData));
         } else {
             caseData.put(CO_RESPONDENT_ADDRESS, formatDerivedReasonForDivorceAdultery3rdAddress(caseData));
         }
@@ -31,7 +33,7 @@ public class CoRespondentAosDerivedAddressFormatterTask implements Task<Map<Stri
     }
 
 
-    String formatDerivedCoRespondentSolicitorAddr(Map<String, Object> caseData) {
+    String formatDerivedCoRespondentSolicitorAddress(Map<String, Object> caseData) {
         return Optional.ofNullable((Map<String, Object>) caseData.get(D8_CO_RESPONDENT_SOLICITOR_ADDRESS))
             .map(LetterAddressHelper::formatAddressForLetterPrinting)
             .orElse(null);

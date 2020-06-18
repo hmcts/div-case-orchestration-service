@@ -96,7 +96,7 @@ public class CoRespondentAosDerivedAddressFormatterTaskTest {
     public void formatDerivedCoRespondentSolicitorAddr() {
         Map<String, Object> caseData = buildCaseWithCoRespondentSolicitorAddress();
 
-        String derivedCoRespondentSolicitorAddr = classUnderTest.formatDerivedCoRespondentSolicitorAddr(caseData);
+        String derivedCoRespondentSolicitorAddr = classUnderTest.formatDerivedCoRespondentSolicitorAddress(caseData);
 
         assertThat(derivedCoRespondentSolicitorAddr, is(EXPECTED_DERIVED_ADDRESS));
 
