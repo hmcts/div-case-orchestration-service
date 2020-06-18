@@ -26,6 +26,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.rules.ExpectedException.none;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
@@ -58,7 +59,6 @@ public class AosPackOfflineServiceImplTest {
         caseDetails = CaseDetails.builder().caseData(emptyMap()).build();
     }
 
-    //issueAosPackOffline
     @Test
     public void testWorkflowIsCalledWithRightParams() throws WorkflowException, CaseOrchestrationServiceException {
         Map<String, Object> returnValue = singletonMap("returnedKey", "returnedValue");
@@ -102,25 +102,26 @@ public class AosPackOfflineServiceImplTest {
         classUnderTest.issueAosPackOffline(null, caseDetails, RESPONDENT);
     }
 
-    //processAosPackOfflineAnswers
     @Test
     public void shouldCallWorkflowAndReturnPayload() throws WorkflowException, CaseOrchestrationServiceException {
         when(aosPackOfflineAnswersWorkflow.run(any(), any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
 
         Map<String, Object> incomingPayload = singletonMap("incomingKey", "incomingValue");
-        Map<String, Object> returnedPayload = classUnderTest.processAosPackOfflineAnswers(incomingPayload, RESPONDENT);
+        CaseDetails caseDetails = CaseDetails.builder().caseData(incomingPayload).build();
+        Map<String, Object> returnedPayload = classUnderTest.processAosPackOfflineAnswers(caseDetails, RESPONDENT);
 
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
-        verify(aosPackOfflineAnswersWorkflow).run(eq(incomingPayload), eq(RESPONDENT));
+        verify(aosPackOfflineAnswersWorkflow).run(eq(caseDetails), eq(RESPONDENT));
     }
 
     @Test
     public void shouldThrowServiceException_WhenWorkflowExceptionIsThrown() throws WorkflowException, CaseOrchestrationServiceException {
-        when(aosPackOfflineAnswersWorkflow.run(any(), any())).thenThrow(WorkflowException.class);
+        when(aosPackOfflineAnswersWorkflow.run(any(CaseDetails.class), notNull())).thenThrow(WorkflowException.class);
         expectedException.expect(CaseOrchestrationServiceException.class);
         expectedException.expectCause(instanceOf(WorkflowException.class));
 
-        classUnderTest.processAosPackOfflineAnswers(emptyMap(), RESPONDENT);
+        CaseDetails caseDetails = CaseDetails.builder().build();
+        classUnderTest.processAosPackOfflineAnswers(caseDetails, RESPONDENT);
     }
 
 }

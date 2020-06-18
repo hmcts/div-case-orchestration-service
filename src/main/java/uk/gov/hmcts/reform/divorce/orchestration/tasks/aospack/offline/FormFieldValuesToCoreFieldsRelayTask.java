@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
  * their values relayed to core CCD fields so that the actual information can have significance.
  */
 @Component
-public class FormFieldValuesToCoreFieldsRelay implements Task<Map<String, Object>> {
+public class FormFieldValuesToCoreFieldsRelayTask implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {

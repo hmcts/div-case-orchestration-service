@@ -2,14 +2,17 @@ package uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.CoRespondentAosAnswersProcessorTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.FormFieldValuesToCoreFieldsRelay;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.CoRespondentAosDerivedAddressFormatterTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.FormFieldValuesToCoreFieldsRelayTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.RespondentAosAnswersProcessorTask;
 
 import java.util.HashMap;
@@ -17,17 +20,16 @@ import java.util.Map;
 
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
 
@@ -41,56 +43,82 @@ public class AosPackOfflineAnswersWorkflowTest {
     private CoRespondentAosAnswersProcessorTask coRespondentAosAnswersProcessor;
 
     @Mock
-    private FormFieldValuesToCoreFieldsRelay formFieldValuesToCoreFieldsRelay;
+    private FormFieldValuesToCoreFieldsRelayTask formFieldValuesToCoreFieldsRelay;
+
+    @Mock
+    private CoRespondentAosDerivedAddressFormatterTask coRespondentAosDerivedAddressFormatter;
 
     @InjectMocks
     private AosPackOfflineAnswersWorkflow classUnderTest;
 
     @Test
     public void shouldCallRespondentTask_ForRespondent() throws WorkflowException, TaskException {
-        Map<String, Object> payload = singletonMap("testKey", "testValue");
-        when(respondentAosAnswersProcessor.execute(any(), eq(payload))).thenReturn(singletonMap("returnedKey", "returnedValue"));
-        when(formFieldValuesToCoreFieldsRelay.execute(any(), eq(payload))).thenReturn(payload);
 
-        Map<String, Object> returnedPayload = classUnderTest.run(payload, RESPONDENT);
+        Map<String, Object> payload = singletonMap("testKey", "testValue");
+        Map<String, Object> returnCaseData = singletonMap("returnedKey", "returnedValue");
+        CaseDetails caseDetails = buildCaseDetail(payload);
+
+        when(respondentAosAnswersProcessor.execute(any(TaskContext.class), eq(payload))).thenReturn(returnCaseData);
+        when(formFieldValuesToCoreFieldsRelay.execute(any(TaskContext.class), eq(payload))).thenReturn(payload);
+        when(coRespondentAosDerivedAddressFormatter.execute(any(TaskContext.class), anyMap())).thenReturn(returnCaseData);
+
+        Map<String, Object> returnedPayload = classUnderTest.run(caseDetails, RESPONDENT);
 
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
 
-        verify(formFieldValuesToCoreFieldsRelay, times(1)).execute(any(), eq(payload));
-        verify(respondentAosAnswersProcessor, times(1)).execute(any(), eq(payload));
+        InOrder inOrder = inOrder(formFieldValuesToCoreFieldsRelay, respondentAosAnswersProcessor, coRespondentAosDerivedAddressFormatter);
+        inOrder.verify(formFieldValuesToCoreFieldsRelay, times(1)).execute(any(), eq(payload));
+        inOrder.verify(respondentAosAnswersProcessor, times(1)).execute(any(), eq(payload));
+        inOrder.verify(coRespondentAosDerivedAddressFormatter, times(1)).execute(any(), anyMap());
+
         verify(coRespondentAosAnswersProcessor, never()).execute(any(), eq(payload));
     }
 
     @Test
     public void shouldCallCoRespondentTask_ForCoRespondent() throws WorkflowException, TaskException {
         Map<String, Object> payload = singletonMap("testKey", "testValue");
-        when(formFieldValuesToCoreFieldsRelay.execute(any(), eq(payload))).thenReturn(payload);
-        when(coRespondentAosAnswersProcessor.execute(any(), eq(payload))).thenReturn(singletonMap("returnedKey", "returnedValue"));
+        Map<String, Object> returnedCaseData = singletonMap("returnedKey", "returnedValue");
+        CaseDetails caseDetails = buildCaseDetail(payload);
 
-        Map<String, Object> returnedPayload = classUnderTest.run(payload, CO_RESPONDENT);
+        when(formFieldValuesToCoreFieldsRelay.execute(any(), eq(payload))).thenReturn(payload);
+        when(coRespondentAosAnswersProcessor.execute(any(), eq(payload))).thenReturn(returnedCaseData);
+        when(coRespondentAosDerivedAddressFormatter.execute(any(), anyMap())).thenReturn(returnedCaseData);
+
+        Map<String, Object> returnedPayload = classUnderTest.run(caseDetails, CO_RESPONDENT);
 
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
 
-        verify(formFieldValuesToCoreFieldsRelay, times(1)).execute(any(), eq(payload));
+        InOrder inOrder = inOrder(formFieldValuesToCoreFieldsRelay, coRespondentAosAnswersProcessor, coRespondentAosDerivedAddressFormatter);
+        inOrder.verify(formFieldValuesToCoreFieldsRelay, times(1)).execute(any(), eq(payload));
+        inOrder.verify(coRespondentAosAnswersProcessor, times(1)).execute(any(), eq(payload));
+        inOrder.verify(coRespondentAosDerivedAddressFormatter, times(1)).execute(any(), anyMap());
+
         verify(respondentAosAnswersProcessor, never()).execute(any(), any());
-        verify(coRespondentAosAnswersProcessor, times(1)).execute(any(), eq(payload));
     }
 
     @Test
     public void shouldCallCoRespondentTask_and_Update_ReceivedAosFromCoResp_to_Yes() throws WorkflowException, TaskException {
-        Map<String, Object> caseData = new HashMap<>();
+        Map<String, Object> payload = new HashMap<>();
+        Map<String, Object> returnedCaseData = singletonMap("returnedKey", "returnedValue");
+        CaseDetails caseDetails = buildCaseDetail(payload);
 
-        when(coRespondentAosAnswersProcessor.execute(any(TaskContext.class), anyMap())).thenCallRealMethod();
+        when(coRespondentAosAnswersProcessor.execute(any(), anyMap())).thenReturn(payload);
+        when(coRespondentAosDerivedAddressFormatter.execute(any(), anyMap())).thenReturn(returnedCaseData);
 
-        Map<String, Object> returnedPayload = classUnderTest.run(caseData, CO_RESPONDENT);
+        Map<String, Object> returnedPayload = classUnderTest.run(caseDetails, CO_RESPONDENT);
 
-        String coRespValue = (String) returnedPayload.get(RECEIVED_AOS_FROM_CO_RESP);
+        assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
 
-        assertEquals(RECEIVED_AOS_FROM_CO_RESP + " value should have been set to Yes", YES_VALUE, coRespValue);
+        InOrder inOrder = inOrder(formFieldValuesToCoreFieldsRelay, coRespondentAosAnswersProcessor, coRespondentAosDerivedAddressFormatter);
+        inOrder.verify(formFieldValuesToCoreFieldsRelay, times(1)).execute(any(), anyMap());
+        inOrder.verify(coRespondentAosAnswersProcessor, times(1)).execute(any(), anyMap());
+        inOrder.verify(coRespondentAosDerivedAddressFormatter, times(1)).execute(any(), anyMap());
 
-        verify(formFieldValuesToCoreFieldsRelay, times(1)).execute(any(TaskContext.class), anyMap());
-        verify(respondentAosAnswersProcessor, never()).execute(any(), any());
-        verify(coRespondentAosAnswersProcessor, times(1)).execute(any(TaskContext.class), anyMap());
+        verify(respondentAosAnswersProcessor, never()).execute(any(), anyMap());
+    }
+
+    private CaseDetails buildCaseDetail(Map<String, Object> payload) {
+        return CaseDetails.builder().caseId(TEST_CASE_ID).caseData(payload).build();
     }
 
 }
