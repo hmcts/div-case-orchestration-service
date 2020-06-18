@@ -82,16 +82,6 @@ If you're making a very small change which does not require ExtendTests to run, 
 If you have already created the PR without `[FAST]` in the title, you can add it but need to make a code change for Jenkins to pick it up
 You can also run non-extended test only locally by setting the `CHANGE_TITLE` env variable to `[FAST]` (i.e simulating a PR with a title starting with `[FAST]`)
 
-#### Update to Pointing to AAT locally 
-The `bootRunAat` may not exist in your `build.gradle` file due to the upgrade to Gradle. If this is the case then to run locally pointing
-to AAT please do the following.
-* Create a new run configuration for your IDE, you can call it `OrchestrationServiceAAT`
-* Set the main class as `uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication`
-* Set the active profile to `aat`. This can also be done by setting the `spring.profile.active` environment variable to `aat`
-* Set the proxy by adding an environment variable like so `http_proxy=http://proxyout.reform.hmcts.net:8080`
-
-You can now run the application pointing to AAT like you would when running normally.
-
 ## Developing
 
 **Enable schedule**
