@@ -31,7 +31,7 @@ public class CoRespondentAosAnswersProcessorTaskTest {
     public void shouldAddNewEntryToCaseData() {
         Map<String, Object> caseData = new HashMap<>();
 
-        coRespondentAosAnswersProcessor.addNewItemToCaseData(caseData, "property", "value");
+        coRespondentAosAnswersProcessor.updateReceivedAosFromCoRespondent(caseData, "property", "value");
 
         assertThat(caseData, hasKey("property"));
     }

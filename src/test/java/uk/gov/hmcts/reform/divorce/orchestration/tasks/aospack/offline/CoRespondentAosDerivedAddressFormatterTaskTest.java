@@ -100,7 +100,7 @@ public class CoRespondentAosDerivedAddressFormatterTaskTest {
     }
 
     @Test
-    public void formatDerivedCoRespondentSolicitorAddr() {
+    public void formatDerivedCoRespondentSolicitorAddress() {
         Map<String, Object> caseData = buildCaseWithCoRespondentSolicitorAddress();
 
         String derivedCoRespondentSolicitorAddr = classUnderTest.formatDerivedCoRespondentSolicitorAddress(caseData);
