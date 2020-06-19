@@ -39,7 +39,4 @@ public class CoELetterDataExtractor {
         return YES_VALUE.equalsIgnoreCase((String) caseData.get(CaseDataKeys.IS_COSTS_CLAIM_GRANTED));
     }
 
-    public static String getSolicitorReference(Map<String, Object> caseData) {
-        return getMandatoryStringValue(caseData, CaseDataKeys.SOLICITOR_REFERENCE);
-    }
 }

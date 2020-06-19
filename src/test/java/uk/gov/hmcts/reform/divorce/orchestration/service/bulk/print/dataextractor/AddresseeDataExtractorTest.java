@@ -35,8 +35,8 @@ public class AddresseeDataExtractorTest {
     public static final String RESPONDENTS_ADDRESS = "123 Respondent Str\nRespondent\ncounty\nRE5 P0N";
     public static final String RESPONDENT_SOLICITORS_ADDRESS = "321 Resp Solicitor\ntown\ncounty\npostcode";
     public static final String RESPONDENT_SOLICITOR_REF = "SolRef4567";
-    public static final String RESPONDENT_SOLICITORS_EXPECTED_NAME = "Sol" + TestConstants.TEST_RESPONDENTS_FULL_NAME;
-    public static final String CO_RESPONDENT_SOLICITORS_EXPECTED_NAME = "CoSol" + TestConstants.TEST_CO_RESPONDENTS_FULL_NAME;
+    public static final String RESPONDENT_SOLICITORS_EXPECTED_NAME = "Sol" + TestConstants.TEST_RESPONDENT_FULL_NAME;
+    public static final String CO_RESPONDENT_SOLICITORS_EXPECTED_NAME = "CoSol" + TestConstants.TEST_CO_RESPONDENT_FULL_NAME;
     public static final String CO_RESPONDENT_ADDRESS = "456 CoRespondent Str\nCoRespondent\nCounty\nRE5 P0N";
     public static final String CO_RESPONDENT_SOLICITOR_ADDRESS = "456 CoRespondent Solicitor Str\nCoRespondent Solicitor\nCounty\nRE5 P0N";
     public static final String D8_CASE_REFERENCE = "LV17D80102";
@@ -50,7 +50,7 @@ public class AddresseeDataExtractorTest {
         Addressee addressee = AddresseeDataExtractor.getRespondent(caseData);
 
         assertThat(addressee.getFormattedAddress(), is(RESPONDENTS_ADDRESS));
-        assertThat(addressee.getName(), is(TestConstants.TEST_RESPONDENTS_FULL_NAME));
+        assertThat(addressee.getName(), is(TestConstants.TEST_RESPONDENT_FULL_NAME));
     }
 
     @Test
@@ -60,7 +60,7 @@ public class AddresseeDataExtractorTest {
         Addressee addressee = AddresseeDataExtractor.getCoRespondent(caseData);
 
         assertThat(addressee.getFormattedAddress(), is(CO_RESPONDENT_ADDRESS));
-        assertThat(addressee.getName(), is(TestConstants.TEST_CO_RESPONDENTS_FULL_NAME));
+        assertThat(addressee.getName(), is(TestConstants.TEST_CO_RESPONDENT_FULL_NAME));
     }
 
     @Test(expected = InvalidDataForTaskException.class)
@@ -70,7 +70,7 @@ public class AddresseeDataExtractorTest {
         Addressee addressee = AddresseeDataExtractor.getCoRespondent(caseData);
 
         assertThat(addressee.getFormattedAddress(), is(CO_RESPONDENT_ADDRESS));
-        assertThat(addressee.getName(), is(TestConstants.TEST_CO_RESPONDENTS_FULL_NAME));
+        assertThat(addressee.getName(), is(TestConstants.TEST_CO_RESPONDENT_FULL_NAME));
     }
 
     @Test(expected = InvalidDataForTaskException.class)

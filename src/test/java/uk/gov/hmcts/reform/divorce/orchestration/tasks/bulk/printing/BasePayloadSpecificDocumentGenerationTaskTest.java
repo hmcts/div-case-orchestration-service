@@ -81,7 +81,7 @@ public class BasePayloadSpecificDocumentGenerationTaskTest {
                 }
 
                 @Override
-                protected String getDocumentType() {
+                public String getDocumentType() {
                     return TEST_DOCUMENT_TYPE;
                 }
 

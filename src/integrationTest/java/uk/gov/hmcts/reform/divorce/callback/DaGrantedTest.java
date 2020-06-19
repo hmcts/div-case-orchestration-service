@@ -22,14 +22,32 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 public class DaGrantedTest extends IntegrationTest {
 
-    private static final String DA_GRANTED_CALLBACK_REQUEST = "fixtures/da-granted/da-granted-digital-no.json";
+    private static final String DA_GRANTED_CALLBACK_REQUEST = "fixtures/da-granted/da-granted-offline.json";
+    private static final String DA_GRANTED_REPRESENTED_CALLBACK_REQUEST = "fixtures/da-granted/da-granted-offline-represented-respondent.json";
 
     @Autowired
     private CosApiClient cosApiClient;
 
     @Test
-    public void givenValidCaseData_whenDaIsGranted_thenReturnDaGrantedData() {
+    public void givenValidCaseData_whenDaIsGranted_ForRespondent_thenReturnDaGrantedData() {
         CcdCallbackRequest ccdCallbackRequest = ResourceLoader.loadJsonToObject(DA_GRANTED_CALLBACK_REQUEST, CcdCallbackRequest.class);
+
+        ResponseEntity<CcdCallbackResponse> response = cosApiClient.handleDaGranted(
+            createCaseWorkerUser().getAuthToken(),
+            ccdCallbackRequest);
+
+        Map<String, Object> responseData = response.getBody().getData();
+
+        assertEquals("Status code should be 200", response.getStatusCode(), HttpStatus.OK);
+        assertNotNull("Case data in response should not be null", responseData);
+        assertNull("No errors should be returned", response.getBody().getErrors());
+
+        assertNoDocumentsGeneratedByWorkflowWasSavedInCaseData(responseData);
+    }
+
+    @Test
+    public void givenValidCaseData_whenDaIsGranted_ForRepresentedRespondent_thenReturnDaGrantedData() {
+        CcdCallbackRequest ccdCallbackRequest = ResourceLoader.loadJsonToObject(DA_GRANTED_REPRESENTED_CALLBACK_REQUEST, CcdCallbackRequest.class);
 
         ResponseEntity<CcdCallbackResponse> response = cosApiClient.handleDaGranted(
             createCaseWorkerUser().getAuthToken(),

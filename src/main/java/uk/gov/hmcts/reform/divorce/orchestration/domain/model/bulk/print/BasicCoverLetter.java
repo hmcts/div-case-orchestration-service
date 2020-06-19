@@ -20,7 +20,7 @@ public class BasicCoverLetter extends DocmosisTemplateVars {
     @JsonProperty("addressee")
     private Addressee addressee;
 
-    @Builder
+    @Builder(builderMethodName = "basicCoverLetterBuilder")
     public BasicCoverLetter(
         CtscContactDetails ctscContactDetails,
         String caseReference,
@@ -31,4 +31,5 @@ public class BasicCoverLetter extends DocmosisTemplateVars {
         super(ctscContactDetails, caseReference, letterDate, petitionerFullName, respondentFullName);
         this.addressee = addressee;
     }
+
 }
