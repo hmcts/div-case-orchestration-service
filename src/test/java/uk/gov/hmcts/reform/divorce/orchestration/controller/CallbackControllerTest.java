@@ -1157,7 +1157,7 @@ public class CallbackControllerTest {
 
         assertThat(response.getStatusCode(), equalTo(OK));
         assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
-        verify(aosPackOfflineService).processAosPackOfflineAnswers(eq(caseDetails.getCaseData()), eq(RESPONDENT));
+        verify(aosPackOfflineService).processAosPackOfflineAnswers(eq(caseDetails), eq(RESPONDENT));
     }
 
     @Test
