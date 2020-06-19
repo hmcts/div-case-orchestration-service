@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoELetterDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor;
@@ -46,7 +46,7 @@ public class CoERespondentSolicitorLetterGenerationTask extends BasePayloadSpeci
                 .letterDate(DatesDataExtractor.getLetterDate())
                 .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
                 .hearingDate(DatesDataExtractor.getHearingDate(caseData))
-                .costClaimGranted(CoELetterDataExtractor.isCostsClaimGranted(caseData))
+                .costClaimGranted(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData))
                 .deadlineToContactCourtBy(DatesDataExtractor.getDeadlineToContactCourtBy(caseData))
                 .addressee(AddresseeDataExtractor.getRespondentSolicitor(caseData))
                 .solicitorReference(SolicitorDataExtractor.getSolicitorReference(caseData))
