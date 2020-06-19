@@ -5,14 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-@SuperBuilder
 public class DocmosisTemplateVars {
 
     @JsonProperty("ctscContactDetails")

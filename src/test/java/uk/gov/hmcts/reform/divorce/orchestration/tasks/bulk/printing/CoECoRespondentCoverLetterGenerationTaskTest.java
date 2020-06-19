@@ -65,7 +65,7 @@ public class CoECoRespondentCoverLetterGenerationTaskTest extends BasePayloadSpe
         Map<String, Object> caseData = buildCaseDataCoRespondentNotRepresented();
         Map<String, Object> returnedCaseData = coECoRespondentCoverLetterGenerationTask.execute(context, caseData);
 
-        CoECoverLetter expectedDocmosisTemplateVars = CoECoverLetter.builder()
+        CoECoverLetter expectedDocmosisTemplateVars = CoECoverLetter.coECoverLetterBuilder()
             .petitionerFullName(TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME)
             .respondentFullName(TEST_RESPONDENT_FIRST_NAME + " " + TEST_RESPONDENT_LAST_NAME)
             .caseReference(CASE_ID)
@@ -88,7 +88,7 @@ public class CoECoRespondentCoverLetterGenerationTaskTest extends BasePayloadSpe
         Map<String, Object> caseData = buildCaseDataCoRespondentRepresented();
         Map<String, Object> returnedCaseData = coECoRespondentCoverLetterGenerationTask.execute(context, caseData);
 
-        CoECoverLetter expectedDocmosisTemplateVars = CoECoverLetter.builder()
+        CoECoverLetter expectedDocmosisTemplateVars = CoECoverLetter.coECoverLetterBuilder()
             .petitionerFullName(TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME)
             .respondentFullName(TEST_RESPONDENT_FIRST_NAME + " " + TEST_RESPONDENT_LAST_NAME)
             .caseReference(CASE_ID)

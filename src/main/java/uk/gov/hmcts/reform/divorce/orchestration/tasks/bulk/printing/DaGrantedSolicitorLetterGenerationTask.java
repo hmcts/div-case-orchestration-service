@@ -38,7 +38,7 @@ public class DaGrantedSolicitorLetterGenerationTask extends BasePayloadSpecificD
 
     @Override
     protected DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        return DaGrantedRespondentSolicitorCoverLetter.builder()
+        return DaGrantedRespondentSolicitorCoverLetter.daGrantedRespondentSolicitorCoverLetterBuilder()
             .caseReference(getCaseId(context))
             .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
             .addressee(AddresseeDataExtractor.getRespondentSolicitor(caseData))

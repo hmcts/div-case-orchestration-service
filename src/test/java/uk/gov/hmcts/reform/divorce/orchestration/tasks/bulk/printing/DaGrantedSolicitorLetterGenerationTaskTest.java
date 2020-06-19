@@ -50,7 +50,7 @@ public class DaGrantedSolicitorLetterGenerationTaskTest extends BasePayloadSpeci
         Map<String, Object> returnedCaseData = daGrantedLetterGenerationTask.execute(context, caseData);
 
         verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
-        final DocmosisTemplateVars expectedDocmosisTemplateVars = DaGrantedRespondentSolicitorCoverLetter.builder()
+        final DocmosisTemplateVars expectedTemplateVars = DaGrantedRespondentSolicitorCoverLetter.daGrantedRespondentSolicitorCoverLetterBuilder()
             .petitionerFullName(TEST_PETITIONER_FULL_NAME)
             .respondentFullName(TEST_RESPONDENT_FULL_NAME)
             .caseReference(CASE_ID)
@@ -63,7 +63,7 @@ public class DaGrantedSolicitorLetterGenerationTaskTest extends BasePayloadSpeci
             returnedCaseData,
             DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER_DOCUMENT_TYPE,
             DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER_TEMPLATE_ID,
-            expectedDocmosisTemplateVars);
+            expectedTemplateVars);
     }
 
     private Map<String, Object> buildCaseDataRespondentRepresented() {

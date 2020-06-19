@@ -63,7 +63,7 @@ public class CostOrderCoRespondentSolicitorCoverLetterGenerationTaskTest extends
         Map<String, Object> returnedCaseData = costOrderNotificationLetterGenerationTask.execute(context, caseData);
 
         verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
-        final CoRespondentCostOrderCoverLetter expectedDocmosisTemplateVars = CoRespondentCostOrderCoverLetter.builder()
+        final CoRespondentCostOrderCoverLetter expectedTemplateVars = CoRespondentCostOrderCoverLetter.coRespondentCostOrderCoverLetterBuilder()
             .petitionerFullName(TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME)
             .respondentFullName(TEST_RESPONDENT_FIRST_NAME + " " + TEST_RESPONDENT_LAST_NAME)
             .caseReference(CASE_ID)
@@ -76,7 +76,7 @@ public class CostOrderCoRespondentSolicitorCoverLetterGenerationTaskTest extends
             returnedCaseData,
             COST_ORDER_CO_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE,
             CostOrderCoRespondentSolicitorCoverLetterGenerationTask.FileMetadata.TEMPLATE_ID,
-            expectedDocmosisTemplateVars);
+            expectedTemplateVars);
     }
 
     private Map<String, Object> buildCaseDataCoRespondentRepresented() {

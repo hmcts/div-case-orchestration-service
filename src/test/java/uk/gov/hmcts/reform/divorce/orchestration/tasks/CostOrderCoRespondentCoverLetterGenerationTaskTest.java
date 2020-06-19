@@ -54,7 +54,7 @@ public class CostOrderCoRespondentCoverLetterGenerationTaskTest extends BasePayl
         Map<String, Object> returnedCaseData = costOrderCoRespondentCoverLetterGenerationTask.execute(context, caseData);
 
         verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
-        final CoRespondentCostOrderCoverLetter coRespondentCoverLetter = CoRespondentCostOrderCoverLetter.builder()
+        final CoRespondentCostOrderCoverLetter coRespondentCoverLetter = CoRespondentCostOrderCoverLetter.coRespondentCostOrderCoverLetterBuilder()
             .petitionerFullName(TEST_PETITIONER_FULL_NAME)
             .respondentFullName(TEST_RESPONDENT_FULL_NAME)
             .caseReference(CASE_ID)

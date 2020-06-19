@@ -66,7 +66,7 @@ public class CoERespondentSolicitorLetterGenerationTaskTest extends BasePayloadS
         Map<String, Object> returnedCaseData = coERespondentSolicitorLetterGenerationTask.execute(context, caseData);
 
         verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
-        final CoERespondentSolicitorCoverLetter expectedDocmosisTemplateVars = CoERespondentSolicitorCoverLetter.builder()
+        final CoERespondentSolicitorCoverLetter expectedTemplateVars = CoERespondentSolicitorCoverLetter.coERespondentSolicitorCoverLetterBuilder()
             .petitionerFullName(TEST_PETITIONER_FULL_NAME)
             .respondentFullName(TEST_RESPONDENT_FULL_NAME)
             .caseReference(CASE_ID)
@@ -82,7 +82,7 @@ public class CoERespondentSolicitorLetterGenerationTaskTest extends BasePayloadS
             returnedCaseData,
             COE_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE,
             CoERespondentSolicitorLetterGenerationTask.FileMetadata.TEMPLATE_ID,
-            expectedDocmosisTemplateVars);
+            expectedTemplateVars);
     }
 
     private Map<String, Object> buildCaseDataRespondentRepresented() {

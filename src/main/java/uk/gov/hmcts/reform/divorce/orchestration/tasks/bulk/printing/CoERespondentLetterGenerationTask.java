@@ -45,7 +45,7 @@ public class CoERespondentLetterGenerationTask extends BasePayloadSpecificDocume
 
     @Override
     protected DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        return CoERespondentCoverLetter.builder()
+        return CoERespondentCoverLetter.coERespondentCoverLetterBuilder()
                 .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
                 .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
                 .caseReference(getCaseId(context))

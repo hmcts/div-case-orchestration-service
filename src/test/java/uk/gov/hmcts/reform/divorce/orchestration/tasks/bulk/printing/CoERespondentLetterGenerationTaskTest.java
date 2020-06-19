@@ -80,7 +80,7 @@ public class CoERespondentLetterGenerationTaskTest extends BasePayloadSpecificDo
         Map<String, Object> returnedCaseData = coERespondentLetterGenerationTask.execute(context, caseData);
 
         verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
-        final CoERespondentCoverLetter expectedDocmosisTemplateVars = CoERespondentCoverLetter.builder()
+        final CoERespondentCoverLetter expectedDocmosisTemplateVars = CoERespondentCoverLetter.coERespondentCoverLetterBuilder()
             .petitionerFullName(TEST_PETITIONER_FULL_NAME)
             .respondentFullName(TEST_RESPONDENT_FULL_NAME)
             .caseReference(CASE_ID)

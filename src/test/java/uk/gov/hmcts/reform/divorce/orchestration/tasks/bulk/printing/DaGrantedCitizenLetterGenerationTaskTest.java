@@ -48,7 +48,7 @@ public class DaGrantedCitizenLetterGenerationTaskTest extends BasePayloadSpecifi
         Map<String, Object> returnedCaseData = daGrantedLetterGenerationTask.execute(context, caseData);
 
         verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
-        final DocmosisTemplateVars expectedDocmosisTemplateVars = BasicCoverLetter.builder()
+        final DocmosisTemplateVars expectedDocmosisTemplateVars = BasicCoverLetter.basicCoverLetterBuilder()
             .petitionerFullName(TEST_PETITIONER_FULL_NAME)
             .respondentFullName(TEST_RESPONDENT_FULL_NAME)
             .caseReference(CASE_ID)
