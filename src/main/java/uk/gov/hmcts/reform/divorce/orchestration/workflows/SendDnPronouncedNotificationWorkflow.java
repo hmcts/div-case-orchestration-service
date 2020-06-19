@@ -54,7 +54,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
         String caseId = caseDetails.getCaseId();
         Map<String, Object> caseData = caseDetails.getCaseData();
-        final String documentType = coverLetterDocumentType(caseData);
+        final String documentType = coverLetterDocType(caseData);
 
         Map<String, Object> returnCaseData = this.execute(
             getTasks(caseDetails),
@@ -134,7 +134,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         return featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE);
     }
 
-    private String coverLetterDocumentType(Map<String, Object> caseData) {
+    private String coverLetterDocType(Map<String, Object> caseData) {
         return isCoRespondentRepresented(caseData)
             ? costOrderCoRespondentSolicitorCoverLetterGenerationTask.getDocumentType()
             : costOrderCoRespondentCoverLetterGenerationTask.getDocumentType();
