@@ -98,23 +98,22 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
                 log.info("CaseID: {} - Cost claim granted", caseDetails.getCaseId());
 
                 if (isCoRespondentRepresented(caseDetails.getCaseData())) {
-                    log.info("CaseID: {} - Send Cost Order Cover Letter to CoRespondent Solicitor", caseDetails.getCaseId());
+                    log.info("CaseID: {} - Added task to send Cost Order Cover Letter to CoRespondent Solicitor", caseDetails.getCaseId());
                     tasks.add(costOrderCoRespondentSolicitorCoverLetterGenerationTask);
-
                 } else {
-                    log.info("CaseID: {} - Send Cost Order Cover Letter to CoRespondent", caseDetails.getCaseId());
+                    log.info("CaseID: {} - Added task to send Cost Order Cover Letter to CoRespondent", caseDetails.getCaseId());
                     tasks.add(costOrderCoRespondentCoverLetterGenerationTask);
-
                 }
-                log.info("CaseID: {} - Documents sent to bulk print", caseDetails.getCaseId());
+
+                log.info("CaseID: {} - Added task to send to bulk print", caseDetails.getCaseId());
                 tasks.add(fetchPrintDocsFromDmStore);
                 tasks.add(bulkPrinterTask);
 
             } else {
-                log.info("CaseID: {} - Cost claim not granted. Nothing was sent to bulk print", caseDetails.getCaseId());
+                log.info("CaseID: {} - Cost claim not granted. Nothing will be sent to bulk print", caseDetails.getCaseId());
             }
         } else {
-            log.info("Features.PAPER_UPDATE = off. Nothing was sent to bulk print");
+            log.info("Features.PAPER_UPDATE = off. Nothing will be sent to bulk print");
         }
     }
 
@@ -124,10 +123,10 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         tasks.add(sendRespondentGenericUpdateNotificationEmailTask);
 
         if (isCoRespondentLiableForCosts(caseDetails.getCaseData())) {
-            log.info("CaseID: {} - corespondent is liable for costs. Email sent", caseDetails.getCaseId());
+            log.info("CaseID: {} - corespondent is liable for costs. Added task to send email do co-resp", caseDetails.getCaseId());
             tasks.add(sendCoRespondentGenericUpdateNotificationEmailTask);
         } else {
-            log.info("CaseID: {} - corespondent is not liable for costs. Email not sent", caseDetails.getCaseId());
+            log.info("CaseID: {} - corespondent is not liable for costs. Email will not be sent", caseDetails.getCaseId());
         }
     }
 
