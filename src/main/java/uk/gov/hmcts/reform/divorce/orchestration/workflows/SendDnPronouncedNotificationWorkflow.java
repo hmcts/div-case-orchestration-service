@@ -54,7 +54,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
         String caseId = caseDetails.getCaseId();
         Map<String, Object> caseData = caseDetails.getCaseData();
-        final String documentType = coverLetterDocType(caseData);
+        final String coverLetterDocType = getCoverLetterDocumentType(caseData);
 
         Map<String, Object> returnCaseData = this.execute(
             getTasks(caseDetails),
@@ -63,10 +63,10 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
             ImmutablePair.of(BULK_PRINT_LETTER_TYPE, COST_ORDER_OFFLINE_PACK_CO_RESPONDENT),
-            ImmutablePair.of(DOCUMENT_TYPES_TO_PRINT, getDocumentTypesToPrint(documentType, caseId))
+            ImmutablePair.of(DOCUMENT_TYPES_TO_PRINT, getDocumentTypesToPrint(coverLetterDocType, caseId))
         );
 
-        return removeDocumentsByDocumentType(returnCaseData, documentType);
+        return removeDocumentsByDocumentType(returnCaseData, coverLetterDocType);
     }
 
     private List<String> getDocumentTypesToPrint(String coverLetterDocumentType, String caseId) {
@@ -134,7 +134,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         return featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE);
     }
 
-    private String coverLetterDocType(Map<String, Object> caseData) {
+    private String getCoverLetterDocumentType(Map<String, Object> caseData) {
         return isCoRespondentRepresented(caseData)
             ? costOrderCoRespondentSolicitorCoverLetterGenerationTask.getDocumentType()
             : costOrderCoRespondentCoverLetterGenerationTask.getDocumentType();
