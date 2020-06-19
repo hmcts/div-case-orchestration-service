@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.google.common.base.Strings.nullToEmpty;
-import static java.util.Arrays.asList;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
@@ -68,7 +67,7 @@ public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Ob
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseDetails.getCaseId()),
             ImmutablePair.of(BULK_PRINT_LETTER_TYPE, COE_OFFLINE_PACK_RESPONDENT),
-            ImmutablePair.of(DOCUMENT_TYPES_TO_PRINT, getDocumentTypesToPrint(caseDetails.getCaseData()))
+            ImmutablePair.of(DOCUMENT_TYPES_TO_PRINT, getDocumentTypesToPrint(caseDetails))
         );
 
         return removeCoverLettersFrom(caseDataToReturn);
@@ -82,47 +81,122 @@ public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Ob
         tasks.add(sendPetitionerCoENotificationEmailTask);
 
         if (isRespondentUsingDigitalContact(caseData)) {
-            log.info("For case {} respondent uses digital contact", caseDetails.getCaseId());
-            tasks.add(sendRespondentCoENotificationEmailTask);
+            addRespondentNotificationEmailTask(tasks, caseDetails);
         } else {
-            log.info("For case {} respondent uses traditional letters", caseDetails.getCaseId());
             oneOrMorePartyUsesPaperUpdates = true;
-            if (featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)) {
-                if (isRespondentRepresented(caseData)) {
-                    log.info("For case {} respondent is represented by a solicitor", caseDetails.getCaseId());
-                    tasks.add(coERespondentSolicitorLetterGenerationTask);
-                } else {
-                    log.info("For case {} respondent is not represented by a solicitor", caseDetails.getCaseId());
-                    tasks.add(coERespondentLetterGenerationTask);
-                }
-            }
+            addRespondentNotificationLetterTask(tasks, caseDetails);
         }
 
         if (caseDataUtils.isAdulteryCaseWithNamedCoRespondent(caseData)) {
             if (isCoRespContactMethodDigital(caseData)) {
-                log.info("For case {} co-respondent uses digital contact", caseDetails.getCaseId());
-                tasks.add(sendCoRespondentGenericUpdateNotificationEmailTask);
+                addCoRespondentNotificationEmailTask(tasks, caseDetails);
             } else {
-                log.info("For case {} co-respondent uses traditional letters", caseDetails.getCaseId());
                 oneOrMorePartyUsesPaperUpdates = true;
-                if (featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)) {
-                    tasks.add(coECoRespondentCoverLetterGenerationTask);
-                }
+                addCoRespondentNotificationLetterTask(tasks, caseDetails);
             }
         }
 
         if (oneOrMorePartyUsesPaperUpdates) {
-            if (featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)) {
-                log.info("Features.PAPER_UPDATE = on.");
+            if (isPaperUpdateEnabled()) {
+                log.info("Features.PAPER_UPDATE = on. Add tasks to send documents to bulk print");
                 tasks.add(fetchPrintDocsFromDmStore);
                 tasks.add(bulkPrinterTask);
             } else {
-                log.info("Features.PAPER_UPDATE = off. Nothing was sent to bulk print. Defaulting to email notifications.");
+                log.info("Features.PAPER_UPDATE = off. Nothing will be sent to bulk print. Defaulting to email notifications.");
                 tasks = getEmailNotificationTasks(caseData);
             }
         }
 
         return tasks.toArray(new Task[0]);
+    }
+
+    public List<String> getDocumentTypesToPrint(CaseDetails caseDetails) {
+        Map<String, Object> caseData = caseDetails.getCaseData();
+        List<String> documentTypes = new ArrayList<>();
+        boolean oneOrMorePartyUsesPaperUpdates = false;
+
+        if (isPaperUpdateEnabled()) {
+            if (!isRespondentUsingDigitalContact(caseData)) {
+                oneOrMorePartyUsesPaperUpdates = true;
+                addRespondentCoverLetterDocumentType(documentTypes, caseDetails);
+            } else {
+                log.info("For case {} respondent is using digital channel. Do not add cover letter to documents to print",
+                    caseDetails.getCaseId());
+            }
+
+            if (caseDataUtils.isAdulteryCaseWithNamedCoRespondent(caseData)) {
+                if (!isCoRespContactMethodDigital(caseData)) {
+                    oneOrMorePartyUsesPaperUpdates = true;
+                    addCoRespondentCoverLetterDocumentType(documentTypes, caseDetails);
+                } else {
+                    log.info("For case {} co-respondent is using digital channel. Do not add cover letter to documents to print",
+                        caseDetails.getCaseId());
+                }
+            }
+
+            if (oneOrMorePartyUsesPaperUpdates) {
+                addCoEDocumentType(documentTypes, caseDetails);
+            } else {
+                log.info("For case {} the certificate of entitlement is not added to the documents to print", caseDetails.getCaseId());
+            }
+        } else {
+            log.info("Features.PAPER_UPDATE = off. No documents are added to the documents to print");
+            return documentTypes;
+        }
+
+        log.info("Case {} has {} documents to print: {}", caseDetails.getCaseId(), documentTypes.size(), documentTypes);
+        return documentTypes;
+    }
+
+    private void addRespondentNotificationEmailTask(List<Task<Map<String, Object>>> tasks, CaseDetails caseDetails) {
+        log.info("For case {} respondent uses digital contact", caseDetails.getCaseId());
+        tasks.add(sendRespondentCoENotificationEmailTask);
+    }
+
+    private void addRespondentNotificationLetterTask(List<Task<Map<String, Object>>> tasks, CaseDetails caseDetails) {
+        log.info("For case {} respondent uses traditional letters", caseDetails.getCaseId());
+        if (isPaperUpdateEnabled()) {
+            if (isRespondentRepresented(caseDetails.getCaseData())) {
+                log.info("For case {} respondent is represented by a solicitor", caseDetails.getCaseId());
+                tasks.add(coERespondentSolicitorLetterGenerationTask);
+            } else {
+                log.info("For case {} respondent is not represented by a solicitor", caseDetails.getCaseId());
+                tasks.add(coERespondentLetterGenerationTask);
+            }
+        }
+    }
+
+    private void addCoRespondentNotificationEmailTask(List<Task<Map<String, Object>>> tasks, CaseDetails caseDetails) {
+        log.info("For case {} co-respondent uses digital contact", caseDetails.getCaseId());
+        tasks.add(sendCoRespondentGenericUpdateNotificationEmailTask);
+    }
+
+    private void addCoRespondentNotificationLetterTask(List<Task<Map<String, Object>>> tasks, CaseDetails caseDetails) {
+        log.info("For case {} co-respondent uses traditional letters", caseDetails.getCaseId());
+        if (isPaperUpdateEnabled()) {
+            tasks.add(coECoRespondentCoverLetterGenerationTask);
+        }
+    }
+
+    private void addRespondentCoverLetterDocumentType(List<String> documentTypes, CaseDetails caseDetails) {
+        log.info("Case {} has cover letters to print for the respondent (or their solicitor)", caseDetails.getCaseId());
+        if (isRespondentRepresented(caseDetails.getCaseData())) {
+            log.info("For case {} add cover letter to print for the respondent's solicitor", caseDetails.getCaseId());
+            documentTypes.add(coERespondentSolicitorLetterGenerationTask.getDocumentType());
+        } else {
+            log.info("For case {} add cover letter to print for the respondent", caseDetails.getCaseId());
+            documentTypes.add(coERespondentLetterGenerationTask.getDocumentType());
+        }
+    }
+
+    private void addCoRespondentCoverLetterDocumentType(List<String> documentTypes, CaseDetails caseDetails) {
+        log.info("Case {} has cover letters to print for the co-respondent (or their solicitor)", caseDetails.getCaseId());
+        documentTypes.add(coECoRespondentCoverLetterGenerationTask.getDocumentType());
+    }
+
+    private void addCoEDocumentType(List<String> documentTypes, CaseDetails caseDetails) {
+        log.info("For case {} add the certificate of entitlement to the documents to print", caseDetails.getCaseId());
+        documentTypes.add(DOCUMENT_TYPE_COE);
     }
 
     private List<Task<Map<String, Object>>> getEmailNotificationTasks(Map<String, Object> caseData) {
@@ -137,21 +211,14 @@ public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Ob
         return tasks;
     }
 
+    private boolean isPaperUpdateEnabled() {
+        return featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE);
+    }
+
     private Map<String, Object> removeCoverLettersFrom(Map<String, Object> caseDataToReturn) {
         return removeDocumentsByDocumentType(caseDataToReturn,
             coERespondentLetterGenerationTask.getDocumentType(),
             coECoRespondentCoverLetterGenerationTask.getDocumentType());
-    }
-
-    private List<String> getDocumentTypesToPrint(Map<String, Object> caseData) {
-        List<String> documentTypes = new ArrayList<>(asList(
-            coERespondentLetterGenerationTask.getDocumentType(),
-            DOCUMENT_TYPE_COE
-        ));
-        if (caseDataUtils.isAdulteryCaseWithNamedCoRespondent(caseData)) {
-            documentTypes.add(coECoRespondentCoverLetterGenerationTask.getDocumentType());
-        }
-        return documentTypes;
     }
 
     private boolean isCoRespContactMethodDigital(Map<String, Object> caseData) {
