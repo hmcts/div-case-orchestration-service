@@ -320,7 +320,8 @@ public class OrchestrationConstants {
     public static final String DECREE_NISI_REFUSAL_REJECTION_DOCUMENT_NAME = "rejectionDnRefusalOrder";
     public static final String DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD = "PreviousDNClarificationRefusalOrder";
     public static final String DECREE_ABSOLUTE_DOCUMENT_TYPE = "daGranted";
-    public static final String DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE = "daGrantedLetter";
+    public static final String DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_DOCUMENT_TYPE = "daGrantedLetter";
+    public static final String DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER_DOCUMENT_TYPE = "daGrantedLetterSol";
     public static final String DECREE_ABSOLUTE_FILENAME = "decreeAbsolute";
     public static final String DECREE_ABSOLUTE_TEMPLATE_ID = "FL-DIV-GOR-ENG-00062.docx";
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID = "FL-DIV-GNO-ENG-00073.docx";

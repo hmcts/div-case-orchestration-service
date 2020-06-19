@@ -15,35 +15,24 @@ import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @ToString(callSuper = true)
-public class CoECoverLetter extends DocmosisTemplateVars {
-    @JsonProperty("addressee")
-    private Addressee addressee;
-    @JsonProperty("costClaimGranted")
-    private boolean costClaimGranted;
+public class CoECoverLetter extends CoEBasicCoverLetter {
+
     @JsonProperty("courtName")
     private String courtName;
-    @JsonProperty("hearingDate")
-    private String hearingDate;
-    @JsonProperty("deadlineToContactCourtBy")
-    private String deadlineToContactCourtBy;
 
-    @Builder
-    public CoECoverLetter(
-        CtscContactDetails ctscContactDetails,
-        String caseReference,
-        String letterDate,
-        String petitionerFullName,
-        String respondentFullName,
-        Addressee addressee,
-        boolean costClaimGranted,
-        String courtName,
-        String hearingDate,
-        String deadlineToContactCourtBy) {
-        super(ctscContactDetails, caseReference, letterDate, petitionerFullName, respondentFullName);
-        this.addressee = addressee;
-        this.costClaimGranted = costClaimGranted;
+    @Builder(builderMethodName = "coECoverLetterBuilder")
+    public CoECoverLetter(CtscContactDetails ctscContactDetails,
+                          String caseReference,
+                          String letterDate,
+                          String petitionerFullName,
+                          String respondentFullName,
+                          Addressee addressee,
+                          boolean costClaimGranted,
+                          String hearingDate,
+                          String deadlineToContactCourtBy,
+                          String courtName) {
+        super(ctscContactDetails, caseReference, letterDate, petitionerFullName, respondentFullName,
+            addressee, costClaimGranted, hearingDate, deadlineToContactCourtBy);
         this.courtName = courtName;
-        this.hearingDate = hearingDate;
-        this.deadlineToContactCourtBy = deadlineToContactCourtBy;
     }
 }

@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextracto
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.SolicitorDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.Map;
@@ -38,7 +39,7 @@ public class CoERespondentSolicitorLetterGenerationTask extends BasePayloadSpeci
 
     @Override
     protected DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        return CoERespondentSolicitorCoverLetter.builder()
+        return CoERespondentSolicitorCoverLetter.coERespondentSolicitorCoverLetterBuilder()
                 .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
                 .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
                 .caseReference(getCaseId(context))
@@ -48,7 +49,7 @@ public class CoERespondentSolicitorLetterGenerationTask extends BasePayloadSpeci
                 .costClaimGranted(CoELetterDataExtractor.isCostsClaimGranted(caseData))
                 .deadlineToContactCourtBy(DatesDataExtractor.getDeadlineToContactCourtBy(caseData))
                 .addressee(AddresseeDataExtractor.getRespondentSolicitor(caseData))
-                .solicitorReference(CoELetterDataExtractor.getSolicitorReference(caseData))
+                .solicitorReference(SolicitorDataExtractor.getSolicitorReference(caseData))
                 .build();
     }
 
