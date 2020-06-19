@@ -98,14 +98,14 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
                 log.info("CaseID: {} - Cost claim granted", caseDetails.getCaseId());
 
                 if (isCoRespondentRepresented(caseDetails.getCaseData())) {
-                    log.info("CaseID: {} - Added task to send Cost Order Cover Letter to CoRespondent Solicitor", caseDetails.getCaseId());
+                    log.info("CaseID: {} - Adding task to send Cost Order Cover Letter to CoRespondent Solicitor", caseDetails.getCaseId());
                     tasks.add(costOrderCoRespondentSolicitorCoverLetterGenerationTask);
                 } else {
-                    log.info("CaseID: {} - Added task to send Cost Order Cover Letter to CoRespondent", caseDetails.getCaseId());
+                    log.info("CaseID: {} - Adding task to send Cost Order Cover Letter to CoRespondent", caseDetails.getCaseId());
                     tasks.add(costOrderCoRespondentCoverLetterGenerationTask);
                 }
 
-                log.info("CaseID: {} - Added task to send to bulk print", caseDetails.getCaseId());
+                log.info("CaseID: {} - Adding task to send to bulk print", caseDetails.getCaseId());
                 tasks.add(fetchPrintDocsFromDmStore);
                 tasks.add(bulkPrinterTask);
 
