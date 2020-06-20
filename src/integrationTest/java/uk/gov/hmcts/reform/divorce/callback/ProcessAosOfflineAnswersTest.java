@@ -19,8 +19,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.CO_RESPONDENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.AosPackOfflineDerivedAddressFormatterHelper.CO_RESPONDENT_SOLICITOR_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.AosPackOfflineDerivedAddressFormatterHelper.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.CO_RESPONDENT_SOLICITOR_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
 
 public class ProcessAosOfflineAnswersTest extends IntegrationTest {

@@ -11,14 +11,14 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.AosPackOfflineDerivedAddressFormatterHelper.D8_DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.AosPackOfflineDerivedAddressFormatterHelper.D8_DERIVED_RESPONDENT_HOME_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.AosPackOfflineDerivedAddressFormatterHelper.D8_DERIVED_RESPONDENT_SOLICITOR_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.AosPackOfflineDerivedAddressFormatterHelper.D8_RESPONDENT_CORRESPONDENCE_USE_HOME_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.AosPackOfflineDerivedAddressFormatterHelper.formatDerivedRespondentCorrespondenceAddress;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.AosPackOfflineDerivedAddressFormatterHelper.formatDerivedRespondentHomeAddress;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.AosPackOfflineDerivedAddressFormatterHelper.formatDerivedRespondentSolicitorAddress;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.AosPackOfflineDerivedAddressFormatterHelper.isRespondentCorrespondenceAddressPopulated;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.D8_DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.D8_DERIVED_RESPONDENT_HOME_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.D8_DERIVED_RESPONDENT_SOLICITOR_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.D8_RESPONDENT_CORRESPONDENCE_USE_HOME_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.formatDerivedRespondentCorrespondenceAddress;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.formatDerivedRespondentHomeAddress;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.formatDerivedRespondentSolicitorAddress;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.isRespondentCorrespondenceAddressPopulated;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
 
 @Slf4j

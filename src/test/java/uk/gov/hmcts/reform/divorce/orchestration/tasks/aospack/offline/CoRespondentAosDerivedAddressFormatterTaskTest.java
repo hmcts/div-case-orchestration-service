@@ -19,9 +19,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.CaseDataKeys.CO_RESPONDENT_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.CaseDataKeys.CO_RESPONDENT_SOLICITOR_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.AosPackOfflineDerivedAddressFormatterHelperTest.EXPECTED_DERIVED_CORESPONDENT_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.AosPackOfflineDerivedAddressFormatterHelperTest.buildCaseWithCoRespondentAddress;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.AosPackOfflineDerivedAddressFormatterHelperTest.buildCaseWithCoRespondentSolicitorAddress;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelperTest.EXPECTED_DERIVED_CORESPONDENT_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelperTest.buildCaseWithCoRespondentAddress;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelperTest.buildCaseWithCoRespondentSolicitorAddress;
 
 public class CoRespondentAosDerivedAddressFormatterTaskTest {
 

@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class AosPackOfflineDerivedAddressFormatterHelper {
+public class DerivedAddressFormatterHelper {
 
     public static final String CO_RESPONDENT_SOLICITOR_ADDRESS = "CoRespondentSolicitorAddress";
     public static final String D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS = "D8ReasonForDivorceAdultery3rdAddress";

@@ -17,13 +17,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.AosPackOfflineDerivedAddressFormatterHelper.CO_RESPONDENT_SOLICITOR_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.AosPackOfflineDerivedAddressFormatterHelper.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.AosPackOfflineDerivedAddressFormatterHelper.D8_RESPONDENT_CORRESPONDENCE_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.AosPackOfflineDerivedAddressFormatterHelper.D8_RESPONDENT_HOME_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.AosPackOfflineDerivedAddressFormatterHelper.D8_RESPONDENT_SOLICITOR_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.CO_RESPONDENT_SOLICITOR_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.D8_RESPONDENT_CORRESPONDENCE_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.D8_RESPONDENT_HOME_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.D8_RESPONDENT_SOLICITOR_ADDRESS;
 
-public class AosPackOfflineDerivedAddressFormatterHelperTest {
+public class DerivedAddressFormatterHelperTest {
 
     public static final String ADDRESS_LINE_1 = "AddressLine1";
     public static final String ADDRESS_LINE_2 = "AddressLine2";
@@ -66,7 +66,7 @@ public class AosPackOfflineDerivedAddressFormatterHelperTest {
     public void formatDerivedCoRespondentSolicitorAddress() {
         Map<String, Object> caseData = buildCaseWithCoRespondentSolicitorAddress();
 
-        String derivedCoRespondentSolicitorAddr = AosPackOfflineDerivedAddressFormatterHelper.formatDerivedCoRespondentSolicitorAddress(caseData);
+        String derivedCoRespondentSolicitorAddr = DerivedAddressFormatterHelper.formatDerivedCoRespondentSolicitorAddress(caseData);
 
         assertThat(derivedCoRespondentSolicitorAddr, is(EXPECTED_DERIVED_CORESPONDENT_ADDRESS));
 
@@ -76,7 +76,7 @@ public class AosPackOfflineDerivedAddressFormatterHelperTest {
     public void formatDerivedReasonForDivorceAdultery3rdAddress() {
         Map<String, Object> caseData = buildCaseWithCoRespondentAddress();
 
-        String derivedCoRespondentAddr = AosPackOfflineDerivedAddressFormatterHelper.formatDerivedReasonForDivorceAdultery3rdAddress(caseData);
+        String derivedCoRespondentAddr = DerivedAddressFormatterHelper.formatDerivedReasonForDivorceAdultery3rdAddress(caseData);
 
         assertThat(derivedCoRespondentAddr, is(EXPECTED_DERIVED_CORESPONDENT_ADDRESS));
     }
@@ -85,7 +85,7 @@ public class AosPackOfflineDerivedAddressFormatterHelperTest {
     public void formatDerivedRespondentSolicitorAddress() {
         Map<String, Object> caseData = buildCaseWithRespondentSolicitorAddress();
 
-        String derivedRespondentSolicitorAddr = AosPackOfflineDerivedAddressFormatterHelper.formatDerivedRespondentSolicitorAddress(caseData);
+        String derivedRespondentSolicitorAddr = DerivedAddressFormatterHelper.formatDerivedRespondentSolicitorAddress(caseData);
 
         assertThat(derivedRespondentSolicitorAddr, is(EXPECTED_DERIVED_RESPONDENT_ADDRESS));
 
@@ -95,7 +95,7 @@ public class AosPackOfflineDerivedAddressFormatterHelperTest {
     public void formatDerivedRespondentHomeAddress() {
         Map<String, Object> caseData = buildCaseWithRespondentHomeAddress();
 
-        String derivedRespondentHomeAddr = AosPackOfflineDerivedAddressFormatterHelper.formatDerivedRespondentHomeAddress(caseData);
+        String derivedRespondentHomeAddr = DerivedAddressFormatterHelper.formatDerivedRespondentHomeAddress(caseData);
 
         assertThat(derivedRespondentHomeAddr, is(EXPECTED_DERIVED_RESPONDENT_ADDRESS));
 
@@ -105,7 +105,7 @@ public class AosPackOfflineDerivedAddressFormatterHelperTest {
     public void formatDerivedRespondentCorrespondenceAddress() {
         Map<String, Object> caseData = buildCaseWithRespondentCorrespondenceAddress();
 
-        String derivedRespondentHomeAddr = AosPackOfflineDerivedAddressFormatterHelper.formatDerivedRespondentCorrespondenceAddress(caseData);
+        String derivedRespondentHomeAddr = DerivedAddressFormatterHelper.formatDerivedRespondentCorrespondenceAddress(caseData);
 
         assertThat(derivedRespondentHomeAddr, is(EXPECTED_DERIVED_CORRESPONDENCE_ADDRESS));
     }
@@ -114,7 +114,7 @@ public class AosPackOfflineDerivedAddressFormatterHelperTest {
     public void shouldFormatHomeAddressWhenCorrespondenceAddressIsNotPopulated() {
         Map<String, Object> caseData = buildCaseWithRespondentHomeAddress();
 
-        String derivedRespondentHomeAddr = AosPackOfflineDerivedAddressFormatterHelper.formatDerivedRespondentCorrespondenceAddress(caseData);
+        String derivedRespondentHomeAddr = DerivedAddressFormatterHelper.formatDerivedRespondentCorrespondenceAddress(caseData);
 
         assertThat(derivedRespondentHomeAddr, is(EXPECTED_DERIVED_RESPONDENT_ADDRESS));
     }
@@ -123,7 +123,7 @@ public class AosPackOfflineDerivedAddressFormatterHelperTest {
     public void shouldReturnTrueIfD8RespondentCorrespondenceAddressIsPopulated() {
         Map<String, Object> caseData = buildCaseWithRespondentCorrespondenceAddress();
 
-        boolean value = AosPackOfflineDerivedAddressFormatterHelper.isRespondentCorrespondenceAddressPopulated(caseData);
+        boolean value = DerivedAddressFormatterHelper.isRespondentCorrespondenceAddressPopulated(caseData);
 
         assertThat(value, is(true));
     }
@@ -132,7 +132,7 @@ public class AosPackOfflineDerivedAddressFormatterHelperTest {
     public void shouldReturnFalseIfD8RespondentCorrespondenceAddressNotPopulated() {
         Map<String, Object> caseData = buildCaseWithRespondentHomeAddress();
 
-        boolean value = AosPackOfflineDerivedAddressFormatterHelper.isRespondentCorrespondenceAddressPopulated(caseData);
+        boolean value = DerivedAddressFormatterHelper.isRespondentCorrespondenceAddressPopulated(caseData);
 
         assertThat(value, is(false));
     }
@@ -143,7 +143,7 @@ public class AosPackOfflineDerivedAddressFormatterHelperTest {
         Map<String, Object> address = new HashMap<>();
         address.put(TEST_ADDR_PROPTERTY, addressType);
 
-        String result = AosPackOfflineDerivedAddressFormatterHelper.formatToDerivedAddress(address, TEST_ADDR_PROPTERTY);
+        String result = DerivedAddressFormatterHelper.formatToDerivedAddress(address, TEST_ADDR_PROPTERTY);
 
         assertThat(result, is(notNullValue()));
         assertThat(result, containsString(TEST_EXPECTED_LINE_1));
@@ -154,7 +154,7 @@ public class AosPackOfflineDerivedAddressFormatterHelperTest {
     public void givenNoValidCcdAddressType_shouldReturnNull() {
         Map<String, Object> address = new HashMap<>();
 
-        String result = AosPackOfflineDerivedAddressFormatterHelper.formatToDerivedAddress(address, TEST_ADDR_PROPTERTY);
+        String result = DerivedAddressFormatterHelper.formatToDerivedAddress(address, TEST_ADDR_PROPTERTY);
 
         assertThat(result, is(nullValue()));
     }
@@ -169,7 +169,7 @@ public class AosPackOfflineDerivedAddressFormatterHelperTest {
         Map<String, Object> address = new HashMap<>();
         address.put(TEST_ADDR_PROPTERTY, addressType);
 
-        String result = AosPackOfflineDerivedAddressFormatterHelper.formatToDerivedAddress(address, TEST_ADDR_PROPTERTY);
+        String result = DerivedAddressFormatterHelper.formatToDerivedAddress(address, TEST_ADDR_PROPTERTY);
 
         assertThat(result, stringContainsInOrder(
             Arrays.asList(TEST_EXPECTED_LINE_1,
