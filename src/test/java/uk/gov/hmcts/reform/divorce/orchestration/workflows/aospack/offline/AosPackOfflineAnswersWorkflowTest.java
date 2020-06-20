@@ -50,7 +50,7 @@ public class AosPackOfflineAnswersWorkflowTest {
     private CoRespondentAosDerivedAddressFormatterTask coRespondentAosDerivedAddressFormatter;
 
     @Mock
-    RespondentAosDerivedAddressFormatterTask respondentAosDerivedAddressFormatter;
+    private RespondentAosDerivedAddressFormatterTask respondentAosDerivedAddressFormatter;
 
     @InjectMocks
     private AosPackOfflineAnswersWorkflow classUnderTest;
