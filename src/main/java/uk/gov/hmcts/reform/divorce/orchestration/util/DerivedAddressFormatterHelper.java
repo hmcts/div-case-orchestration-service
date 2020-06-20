@@ -56,6 +56,6 @@ public class DerivedAddressFormatterHelper {
     }
 
     public static boolean isRespondentCorrespondenceAddressPopulated(Map<String, Object> caseData) {
-        return !StringUtils.isEmpty(formatToDerivedAddress(caseData, D8_RESPONDENT_CORRESPONDENCE_ADDRESS)) ? true : false;
+        return !StringUtils.isEmpty(formatToDerivedAddress(caseData, D8_RESPONDENT_CORRESPONDENCE_ADDRESS));
     }
 }
