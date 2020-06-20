@@ -39,7 +39,7 @@ public class ResourceLoader {
         }
     }
 
-    private static <T> T jsonToObject(byte[] json, Class<T> type) {
+    public static <T> T jsonToObject(byte[] json, Class<T> type) {
         try {
             return new ObjectMapper().readValue(json, type);
         } catch (Exception e) {

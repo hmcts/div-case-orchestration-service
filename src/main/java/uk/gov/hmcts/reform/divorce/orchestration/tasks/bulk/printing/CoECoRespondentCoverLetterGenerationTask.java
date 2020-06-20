@@ -49,7 +49,7 @@ public class CoECoRespondentCoverLetterGenerationTask extends BasePayloadSpecifi
 
     @Override
     protected DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        return CoECoverLetter.builder()
+        return CoECoverLetter.coECoverLetterBuilder()
             .caseReference(getCaseId(context))
             .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
             .addressee(getAddresseeCoRespondentOrSolicitorIfRepresented(caseData))

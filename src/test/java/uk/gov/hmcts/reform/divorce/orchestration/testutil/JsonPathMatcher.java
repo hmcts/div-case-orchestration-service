@@ -35,7 +35,7 @@ public class JsonPathMatcher {
 
         @Override
         public boolean matches(Object argument) {
-            return  hasJsonPath(path, matcher).matches(argument);
+            return hasJsonPath(path, matcher).matches(argument);
         }
     }
 }

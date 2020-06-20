@@ -16,7 +16,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_DERIVED_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
@@ -25,6 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.CaseDataKeys.RESPONDENT_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.CaseDataKeys.RESPONDENT_SOLICITOR_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.COST_CLAIMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.buildCaseDataWithCoRespondentNames;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.buildCaseDataWithCoRespondentSolicitorNames;
@@ -35,8 +35,8 @@ public class AddresseeDataExtractorTest {
     public static final String RESPONDENTS_ADDRESS = "123 Respondent Str\nRespondent\ncounty\nRE5 P0N";
     public static final String RESPONDENT_SOLICITORS_ADDRESS = "321 Resp Solicitor\ntown\ncounty\npostcode";
     public static final String RESPONDENT_SOLICITOR_REF = "SolRef4567";
-    public static final String RESPONDENT_SOLICITORS_EXPECTED_NAME = "Sol" + TestConstants.TEST_RESPONDENTS_FULL_NAME;
-    public static final String CO_RESPONDENT_SOLICITORS_EXPECTED_NAME = "CoSol" + TestConstants.TEST_CO_RESPONDENTS_FULL_NAME;
+    public static final String RESPONDENT_SOLICITORS_EXPECTED_NAME = "Sol" + TestConstants.TEST_RESPONDENT_FULL_NAME;
+    public static final String CO_RESPONDENT_SOLICITORS_EXPECTED_NAME = "CoSol" + TestConstants.TEST_CO_RESPONDENT_FULL_NAME;
     public static final String CO_RESPONDENT_ADDRESS = "456 CoRespondent Str\nCoRespondent\nCounty\nRE5 P0N";
     public static final String CO_RESPONDENT_SOLICITOR_ADDRESS = "456 CoRespondent Solicitor Str\nCoRespondent Solicitor\nCounty\nRE5 P0N";
     public static final String D8_CASE_REFERENCE = "LV17D80102";
@@ -50,7 +50,7 @@ public class AddresseeDataExtractorTest {
         Addressee addressee = AddresseeDataExtractor.getRespondent(caseData);
 
         assertThat(addressee.getFormattedAddress(), is(RESPONDENTS_ADDRESS));
-        assertThat(addressee.getName(), is(TestConstants.TEST_RESPONDENTS_FULL_NAME));
+        assertThat(addressee.getName(), is(TestConstants.TEST_RESPONDENT_FULL_NAME));
     }
 
     @Test
@@ -60,7 +60,7 @@ public class AddresseeDataExtractorTest {
         Addressee addressee = AddresseeDataExtractor.getCoRespondent(caseData);
 
         assertThat(addressee.getFormattedAddress(), is(CO_RESPONDENT_ADDRESS));
-        assertThat(addressee.getName(), is(TestConstants.TEST_CO_RESPONDENTS_FULL_NAME));
+        assertThat(addressee.getName(), is(TestConstants.TEST_CO_RESPONDENT_FULL_NAME));
     }
 
     @Test(expected = InvalidDataForTaskException.class)
@@ -70,7 +70,7 @@ public class AddresseeDataExtractorTest {
         Addressee addressee = AddresseeDataExtractor.getCoRespondent(caseData);
 
         assertThat(addressee.getFormattedAddress(), is(CO_RESPONDENT_ADDRESS));
-        assertThat(addressee.getName(), is(TestConstants.TEST_CO_RESPONDENTS_FULL_NAME));
+        assertThat(addressee.getName(), is(TestConstants.TEST_CO_RESPONDENT_FULL_NAME));
     }
 
     @Test(expected = InvalidDataForTaskException.class)
@@ -139,7 +139,7 @@ public class AddresseeDataExtractorTest {
         Map<String, Object> caseData = buildCaseDataWithCoRespondentNames();
         caseData.put(D8_DERIVED_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS, CO_RESPONDENT_ADDRESS);
         caseData.put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE);
-        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
+        caseData.put(COST_CLAIMED, YES_VALUE);
         caseData.put(CO_RESPONDENT_REPRESENTED, NO_VALUE);
         caseData.put(D_8_CASE_REFERENCE, D8_CASE_REFERENCE);
         caseData.put(DATETIME_OF_HEARING_CCD_FIELD, VALID_HEARING_DATE);
@@ -150,7 +150,7 @@ public class AddresseeDataExtractorTest {
         Map<String, Object> caseData = buildCaseDataWithCoRespondentSolicitorNames(CO_RESPONDENT_SOLICITORS_EXPECTED_NAME);
         caseData.put(OrchestrationConstants.CO_RESPONDENT_SOLICITOR_ADDRESS, CO_RESPONDENT_SOLICITOR_ADDRESS);
         caseData.put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE);
-        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
+        caseData.put(COST_CLAIMED, YES_VALUE);
         caseData.put(CO_RESPONDENT_REPRESENTED, YES_VALUE);
         caseData.put(D_8_CASE_REFERENCE, D8_CASE_REFERENCE);
         caseData.put(SOLICITOR_REFERENCE_JSON_KEY, CO_RESPONDENT_SOLICITOR_REF);

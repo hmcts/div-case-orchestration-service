@@ -13,39 +13,24 @@ import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
 @Getter
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-public class CoERespondentSolicitorCoverLetter extends DocmosisTemplateVars {
-    @JsonProperty("hearingDate")
-    private String hearingDate;
-
-    @JsonProperty("deadlineToContactCourtBy")
-    private String deadlineToContactCourtBy;
-
-    @JsonProperty("costClaimGranted")
-    private boolean costClaimGranted;
-
-    @JsonProperty("addressee")
-    private Addressee addressee;
+public class CoERespondentSolicitorCoverLetter extends CoEBasicCoverLetter {
 
     @JsonProperty("solicitorReference")
     private String solicitorReference;
 
-    @Builder
-    public CoERespondentSolicitorCoverLetter(
-        CtscContactDetails ctscContactDetails,
-        String caseReference,
-        String letterDate,
-        String petitionerFullName,
-        String respondentFullName,
-        String hearingDate,
-        String deadlineToContactCourtBy,
-        String solicitorReference,
-        boolean costClaimGranted,
-        Addressee addressee) {
-        super(ctscContactDetails, caseReference, letterDate, petitionerFullName, respondentFullName);
-        this.hearingDate = hearingDate;
-        this.deadlineToContactCourtBy = deadlineToContactCourtBy;
-        this.costClaimGranted = costClaimGranted;
-        this.addressee = addressee;
+    @Builder(builderMethodName = "coERespondentSolicitorCoverLetterBuilder")
+    public CoERespondentSolicitorCoverLetter(CtscContactDetails ctscContactDetails,
+                                             String caseReference,
+                                             String letterDate,
+                                             String petitionerFullName,
+                                             String respondentFullName,
+                                             Addressee addressee,
+                                             boolean costClaimGranted,
+                                             String hearingDate,
+                                             String deadlineToContactCourtBy,
+                                             String solicitorReference) {
+        super(ctscContactDetails, caseReference, letterDate, petitionerFullName, respondentFullName,
+            addressee, costClaimGranted, hearingDate, deadlineToContactCourtBy);
         this.solicitorReference = solicitorReference;
     }
 }

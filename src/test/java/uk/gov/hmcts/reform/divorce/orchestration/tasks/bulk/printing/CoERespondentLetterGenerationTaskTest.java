@@ -21,16 +21,19 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENTS_FULL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FULL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.COE_RESPONDENT_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.RESPONDENTS_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoELetterDataExtractor.CaseDataKeys.COURT_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoELetterDataExtractor.CaseDataKeys.HEARING_DATE_TIME;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoELetterDataExtractor.CaseDataKeys.IS_COSTS_CLAIM_GRANTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoELetterDataExtractor.CaseDataKeys.PETITIONER_GENDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.COST_CLAIMED;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.COURT_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.HEARING_DATE_TIME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.PETITIONER_GENDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractorTest.CONTACT_COURT_BY_DATE_FORMATTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractorTest.HEARING_DATE_FORMATTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractorTest.createHearingDatesList;
@@ -39,8 +42,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.CTSC_CONTACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.LETTER_DATE_EXPECTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.PETITIONERS_FIRST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.PETITIONERS_LAST_NAME;
 
 public class CoERespondentLetterGenerationTaskTest extends BasePayloadSpecificDocumentGenerationTaskTest {
 
@@ -49,7 +50,7 @@ public class CoERespondentLetterGenerationTaskTest extends BasePayloadSpecificDo
     private static final String PETITIONER_GENDER_VALUE = Gender.MALE.getValue();
     private static final String HUSBAND_OR_WIFE = "husband";
     private static final String COURT_ID = "southampton";
-    private static final String COURT_NAME_VALUE = "The Family Court at Southampton" ;
+    private static final String COURT_NAME_VALUE = "The Family Court at Southampton";
 
     @Mock
     private CourtLookupService courtLookupService;
@@ -79,9 +80,9 @@ public class CoERespondentLetterGenerationTaskTest extends BasePayloadSpecificDo
         Map<String, Object> returnedCaseData = coERespondentLetterGenerationTask.execute(context, caseData);
 
         verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
-        final CoERespondentCoverLetter expectedDocmosisTemplateVars = CoERespondentCoverLetter.builder()
-            .petitionerFullName(PETITIONERS_FIRST_NAME + " " + PETITIONERS_LAST_NAME)
-            .respondentFullName(TEST_RESPONDENTS_FULL_NAME)
+        final CoERespondentCoverLetter expectedDocmosisTemplateVars = CoERespondentCoverLetter.coERespondentCoverLetterBuilder()
+            .petitionerFullName(TEST_PETITIONER_FULL_NAME)
+            .respondentFullName(TEST_RESPONDENT_FULL_NAME)
             .caseReference(CASE_ID)
             .letterDate(LETTER_DATE_EXPECTED)
             .ctscContactDetails(CTSC_CONTACT)
@@ -90,7 +91,7 @@ public class CoERespondentLetterGenerationTaskTest extends BasePayloadSpecificDo
             .hearingDate(HEARING_DATE_FORMATTED)
             .costClaimGranted(IS_COSTS_CLAIM_GRANTED_BOOL_VALUE)
             .deadlineToContactCourtBy(CONTACT_COURT_BY_DATE_FORMATTED)
-            .addressee(Addressee.builder().name(TEST_RESPONDENTS_FULL_NAME).formattedAddress(RESPONDENTS_ADDRESS).build())
+            .addressee(Addressee.builder().name(TEST_RESPONDENT_FULL_NAME).formattedAddress(RESPONDENTS_ADDRESS).build())
             .build();
         runCommonVerifications(caseData,
             returnedCaseData,
@@ -102,11 +103,11 @@ public class CoERespondentLetterGenerationTaskTest extends BasePayloadSpecificDo
     private Map<String, Object> buildCaseDataRespondent() {
         Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithRespondentWithAddress();
 
-        caseData.put(PETITIONER_FIRST_NAME, PETITIONERS_FIRST_NAME);
-        caseData.put(PETITIONER_LAST_NAME, PETITIONERS_LAST_NAME);
+        caseData.put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
+        caseData.put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
 
         caseData.put(PETITIONER_GENDER, PETITIONER_GENDER_VALUE);
-        caseData.put(IS_COSTS_CLAIM_GRANTED, IS_COSTS_CLAIM_GRANTED_STRING_VALUE);
+        caseData.put(COST_CLAIMED, IS_COSTS_CLAIM_GRANTED_STRING_VALUE);
         caseData.put(HEARING_DATE_TIME, createHearingDatesList());
         caseData.put(COURT_NAME, COURT_ID);
 
