@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoELetterDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor;
@@ -52,17 +52,17 @@ public class CoERespondentLetterGenerationTask extends BasePayloadSpecificDocume
                 .letterDate(DatesDataExtractor.getLetterDate())
                 .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
                 .hearingDate(DatesDataExtractor.getHearingDate(caseData))
-                .costClaimGranted(CoELetterDataExtractor.isCostsClaimGranted(caseData))
+                .costClaimGranted(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData))
                 .deadlineToContactCourtBy(DatesDataExtractor.getDeadlineToContactCourtBy(caseData))
                 .addressee(AddresseeDataExtractor.getRespondent(caseData))
-                .husbandOrWife(CoELetterDataExtractor.getHusbandOrWife(caseData))
+                .husbandOrWife(CoECoverLetterDataExtractor.getHusbandOrWife(caseData))
                 .courtName(getCourtName(caseData))
                 .build();
     }
 
     private String getCourtName(Map<String, Object> caseData) {
         try {
-            return courtLookupService.getDnCourtByKey(CoELetterDataExtractor.getCourtId(caseData)).getName();
+            return courtLookupService.getDnCourtByKey(CoECoverLetterDataExtractor.getCourtId(caseData)).getName();
         } catch (CourtDetailsNotFound e) {
             throw new InvalidDataForTaskException(e);
         }
