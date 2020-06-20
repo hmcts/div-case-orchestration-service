@@ -48,12 +48,13 @@ public class AosPackOfflineAnswersWorkflow extends DefaultWorkflow<Map<String, O
 
         if (isRespondent(divorceParty)) {
             tasks.add(respondentAosAnswersProcessor);
-        }
-        if (isCoRespondent(divorceParty)) {
-            tasks.add(coRespondentAosAnswersProcessor);
+//            tasks.add(respondentAosDerivedAddressFormatter);
         }
 
-        tasks.add(coRespondentAosDerivedAddressFormatter);
+        if (isCoRespondent(divorceParty)) {
+            tasks.add(coRespondentAosAnswersProcessor);
+            tasks.add(coRespondentAosDerivedAddressFormatter);
+        }
 
         return tasks.toArray(new Task[] {});
     }
