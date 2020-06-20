@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
@@ -82,7 +81,6 @@ public class AOSPackOfflineAnswersInputTest {
     private static final String RESP_SOLICITOR_PREFIX = "RespSol-";
     private static final String RESP_PREFIX = "Resp-";
     private static final String RESP_CORRESPONDENCE_PREFIX = "RespCoresp-";
-    private static final String TEST_REASON_FOR_DIVORCE = "desertion";
 
     @Autowired
     private MockMvc mockMvc;
@@ -96,8 +94,8 @@ public class AOSPackOfflineAnswersInputTest {
 
     @Test
     public void shouldReturnNewStateAndAutomaticFields_ForRespondent_ForAdultery() throws Exception {
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(D_8_REASON_FOR_DIVORCE, ADULTERY);
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(RESP_AOS_ADMIT_ADULTERY, YES_VALUE);
+        addToCaseData(ccdCallbackRequest, D_8_REASON_FOR_DIVORCE, ADULTERY);
+        addToCaseData(ccdCallbackRequest, RESP_AOS_ADMIT_ADULTERY, YES_VALUE);
 
         mockMvc.perform(post("/processAosOfflineAnswers/parties/{party}", "respondent")
             .contentType(APPLICATION_JSON)
@@ -115,7 +113,7 @@ public class AOSPackOfflineAnswersInputTest {
 
     @Test
     public void shouldReturnOnlyAutomaticFields_ForCoRespondent_ForAdultery() throws Exception {
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        addToCaseData(ccdCallbackRequest, D_8_REASON_FOR_DIVORCE, ADULTERY);
         mockMvc.perform(post("/processAosOfflineAnswers/parties/{party}", CO_RESPONDENT.getDescription())
             .contentType(APPLICATION_JSON)
             .content(convertObjectToJsonString(ccdCallbackRequest)))
@@ -131,8 +129,8 @@ public class AOSPackOfflineAnswersInputTest {
 
     @Test
     public void shouldReturnNewStateAndAutomaticFieldsIfDefended_ForUnreasonableBehaviour() throws Exception {
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(D_8_REASON_FOR_DIVORCE, UNREASONABLE_BEHAVIOUR);
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
+        addToCaseData(ccdCallbackRequest, D_8_REASON_FOR_DIVORCE, UNREASONABLE_BEHAVIOUR);
+        addToCaseData(ccdCallbackRequest, RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
 
         mockMvc.perform(post("/processAosOfflineAnswers/parties/{party}", RESPONDENT.getDescription())
             .contentType(APPLICATION_JSON)
@@ -150,8 +148,8 @@ public class AOSPackOfflineAnswersInputTest {
 
     @Test
     public void shouldReturnNewStateAndAutomaticFieldsIfUndefended_ForUnreasonableBehaviour() throws Exception {
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(D_8_REASON_FOR_DIVORCE, UNREASONABLE_BEHAVIOUR);
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
+        addToCaseData(ccdCallbackRequest, D_8_REASON_FOR_DIVORCE, UNREASONABLE_BEHAVIOUR);
+        addToCaseData(ccdCallbackRequest, RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
 
         mockMvc.perform(post("/processAosOfflineAnswers/parties/{party}", RESPONDENT.getDescription())
             .contentType(APPLICATION_JSON)
@@ -171,7 +169,7 @@ public class AOSPackOfflineAnswersInputTest {
     public void shouldReturnDerivedSolicitorAddress_ForRepresentedRespondent() throws Exception {
         String derivedAddress = expectedDerivedAddress(RESP_SOLICITOR_PREFIX, LINE_1, LINE_2, LINE_3,
             ADY_COUNTY, ADY, ADY_TOWN, ADY_POSTCODE);
-        addDataForRepresentedRespondentToCallbackRequest(ccdCallbackRequest);
+        addDataForRepresentedRespondentToCallbackRequest(RESP_SOLICITOR_PREFIX, ccdCallbackRequest);
 
         mockMvc.perform(post("/processAosOfflineAnswers/parties/{party}", RESPONDENT.getDescription())
             .contentType(APPLICATION_JSON)
@@ -190,7 +188,7 @@ public class AOSPackOfflineAnswersInputTest {
     public void shouldReturnDerivedRespondentHomeAddress_ForNonRepresentedRespondent() throws Exception {
         String derivedAddress = expectedDerivedAddress(RESP_PREFIX, LINE_1, LINE_2, LINE_3,
             ADY_COUNTY, ADY, ADY_TOWN, ADY_POSTCODE);
-        addDataForNonRepresentedRespondentToCallbackRequest(ccdCallbackRequest);
+        addDataForNonRepresentedRespondentToCallbackRequest(RESP_PREFIX, ccdCallbackRequest);
 
         mockMvc.perform(post("/processAosOfflineAnswers/parties/{party}", RESPONDENT.getDescription())
             .contentType(APPLICATION_JSON)
@@ -209,7 +207,7 @@ public class AOSPackOfflineAnswersInputTest {
     public void shouldReturnDerivedRespondentCorrespondenceAddress_When_RespondentCorrespondenceAddressIsProvided() throws Exception {
         String derivedAddress = expectedDerivedAddress(RESP_CORRESPONDENCE_PREFIX, LINE_1, LINE_2, LINE_3,
             ADY_COUNTY, ADY, ADY_TOWN, ADY_POSTCODE);
-        addDataWithRespondentCorrespondenceAddressToCallbackRequest(ccdCallbackRequest);
+        addDataWithRespondentCorrespondenceAddressToCallbackRequest(RESP_CORRESPONDENCE_PREFIX, ccdCallbackRequest);
 
         mockMvc.perform(post("/processAosOfflineAnswers/parties/{party}", RESPONDENT.getDescription())
             .contentType(APPLICATION_JSON)
@@ -226,7 +224,7 @@ public class AOSPackOfflineAnswersInputTest {
     public void shouldUseRespondentHomeAddress_When_RespondentCorrespondenceAddressIsNotProvided() throws Exception {
         String derivedAddress = expectedDerivedAddress(RESP_PREFIX, LINE_1, LINE_2, LINE_3,
             ADY_COUNTY, ADY, ADY_TOWN, ADY_POSTCODE);
-        addDataWithRespondentHomeAddressToCallbackRequest(ccdCallbackRequest);
+        addDataWithRespondentHomeAddressToCallbackRequest(RESP_PREFIX, ccdCallbackRequest);
 
         mockMvc.perform(post("/processAosOfflineAnswers/parties/{party}", RESPONDENT.getDescription())
             .contentType(APPLICATION_JSON)
@@ -243,7 +241,7 @@ public class AOSPackOfflineAnswersInputTest {
     public void shouldReturnDerivedSolicitorAddress_ForRepresentedCoRespondent() throws Exception {
         String derivedAddress = expectedDerivedAddress(CO_RESP_PREFIX, LINE_1, LINE_2, LINE_3,
             ADY_COUNTY, ADY, ADY_TOWN, ADY_POSTCODE);
-        addDataForRepresentedCoRespondentToCallbackRequest(ccdCallbackRequest);
+        addDataForRepresentedCoRespondentToCallbackRequest(CO_RESP_PREFIX, ccdCallbackRequest);
 
         mockMvc.perform(post("/processAosOfflineAnswers/parties/{party}", CO_RESPONDENT.getDescription())
             .contentType(APPLICATION_JSON)
@@ -261,7 +259,7 @@ public class AOSPackOfflineAnswersInputTest {
     public void shouldReturnDerivedCoRespondentAddress_ForNonRepresentedCoRespondent() throws Exception {
         String derivedAddress = expectedDerivedAddress(SOLICITOR_PREFIX, LINE_1, LINE_2, LINE_3,
             ADY_COUNTY, ADY, ADY_TOWN, ADY_POSTCODE);
-        addDataForNonRepresentedCoRespondentToCallbackRequest(ccdCallbackRequest);
+        addDataForNonRepresentedCoRespondentToCallbackRequest(SOLICITOR_PREFIX, ccdCallbackRequest);
 
         mockMvc.perform(post("/processAosOfflineAnswers/parties/{party}", CO_RESPONDENT.getDescription())
             .contentType(APPLICATION_JSON)
@@ -277,7 +275,7 @@ public class AOSPackOfflineAnswersInputTest {
 
     @Test
     public void shouldReturnEmptyDerivedCoRespondentAddress_WhenInvalidDataIsProvided() throws Exception {
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(CO_RESPONDENT_REPRESENTED, YES_VALUE);
+        addToCaseData(ccdCallbackRequest, CO_RESPONDENT_REPRESENTED, YES_VALUE);
 
         mockMvc.perform(post("/processAosOfflineAnswers/parties/{party}", CO_RESPONDENT.getDescription())
             .contentType(APPLICATION_JSON)
@@ -290,37 +288,41 @@ public class AOSPackOfflineAnswersInputTest {
             )));
     }
 
-    private void addDataForRepresentedRespondentToCallbackRequest(CcdCallbackRequest ccdCallbackRequest) { //TODO refactor, pass prefix as parameter
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(D8_RESPONDENT_SOLICITOR_ADDRESS, buildAddress(RESP_SOLICITOR_PREFIX));
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(RESP_SOL_REPRESENTED, YES_VALUE);
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(D_8_REASON_FOR_DIVORCE, TEST_REASON_FOR_DIVORCE);
+    private void addDataForRepresentedRespondentToCallbackRequest(String addressPrefix, CcdCallbackRequest ccdCallbackRequest) {
+        addToCaseData(ccdCallbackRequest, D8_RESPONDENT_SOLICITOR_ADDRESS, buildAddress(addressPrefix));
+        addToCaseData(ccdCallbackRequest, RESP_SOL_REPRESENTED, YES_VALUE);
+        addToCaseData(ccdCallbackRequest, D_8_REASON_FOR_DIVORCE, UNREASONABLE_BEHAVIOUR);
 
     }
 
-    private void addDataForNonRepresentedRespondentToCallbackRequest(CcdCallbackRequest ccdCallbackRequest) { //TODO refactor, pass prefix as parameter
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(D8_RESPONDENT_HOME_ADDRESS, buildAddress(RESP_PREFIX));
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(RESP_SOL_REPRESENTED, NO_VALUE);
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(D_8_REASON_FOR_DIVORCE, TEST_REASON_FOR_DIVORCE);
+    private void addDataForNonRepresentedRespondentToCallbackRequest(String addressPrefix, CcdCallbackRequest ccdCallbackRequest) {
+        addToCaseData(ccdCallbackRequest, D8_RESPONDENT_HOME_ADDRESS, buildAddress(addressPrefix));
+        addToCaseData(ccdCallbackRequest, RESP_SOL_REPRESENTED, NO_VALUE);
+        addToCaseData(ccdCallbackRequest, D_8_REASON_FOR_DIVORCE, UNREASONABLE_BEHAVIOUR);
     }
 
-    private void addDataWithRespondentCorrespondenceAddressToCallbackRequest(CcdCallbackRequest ccdCallbackRequest) { //TODO refactor, pass prefix as parameter
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(D8_RESPONDENT_CORRESPONDENCE_ADDRESS, buildAddress(RESP_CORRESPONDENCE_PREFIX));
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(D_8_REASON_FOR_DIVORCE, TEST_REASON_FOR_DIVORCE);
+    private void addDataWithRespondentCorrespondenceAddressToCallbackRequest(String addressPrefix, CcdCallbackRequest ccdCallbackRequest) {
+        addToCaseData(ccdCallbackRequest, D8_RESPONDENT_CORRESPONDENCE_ADDRESS, buildAddress(addressPrefix));
+        addToCaseData(ccdCallbackRequest, D_8_REASON_FOR_DIVORCE, UNREASONABLE_BEHAVIOUR);
     }
 
-    private void addDataWithRespondentHomeAddressToCallbackRequest(CcdCallbackRequest ccdCallbackRequest) { //TODO refactor, pass prefix as parameter
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(D8_RESPONDENT_HOME_ADDRESS, buildAddress(RESP_PREFIX));
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(D_8_REASON_FOR_DIVORCE, TEST_REASON_FOR_DIVORCE);
+    private void addDataWithRespondentHomeAddressToCallbackRequest(String addressPrefix, CcdCallbackRequest ccdCallbackRequest) {
+        addToCaseData(ccdCallbackRequest, D8_RESPONDENT_HOME_ADDRESS, buildAddress(addressPrefix));
+        addToCaseData(ccdCallbackRequest, D_8_REASON_FOR_DIVORCE, UNREASONABLE_BEHAVIOUR);
     }
 
-    private void addDataForRepresentedCoRespondentToCallbackRequest(CcdCallbackRequest ccdCallbackRequest) { //TODO refactor, pass prefix as parameter
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(CO_RESPONDENT_SOLICITOR_ADDRESS, buildAddress(CO_RESP_PREFIX));
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(CO_RESPONDENT_REPRESENTED, YES_VALUE);
+    private void addDataForRepresentedCoRespondentToCallbackRequest(String addressPrefix, CcdCallbackRequest ccdCallbackRequest) {
+        addToCaseData(ccdCallbackRequest, CO_RESPONDENT_SOLICITOR_ADDRESS, buildAddress(addressPrefix));
+        addToCaseData(ccdCallbackRequest, CO_RESPONDENT_REPRESENTED, YES_VALUE);
     }
 
-    private void addDataForNonRepresentedCoRespondentToCallbackRequest(CcdCallbackRequest ccdCallbackRequest) { //TODO refactor, pass prefix as parameter
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS, buildAddress(SOLICITOR_PREFIX));
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(CO_RESPONDENT_REPRESENTED, NO_VALUE);
+    private void addDataForNonRepresentedCoRespondentToCallbackRequest(String addressPrefix, CcdCallbackRequest ccdCallbackRequest) {
+        addToCaseData(ccdCallbackRequest, D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS, buildAddress(addressPrefix));
+        addToCaseData(ccdCallbackRequest, CO_RESPONDENT_REPRESENTED, NO_VALUE);
+    }
+
+    private void addToCaseData(CcdCallbackRequest ccdCallbackRequest, String key, Object value) {
+        ccdCallbackRequest.getCaseDetails().getCaseData().put(key, value);
     }
 
     private HashMap<String, Object> buildAddress(String prefix) {
