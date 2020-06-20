@@ -49,7 +49,6 @@ public class RespondentAosDerivedAddressFormatterTaskTest {
 
         assertThat(returnedData, hasKey(D8_RESPONDENT_SOLICITOR_ADDRESS));
         assertThat(returnedData.get(D8_DERIVED_RESPONDENT_SOLICITOR_ADDRESS), is(EXPECTED_DERIVED_RESPONDENT_ADDRESS));
-
     }
 
     @Test
@@ -60,7 +59,6 @@ public class RespondentAosDerivedAddressFormatterTaskTest {
 
         assertThat(returnedData, hasKey(D8_RESPONDENT_HOME_ADDRESS));
         assertThat(returnedData.get(D8_DERIVED_RESPONDENT_HOME_ADDRESS), is(EXPECTED_DERIVED_RESPONDENT_ADDRESS));
-
     }
 
     @Test

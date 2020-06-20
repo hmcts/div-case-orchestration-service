@@ -25,27 +25,40 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentation
 @Component
 public class RespondentAosDerivedAddressFormatterTask implements Task<Map<String, Object>> {
 
+    private static final String FORMAT_TEMPLATE = "{} formatted for Case ID {}";
+    private static final String UPDATE_TEMPLATE = "{} for Case ID {} set to {}";
+
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
         String caseId = getCaseId(context);
 
         if (isRespondentRepresented(caseData)) {
             caseData.put(D8_DERIVED_RESPONDENT_SOLICITOR_ADDRESS, formatDerivedRespondentSolicitorAddress(caseData));
-            log.info("{} formatted for Case ID {}", D8_DERIVED_RESPONDENT_SOLICITOR_ADDRESS, caseId);
+            logFormatting(caseId, D8_DERIVED_RESPONDENT_SOLICITOR_ADDRESS);
         } else {
             caseData.put(D8_DERIVED_RESPONDENT_HOME_ADDRESS, formatDerivedRespondentHomeAddress(caseData));
-            log.info("{} formatted for Case ID {}", D8_DERIVED_RESPONDENT_HOME_ADDRESS, caseId);
+            logFormatting(caseId, D8_DERIVED_RESPONDENT_HOME_ADDRESS);
         }
 
         if (isRespondentCorrespondenceAddressPopulated(caseData)) {
             caseData.put(D8_RESPONDENT_CORRESPONDENCE_USE_HOME_ADDRESS, NO_VALUE);
+            logUpdate(caseId, NO_VALUE);
         } else {
             caseData.put(D8_RESPONDENT_CORRESPONDENCE_USE_HOME_ADDRESS, YES_VALUE);
+            logUpdate(caseId, YES_VALUE);
         }
 
         caseData.put(D8_DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS, formatDerivedRespondentCorrespondenceAddress(caseData));
-        log.info("{} formatted for Case ID {}", D8_DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS, caseId);
+        logFormatting(caseId, D8_DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS);
 
         return caseData;
+    }
+
+    private void logFormatting(String caseId, String d8DerivedRespondentHomeAddress) {
+        log.info(FORMAT_TEMPLATE, d8DerivedRespondentHomeAddress, caseId);
+    }
+
+    private void logUpdate(String caseId, String yesValue) {
+        log.info(UPDATE_TEMPLATE, D8_RESPONDENT_CORRESPONDENCE_USE_HOME_ADDRESS, caseId, yesValue);
     }
 }
