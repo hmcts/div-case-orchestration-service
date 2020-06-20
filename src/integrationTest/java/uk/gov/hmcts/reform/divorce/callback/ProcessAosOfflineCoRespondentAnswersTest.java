@@ -12,9 +12,14 @@ import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.withJsonPath;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.withoutJsonPath;
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -23,7 +28,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressForma
 import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
 
-public class ProcessAosOfflineAnswersTest extends IntegrationTest {
+public class ProcessAosOfflineCoRespondentAnswersTest extends IntegrationTest {
 
     private static final String CCD_CALLBACK_REQUEST = "fixtures/co-resp-case/co-resp-aos-answers.json";
     private static final String ADDRESS_LINE_1 = "AddressLine1";
@@ -57,41 +62,47 @@ public class ProcessAosOfflineAnswersTest extends IntegrationTest {
     @Test
     public void givenCase_whenProcessAosOfflineAnswersEventAndCoRespondentIsRepresented_shouldFormatDerivedSolicitorAddress() {
         addRepresentedCoRespondentDataToCcdCallbackRequest(ccdCallbackRequest);
-
         CcdCallbackResponse ccdCallbackResponse = cosApiClient.processAosPackOfflineAnswers(ccdCallbackRequest, CO_RESPONDENT.getDescription());
 
         assertThat(ccdCallbackResponse.getErrors(), is(nullValue()));
         assertThat(ccdCallbackResponse.getWarnings(), is(nullValue()));
-        String jsonResponse = objectToJson(ccdCallbackResponse);
-        assertThat(jsonResponse, hasJsonPath("$.data.CoRespondentSolicitorRepresented", is(YES_VALUE)));
-        assertThat(jsonResponse, hasJsonPath("$.data.DerivedCoRespondentSolicitorAddr", is(expectedAddress)));
-        assertThat(jsonResponse, hasNoJsonPath("$.data.D8DerivedReasonForDivorceAdultery3rdAddr"));
+
+        assertThat(objectToJson(ccdCallbackResponse), isJson(allOf(
+            withJsonPath("$.data.CoRespondentSolicitorRepresented", is(YES_VALUE)),
+            withJsonPath("$.data.DerivedCoRespondentSolicitorAddr", is(expectedAddress)),
+            withoutJsonPath("$.data.D8DerivedReasonForDivorceAdultery3rdAddr")
+        )));
     }
 
     @Test
     public void givenCase_whenProcessAosOfflineAnswersEventAndCoRespondentIsNotRepresented_shouldFormatDerivedCoRespondentAddress() {
         addNonRepresentedCoRespondentDataToCcdCallbackRequest(ccdCallbackRequest);
-
         CcdCallbackResponse ccdCallbackResponse = cosApiClient.processAosPackOfflineAnswers(ccdCallbackRequest, CO_RESPONDENT.getDescription());
 
         assertThat(ccdCallbackResponse.getErrors(), is(nullValue()));
         assertThat(ccdCallbackResponse.getWarnings(), is(nullValue()));
-        String jsonResponse = objectToJson(ccdCallbackResponse);
-        assertThat(jsonResponse, hasJsonPath("$.data.CoRespondentSolicitorRepresented", is(NO_VALUE)));
-        assertThat(jsonResponse, hasJsonPath("$.data.D8DerivedReasonForDivorceAdultery3rdAddr", is(expectedAddress)));
-        assertThat(jsonResponse, hasNoJsonPath("$.data.DerivedCoRespondentSolicitorAddr"));
+
+        assertThat(objectToJson(ccdCallbackResponse), isJson(allOf(
+            withJsonPath("$.data.CoRespondentSolicitorRepresented", is(NO_VALUE)),
+            withJsonPath("$.data.D8DerivedReasonForDivorceAdultery3rdAddr", is(expectedAddress)),
+            withoutJsonPath("$.data.DerivedCoRespondentSolicitorAddr")
+        )));
     }
 
     private void addRepresentedCoRespondentDataToCcdCallbackRequest(CcdCallbackRequest ccdCallbackRequest) {
         ImmutableMap<String, Object> address = getBuildAddress();
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(CO_RESPONDENT_SOLICITOR_ADDRESS, address);
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(CO_RESPONDENT_REPRESENTED, YES_VALUE);
+        addToCaseData(ccdCallbackRequest, CO_RESPONDENT_SOLICITOR_ADDRESS, address);
+        addToCaseData(ccdCallbackRequest, CO_RESPONDENT_REPRESENTED, YES_VALUE);
     }
 
     private void addNonRepresentedCoRespondentDataToCcdCallbackRequest(CcdCallbackRequest ccdCallbackRequest) {
         ImmutableMap<String, Object> address = getBuildAddress();
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS, address);
-        ccdCallbackRequest.getCaseDetails().getCaseData().put(CO_RESPONDENT_REPRESENTED, NO_VALUE);
+        addToCaseData(ccdCallbackRequest, D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS, address);
+        addToCaseData(ccdCallbackRequest, CO_RESPONDENT_REPRESENTED, NO_VALUE);
+    }
+
+    private void addToCaseData(CcdCallbackRequest ccdCallbackRequest, String key, Object value) {
+        ccdCallbackRequest.getCaseDetails().getCaseData().put(key, value);
     }
 
     private ImmutableMap<String, Object> getBuildAddress() {

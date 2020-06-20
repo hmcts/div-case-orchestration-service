@@ -55,7 +55,7 @@ public class DerivedAddressFormatterHelperTest {
         + "RespCorespCounty\nRespCorespCountry\nRespCorespPostTown\nRespCorespPostcode";
 
     private static final String TEST_PERFIX = "any-";
-    private static final String TEST_ADDR_PROPTERTY = "any";
+    private static final String TEST_ADDR_PROPERTY = "any";
     private static final int MAX_EXPECTED_NEWLINES = 6;
     private static final String TEST_EXPECTED_LINE_1 = "any-AddyLine1";
     private static final String TEST_EXPECTED_LINE_2 = "any-AddyLine2";
@@ -141,9 +141,9 @@ public class DerivedAddressFormatterHelperTest {
     public void givenCcdAddressType_shouldFormatAddressWithNewLines() {
         Map<String, Object> addressType = buildAddress(TEST_PERFIX);
         Map<String, Object> address = new HashMap<>();
-        address.put(TEST_ADDR_PROPTERTY, addressType);
+        address.put(TEST_ADDR_PROPERTY, addressType);
 
-        String result = DerivedAddressFormatterHelper.formatToDerivedAddress(address, TEST_ADDR_PROPTERTY);
+        String result = DerivedAddressFormatterHelper.formatToDerivedAddress(address, TEST_ADDR_PROPERTY);
 
         assertThat(result, is(notNullValue()));
         assertThat(result, containsString(TEST_EXPECTED_LINE_1));
@@ -154,7 +154,7 @@ public class DerivedAddressFormatterHelperTest {
     public void givenNoValidCcdAddressType_shouldReturnNull() {
         Map<String, Object> address = new HashMap<>();
 
-        String result = DerivedAddressFormatterHelper.formatToDerivedAddress(address, TEST_ADDR_PROPTERTY);
+        String result = DerivedAddressFormatterHelper.formatToDerivedAddress(address, TEST_ADDR_PROPERTY);
 
         assertThat(result, is(nullValue()));
     }
@@ -167,9 +167,9 @@ public class DerivedAddressFormatterHelperTest {
         addressType.remove(ADDY_COUNTRY);
 
         Map<String, Object> address = new HashMap<>();
-        address.put(TEST_ADDR_PROPTERTY, addressType);
+        address.put(TEST_ADDR_PROPERTY, addressType);
 
-        String result = DerivedAddressFormatterHelper.formatToDerivedAddress(address, TEST_ADDR_PROPTERTY);
+        String result = DerivedAddressFormatterHelper.formatToDerivedAddress(address, TEST_ADDR_PROPERTY);
 
         assertThat(result, stringContainsInOrder(
             Arrays.asList(TEST_EXPECTED_LINE_1,
