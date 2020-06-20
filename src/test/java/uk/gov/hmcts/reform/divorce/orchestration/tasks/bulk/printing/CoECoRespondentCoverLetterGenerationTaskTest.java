@@ -73,12 +73,23 @@ public class CoECoRespondentCoverLetterGenerationTaskTest extends BasePayloadSpe
             .ctscContactDetails(CTSC_CONTACT)
             .courtName(COURT_NAME)
             .hearingDate(HEARING_DATE_FORMATTED)
+            .costClaimGranted(true)
             .deadlineToContactCourtBy(CONTACT_COURT_BY_DATE_FORMATTED)
-            .addressee(Addressee.builder().name(TEST_CO_RESPONDENT_FULL_NAME).formattedAddress(CO_RESPONDENT_ADDRESS).build())
-            .build();
+            .addressee(
+                Addressee.builder()
+                    .name(TEST_CO_RESPONDENT_FULL_NAME)
+                    .formattedAddress(CO_RESPONDENT_ADDRESS)
+                    .build()
+            ).build();
 
         verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
-        runCommonVerifications(caseData, returnedCaseData, "coe-cover-letter", "FL-DIV-GNO-ENG-00449.docx", expectedDocmosisTemplateVars);
+        runCommonVerifications(
+            caseData,
+            returnedCaseData,
+            coECoRespondentCoverLetterGenerationTask.getDocumentType(),
+            coECoRespondentCoverLetterGenerationTask.getTemplateId(),
+            expectedDocmosisTemplateVars
+        );
     }
 
     @Test
@@ -95,12 +106,19 @@ public class CoECoRespondentCoverLetterGenerationTaskTest extends BasePayloadSpe
             .letterDate(formatDateWithCustomerFacingFormat(LocalDate.now()))
             .ctscContactDetails(CTSC_CONTACT)
             .courtName(COURT_NAME)
+            .costClaimGranted(true)
             .hearingDate(HEARING_DATE_FORMATTED)
             .deadlineToContactCourtBy(CONTACT_COURT_BY_DATE_FORMATTED)
             .addressee(Addressee.builder().name(CO_RESPONDENT_SOLICITORS_EXPECTED_NAME).formattedAddress(CO_RESPONDENT_SOLICITOR_ADDRESS).build())
             .build();
         verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
-        runCommonVerifications(caseData, returnedCaseData, "coe-cover-letter", "FL-DIV-GNO-ENG-00449.docx", expectedDocmosisTemplateVars);
+        runCommonVerifications(
+            caseData,
+            returnedCaseData,
+            coECoRespondentCoverLetterGenerationTask.getDocumentType(),
+            coECoRespondentCoverLetterGenerationTask.getTemplateId(),
+            expectedDocmosisTemplateVars
+        );
     }
 
     @Test(expected = InvalidDataForTaskException.class)

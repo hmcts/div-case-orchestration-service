@@ -8,7 +8,7 @@ import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoELetterDataExtractor.CaseDataKeys.SOLICITOR_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.SolicitorDataExtractor.CaseDataKeys.SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.SOLICITOR_REF;
 
 public class SolicitorDataExtractorTest {
@@ -35,5 +35,4 @@ public class SolicitorDataExtractorTest {
 
         return caseData;
     }
-
 }

@@ -8,7 +8,6 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
@@ -42,11 +41,6 @@ public class PartyRepresentationChecker {
     public static boolean isCoRespondentDigital(Map<String, Object> caseData) {
         String value = (String) caseData.get(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL);
         return Strings.isNullOrEmpty(value) || YES_VALUE.equalsIgnoreCase(value);
-    }
-
-    public static boolean isCostsClaimGranted(Map<String, Object> caseData) {
-        String value = (String) caseData.get(DIVORCE_COSTS_CLAIM_CCD_FIELD);
-        return YES_VALUE.equalsIgnoreCase(value);
     }
 
     public static boolean isCoRespondentLiableForCosts(Map<String, Object> caseData) {
