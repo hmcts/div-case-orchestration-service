@@ -161,13 +161,10 @@ public class DerivedAddressFormatterHelperTest {
 
     @Test
     public void shouldNotReturnExtraLinesWhenIncompleteAddressDataIsProvided() {
-        Map<String, Object> addressType = buildAddress(TEST_PERFIX);
-        addressType.remove(ADDRESS_LINE_3);
-        addressType.remove(POST_TOWN);
-        addressType.remove(ADDY_COUNTRY);
+        Map<String, Object> inCompleteAddress = buildInCompleteAddress();
 
         Map<String, Object> address = new HashMap<>();
-        address.put(TEST_ADDR_PROPERTY, addressType);
+        address.put(TEST_ADDR_PROPERTY, inCompleteAddress);
 
         String result = DerivedAddressFormatterHelper.formatToDerivedAddress(address, TEST_ADDR_PROPERTY);
 
@@ -178,7 +175,6 @@ public class DerivedAddressFormatterHelperTest {
                 TEST_EXPECTED_POSTCODE))
         );
     }
-
 
     public static Map<String, Object> buildCaseWithRespondentSolicitorAddress() {
         return new HashMap<String, Object>() {
@@ -236,6 +232,14 @@ public class DerivedAddressFormatterHelperTest {
                 put(POST_CODE, appendPrefix(prefix, ADDY_POSTCODE));
             }
         };
+    }
+
+    private Map<String, Object> buildInCompleteAddress() {
+        Map<String, Object> addressType = buildAddress(TEST_PERFIX);
+        addressType.remove(ADDRESS_LINE_3);
+        addressType.remove(POST_TOWN);
+        addressType.remove(ADDY_COUNTRY);
+        return addressType;
     }
 
     private static String appendPrefix(String prefix, String value) {
