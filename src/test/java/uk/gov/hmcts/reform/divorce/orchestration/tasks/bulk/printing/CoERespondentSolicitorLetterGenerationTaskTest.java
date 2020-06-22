@@ -26,7 +26,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.RESPONDENT_SOLICITORS_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.RESPONDENT_SOLICITORS_EXPECTED_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.RESPONDENT_SOLICITOR_REF;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.COST_CLAIMED;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.COSTS_CLAIM_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.HEARING_DATE_TIME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractorTest.CONTACT_COURT_BY_DATE_FORMATTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractorTest.HEARING_DATE_FORMATTED;
@@ -91,7 +91,7 @@ public class CoERespondentSolicitorLetterGenerationTaskTest extends BasePayloadS
         caseData.put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         caseData.put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
 
-        caseData.put(COST_CLAIMED, IS_COSTS_CLAIM_GRANTED_STRING_VALUE);
+        caseData.put(COSTS_CLAIM_GRANTED, IS_COSTS_CLAIM_GRANTED_STRING_VALUE);
         caseData.put(HEARING_DATE_TIME, createHearingDatesList());
 
         return caseData;
