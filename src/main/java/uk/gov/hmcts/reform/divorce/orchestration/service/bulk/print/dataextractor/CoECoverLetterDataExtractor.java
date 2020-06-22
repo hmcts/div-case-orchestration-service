@@ -21,7 +21,7 @@ public class CoECoverLetterDataExtractor {
         public static final String HEARING_DATE = OrchestrationConstants.DATE_OF_HEARING_CCD_FIELD;
         public static final String HEARING_DATE_TIME = OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
         public static final String PETITIONER_GENDER = OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
-        public static final String COST_CLAIMED = OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
+        public static final String COSTS_CLAIM_GRANTED = OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
         public static final String COURT_ID = BulkCaseConstants.COURT_NAME_CCD_FIELD;
     }
 
@@ -37,6 +37,6 @@ public class CoECoverLetterDataExtractor {
     }
 
     public static boolean isCostsClaimGranted(Map<String, Object> caseData) {
-        return YES_VALUE.equalsIgnoreCase((String) caseData.get(CaseDataKeys.COST_CLAIMED));
+        return YES_VALUE.equalsIgnoreCase((String) caseData.get(CaseDataKeys.COSTS_CLAIM_GRANTED));
     }
 }

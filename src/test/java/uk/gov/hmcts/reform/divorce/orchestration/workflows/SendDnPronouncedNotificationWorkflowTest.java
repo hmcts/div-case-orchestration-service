@@ -42,7 +42,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_COSTS_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.COST_CLAIMED;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.COSTS_CLAIM_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocumentAsMap;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTaskWasNeverCalled;
@@ -230,7 +230,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
     public void givenPaperBasedAndPaperUpdateToggledOnAndCostClaimGrantedAndIsRepresented_SendCoRespondentSolicitorCoverLetter() throws Exception {
         Map<String, Object> caseData = ImmutableMap.of(
             CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE,
-            COST_CLAIMED, YES_VALUE,
+            COSTS_CLAIM_GRANTED, YES_VALUE,
             CO_RESPONDENT_REPRESENTED, YES_VALUE
         );
 
