@@ -39,7 +39,7 @@ public class ProcessAosOfflineRespondentAnswersTest extends IntegrationTest {
     private static final String COUNTRY = "Country";
     private static final String POST_TOWN = "PostTown";
     private static final String POST_CODE = "PostCode";
-    private static final String expectedAddress = "ADDY_LINE_1\nADDY_LINE_2\nADDY_LINE_3\nADDY_COUNTY\nADDY_COUNTRY\nADDY_POST_TOWN\nADDY_POSTCODE";
+    private static final String EXPECTED_STRINGIFIED_ADDRESS = "ADDY_LINE_1\nADDY_LINE_2\nADDY_LINE_3\nADDY_COUNTY\nADDY_COUNTRY\nADDY_POST_TOWN\nADDY_POSTCODE";
 
     @Autowired
     private CosApiClient cosApiClient;
@@ -62,7 +62,7 @@ public class ProcessAosOfflineRespondentAnswersTest extends IntegrationTest {
 
         assertThat(objectToJson(ccdCallbackResponse), isJson(allOf(
             withJsonPath("$.data.respondentSolicitorRepresented", is(YES_VALUE)),
-            withJsonPath("$.data.D8DerivedRespondentSolicitorAddr", is(expectedAddress)),
+            withJsonPath("$.data.D8DerivedRespondentSolicitorAddr", is(EXPECTED_STRINGIFIED_ADDRESS)),
             withJsonPath("$.data.D8RespondentSolicitorAddress"),
             withoutJsonPath("$.data.D8DerivedRespondentHomeAddress")
         )));
@@ -79,7 +79,7 @@ public class ProcessAosOfflineRespondentAnswersTest extends IntegrationTest {
 
         assertThat(objectToJson(ccdCallbackResponse), isJson(allOf(
             withJsonPath("$.data.respondentSolicitorRepresented", is(NO_VALUE)),
-            withJsonPath("$.data.D8DerivedRespondentHomeAddress", is(expectedAddress)),
+            withJsonPath("$.data.D8DerivedRespondentHomeAddress", is(EXPECTED_STRINGIFIED_ADDRESS)),
             withoutJsonPath("$.data.D8DerivedRespondentSolicitorAddr")
         )));
     }
@@ -95,7 +95,7 @@ public class ProcessAosOfflineRespondentAnswersTest extends IntegrationTest {
 
         assertThat(objectToJson(ccdCallbackResponse), isJson(allOf(
             withJsonPath("$.data.respondentSolicitorRepresented", is(NO_VALUE)),
-            withJsonPath("$.data.D8DerivedRespondentCorrespondenceAddr", is(expectedAddress)),
+            withJsonPath("$.data.D8DerivedRespondentCorrespondenceAddr", is(EXPECTED_STRINGIFIED_ADDRESS)),
             withoutJsonPath("$.data.D8RespondentCorrespondenceAddress")
         )));
     }
