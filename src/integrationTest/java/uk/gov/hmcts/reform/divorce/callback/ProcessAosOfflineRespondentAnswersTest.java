@@ -24,9 +24,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.UNREASONABLE_BEHAVIOUR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.D8_RESPONDENT_CORRESPONDENCE_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.D8_RESPONDENT_HOME_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.D8_RESPONDENT_SOLICITOR_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.CaseDataKeys.D8_RESPONDENT_CORRESPONDENCE_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.CaseDataKeys.D8_RESPONDENT_HOME_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.CaseDataKeys.D8_RESPONDENT_SOLICITOR_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
 
 public class ProcessAosOfflineRespondentAnswersTest extends IntegrationTest {

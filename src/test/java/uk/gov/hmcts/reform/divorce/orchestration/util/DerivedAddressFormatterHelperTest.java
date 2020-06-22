@@ -17,11 +17,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.CO_RESPONDENT_SOLICITOR_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.D8_RESPONDENT_CORRESPONDENCE_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.D8_RESPONDENT_HOME_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.D8_RESPONDENT_SOLICITOR_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.CaseDataKeys.CO_RESPONDENT_SOLICITOR_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.CaseDataKeys.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.CaseDataKeys.D8_RESPONDENT_CORRESPONDENCE_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.CaseDataKeys.D8_RESPONDENT_HOME_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.CaseDataKeys.D8_RESPONDENT_SOLICITOR_ADDRESS;
 
 public class DerivedAddressFormatterHelperTest {
 
@@ -45,7 +45,7 @@ public class DerivedAddressFormatterHelperTest {
     private static final String RESPONDENT_PREFIX = "Resp";
     private static final String RESPONDENT_CORRESPONDENCE_PREFIX = "RespCoresp";
 
-    public static final String EXPECTED_DERIVED_CORESPONDENT_ADDRESS = "CoRespAddyLine1\nCoRespAddyLine2\nCoRespAddyLine3\nCoRespCounty\n"
+    public static final String EXPECTED_DERIVED_CO_RESPONDENT_ADDRESS = "CoRespAddyLine1\nCoRespAddyLine2\nCoRespAddyLine3\nCoRespCounty\n"
         + "CoRespCountry\nCoRespPostTown\nCoRespPostcode";
 
     public static final String EXPECTED_DERIVED_RESPONDENT_ADDRESS = "RespAddyLine1\nRespAddyLine2\nRespAddyLine3\nRespCounty\n"
@@ -68,7 +68,7 @@ public class DerivedAddressFormatterHelperTest {
 
         String derivedCoRespondentSolicitorAddr = DerivedAddressFormatterHelper.formatDerivedCoRespondentSolicitorAddress(caseData);
 
-        assertThat(derivedCoRespondentSolicitorAddr, is(EXPECTED_DERIVED_CORESPONDENT_ADDRESS));
+        assertThat(derivedCoRespondentSolicitorAddr, is(EXPECTED_DERIVED_CO_RESPONDENT_ADDRESS));
 
     }
 
@@ -78,7 +78,7 @@ public class DerivedAddressFormatterHelperTest {
 
         String derivedCoRespondentAddr = DerivedAddressFormatterHelper.formatDerivedReasonForDivorceAdultery3rdAddress(caseData);
 
-        assertThat(derivedCoRespondentAddr, is(EXPECTED_DERIVED_CORESPONDENT_ADDRESS));
+        assertThat(derivedCoRespondentAddr, is(EXPECTED_DERIVED_CO_RESPONDENT_ADDRESS));
     }
 
     @Test

@@ -11,10 +11,10 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.D8_DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.D8_DERIVED_RESPONDENT_HOME_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.D8_DERIVED_RESPONDENT_SOLICITOR_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.D8_RESPONDENT_CORRESPONDENCE_USE_HOME_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.CaseDataKeys.D8_DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.CaseDataKeys.D8_DERIVED_RESPONDENT_HOME_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.CaseDataKeys.D8_DERIVED_RESPONDENT_SOLICITOR_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.CaseDataKeys.D8_RESPONDENT_CORRESPONDENCE_USE_HOME_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.formatDerivedRespondentCorrespondenceAddress;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.formatDerivedRespondentHomeAddress;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.formatDerivedRespondentSolicitorAddress;
@@ -34,10 +34,10 @@ public class RespondentAosDerivedAddressFormatterTask implements Task<Map<String
 
         if (isRespondentRepresented(caseData)) {
             caseData.put(D8_DERIVED_RESPONDENT_SOLICITOR_ADDRESS, formatDerivedRespondentSolicitorAddress(caseData));
-            logFormatting(caseId, D8_DERIVED_RESPONDENT_SOLICITOR_ADDRESS);
+            logFormat(caseId, D8_DERIVED_RESPONDENT_SOLICITOR_ADDRESS);
         } else {
             caseData.put(D8_DERIVED_RESPONDENT_HOME_ADDRESS, formatDerivedRespondentHomeAddress(caseData));
-            logFormatting(caseId, D8_DERIVED_RESPONDENT_HOME_ADDRESS);
+            logFormat(caseId, D8_DERIVED_RESPONDENT_HOME_ADDRESS);
         }
 
         if (isRespondentCorrespondenceAddressPopulated(caseData)) {
@@ -49,12 +49,12 @@ public class RespondentAosDerivedAddressFormatterTask implements Task<Map<String
         }
 
         caseData.put(D8_DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS, formatDerivedRespondentCorrespondenceAddress(caseData));
-        logFormatting(caseId, D8_DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS);
+        logFormat(caseId, D8_DERIVED_RESPONDENT_CORRESPONDENCE_ADDRESS);
 
         return caseData;
     }
 
-    private void logFormatting(String caseId, String d8DerivedRespondentHomeAddress) {
+    private void logFormat(String caseId, String d8DerivedRespondentHomeAddress) {
         log.info(FORMAT_TEMPLATE, d8DerivedRespondentHomeAddress, caseId);
     }
 

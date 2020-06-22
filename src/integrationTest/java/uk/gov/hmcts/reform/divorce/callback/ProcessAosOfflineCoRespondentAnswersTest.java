@@ -22,8 +22,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.CO_RESPONDENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.CO_RESPONDENT_SOLICITOR_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.CaseDataKeys.CO_RESPONDENT_SOLICITOR_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.CaseDataKeys.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
 
 public class ProcessAosOfflineCoRespondentAnswersTest extends IntegrationTest {
@@ -36,7 +36,8 @@ public class ProcessAosOfflineCoRespondentAnswersTest extends IntegrationTest {
     private static final String COUNTRY = "Country";
     private static final String POST_TOWN = "PostTown";
     private static final String POST_CODE = "PostCode";
-    private static final String expectedAddress = "ADDY_LINE_1\nADDY_LINE_2\nADDY_LINE_3\nADDY_COUNTY\nADDY_COUNTRY\nADDY_POST_TOWN\nADDY_POSTCODE";
+    private static final String EXPECTED_STRINGIFIED_ADDRESS = "ADDY_LINE_1\nADDY_LINE_2\nADDY_LINE_3\nADDY_COUNTY\n"
+        + "ADDY_COUNTRY\nADDY_POST_TOWN\nADDY_POSTCODE";
 
     @Autowired
     private CosApiClient cosApiClient;
@@ -67,7 +68,7 @@ public class ProcessAosOfflineCoRespondentAnswersTest extends IntegrationTest {
 
         assertThat(objectToJson(ccdCallbackResponse), isJson(allOf(
             withJsonPath("$.data.CoRespondentSolicitorRepresented", is(YES_VALUE)),
-            withJsonPath("$.data.DerivedCoRespondentSolicitorAddr", is(expectedAddress)),
+            withJsonPath("$.data.DerivedCoRespondentSolicitorAddr", is(EXPECTED_STRINGIFIED_ADDRESS)),
             withoutJsonPath("$.data.D8DerivedReasonForDivorceAdultery3rdAddr")
         )));
     }
@@ -82,7 +83,7 @@ public class ProcessAosOfflineCoRespondentAnswersTest extends IntegrationTest {
 
         assertThat(objectToJson(ccdCallbackResponse), isJson(allOf(
             withJsonPath("$.data.CoRespondentSolicitorRepresented", is(NO_VALUE)),
-            withJsonPath("$.data.D8DerivedReasonForDivorceAdultery3rdAddr", is(expectedAddress)),
+            withJsonPath("$.data.D8DerivedReasonForDivorceAdultery3rdAddr", is(EXPECTED_STRINGIFIED_ADDRESS)),
             withoutJsonPath("$.data.DerivedCoRespondentSolicitorAddr")
         )));
     }
