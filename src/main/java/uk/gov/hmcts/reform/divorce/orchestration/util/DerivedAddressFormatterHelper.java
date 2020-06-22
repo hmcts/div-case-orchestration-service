@@ -3,19 +3,18 @@ package uk.gov.hmcts.reform.divorce.orchestration.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.bsp.common.utils.LetterAddressHelper;
 
 import java.util.Map;
 import java.util.Optional;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
+
 @Component
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DerivedAddressFormatterHelper {
-
-    private static final int MAX_EXPECTED_NEWLINES = 6;
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class CaseDataKeys {
@@ -49,7 +48,7 @@ public class DerivedAddressFormatterHelper {
     public static String formatDerivedRespondentCorrespondenceAddress(Map<String, Object> caseData) {
         String correspondenceAddress = formatToDerivedAddress(caseData, CaseDataKeys.D8_RESPONDENT_CORRESPONDENCE_ADDRESS);
 
-        if (StringUtils.isEmpty(correspondenceAddress)) {
+        if (isEmpty(correspondenceAddress)) {
             correspondenceAddress = formatDerivedRespondentHomeAddress(caseData);
         }
 
@@ -63,7 +62,7 @@ public class DerivedAddressFormatterHelper {
     }
 
     public static boolean isRespondentCorrespondenceAddressPopulated(Map<String, Object> caseData) {
-        return !StringUtils.isEmpty(formatToDerivedAddress(caseData, CaseDataKeys.D8_RESPONDENT_CORRESPONDENCE_ADDRESS));
+        return !isEmpty(formatToDerivedAddress(caseData, CaseDataKeys.D8_RESPONDENT_CORRESPONDENCE_ADDRESS));
     }
 
 }
