@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.BulkPrintConf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,5 +90,21 @@ public class MultiBulkPrinterTaskTest {
                     eq(bulkLetterTypes.get(i)),
                     eq(documents.get(i)));
         }
+    }
+
+    @Test
+    public void executeShouldNotCallBulkPrintingWhenMisconfigured() throws TaskException {
+        TaskContext taskContext = prepareTaskContext();
+        taskContext.setTransientObject(
+            MULTI_BULK_PRINT_CONFIGS,
+            asList(
+                new BulkPrintConfig(bulkLetterTypes.get(0), Collections.emptyList()),
+                new BulkPrintConfig(bulkLetterTypes.get(1), Collections.emptyList())
+            )
+        );
+
+        multiBulkPrinterTask.execute(taskContext, new HashMap<>());
+
+        verify(bulkPrinterTask, never()).printSpecifiedDocument(any(), any(), any(), any());
     }
 }

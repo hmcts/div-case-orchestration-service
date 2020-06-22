@@ -36,10 +36,15 @@ public class MultiBulkPrinterTask implements Task<Map<String, Object>> {
         log.info("CaseID: {} Multi Bulk Printer config is {}.", caseId, configs);
 
         for (BulkPrintConfig bulkPrintConfig : configs) {
-            triggerBulkPrint(context, payload, bulkPrintConfig);
+            if (!bulkPrintConfig.getDocumentTypesToPrint().isEmpty()) {
+                log.info("CaseID: {} calling bulk printer task for {}.", caseId, bulkPrintConfig.getBulkPrintLetterType());
+                triggerBulkPrint(context, payload, bulkPrintConfig);
+            } else {
+                log.warn("CaseID: {} no documents for {}.", caseId, bulkPrintConfig.getBulkPrintLetterType());
+            }
         }
 
-        log.info("CaseID: {} All multi bulk prints have been triggered.", caseId);
+        log.info("CaseID: {} triggering valid bulk prints finished.", caseId);
 
         return payload;
     }
