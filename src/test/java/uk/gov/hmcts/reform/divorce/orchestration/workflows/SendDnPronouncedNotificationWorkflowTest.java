@@ -4,12 +4,14 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest;
@@ -20,12 +22,16 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentGenericUpda
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderCoRespondentCoverLetterGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderCoRespondentSolicitorCoverLetterGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DnGrantedRespondentCoverLetterGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DnGrantedRespondentSolicitorCoverLetterGenerationTask;
 
 import java.util.Map;
 
 import static java.util.Arrays.asList;
+import static org.elasticsearch.common.inject.matcher.Matchers.any;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_TYPE_ID;
@@ -65,6 +71,12 @@ public class SendDnPronouncedNotificationWorkflowTest {
 
     @Mock
     private CostOrderCoRespondentSolicitorCoverLetterGenerationTask costOrderCoRespondentSolicitorCoverLetterGenerationTask;
+
+    @Mock
+    private DnGrantedRespondentCoverLetterGenerationTask dnGrantedRespondentCoverLetterGenerationTask;
+
+    @Mock
+    private DnGrantedRespondentSolicitorCoverLetterGenerationTask dnGrantedRespondentSolicitorCoverLetterGenerationTask;
 
     @Mock
     private FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
@@ -181,13 +193,25 @@ public class SendDnPronouncedNotificationWorkflowTest {
     @Test
     public void givenPaperBased_EmailTasksAreNotCalled() throws Exception {
         Map<String, Object> caseData = ImmutableMap.of(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE);
+        when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
+
+        mockTasksExecution(
+            caseData,
+            dnGrantedRespondentCoverLetterGenerationTask,
+            fetchPrintDocsFromDmStore,
+            bulkPrinterTask
+        );
 
         executeWorkflowRun(caseData);
 
-        verifyNoBulkPrintTasksCalled();
+        verifyTasksCalledInOrder(
+            caseData,
+            dnGrantedRespondentCoverLetterGenerationTask,
+            fetchPrintDocsFromDmStore,
+            bulkPrinterTask
+        );
         verifyNoEmailsSent();
     }
-
 
     @Test
     public void givenPaperUpdateToggleIsOff_thenNoBulkPrintTasksAreCalled() throws Exception {
@@ -214,11 +238,15 @@ public class SendDnPronouncedNotificationWorkflowTest {
             bulkPrinterTask
         );
 
+        when(dnGrantedRespondentCoverLetterGenerationTask.execute(
+            ArgumentMatchers.any(TaskContext.class), eq(caseData))).thenThrow(new RuntimeException());
+
         executeWorkflowRun(caseData);
 
         verifyTasksCalledInOrder(
             caseData,
             costOrderCoRespondentCoverLetterGenerationTask,
+            dnGrantedRespondentCoverLetterGenerationTask,
             fetchPrintDocsFromDmStore,
             bulkPrinterTask
         );
@@ -311,6 +339,8 @@ public class SendDnPronouncedNotificationWorkflowTest {
     private void verifyNoBulkPrintTasksCalled() throws TaskException {
         verifyTaskWasNeverCalled(costOrderCoRespondentSolicitorCoverLetterGenerationTask);
         verifyTaskWasNeverCalled(costOrderCoRespondentCoverLetterGenerationTask);
+        verifyTaskWasNeverCalled(dnGrantedRespondentCoverLetterGenerationTask);
+        verifyTaskWasNeverCalled(dnGrantedRespondentSolicitorCoverLetterGenerationTask);
         verifyTaskWasNeverCalled(fetchPrintDocsFromDmStore);
         verifyTaskWasNeverCalled(bulkPrinterTask);
     }

@@ -17,6 +17,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentGenericUpda
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderCoRespondentCoverLetterGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderCoRespondentSolicitorCoverLetterGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DnGrantedRespondentCoverLetterGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DnGrantedRespondentSolicitorCoverLetterGenerationTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +37,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.remov
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentDigital;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentLiableForCosts;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentRepresented;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentDigital;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
 
 @Component
 @RequiredArgsConstructor
@@ -47,6 +51,9 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
 
     private final CostOrderCoRespondentCoverLetterGenerationTask costOrderCoRespondentCoverLetterGenerationTask;
     private final CostOrderCoRespondentSolicitorCoverLetterGenerationTask costOrderCoRespondentSolicitorCoverLetterGenerationTask;
+
+    private final DnGrantedRespondentCoverLetterGenerationTask dnGrantedRespondentCoverLetterGenerationTask;
+    private final DnGrantedRespondentSolicitorCoverLetterGenerationTask dnGrantedRespondentSolicitorCoverLetterGenerationTask;
 
     private final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
     private final BulkPrinterTask bulkPrinterTask;
@@ -82,54 +89,118 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
     private Task<Map<String, Object>>[] getTasks(CaseDetails caseDetails) {
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
-        if (isCoRespondentDigital(caseDetails.getCaseData())) {
-            addGenericUpdateNotificationEmailTask(tasks, caseDetails);
-        } else {
-            addCoRespondentPaperTasks(tasks, caseDetails);
-        }
+        addTasksForPetitioner(tasks, caseDetails);
+        addTasksForRespondent(tasks, caseDetails);
+        addTasksToCoRespondent(tasks, caseDetails);
+
         return tasks.toArray(new Task[0]);
     }
 
-    private void addCoRespondentPaperTasks(List<Task<Map<String, Object>>> tasks, CaseDetails caseDetails) {
-        log.info("For case {} co-respondent uses traditional letters", caseDetails.getCaseId());
+    private void addTasksForRespondent(List<Task<Map<String, Object>>> tasks, CaseDetails caseDetails) {
+        final String caseId = caseDetails.getCaseId();
 
-        if (isPaperUpdateEnabled()) {
-            log.info("Features.PAPER_UPDATE = on.");
-
-            if (isCostsClaimGranted(caseDetails.getCaseData())) {
-                log.info("CaseID: {} - Cost claim granted", caseDetails.getCaseId());
-
-                if (isCoRespondentRepresented(caseDetails.getCaseData())) {
-                    log.info("CaseID: {} - Adding task to send Cost Order Cover Letter to CoRespondent Solicitor", caseDetails.getCaseId());
-                    tasks.add(costOrderCoRespondentSolicitorCoverLetterGenerationTask);
-                } else {
-                    log.info("CaseID: {} - Adding task to send Cost Order Cover Letter to CoRespondent", caseDetails.getCaseId());
-                    tasks.add(costOrderCoRespondentCoverLetterGenerationTask);
-                }
-
-                log.info("CaseID: {} - Adding task to send to bulk print", caseDetails.getCaseId());
-                tasks.add(fetchPrintDocsFromDmStore);
-                tasks.add(bulkPrinterTask);
-
-            } else {
-                log.info("CaseID: {} - Cost claim not granted. Nothing will be sent to bulk print", caseDetails.getCaseId());
-            }
+        if (isRespondentDigital(caseDetails.getCaseData())) {
+            addGenericUpdateEmailToRespondentTask(tasks, caseDetails);
         } else {
-            log.info("Features.PAPER_UPDATE = off. Nothing will be sent to bulk print");
+            if (isPaperUpdateEnabled()) {
+                log.info("Features.PAPER_UPDATE = on. Case: {}", caseId);
+
+                addRespondentPaperTasks(tasks, caseDetails);
+                // we should send all to bulk printing here
+                // but not using this task, but like this:
+                // uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoRespondentAosPackPrinterTask
+                // this ^ task uses method: bulkPrinter.printSpecifiedDocument
+                addByBulkPrintTasks(tasks, caseDetails);
+            } else {
+                log.info("Features.PAPER_UPDATE = off. Nothing will be sent to bulk print. Case: {}", caseId);
+            }
         }
     }
 
-    private void addGenericUpdateNotificationEmailTask(List<Task<Map<String, Object>>> tasks, CaseDetails caseDetails) {
-        log.info("For case {} co-respondent uses digital contact", caseDetails.getCaseId());
+    private void addTasksToCoRespondent(List<Task<Map<String, Object>>> tasks, CaseDetails caseDetails) {
+        final String caseId = caseDetails.getCaseId();
+
+        // shouldn't we check if co-resp exist? Jeremy
+
+        if (isCoRespondentDigital(caseDetails.getCaseData())) {
+            addGenericUpdateEmailToCoRespondentTask(tasks, caseDetails);
+        } else {
+            if (isPaperUpdateEnabled()) {
+                log.info("Features.PAPER_UPDATE = on. Case: {}", caseId);
+
+                addCoRespondentPaperTasks(tasks, caseDetails);
+                // we should send all to bulk printing here
+                // but not using this task, but like this:
+                // uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoRespondentAosPackPrinterTask
+                // this ^ task uses method: bulkPrinter.printSpecifiedDocument
+                addByBulkPrintTasks(tasks, caseDetails);
+            } else {
+                log.info("Features.PAPER_UPDATE = off. Nothing will be sent to bulk print. Case: {}", caseId);
+            }
+        }
+    }
+
+    private void addTasksForPetitioner(List<Task<Map<String, Object>>> tasks, CaseDetails caseDetails) {
+        log.info(
+            "CaseID: {} - Adding task to send generic update (dn pronounced) to petitioner",
+            caseDetails.getCaseId()
+        );
         tasks.add(sendPetitionerGenericUpdateNotificationEmailTask);
-        tasks.add(sendRespondentGenericUpdateNotificationEmailTask);
+    }
+
+    private void addByBulkPrintTasks(List<Task<Map<String, Object>>> tasks, CaseDetails caseDetails) {
+        log.info("CaseID: {} - Adding tasks to send to bulk print", caseDetails.getCaseId());
+        tasks.add(fetchPrintDocsFromDmStore);
+        tasks.add(bulkPrinterTask);
+    }
+
+    private void addRespondentPaperTasks(List<Task<Map<String, Object>>> tasks, CaseDetails caseDetails) {
+        String caseId = caseDetails.getCaseId();
+        log.info("For case {} respondent uses traditional letters", caseId);
+
+        if (isRespondentRepresented(caseDetails.getCaseData())) {
+            log.info("CaseID: {} - Adding task to send DN-Granted Cover Letter to Respondent Solicitor", caseId);
+            tasks.add(dnGrantedRespondentCoverLetterGenerationTask);
+        } else {
+            log.info("CaseID: {} - Adding task to send DN-Granted Cover Letter to Respondent", caseId);
+            tasks.add(dnGrantedRespondentSolicitorCoverLetterGenerationTask);
+        }
+    }
+
+    private void addCoRespondentPaperTasks(List<Task<Map<String, Object>>> tasks, CaseDetails caseDetails) {
+        String caseId = caseDetails.getCaseId();
+        log.info("For case {} co-respondent uses traditional letters", caseId);
+
+        if (isCostsClaimGranted(caseDetails.getCaseData())) {
+            log.info("CaseID: {} - Cost claim granted", caseDetails.getCaseId());
+
+            if (isCoRespondentRepresented(caseDetails.getCaseData())) {
+                log.info("CaseID: {} - Adding task to send Cost Order Cover Letter to CoRespondent Solicitor", caseId);
+                tasks.add(costOrderCoRespondentSolicitorCoverLetterGenerationTask);
+            } else {
+                log.info("CaseID: {} - Adding task to send Cost Order Cover Letter to CoRespondent", caseId);
+                tasks.add(costOrderCoRespondentCoverLetterGenerationTask);
+            }
+        } else {
+            log.info("CaseID: {} - Cost claim not granted. Nothing will be sent to bulk print", caseId);
+        }
+    }
+
+    private void addGenericUpdateEmailToCoRespondentTask(List<Task<Map<String, Object>>> tasks, CaseDetails caseDetails) {
+        String caseId = caseDetails.getCaseId();
+        log.info("For case {} co-respondent uses digital contact", caseDetails.getCaseId());
 
         if (isCoRespondentLiableForCosts(caseDetails.getCaseData())) {
-            log.info("CaseID: {} - corespondent is liable for costs. Added task to send email do co-resp", caseDetails.getCaseId());
+            log.info("CaseID: {} - corespondent is liable for costs. Added task to send email do co-resp", caseId);
             tasks.add(sendCoRespondentGenericUpdateNotificationEmailTask);
         } else {
-            log.info("CaseID: {} - corespondent is not liable for costs. Email will not be sent", caseDetails.getCaseId());
+            log.info("CaseID: {} - corespondent is not liable for costs. Email will not be sent", caseId);
         }
+    }
+
+    private void addGenericUpdateEmailToRespondentTask(List<Task<Map<String, Object>>> tasks, CaseDetails caseDetails) {
+        log.info("For case {} respondent uses digital contact", caseDetails.getCaseId());
+        tasks.add(sendRespondentGenericUpdateNotificationEmailTask);
     }
 
     private boolean isPaperUpdateEnabled() {
