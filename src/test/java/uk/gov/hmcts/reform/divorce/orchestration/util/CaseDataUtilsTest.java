@@ -183,6 +183,25 @@ public class CaseDataUtilsTest {
     }
 
     @Test
+    public void ensureAllListedDocumentsAreRemoved() {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(D8DOCUMENTS_GENERATED, asList(
+            createCollectionMemberDocumentAsMap("testUrl", "myDocTypeA", "filename"),
+            createCollectionMemberDocumentAsMap("testUrl", "myDocTypeB", "filename"),
+            createCollectionMemberDocumentAsMap("testUrl", "myDocTypeC", "filename")
+        ));
+
+        Map<String, Object> returnedCaseData = CaseDataUtils
+            .removeDocumentsByDocumentType(caseData, "myDocTypeA", "myDocTypeB", "myDocTypeF", "myDocTypeH");
+
+        List<Map<String, Object>> documents = (List) returnedCaseData.get(D8DOCUMENTS_GENERATED);
+        Map<String, Object> firstDocument = (Map<String, Object>) documents.get(0).get(VALUE_KEY);
+
+        assertThat(documents, hasSize(1));
+        assertThat(firstDocument.get(DOCUMENT_TYPE_JSON_KEY), is("myDocTypeC"));
+    }
+
+    @Test
     public void ensureDocumentIsRemovedByDocumentType() {
         Map<String, Object> caseData =
             singletonMap(D8DOCUMENTS_GENERATED, asList(createCollectionMemberDocumentAsMap("testUrl", "myDocType", "filename")));
