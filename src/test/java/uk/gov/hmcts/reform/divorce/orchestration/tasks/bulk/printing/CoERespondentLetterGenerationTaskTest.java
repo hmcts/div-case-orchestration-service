@@ -101,7 +101,7 @@ public class CoERespondentLetterGenerationTaskTest extends BasePayloadSpecificDo
     }
 
     private Map<String, Object> buildCaseDataRespondent() {
-        Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithRespondentWithAddress();
+        Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithRespondent();
 
         caseData.put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         caseData.put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
