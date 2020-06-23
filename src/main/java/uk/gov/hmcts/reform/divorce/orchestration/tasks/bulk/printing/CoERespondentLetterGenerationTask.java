@@ -46,18 +46,18 @@ public class CoERespondentLetterGenerationTask extends BasePayloadSpecificDocume
     @Override
     protected DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) throws TaskException {
         return CoERespondentCoverLetter.coERespondentCoverLetterBuilder()
-                .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
-                .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
-                .caseReference(getCaseId(context))
-                .letterDate(DatesDataExtractor.getLetterDate())
-                .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
-                .hearingDate(DatesDataExtractor.getHearingDate(caseData))
-                .costClaimGranted(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData))
-                .deadlineToContactCourtBy(DatesDataExtractor.getDeadlineToContactCourtBy(caseData))
-                .addressee(AddresseeDataExtractor.getRespondent(caseData))
-                .husbandOrWife(CoECoverLetterDataExtractor.getHusbandOrWife(caseData))
-                .courtName(getCourtName(caseData))
-                .build();
+            .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
+            .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
+            .caseReference(getCaseId(context))
+            .letterDate(DatesDataExtractor.getLetterDate())
+            .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
+            .hearingDate(DatesDataExtractor.getHearingDate(caseData))
+            .costClaimGranted(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData))
+            .deadlineToContactCourtBy(DatesDataExtractor.getDeadlineToContactCourtBy(caseData))
+            .addressee(AddresseeDataExtractor.getRespondent(caseData))
+            .husbandOrWife(CoECoverLetterDataExtractor.getHusbandOrWife(caseData))
+            .courtName(getCourtName(caseData))
+            .build();
     }
 
     private String getCourtName(Map<String, Object> caseData) {

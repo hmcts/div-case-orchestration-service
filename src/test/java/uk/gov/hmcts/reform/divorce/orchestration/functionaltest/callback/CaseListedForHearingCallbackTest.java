@@ -22,6 +22,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctional
 import uk.gov.hmcts.reform.divorce.orchestration.service.BulkPrintService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoECoRespondentCoverLetterGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoERespondentLetterGenerationTask;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.List;
@@ -36,10 +38,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -160,9 +165,12 @@ public class CaseListedForHearingCallbackTest extends MockedFunctionalTest {
         //Existing document
         byte[] coeDocumentBytes = new byte[] {4, 5, 6};
         stubDMStore(CERTIFICATE_OF_ENTITLEMENT_ID, coeDocumentBytes);
-        CollectionMember<Document> coeDocument = createCollectionMemberDocument(getDocumentStoreTestUrl(CERTIFICATE_OF_ENTITLEMENT_ID),
+        CollectionMember<Document> coeDocument = createCollectionMemberDocument(
+            getDocumentStoreTestUrl(CERTIFICATE_OF_ENTITLEMENT_ID),
             DOCUMENT_TYPE_COE,
-            "certificateOfEntitlement");
+            "certificateOfEntitlement"
+        );
+
         Map<String, Object> caseData = new ImmutableMap.Builder<String, Object>().putAll(BASE_CASE_DATA)
             .put(RESP_IS_USING_DIGITAL_CHANNEL, NO_VALUE)
             .put(D8DOCUMENTS_GENERATED, asList(coeDocument))
@@ -183,7 +191,20 @@ public class CaseListedForHearingCallbackTest extends MockedFunctionalTest {
             .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
 
         //Then
-        verify(bulkPrintService).send(eq(TEST_CASE_ID), anyString(), documentsToPrintCaptor.capture());
+        verify(bulkPrintService, never())
+            .send(
+                anyString(),
+                eq(CoECoRespondentCoverLetterGenerationTask.FileMetadata.DOCUMENT_TYPE),
+                any()
+            );
+
+        verify(bulkPrintService, times(1))
+            .send(
+                eq(TEST_CASE_ID),
+                eq(CoERespondentLetterGenerationTask.FileMetadata.DOCUMENT_TYPE),
+                documentsToPrintCaptor.capture()
+            );
+
         List<GeneratedDocumentInfo> documentsSentToBulkPrint = documentsToPrintCaptor.getValue();
         assertThat(documentsSentToBulkPrint, hasSize(2));
         assertThat(documentsSentToBulkPrint.get(0).getBytes(), is(coeLetterBytes));
