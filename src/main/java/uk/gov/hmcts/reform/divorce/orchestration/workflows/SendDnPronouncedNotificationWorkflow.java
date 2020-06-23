@@ -163,6 +163,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         final Map<String, Object> caseData = caseDetails.getCaseData();
         final boolean respondentDigital = isRespondentDigital(caseData);
         final boolean coRespondentDigital = isCoRespondentDigital(caseData);
+        final boolean coRespondentExists = caseDataUtils.isAdulteryCaseWithNamedCoRespondent(caseData);
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
         log.info("CaseID: {} adding task for email to petitioner and respondent", caseId);
@@ -174,13 +175,17 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
             addRespondentPaperTasks(tasks, caseDetails);
         }
 
-        if (coRespondentDigital) {
-            addEmailForCoRespondentTask(tasks, caseDetails);
+        if (coRespondentExists) {
+            if (coRespondentDigital) {
+                addEmailForCoRespondentTask(tasks, caseDetails);
+            } else {
+                addCoRespondentPaperTasks(tasks, caseDetails);
+            }
         } else {
-            addCoRespondentPaperTasks(tasks, caseDetails);
+            log.info("CaseID: {} - there is no co-respondent named", caseId);
         }
 
-        if (!coRespondentDigital || !respondentDigital) {
+        if ((coRespondentExists && !coRespondentDigital) || !respondentDigital) {
             log.info("CaseID: {} - Adding task to send to bulk print", caseId);
             tasks.add(fetchPrintDocsFromDmStore);
             tasks.add(multiBulkPrinterTask);
