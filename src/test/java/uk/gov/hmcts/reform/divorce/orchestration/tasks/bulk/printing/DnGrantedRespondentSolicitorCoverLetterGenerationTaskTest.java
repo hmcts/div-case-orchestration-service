@@ -4,7 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import uk.gov.hmcts.reform.bsp.common.model.document.Addressee;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CoEBasicCoverLetter;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CoERespondentSolicitorCoverLetter;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest;
@@ -22,6 +22,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.RESPONDENT_SOLICITORS_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.RESPONDENT_SOLICITORS_EXPECTED_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.RESPONDENT_SOLICITOR_REF;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractorTest.HEARING_DATE_FORMATTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractorTest.createHearingDatesList;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
@@ -59,14 +60,15 @@ public class DnGrantedRespondentSolicitorCoverLetterGenerationTaskTest extends B
         );
     }
 
-    private CoEBasicCoverLetter getTemplateModel() {
-        return CoEBasicCoverLetter.coEBasicCoverLetterBuilder()
+    private CoERespondentSolicitorCoverLetter getTemplateModel() {
+        return CoERespondentSolicitorCoverLetter.coERespondentSolicitorCoverLetterBuilder()
             .petitionerFullName(TEST_PETITIONER_FULL_NAME)
             .respondentFullName(TEST_RESPONDENT_FULL_NAME)
             .caseReference(CASE_ID)
             .letterDate(LETTER_DATE_EXPECTED)
             .ctscContactDetails(CTSC_CONTACT)
             .hearingDate(HEARING_DATE_FORMATTED)
+            .solicitorReference(RESPONDENT_SOLICITOR_REF)
             .addressee(Addressee.builder()
                 .name(RESPONDENT_SOLICITORS_EXPECTED_NAME)
                 .formattedAddress(RESPONDENT_SOLICITORS_ADDRESS)

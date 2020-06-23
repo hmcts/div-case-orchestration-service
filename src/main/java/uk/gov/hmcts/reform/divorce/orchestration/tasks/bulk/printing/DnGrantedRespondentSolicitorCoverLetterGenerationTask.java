@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CoEBasicCoverLetter;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CoERespondentSolicitorCoverLetter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextracto
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.SolicitorDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.Map;
@@ -37,7 +38,7 @@ public class DnGrantedRespondentSolicitorCoverLetterGenerationTask extends BaseP
 
     @Override
     protected DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        return CoEBasicCoverLetter.coEBasicCoverLetterBuilder()
+        return CoERespondentSolicitorCoverLetter.coERespondentSolicitorCoverLetterBuilder()
             .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
             .addressee(AddresseeDataExtractor.getRespondentSolicitor(caseData))
             .caseReference(getCaseId(context))
@@ -46,6 +47,7 @@ public class DnGrantedRespondentSolicitorCoverLetterGenerationTask extends BaseP
             .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
             .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
             .costClaimGranted(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData))
+            .solicitorReference(SolicitorDataExtractor.getSolicitorReference(caseData))
             .build();
     }
 
