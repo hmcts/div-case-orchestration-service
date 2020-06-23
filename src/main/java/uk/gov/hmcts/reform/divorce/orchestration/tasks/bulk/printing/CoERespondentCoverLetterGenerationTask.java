@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOffl
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 
 @Component
-public class CoERespondentLetterGenerationTask extends BasePayloadSpecificDocumentGenerationTask {
+public class CoERespondentCoverLetterGenerationTask extends BasePayloadSpecificDocumentGenerationTask {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FileMetadata {
@@ -34,7 +34,7 @@ public class CoERespondentLetterGenerationTask extends BasePayloadSpecificDocume
 
     private final CourtLookupService courtLookupService;
 
-    public CoERespondentLetterGenerationTask(
+    public CoERespondentCoverLetterGenerationTask(
         CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
         PdfDocumentGenerationService pdfDocumentGenerationService,
         CcdUtil ccdUtil,
