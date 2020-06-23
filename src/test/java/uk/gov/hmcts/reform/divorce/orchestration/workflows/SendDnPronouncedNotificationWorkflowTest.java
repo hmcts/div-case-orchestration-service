@@ -38,14 +38,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_BOTH;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_COSTS_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.buildCaseDataWithRespondent;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.buildCaseDataWithRespondentSolicitor;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.COSTS_CLAIM_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocumentAsMap;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
@@ -125,31 +125,6 @@ public class SendDnPronouncedNotificationWorkflowTest {
     }
 
     @Test
-    public void givenDigitalCaseAndCoRespondentAreLiableForCosts_thenEmailsAreSent() throws Exception {
-        Map<String, Object> caseData = ImmutableMap.of(
-            WHO_PAYS_COSTS_CCD_FIELD,
-            WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT
-        );
-
-        mockTasksExecution(
-            caseData,
-            sendPetitionerGenericUpdateNotificationEmailTask,
-            sendRespondentGenericUpdateNotificationEmailTask,
-            sendCoRespondentGenericUpdateNotificationEmailTask
-        );
-
-        executeWorkflowRun(caseData);
-
-        verifyTasksCalledInOrder(
-            caseData,
-            sendPetitionerGenericUpdateNotificationEmailTask,
-            sendRespondentGenericUpdateNotificationEmailTask,
-            sendCoRespondentGenericUpdateNotificationEmailTask
-        );
-        verifyNoBulkPrintTasksCalled();
-    }
-
-    @Test
     public void givenDigitalCaseAndCoRespondentNotLiableForCosts_thenEmailsAreSent() throws Exception {
         Map<String, Object> caseData = ImmutableMap.of(
             WHO_PAYS_COSTS_CCD_FIELD,
@@ -174,16 +149,21 @@ public class SendDnPronouncedNotificationWorkflowTest {
     }
 
     @Test
-    public void givenDigitalCaseAndRespondentAndCoRespondentAreLiableForCosts_thenEmailsAreSent() throws Exception {
-        Map<String, Object> caseData = ImmutableMap.of(
-            WHO_PAYS_COSTS_CCD_FIELD,
-            WHO_PAYS_CCD_CODE_FOR_BOTH);
+    public void givenPaperBased_OnlyEmailToPetitionerSentAndBulkPrintCalled() throws Exception {
+        Map<String, Object> caseData = buildCaseDataWithRespondentSolicitor();
+        caseData.putAll(
+            ImmutableMap.of(
+                CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE,
+                RESP_IS_USING_DIGITAL_CHANNEL, NO_VALUE
+            )
+        );
 
         mockTasksExecution(
             caseData,
             sendPetitionerGenericUpdateNotificationEmailTask,
-            sendRespondentGenericUpdateNotificationEmailTask,
-            sendCoRespondentGenericUpdateNotificationEmailTask
+            dnGrantedRespondentSolicitorCoverLetterGenerationTask,
+            fetchPrintDocsFromDmStore,
+            multiBulkPrinterTask
         );
 
         executeWorkflowRun(caseData);
@@ -191,22 +171,14 @@ public class SendDnPronouncedNotificationWorkflowTest {
         verifyTasksCalledInOrder(
             caseData,
             sendPetitionerGenericUpdateNotificationEmailTask,
-            sendRespondentGenericUpdateNotificationEmailTask,
-            sendCoRespondentGenericUpdateNotificationEmailTask
+            dnGrantedRespondentSolicitorCoverLetterGenerationTask,
+            fetchPrintDocsFromDmStore,
+            multiBulkPrinterTask
         );
-        verifyNoBulkPrintTasksCalled();
+        verifyTaskWasNeverCalled(sendRespondentGenericUpdateNotificationEmailTask);
+        verifyTaskWasNeverCalled(sendCoRespondentGenericUpdateNotificationEmailTask);
+        verifyTaskWasNeverCalled(dnGrantedRespondentCoverLetterGenerationTask);
     }
-
-    @Test
-    public void givenPaperBased_EmailTasksAreNotCalled() throws Exception {
-        Map<String, Object> caseData = ImmutableMap.of(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE);
-
-        executeWorkflowRun(caseData);
-
-        verifyNoBulkPrintTasksCalled();
-        verifyNoEmailsSent();
-    }
-
 
     @Test
     public void givenToggleIsOffAndNoCoResp_thenSendEmailsToDivorcingParties() throws Exception {
@@ -312,6 +284,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
         Map<String, Object> caseData = buildCaseDataWithCoRespondentAsAddressee();
 
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
+        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(eq(caseData))).thenReturn(true);
 
         mockTasksExecution(
             caseData,
@@ -346,30 +319,40 @@ public class SendDnPronouncedNotificationWorkflowTest {
 
         mockTasksExecution(
             caseData,
+            sendPetitionerGenericUpdateNotificationEmailTask,
+            sendRespondentGenericUpdateNotificationEmailTask,
             costOrderCoRespondentSolicitorCoverLetterGenerationTask,
             fetchPrintDocsFromDmStore,
             multiBulkPrinterTask
         );
 
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
+        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(eq(caseData))).thenReturn(true);
 
         executeWorkflowRun(caseData);
 
         verifyTasksCalledInOrder(
             caseData,
+            sendPetitionerGenericUpdateNotificationEmailTask,
+            sendRespondentGenericUpdateNotificationEmailTask,
             costOrderCoRespondentSolicitorCoverLetterGenerationTask,
             fetchPrintDocsFromDmStore,
             multiBulkPrinterTask
         );
         verifyTaskWasNeverCalled(costOrderCoRespondentCoverLetterGenerationTask);
-        verifyNoEmailsSent();
+        verifyTaskWasNeverCalled(sendCoRespondentGenericUpdateNotificationEmailTask);
     }
 
     @Test
     public void givenPaperBasedAndPaperUpdateToggledOnAndCostClaimNotGranted_thenNoBulkPrintTasksAreCalled() throws Exception {
         Map<String, Object> caseData = ImmutableMap.of(
-            CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE,
-            DIVORCE_COSTS_CLAIM_CCD_FIELD, NO_VALUE
+            COSTS_CLAIM_GRANTED, NO_VALUE
+        );
+
+        mockTasksExecution(
+            caseData,
+            sendPetitionerGenericUpdateNotificationEmailTask,
+            sendRespondentGenericUpdateNotificationEmailTask
         );
 
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
@@ -377,7 +360,11 @@ public class SendDnPronouncedNotificationWorkflowTest {
         executeWorkflowRun(caseData);
 
         verifyNoBulkPrintTasksCalled();
-        verifyNoEmailsSent();
+        verifyTasksCalledInOrder(
+            caseData,
+            sendPetitionerGenericUpdateNotificationEmailTask,
+            sendRespondentGenericUpdateNotificationEmailTask
+        );
     }
 
     @Test
@@ -386,10 +373,20 @@ public class SendDnPronouncedNotificationWorkflowTest {
 
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(false);
 
+        mockTasksExecution(
+            caseData,
+            sendPetitionerGenericUpdateNotificationEmailTask,
+            sendRespondentGenericUpdateNotificationEmailTask
+        );
+
         executeWorkflowRun(caseData);
 
         verifyNoBulkPrintTasksCalled();
-        verifyNoEmailsSent();
+        verifyTasksCalledInOrder(
+            caseData,
+            sendPetitionerGenericUpdateNotificationEmailTask,
+            sendRespondentGenericUpdateNotificationEmailTask
+        );
     }
 
     private void executeWorkflowRun(Map<String, Object> caseData) throws WorkflowException {
@@ -411,12 +408,6 @@ public class SendDnPronouncedNotificationWorkflowTest {
             .caseId(CASE_TYPE_ID)
             .caseData(casePayload)
             .build();
-    }
-
-    private void verifyNoEmailsSent() throws TaskException {
-        verifyTaskWasNeverCalled(sendPetitionerGenericUpdateNotificationEmailTask);
-        verifyTaskWasNeverCalled(sendRespondentGenericUpdateNotificationEmailTask);
-        verifyTaskWasNeverCalled(sendCoRespondentGenericUpdateNotificationEmailTask);
     }
 
     private void verifyNoBulkPrintTasksCalled() throws TaskException {

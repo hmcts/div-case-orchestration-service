@@ -83,7 +83,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         );
     }
 
-    public List<BulkPrintConfig> getBulkPrintConfigForMultiPrinting(CaseDetails caseDetails) {
+    private List<BulkPrintConfig> getBulkPrintConfigForMultiPrinting(CaseDetails caseDetails) {
         final String caseId = caseDetails.getCaseId();
         final Map<String, Object> caseData = caseDetails.getCaseData();
         List<BulkPrintConfig> config = new ArrayList<>();
