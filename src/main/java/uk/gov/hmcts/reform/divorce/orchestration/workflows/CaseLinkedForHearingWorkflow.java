@@ -56,7 +56,7 @@ public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Ob
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
         String caseId = caseDetails.getCaseId();
-        log.info("Running CaseLinkedForHearingWorkflow for case id {}.", caseId);
+        log.info("CaseID: {} - Running CaseLinkedForHearingWorkflow.", caseId);
 
         Task<Map<String, Object>>[] tasks = getTasks(caseDetails);
         List<BulkPrintConfig> configs = getBulkPrintConfigForMultiPrinting(caseDetails);
@@ -70,7 +70,7 @@ public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Ob
             ImmutablePair.of(MULTI_BULK_PRINT_CONFIGS, configs)
         );
 
-        log.info("CaseLinkedForHearingWorkflow executed for case id {}.", caseId);
+        log.info("CaseID: {} CaseLinkedForHearingWorkflow executed.", caseId);
 
         return removeCoverLettersFrom(caseDataToReturn);
     }
@@ -122,19 +122,19 @@ public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Ob
             if (!isRespondentDigital(caseData)) {
                 addRespondentCoverLetterDocumentType(respondentDocTypes, caseDetails);
             } else {
-                log.info("CaseId {} respondent is using digital channel. No documents to print", caseId);
+                log.info("CaseID: {} respondent is using digital channel. No documents to print", caseId);
             }
 
             if (caseDataUtils.isAdulteryCaseWithNamedCoRespondent(caseData)) {
-                log.info("CaseId {} named co-respondent", caseId);
+                log.info("CaseID: {} named co-respondent", caseId);
 
                 if (!isCoRespondentDigital(caseData)) {
                     addCoRespondentCoverLetterDocumentType(coRespondentDocTypes, caseDetails);
                 } else {
-                    log.info("CaseId {} co-respondent is using digital channel. No documents to print", caseId);
+                    log.info("CaseID: {} co-respondent is using digital channel. No documents to print", caseId);
                 }
             } else {
-                log.info("CaseId {} there is no co-respondent", caseId);
+                log.info("CaseID: {} there is no co-respondent", caseId);
             }
         } else {
             log.info("Features.PAPER_UPDATE = off. No documents will be sent to print");
@@ -156,36 +156,36 @@ public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Ob
             );
         }
 
-        log.info("CaseId {} multi bulk print config: {}", caseId, config);
+        log.info("CaseID: {} multi bulk print config: {}", caseId, config);
 
         return config;
     }
 
     private void addRespondentNotificationEmailTask(List<Task<Map<String, Object>>> tasks, CaseDetails caseDetails) {
-        log.info("CaseId {} respondent uses digital contact", caseDetails.getCaseId());
+        log.info("CaseID: {} respondent uses digital contact", caseDetails.getCaseId());
         tasks.add(sendRespondentCoENotificationEmailTask);
     }
 
     private void addRespondentNotificationLetterTask(List<Task<Map<String, Object>>> tasks, CaseDetails caseDetails) {
-        log.info("For case {} respondent uses traditional letters", caseDetails.getCaseId());
+        log.info("CaseID: {} respondent uses traditional letters", caseDetails.getCaseId());
         if (isPaperUpdateEnabled()) {
             if (isRespondentRepresented(caseDetails.getCaseData())) {
-                log.info("For case {} respondent is represented by a solicitor", caseDetails.getCaseId());
+                log.info("CaseID: {} respondent is represented by a solicitor", caseDetails.getCaseId());
                 tasks.add(coERespondentSolicitorLetterGenerationTask);
             } else {
-                log.info("For case {} respondent is not represented by a solicitor", caseDetails.getCaseId());
+                log.info("CaseID: {} respondent is not represented by a solicitor", caseDetails.getCaseId());
                 tasks.add(coERespondentLetterGenerationTask);
             }
         }
     }
 
     private void addCoRespondentNotificationEmailTask(List<Task<Map<String, Object>>> tasks, CaseDetails caseDetails) {
-        log.info("For case {} co-respondent uses digital contact", caseDetails.getCaseId());
+        log.info("CaseID: {} co-respondent uses digital contact", caseDetails.getCaseId());
         tasks.add(sendCoRespondentGenericUpdateNotificationEmailTask);
     }
 
     private void addCoRespondentNotificationLetterTask(List<Task<Map<String, Object>>> tasks, CaseDetails caseDetails) {
-        log.info("For case {} co-respondent uses traditional letters", caseDetails.getCaseId());
+        log.info("CaseID: {} co-respondent uses traditional letters", caseDetails.getCaseId());
         if (isPaperUpdateEnabled()) {
             tasks.add(coECoRespondentCoverLetterGenerationTask);
         }
@@ -193,21 +193,23 @@ public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Ob
 
     private void addRespondentCoverLetterDocumentType(List<String> documentTypes, CaseDetails caseDetails) {
         if (isRespondentRepresented(caseDetails.getCaseData())) {
-            log.info("CaseId {} add cover letter to print for the respondent's solicitor", caseDetails.getCaseId());
+            log.info("CaseID: {} add cover letter to print for the respondent's solicitor", caseDetails.getCaseId());
             documentTypes.add(coERespondentSolicitorLetterGenerationTask.getDocumentType());
         } else {
-            log.info("CaseId {} add cover letter to print for the respondent", caseDetails.getCaseId());
+            log.info("CaseID: {} add cover letter to print for the respondent", caseDetails.getCaseId());
             documentTypes.add(coERespondentLetterGenerationTask.getDocumentType());
         }
 
-        log.info("CaseId {} add CoE to print (respondent/sol)", caseDetails.getCaseId());
+        log.info("CaseID: {} add CoE to print (respondent/sol)", caseDetails.getCaseId());
         documentTypes.add(DOCUMENT_TYPE_COE);
     }
 
     private void addCoRespondentCoverLetterDocumentType(List<String> documentTypes, CaseDetails caseDetails) {
-        log.info("CaseId {} has cover letters to print for the co-respondent (or their solicitor)", caseDetails.getCaseId());
+        String caseId = caseDetails.getCaseId();
+
+        log.info("CaseID: {} has cover letters to print for the co-respondent (or their solicitor)", caseId);
         documentTypes.add(coECoRespondentCoverLetterGenerationTask.getDocumentType());
-        log.info("CaseId {} add CoE to print (co-respondent/sol)", caseDetails.getCaseId());
+        log.info("CaseID: {} add CoE to print (co-respondent/sol)", caseId);
         documentTypes.add(DOCUMENT_TYPE_COE);
     }
 
