@@ -909,8 +909,9 @@ public class CallbackController {
         @RequestHeader(name = AUTHORIZATION_HEADER)
         @ApiParam(value = "Authorisation token issued by IDAM", required = true) String authToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest,
-        @PathVariable("party") @ApiParam("Party in divorce (respondent or co-respondent") DivorceParty party) {
-
+        @PathVariable("party")
+        @ApiParam(value = "Party in divorce (respondent or co-respondent)" ,
+                  allowableValues = "respondent, co-respondent") DivorceParty party) {
         CcdCallbackResponse response;
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
 
@@ -935,8 +936,9 @@ public class CallbackController {
         @ApiResponse(code = 200, message = "Successfully processed offline AOS Answers")})
     public ResponseEntity<CcdCallbackResponse> processAosPackOfflineAnswers(
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest,
-        @PathVariable("party") @ApiParam("Party in divorce (respondent or co-respondent") DivorceParty party) {
-
+        @PathVariable("party")
+        @ApiParam(value = "Party in divorce (respondent or co-respondent)",
+                  allowableValues = "respondent, co-respondent") DivorceParty party) {
         CcdCallbackResponse.CcdCallbackResponseBuilder responseBuilder = CcdCallbackResponse.builder();
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
 

@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.CoRespond
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.CoRespondentAosDerivedAddressFormatterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.FormFieldValuesToCoreFieldsRelayTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.RespondentAosAnswersProcessorTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.RespondentAosDerivedAddressFormatterTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +27,6 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
@@ -48,6 +48,9 @@ public class AosPackOfflineAnswersWorkflowTest {
     @Mock
     private CoRespondentAosDerivedAddressFormatterTask coRespondentAosDerivedAddressFormatter;
 
+    @Mock
+    private RespondentAosDerivedAddressFormatterTask respondentAosDerivedAddressFormatter;
+
     @InjectMocks
     private AosPackOfflineAnswersWorkflow classUnderTest;
 
@@ -60,16 +63,16 @@ public class AosPackOfflineAnswersWorkflowTest {
 
         when(respondentAosAnswersProcessor.execute(any(TaskContext.class), eq(payload))).thenReturn(returnCaseData);
         when(formFieldValuesToCoreFieldsRelay.execute(any(TaskContext.class), eq(payload))).thenReturn(payload);
-        when(coRespondentAosDerivedAddressFormatter.execute(any(TaskContext.class), anyMap())).thenReturn(returnCaseData);
+        when(respondentAosDerivedAddressFormatter.execute(any(TaskContext.class), anyMap())).thenReturn(returnCaseData);
 
         Map<String, Object> returnedPayload = classUnderTest.run(caseDetails, RESPONDENT);
 
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
 
-        InOrder inOrder = inOrder(formFieldValuesToCoreFieldsRelay, respondentAosAnswersProcessor, coRespondentAosDerivedAddressFormatter);
-        inOrder.verify(formFieldValuesToCoreFieldsRelay, times(1)).execute(any(), eq(payload));
-        inOrder.verify(respondentAosAnswersProcessor, times(1)).execute(any(), eq(payload));
-        inOrder.verify(coRespondentAosDerivedAddressFormatter, times(1)).execute(any(), anyMap());
+        InOrder inOrder = inOrder(formFieldValuesToCoreFieldsRelay, respondentAosAnswersProcessor, respondentAosDerivedAddressFormatter);
+        inOrder.verify(formFieldValuesToCoreFieldsRelay).execute(any(), eq(payload));
+        inOrder.verify(respondentAosAnswersProcessor).execute(any(), eq(payload));
+        inOrder.verify(respondentAosDerivedAddressFormatter).execute(any(), anyMap());
 
         verify(coRespondentAosAnswersProcessor, never()).execute(any(), eq(payload));
     }
@@ -89,9 +92,9 @@ public class AosPackOfflineAnswersWorkflowTest {
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
 
         InOrder inOrder = inOrder(formFieldValuesToCoreFieldsRelay, coRespondentAosAnswersProcessor, coRespondentAosDerivedAddressFormatter);
-        inOrder.verify(formFieldValuesToCoreFieldsRelay, times(1)).execute(any(), eq(payload));
-        inOrder.verify(coRespondentAosAnswersProcessor, times(1)).execute(any(), eq(payload));
-        inOrder.verify(coRespondentAosDerivedAddressFormatter, times(1)).execute(any(), anyMap());
+        inOrder.verify(formFieldValuesToCoreFieldsRelay).execute(any(), eq(payload));
+        inOrder.verify(coRespondentAosAnswersProcessor).execute(any(), eq(payload));
+        inOrder.verify(coRespondentAosDerivedAddressFormatter).execute(any(), anyMap());
 
         verify(respondentAosAnswersProcessor, never()).execute(any(), any());
     }
@@ -110,9 +113,9 @@ public class AosPackOfflineAnswersWorkflowTest {
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
 
         InOrder inOrder = inOrder(formFieldValuesToCoreFieldsRelay, coRespondentAosAnswersProcessor, coRespondentAosDerivedAddressFormatter);
-        inOrder.verify(formFieldValuesToCoreFieldsRelay, times(1)).execute(any(), anyMap());
-        inOrder.verify(coRespondentAosAnswersProcessor, times(1)).execute(any(), anyMap());
-        inOrder.verify(coRespondentAosDerivedAddressFormatter, times(1)).execute(any(), anyMap());
+        inOrder.verify(formFieldValuesToCoreFieldsRelay).execute(any(), anyMap());
+        inOrder.verify(coRespondentAosAnswersProcessor).execute(any(), anyMap());
+        inOrder.verify(coRespondentAosDerivedAddressFormatter).execute(any(), anyMap());
 
         verify(respondentAosAnswersProcessor, never()).execute(any(), anyMap());
     }
