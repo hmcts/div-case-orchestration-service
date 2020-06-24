@@ -258,7 +258,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
     public void givenToggleIsOffAndCoRespDigitalAndNotLiableForCosts_thenSendEmailsToDivorcingParties() throws Exception {
         Map<String, Object> caseData = buildCaseDataWithCoRespondentAsAddressee();
         caseData.put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, YES_VALUE);
-        caseData.put(WHO_PAYS_COSTS_CCD_FIELD, "No me!");
+        caseData.put(WHO_PAYS_COSTS_CCD_FIELD, "Not me!");
 
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(false);
         when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(eq(caseData))).thenReturn(true);

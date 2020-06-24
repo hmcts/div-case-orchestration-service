@@ -100,7 +100,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         }
 
         if (caseDataUtils.isAdulteryCaseWithNamedCoRespondent(caseData)) {
-            if (isCoRespondentDigital(caseData)) {
+            if (!isCoRespondentDigital(caseData)) {
                 config.add(createBulkPrintConfigForCoRespondentOrSolicitor(caseDetails));
             } else {
                 log.info("CaseID: {} co-respondent is using digital channel. No documents to print", caseId);
@@ -195,7 +195,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
     }
 
     private void addRespondentPaperTasks(List<Task<Map<String, Object>>> tasks, CaseDetails caseDetails) {
-        if (isPaperUpdateEnabled()) {
+        if (!isPaperUpdateEnabled()) {
             log.info("Features.PAPER_UPDATE = off. Nothing will be sent to bulk print");
         }
 
