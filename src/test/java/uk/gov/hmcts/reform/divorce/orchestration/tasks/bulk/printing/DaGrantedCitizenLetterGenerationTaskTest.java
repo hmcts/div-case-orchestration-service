@@ -64,7 +64,7 @@ public class DaGrantedCitizenLetterGenerationTaskTest extends BasePayloadSpecifi
     }
 
     private Map<String, Object> buildCaseDataRespondentNotRepresented() {
-        Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithRespondentWithAddress();
+        Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithRespondent();
 
         caseData.put(DatesDataExtractor.CaseDataKeys.DA_GRANTED_DATE, LETTER_DATE_FROM_CCD);
 
