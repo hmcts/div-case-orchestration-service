@@ -3,10 +3,8 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CoERespondentCoverLetter;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CoERespondentSolicitorCoverLetter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
-import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
@@ -15,66 +13,51 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextracto
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor;
-import uk.gov.hmcts.reform.divorce.orchestration.service.impl.CourtLookupService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.SolicitorDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.COE_RESPONDENT_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 
 @Component
-public class CoERespondentLetterGenerationTask extends BasePayloadSpecificDocumentGenerationTask {
+public class DnGrantedRespondentSolicitorCoverLetterGenerationTask extends BasePayloadSpecificDocumentGenerationTask {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FileMetadata {
-        public static final String TEMPLATE_ID = "FL-DIV-LET-ENG-00360.docx";
-        public static final String DOCUMENT_TYPE = COE_RESPONDENT_LETTER_DOCUMENT_TYPE;
+        public static final String TEMPLATE_ID = "FL-DIV-GNO-ENG-00356.docx";
+        public static final String DOCUMENT_TYPE = "dnGrantedCoverLetterRespondentSolicitor";
     }
 
-    private final CourtLookupService courtLookupService;
-
-    public CoERespondentLetterGenerationTask(
+    public DnGrantedRespondentSolicitorCoverLetterGenerationTask(
         CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
         PdfDocumentGenerationService pdfDocumentGenerationService,
-        CcdUtil ccdUtil,
-        CourtLookupService courtLookupService) {
+        CcdUtil ccdUtil) {
         super(ctscContactDetailsDataProviderService, pdfDocumentGenerationService, ccdUtil);
-        this.courtLookupService = courtLookupService;
     }
 
     @Override
     protected DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        return CoERespondentCoverLetter.coERespondentCoverLetterBuilder()
-            .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
-            .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
+        return CoERespondentSolicitorCoverLetter.coERespondentSolicitorCoverLetterBuilder()
+            .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
+            .addressee(AddresseeDataExtractor.getRespondentSolicitor(caseData))
             .caseReference(getCaseId(context))
             .letterDate(DatesDataExtractor.getLetterDate())
-            .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
             .hearingDate(DatesDataExtractor.getHearingDate(caseData))
+            .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
+            .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
             .costClaimGranted(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData))
-            .deadlineToContactCourtBy(DatesDataExtractor.getDeadlineToContactCourtBy(caseData))
-            .addressee(AddresseeDataExtractor.getRespondent(caseData))
-            .husbandOrWife(CoECoverLetterDataExtractor.getHusbandOrWife(caseData))
-            .courtName(getCourtName(caseData))
+            .solicitorReference(SolicitorDataExtractor.getSolicitorReference(caseData))
             .build();
-    }
-
-    private String getCourtName(Map<String, Object> caseData) {
-        try {
-            return courtLookupService.getDnCourtByKey(CoECoverLetterDataExtractor.getCourtId(caseData)).getName();
-        } catch (CourtDetailsNotFound e) {
-            throw new InvalidDataForTaskException(e);
-        }
-    }
-
-    @Override
-    public String getTemplateId() {
-        return FileMetadata.TEMPLATE_ID;
     }
 
     @Override
     public String getDocumentType() {
         return FileMetadata.DOCUMENT_TYPE;
+    }
+
+    @Override
+    public String getTemplateId() {
+        return FileMetadata.TEMPLATE_ID;
     }
 }

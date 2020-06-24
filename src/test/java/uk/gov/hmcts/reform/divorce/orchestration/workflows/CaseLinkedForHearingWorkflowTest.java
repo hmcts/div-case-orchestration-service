@@ -23,7 +23,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUp
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerCoENotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentCoENotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoECoRespondentCoverLetterGenerationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoERespondentLetterGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoERespondentCoverLetterGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoERespondentSolicitorLetterGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.MultiBulkPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
@@ -79,7 +79,7 @@ public class CaseLinkedForHearingWorkflowTest {
     private CoECoRespondentCoverLetterGenerationTask coECoRespondentCoverLetterGenerationTask;
 
     @Mock
-    private CoERespondentLetterGenerationTask coERespondentLetterGenerationTask;
+    private CoERespondentCoverLetterGenerationTask coERespondentCoverLetterGenerationTask;
 
     @Mock
     private CoERespondentSolicitorLetterGenerationTask coERespondentSolicitorLetterGenerationTask;
@@ -109,9 +109,9 @@ public class CaseLinkedForHearingWorkflowTest {
         when(sendPetitionerCoENotificationEmailTask.execute(notNull(), eq(payload))).thenReturn(payload);
         when(sendRespondentCoENotificationEmailTask.execute(notNull(), eq(payload))).thenReturn(payload);
         when(sendCoRespondentGenericUpdateNotificationEmailTask.execute(notNull(), eq(payload))).thenReturn(payload);
-        when(coERespondentLetterGenerationTask.execute(isNotNull(), eq(payload))).thenReturn(payload);
-        when(coERespondentLetterGenerationTask.getDocumentType())
-            .thenReturn(CoERespondentLetterGenerationTask.FileMetadata.DOCUMENT_TYPE);
+        when(coERespondentCoverLetterGenerationTask.execute(isNotNull(), eq(payload))).thenReturn(payload);
+        when(coERespondentCoverLetterGenerationTask.getDocumentType())
+            .thenReturn(CoERespondentCoverLetterGenerationTask.FileMetadata.DOCUMENT_TYPE);
         when(coERespondentSolicitorLetterGenerationTask.execute(isNotNull(), eq(payload))).thenReturn(payload);
         when(coERespondentSolicitorLetterGenerationTask.getDocumentType())
             .thenReturn(COE_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE);
@@ -143,7 +143,7 @@ public class CaseLinkedForHearingWorkflowTest {
         inOrder.verify(sendRespondentCoENotificationEmailTask).execute(contextCaptor.capture(), eq(payload));
         inOrder.verify(sendCoRespondentGenericUpdateNotificationEmailTask).execute(contextCaptor.capture(), eq(payload));
 
-        verifyNotCalled(coERespondentLetterGenerationTask);
+        verifyNotCalled(coERespondentCoverLetterGenerationTask);
         verifyNotCalled(coERespondentSolicitorLetterGenerationTask);
         verifyNotCalled(coECoRespondentCoverLetterGenerationTask);
         verifyNotCalled(fetchPrintDocsFromDmStore);
@@ -178,7 +178,7 @@ public class CaseLinkedForHearingWorkflowTest {
         inOrder.verify(multiBulkPrinterTask).execute(contextCaptor.capture(), eq(payload));
 
         verifyNotCalled(sendCoRespondentGenericUpdateNotificationEmailTask);
-        verifyNotCalled(coERespondentLetterGenerationTask);
+        verifyNotCalled(coERespondentCoverLetterGenerationTask);
         verifyNotCalled(coERespondentSolicitorLetterGenerationTask);
 
         assertThat(contextCaptor.getValue().getTransientObject(CASE_ID_JSON_KEY), is(equalTo(TEST_CASE_ID)));
@@ -203,7 +203,7 @@ public class CaseLinkedForHearingWorkflowTest {
         inOrder.verify(sendRespondentCoENotificationEmailTask).execute(contextCaptor.capture(), eq(payload));
 
         verifyNotCalled(sendCoRespondentGenericUpdateNotificationEmailTask);
-        verifyNotCalled(coERespondentLetterGenerationTask);
+        verifyNotCalled(coERespondentCoverLetterGenerationTask);
         verifyNotCalled(coERespondentSolicitorLetterGenerationTask);
         verifyNotCalled(coECoRespondentCoverLetterGenerationTask);
         verifyNotCalled(fetchPrintDocsFromDmStore);
@@ -225,14 +225,14 @@ public class CaseLinkedForHearingWorkflowTest {
 
         final InOrder inOrder = inOrder(
             sendPetitionerCoENotificationEmailTask,
-            coERespondentLetterGenerationTask,
+            coERespondentCoverLetterGenerationTask,
             sendCoRespondentGenericUpdateNotificationEmailTask,
             fetchPrintDocsFromDmStore,
             multiBulkPrinterTask
         );
 
         inOrder.verify(sendPetitionerCoENotificationEmailTask).execute(contextCaptor.capture(), eq(payload));
-        inOrder.verify(coERespondentLetterGenerationTask).execute(contextCaptor.capture(), eq(payload));
+        inOrder.verify(coERespondentCoverLetterGenerationTask).execute(contextCaptor.capture(), eq(payload));
         inOrder.verify(sendCoRespondentGenericUpdateNotificationEmailTask).execute(contextCaptor.capture(), eq(payload));
         inOrder.verify(fetchPrintDocsFromDmStore).execute(contextCaptor.capture(), eq(payload));
         inOrder.verify(multiBulkPrinterTask).execute(contextCaptor.capture(), eq(payload));
@@ -256,14 +256,14 @@ public class CaseLinkedForHearingWorkflowTest {
 
         final InOrder inOrder = inOrder(
             sendPetitionerCoENotificationEmailTask,
-            coERespondentLetterGenerationTask,
+            coERespondentCoverLetterGenerationTask,
             coECoRespondentCoverLetterGenerationTask,
             fetchPrintDocsFromDmStore,
             multiBulkPrinterTask
         );
 
         inOrder.verify(sendPetitionerCoENotificationEmailTask).execute(contextCaptor.capture(), eq(payload));
-        inOrder.verify(coERespondentLetterGenerationTask).execute(contextCaptor.capture(), eq(payload));
+        inOrder.verify(coERespondentCoverLetterGenerationTask).execute(contextCaptor.capture(), eq(payload));
         inOrder.verify(coECoRespondentCoverLetterGenerationTask).execute(contextCaptor.capture(), eq(payload));
         inOrder.verify(fetchPrintDocsFromDmStore).execute(contextCaptor.capture(), eq(payload));
         inOrder.verify(multiBulkPrinterTask).execute(contextCaptor.capture(), eq(payload));
@@ -288,13 +288,13 @@ public class CaseLinkedForHearingWorkflowTest {
 
         final InOrder inOrder = inOrder(
             sendPetitionerCoENotificationEmailTask,
-            coERespondentLetterGenerationTask,
+            coERespondentCoverLetterGenerationTask,
             fetchPrintDocsFromDmStore,
             multiBulkPrinterTask
         );
 
         inOrder.verify(sendPetitionerCoENotificationEmailTask).execute(contextCaptor.capture(), eq(payload));
-        inOrder.verify(coERespondentLetterGenerationTask).execute(contextCaptor.capture(), eq(payload));
+        inOrder.verify(coERespondentCoverLetterGenerationTask).execute(contextCaptor.capture(), eq(payload));
         inOrder.verify(fetchPrintDocsFromDmStore).execute(contextCaptor.capture(), eq(payload));
         inOrder.verify(multiBulkPrinterTask).execute(contextCaptor.capture(), eq(payload));
 
@@ -326,7 +326,7 @@ public class CaseLinkedForHearingWorkflowTest {
         inOrder.verify(sendRespondentCoENotificationEmailTask).execute(contextCaptor.capture(), eq(payload));
 
         verifyNotCalled(sendCoRespondentGenericUpdateNotificationEmailTask);
-        verifyNotCalled(coERespondentLetterGenerationTask);
+        verifyNotCalled(coERespondentCoverLetterGenerationTask);
         verifyNotCalled(coERespondentSolicitorLetterGenerationTask);
         verifyNotCalled(coECoRespondentCoverLetterGenerationTask);
         verifyNotCalled(fetchPrintDocsFromDmStore);
@@ -360,7 +360,7 @@ public class CaseLinkedForHearingWorkflowTest {
 
         verifyNotCalled(sendRespondentCoENotificationEmailTask);
         verifyNotCalled(sendCoRespondentGenericUpdateNotificationEmailTask);
-        verifyNotCalled(coERespondentLetterGenerationTask);
+        verifyNotCalled(coERespondentCoverLetterGenerationTask);
         verifyNotCalled(coECoRespondentCoverLetterGenerationTask);
 
         assertThat(contextCaptor.getValue().getTransientObject(CASE_ID_JSON_KEY), is(equalTo(TEST_CASE_ID)));
@@ -372,7 +372,7 @@ public class CaseLinkedForHearingWorkflowTest {
             D8DOCUMENTS_GENERATED, asList(
                 createCollectionMemberDocumentAsMap(
                     "http://coeLetter.com",
-                    CoERespondentLetterGenerationTask.FileMetadata.DOCUMENT_TYPE,
+                    CoERespondentCoverLetterGenerationTask.FileMetadata.DOCUMENT_TYPE,
                     "certificateOfEntitlementCoverLetterForRespondent.pdf"),
                 createCollectionMemberDocumentAsMap(
                     "http://coeCoRespLetter.com",
@@ -384,7 +384,7 @@ public class CaseLinkedForHearingWorkflowTest {
 
         when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(casePayload)).thenReturn(true);
         when(sendPetitionerCoENotificationEmailTask.execute(notNull(), eq(casePayload))).thenReturn(casePayload);
-        when(coERespondentLetterGenerationTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
+        when(coERespondentCoverLetterGenerationTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
         when(coECoRespondentCoverLetterGenerationTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
         when(fetchPrintDocsFromDmStore.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
         when(multiBulkPrinterTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
@@ -424,7 +424,7 @@ public class CaseLinkedForHearingWorkflowTest {
         inOrder.verify(sendRespondentCoENotificationEmailTask).execute(contextCaptor.capture(), eq(payload));
         inOrder.verify(sendCoRespondentGenericUpdateNotificationEmailTask).execute(contextCaptor.capture(), eq(payload));
 
-        verifyNotCalled(coERespondentLetterGenerationTask);
+        verifyNotCalled(coERespondentCoverLetterGenerationTask);
         verifyNotCalled(coERespondentSolicitorLetterGenerationTask);
         verifyNotCalled(coECoRespondentCoverLetterGenerationTask);
         verifyNotCalled(fetchPrintDocsFromDmStore);
@@ -484,7 +484,7 @@ public class CaseLinkedForHearingWorkflowTest {
             .getBulkPrintConfigForMultiPrinting(caseDetails);
 
         assertDocumentTypes(bulkPrintConfig.get(RESPONDENT), asList(
-            CoERespondentLetterGenerationTask.FileMetadata.DOCUMENT_TYPE,
+            CoERespondentCoverLetterGenerationTask.FileMetadata.DOCUMENT_TYPE,
             DOCUMENT_TYPE_COE
         ));
         assertThat(bulkPrintConfig.size(), is(1));
@@ -518,7 +518,7 @@ public class CaseLinkedForHearingWorkflowTest {
         List<BulkPrintConfig> bulkPrintConfig = caseLinkedForHearingWorkflow.getBulkPrintConfigForMultiPrinting(caseDetails);
 
         assertDocumentTypes(bulkPrintConfig.get(RESPONDENT), asList(
-            CoERespondentLetterGenerationTask.FileMetadata.DOCUMENT_TYPE,
+            CoERespondentCoverLetterGenerationTask.FileMetadata.DOCUMENT_TYPE,
             DOCUMENT_TYPE_COE
         ));
 

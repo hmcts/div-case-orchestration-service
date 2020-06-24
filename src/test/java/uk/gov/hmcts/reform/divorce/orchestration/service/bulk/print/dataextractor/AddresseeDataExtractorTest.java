@@ -45,7 +45,7 @@ public class AddresseeDataExtractorTest {
 
     @Test
     public void getRespondentShouldReturnValidValues() {
-        Map<String, Object> caseData = buildCaseDataWithRespondentWithAddress();
+        Map<String, Object> caseData = buildCaseDataWithRespondent();
 
         Addressee addressee = AddresseeDataExtractor.getRespondent(caseData);
 
@@ -117,7 +117,7 @@ public class AddresseeDataExtractorTest {
         AddresseeDataExtractor.getRespondent(caseData);
     }
 
-    public static Map<String, Object> buildCaseDataWithRespondentWithAddress() {
+    public static Map<String, Object> buildCaseDataWithRespondent() {
         Map<String, Object> caseData = buildCaseDataWithRespondentNames();
         caseData.put(RESPONDENT_ADDRESS, RESPONDENTS_ADDRESS);
 

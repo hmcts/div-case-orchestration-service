@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUp
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerCoENotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentCoENotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoECoRespondentCoverLetterGenerationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoERespondentLetterGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoERespondentCoverLetterGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoERespondentSolicitorLetterGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.MultiBulkPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
@@ -44,7 +44,7 @@ public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Ob
     private final SendRespondentCoENotificationEmailTask sendRespondentCoENotificationEmailTask;
     private final SendCoRespondentGenericUpdateNotificationEmailTask sendCoRespondentGenericUpdateNotificationEmailTask;
 
-    private final CoERespondentLetterGenerationTask coERespondentLetterGenerationTask;
+    private final CoERespondentCoverLetterGenerationTask coERespondentCoverLetterGenerationTask;
     private final CoERespondentSolicitorLetterGenerationTask coERespondentSolicitorLetterGenerationTask;
     private final CoECoRespondentCoverLetterGenerationTask coECoRespondentCoverLetterGenerationTask;
 
@@ -145,7 +145,7 @@ public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Ob
             config.add(new BulkPrintConfig(
                 isRespondentRepresented(caseData)
                     ? coERespondentSolicitorLetterGenerationTask.getDocumentType()
-                    : coERespondentLetterGenerationTask.getDocumentType(),
+                    : coERespondentCoverLetterGenerationTask.getDocumentType(),
                 respondentDocTypes
             ));
         }
@@ -174,7 +174,7 @@ public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Ob
                 tasks.add(coERespondentSolicitorLetterGenerationTask);
             } else {
                 log.info("CaseID: {} respondent is not represented by a solicitor", caseDetails.getCaseId());
-                tasks.add(coERespondentLetterGenerationTask);
+                tasks.add(coERespondentCoverLetterGenerationTask);
             }
         }
     }
@@ -197,7 +197,7 @@ public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Ob
             documentTypes.add(coERespondentSolicitorLetterGenerationTask.getDocumentType());
         } else {
             log.info("CaseID: {} add cover letter to print for the respondent", caseDetails.getCaseId());
-            documentTypes.add(coERespondentLetterGenerationTask.getDocumentType());
+            documentTypes.add(coERespondentCoverLetterGenerationTask.getDocumentType());
         }
 
         log.info("CaseID: {} add CoE to print (respondent/sol)", caseDetails.getCaseId());
@@ -232,7 +232,7 @@ public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Ob
 
     private Map<String, Object> removeCoverLettersFrom(Map<String, Object> caseDataToReturn) {
         return removeDocumentsByDocumentType(caseDataToReturn,
-            coERespondentLetterGenerationTask.getDocumentType(),
+            coERespondentCoverLetterGenerationTask.getDocumentType(),
             coERespondentSolicitorLetterGenerationTask.getDocumentType(),
             coECoRespondentCoverLetterGenerationTask.getDocumentType()
         );
