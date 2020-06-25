@@ -28,11 +28,17 @@ public class Verificators {
         verify(task, never()).execute(any(TaskContext.class), anyMap());
     }
 
+    public static void verifyTasksWereNeverCalled(Task<Map<String, Object>>... tasks) throws TaskException {
+        for (Task<Map<String, Object>> task : tasks) {
+            verify(task, never()).execute(any(TaskContext.class), anyMap());
+        }
+    }
+
     public static void verifyTasksCalledInOrder(Map<String, Object> caseData, Object... tasks) throws TaskException {
         InOrder inOrder = inOrder(tasks);
 
         for (Object task : tasks) {
-            inOrder.verify((Task<Map<String, Object>> )task).execute(any(TaskContext.class), eq(caseData));
+            inOrder.verify((Task<Map<String, Object>>) task).execute(any(TaskContext.class), eq(caseData));
         }
     }
 

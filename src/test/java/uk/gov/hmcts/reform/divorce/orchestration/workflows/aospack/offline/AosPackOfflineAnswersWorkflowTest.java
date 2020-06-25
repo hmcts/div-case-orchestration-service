@@ -31,14 +31,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTaskWasNeverCalled;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksWereNeverCalled;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AosPackOfflineAnswersWorkflowTest {
@@ -101,8 +102,7 @@ public class AosPackOfflineAnswersWorkflowTest {
         inOrder.verify(addNewDocumentsToCaseDataTask).execute(any(), anyMap());
         TaskContext taskContext = taskContextArgumentCaptor.getValue();
         assertThat(taskContext.getTransientObject(AUTH_TOKEN_JSON_KEY), is(AUTH_TOKEN));
-
-        verify(coRespondentAosAnswersProcessor, never()).execute(any(), eq(payload));
+        verifyTaskWasNeverCalled(coRespondentAosAnswersProcessor);
     }
 
     @Test
@@ -112,21 +112,14 @@ public class AosPackOfflineAnswersWorkflowTest {
         CaseDetails caseDetails = buildCaseDetail(payload);
 
         when(formFieldValuesToCoreFieldsRelay.execute(any(), eq(payload))).thenReturn(payload);
-        when(coRespondentAosAnswersProcessor.execute(any(), eq(payload))).thenReturn(returnedCaseData);
-        when(coRespondentAosDerivedAddressFormatter.execute(any(), anyMap())).thenReturn(returnedCaseData);
+        when(coRespondentAosAnswersProcessor.execute(any(), eq(payload))).thenReturn(payload);
+        when(coRespondentAosDerivedAddressFormatter.execute(any(), eq(payload))).thenReturn(returnedCaseData);
 
         Map<String, Object> returnedPayload = classUnderTest.run(AUTH_TOKEN, caseDetails, CO_RESPONDENT);
 
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
-
-        InOrder inOrder = inOrder(formFieldValuesToCoreFieldsRelay, coRespondentAosAnswersProcessor, coRespondentAosDerivedAddressFormatter);
-        inOrder.verify(formFieldValuesToCoreFieldsRelay).execute(any(), eq(payload));
-        inOrder.verify(coRespondentAosAnswersProcessor).execute(any(), eq(payload));
-        inOrder.verify(coRespondentAosDerivedAddressFormatter).execute(any(), anyMap());
-
-        verify(respondentAosAnswersProcessor, never()).execute(any(), any());
-        verify(respondentAnswersGenerator, never()).execute(any(), any());
-        verify(addNewDocumentsToCaseDataTask, never()).execute(any(), any());
+        verifyTasksCalledInOrder(payload, formFieldValuesToCoreFieldsRelay, coRespondentAosAnswersProcessor, coRespondentAosDerivedAddressFormatter);
+        verifyTasksWereNeverCalled(respondentAosAnswersProcessor, respondentAnswersGenerator, addNewDocumentsToCaseDataTask);
     }
 
     @Test
@@ -141,15 +134,8 @@ public class AosPackOfflineAnswersWorkflowTest {
         Map<String, Object> returnedPayload = classUnderTest.run(AUTH_TOKEN, caseDetails, CO_RESPONDENT);
 
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
-
-        InOrder inOrder = inOrder(formFieldValuesToCoreFieldsRelay, coRespondentAosAnswersProcessor, coRespondentAosDerivedAddressFormatter);
-        inOrder.verify(formFieldValuesToCoreFieldsRelay).execute(any(), anyMap());
-        inOrder.verify(coRespondentAosAnswersProcessor).execute(any(), anyMap());
-        inOrder.verify(coRespondentAosDerivedAddressFormatter).execute(any(), anyMap());
-
-        verify(respondentAosAnswersProcessor, never()).execute(any(), anyMap());
-        verify(respondentAnswersGenerator, never()).execute(any(), any());
-        verify(addNewDocumentsToCaseDataTask, never()).execute(any(), any());
+        verifyTasksCalledInOrder(payload, formFieldValuesToCoreFieldsRelay, coRespondentAosAnswersProcessor, coRespondentAosDerivedAddressFormatter);
+        verifyTasksWereNeverCalled(respondentAosAnswersProcessor, respondentAnswersGenerator, addNewDocumentsToCaseDataTask);
     }
 
     private CaseDetails buildCaseDetail(Map<String, Object> payload) {

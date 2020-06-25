@@ -882,7 +882,7 @@ public class CallbackController {
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
         Map<String, Object> caseData = caseOrchestrationService.handleMakeCaseEligibleForDaSubmitted(ccdCallbackRequest);
-        log.info("Processed handleMakeCaseEligibleForDaSubmitted successfully");
+        log.info("Processed handleMakeCaseEligibleForDaSubmitted successfully for case id {}", ccdCallbackRequest.getCaseDetails().getCaseId());
 
         return ResponseEntity.ok(CcdCallbackResponse.builder()
             .data(caseData)
