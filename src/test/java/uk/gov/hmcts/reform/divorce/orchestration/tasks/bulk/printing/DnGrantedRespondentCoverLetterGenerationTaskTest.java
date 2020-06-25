@@ -39,7 +39,7 @@ public class DnGrantedRespondentCoverLetterGenerationTaskTest extends BasePayloa
     }
 
     @Test
-    public void executeShouldPopulateFieldInContextWhenCoRespondentIsNotRepresented() throws TaskException {
+    public void executeShouldPopulateFieldInContextWhenRespondentIsNotRepresented() throws TaskException {
         TaskContext context = prepareTaskContext();
         Map<String, Object> caseData = buildCaseDataWhenRespondentNotRepresented();
 
