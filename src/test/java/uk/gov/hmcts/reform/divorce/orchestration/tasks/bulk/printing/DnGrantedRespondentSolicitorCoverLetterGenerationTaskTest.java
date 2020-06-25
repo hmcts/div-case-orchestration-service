@@ -43,10 +43,9 @@ public class DnGrantedRespondentSolicitorCoverLetterGenerationTaskTest extends B
     }
 
     @Test
-    public void executeShouldPopulateFieldInContextWhenCoRespondentIsNotRepresented() throws TaskException {
+    public void executeShouldPopulateFieldInContextWhenRespondentIsRepresented() throws TaskException {
         TaskContext context = prepareTaskContext();
-        Map<String, Object> caseData = buildCaseDataWhenRespondentNotRepresented();
-        caseData.put(RESP_SOL_REPRESENTED, YES_VALUE);
+        Map<String, Object> caseData = buildCaseDataWhenRespondentIsRepresented();
 
         Map<String, Object> returnedCaseData = dnGrantedRespondentSolicitorCoverLetterGenerationTask.execute(context, caseData);
 
@@ -76,11 +75,12 @@ public class DnGrantedRespondentSolicitorCoverLetterGenerationTaskTest extends B
             ).build();
     }
 
-    private Map<String, Object> buildCaseDataWhenRespondentNotRepresented() {
+    private Map<String, Object> buildCaseDataWhenRespondentIsRepresented() {
         Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithRespondentSolicitor();
 
         caseData.put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         caseData.put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
+        caseData.put(RESP_SOL_REPRESENTED, YES_VALUE);
 
         caseData.put(DATETIME_OF_HEARING_CCD_FIELD, createHearingDatesList());
 

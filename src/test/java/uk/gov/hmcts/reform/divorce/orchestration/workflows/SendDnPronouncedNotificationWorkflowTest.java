@@ -40,6 +40,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_COSTS_CCD_FIELD;
@@ -252,6 +253,111 @@ public class SendDnPronouncedNotificationWorkflowTest {
             sendCoRespondentGenericUpdateNotificationEmailTask
         );
         verifyNoBulkPrintTasksCalled();
+    }
+
+    @Test
+    public void givenToggleIsOffAndCostsClaimNotGranted_thenSendEmailsToAll() throws Exception {
+        Map<String, Object> caseData = buildCaseDataWithCoRespondentAsAddressee();
+        caseData.put(COSTS_CLAIM_GRANTED, NO_VALUE);
+        caseData.put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, YES_VALUE);
+        caseData.put(WHO_PAYS_COSTS_CCD_FIELD, WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT);
+
+        when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(false);
+        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(eq(caseData))).thenReturn(true);
+
+        mockTasksExecution(
+            caseData,
+            sendPetitionerGenericUpdateNotificationEmailTask,
+            sendRespondentGenericUpdateNotificationEmailTask,
+            sendCoRespondentGenericUpdateNotificationEmailTask
+        );
+
+        executeWorkflowRun(caseData);
+
+        verifyTasksCalledInOrder(
+            caseData,
+            sendPetitionerGenericUpdateNotificationEmailTask,
+            sendRespondentGenericUpdateNotificationEmailTask,
+            sendCoRespondentGenericUpdateNotificationEmailTask
+        );
+        verifyNoBulkPrintTasksCalled();
+    }
+
+    @Test
+    public void givenCostsClaimGrantedAndOffline_thenSendEmailToPetitionerAndSendDocsToBulkPrint()
+        throws Exception {
+        Map<String, Object> caseData = buildCaseDataWithCoRespondentAsAddressee();
+        caseData.putAll(buildCaseDataWithRespondent());
+        caseData.put(RESP_IS_USING_DIGITAL_CHANNEL, NO_VALUE);
+        caseData.put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE);
+        caseData.put(WHO_PAYS_COSTS_CCD_FIELD, WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT);
+        caseData.put(CO_RESPONDENT_REPRESENTED, NO_VALUE);
+        caseData.put(RESP_SOL_REPRESENTED, NO_VALUE);
+
+        when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
+        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(eq(caseData))).thenReturn(true);
+
+        mockTasksExecution(
+            caseData,
+            sendPetitionerGenericUpdateNotificationEmailTask,
+            dnGrantedRespondentCoverLetterGenerationTask,
+            costOrderCoRespondentCoverLetterGenerationTask,
+            fetchPrintDocsFromDmStore,
+            multiBulkPrinterTask
+        );
+
+        executeWorkflowRun(caseData);
+
+        verifyTasksCalledInOrder(
+            caseData,
+            sendPetitionerGenericUpdateNotificationEmailTask,
+            dnGrantedRespondentCoverLetterGenerationTask,
+            costOrderCoRespondentCoverLetterGenerationTask,
+            fetchPrintDocsFromDmStore,
+            multiBulkPrinterTask
+        );
+        verifyTaskWasNeverCalled(sendRespondentGenericUpdateNotificationEmailTask);
+        verifyTaskWasNeverCalled(sendCoRespondentGenericUpdateNotificationEmailTask);
+        verifyTaskWasNeverCalled(dnGrantedRespondentSolicitorCoverLetterGenerationTask);
+        verifyTaskWasNeverCalled(costOrderCoRespondentSolicitorCoverLetterGenerationTask);
+    }
+
+    @Test
+    public void givenCostsClaimGrantedAndOfflineRespAndCoRespRepresented_thenSendEmailToPetitionerAndSendDocsToBulkPrint()
+        throws Exception {
+        Map<String, Object> caseData = buildCaseDataWithCoRespondentAsAddressee();
+        caseData.putAll(buildCaseDataWithRespondentSolicitor());
+        caseData.put(RESP_IS_USING_DIGITAL_CHANNEL, NO_VALUE);
+        caseData.put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE);
+        caseData.put(WHO_PAYS_COSTS_CCD_FIELD, WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT);
+        caseData.put(CO_RESPONDENT_REPRESENTED, YES_VALUE);
+
+        when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
+        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(eq(caseData))).thenReturn(true);
+
+        mockTasksExecution(
+            caseData,
+            sendPetitionerGenericUpdateNotificationEmailTask,
+            dnGrantedRespondentSolicitorCoverLetterGenerationTask,
+            costOrderCoRespondentSolicitorCoverLetterGenerationTask,
+            fetchPrintDocsFromDmStore,
+            multiBulkPrinterTask
+        );
+
+        executeWorkflowRun(caseData);
+
+        verifyTasksCalledInOrder(
+            caseData,
+            sendPetitionerGenericUpdateNotificationEmailTask,
+            dnGrantedRespondentSolicitorCoverLetterGenerationTask,
+            costOrderCoRespondentSolicitorCoverLetterGenerationTask,
+            fetchPrintDocsFromDmStore,
+            multiBulkPrinterTask
+        );
+        verifyTaskWasNeverCalled(sendRespondentGenericUpdateNotificationEmailTask);
+        verifyTaskWasNeverCalled(sendCoRespondentGenericUpdateNotificationEmailTask);
+        verifyTaskWasNeverCalled(dnGrantedRespondentCoverLetterGenerationTask);
+        verifyTaskWasNeverCalled(costOrderCoRespondentCoverLetterGenerationTask);
     }
 
     @Test
