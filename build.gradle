@@ -399,10 +399,10 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
 test {
     // set heap size for the test JVM(s)
     minHeapSize = "128m"
-    maxHeapSize = "512m"
+    maxHeapSize = "256m"
 
     // set JVM arguments for the test JVM(s)
-    jvmArgs '-XX:MaxPermSize=256m'
+    jvmArgs '-XX:MaxPermSize=128m'
 }
 
 pitest {
