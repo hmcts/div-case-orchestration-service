@@ -33,7 +33,7 @@ public class MultiBulkPrinterTask implements Task<Map<String, Object>> {
         List<BulkPrintConfig> configs = getConfigsForMultiBulkPrint(context);
         final String caseId = getCaseId(context);
 
-        log.info("CaseID: {} Multi Bulk Printer config is {}.", caseId, configs);
+        log.info("CaseID: {} Multi Bulk Printer config is {}.", caseId, toLogMessage(configs));
 
         for (BulkPrintConfig bulkPrintConfig : configs) {
             if (!bulkPrintConfig.getDocumentTypesToPrint().isEmpty()) {
@@ -68,5 +68,21 @@ public class MultiBulkPrinterTask implements Task<Map<String, Object>> {
         return context.computeTransientObjectIfAbsent(
             ContextFields.MULTI_BULK_PRINT_CONFIGS, new ArrayList<>()
         );
+    }
+
+    private String toLogMessage(List<BulkPrintConfig> configs) {
+        String log = String.format("prepared for %s sets of documents. ", configs.size());
+
+        for (BulkPrintConfig bulkPrintConfig : configs) {
+            log += String.format(
+                "[documentType = %s, bulkPrintLetterType = %s], ",
+                bulkPrintConfig.getDocumentTypesToPrint(),
+                bulkPrintConfig.getBulkPrintLetterType()
+            );
+        }
+
+        log += ")";
+
+        return log;
     }
 }
