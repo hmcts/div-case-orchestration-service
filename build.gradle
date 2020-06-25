@@ -396,6 +396,10 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
     finalizedBy aggregate
 }
 
+test {
+    maxHeapSize = "512m"
+}
+
 pitest {
     targetClasses = ['uk.gov.hmcts.reform.divorce.orchestration.*']
     excludedClasses = ['uk.gov.hmcts.reform.divorce.orchestration.config.*',
