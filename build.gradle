@@ -396,15 +396,6 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
     finalizedBy aggregate
 }
 
-test {
-    // set heap size for the test JVM(s)
-    minHeapSize = "128m"
-    maxHeapSize = "256m"
-
-    // set JVM arguments for the test JVM(s)
-    jvmArgs '-XX:MaxPermSize=128m'
-}
-
 pitest {
     targetClasses = ['uk.gov.hmcts.reform.divorce.orchestration.*']
     excludedClasses = ['uk.gov.hmcts.reform.divorce.orchestration.config.*',

@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.aospack.offline
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
@@ -23,7 +22,6 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -55,7 +53,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressForma
 import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.CaseDataKeys.D8_RESPONDENT_HOME_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.DerivedAddressFormatterHelper.CaseDataKeys.D8_RESPONDENT_SOLICITOR_ADDRESS;
 
-@DirtiesContext(classMode = BEFORE_EACH_TEST_METHOD)
 public class AOSPackOfflineAnswersInputTest extends MockedFunctionalTest {
 
     private static final String CCD_RESPONSE_DATA_FIELD = "data";
@@ -88,6 +85,8 @@ public class AOSPackOfflineAnswersInputTest extends MockedFunctionalTest {
     @Before
     public void setUp() throws Exception {
         ccdCallbackRequest = getJsonFromResourceFile("/jsonExamples/payloads/genericPetitionerData.json", CcdCallbackRequest.class);
+
+        documentGeneratorServiceServer.resetAll();
     }
 
     @Test
