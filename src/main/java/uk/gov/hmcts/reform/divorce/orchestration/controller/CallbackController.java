@@ -274,7 +274,7 @@ public class CallbackController {
     @ApiOperation(value = "Caseworker confirm personal service from CCD")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error message is attached to the case",
-        response = CcdCallbackResponse.class),
+            response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> confirmPersonalService(
@@ -304,7 +304,7 @@ public class CallbackController {
     @ApiOperation(value = "Handles bulk print callback from CCD")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error message is attached to the case",
-        response = CcdCallbackResponse.class),
+            response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> bulkPrint(
@@ -599,7 +599,7 @@ public class CallbackController {
     @PostMapping(path = "/da-about-to-be-granted", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Generate Decree Absolute Certificate and email notifications to Petitioner and Respondent")
     @ApiResponses(value = {
-        @ApiResponse(code = 200,message = "DA Certificate generated and emails sent to Petitioner and Respondent",
+        @ApiResponse(code = 200, message = "DA Certificate generated and emails sent to Petitioner and Respondent",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
@@ -816,7 +816,7 @@ public class CallbackController {
     public ResponseEntity<CcdCallbackResponse> clearStateCallback(
         @RequestHeader(AUTHORIZATION_HEADER)
         @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
-        @RequestBody @ApiParam("CaseData")CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
 
         callbackResponseBuilder.data(caseOrchestrationService.cleanStateCallback(ccdCallbackRequest, authorizationToken));
@@ -865,7 +865,7 @@ public class CallbackController {
 
         try {
             callbackResponseBuilder.data(caseOrchestrationService.processApplicantDecreeAbsoluteEligibility(ccdCallbackRequest));
-            log.info("Processed decree absolute grant callback request for case ID: {}", caseId);
+            log.info("Processed processApplicantDecreeAbsoluteEligibility callback request for case ID: {}", caseId);
         } catch (CaseOrchestrationServiceException exception) {
             log.error(format(FAILED_TO_EXECUTE_SERVICE_ERROR, caseId), exception);
             callbackResponseBuilder.errors(asList(exception.getMessage()));
@@ -881,8 +881,11 @@ public class CallbackController {
     public ResponseEntity<CcdCallbackResponse> handleMakeCaseEligibleForDaSubmitted(
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
+        Map<String, Object> caseData = caseOrchestrationService.handleMakeCaseEligibleForDaSubmitted(ccdCallbackRequest);
+        log.info("Processed handleMakeCaseEligibleForDaSubmitted successfully");
+
         return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .data(caseOrchestrationService.handleMakeCaseEligibleForDaSubmitted(ccdCallbackRequest))
+            .data(caseData)
             .build());
     }
 
@@ -935,6 +938,8 @@ public class CallbackController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Successfully processed offline AOS Answers")})
     public ResponseEntity<CcdCallbackResponse> processAosPackOfflineAnswers(
+        @RequestHeader(AUTHORIZATION_HEADER)
+        @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest,
         @PathVariable("party")
         @ApiParam(value = "Party in divorce (respondent or co-respondent)",
@@ -943,7 +948,7 @@ public class CallbackController {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
 
         try {
-            responseBuilder.data(aosPackOfflineService.processAosPackOfflineAnswers(caseDetails, party));
+            responseBuilder.data(aosPackOfflineService.processAosPackOfflineAnswers(authorizationToken, caseDetails, party));
             log.info("Processed AOS offline answers for {} of case {}", party.getDescription(), caseDetails.getCaseId());
         } catch (CaseOrchestrationServiceException exception) {
             log.info("Error processing AOS offline answers for {} of case {}", party.getDescription(), caseDetails.getCaseId());
