@@ -71,7 +71,7 @@ public class MultiBulkPrinterTask implements Task<Map<String, Object>> {
     }
 
     private String toLogMessage(List<BulkPrintConfig> configs) {
-        String log = String.format("prepared for %s sets of documents. ", configs.size());
+        String log = String.format("prepared for %s sets of documents. (", configs.size());
 
         for (BulkPrintConfig bulkPrintConfig : configs) {
             log += String.format(
