@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Gender;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.DnCourt;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest;
@@ -70,6 +71,17 @@ public class CoERespondentCoverLetterGenerationTaskTest extends BasePayloadSpeci
     public void setup() throws CourtDetailsNotFound {
         when(ctscContactDetailsDataProviderService.getCtscContactDetails()).thenReturn(CTSC_CONTACT);
         when(courtLookupService.getDnCourtByKey(eq(COURT_ID))).thenReturn(getCourt());
+    }
+
+    @Test(expected = InvalidDataForTaskException.class)
+    public void executeShouldThrowInvalidDataForTaskException() throws TaskException, CourtDetailsNotFound {
+        String invalidCourt = "I don't exist!";
+        Map<String, Object> caseData = buildCaseDataRespondent();
+        caseData.put(COURT_NAME, invalidCourt);
+
+        when(courtLookupService.getDnCourtByKey(eq(invalidCourt))).thenThrow(new CourtDetailsNotFound(invalidCourt));
+
+        coERespondentCoverLetterGenerationTask.execute(prepareTaskContext(), caseData);
     }
 
     @Test
