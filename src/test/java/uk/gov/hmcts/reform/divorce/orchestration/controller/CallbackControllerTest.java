@@ -1117,26 +1117,26 @@ public class CallbackControllerTest {
 
     @Test
     public void testProcessAosOfflineAnswers_callsRightService() throws CaseOrchestrationServiceException {
-        when(aosPackOfflineService.processAosPackOfflineAnswers(any(), any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
+        when(aosPackOfflineService.processAosPackOfflineAnswers(any(), any(), any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(singletonMap("incomingKey", "incomingValue")).build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.processAosPackOfflineAnswers(ccdCallbackRequest, RESPONDENT);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.processAosPackOfflineAnswers(AUTH_TOKEN, ccdCallbackRequest, RESPONDENT);
 
         assertThat(response.getStatusCode(), equalTo(OK));
         assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
-        verify(aosPackOfflineService).processAosPackOfflineAnswers(eq(caseDetails), eq(RESPONDENT));
+        verify(aosPackOfflineService).processAosPackOfflineAnswers(eq(AUTH_TOKEN), eq(caseDetails), eq(RESPONDENT));
     }
 
     @Test
     public void testProcessAosOfflineAnswers_returnsErrors_whenServiceThrowsException() throws CaseOrchestrationServiceException {
-        when(aosPackOfflineService.processAosPackOfflineAnswers(any(), any()))
+        when(aosPackOfflineService.processAosPackOfflineAnswers(any(), any(), any()))
             .thenThrow(new CaseOrchestrationServiceException(new RuntimeException("Error message")));
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.processAosPackOfflineAnswers(ccdCallbackRequest, RESPONDENT);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.processAosPackOfflineAnswers(AUTH_TOKEN, ccdCallbackRequest, RESPONDENT);
 
         assertThat(response.getStatusCode(), equalTo(OK));
         assertThat(response.getBody().getErrors(), hasItem(equalTo("Error message")));
