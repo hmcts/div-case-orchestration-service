@@ -9,6 +9,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorcePar
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentAnswersGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.CoRespondentAosAnswersProcessorTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.CoRespondentAosDerivedAddressFormatterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.FormFieldValuesToCoreFieldsRelayTask;
@@ -19,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
@@ -33,14 +36,16 @@ public class AosPackOfflineAnswersWorkflow extends DefaultWorkflow<Map<String, O
     private final CoRespondentAosAnswersProcessorTask coRespondentAosAnswersProcessor;
     private final CoRespondentAosDerivedAddressFormatterTask coRespondentAosDerivedAddressFormatter;
     private final RespondentAosDerivedAddressFormatterTask respondentAosDerivedAddressFormatter;
+    private final RespondentAnswersGenerator respondentAnswersGenerator;
+    private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
-    public Map<String, Object> run(CaseDetails caseDetails, DivorceParty divorceParty) throws WorkflowException {
+    public Map<String, Object> run(String authToken, CaseDetails caseDetails, DivorceParty divorceParty) throws WorkflowException {
         Map<String, Object> caseData = caseDetails.getCaseData();
         String caseId = caseDetails.getCaseId();
 
         Task[] tasks = getTasks(divorceParty);
         log.info("Processing AosPackOfflineAnswersWorkflow for Case ID: {}", caseId);
-        return execute(tasks, caseData, ImmutablePair.of(CASE_ID_JSON_KEY, caseId));
+        return execute(tasks, caseData, ImmutablePair.of(CASE_ID_JSON_KEY, caseId), ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken));
     }
 
     private Task[] getTasks(DivorceParty divorceParty) {
@@ -51,6 +56,8 @@ public class AosPackOfflineAnswersWorkflow extends DefaultWorkflow<Map<String, O
         if (isRespondent(divorceParty)) {
             tasks.add(respondentAosAnswersProcessor);
             tasks.add(respondentAosDerivedAddressFormatter);
+            tasks.add(respondentAnswersGenerator);
+            tasks.add(addNewDocumentsToCaseDataTask);
         }
 
         if (isCoRespondent(divorceParty)) {
