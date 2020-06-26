@@ -121,7 +121,7 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
     protected void stubSignInForCaseworker() {
         try {
             stubAuthoriseEndpoint(getBasicAuthHeader(caseworkerUserName, caseworkerPassword),
-                    convertObjectToJsonString(AUTHENTICATE_USER_RESPONSE));
+                convertObjectToJsonString(AUTHENTICATE_USER_RESPONSE));
 
             stubTokenExchangeEndpoint(HttpStatus.OK, convertObjectToJsonString(TOKEN_EXCHANGE_RESPONSE));
 
@@ -143,8 +143,8 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
     void stubPinAuthoriseEndpoint(HttpStatus status, String responseBody)
         throws UnsupportedEncodingException {
         idamServer.stubFor(get(IDAM_PIN_DETAILS_CONTEXT_PATH
-                + "?client_id=" + authClientId
-                + "&redirect_uri=" + URLEncoder.encode(authRedirectUrl, StandardCharsets.UTF_8.name()))
+            + "?client_id=" + authClientId
+            + "&redirect_uri=" + URLEncoder.encode(authRedirectUrl, StandardCharsets.UTF_8.name()))
             .withHeader("pin", new EqualToPattern(TEST_PIN))
             .willReturn(aResponse()
                 .withStatus(status.value())

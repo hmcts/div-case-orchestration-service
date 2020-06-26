@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -31,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static java.util.Arrays.asList;
 import static java.util.Collections.EMPTY_MAP;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -117,7 +115,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 
 public class DnPronouncedNotificationTest extends MockedFunctionalTest {
     private static final String API_URL = "/dn-pronounced";
-    private static final String SERVICE_AUTH_CONTEXT_PATH = "/lease";
 
     private static final String GENERIC_UPDATE_EMAIL_TEMPLATE_ID = "6ee6ec29-5e88-4516-99cb-2edc30256575";
     private static final String SOLICITOR_GENERIC_UPDATE_EMAIL_TEMPLATE_ID = "951d26d9-e5fc-40de-a9da-d3ab957cb5e3";
@@ -277,7 +274,7 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
     public void givenOfflineCoRespondent_CostsClaimGranted_NotRepresented_ThenOkResponse() throws Exception {
         //Given
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
-        stubServiceAuthProvider(TEST_SERVICE_AUTH_TOKEN);
+        stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
 
         //Newly generated document cover letter
         stubNewlyGeneratedDocument(
@@ -348,7 +345,7 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
     public void givenOfflineCoRespondent_CostsClaimGranted_Represented_ThenOkResponse() throws Exception {
         //Given
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
-        stubServiceAuthProvider(TEST_SERVICE_AUTH_TOKEN);
+        stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
 
         //Newly generated document cover letter
         stubNewlyGeneratedDocument(
@@ -438,13 +435,6 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
     private void stubNewlyGeneratedDocument(String templateId, String documentType, byte[] documentAsBytes) {
         String letterId = stubDocumentGeneratorService(templateId, documentType);
         stubDMStore(letterId, documentAsBytes);
-    }
-
-    private void stubServiceAuthProvider(String response) {
-        serviceAuthProviderServer.stubFor(WireMock.post(SERVICE_AUTH_CONTEXT_PATH)
-            .willReturn(aResponse()
-                .withStatus(HttpStatus.OK.value())
-                .withBody(response)));
     }
 
     private Map<String, Object> buildCaseDataForEmailNotifications(Map<String, Object> extraData) {
