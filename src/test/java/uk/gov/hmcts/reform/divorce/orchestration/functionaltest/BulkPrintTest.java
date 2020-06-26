@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static java.util.Collections.emptyMap;
@@ -47,8 +45,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class BulkPrintTest extends IdamTestSupport {
 
     private static final String API_URL = "/bulk-print";
-
-    private static final String SERVICE_AUTH_CONTEXT_PATH = "/lease";
 
     @Autowired
     private MockMvc webClient;
@@ -155,13 +151,6 @@ public class BulkPrintTest extends IdamTestSupport {
                         + "service method is Personal Service and the case is not in Awaiting Service.")
                 )
             )));
-    }
-
-    private void stubServiceAuthProvider(HttpStatus status, String response) {
-        serviceAuthProviderServer.stubFor(WireMock.post(SERVICE_AUTH_CONTEXT_PATH)
-            .willReturn(aResponse()
-                .withStatus(status.value())
-                .withBody(response)));
     }
 
 }

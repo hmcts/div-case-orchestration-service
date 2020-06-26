@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.callback;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -26,7 +25,6 @@ import uk.gov.service.notify.NotificationClientException;
 import java.util.List;
 import java.util.Map;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -82,8 +80,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class DaGrantedCallbackTest extends MockedFunctionalTest {
 
     private static final String API_URL = "/handle-post-da-granted";
-
-    private static final String SERVICE_AUTH_CONTEXT_PATH = "/lease";
 
     private static final String DECREE_ABSOLUTE_ID = "7d10126d-0e88-4f0e-b475-628b54a87ca6";
 
@@ -143,7 +139,7 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
     public void givenOfflineRespondentDetails_ThenOkResponse() throws Exception {
         //Given
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
-        stubServiceAuthProvider(TEST_SERVICE_AUTH_TOKEN);
+        stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
 
         //Newly generated document
         byte[] decreeAbsoluteLetterBytes = new byte[] {1, 2, 3};
@@ -189,7 +185,7 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
     public void givenOfflineRepresentedRespondentDetails_ThenOkResponse() throws Exception {
         //Given
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
-        stubServiceAuthProvider(TEST_SERVICE_AUTH_TOKEN);
+        stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
 
         //Newly generated document
         byte[] decreeAbsoluteLetterBytes = new byte[] {1, 2, 3};
@@ -276,13 +272,6 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
-    }
-
-    private void stubServiceAuthProvider(String response) {
-        serviceAuthProviderServer.stubFor(WireMock.post(SERVICE_AUTH_CONTEXT_PATH)
-            .willReturn(aResponse()
-                .withStatus(HttpStatus.OK.value())
-                .withBody(response)));
     }
 
 }
