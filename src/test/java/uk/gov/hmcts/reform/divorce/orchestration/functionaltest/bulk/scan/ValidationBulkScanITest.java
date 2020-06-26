@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.bulk.scan;
 
 import org.junit.Before;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
@@ -83,6 +84,7 @@ public class ValidationBulkScanITest {
     }
 
     @Test
+    @Ignore // not needed until the OCR validation functionality is resumed
     public void shouldReturnSuccessResponseForValidationEndpoint() throws Exception {
         mockMvc.perform(
             post("/forms/{form-type}/validate-ocr", D8_FORM)
@@ -101,6 +103,7 @@ public class ValidationBulkScanITest {
     }
 
     @Test
+    @Ignore // not needed until the OCR validation functionality is resumed
     public void shouldReturnFailureResponseForValidationEndpoint() throws Exception {
         String formToValidate = loadResourceAsString("jsonExamples/payloads/bulk/scan/d8/validation/incompleteForm.json");
 
@@ -133,6 +136,7 @@ public class ValidationBulkScanITest {
     }
 
     @Test
+    @Ignore // not needed until the OCR validation functionality is resumed
     public void shouldReturnWarningResponseForValidationEndpoint() throws Exception {
         String formToValidate = loadResourceAsString("jsonExamples/payloads/bulk/scan/d8/validation/warningsD8Form.json");
 
