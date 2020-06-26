@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConst
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SolicitorDataExtractor {
@@ -17,6 +17,6 @@ public class SolicitorDataExtractor {
     }
 
     public static String getSolicitorReference(Map<String, Object> caseData) {
-        return getMandatoryStringValue(caseData, CaseDataKeys.SOLICITOR_REFERENCE);
+        return getOptionalPropertyValueAsString(caseData, CaseDataKeys.SOLICITOR_REFERENCE, "");
     }
 }

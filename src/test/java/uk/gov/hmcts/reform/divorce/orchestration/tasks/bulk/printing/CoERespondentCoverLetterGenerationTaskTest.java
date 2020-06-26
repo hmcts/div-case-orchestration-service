@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Gender;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.DnCourt;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest;
@@ -43,7 +44,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.Bulk
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.CTSC_CONTACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.LETTER_DATE_EXPECTED;
 
-public class CoERespondentLetterGenerationTaskTest extends BasePayloadSpecificDocumentGenerationTaskTest {
+public class CoERespondentCoverLetterGenerationTaskTest extends BasePayloadSpecificDocumentGenerationTaskTest {
 
     private static final String IS_COSTS_CLAIM_GRANTED_STRING_VALUE = YES_VALUE;
     private static final boolean IS_COSTS_CLAIM_GRANTED_BOOL_VALUE = true;
@@ -56,7 +57,7 @@ public class CoERespondentLetterGenerationTaskTest extends BasePayloadSpecificDo
     private CourtLookupService courtLookupService;
 
     @InjectMocks
-    private CoERespondentLetterGenerationTask coERespondentLetterGenerationTask;
+    private CoERespondentCoverLetterGenerationTask coERespondentCoverLetterGenerationTask;
 
     public static TaskContext prepareTaskContext() {
         TaskContext context = new DefaultTaskContext();
@@ -72,12 +73,23 @@ public class CoERespondentLetterGenerationTaskTest extends BasePayloadSpecificDo
         when(courtLookupService.getDnCourtByKey(eq(COURT_ID))).thenReturn(getCourt());
     }
 
+    @Test(expected = InvalidDataForTaskException.class)
+    public void executeShouldThrowInvalidDataForTaskException() throws TaskException, CourtDetailsNotFound {
+        String invalidCourt = "I don't exist!";
+        Map<String, Object> caseData = buildCaseDataRespondent();
+        caseData.put(COURT_NAME, invalidCourt);
+
+        when(courtLookupService.getDnCourtByKey(eq(invalidCourt))).thenThrow(new CourtDetailsNotFound(invalidCourt));
+
+        coERespondentCoverLetterGenerationTask.execute(prepareTaskContext(), caseData);
+    }
+
     @Test
     public void executeShouldPopulateFieldInContextWhenRespondentIsNotRepresented() throws TaskException {
         TaskContext context = prepareTaskContext();
 
         Map<String, Object> caseData = buildCaseDataRespondent();
-        Map<String, Object> returnedCaseData = coERespondentLetterGenerationTask.execute(context, caseData);
+        Map<String, Object> returnedCaseData = coERespondentCoverLetterGenerationTask.execute(context, caseData);
 
         verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
         final CoERespondentCoverLetter expectedDocmosisTemplateVars = CoERespondentCoverLetter.coERespondentCoverLetterBuilder()
@@ -96,12 +108,12 @@ public class CoERespondentLetterGenerationTaskTest extends BasePayloadSpecificDo
         runCommonVerifications(caseData,
             returnedCaseData,
             COE_RESPONDENT_LETTER_DOCUMENT_TYPE,
-            CoERespondentLetterGenerationTask.FileMetadata.TEMPLATE_ID,
+            CoERespondentCoverLetterGenerationTask.FileMetadata.TEMPLATE_ID,
             expectedDocmosisTemplateVars);
     }
 
     private Map<String, Object> buildCaseDataRespondent() {
-        Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithRespondentWithAddress();
+        Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithRespondent();
 
         caseData.put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         caseData.put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);

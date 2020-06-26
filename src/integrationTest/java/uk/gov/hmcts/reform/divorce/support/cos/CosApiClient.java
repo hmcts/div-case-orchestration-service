@@ -188,8 +188,9 @@ public interface CosApiClient {
     @ApiOperation("Handle callback to trigger offline AOS Answers for Respondent or Co-Respondent process")
     @PostMapping(value = "/processAosOfflineAnswers/parties/{party}")
     CcdCallbackResponse processAosPackOfflineAnswers(
-        @RequestBody CcdCallbackRequest caseDataContent,
-        @PathVariable("party") String party
+        @RequestHeader(AUTHORIZATION) String authorisation,
+        @PathVariable("party") String party,
+        @RequestBody CcdCallbackRequest ccdCallbackRequest
     );
 
     @ApiOperation("Handle callback to process Personal Service Pack")

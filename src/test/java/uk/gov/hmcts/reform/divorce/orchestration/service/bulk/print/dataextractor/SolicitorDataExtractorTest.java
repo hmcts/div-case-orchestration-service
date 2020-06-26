@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
 
 import org.junit.Test;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,14 +18,16 @@ public class SolicitorDataExtractorTest {
         assertThat(SolicitorDataExtractor.getSolicitorReference(caseData), is(SOLICITOR_REF));
     }
 
-    @Test(expected = InvalidDataForTaskException.class)
-    public void getSolicitorReferenceThrowsExceptionsWhenItIsEmpty() {
-        SolicitorDataExtractor.getSolicitorReference(buildCaseDataWithSolicitorReference(""));
+    @Test
+    public void getSolicitorReferenceReturnsEmptyStringWhenItIsEmpty() {
+        Map<String, Object> caseData = buildCaseDataWithSolicitorReference("");
+        assertThat(SolicitorDataExtractor.getSolicitorReference(caseData), is(""));
     }
 
-    @Test(expected = InvalidDataForTaskException.class)
+    @Test
     public void getSolicitorReferenceThrowsExceptionsWhenItIsNull() {
-        SolicitorDataExtractor.getSolicitorReference(buildCaseDataWithSolicitorReference(null));
+        Map<String, Object> caseData = buildCaseDataWithSolicitorReference(null);
+        assertThat(SolicitorDataExtractor.getSolicitorReference(caseData), is(""));
     }
 
     private static Map<String, Object> buildCaseDataWithSolicitorReference(String solicitorReference) {

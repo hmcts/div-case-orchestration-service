@@ -129,8 +129,8 @@ public abstract class MockedFunctionalTest {
                 .build();
 
         documentGeneratorServiceServer.stubFor(WireMock.post(GENERATE_DOCUMENT_CONTEXT_PATH)
-            .withRequestBody(matchingJsonPath("$.template", equalTo(templateName)))
             .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
+            .withRequestBody(matchingJsonPath("$.template", equalTo(templateName)))
             .willReturn(aResponse()
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
                 .withStatus(HttpStatus.OK.value())
