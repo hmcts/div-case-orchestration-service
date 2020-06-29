@@ -30,7 +30,9 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskTestHelper.createRandomGeneratedDocument;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -79,7 +81,7 @@ public class BasePayloadSpecificDocumentGenerationTaskTest {
                 }
 
                 @Override
-                protected String getDocumentType() {
+                public String getDocumentType() {
                     return TEST_DOCUMENT_TYPE;
                 }
 
@@ -90,6 +92,7 @@ public class BasePayloadSpecificDocumentGenerationTaskTest {
             };
 
         taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
         Map<String, Object> incomingCaseData = Collections.singletonMap("testKey", "testValue");
         Map<String, Object> returnedCaseData = testDocGenerationTask.execute(taskContext, incomingCaseData);
 
@@ -121,5 +124,4 @@ public class BasePayloadSpecificDocumentGenerationTaskTest {
         final DocmosisTemplateVars docmosisTemplateVars = docmosisTemplateVarsCaptor.getValue();
         assertEquals(expectedDocmosisTemplateVars, docmosisTemplateVars);
     }
-
 }

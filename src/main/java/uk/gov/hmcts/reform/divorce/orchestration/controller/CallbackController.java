@@ -891,7 +891,7 @@ public class CallbackController {
 
         try {
             callbackResponseBuilder.data(caseOrchestrationService.processApplicantDecreeAbsoluteEligibility(ccdCallbackRequest));
-            log.info("Processed decree absolute grant callback request for case ID: {}", caseId);
+            log.info("Processed processApplicantDecreeAbsoluteEligibility callback request for case ID: {}", caseId);
         } catch (CaseOrchestrationServiceException exception) {
             log.error(format(FAILED_TO_EXECUTE_SERVICE_ERROR, caseId), exception);
             callbackResponseBuilder.errors(asList(exception.getMessage()));
@@ -907,8 +907,11 @@ public class CallbackController {
     public ResponseEntity<CcdCallbackResponse> handleMakeCaseEligibleForDaSubmitted(
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
+        Map<String, Object> caseData = caseOrchestrationService.handleMakeCaseEligibleForDaSubmitted(ccdCallbackRequest);
+        log.info("Processed handleMakeCaseEligibleForDaSubmitted successfully for case id {}", ccdCallbackRequest.getCaseDetails().getCaseId());
+
         return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .data(caseOrchestrationService.handleMakeCaseEligibleForDaSubmitted(ccdCallbackRequest))
+            .data(caseData)
             .build());
     }
 
@@ -935,8 +938,9 @@ public class CallbackController {
         @RequestHeader(name = AUTHORIZATION_HEADER)
         @ApiParam(value = "Authorisation token issued by IDAM", required = true) String authToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest,
-        @PathVariable("party") @ApiParam("Party in divorce (respondent or co-respondent") DivorceParty party) {
-
+        @PathVariable("party")
+        @ApiParam(value = "Party in divorce (respondent or co-respondent)" ,
+                  allowableValues = "respondent, co-respondent") DivorceParty party) {
         CcdCallbackResponse response;
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
 
@@ -960,14 +964,17 @@ public class CallbackController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Successfully processed offline AOS Answers")})
     public ResponseEntity<CcdCallbackResponse> processAosPackOfflineAnswers(
+        @RequestHeader(AUTHORIZATION_HEADER)
+        @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest,
-        @PathVariable("party") @ApiParam("Party in divorce (respondent or co-respondent") DivorceParty party) {
-
+        @PathVariable("party")
+        @ApiParam(value = "Party in divorce (respondent or co-respondent)",
+                  allowableValues = "respondent, co-respondent") DivorceParty party) {
         CcdCallbackResponse.CcdCallbackResponseBuilder responseBuilder = CcdCallbackResponse.builder();
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
 
         try {
-            responseBuilder.data(aosPackOfflineService.processAosPackOfflineAnswers(caseDetails, party));
+            responseBuilder.data(aosPackOfflineService.processAosPackOfflineAnswers(authorizationToken, caseDetails, party));
             log.info("Processed AOS offline answers for {} of case {}", party.getDescription(), caseDetails.getCaseId());
         } catch (CaseOrchestrationServiceException exception) {
             log.info("Error processing AOS offline answers for {} of case {}", party.getDescription(), caseDetails.getCaseId());

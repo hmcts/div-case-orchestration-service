@@ -46,11 +46,11 @@ public class AosPackOfflineServiceImpl implements AosPackOfflineService {
     }
 
     @Override
-    public Map<String, Object> processAosPackOfflineAnswers(CaseDetails caseDetails, DivorceParty divorceParty)
+    public Map<String, Object> processAosPackOfflineAnswers(String authToken, CaseDetails caseDetails, DivorceParty divorceParty)
         throws CaseOrchestrationServiceException {
 
         try {
-            return aosPackOfflineAnswersWorkflow.run(caseDetails, divorceParty);
+            return aosPackOfflineAnswersWorkflow.run(authToken, caseDetails, divorceParty);
         } catch (WorkflowException e) {
             throw new CaseOrchestrationServiceException(e);
         }

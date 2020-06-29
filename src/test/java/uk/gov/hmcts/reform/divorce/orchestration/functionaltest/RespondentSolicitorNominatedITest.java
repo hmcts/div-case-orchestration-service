@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,6 @@ import uk.gov.hmcts.reform.idam.client.models.GeneratePinRequest;
 
 import java.util.Map;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static org.hamcrest.Matchers.allOf;
@@ -43,7 +41,6 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
     private static final String API_URL = "/aos-solicitor-nominated";
     private static final String AOS_SOL_NOMINATED_JSON = "/jsonExamples/payloads/aosSolicitorNominated.json";
 
-    private static final String SERVICE_AUTH_CONTEXT_PATH = "/lease";
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
     private static final String FORMAT_ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
     private static final String RESPONDENT_INVITATION_TEMPLATE_NAME = "aosinvitation";
@@ -97,13 +94,6 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
                 isJson(),
                 hasJsonPath("$.errors", nullValue())
             )));
-    }
-
-    private void stubServiceAuthProvider(HttpStatus status, String response) {
-        serviceAuthProviderServer.stubFor(WireMock.post(SERVICE_AUTH_CONTEXT_PATH)
-            .willReturn(aResponse()
-                .withStatus(status.value())
-                .withBody(response)));
     }
 
 }

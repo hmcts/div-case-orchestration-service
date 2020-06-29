@@ -9,10 +9,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoELetterDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.SolicitorDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.Map;
@@ -38,17 +39,17 @@ public class CoERespondentSolicitorLetterGenerationTask extends BasePayloadSpeci
 
     @Override
     protected DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        return CoERespondentSolicitorCoverLetter.builder()
+        return CoERespondentSolicitorCoverLetter.coERespondentSolicitorCoverLetterBuilder()
                 .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
                 .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
                 .caseReference(getCaseId(context))
                 .letterDate(DatesDataExtractor.getLetterDate())
                 .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
                 .hearingDate(DatesDataExtractor.getHearingDate(caseData))
-                .costClaimGranted(CoELetterDataExtractor.isCostsClaimGranted(caseData))
+                .costClaimGranted(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData))
                 .deadlineToContactCourtBy(DatesDataExtractor.getDeadlineToContactCourtBy(caseData))
                 .addressee(AddresseeDataExtractor.getRespondentSolicitor(caseData))
-                .solicitorReference(CoELetterDataExtractor.getSolicitorReference(caseData))
+                .solicitorReference(SolicitorDataExtractor.getSolicitorReference(caseData))
                 .build();
     }
 

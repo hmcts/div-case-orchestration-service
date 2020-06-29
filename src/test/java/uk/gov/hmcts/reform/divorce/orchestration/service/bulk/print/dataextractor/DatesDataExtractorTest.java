@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATE_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.TIME_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.COST_CLAIMED;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.COSTS_CLAIM_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor.CaseDataKeys.DA_GRANTED_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor.getDeadlineToContactCourtBy;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor.getHearingDate;
@@ -94,7 +94,7 @@ public class DatesDataExtractorTest {
 
     static Map<String, Object> createCaseData() {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(COST_CLAIMED, YES_VALUE);
+        caseData.put(COSTS_CLAIM_GRANTED, YES_VALUE);
         caseData.put(DATETIME_OF_HEARING_CCD_FIELD, createHearingDatesList());
 
         return caseData;

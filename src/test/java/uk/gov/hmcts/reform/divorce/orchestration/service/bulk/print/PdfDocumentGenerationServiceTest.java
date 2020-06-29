@@ -26,7 +26,7 @@ public class PdfDocumentGenerationServiceTest {
     private final String letterDate = LocalDate.now().toString();
     private final String caseId = "123-987";
     private final String templateId = "template";
-    private final BasicCoverLetter model = BasicCoverLetter.builder().caseReference(caseId).letterDate(letterDate).build();
+    private final BasicCoverLetter model = BasicCoverLetter.basicCoverLetterBuilder().caseReference(caseId).letterDate(letterDate).build();
 
     @Mock
     private DocumentGeneratorClient documentGeneratorClient;

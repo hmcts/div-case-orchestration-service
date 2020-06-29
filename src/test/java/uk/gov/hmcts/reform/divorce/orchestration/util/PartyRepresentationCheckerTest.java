@@ -6,13 +6,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Collections.EMPTY_MAP;
+import static java.util.Collections.emptyMap;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_RESPONDENT;
@@ -21,8 +22,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentDigital;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentLiableForCosts;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentRepresented;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCostsClaimGranted;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerRepresented;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentDigital;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
 
 public class PartyRepresentationCheckerTest {
@@ -69,15 +70,21 @@ public class PartyRepresentationCheckerTest {
     }
 
     @Test
-    public void isCoRespondentDigitalReturnsFalse() {
-        Map<String, Object> caseData = createCaseData(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE);
-        assertThat(isCoRespondentDigital(caseData), is(false));
+    public void isRespondentDigitalReturnsFalse() {
+        Map<String, Object> caseData = createCaseData(RESP_IS_USING_DIGITAL_CHANNEL, NO_VALUE);
+        assertThat(isRespondentDigital(caseData), is(false));
     }
 
     @Test
-    public void isCoRespondentDigitalReturnsFalseWhenNone() {
-        Map<String, Object> caseData = createCaseData(WHO_PAYS_COSTS_CCD_FIELD, WHO_PAYS_CCD_CODE_FOR_RESPONDENT);
-        assertThat(isCoRespondentDigital(caseData), is(true));
+    public void isRespondentDigitalReturnsTrue() {
+        Map<String, Object> caseData = createCaseData(RESP_IS_USING_DIGITAL_CHANNEL, YES_VALUE);
+        assertThat(isRespondentDigital(caseData), is(true));
+    }
+
+    @Test
+    public void isCoRespondentDigitalReturnsFalse() {
+        Map<String, Object> caseData = createCaseData(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE);
+        assertThat(isCoRespondentDigital(caseData), is(false));
     }
 
     @Test
@@ -87,15 +94,10 @@ public class PartyRepresentationCheckerTest {
     }
 
     @Test
-    public void isCostsClaimGrantedReturnsTrue() {
-        Map<String, Object> caseData = createCaseData(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
-        assertThat(isCostsClaimGranted(caseData), is(true));
-    }
-
-    @Test
-    public void isCostsClaimGrantedReturnsFalse() {
-        Map<String, Object> caseData = createCaseData(DIVORCE_COSTS_CLAIM_CCD_FIELD, NO_VALUE);
-        assertThat(isCostsClaimGranted(caseData), is(false));
+    public void isRespondentAndCoRespondentDigitalReturnsTrueWhenNone() {
+        Map<String, Object> caseData = emptyMap();
+        assertThat(isRespondentDigital(caseData), is(true));
+        assertThat(isCoRespondentDigital(caseData), is(true));
     }
 
     @Test

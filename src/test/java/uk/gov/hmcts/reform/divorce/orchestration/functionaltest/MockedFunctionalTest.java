@@ -42,6 +42,7 @@ public abstract class MockedFunctionalTest {
 
     private static final String APPLICATION_VND_UK_GOV_HMCTS_LETTER_SERVICE_IN_LETTER = "application/vnd.uk.gov.hmcts.letter-service.in.letter";
     protected static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
+    private static final String SERVICE_AUTH_CONTEXT_PATH = "/lease";
     protected static final String GENERATE_DRAFT_DOCUMENT_CONTEXT_PATH = "/version/1/generateDraftPDF";
 
     @ClassRule
@@ -157,8 +158,8 @@ public abstract class MockedFunctionalTest {
                 .build();
 
         documentGeneratorServiceServer.stubFor(WireMock.post(GENERATE_DOCUMENT_CONTEXT_PATH)
-            .withRequestBody(matchingJsonPath("$.template", equalTo(templateName)))
             .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
+            .withRequestBody(matchingJsonPath("$.template", equalTo(templateName)))
             .willReturn(aResponse()
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
                 .withStatus(HttpStatus.OK.value())
@@ -179,6 +180,27 @@ public abstract class MockedFunctionalTest {
                 .withStatus(HttpStatus.OK.value())
                 .withHeader(CONTENT_TYPE, ALL_VALUE)
                 .withBody(fileBytes)));
+    }
+
+    protected void stubServiceAuthProvider(HttpStatus status, String response) {
+        serviceAuthProviderServer.stubFor(WireMock.post(SERVICE_AUTH_CONTEXT_PATH)
+            .willReturn(aResponse()
+                .withStatus(status.value())
+                .withBody(response)));
+    }
+
+    protected final void resetAllMockServices() {
+        maintenanceServiceServer.resetAll();
+        documentGeneratorServiceServer.resetAll();
+        featureToggleService.resetAll();
+        feesAndPaymentsServer.resetAll();
+        formatterServiceServer.resetAll();
+        idamServer.resetAll();
+        paymentServiceServer.resetAll();
+        sendLetterService.resetAll();
+        serviceAuthProviderServer.resetAll();
+        validationServiceServer.resetAll();
+        documentStore.resetAll();
     }
 
     public String stubDocumentGeneratorService(String templateName, Map<String, Object> templateValues, String documentTypeToReturn) {

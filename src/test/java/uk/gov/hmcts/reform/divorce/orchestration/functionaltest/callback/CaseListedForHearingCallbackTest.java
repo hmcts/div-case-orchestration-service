@@ -1,7 +1,6 @@
 
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.callback;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -22,12 +21,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctional
 import uk.gov.hmcts.reform.divorce.orchestration.service.BulkPrintService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoECoRespondentCoverLetterGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoERespondentCoverLetterGenerationTask;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.List;
 import java.util.Map;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -41,6 +41,8 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -76,16 +78,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoELetterDataExtractor.CaseDataKeys.HEARING_DATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoERespondentLetterGenerationTask.FileMetadata.TEMPLATE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.HEARING_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoERespondentCoverLetterGenerationTask.FileMetadata.TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocument;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class CaseListedForHearingCallbackTest extends MockedFunctionalTest {
 
     private static final String API_URL = "/case-linked-for-hearing";
-
-    private static final String SERVICE_AUTH_CONTEXT_PATH = "/lease";
 
     private static final String CERTIFICATE_OF_ENTITLEMENT_ID = "7d10123a-0t88-4e0e-b475-528b54t87ca6";
 
@@ -150,7 +150,7 @@ public class CaseListedForHearingCallbackTest extends MockedFunctionalTest {
     public void givenOfflineRespondentDetails_ThenOkResponse() throws Exception {
         //Given
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
-        stubServiceAuthProvider(TEST_SERVICE_AUTH_TOKEN);
+        stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
 
         //Newly generated document
         byte[] coeLetterBytes = new byte[] {1, 2, 3};
@@ -161,9 +161,12 @@ public class CaseListedForHearingCallbackTest extends MockedFunctionalTest {
         //Existing document
         byte[] coeDocumentBytes = new byte[] {4, 5, 6};
         stubDMStore(CERTIFICATE_OF_ENTITLEMENT_ID, coeDocumentBytes);
-        CollectionMember<Document> coeDocument = createCollectionMemberDocument(getDocumentStoreTestUrl(CERTIFICATE_OF_ENTITLEMENT_ID),
+        CollectionMember<Document> coeDocument = createCollectionMemberDocument(
+            getDocumentStoreTestUrl(CERTIFICATE_OF_ENTITLEMENT_ID),
             DOCUMENT_TYPE_COE,
-            "certificateOfEntitlement");
+            "certificateOfEntitlement"
+        );
+
         Map<String, Object> caseData = new ImmutableMap.Builder<String, Object>().putAll(BASE_CASE_DATA)
             .put(RESP_IS_USING_DIGITAL_CHANNEL, NO_VALUE)
             .put(D8DOCUMENTS_GENERATED, asList(coeDocument))
@@ -184,7 +187,20 @@ public class CaseListedForHearingCallbackTest extends MockedFunctionalTest {
             .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
 
         //Then
-        verify(bulkPrintService).send(eq(TEST_CASE_ID), anyString(), documentsToPrintCaptor.capture());
+        verify(bulkPrintService, never())
+            .send(
+                anyString(),
+                eq(CoECoRespondentCoverLetterGenerationTask.FileMetadata.DOCUMENT_TYPE),
+                any()
+            );
+
+        verify(bulkPrintService, times(1))
+            .send(
+                eq(TEST_CASE_ID),
+                eq(CoERespondentCoverLetterGenerationTask.FileMetadata.DOCUMENT_TYPE),
+                documentsToPrintCaptor.capture()
+            );
+
         List<GeneratedDocumentInfo> documentsSentToBulkPrint = documentsToPrintCaptor.getValue();
         assertThat(documentsSentToBulkPrint, hasSize(2));
         assertThat(documentsSentToBulkPrint.get(0).getBytes(), is(coeLetterBytes));
@@ -233,13 +249,6 @@ public class CaseListedForHearingCallbackTest extends MockedFunctionalTest {
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
-    }
-
-    private void stubServiceAuthProvider(String response) {
-        serviceAuthProviderServer.stubFor(WireMock.post(SERVICE_AUTH_CONTEXT_PATH)
-            .willReturn(aResponse()
-                .withStatus(HttpStatus.OK.value())
-                .withBody(response)));
     }
 
 }

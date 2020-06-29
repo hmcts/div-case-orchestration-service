@@ -23,8 +23,6 @@ import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 import java.time.LocalDate;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.CERTIFICATE_OF_ENTITLEMENT_LETTER_CO_RESPONDENT_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.CERTIFICATE_OF_ENTITLEMENT_LETTER_CO_RESPONDENT_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentRepresented;
 
@@ -39,17 +37,19 @@ public class CoECoRespondentCoverLetterGenerationTask extends BasePayloadSpecifi
 
     private final CourtLookupService courtLookupService;
 
-    public CoECoRespondentCoverLetterGenerationTask(CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
-                                                    PdfDocumentGenerationService pdfDocumentGenerationService,
-                                                    CcdUtil ccdUtil,
-                                                    CourtLookupService courtLookupService) {
+    public CoECoRespondentCoverLetterGenerationTask(
+        CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
+        PdfDocumentGenerationService pdfDocumentGenerationService,
+        CcdUtil ccdUtil,
+        CourtLookupService courtLookupService) {
         super(ctscContactDetailsDataProviderService, pdfDocumentGenerationService, ccdUtil);
         this.courtLookupService = courtLookupService;
     }
 
     @Override
-    protected DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        return CoECoverLetter.builder()
+    protected DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData)
+        throws TaskException {
+        return CoECoverLetter.coECoverLetterBuilder()
             .caseReference(getCaseId(context))
             .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
             .addressee(getAddresseeCoRespondentOrSolicitorIfRepresented(caseData))

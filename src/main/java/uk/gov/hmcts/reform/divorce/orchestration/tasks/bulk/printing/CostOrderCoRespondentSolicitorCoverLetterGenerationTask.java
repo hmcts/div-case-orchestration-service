@@ -37,7 +37,7 @@ public class CostOrderCoRespondentSolicitorCoverLetterGenerationTask extends Bas
 
     @Override
     protected DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        return CoRespondentCostOrderCoverLetter.builder()
+        return CoRespondentCostOrderCoverLetter.coRespondentCostOrderCoverLetterBuilder()
             .caseReference(getCaseId(context))
             .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
             .addressee(AddresseeDataExtractor.getCoRespondentSolicitor(caseData))

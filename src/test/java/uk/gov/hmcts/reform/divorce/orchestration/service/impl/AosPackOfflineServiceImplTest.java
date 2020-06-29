@@ -29,6 +29,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
@@ -105,24 +106,24 @@ public class AosPackOfflineServiceImplTest {
 
     @Test
     public void shouldCallWorkflowAndReturnPayload() throws WorkflowException, CaseOrchestrationServiceException {
-        when(aosPackOfflineAnswersWorkflow.run(any(), any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
+        when(aosPackOfflineAnswersWorkflow.run(any(), any(), any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
 
         Map<String, Object> incomingPayload = singletonMap("incomingKey", "incomingValue");
         CaseDetails caseDetails = CaseDetails.builder().caseData(incomingPayload).build();
-        Map<String, Object> returnedPayload = classUnderTest.processAosPackOfflineAnswers(caseDetails, RESPONDENT);
+        Map<String, Object> returnedPayload = classUnderTest.processAosPackOfflineAnswers(AUTH_TOKEN, caseDetails, RESPONDENT);
 
         assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
-        verify(aosPackOfflineAnswersWorkflow).run(eq(caseDetails), eq(RESPONDENT));
+        verify(aosPackOfflineAnswersWorkflow).run(eq(AUTH_TOKEN), eq(caseDetails), eq(RESPONDENT));
     }
 
     @Test
     public void shouldThrowServiceException_WhenWorkflowExceptionIsThrown() throws WorkflowException, CaseOrchestrationServiceException {
-        when(aosPackOfflineAnswersWorkflow.run(any(CaseDetails.class), notNull())).thenThrow(WorkflowException.class);
+        when(aosPackOfflineAnswersWorkflow.run(any(), any(CaseDetails.class), notNull())).thenThrow(WorkflowException.class);
         expectedException.expect(CaseOrchestrationServiceException.class);
         expectedException.expectCause(instanceOf(WorkflowException.class));
 
         CaseDetails caseDetails = CaseDetails.builder().build();
-        classUnderTest.processAosPackOfflineAnswers(caseDetails, RESPONDENT);
+        classUnderTest.processAosPackOfflineAnswers(AUTH_TOKEN, caseDetails, RESPONDENT);
     }
 
 }

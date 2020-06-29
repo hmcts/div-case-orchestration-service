@@ -209,7 +209,6 @@ public class OrchestrationConstants {
     public static final String D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME = "D8ReasonForDivorceAdultery3rdPartyFName";
     public static final String D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME = "D8ReasonForDivorceAdultery3rdPartyLName";
     public static final String D8_DERIVED_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS = "D8DerivedReasonForDivorceAdultery3rdAddr";
-    public static final String D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS = "D8ReasonForDivorceAdultery3rdAddress";
     public static final String CO_RESPONDENT_DUE_DATE = "DueDateCoResp";
     public static final String CO_RESPONDENT_ANSWER_RECEIVED = "ReceivedAnswerFromCoResp";
     public static final String CO_RESPONDENT_ANSWER_RECEIVED_DATE = "ReceivedAnswerFromCoRespDate";
@@ -332,7 +331,8 @@ public class OrchestrationConstants {
     public static final String DECREE_NISI_REFUSAL_REJECTION_DOCUMENT_NAME = "rejectionDnRefusalOrder";
     public static final String DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD = "PreviousDNClarificationRefusalOrder";
     public static final String DECREE_ABSOLUTE_DOCUMENT_TYPE = "daGranted";
-    public static final String DECREE_ABSOLUTE_GRANTED_LETTER_DOCUMENT_TYPE = "daGrantedLetter";
+    public static final String DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_DOCUMENT_TYPE = "daGrantedLetter";
+    public static final String DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER_DOCUMENT_TYPE = "daGrantedLetterSol";
     public static final String DECREE_ABSOLUTE_FILENAME = "decreeAbsolute";
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_FILENAME = "solicitor-personal-service-";
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE = "personalService";
@@ -376,10 +376,8 @@ public class OrchestrationConstants {
     public static final String D8_RESPONDENT_SOLICITOR_PHONE = "D8RespondentSolicitorPhone";
     public static final String D8_RESPONDENT_SOLICITOR_REFERENCE = "respondentSolicitorReference";
     public static final String D8_RESPONDENT_SOLICITOR_NAME = "D8RespondentSolicitorName";
-    public static final String D8_CO_RESPONDENT_SOLICITOR_ADDRESS = "CoRespondentSolicitorAddress";
     public static final String D8DOCUMENTS_GENERATED = "D8DocumentsGenerated";
     public static final String PETITIONER_SOLICITOR_EMAIL = "PetitionerSolicitorEmail";
-
 
     // Payment
     public static final String PAYMENT = "payment";

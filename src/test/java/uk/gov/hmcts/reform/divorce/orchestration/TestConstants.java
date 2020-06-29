@@ -93,9 +93,9 @@ public class TestConstants {
     public static final String TEST_PETITIONER_FULL_NAME = TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME;
     public static final String TEST_RESPONDENT_FIRST_NAME = "Diana";
     public static final String TEST_RESPONDENT_LAST_NAME = "Prince";
-    public static final String TEST_RESPONDENTS_FULL_NAME = TEST_RESPONDENT_FIRST_NAME + " " + TEST_RESPONDENT_LAST_NAME;
-    public static final String TEST_CO_RESPONDENTS_FIRST_NAME = "Bruce";
-    public static final String TEST_CO_RESPONDENTS_LAST_NAME = "Wayne";
-    public static final String TEST_CO_RESPONDENTS_FULL_NAME = TEST_CO_RESPONDENTS_FIRST_NAME + " " + TEST_CO_RESPONDENTS_LAST_NAME;
+    public static final String TEST_RESPONDENT_FULL_NAME = TEST_RESPONDENT_FIRST_NAME + " " + TEST_RESPONDENT_LAST_NAME;
+    public static final String TEST_CO_RESPONDENT_FIRST_NAME = "Bruce";
+    public static final String TEST_CO_RESPONDENT_LAST_NAME = "Wayne";
+    public static final String TEST_CO_RESPONDENT_FULL_NAME = TEST_CO_RESPONDENT_FIRST_NAME + " " + TEST_CO_RESPONDENT_LAST_NAME;
 
 }

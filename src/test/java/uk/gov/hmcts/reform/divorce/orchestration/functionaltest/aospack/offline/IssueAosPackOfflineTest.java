@@ -1,13 +1,10 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.aospack.offline;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
 import org.json.JSONArray;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -18,7 +15,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
@@ -36,7 +32,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -59,12 +54,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.Div
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
-@DirtiesContext(classMode = BEFORE_EACH_TEST_METHOD)
 public class IssueAosPackOfflineTest extends MockedFunctionalTest {
 
     private static final String API_URL = "/issue-aos-pack-offline/parties/%s";
-
-    private static final String SERVICE_AUTH_CONTEXT_PATH = "/lease";
 
     private static final byte[] FIRST_FILE_BYTES = "firstFile".getBytes();
     private static final byte[] SECOND_FILE_BYTES = "secondFile".getBytes();
@@ -86,12 +78,7 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
 
     @Before
     public void setUp() {
-        documentGeneratorServiceServer.resetAll();
-        formatterServiceServer.resetAll();
-        sendLetterService.resetAll();
-        documentStore.resetAll();
-        serviceAuthProviderServer.resetAll();
-        featureToggleService.resetAll();
+        resetAllMockServices();
 
         stubSendLetterService(OK);
         stubServiceAuthProvider(OK, TEST_SERVICE_AUTH_TOKEN);
@@ -270,13 +257,6 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
             .andExpect(status().isOk())
             .andExpect(content().string(allOf(isJson())))
             .andExpect(content().string(hasNoJsonPath("$.data.dueDate")));
-    }
-
-    private void stubServiceAuthProvider(HttpStatus status, String response) {
-        serviceAuthProviderServer.stubFor(WireMock.post(SERVICE_AUTH_CONTEXT_PATH)
-            .willReturn(aResponse()
-                .withStatus(status.value())
-                .withBody(response)));
     }
 
 }
