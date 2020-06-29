@@ -454,7 +454,7 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
             .put(CO_RESPONDENT_REPRESENTED, YES_VALUE)
             .put(D_8_CO_RESPONDENT_NAMED, YES_VALUE)
             .put(CO_RESPONDENT_SOLICITOR_NAME, TEST_CO_RESPONDENT_SOLICITOR_NAME)
-            .put(D_8_REASON_FOR_DIVORCE, ADULTERY)
+            .put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue())
             .build();
     }
 
@@ -462,7 +462,7 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
         return new HashMap<>(ImmutableMap.<String, Object>builder()
             .putAll(BASE_CASE_DATA)
             .put(CO_RESPONDENT_REPRESENTED, NO_VALUE)
-            .put(D_8_REASON_FOR_DIVORCE, ADULTERY)
+            .put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue())
             .put(D_8_CO_RESPONDENT_NAMED, YES_VALUE)
             .put(RESPONDENT_ADDRESS, "address of resp")
             .build());

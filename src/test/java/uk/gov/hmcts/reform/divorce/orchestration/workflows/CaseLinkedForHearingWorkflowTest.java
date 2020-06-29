@@ -114,7 +114,7 @@ public class CaseLinkedForHearingWorkflowTest {
             .thenReturn(CoERespondentCoverLetterGenerationTask.FileMetadata.DOCUMENT_TYPE);
         when(coERespondentSolicitorLetterGenerationTask.execute(isNotNull(), eq(payload))).thenReturn(payload);
         when(coERespondentSolicitorLetterGenerationTask.getDocumentType())
-            .thenReturn(COE_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE);
+            .thenReturn(COE_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE.getValue());
         when(coECoRespondentCoverLetterGenerationTask.execute(notNull(), eq(payload))).thenReturn(payload);
         when(coECoRespondentCoverLetterGenerationTask.getDocumentType())
             .thenReturn(CoECoRespondentCoverLetterGenerationTask.FileMetadata.DOCUMENT_TYPE);

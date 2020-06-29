@@ -145,7 +145,8 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         //Newly generated document
         byte[] decreeAbsoluteLetterBytes = new byte[] {1, 2, 3};
         String daGrantedLetterDocumentId =
-            stubDocumentGeneratorService(DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_TEMPLATE_ID, DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_DOCUMENT_TYPE.getValue());
+            stubDocumentGeneratorService(DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_TEMPLATE_ID.getValue(),
+                    DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_DOCUMENT_TYPE);
         stubDMStore(daGrantedLetterDocumentId, decreeAbsoluteLetterBytes);
 
         //Existing document
@@ -191,7 +192,7 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         //Newly generated document
         byte[] decreeAbsoluteLetterBytes = new byte[] {1, 2, 3};
         String daGrantedLetterDocumentId = stubDocumentGeneratorService(
-            DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER_TEMPLATE_ID,
+            DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER_TEMPLATE_ID.getValue(),
             DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER_DOCUMENT_TYPE
         );
         stubDMStore(daGrantedLetterDocumentId, decreeAbsoluteLetterBytes);
