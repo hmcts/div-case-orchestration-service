@@ -27,7 +27,12 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AMEND_PETITION_FEE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_REJECT_OPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
@@ -40,10 +45,17 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_FEES_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_SOLICITOR_NAME;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NotifyForRefusalOrderTaskTest {
@@ -56,7 +68,6 @@ public class NotifyForRefusalOrderTaskTest {
     private static final String RELATION = "husband";
     private static final FeeResponse TEST_FEES = FeeResponse.builder().amount(50.00).build();
     private static final String FEE_AMOUNT_AS_STRING = "50";
-    private static final String SOLICITOR_EMAIL_ADDRESS = "pet_sol_email@mail.com";
 
     private Map<String, Object> incomingPayload;
     private TaskContext taskContext;
@@ -77,6 +88,7 @@ public class NotifyForRefusalOrderTaskTest {
         incomingPayload.put(D_8_INFERRED_PETITIONER_GENDER, MALE_GENDER);
         taskContext = new DefaultTaskContext();
         taskContext.setTransientObject(AMEND_PETITION_FEE_JSON_KEY, TEST_FEES);
+        taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_REFERENCE);
     }
 
     @Test
@@ -127,20 +139,23 @@ public class NotifyForRefusalOrderTaskTest {
     public void notificationServiceIsCalledWithExpectedParametersWhenRefusalDecisionIsRejection_forSolicitor() throws TaskException {
         incomingPayload.put(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE);
         incomingPayload.put(REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION);
-        // this is a bug, I need to fix it
-        // incomingPayload.put(PETITIONER_EMAIL, null);
+        incomingPayload.put(PETITIONER_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL);
+        incomingPayload.put(PETITIONER_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
+        incomingPayload.put(RESP_FIRST_NAME_CCD_FIELD, TEST_USER_FIRST_NAME);
+        incomingPayload.put(RESP_LAST_NAME_CCD_FIELD, TEST_USER_LAST_NAME);
+        incomingPayload.put(PETITIONER_EMAIL, null);
 
         executeTask();
 
         verify(emailService).sendEmail(
-            eq(SOLICITOR_EMAIL_ADDRESS),
+            eq(TEST_SOLICITOR_EMAIL),
             eq(EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_REJECTION_SOLICITOR.name()),
             argThat(new HamcrestArgumentMatcher<>(
                 allOf(
                     hasEntry(NOTIFICATION_CASE_NUMBER_KEY, TEST_CASE_REFERENCE),
-                    hasEntry(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, PETITIONER_FIRST_NAME),
-                    hasEntry(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, PETITIONER_LAST_NAME),
-                    hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, RELATION),
+                    hasEntry(NOTIFICATION_PET_NAME, PETITIONER_FIRST_NAME + " " + PETITIONER_LAST_NAME),
+                    hasEntry(NOTIFICATION_RESP_NAME, TEST_USER_FIRST_NAME + " " + TEST_USER_LAST_NAME),
+                    hasEntry(NOTIFICATION_SOLICITOR_NAME, TEST_SOLICITOR_NAME),
                     hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING)
                 )
             )),

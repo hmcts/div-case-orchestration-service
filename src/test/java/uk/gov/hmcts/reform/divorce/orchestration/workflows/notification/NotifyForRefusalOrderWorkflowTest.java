@@ -5,6 +5,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetAmendPetitionFeeTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.notification.NotifyForRefusalOrderTask;
@@ -36,7 +37,7 @@ public class NotifyForRefusalOrderWorkflowTest {
         when(getAmendPetitionFeeTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
         when(notifyForRefusalOrderTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
 
-        notifyForRefusalOrderWorkflow.run(casePayload);
+        notifyForRefusalOrderWorkflow.run(CaseDetails.builder().caseData(casePayload).build());
 
         verify(getAmendPetitionFeeTask).execute(any(TaskContext.class), eq(casePayload));
         verify(notifyForRefusalOrderTask).execute(any(TaskContext.class), eq(casePayload));
