@@ -46,7 +46,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_LINKED_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -62,7 +61,6 @@ public class NotifyForRefusalOrderTaskTest {
     private static final String FEE_AMOUNT_AS_STRING = "50";
     private static final String SOLICITOR_EMAIL_ADDRESS = "pet_sol_email@mail.com";
 
-
     private Map<String, Object> incomingPayload;
     private TaskContext taskContext;
 
@@ -71,7 +69,6 @@ public class NotifyForRefusalOrderTaskTest {
 
     @InjectMocks
     private NotifyForRefusalOrderTask notifyForRefusalOrderTask;
-
 
     @Before
     public void setUp() {
@@ -86,13 +83,14 @@ public class NotifyForRefusalOrderTaskTest {
     }
 
     @Test
-    public void testNotificationServiceIsCalledWithExpectedParametersWhenRefusalDecisionIsMoreInfo() throws TaskException {
+    public void notificationServiceIsCalledWithExpectedParametersWhenRefusalDecisionIsMoreInfo() throws TaskException {
         incomingPayload.put(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE);
         incomingPayload.put(REFUSAL_DECISION_CCD_FIELD, REFUSAL_DECISION_MORE_INFO_VALUE);
-        Map returnedPayload = notifyForRefusalOrderTask.execute(taskContext, incomingPayload);
 
-        assertThat(returnedPayload, equalTo(incomingPayload));
-        verify(emailService).sendEmail(eq(PETITIONER_EMAIL),
+        executeTask();
+
+        verify(emailService).sendEmail(
+            eq(PETITIONER_EMAIL),
             eq(EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION.name()),
             argThat(new HamcrestArgumentMatcher<>(
                 allOf(
@@ -106,13 +104,14 @@ public class NotifyForRefusalOrderTaskTest {
     }
 
     @Test
-    public void testNotificationServiceIsCalledWithExpectedParametersWhenRefusalDecisionIsRejection() throws TaskException {
+    public void notificationServiceIsCalledWithExpectedParametersWhenRefusalDecisionIsRejection() throws TaskException {
         incomingPayload.put(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE);
         incomingPayload.put(REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION);
-        Map returnedPayload = notifyForRefusalOrderTask.execute(taskContext, incomingPayload);
 
-        assertThat(returnedPayload, equalTo(incomingPayload));
-        verify(emailService).sendEmail(eq(PETITIONER_EMAIL),
+        executeTask();
+
+        verify(emailService).sendEmail(
+            eq(PETITIONER_EMAIL),
             eq(EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_REJECTION.name()),
             argThat(new HamcrestArgumentMatcher<>(
                 allOf(
@@ -128,16 +127,17 @@ public class NotifyForRefusalOrderTaskTest {
     }
 
     @Test
-    public void testNotificationServiceIsCalledWithExpectedParametersWhenRefusalDecisionIsRejection_forSolicitor() throws TaskException {
+    public void notificationServiceIsCalledWithExpectedParametersWhenRefusalDecisionIsRejection_forSolicitor() throws TaskException {
         incomingPayload.put(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE);
         incomingPayload.put(REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION);
         incomingPayload.put(PETITIONER_EMAIL, null);
         incomingPayload.put(PETITIONER_SOLICITOR_EMAIL, SOLICITOR_EMAIL_ADDRESS);
         incomingPayload.put(PETITIONER_SOLICITOR_NAME_FIELD, NOTIFICATION_SOLICITOR_NAME);
-        Map returnedPayload = notifyForRefusalOrderTask.execute(taskContext, incomingPayload);
 
-        assertThat(returnedPayload, equalTo(incomingPayload));
-        verify(emailService).sendEmail(eq(PETITIONER_SOLICITOR_EMAIL),
+        executeTask();
+
+        verify(emailService).sendEmail(
+            eq(SOLICITOR_EMAIL_ADDRESS),
             eq(EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_REJECTION_SOLICITOR.name()),
             argThat(new HamcrestArgumentMatcher<>(
                 allOf(
@@ -153,43 +153,43 @@ public class NotifyForRefusalOrderTaskTest {
     }
 
     @Test
-    public void testNotificationServiceIsNotCalledWithNoRefusalDecision() throws TaskException {
-        Map returnedPayload = notifyForRefusalOrderTask.execute(taskContext, incomingPayload);
+    public void notificationServiceIsNotCalledWithNoRefusalDecision() throws TaskException {
+        executeTask();
 
-        assertThat(returnedPayload, equalTo(incomingPayload));
-        verify(emailService, never()).sendEmail(eq(PETITIONER_EMAIL),
-            eq(EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION.name()),
-            anyMap(),
-            anyString()
-        );
+        verifyEmailNeverSent(PETITIONER_EMAIL, EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION);
     }
 
     @Test
-    public void testNotificationServiceIsNotCalledWhenDecreeNisiIsGrantedAndNotRefused() throws TaskException {
+    public void notificationServiceIsNotCalledWhenDecreeNisiIsGrantedAndNotRefused() throws TaskException {
         incomingPayload.put(DECREE_NISI_GRANTED_CCD_FIELD, YES_VALUE);
         incomingPayload.put(REFUSAL_DECISION_CCD_FIELD, REFUSAL_DECISION_MORE_INFO_VALUE);
 
-        Map returnedPayload = notifyForRefusalOrderTask.execute(taskContext, incomingPayload);
+        executeTask();
 
-        assertThat(returnedPayload, equalTo(incomingPayload));
-        verify(emailService, never()).sendEmail(eq(PETITIONER_EMAIL),
-            eq(EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION.name()),
-            anyMap(),
-            anyString()
-        );
+        verifyEmailNeverSent(PETITIONER_EMAIL, EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION);
     }
 
-
     @Test
-    public void testNotificationServiceIsNotCalledWhenNoPetitioner() throws TaskException {
+    public void notificationServiceIsNotCalledWhenNoPetitioner() throws TaskException {
         incomingPayload.put(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE);
         incomingPayload.put(REFUSAL_DECISION_CCD_FIELD, REFUSAL_DECISION_MORE_INFO_VALUE);
         incomingPayload.remove(D_8_PETITIONER_EMAIL);
-        Map returnedPayload = notifyForRefusalOrderTask.execute(taskContext, incomingPayload);
+
+        executeTask();
+
+        verifyEmailNeverSent(PETITIONER_EMAIL, EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION);
+    }
+
+    private void executeTask() throws TaskException {
+        Map<String, Object> returnedPayload = notifyForRefusalOrderTask.execute(taskContext, incomingPayload);
 
         assertThat(returnedPayload, equalTo(incomingPayload));
-        verify(emailService, never()).sendEmail(eq(PETITIONER_EMAIL),
-            eq(EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION.name()),
+    }
+
+    private void verifyEmailNeverSent(String email, EmailTemplateNames templateId) {
+        verify(emailService, never()).sendEmail(
+            eq(email),
+            eq(templateId.name()),
             anyMap(),
             anyString()
         );

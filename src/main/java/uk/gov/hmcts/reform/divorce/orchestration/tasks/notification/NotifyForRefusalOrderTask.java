@@ -32,6 +32,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerSolicitorFullName;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRelationshipTermByGender;
@@ -41,7 +43,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentation
 @Component
 public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
 
-    private String EMAIL_DESCRIPTION = "Decree Nisi Refusal Order - ";
+    private static final String EMAIL_DESCRIPTION = "Decree Nisi Refusal Order - ";
 
     @Autowired
     private EmailService emailService;
@@ -55,8 +57,8 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
             personalisation.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_FIRST_NAME));
             personalisation.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_LAST_NAME));
 
-            final String petitionerEmail = getOptionalPropertyValueAsString(payload, D_8_PETITIONER_EMAIL,  null);
-            if  (petitionerEmail == null) {
+            final String petitionerEmail = getOptionalPropertyValueAsString(payload, D_8_PETITIONER_EMAIL, null);
+            if (petitionerEmail == null) {
                 log.debug("There is no petitioner email, It's solicitor journey");
                 return payload;
             }
@@ -82,16 +84,14 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
                     // make sure `personalisation` has all fields that DECREE_NISI_REFUSAL_ORDER_REJECTION_SOLICITOR requires
                     // use solicitor email
                     // when it works:
-                        // make sure all existing tests are passing
-                        // add more unit tests to cover this scenario (and maybe more tests if any other scenario is not covered)
-                        // create a PR
-                        // functional / int tests?
+                    // make sure all existing tests are passing
+                    // add more unit tests to cover this scenario (and maybe more tests if any other scenario is not covered)
+                    // create a PR
+                    // functional / int tests?
 
-                    // TODO: Question: Is it necessary to nullify the petitioner email field?
-                    personalisation.put(PETITIONER_SOLICITOR_EMAIL,  (String) payload.get(PETITIONER_SOLICITOR_EMAIL));
-                    personalisation.put(PETITIONER_SOLICITOR_NAME_FIELD, (String) payload.get(PETITIONER_SOLICITOR_NAME_FIELD));
+                    personalisation.put(PETITIONER_SOLICITOR_NAME_FIELD, getPetitionerSolicitorFullName(payload));
 
-                    String solicitorEmail = (String) payload.get(PETITIONER_SOLICITOR_EMAIL);
+                    String solicitorEmail = getMandatoryStringValue(payload, PETITIONER_SOLICITOR_EMAIL);
 
                     emailService.sendEmail(
                         solicitorEmail,
