@@ -32,6 +32,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRelationshipTermByGender;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerRepresented;
 
 @Slf4j
 @Component
@@ -63,18 +64,38 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
                     "Decree Nisi Refusal Order - Clarification"
                 );
             } else if (DN_REFUSED_REJECT_OPTION.equalsIgnoreCase(refusalReason)) {
+                // here
                 FeeResponse amendFee = context.getTransientObject(AMEND_PETITION_FEE_JSON_KEY);
                 String petitionerInferredGender = getMandatoryPropertyValueAsString(payload,
                     D_8_INFERRED_PETITIONER_GENDER);
                 String petitionerRelationshipToRespondent = getRelationshipTermByGender(petitionerInferredGender);
                 personalisation.put(NOTIFICATION_HUSBAND_OR_WIFE, petitionerRelationshipToRespondent);
                 personalisation.put(NOTIFICATION_FEES_KEY, amendFee.getFormattedFeeAmount());
-                emailService.sendEmail(
-                    petitionerEmail,
-                    EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_REJECTION.name(),
-                    personalisation,
-                    "Decree Nisi Refusal Order - Rejection"
-                );
+
+                if (isPetitionerRepresented(payload)) {
+
+                    // make sure `personalisation` has all fields that DECREE_NISI_REFUSAL_ORDER_REJECTION_SOLICITOR requires
+                    // use solicitor email
+                    // when it works:
+                        // make sure all existing tests are passing
+                        // add more unit tests to cover this scenario (and maybe more tests if any other scenario is not covered)
+                        // create a PR
+                        // functional / int tests?
+
+                    emailService.sendEmail(
+                        petitionerEmail,
+                        EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_REJECTION_SOLICITOR.name(),
+                        personalisation,
+                        "Decree Nisi Refusal Order - Rejection"
+                    );
+                } else {
+                    emailService.sendEmail(
+                        petitionerEmail,
+                        EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_REJECTION.name(),
+                        personalisation,
+                        "Decree Nisi Refusal Order - Rejection"
+                    );
+                }
             }
         }
 
