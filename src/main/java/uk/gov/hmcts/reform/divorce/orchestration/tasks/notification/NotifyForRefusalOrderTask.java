@@ -25,6 +25,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_FEES_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
@@ -89,6 +90,7 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
 
         personalisation.put(NOTIFICATION_HUSBAND_OR_WIFE, petitionerRelationshipToRespondent);
         personalisation.put(NOTIFICATION_FEES_KEY, getFormattedFeeAmount(context));
+
         return personalisation;
     }
 
@@ -106,12 +108,13 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
         return personalisation;
     }
 
-    private Map<String, String> getPersonalisationForSolicitor(TaskContext context, Map<String, Object> payload) {
+    private Map<String, String> getPersonalisationForSolicitor(TaskContext context, Map<String, Object> payload)
+        throws TaskException {
         return ImmutableMap.of(
             NOTIFICATION_PET_NAME, getPetitionerFullName(payload),
             NOTIFICATION_RESP_NAME, getRespondentFullName(payload),
             NOTIFICATION_SOLICITOR_NAME, getPetitionerSolicitorFullName(payload),
-            NOTIFICATION_CASE_NUMBER_KEY, getMandatoryStringValue(payload, D_8_CASE_REFERENCE),
+            NOTIFICATION_CCD_REFERENCE_KEY, getCaseId(context),
             NOTIFICATION_FEES_KEY, getFormattedFeeAmount(context)
         );
     }
@@ -158,7 +161,7 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
         return payload;
     }
 
-    private Map<String, Object> sendDnRejectedToPetitionerSolicitor(TaskContext context, Map<String, Object> payload) {
+    private Map<String, Object> sendDnRejectedToPetitionerSolicitor(TaskContext context, Map<String, Object> payload) throws TaskException {
         String solicitorEmail = getMandatoryStringValue(payload, PETITIONER_SOLICITOR_EMAIL);
 
         emailService.sendEmail(

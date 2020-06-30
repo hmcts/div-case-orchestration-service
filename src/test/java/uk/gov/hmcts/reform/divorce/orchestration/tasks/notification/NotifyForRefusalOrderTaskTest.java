@@ -27,6 +27,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_FIRST_NAME;
@@ -43,6 +44,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_FEES_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
@@ -88,7 +90,7 @@ public class NotifyForRefusalOrderTaskTest {
         incomingPayload.put(D_8_INFERRED_PETITIONER_GENDER, MALE_GENDER);
         taskContext = new DefaultTaskContext();
         taskContext.setTransientObject(AMEND_PETITION_FEE_JSON_KEY, TEST_FEES);
-        taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_REFERENCE);
+        taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
     }
 
     @Test
@@ -152,7 +154,7 @@ public class NotifyForRefusalOrderTaskTest {
             eq(EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_REJECTION_SOLICITOR.name()),
             argThat(new HamcrestArgumentMatcher<>(
                 allOf(
-                    hasEntry(NOTIFICATION_CASE_NUMBER_KEY, TEST_CASE_REFERENCE),
+                    hasEntry(NOTIFICATION_CCD_REFERENCE_KEY, TEST_CASE_ID),
                     hasEntry(NOTIFICATION_PET_NAME, PETITIONER_FIRST_NAME + " " + PETITIONER_LAST_NAME),
                     hasEntry(NOTIFICATION_RESP_NAME, TEST_USER_FIRST_NAME + " " + TEST_USER_LAST_NAME),
                     hasEntry(NOTIFICATION_SOLICITOR_NAME, TEST_SOLICITOR_NAME),
