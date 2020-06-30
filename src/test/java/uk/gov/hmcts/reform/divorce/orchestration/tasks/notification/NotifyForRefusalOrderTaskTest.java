@@ -40,9 +40,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_FEES_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_LINKED_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -56,6 +60,8 @@ public class NotifyForRefusalOrderTaskTest {
     private static final String RELATION = "husband";
     private static final FeeResponse TEST_FEES = FeeResponse.builder().amount(50.00).build();
     private static final String FEE_AMOUNT_AS_STRING = "50";
+    private static final String SOLICITOR_EMAIL_ADDRESS = "pet_sol_email@mail.com";
+
 
     private Map<String, Object> incomingPayload;
     private TaskContext taskContext;
@@ -108,6 +114,31 @@ public class NotifyForRefusalOrderTaskTest {
         assertThat(returnedPayload, equalTo(incomingPayload));
         verify(emailService).sendEmail(eq(PETITIONER_EMAIL),
             eq(EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_REJECTION.name()),
+            argThat(new HamcrestArgumentMatcher<>(
+                allOf(
+                    hasEntry(NOTIFICATION_CASE_NUMBER_KEY, TEST_CASE_REFERENCE),
+                    hasEntry(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, PETITIONER_FIRST_NAME),
+                    hasEntry(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, PETITIONER_LAST_NAME),
+                    hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, RELATION),
+                    hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING)
+                )
+            )),
+            anyString()
+        );
+    }
+
+    @Test
+    public void testNotificationServiceIsCalledWithExpectedParametersWhenRefusalDecisionIsRejection_forSolicitor() throws TaskException {
+        incomingPayload.put(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE);
+        incomingPayload.put(REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION);
+        incomingPayload.put(PETITIONER_EMAIL, null);
+        incomingPayload.put(PETITIONER_SOLICITOR_EMAIL, SOLICITOR_EMAIL_ADDRESS);
+        incomingPayload.put(PETITIONER_SOLICITOR_NAME_FIELD, NOTIFICATION_SOLICITOR_NAME);
+        Map returnedPayload = notifyForRefusalOrderTask.execute(taskContext, incomingPayload);
+
+        assertThat(returnedPayload, equalTo(incomingPayload));
+        verify(emailService).sendEmail(eq(PETITIONER_SOLICITOR_EMAIL),
+            eq(EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_REJECTION_SOLICITOR.name()),
             argThat(new HamcrestArgumentMatcher<>(
                 allOf(
                     hasEntry(NOTIFICATION_CASE_NUMBER_KEY, TEST_CASE_REFERENCE),

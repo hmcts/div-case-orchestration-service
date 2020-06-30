@@ -38,6 +38,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentation
 @Component
 public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
 
+    private String EMAIL_DESCRIPTION = "Decree Nisi Refusal Order - ";
+
     @Autowired
     private EmailService emailService;
 
@@ -61,7 +63,7 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
                     petitionerEmail,
                     EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION.name(),
                     personalisation,
-                    "Decree Nisi Refusal Order - Clarification"
+                    EMAIL_DESCRIPTION + "Clarification"
                 );
             } else if (DN_REFUSED_REJECT_OPTION.equalsIgnoreCase(refusalReason)) {
                 // here
@@ -86,14 +88,14 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
                         petitionerEmail,
                         EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_REJECTION_SOLICITOR.name(),
                         personalisation,
-                        "Decree Nisi Refusal Order - Rejection"
+                        EMAIL_DESCRIPTION + "Rejection"
                     );
                 } else {
                     emailService.sendEmail(
                         petitionerEmail,
                         EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_REJECTION.name(),
                         personalisation,
-                        "Decree Nisi Refusal Order - Rejection"
+                        EMAIL_DESCRIPTION + "Rejection"
                     );
                 }
             }
