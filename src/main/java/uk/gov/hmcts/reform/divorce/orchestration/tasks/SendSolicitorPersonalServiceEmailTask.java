@@ -13,7 +13,7 @@ import uk.gov.service.notify.NotificationClientException;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 
 @Slf4j
@@ -27,7 +27,7 @@ public class SendSolicitorPersonalServiceEmailTask extends SolicitorEmailTask im
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        String petSolicitorEmail = getMandatoryPropertyValueAsString(caseData, PET_SOL_EMAIL);
+        String petSolicitorEmail = getMandatoryPropertyValueAsString(caseData, PETITIONER_SOLICITOR_EMAIL);
         String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
         Map<String, String> templateVars = buildEmailTemplateVars(petSolicitorEmail, caseId, caseData);
 

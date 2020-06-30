@@ -1552,11 +1552,11 @@ public class CaseOrchestrationServiceImplTest {
             .token(TEST_TOKEN)
             .build();
 
-        when(notifyForRefusalOrderWorkflow.run(eq(requestPayload))).thenReturn(requestPayload);
+        when(notifyForRefusalOrderWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()))).thenReturn(requestPayload);
 
         classUnderTest.notifyForRefusalOrder(ccdCallbackRequest);
 
-        verify(notifyForRefusalOrderWorkflow).run(eq(requestPayload));
+        verify(notifyForRefusalOrderWorkflow).run(eq(ccdCallbackRequest.getCaseDetails()));
     }
 
     @Test

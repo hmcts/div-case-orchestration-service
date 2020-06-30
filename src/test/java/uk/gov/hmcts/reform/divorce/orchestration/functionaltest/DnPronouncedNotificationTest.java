@@ -89,8 +89,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
@@ -230,8 +230,8 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
 
         runTestBothPaysCostsSendGenericNotificationsToAll(ImmutableMap.of(
-            PET_SOL_EMAIL, TEST_SOLICITOR_EMAIL,
-            PET_SOL_NAME, "James Petitioner-Solicitor"
+            PETITIONER_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL,
+            PETITIONER_SOLICITOR_NAME, "James Petitioner-Solicitor"
         ));
 
         verifyEmailWasSentTo(SOLICITOR_GENERIC_UPDATE_EMAIL_TEMPLATE_ID, TEST_SOLICITOR_EMAIL);

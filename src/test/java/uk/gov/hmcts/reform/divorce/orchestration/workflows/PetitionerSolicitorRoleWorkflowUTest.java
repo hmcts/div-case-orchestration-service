@@ -45,7 +45,7 @@ public class PetitionerSolicitorRoleWorkflowUTest {
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
         when(addPetitionerSolicitorRole.execute(any(),
-                eq(caseDetails.getCaseData()))).thenReturn(caseDetails.getCaseData());
+            eq(caseDetails.getCaseData()))).thenReturn(caseDetails.getCaseData());
         Map<String, Object> response = classToTest.run(ccdCallbackRequest, TestConstants.TEST_TOKEN);
 
         assertEquals(caseDetails.getCaseData(), response);

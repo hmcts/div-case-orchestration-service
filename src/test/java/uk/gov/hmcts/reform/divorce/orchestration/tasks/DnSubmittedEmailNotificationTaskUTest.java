@@ -44,8 +44,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 
@@ -86,11 +86,11 @@ public class DnSubmittedEmailNotificationTaskUTest {
         Map<String, Object> payload = new HashMap<>();
         payload.put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         payload.put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
-        payload.put(PET_SOL_EMAIL, TEST_USER_EMAIL);
+        payload.put(PETITIONER_SOLICITOR_EMAIL, TEST_USER_EMAIL);
         payload.put(D_8_CASE_REFERENCE, TEST_CASE_FAMILY_MAN_ID);
         payload.put(RESP_FIRST_NAME_CCD_FIELD, TEST_USER_FIRST_NAME);
         payload.put(RESP_LAST_NAME_CCD_FIELD, TEST_USER_LAST_NAME);
-        payload.put(PET_SOL_NAME, TEST_SOLICITOR_NAME);
+        payload.put(PETITIONER_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
 
         TaskContext context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
