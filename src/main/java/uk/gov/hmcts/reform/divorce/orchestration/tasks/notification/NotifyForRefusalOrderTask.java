@@ -26,7 +26,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_FEES_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
@@ -84,8 +87,14 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
                         // create a PR
                         // functional / int tests?
 
+                    // TODO: Question: Is it necessary to nullify the petitioner email field?
+                    personalisation.put(PETITIONER_SOLICITOR_EMAIL,  (String) payload.get(PETITIONER_SOLICITOR_EMAIL));
+                    personalisation.put(PETITIONER_SOLICITOR_NAME_FIELD, (String) payload.get(PETITIONER_SOLICITOR_NAME_FIELD));
+
+                    String solicitorEmail = (String) payload.get(PETITIONER_SOLICITOR_EMAIL);
+
                     emailService.sendEmail(
-                        petitionerEmail,
+                        solicitorEmail,
                         EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_REJECTION_SOLICITOR.name(),
                         personalisation,
                         EMAIL_DESCRIPTION + "Rejection"
