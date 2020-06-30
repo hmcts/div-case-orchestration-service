@@ -41,8 +41,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 
@@ -108,11 +108,11 @@ public class SendDnDecisionSolNotificationTaskTest {
     @Test
     public void executeCallsEmailServiceWithIfDnIsRefusedAndSolicitorEmailIsPresent() throws NotificationClientException, TaskException {
         //given
-        testData.put(PET_SOL_EMAIL, TEST_USER_EMAIL);
+        testData.put(PETITIONER_SOLICITOR_EMAIL, TEST_USER_EMAIL);
         testData.put(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
         testData.put(RESP_FIRST_NAME_CCD_FIELD, TEST_USER_FIRST_NAME);
         testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_USER_LAST_NAME);
-        testData.put(PET_SOL_NAME, TEST_SOLICITOR_NAME);
+        testData.put(PETITIONER_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
 
         expectedTemplateVars.put(NOTIFICATION_PET_NAME, TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME);
         expectedTemplateVars.put(NOTIFICATION_RESP_NAME, TEST_USER_FIRST_NAME + " " + TEST_USER_LAST_NAME);
@@ -134,11 +134,11 @@ public class SendDnDecisionSolNotificationTaskTest {
     @Test(expected = TaskException.class)
     public void testExecuteThrowsTaskExceptionIfSendEmailThrowsANotificationException() throws NotificationClientException, TaskException {
         //given
-        testData.put(PET_SOL_EMAIL, TEST_USER_EMAIL);
+        testData.put(PETITIONER_SOLICITOR_EMAIL, TEST_USER_EMAIL);
         testData.put(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
         testData.put(RESP_FIRST_NAME_CCD_FIELD, TEST_USER_FIRST_NAME);
         testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_USER_LAST_NAME);
-        testData.put(PET_SOL_NAME, TEST_SOLICITOR_NAME);
+        testData.put(PETITIONER_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
 
         expectedTemplateVars.put(NOTIFICATION_PET_NAME, TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME);
         expectedTemplateVars.put(NOTIFICATION_RESP_NAME, TEST_USER_FIRST_NAME + " " + TEST_USER_LAST_NAME);

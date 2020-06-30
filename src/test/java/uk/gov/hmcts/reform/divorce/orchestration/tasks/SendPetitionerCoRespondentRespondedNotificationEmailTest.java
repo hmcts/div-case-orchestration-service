@@ -35,8 +35,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
@@ -67,14 +67,14 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
         Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
 
         Map<String, String> expectedTemplateVars = new HashMap<>();
-        expectedTemplateVars.put(NOTIFICATION_EMAIL, (String) caseData.get(PET_SOL_EMAIL));
+        expectedTemplateVars.put(NOTIFICATION_EMAIL, (String) caseData.get(PETITIONER_SOLICITOR_EMAIL));
         expectedTemplateVars.put(NOTIFICATION_PET_NAME, caseData.get(D_8_PETITIONER_FIRST_NAME) + " " + caseData.get(D_8_PETITIONER_LAST_NAME));
         expectedTemplateVars.put(NOTIFICATION_RESP_NAME, caseData.get(RESP_FIRST_NAME_CCD_FIELD) + " " + caseData.get(RESP_LAST_NAME_CCD_FIELD));
-        expectedTemplateVars.put(NOTIFICATION_SOLICITOR_NAME, (String) caseData.get(PET_SOL_NAME));
+        expectedTemplateVars.put(NOTIFICATION_SOLICITOR_NAME, (String) caseData.get(PETITIONER_SOLICITOR_NAME));
         expectedTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, TEST_CASE_ID);
 
 
-        String petSolEmail = (String) caseData.get(PET_SOL_EMAIL);
+        String petSolEmail = (String) caseData.get(PETITIONER_SOLICITOR_EMAIL);
         when(emailService.sendEmail(petSolEmail,
             EmailTemplateNames.SOL_APPLICANT_CORESP_RESPONDED.name(),
             expectedTemplateVars,
