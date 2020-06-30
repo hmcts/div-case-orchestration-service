@@ -16,7 +16,7 @@ public class FullNamesDataExtractor {
     public static class CaseDataKeys {
         public static final String PETITIONER_FIRST_NAME = OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
         public static final String PETITIONER_LAST_NAME = OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
-        public static final String PETITIONER_SOLICITOR_NAME = OrchestrationConstants.PET_SOL_NAME;
+        public static final String PETITIONER_SOLICITOR_NAME = OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
         public static final String RESPONDENT_FIRST_NAME = OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
         public static final String RESPONDENT_LAST_NAME = OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
         public static final String RESPONDENT_SOLICITOR_NAME = OrchestrationConstants.D8_RESPONDENT_SOLICITOR_NAME;

@@ -25,8 +25,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
@@ -47,7 +47,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmail implements Tas
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
 
-        String petSolicitorEmail = (String) caseData.get(PET_SOL_EMAIL);
+        String petSolicitorEmail = (String) caseData.get(PETITIONER_SOLICITOR_EMAIL);
         String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
 
         String ccdReference = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
@@ -60,7 +60,7 @@ public class SendPetitionerCoRespondentRespondedNotificationEmail implements Tas
         if (StringUtils.isNotBlank(petSolicitorEmail)) {
             String respFirstName = getMandatoryPropertyValueAsString(caseData, RESP_FIRST_NAME_CCD_FIELD);
             String respLastName = getMandatoryPropertyValueAsString(caseData, RESP_LAST_NAME_CCD_FIELD);
-            String solicitorName = getMandatoryPropertyValueAsString(caseData, PET_SOL_NAME);
+            String solicitorName = getMandatoryPropertyValueAsString(caseData, PETITIONER_SOLICITOR_NAME);
 
             templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, caseId);
             templateVars.put(NOTIFICATION_EMAIL, petSolicitorEmail);
