@@ -71,7 +71,7 @@ public class SendPetitionerUpdateNotificationEmailTest {
     EmailService emailService;
 
     @InjectMocks
-    SendPetitionerUpdateNotificationsEmail sendPetitionerUpdateNotificationsEmail;
+    SendPetitionerUpdateNotificationsEmailTask sendPetitionerUpdateNotificationsEmailTask;
 
     private Map<String, Object> testData;
     private TaskContext context;
@@ -128,7 +128,7 @@ public class SendPetitionerUpdateNotificationEmailTest {
     }
 
     private void verifyCallsEmailTemplate(String emailTemplateName) throws Exception {
-        Map returnPayload = sendPetitionerUpdateNotificationsEmail.execute(context, testData);
+        Map returnPayload = sendPetitionerUpdateNotificationsEmailTask.execute(context, testData);
 
         assertEquals(testData, returnPayload);
 
@@ -145,7 +145,7 @@ public class SendPetitionerUpdateNotificationEmailTest {
         testData.put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         testData.put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
 
-        sendPetitionerUpdateNotificationsEmail.execute(context, testData);
+        sendPetitionerUpdateNotificationsEmailTask.execute(context, testData);
 
         verifyZeroInteractions(emailService);
     }
@@ -194,7 +194,7 @@ public class SendPetitionerUpdateNotificationEmailTest {
         addSolicitorTestData();
         testData.replace(RESP_FIRST_NAME_CCD_FIELD, null);
         try {
-            sendPetitionerUpdateNotificationsEmail.execute(context, testData);
+            sendPetitionerUpdateNotificationsEmailTask.execute(context, testData);
             fail("Failed to catch task exception");
         } catch (TaskException e) {
             verifyZeroInteractions(emailService);
@@ -279,7 +279,7 @@ public class SendPetitionerUpdateNotificationEmailTest {
         addPetTestData();
         testData.replace(D_8_DIVORCED_WHO, null);
         try {
-            sendPetitionerUpdateNotificationsEmail.execute(context, testData);
+            sendPetitionerUpdateNotificationsEmailTask.execute(context, testData);
             fail("Failed to catch task exception");
         } catch (TaskException e) {
             verifyZeroInteractions(emailService);

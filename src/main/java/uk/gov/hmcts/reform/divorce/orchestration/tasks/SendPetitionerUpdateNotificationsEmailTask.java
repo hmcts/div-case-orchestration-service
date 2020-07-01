@@ -47,7 +47,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 
 @Component
 @Slf4j
-public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, Object>> {
+public class SendPetitionerUpdateNotificationsEmailTask implements Task<Map<String, Object>> {
 
     private static final String GENERIC_UPDATE_EMAIL_DESC = "Generic Update Notification - Petitioner";
     private static final String AOS_RECEIVED_NO_ADMIT_ADULTERY_EMAIL_DESC =
@@ -71,7 +71,7 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
     private final EmailService emailService;
 
     @Autowired
-    public SendPetitionerUpdateNotificationsEmail(EmailService emailService) {
+    public SendPetitionerUpdateNotificationsEmailTask(EmailService emailService) {
         this.emailService = emailService;
     }
 

@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerUpdateNotificationsEmail;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerUpdateNotificationsEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.notification.SendNoticeOfProceedingsEmailTask;
 
 import java.util.Collections;
@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.ve
 public class SendPetitionerEmailNotificationWorkflowTest {
 
     @Mock
-    private SendPetitionerUpdateNotificationsEmail sendPetitionerUpdateNotificationsEmail;
+    private SendPetitionerUpdateNotificationsEmailTask sendPetitionerUpdateNotificationsEmailTask;
 
     @Mock
     private SendNoticeOfProceedingsEmailTask sendNoticeOfProceedingsEmailTask;
@@ -39,7 +39,7 @@ public class SendPetitionerEmailNotificationWorkflowTest {
 
         mockTasksExecution(
             testData,
-            sendPetitionerUpdateNotificationsEmail,
+            sendPetitionerUpdateNotificationsEmailTask,
             sendNoticeOfProceedingsEmailTask
         );
 
@@ -50,7 +50,7 @@ public class SendPetitionerEmailNotificationWorkflowTest {
 
         verifyTasksCalledInOrder(
             testData,
-            sendPetitionerUpdateNotificationsEmail,
+            sendPetitionerUpdateNotificationsEmailTask,
             sendNoticeOfProceedingsEmailTask
         );
     }
