@@ -113,7 +113,7 @@ fees-and-payments:
 payment:
   service:
     api:
-      baseurl: ${PAYMENT_API_BASEURL:http://localhost:8383}
+      baseurl: ${PAYMENT_API_BASEURL:http://localhost:9190}
 
 feature-toggle:
   toggle:
@@ -155,6 +155,7 @@ uk:
             DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_SOLICITOR: 43b52d1a-b9be-4de5-b5ae-627c51a55111
             DECREE_NISI_REFUSAL_ORDER_CLARIFICATION: bc4c7ba0-4fc0-4f14-876b-1328eca127b8
             DECREE_NISI_REFUSAL_ORDER_REJECTION: 0216e301-989f-49b8-841e-7f61cef9838a
+            DECREE_NISI_REFUSAL_ORDER_REJECTION_SOLICITOR: de12c7ed-9d5d-4def-a060-2de30594a3bf
             DECREE_NISI_CLARIFICATION_SUBMISSION: 1b59454a-af9a-4444-87a3-67f3f238db35
             DN_SUBMISSION: edf3bce9-f63a-4be0-93a9-d0c80dff7983
             GENERIC_UPDATE: 6ee6ec29-5e88-4516-99cb-2edc30256575
@@ -181,8 +182,8 @@ uk:
             SOL_GENERAL_CASE_UPDATE: 951d26d9-e5fc-40de-a9da-d3ab957cb5e3
             SOL_RESP_COE_NOTIFICATION: e7117ed4-83ff-43f9-8521-e70d31063c7e
             SOL_PERSONAL_SERVICE: 1e2f2ac5-ce4c-4fce-aca0-47a876eda089
-            SOL_DA_GRANTED_NOTIFICATION: fc8f7343-8f07-42b7-a3c5-52543a21015d
             SOL_DN_DECISION_MADE: fd6d9667-527f-4c22-b1f1-d095c412ab2c
+            SOL_DA_GRANTED_NOTIFICATION: fc8f7343-8f07-42b7-a3c5-52543a21015d
           welsh:
             AOS_RECEIVED_NO_ADMIT_ADULTERY: e0791556-a202-45e5-9b55-7d1bb61415db
             AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED: bf8945dc-f6e5-48fa-adb6-5f277441584c
@@ -412,26 +413,26 @@ dncourt:
 
 idam:
   client:
-    redirect_uri: ${IDAM_API_REDIRECT_URL:https://localhost:3000/authenticated}
-    port: 5000
+    redirect_uri: ${IDAM_API_REDIRECT_URL:http://localhost:8080/authenticated}
+    port: 4503
     secret: ${IDAM_CLIENT_SECRET:dummysecret}
     id: divorce
     health:
       context-path: /health
   citizen:
-    username: ${IDAM_CITIZEN_USERNAME:testusername@test.com}
-    password: ${IDAM_CITIZEN_PASSWORD:Pa55word11}
+    username: ${IDAM_CITIZEN_USERNAME:dummyuser}
+    password: ${IDAM_CITIZEN_PASSWORD:dummypassword}
   caseworker:
-    username: ${IDAM_CASEWORKER_USERNAME:divorce_as_caseworker_admin@mailinator.com}
-    password: ${IDAM_CASEWORKER_PASSWORD:Pa55word11}
+    username: ${IDAM_CASEWORKER_USERNAME:dummyuser}
+    password: ${IDAM_CASEWORKER_PASSWORD:dummypassword}
   s2s-auth:
-    url: ${SERVICE_AUTH_PROVIDER_URL:http://localhost:4502}
+    url: ${SERVICE_AUTH_PROVIDER_URL:http://localhost:4504}
     microservice: ${SERVICE_AUTH_MICROSERVICE:divorce_frontend}
-    secret: ${SERVICE_AUTH_SECRET:AAAAAAAAAAAAAAAA}
+    secret: ${SERVICE_AUTH_SECRET:dummysecret}
     services-allowed-to-update: ${BSP_SERVICES_ALLOWED_TO_UPDATE:bulk_scan_orchestrator}
     services-allowed-to-validate: ${BSP_SERVICES_ALLOWED_TO_VALIDATE:bulk_scan_processor}
   api:
-    url: ${IDAM_API_URL:http://localhost:5000}
+    url: ${IDAM_API_URL:http://localhost:4503}
 
 document:
   generator:

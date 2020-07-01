@@ -38,8 +38,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOT_RECEIVED_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOT_RECEIVED_AOS_STARTED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
@@ -87,7 +87,7 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
 
         String eventId = context.getTransientObject(CASE_EVENT_ID_JSON_KEY);
         String petEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
-        String petSolEmail = (String) caseData.get(PET_SOL_EMAIL);
+        String petSolEmail = (String) caseData.get(PETITIONER_SOLICITOR_EMAIL);
 
         String petitionerFirstName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME);
         String petitionerLastName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME);
@@ -98,7 +98,7 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
         if (StringUtils.isNotBlank(petSolEmail)) {
             String respFirstName = getMandatoryPropertyValueAsString(caseData, RESP_FIRST_NAME_CCD_FIELD);
             String respLastName = getMandatoryPropertyValueAsString(caseData, RESP_LAST_NAME_CCD_FIELD);
-            String solicitorName = getMandatoryPropertyValueAsString(caseData, PET_SOL_NAME);
+            String solicitorName = getMandatoryPropertyValueAsString(caseData, PETITIONER_SOLICITOR_NAME);
 
             templateVars.put(NOTIFICATION_EMAIL, petSolEmail);
             templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, context.getTransientObject(CASE_ID_JSON_KEY));

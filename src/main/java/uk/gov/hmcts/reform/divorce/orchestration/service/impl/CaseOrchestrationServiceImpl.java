@@ -857,7 +857,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     public Map<String, Object> notifyForRefusalOrder(CcdCallbackRequest ccdCallbackRequest)
         throws WorkflowException {
 
-        return notifyForRefusalOrderWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
+        return notifyForRefusalOrderWorkflow.run(ccdCallbackRequest.getCaseDetails());
     }
 
     @Override

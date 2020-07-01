@@ -29,8 +29,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 
@@ -48,7 +48,7 @@ public class DnSubmittedEmailNotificationTask implements Task<Map<String, Object
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> data) {
 
-        String petSolicitorEmail = (String) data.get(PET_SOL_EMAIL);
+        String petSolicitorEmail = (String) data.get(PETITIONER_SOLICITOR_EMAIL);
 
         String ccdReference = Objects.toString(data.get(D_8_CASE_REFERENCE), null);
         String petitionerFirstName = Objects.toString(data.get(D_8_PETITIONER_FIRST_NAME), null);
@@ -63,7 +63,7 @@ public class DnSubmittedEmailNotificationTask implements Task<Map<String, Object
         if (StringUtils.isNotBlank(petSolicitorEmail)) {
             String respFirstName = Objects.toString(data.get(RESP_FIRST_NAME_CCD_FIELD), null);
             String respLastName = Objects.toString(data.get(RESP_LAST_NAME_CCD_FIELD), null);
-            String solicitorName = Objects.toString(data.get(PET_SOL_NAME), null);
+            String solicitorName = Objects.toString(data.get(PETITIONER_SOLICITOR_NAME), null);
 
             notificationTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, caseId);
             notificationTemplateVars.put(NOTIFICATION_EMAIL, petSolicitorEmail);

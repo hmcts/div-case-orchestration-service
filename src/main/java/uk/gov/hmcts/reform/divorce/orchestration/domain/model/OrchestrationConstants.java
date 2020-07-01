@@ -128,9 +128,6 @@ public class OrchestrationConstants {
     public static final String D_8_REASON_FOR_DIVORCE_SEPARATION_MONTH = "D8ReasonForDivorceSeperationMonth";
     public static final String D_8_REASON_FOR_DIVORCE_SEPARATION_YEAR = "D8ReasonForDivorceSeperationYear";
 
-    public static final String PET_SOL_EMAIL = "PetitionerSolicitorEmail";
-    public static final String PET_SOL_NAME = "PetitionerSolicitorName";
-
     //CCD DN fields
     public static final String DN_OUTCOME_FLAG_CCD_FIELD = "DnOutcomeCase";
     public static final String REFUSAL_DECISION_CCD_FIELD = "RefusalDecision";
@@ -378,6 +375,7 @@ public class OrchestrationConstants {
     public static final String D8_RESPONDENT_SOLICITOR_NAME = "D8RespondentSolicitorName";
     public static final String D8DOCUMENTS_GENERATED = "D8DocumentsGenerated";
     public static final String PETITIONER_SOLICITOR_EMAIL = "PetitionerSolicitorEmail";
+    public static final String PETITIONER_SOLICITOR_NAME = "PetitionerSolicitorName";
 
     // Payment
     public static final String PAYMENT = "payment";

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.notification;
 
 import lombok.AllArgsConstructor;
+import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
@@ -27,67 +28,167 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_FEES_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerFullName;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerSolicitorFullName;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getRespondentFullName;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRelationshipTermByGender;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerRepresented;
 
 @Slf4j
 @AllArgsConstructor
 @Component
 public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
 
+    private static final String EMAIL_DESCRIPTION = "Decree Nisi Refusal Order - ";
+
     private EmailService emailService;
     private TemplateConfigService templateConfigService;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
-        if (NO_VALUE.equalsIgnoreCase((String) payload.get(DECREE_NISI_GRANTED_CCD_FIELD))) {
-            Map<String, String> personalisation = new HashMap<>();
+        String caseId = getCaseId(context);
 
-            personalisation.put(NOTIFICATION_CASE_NUMBER_KEY, getMandatoryPropertyValueAsString(payload, D_8_CASE_REFERENCE));
-            personalisation.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_FIRST_NAME));
-            personalisation.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_LAST_NAME));
+        if (isDnAlreadyGranted(payload)) {
+            log.warn("CaseId: {}. DN is already granted. No email will be sent.", caseId);
+            return payload;
+        } else {
+            log.info("CaseId: {}. DN not granted yet. An email may to be sent.", caseId);
+        }
 
-            final String petitionerEmail = getOptionalPropertyValueAsString(payload, D_8_PETITIONER_EMAIL,  null);
-            if  (petitionerEmail == null) {
-                log.debug("There is no petitioner email, It's solicitor journey");
-                return payload;
+        if (isMoreInfoRequired(payload)) {
+            log.info("CaseId: {}. DN refused. Sending email to petitioner to provide more info.", caseId);
+            return sendDnRefusalToPetitioner(context, payload);
+        } else if (isDnRejected(payload)) {
+            if (isPetitionerRepresented(payload)) {
+                log.info("CaseId: {}. DN rejected. Petitioner represented. Sending email to solicitor.", caseId);
+                return sendDnRejectedToPetitionerSolicitor(context, payload);
+            } else {
+                log.info("CaseId: {}. DN rejected. Sending email to petitioner.", caseId);
+                return sendDnRejectedToPetitioner(context, payload);
             }
-            String refusalReason = (String) payload.get(REFUSAL_DECISION_CCD_FIELD);
-            LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(payload);
-            if (REFUSAL_DECISION_MORE_INFO_VALUE.equalsIgnoreCase(refusalReason)) {
-                emailService.sendEmail(
-                    petitionerEmail,
-                    EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION.name(),
-                    personalisation,
-                    "Decree Nisi Refusal Order - Clarification",
-                    languagePreference
-                );
-            } else if (DN_REFUSED_REJECT_OPTION.equalsIgnoreCase(refusalReason)) {
-                FeeResponse amendFee = context.getTransientObject(AMEND_PETITION_FEE_JSON_KEY);
-                String petitionerInferredGender = getMandatoryPropertyValueAsString(payload,
-                    D_8_INFERRED_PETITIONER_GENDER);
-                String petRelToRespondent = templateConfigService.getRelationshipTermByGender(petitionerInferredGender, LanguagePreference.ENGLISH);
-                String welshPetRelToRespondent = templateConfigService.getRelationshipTermByGender(petitionerInferredGender,LanguagePreference.WELSH);
-                personalisation.put(NOTIFICATION_HUSBAND_OR_WIFE, petRelToRespondent);
-                personalisation.put(NOTIFICATION_FEES_KEY, amendFee.getFormattedFeeAmount());
-                personalisation.put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, welshPetRelToRespondent);
-
-                emailService.sendEmail(
-                    petitionerEmail,
-                    EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_REJECTION.name(),
-                    personalisation,
-                    "Decree Nisi Refusal Order - Rejection",
-                    languagePreference
-                );
-            }
+        } else {
+            log.warn("CaseId: {}. Notify for DN refusal - unsupported scenario!", caseId);
         }
 
         return payload;
+    }
+
+    private Map<String, String> getDnRejectPersonalisationForPetitioner(TaskContext context, Map<String, Object> payload) {
+        Map<String, String> personalisation = getPersonalisationForPetitioner(payload);
+
+        String petitionerInferredGender = getMandatoryStringValue(payload, D_8_INFERRED_PETITIONER_GENDER);
+        String petitionerRelationshipToRespondent = getRelationshipTermByGender(petitionerInferredGender);
+
+        personalisation.put(NOTIFICATION_HUSBAND_OR_WIFE, petitionerRelationshipToRespondent);
+        personalisation.put(NOTIFICATION_FEES_KEY, getFormattedFeeAmount(context));
+
+        return personalisation;
+    }
+
+    private String getFormattedFeeAmount(TaskContext context) {
+        return ((FeeResponse) context.getTransientObject(AMEND_PETITION_FEE_JSON_KEY)).getFormattedFeeAmount();
+    }
+
+    private Map<String, String> getPersonalisationForPetitioner(Map<String, Object> payload) {
+        Map<String, String> personalisation = new HashMap<>();
+
+        personalisation.put(NOTIFICATION_CASE_NUMBER_KEY, getMandatoryStringValue(payload, D_8_CASE_REFERENCE));
+        personalisation.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, getMandatoryStringValue(payload, D_8_PETITIONER_FIRST_NAME));
+        personalisation.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, getMandatoryStringValue(payload, D_8_PETITIONER_LAST_NAME));
+
+        return personalisation;
+    }
+
+    private Map<String, String> getPersonalisationForSolicitor(TaskContext context, Map<String, Object> payload)
+        throws TaskException {
+        return ImmutableMap.of(
+            NOTIFICATION_PET_NAME, getPetitionerFullName(payload),
+            NOTIFICATION_RESP_NAME, getRespondentFullName(payload),
+            NOTIFICATION_SOLICITOR_NAME, getPetitionerSolicitorFullName(payload),
+            NOTIFICATION_CCD_REFERENCE_KEY, getCaseId(context),
+            NOTIFICATION_FEES_KEY, getFormattedFeeAmount(context)
+        );
+    }
+
+    private Map<String, Object> sendDnRefusalToPetitioner(TaskContext context, Map<String, Object> payload) throws TaskException {
+        return sendEmailToPetitioner(
+            context,
+            payload,
+            EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION,
+            getPersonalisationForPetitioner(payload),
+            "Clarification"
+        );
+    }
+
+    private Map<String, Object> sendDnRejectedToPetitioner(TaskContext context, Map<String, Object> payload) throws TaskException {
+        return sendEmailToPetitioner(
+            context,
+            payload,
+            EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_REJECTION,
+            getDnRejectPersonalisationForPetitioner(context, payload),
+            "Rejection"
+        );
+    }
+
+    private Map<String, Object> sendEmailToPetitioner(
+        TaskContext context,
+        Map<String, Object> payload,
+        EmailTemplateNames templateId,
+        Map<String, String> personalisation,
+        String description) throws TaskException {
+
+        String caseId = getCaseId(context);
+        String petitionerEmail = getOptionalPropertyValueAsString(payload, D_8_PETITIONER_EMAIL, null);
+
+        if (petitionerEmail == null) {
+            log.debug("CaseId {}: There is no petitioner email, It's solicitor journey", caseId);
+            return payload;
+        }
+
+        emailService.sendEmail(petitionerEmail, templateId.name(), personalisation, EMAIL_DESCRIPTION + description);
+
+        log.info("CaseId {}: Email to petitioner sent.", caseId);
+
+        return payload;
+    }
+
+    private Map<String, Object> sendDnRejectedToPetitionerSolicitor(TaskContext context, Map<String, Object> payload) throws TaskException {
+        String solicitorEmail = getMandatoryStringValue(payload, PETITIONER_SOLICITOR_EMAIL);
+
+        emailService.sendEmail(
+            solicitorEmail,
+            EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_REJECTION_SOLICITOR.name(),
+            getPersonalisationForSolicitor(context, payload),
+            EMAIL_DESCRIPTION + "Rejection"
+        );
+
+        return payload;
+    }
+
+    private boolean isDnRejected(Map<String, Object> payload) {
+        return DN_REFUSED_REJECT_OPTION.equalsIgnoreCase((String) payload.get(REFUSAL_DECISION_CCD_FIELD));
+    }
+
+    private boolean isMoreInfoRequired(Map<String, Object> payload) {
+        return REFUSAL_DECISION_MORE_INFO_VALUE.equalsIgnoreCase((String) payload.get(REFUSAL_DECISION_CCD_FIELD));
+    }
+
+    private boolean isDnAlreadyGranted(Map<String, Object> payload) {
+        return YES_VALUE.equalsIgnoreCase((String) payload.get(DECREE_NISI_GRANTED_CCD_FIELD));
     }
 }

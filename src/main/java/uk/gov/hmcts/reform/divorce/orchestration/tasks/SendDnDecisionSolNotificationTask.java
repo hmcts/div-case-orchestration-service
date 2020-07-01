@@ -17,7 +17,7 @@ import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
@@ -33,9 +33,9 @@ public class SendDnDecisionSolNotificationTask extends SolicitorEmailTask implem
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        Optional<String> solicitorEmail = Optional.ofNullable(getOptionalPropertyValueAsString(caseData, PET_SOL_EMAIL, null));
+        Optional<String> solicitorEmail = Optional.ofNullable(getOptionalPropertyValueAsString(caseData, PETITIONER_SOLICITOR_EMAIL, null));
         if (!isDnGranted(caseData) && solicitorEmail.isPresent()) {
-            String petSolicitorEmail = getMandatoryPropertyValueAsString(caseData, PET_SOL_EMAIL);
+            String petSolicitorEmail = getMandatoryPropertyValueAsString(caseData, PETITIONER_SOLICITOR_EMAIL);
             String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
             LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
             Map<String, String> templateVars = buildEmailTemplateVars(petSolicitorEmail, caseId, caseData);

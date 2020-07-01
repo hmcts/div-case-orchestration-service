@@ -12,7 +12,7 @@ import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT;
@@ -30,13 +30,13 @@ public class PartyRepresentationCheckerTest {
 
     @Test
     public void isPetitionerRepresentedReturnsTrue() {
-        assertThat(isPetitionerRepresented(createCaseData(PET_SOL_EMAIL, "I-represent@petitioner.com")), is(true));
+        assertThat(isPetitionerRepresented(createCaseData(PETITIONER_SOLICITOR_EMAIL, "I-represent@petitioner.com")), is(true));
     }
 
     @Test
     public void isPetitionerRepresentedReturnsFalse() {
-        assertThat(isPetitionerRepresented(createCaseData(PET_SOL_EMAIL, "")), is(false));
-        assertThat(isPetitionerRepresented(createCaseData(PET_SOL_EMAIL, null)), is(false));
+        assertThat(isPetitionerRepresented(createCaseData(PETITIONER_SOLICITOR_EMAIL, "")), is(false));
+        assertThat(isPetitionerRepresented(createCaseData(PETITIONER_SOLICITOR_EMAIL, null)), is(false));
         assertThat(isPetitionerRepresented(createCaseData("another-field", "value")), is(false));
         assertThat(isPetitionerRepresented(EMPTY_MAP), is(false));
     }

@@ -38,9 +38,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
@@ -69,8 +68,8 @@ public class SendDaGrantedNotificationEmailTask implements Task<Map<String, Obje
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
 
         if (isPetitionerRepresented(caseData)) {
-            String petSolEmail = getMandatoryPropertyValueAsString(caseData, PET_SOL_EMAIL);
-            String petSolName = getMandatoryPropertyValueAsString(caseData, PET_SOL_NAME);
+            String petSolEmail = getMandatoryPropertyValueAsString(caseData, PETITIONER_SOLICITOR_EMAIL);
+            String petSolName = getMandatoryPropertyValueAsString(caseData, PETITIONER_SOLICITOR_NAME);
 
             sendEmailToSolicitor(context, caseData, petSolEmail, petSolName);
         } else {

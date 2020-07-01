@@ -40,8 +40,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -60,10 +60,9 @@ public class SendPetitionerCoENotificationEmailTask implements Task<Map<String, 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
         String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
-        log.info("Executing task to notify petitioner about certificate of entitlement. Case id: {}",
-            caseId);
+        log.info("Executing task to notify petitioner about certificate of entitlement. Case id: {}", caseId);
 
-        String petSolicitorEmail = (String) payload.get(PET_SOL_EMAIL);
+        String petSolicitorEmail = (String) payload.get(PETITIONER_SOLICITOR_EMAIL);
         String petitionerEmail = (String) payload.get(D_8_PETITIONER_EMAIL);
         String familyManCaseId = getMandatoryPropertyValueAsString(payload, D_8_CASE_REFERENCE);
         String petitionerFirstName = getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_FIRST_NAME);
@@ -81,7 +80,7 @@ public class SendPetitionerCoENotificationEmailTask implements Task<Map<String, 
         if (StringUtils.isNotBlank(petSolicitorEmail)) {
             String respFirstName = getMandatoryPropertyValueAsString(payload, RESP_FIRST_NAME_CCD_FIELD);
             String respLastName = getMandatoryPropertyValueAsString(payload, RESP_LAST_NAME_CCD_FIELD);
-            String solicitorName = getMandatoryPropertyValueAsString(payload, PET_SOL_NAME);
+            String solicitorName = getMandatoryPropertyValueAsString(payload, PETITIONER_SOLICITOR_NAME);
 
             templateParameters.put(NOTIFICATION_CCD_REFERENCE_KEY, caseId);
             templateParameters.put(NOTIFICATION_EMAIL, petSolicitorEmail);

@@ -50,8 +50,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOT_DEFENDING_NOT_ADMITTING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
@@ -117,7 +117,7 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         final String relationship = getRespondentRelationship(caseDetails);
         final String welshRelationship = getWelshRespondentRelationship(caseDetails);
 
-        String petSolicitorEmail = getFieldAsStringOrNull(caseDetails, PET_SOL_EMAIL);
+        String petSolicitorEmail = getFieldAsStringOrNull(caseDetails, PETITIONER_SOLICITOR_EMAIL);
         String petitionerEmail = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_EMAIL);
         String ref = getFieldAsStringOrNull(caseDetails, D_8_CASE_REFERENCE);
 
@@ -135,7 +135,7 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
             if (StringUtils.isNotEmpty(petSolicitorEmail)) {
                 String respFirstName = getFieldAsStringOrNull(caseDetails, RESP_FIRST_NAME_CCD_FIELD);
                 String respLastName = getFieldAsStringOrNull(caseDetails, RESP_LAST_NAME_CCD_FIELD);
-                String solicitorName = getFieldAsStringOrNull(caseDetails, PET_SOL_NAME);
+                String solicitorName = getFieldAsStringOrNull(caseDetails, PETITIONER_SOLICITOR_NAME);
 
                 notificationTemplateVars.put(NOTIFICATION_EMAIL, petSolicitorEmail);
                 notificationTemplateVars.put(NOTIFICATION_PET_NAME, petitionerFirstName + " " + petitionerLastName);
