@@ -44,14 +44,10 @@ public class SendNoticeOfProceedingsEmailTask implements Task<Map<String, Object
         if (isPetitionerRepresented(caseData)) {
             log.info("CaseId: {}. Notice Of Proceedings. Sending email to solicitor.", caseId);
             return sendNoticeOfProceedingsToPetitionerSolicitor(context, caseData);
-        } else if (!isPetitionerRepresented(caseData)) {
-            log.info("CaseId: {}. Notice Of Proceedings. Sending email to petitioner.", caseId);
-            return sendNoticeOfProceedingsToPetitioner(caseData);
-        } else {
-            log.warn("CaseId: {}. Notice Of Proceedings. Invalid condition. Petitioner representation error. No email sent", caseId);
         }
 
-        return caseData;
+        log.info("CaseId: {}. Notice Of Proceedings. Sending email to petitioner.", caseId);
+        return sendNoticeOfProceedingsToPetitioner(caseData);
     }
 
     private Map<String, Object> sendNoticeOfProceedingsToPetitionerSolicitor(TaskContext context, Map<String, Object> payload) throws TaskException {

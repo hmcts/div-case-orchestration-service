@@ -20,11 +20,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.hamcrest.core.AllOf.allOf;
-import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
@@ -128,18 +126,13 @@ public class SendNoticeOfProceedingsEmailTaskTest {
         );
     }
 
+    @Test void shouldNotSendEmailNotification_whenErrorIsThrown() throws TaskException {
+
+    }
+
     private void executeTask() throws TaskException {
         Map<String, Object> returnedPayload = sendNoticeOfProceedingsEmailTask.execute(taskContext, incomingPayload);
 
         assertThat(returnedPayload, equalTo(incomingPayload));
-    }
-
-    private void verifyEmailNeverSent(String email, EmailTemplateNames templateId) {
-        verify(emailService, never()).sendEmail(
-            eq(email),
-            eq(templateId.name()),
-            anyMap(),
-            anyString()
-        );
     }
 }
