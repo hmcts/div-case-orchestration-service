@@ -7,7 +7,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -29,7 +28,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -59,7 +57,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.STATEMENT_OF_TRUTH;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
-@DirtiesContext(classMode = BEFORE_EACH_TEST_METHOD)
 public class ProcessPbaPaymentITest extends MockedFunctionalTest {
 
     private static final String API_URL = "/process-pba-payment";
@@ -122,7 +119,6 @@ public class ProcessPbaPaymentITest extends MockedFunctionalTest {
         request.setFees(Collections.singletonList(paymentItem));
     }
 
-    @DirtiesContext
     @Test
     public void givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn() throws Exception {
         caseData.put(STATEMENT_OF_TRUTH, YES_VALUE);
