@@ -1,10 +1,9 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import com.google.common.collect.ImmutableMap;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -12,15 +11,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.Pin;
 import uk.gov.hmcts.reform.idam.client.models.GeneratePinRequest;
 
-import java.util.Map;
-
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -36,7 +33,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
-@DirtiesContext(classMode = BEFORE_EACH_TEST_METHOD)
 public class RespondentSolicitorNominatedITest extends IdamTestSupport {
 
     private static final String API_URL = "/aos-solicitor-nominated";
@@ -45,28 +41,23 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
     @Autowired
     private MockMvc webClient;
 
-    @Test
-    public void givenRespondentSolicitorNominated_whenCallbackCalled_linkingFieldsAreReset() throws Exception {
+    @Before
+    public void setUp() {
+        stubSignIn();
+
         final GeneratePinRequest pinRequest = GeneratePinRequest.builder()
             .firstName("")
             .lastName("")
             .build();
-
         final Pin pin = Pin.builder().pin(TEST_PIN_CODE).userId(TEST_LETTER_HOLDER_ID_CODE).build();
+        stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
+    }
 
-        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
-            AOS_SOL_NOMINATED_JSON, CcdCallbackRequest.class);
-
-        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
-
-        caseData.put(RESPONDENT_LETTER_HOLDER_ID, TEST_LETTER_HOLDER_ID_CODE);
-
-        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
-
-        final CaseDetails caseDetails = CaseDetails.builder()
-            .caseId(caseId)
-            .caseData(caseData)
-            .build();
+    @Test
+    public void givenRespondentSolicitorNominated_whenCallbackCalled_linkingFieldsAreReset() throws Exception {
+        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(AOS_SOL_NOMINATED_JSON, CcdCallbackRequest.class);
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        caseDetails.getCaseData().put(RESPONDENT_LETTER_HOLDER_ID, TEST_LETTER_HOLDER_ID_CODE);
 
         String documentId = stubDocumentGeneratorService(RESPONDENT_INVITATION_TEMPLATE_NAME,
             ImmutableMap.of(
@@ -75,11 +66,8 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
             ),
             DOCUMENT_TYPE_RESPONDENT_INVITATION
         );
-
-        stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
+        stubServiceAuthProvider(OK, TEST_SERVICE_AUTH_TOKEN);
         stubDMStore(documentId, new byte[] {1, 2, 3});
-        stubSignIn();
-        stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
