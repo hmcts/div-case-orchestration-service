@@ -15,10 +15,6 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
@@ -48,7 +44,7 @@ public class SendNoticeOfProceedingsEmailTask implements Task<Map<String, Object
         if (isPetitionerRepresented(caseData)) {
             log.info("CaseId: {}. Notice Of Proceedings. Sending email to solicitor.", caseId);
             return sendNoticeOfProceedingsToPetitionerSolicitor(context, caseData);
-        } else if (!isPetitionerRepresented(caseData)){
+        } else if (!isPetitionerRepresented(caseData)) {
             log.info("CaseId: {}. Notice Of Proceedings. Sending email to petitioner.", caseId);
             return sendNoticeOfProceedingsToPetitioner(caseData);
         } else {
