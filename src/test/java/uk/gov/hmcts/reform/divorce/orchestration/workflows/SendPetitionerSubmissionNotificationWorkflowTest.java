@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerUpdateNotificationsEmail;
 
 import java.util.Collections;
@@ -22,48 +23,66 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SendPetitionerEmailNotificationWorkflowTest {
+public class SendPetitionerSubmissionNotificationWorkflowTest {
+
+    @Mock
+    private SendPetitionerSubmissionNotificationEmailTask sendPetitionerSubmissionNotificationEmailTask;
 
     @Mock
     private SendPetitionerUpdateNotificationsEmail sendPetitionerUpdateNotificationsEmail;
 
     @InjectMocks
+    private SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow;
+
+    @InjectMocks
     private SendPetitionerEmailNotificationWorkflow sendPetitionerEmailNotificationWorkflow;
 
-    private Map<String, Object> testData = Collections.emptyMap();
+    private CcdCallbackRequest ccdCallbackRequestRequest;
+    private Map<String, Object> testData;
     private TaskContext context;
 
     @Before
     public void setup() {
+        testData = Collections.emptyMap();
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .caseData(testData)
+            .build();
+        ccdCallbackRequestRequest =
+                CcdCallbackRequest.builder()
+                        .eventId(TEST_EVENT_ID)
+                        .token(TEST_TOKEN)
+                        .caseDetails(
+                            caseDetails
+                        )
+                        .build();
+
         context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
     }
 
-    public static CcdCallbackRequest buildCcdCallbackRequest(Map<String, Object> caseData) {
-        return
-            CcdCallbackRequest.builder()
-                .eventId(TEST_EVENT_ID)
-                .token(TEST_TOKEN)
-                .caseDetails(
-                    CaseDetails.builder()
-                        .caseId(TEST_CASE_ID)
-                        .state(TEST_STATE)
-                        .caseData(caseData)
-                        .build()
-                ).build();
-    }
-
     @Test
     public void genericEmailTaskShouldExecuteAndReturnPayload() throws Exception {
+        context.setTransientObject(CASE_EVENT_ID_JSON_KEY, TEST_EVENT_ID);
         when(sendPetitionerUpdateNotificationsEmail.execute(context, testData)).thenReturn(testData);
 
-        assertEquals(testData, sendPetitionerEmailNotificationWorkflow.run(buildCcdCallbackRequest(testData)));
+        assertEquals(testData, sendPetitionerEmailNotificationWorkflow.run(ccdCallbackRequestRequest));
 
         verify(sendPetitionerUpdateNotificationsEmail).execute(context, testData);
     }
-}
 
-//TODO: Add unit tests
+    @Test
+    public void submissionEmailTaskShouldExecuteAndReturnPayload() throws Exception {
+        when(sendPetitionerSubmissionNotificationEmailTask.execute(context, testData)).thenReturn(testData);
+
+        assertEquals(testData, sendPetitionerSubmissionNotificationWorkflow.run(ccdCallbackRequestRequest));
+
+        verify(sendPetitionerSubmissionNotificationEmailTask).execute(context, testData);
+    }
+}
