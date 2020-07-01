@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.notification;
 
-import lombok.AllArgsConstructor;
 import com.google.common.collect.ImmutableMap;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
@@ -31,11 +31,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_FEES_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_HUSBAND_OR_WIFE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
@@ -46,7 +45,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRelationshipTermByGender;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerRepresented;
 
 @Slf4j
@@ -92,10 +90,13 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
         Map<String, String> personalisation = getPersonalisationForPetitioner(payload);
 
         String petitionerInferredGender = getMandatoryStringValue(payload, D_8_INFERRED_PETITIONER_GENDER);
-        String petitionerRelationshipToRespondent = getRelationshipTermByGender(petitionerInferredGender);
+        String petitionerRelationshipToRespondent = templateConfigService
+                .getRelationshipTermByGender(petitionerInferredGender, LanguagePreference.ENGLISH);
+        String welshPetRelToRespondent = templateConfigService.getRelationshipTermByGender(petitionerInferredGender,LanguagePreference.WELSH);
 
         personalisation.put(NOTIFICATION_HUSBAND_OR_WIFE, petitionerRelationshipToRespondent);
         personalisation.put(NOTIFICATION_FEES_KEY, getFormattedFeeAmount(context));
+        personalisation.put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, welshPetRelToRespondent);
 
         return personalisation;
     }
@@ -159,8 +160,8 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
             log.debug("CaseId {}: There is no petitioner email, It's solicitor journey", caseId);
             return payload;
         }
-
-        emailService.sendEmail(petitionerEmail, templateId.name(), personalisation, EMAIL_DESCRIPTION + description);
+        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(payload);
+        emailService.sendEmail(petitionerEmail, templateId.name(), personalisation, EMAIL_DESCRIPTION + description, languagePreference);
 
         log.info("CaseId {}: Email to petitioner sent.", caseId);
 
@@ -170,11 +171,13 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
     private Map<String, Object> sendDnRejectedToPetitionerSolicitor(TaskContext context, Map<String, Object> payload) throws TaskException {
         String solicitorEmail = getMandatoryStringValue(payload, PETITIONER_SOLICITOR_EMAIL);
 
+        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(payload);
         emailService.sendEmail(
             solicitorEmail,
             EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_REJECTION_SOLICITOR.name(),
             getPersonalisationForSolicitor(context, payload),
-            EMAIL_DESCRIPTION + "Rejection"
+            EMAIL_DESCRIPTION + "Rejection",
+            languagePreference
         );
 
         return payload;

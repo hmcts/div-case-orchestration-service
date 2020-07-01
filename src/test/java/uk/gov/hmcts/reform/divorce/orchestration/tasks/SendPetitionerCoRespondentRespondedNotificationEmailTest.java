@@ -83,6 +83,18 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
             expectedTemplateVars,
             coRespRespondedSolicitorEmail,
             LanguagePreference.ENGLISH)).thenReturn(null);
+
+        DefaultTaskContext context = new DefaultTaskContext();
+        context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
+
+        Map<String, Object> returnedPayload = sendPetitionerCoRespondentRespondedNotificationEmail.execute(context, caseData);
+
+        assertThat(caseData, is(sameInstance(returnedPayload)));
+        verify(emailService).sendEmail(petSolEmail,
+                EmailTemplateNames.SOL_APPLICANT_CORESP_RESPONDED.name(),
+                expectedTemplateVars,
+                coRespRespondedSolicitorEmail,
+                LanguagePreference.ENGLISH);
     }
 
     @Test
@@ -93,13 +105,13 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
         Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
 
         Map<String, String> expectedTemplateVars = new HashMap<>();
-        expectedTemplateVars.put(NOTIFICATION_EMAIL, (String) caseData.get(PET_SOL_EMAIL));
+        expectedTemplateVars.put(NOTIFICATION_EMAIL, (String) caseData.get(PETITIONER_SOLICITOR_EMAIL));
         expectedTemplateVars.put(NOTIFICATION_PET_NAME, caseData.get(D_8_PETITIONER_FIRST_NAME) + " " + caseData.get(D_8_PETITIONER_LAST_NAME));
         expectedTemplateVars.put(NOTIFICATION_RESP_NAME, caseData.get(RESP_FIRST_NAME_CCD_FIELD) + " " + caseData.get(RESP_LAST_NAME_CCD_FIELD));
-        expectedTemplateVars.put(NOTIFICATION_SOLICITOR_NAME, (String) caseData.get(PET_SOL_NAME));
+        expectedTemplateVars.put(NOTIFICATION_SOLICITOR_NAME, (String) caseData.get(PETITIONER_SOLICITOR_NAME));
         expectedTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, TEST_CASE_ID);
 
-        String petSolEmail = (String) caseData.get(PET_SOL_EMAIL);
+        String petSolEmail = (String) caseData.get(PETITIONER_SOLICITOR_EMAIL);
 
         DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
@@ -127,6 +139,12 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
         expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, (String) caseData.get(D_8_PETITIONER_LAST_NAME));
 
         String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
+        when(emailService.sendEmail(petitionerEmail,
+                EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_NOT_SUBMITTED.name(),
+                expectedTemplateVars,
+                coRespRespondedButRespHasNot,
+                LanguagePreference.ENGLISH)
+        ).thenReturn(null);
 
         DefaultTaskContext context = new DefaultTaskContext();
 
@@ -154,6 +172,13 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
         expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, (String) caseData.get(D_8_PETITIONER_LAST_NAME));
 
         String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
+        when(emailService.sendEmail(petitionerEmail,
+                EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND.name(),
+                expectedTemplateVars,
+                coRespRespondedWhenAosUndefended,
+                LanguagePreference.ENGLISH)
+        ).thenReturn(null);
+
         DefaultTaskContext context = new DefaultTaskContext();
 
         Map<String, Object> returnedPayload = sendPetitionerCoRespondentRespondedNotificationEmail.execute(context, caseData);
