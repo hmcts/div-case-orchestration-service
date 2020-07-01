@@ -126,10 +126,6 @@ public class SendNoticeOfProceedingsEmailTaskTest {
         );
     }
 
-    @Test void shouldNotSendEmailNotification_whenErrorIsThrown() throws TaskException {
-
-    }
-
     private void executeTask() throws TaskException {
         Map<String, Object> returnedPayload = sendNoticeOfProceedingsEmailTask.execute(taskContext, incomingPayload);
 
