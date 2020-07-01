@@ -65,7 +65,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @RunWith(SpringRunner.class)
-public class SendPetitionerUpdateNotificationEmailTest {
+public class SendPetitionerUpdateNotificationsEmailTaskTest {
 
     @Mock
     EmailService emailService;
@@ -76,7 +76,6 @@ public class SendPetitionerUpdateNotificationEmailTest {
     private Map<String, Object> testData;
     private TaskContext context;
     private Map<String, String> expectedTemplateVars;
-
 
     private static final String RESP_ANSWER_RECVD_EVENT = "answerReceived";
     private static final String RESP_ANSWER_NOT_RECVD_EVENT = "answerNotReceived";
