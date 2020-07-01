@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.google.common.collect.Maps;
 import org.junit.Test;
@@ -14,8 +12,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.CourtsMatcher;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader;
 
-import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,24 +21,24 @@ import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.mockito.Mockito.mock;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_DRAFT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class RetrieveDraftITest extends MockedFunctionalTest {
+
     private static final String API_URL = "/draftsapi/version/1";
     private static final String CMS_CONTEXT_PATH = "/casemaintenance/version/1/retrieveCase";
     private static final String CMS_UPDATE_CASE_PATH =
         "/casemaintenance/version/1/updateCase/1547073120300616/paymentMade";
     private static final String CFS_CONTEXT_PATH = "/caseformatter/version/1/to-divorce-format";
     private static final String CFS_TO_CCD_CONTEXT_PATH = "/caseformatter/version/1/to-ccd-format";
-    private static final String AUTH_SERVICE_PATH = "/lease";
 
     private static final String CARD_PAYMENT_PATH = "/card-payments/RC-1547-0733-1813-9545";
     private static final String USER_TOKEN = "Some JWT Token";
@@ -142,7 +138,7 @@ public class RetrieveDraftITest extends MockedFunctionalTest {
 
         stubCmsServerEndpoint(CMS_CONTEXT_PATH, HttpStatus.OK, caseDetails, HttpMethod.GET);
         stubCfsServerEndpoint(caseDetails);
-        stubAuthServerEndpoint();
+        stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
 
         String paymentPath = "jsonExamples/payloads/paymentSystemPaid.json";
         String paymentResponse = ResourceLoader.loadResourceAsString(paymentPath);
@@ -183,18 +179,6 @@ public class RetrieveDraftITest extends MockedFunctionalTest {
 
     private void stubCfsToCCDServerEndpoint(String body) {
         formatterServiceServer.stubFor(WireMock.post(CFS_TO_CCD_CONTEXT_PATH)
-            .willReturn(aResponse()
-                .withStatus(HttpStatus.OK.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withBody(body)));
-    }
-
-
-    private void stubAuthServerEndpoint() {
-        Algorithm algorithm = mock(Algorithm.class);
-        String body = JWT.create()
-            .withExpiresAt(Date.from(ZonedDateTime.now().plusHours(1).toInstant())).sign(algorithm);
-        serviceAuthProviderServer.stubFor(WireMock.post(AUTH_SERVICE_PATH)
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
