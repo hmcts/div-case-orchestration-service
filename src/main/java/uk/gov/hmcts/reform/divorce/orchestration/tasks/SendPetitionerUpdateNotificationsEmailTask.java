@@ -65,8 +65,8 @@ public class SendPetitionerUpdateNotificationsEmailTask implements Task<Map<Stri
     private static final String SOL_GENERIC_UPDATE_EMAIL_DESC =
         "Generic Update Notification - Petitioner solicitor";
 
-    private static final String RESP_ANSWER_RECVD_EVENT = "answerReceived";
-    private static final String RESP_ANSWER_NOT_RECVD_EVENT = "answerNotReceived";
+    public static final String RESP_ANSWER_RECVD_EVENT = "answerReceived";
+    public static final String RESP_ANSWER_NOT_RECVD_EVENT = "answerNotReceived";
 
     private final EmailService emailService;
 
