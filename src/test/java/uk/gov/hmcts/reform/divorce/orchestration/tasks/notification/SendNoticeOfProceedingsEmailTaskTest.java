@@ -20,11 +20,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.hamcrest.core.AllOf.allOf;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
@@ -39,6 +42,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.notification.SendNoticeOfProceedingsEmailTask.EVENT_ISSUE_AOS;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SendNoticeOfProceedingsEmailTaskTest {
@@ -85,6 +89,7 @@ public class SendNoticeOfProceedingsEmailTaskTest {
     public void shouldSendNotificationEmailToSolicitor_whenPetitionerIsRepresented() throws TaskException {
         incomingPayload.put(D_8_PETITIONER_EMAIL, null);
         incomingPayload.put(PETITIONER_SOLICITOR_EMAIL, SOLICITOR_EMAIL);
+        taskContext.setTransientObject(CASE_EVENT_ID_JSON_KEY, EVENT_ISSUE_AOS);
 
         executeTask();
 
@@ -108,6 +113,7 @@ public class SendNoticeOfProceedingsEmailTaskTest {
     public void shouldSendNotificationEmailToPetitioner_whenPetitionerIsNotRepresented() throws TaskException {
         incomingPayload.put(D_8_PETITIONER_EMAIL, PETITIONER_EMAIL);
         incomingPayload.put(PETITIONER_SOLICITOR_EMAIL, null);
+        taskContext.setTransientObject(CASE_EVENT_ID_JSON_KEY, EVENT_ISSUE_AOS);
 
         executeTask();
 
@@ -124,6 +130,15 @@ public class SendNoticeOfProceedingsEmailTaskTest {
             ),
             anyString()
         );
+    }
+
+    @Test
+    public void shouldNotSentAnythingWhenUnsupportedEvent() throws TaskException {
+        taskContext.setTransientObject(CASE_EVENT_ID_JSON_KEY, "unsupported-event-id");
+
+        executeTask();
+
+        verify(emailService, never()).sendEmail(anyString(), anyString(), anyMap(), anyString());
     }
 
     private void executeTask() throws TaskException {

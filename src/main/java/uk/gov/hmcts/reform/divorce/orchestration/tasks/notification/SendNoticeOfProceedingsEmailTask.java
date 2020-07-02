@@ -12,7 +12,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
@@ -32,6 +34,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentation
 @Component
 public class SendNoticeOfProceedingsEmailTask implements Task<Map<String, Object>> {
 
+    public static final String EVENT_ISSUE_AOS_FROM_REISSUE = "issueAosFromReissue";
+    public static final String EVENT_ISSUE_AOS = "issueAos";
+
     private static final String EMAIL_DESCRIPTION = "Notice of Proceedings";
 
     @Autowired
@@ -41,6 +46,11 @@ public class SendNoticeOfProceedingsEmailTask implements Task<Map<String, Object
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
         String caseId = getCaseId(context);
 
+        if (!isEventSupported(context)) {
+            log.info("CaseId: {}. Notice of proceeding will not be sent becasue this is wrong event.", caseId);
+            return caseData;
+        }
+
         if (isPetitionerRepresented(caseData)) {
             log.info("CaseId: {}. Notice Of Proceedings. Sending email to solicitor.", caseId);
             return sendNoticeOfProceedingsToPetitionerSolicitor(context, caseData);
@@ -48,6 +58,13 @@ public class SendNoticeOfProceedingsEmailTask implements Task<Map<String, Object
 
         log.info("CaseId: {}. Notice Of Proceedings. Sending email to petitioner.", caseId);
         return sendNoticeOfProceedingsToPetitioner(caseData);
+    }
+
+    private boolean isEventSupported(TaskContext context) {
+        String eventId = context.getTransientObject(CASE_EVENT_ID_JSON_KEY);
+
+        return Stream.of(EVENT_ISSUE_AOS, EVENT_ISSUE_AOS_FROM_REISSUE)
+            .anyMatch(supportEvent -> supportEvent.equalsIgnoreCase(eventId));
     }
 
     private Map<String, Object> sendNoticeOfProceedingsToPetitionerSolicitor(TaskContext context, Map<String, Object> payload) throws TaskException {
