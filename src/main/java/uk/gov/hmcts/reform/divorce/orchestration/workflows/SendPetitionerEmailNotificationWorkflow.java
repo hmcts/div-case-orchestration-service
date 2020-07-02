@@ -24,13 +24,22 @@ public class SendPetitionerEmailNotificationWorkflow extends DefaultWorkflow<Map
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return this.execute(
-            new Task[] {
-                sendPetitionerUpdateNotificationsEmailTask,
-                sendNoticeOfProceedingsEmailTask
-            },
+            getTasks(ccdCallbackRequest.getEventId()),
             ccdCallbackRequest.getCaseDetails().getCaseData(),
             ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, ccdCallbackRequest.getEventId()),
             ImmutablePair.of(CASE_ID_JSON_KEY, ccdCallbackRequest.getCaseDetails().getCaseId())
         );
+    }
+
+    private Task<Map<String, Object>>[] getTasks(String eventId) {
+        if (SendNoticeOfProceedingsEmailTask.isEventSupported(eventId)) {
+            return new Task[] {
+                sendNoticeOfProceedingsEmailTask
+            };
+        }
+
+        return new Task[] {
+            sendPetitionerUpdateNotificationsEmailTask
+        };
     }
 }

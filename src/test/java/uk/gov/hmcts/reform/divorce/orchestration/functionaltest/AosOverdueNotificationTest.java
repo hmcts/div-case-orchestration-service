@@ -111,14 +111,13 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
     }
 
     @Test
-    public void givenBadRequestBody_thenReturnBadRequest()
-            throws Exception {
+    public void givenBadRequestBody_thenReturnBadRequest()  throws Exception {
         setEventIdTo(NOT_RECEIVED_AOS_EVENT_ID);
         webClient.perform(post(API_URL)
-                .header(AUTHORIZATION, AUTH_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
         verifyZeroInteractions(mockEmailClient);
     }
 
@@ -130,7 +129,7 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
         setUpEmailClientMockThrowsExceptionWith(templateName, testTemplateVars);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
-                .data(testData).errors(Collections.singletonList("test exception")).build();
+            .data(testData).errors(Collections.singletonList("test exception")).build();
         expect(status().isOk(), expectedResponse);
         verifySendEmailIsCalledWithUserDataAnd(templateName);
     }
@@ -143,7 +142,7 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
         setUpEmailClientMockThrowsExceptionWith(templateName, testTemplateVars);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
-                .data(testData).errors(Collections.singletonList("test exception")).build();
+            .data(testData).errors(Collections.singletonList("test exception")).build();
         expect(status().isOk(), expectedResponse);
         verifySendEmailIsCalledWithUserDataAnd(templateName);
     }
@@ -210,20 +209,20 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
 
     private void setUpEmailClientMockWith(String templateName, Map emailArgs) throws NotificationClientException {
         when(mockEmailClient
-                .sendEmail(eq(templateIdOf(templateName)), eq(TEST_USER_EMAIL), eq(emailArgs), anyString()))
-                .thenReturn(null);
+            .sendEmail(eq(templateIdOf(templateName)), eq(TEST_USER_EMAIL), eq(emailArgs), anyString()))
+            .thenReturn(null);
     }
 
     private void setUpEmailClientMockThrowsExceptionWith(String templateName, Map emailArgs) throws NotificationClientException {
         NotificationClientException exception = new NotificationClientException("test exception");
         when(mockEmailClient
-                .sendEmail(eq(templateIdOf(templateName)), eq(TEST_USER_EMAIL), eq(emailArgs), anyString()))
-                .thenThrow(exception);
+            .sendEmail(eq(templateIdOf(templateName)), eq(TEST_USER_EMAIL), eq(emailArgs), anyString()))
+            .thenThrow(exception);
     }
 
     private void verifySendEmailIsCalledWithUserDataAnd(String templateName) throws NotificationClientException {
         verify(mockEmailClient, times(1))
-                .sendEmail(eq(templateIdOf(templateName)), eq(TEST_USER_EMAIL), eq(testTemplateVars), anyString());
+            .sendEmail(eq(templateIdOf(templateName)), eq(TEST_USER_EMAIL), eq(testTemplateVars), anyString());
     }
 
     private String templateIdOf(String templateName) {
@@ -232,18 +231,18 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
 
     private CaseDetails caseDetailsOf(Map data) {
         return CaseDetails.builder()
-                .caseId(D8_CASE_ID)
-                .state(TEST_STATE)
-                .caseData(data)
-                .build();
+            .caseId(D8_CASE_ID)
+            .state(TEST_STATE)
+            .caseData(data)
+            .build();
     }
 
     private CcdCallbackRequest requestFrom(CaseDetails caseDetails, String eventId) {
         return CcdCallbackRequest.builder()
-                .eventId(eventId)
-                .token(TEST_TOKEN)
-                .caseDetails(caseDetails)
-                .build();
+            .eventId(eventId)
+            .token(TEST_TOKEN)
+            .caseDetails(caseDetails)
+            .build();
     }
 
     private void expect(ResultMatcher statusCondition, CcdCallbackResponse expectedResponse) throws Exception {
@@ -251,11 +250,11 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
         String inputJson = convertObjectToJsonString(ccdCallbackRequest);
 
         webClient.perform(post(API_URL)
-                .header(AUTHORIZATION, AUTH_TOKEN)
-                .content(inputJson)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(statusCondition)
-                .andExpect(MockMvcResultMatchers.content().json(convertObjectToJsonString(expectedResponse)));
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(inputJson)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(statusCondition)
+            .andExpect(MockMvcResultMatchers.content().json(convertObjectToJsonString(expectedResponse)));
     }
 }
