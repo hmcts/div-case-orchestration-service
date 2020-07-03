@@ -71,7 +71,7 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
                 return sendDnRefusalToPetitionerSolicitor(context, payload);
             }
 
-            log.info("CaseId: {}. DN rejected. Sending email to petitioner.", caseId);
+            log.info("CaseId: {}. DN refused. Sending email to petitioner to provide more info.", caseId);
             return sendDnRefusalToPetitioner(context, payload);
         } else if (isDnRejected(payload)) {
             if (isPetitionerRepresented(payload)) {
