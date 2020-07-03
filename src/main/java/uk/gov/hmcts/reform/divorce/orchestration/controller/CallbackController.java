@@ -149,6 +149,8 @@ public class CallbackController {
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         final CcdCallbackResponse response = caseOrchestrationService.setOrderSummaryAssignRole(ccdCallbackRequest, authorizationToken);
 
+        response.getData().put("testField", 123);
+
         return ResponseEntity.ok(response);
     }
 

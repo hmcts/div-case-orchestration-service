@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
+import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -71,7 +72,10 @@ public class GetPetitionIssueFeesITest extends MockedFunctionalTest {
         orderSummary.add(feeResponse);
 
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
-                .data(Collections.singletonMap(PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY, orderSummary))
+                .data(ImmutableMap.of(
+                    PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY, orderSummary,
+                    "testField", 123
+                ))
                 .build();
 
         webClient.perform(post(API_URL)
