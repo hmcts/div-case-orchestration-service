@@ -28,7 +28,7 @@ public class GetAmendPetitionFeeTaskTest {
     @Test
     public void whenExecuteTask_ReturnAmendFeesOnContext() {
         FeeResponse expected = FeeResponse.builder().build();
-        when(feesAndPaymentsClient.getAmendPetitioneFee()).thenReturn(expected);
+        when(feesAndPaymentsClient.getAmendPetitionerFee()).thenReturn(expected);
         TaskContext context = new DefaultTaskContext();
         assertThat(getAmendPetitionFeeTask.execute(context, DUMMY_CASE_DATA), is(DUMMY_CASE_DATA));
         assertThat(context.getTransientObject(AMEND_PETITION_FEE_JSON_KEY), is(expected));

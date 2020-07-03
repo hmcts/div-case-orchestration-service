@@ -49,7 +49,7 @@ public class GetAmendPetitionFeeTest {
                 .description(TEST_FEE_DESCRIPTION)
                 .build();
 
-        when(feesAndPaymentsClient.getAmendPetitioneFee()).thenReturn(feeResponse);
+        when(feesAndPaymentsClient.getAmendPetitionerFee()).thenReturn(feeResponse);
 
         assertEquals(testData, classToTest.execute(context, testData));
         assertEquals(feeResponse, context.getTransientObject(AMEND_PETITION_FEE_JSON_KEY));
