@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.config.EmailTemplatesConfig;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Collections;
@@ -32,10 +33,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.D8_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_REASON_UNREASONABLE_BEHAVIOUR;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RELATIONSHIP;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
@@ -50,6 +54,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
@@ -64,8 +69,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.PETITIONER_NOTICE_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.PETITIONER_RESP_NOT_RESPONDED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.SOL_APPLICANT_RESP_NOT_RESPONDED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.SOL_PETITIONER_NOTICE_OF_PROCEEDINGS;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.notification.SendNoticeOfProceedingsEmailTask.EVENT_ISSUE_AOS;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.notification.SendNoticeOfProceedingsEmailTask.EVENT_ISSUE_AOS_FROM_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 @RunWith(SpringRunner.class)
@@ -111,14 +120,43 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
     }
 
     @Test
-    public void givenBadRequestBody_thenReturnBadRequest()
-            throws Exception {
+    public void givenCorrectSolicitorDetails_WithIssueAosEventId_ThenOkResponse() throws Exception {
+        addSolicitorTestData();
+        testTemplateVars.remove(NOTIFICATION_EMAIL);
+
+        runTestProcedureUsing(EVENT_ISSUE_AOS, SOL_PETITIONER_NOTICE_OF_PROCEEDINGS);
+    }
+
+    @Test
+    public void givenCorrectSolicitorDetails_WithIssueAosFromReIssueEventId_ThenOkResponse() throws Exception {
+        addSolicitorTestData();
+        testTemplateVars.remove(NOTIFICATION_EMAIL);
+
+        runTestProcedureUsing(EVENT_ISSUE_AOS_FROM_REISSUE, SOL_PETITIONER_NOTICE_OF_PROCEEDINGS);
+    }
+
+    @Test
+    public void givenCorrectPetitionerDetails_WithIssueAosEventId_ThenOkResponse() throws Exception {
+        addPetitionerTestDataForNoticeOfProceeding();
+
+        runTestProcedureUsing(EVENT_ISSUE_AOS, PETITIONER_NOTICE_OF_PROCEEDINGS);
+    }
+
+    @Test
+    public void givenCorrectPetitionerDetails_WithIssueAosFromReIssueEventId_ThenOkResponse() throws Exception {
+        addPetitionerTestDataForNoticeOfProceeding();
+
+        runTestProcedureUsing(EVENT_ISSUE_AOS_FROM_REISSUE, PETITIONER_NOTICE_OF_PROCEEDINGS);
+    }
+
+    @Test
+    public void givenBadRequestBody_thenReturnBadRequest() throws Exception {
         setEventIdTo(NOT_RECEIVED_AOS_EVENT_ID);
         webClient.perform(post(API_URL)
-                .header(AUTHORIZATION, AUTH_TOKEN)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
         verifyZeroInteractions(mockEmailClient);
     }
 
@@ -130,7 +168,7 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
         setUpEmailClientMockThrowsExceptionWith(templateName, testTemplateVars);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
-                .data(testData).errors(Collections.singletonList("test exception")).build();
+            .data(testData).errors(Collections.singletonList("test exception")).build();
         expect(status().isOk(), expectedResponse);
         verifySendEmailIsCalledWithUserDataAnd(templateName);
     }
@@ -143,7 +181,7 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
         setUpEmailClientMockThrowsExceptionWith(templateName, testTemplateVars);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
-                .data(testData).errors(Collections.singletonList("test exception")).build();
+            .data(testData).errors(Collections.singletonList("test exception")).build();
         expect(status().isOk(), expectedResponse);
         verifySendEmailIsCalledWithUserDataAnd(templateName);
     }
@@ -151,32 +189,31 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
     private void runPetitionerTestProcedureUsing(String eventId) throws Exception {
         addPetitionerTestData();
 
-        String expectedTemplateName = PETITIONER_RESP_NOT_RESPONDED.name();
-        runTestProcedureUsing(eventId, expectedTemplateName);
+        runTestProcedureUsing(eventId, PETITIONER_RESP_NOT_RESPONDED);
     }
 
     private void runSolicitorTestProcedureUsing(String eventId) throws Exception {
         addSolicitorTestData();
 
-        String expectedTemplateName = SOL_APPLICANT_RESP_NOT_RESPONDED.name();
-        runTestProcedureUsing(eventId, expectedTemplateName);
+        runTestProcedureUsing(eventId, SOL_APPLICANT_RESP_NOT_RESPONDED);
     }
 
-    private void runTestProcedureUsing(String eventId, String expectedTemplateName) throws Exception {
+    private void runTestProcedureUsing(String eventId, EmailTemplateNames expectedTemplate) throws Exception {
         setEventIdTo(eventId);
-        setUpEmailClientMockWith(expectedTemplateName, testTemplateVars);
+        setUpEmailClientMockWith(expectedTemplate.name(), testTemplateVars);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(testData).build();
         expect(status().isOk(), expectedResponse);
-        verifySendEmailIsCalledWithUserDataAnd(expectedTemplateName);
+        verifySendEmailIsCalledWithUserDataAnd(expectedTemplate.name());
     }
-
 
     private void addPetitionerTestData() {
         testData.put(D_8_CASE_REFERENCE, D8_CASE_ID);
         testData.put(D_8_PETITIONER_EMAIL, TEST_USER_EMAIL);
         testData.put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         testData.put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
+        testData.put(RESP_FIRST_NAME_CCD_FIELD, TEST_RESPONDENT_FIRST_NAME);
+        testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME);
         testData.put(D_8_REASON_FOR_DIVORCE, TEST_REASON_UNREASONABLE_BEHAVIOUR);
         testData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
         testData.put(D_8_DIVORCED_WHO, TEST_RELATIONSHIP);
@@ -186,6 +223,19 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
         testTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_PETITIONER_LAST_NAME);
         testTemplateVars.put(NOTIFICATION_RELATIONSHIP_KEY, TEST_RELATIONSHIP);
         testTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, D8_CASE_ID);
+    }
+
+    private void addPetitionerTestDataForNoticeOfProceeding() {
+        testData.put(D_8_CASE_REFERENCE, D8_CASE_ID);
+        testData.put(D_8_PETITIONER_EMAIL, TEST_USER_EMAIL);
+        testData.put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
+        testData.put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
+        testData.put(RESP_FIRST_NAME_CCD_FIELD, TEST_RESPONDENT_FIRST_NAME);
+        testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME);
+
+        testTemplateVars.put(NOTIFICATION_CASE_NUMBER_KEY, D8_CASE_ID);
+        testTemplateVars.put(NOTIFICATION_PET_NAME, TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME);
+        testTemplateVars.put(NOTIFICATION_RESP_NAME, TEST_RESPONDENT_FIRST_NAME + " " + TEST_RESPONDENT_LAST_NAME);
     }
 
     private void addSolicitorTestData() {
@@ -198,7 +248,7 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
         testData.put(PETITIONER_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
 
         testTemplateVars.put(NOTIFICATION_EMAIL, TEST_USER_EMAIL);
-        testTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, D8_CASE_ID);
+        testTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, TEST_CASE_ID);
         testTemplateVars.put(NOTIFICATION_PET_NAME, TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME);
         testTemplateVars.put(NOTIFICATION_RESP_NAME, TEST_USER_FIRST_NAME + " " + TEST_USER_LAST_NAME);
         testTemplateVars.put(NOTIFICATION_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
@@ -210,20 +260,20 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
 
     private void setUpEmailClientMockWith(String templateName, Map emailArgs) throws NotificationClientException {
         when(mockEmailClient
-                .sendEmail(eq(templateIdOf(templateName)), eq(TEST_USER_EMAIL), eq(emailArgs), anyString()))
-                .thenReturn(null);
+            .sendEmail(eq(templateIdOf(templateName)), eq(TEST_USER_EMAIL), eq(emailArgs), anyString()))
+            .thenReturn(null);
     }
 
     private void setUpEmailClientMockThrowsExceptionWith(String templateName, Map emailArgs) throws NotificationClientException {
         NotificationClientException exception = new NotificationClientException("test exception");
         when(mockEmailClient
-                .sendEmail(eq(templateIdOf(templateName)), eq(TEST_USER_EMAIL), eq(emailArgs), anyString()))
-                .thenThrow(exception);
+            .sendEmail(eq(templateIdOf(templateName)), eq(TEST_USER_EMAIL), eq(emailArgs), anyString()))
+            .thenThrow(exception);
     }
 
     private void verifySendEmailIsCalledWithUserDataAnd(String templateName) throws NotificationClientException {
         verify(mockEmailClient, times(1))
-                .sendEmail(eq(templateIdOf(templateName)), eq(TEST_USER_EMAIL), eq(testTemplateVars), anyString());
+            .sendEmail(eq(templateIdOf(templateName)), eq(TEST_USER_EMAIL), eq(testTemplateVars), anyString());
     }
 
     private String templateIdOf(String templateName) {
@@ -232,18 +282,18 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
 
     private CaseDetails caseDetailsOf(Map data) {
         return CaseDetails.builder()
-                .caseId(D8_CASE_ID)
-                .state(TEST_STATE)
-                .caseData(data)
-                .build();
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .caseData(data)
+            .build();
     }
 
     private CcdCallbackRequest requestFrom(CaseDetails caseDetails, String eventId) {
         return CcdCallbackRequest.builder()
-                .eventId(eventId)
-                .token(TEST_TOKEN)
-                .caseDetails(caseDetails)
-                .build();
+            .eventId(eventId)
+            .token(TEST_TOKEN)
+            .caseDetails(caseDetails)
+            .build();
     }
 
     private void expect(ResultMatcher statusCondition, CcdCallbackResponse expectedResponse) throws Exception {
@@ -251,11 +301,11 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
         String inputJson = convertObjectToJsonString(ccdCallbackRequest);
 
         webClient.perform(post(API_URL)
-                .header(AUTHORIZATION, AUTH_TOKEN)
-                .content(inputJson)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(statusCondition)
-                .andExpect(MockMvcResultMatchers.content().json(convertObjectToJsonString(expectedResponse)));
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(inputJson)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(statusCondition)
+            .andExpect(MockMvcResultMatchers.content().json(convertObjectToJsonString(expectedResponse)));
     }
 }
