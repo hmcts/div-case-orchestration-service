@@ -49,6 +49,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentation
 public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
 
     private static final String EMAIL_DESCRIPTION = "Decree Nisi Refusal Order - ";
+    private static final String SOL_PERSONAL_SERVICE_EMAIL = "DN decision made email";
 
     @Autowired
     private EmailService emailService;
@@ -60,24 +61,29 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
         if (isDnAlreadyGranted(payload)) {
             log.warn("CaseId: {}. DN is already granted. No email will be sent.", caseId);
             return payload;
-        } else {
-            log.info("CaseId: {}. DN not granted yet. An email may to be sent.", caseId);
         }
 
+        log.info("CaseId: {}. DN not granted yet. An email may to be sent.", caseId);
+
         if (isMoreInfoRequired(payload)) {
+            if (isPetitionerRepresented(payload)) {
+                log.info("CaseId: {}. DN refused. Sending email to solicitor to provide more info.", caseId);
+                return sendDnRefusalToPetitionerSolicitor(context, payload);
+            }
+
             log.info("CaseId: {}. DN refused. Sending email to petitioner to provide more info.", caseId);
             return sendDnRefusalToPetitioner(context, payload);
         } else if (isDnRejected(payload)) {
             if (isPetitionerRepresented(payload)) {
                 log.info("CaseId: {}. DN rejected. Petitioner represented. Sending email to solicitor.", caseId);
                 return sendDnRejectedToPetitionerSolicitor(context, payload);
-            } else {
-                log.info("CaseId: {}. DN rejected. Sending email to petitioner.", caseId);
-                return sendDnRejectedToPetitioner(context, payload);
             }
-        } else {
-            log.warn("CaseId: {}. Notify for DN refusal - unsupported scenario!", caseId);
+
+            log.info("CaseId: {}. DN rejected. Sending email to petitioner.", caseId);
+            return sendDnRejectedToPetitioner(context, payload);
         }
+
+        log.warn("CaseId: {}. Notify for DN refusal - unsupported scenario!", caseId);
 
         return payload;
     }
@@ -169,6 +175,20 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
             EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_REJECTION_SOLICITOR.name(),
             getPersonalisationForSolicitor(context, payload),
             EMAIL_DESCRIPTION + "Rejection"
+        );
+
+        return payload;
+    }
+
+    private Map<String, Object> sendDnRefusalToPetitionerSolicitor(TaskContext context, Map<String, Object> payload)
+        throws TaskException {
+        String solicitorEmail = getMandatoryStringValue(payload, PETITIONER_SOLICITOR_EMAIL);
+
+        emailService.sendEmail(
+            solicitorEmail,
+            EmailTemplateNames.SOL_DN_DECISION_MADE.name(),
+            getPersonalisationForSolicitor(context, payload),
+            SOL_PERSONAL_SERVICE_EMAIL
         );
 
         return payload;

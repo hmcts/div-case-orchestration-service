@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -47,7 +47,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 
 @Component
 @Slf4j
-public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, Object>> {
+@RequiredArgsConstructor
+public class SendPetitionerUpdateNotificationsEmailTask implements Task<Map<String, Object>> {
 
     private static final String GENERIC_UPDATE_EMAIL_DESC = "Generic Update Notification - Petitioner";
     private static final String AOS_RECEIVED_NO_ADMIT_ADULTERY_EMAIL_DESC =
@@ -65,15 +66,10 @@ public class SendPetitionerUpdateNotificationsEmail implements Task<Map<String, 
     private static final String SOL_GENERIC_UPDATE_EMAIL_DESC =
         "Generic Update Notification - Petitioner solicitor";
 
-    private static final String RESP_ANSWER_RECVD_EVENT = "answerReceived";
-    private static final String RESP_ANSWER_NOT_RECVD_EVENT = "answerNotReceived";
+    public static final String RESP_ANSWER_RECVD_EVENT = "answerReceived";
+    public static final String RESP_ANSWER_NOT_RECVD_EVENT = "answerNotReceived";
 
     private final EmailService emailService;
-
-    @Autowired
-    public SendPetitionerUpdateNotificationsEmail(EmailService emailService) {
-        this.emailService = emailService;
-    }
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {

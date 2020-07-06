@@ -969,7 +969,6 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getErrors(), is(nullValue()));
         verify(caseOrchestrationService).notifyForRefusalOrder(eq(ccdCallbackRequest));
         verify(caseOrchestrationService).cleanStateCallback(eq(ccdCallbackRequest), eq(AUTH_TOKEN));
-        verify(caseOrchestrationService).processDnDecisionMade(eq(ccdCallbackRequest));
     }
 
     @Test
