@@ -1,0 +1,7 @@
+{
+  "10035_Strict-Transport-Security Header Not Set_https://div-cos-aat.service.core-compute-aat.internal/v2/api-docs_GET": "ignore",
+  "100000_A Client Error response code was returned by the server_https://div-cos-aat.service.core-compute-aat.internal/v2/api-docs_GET": "ignore",
+  "10038_Content Security Policy (CSP) Header Not Set_https://div-cos-aat.service.core-compute-aat.internal/v2/api-docs_GET": "ignore",
+  "10036_Server Leaks Version Information via \\\"Server\\\" HTTP Response Header Field_https://div-cos-aat.service.core-compute-aat.internal/v2/api-docs_GET": "ignore",
+  "100001_Unexpected Content-Type was returned_https://div-cos-aat.service.core-compute-aat.internal/v2/api-docs_GET":"ignore"
+}
