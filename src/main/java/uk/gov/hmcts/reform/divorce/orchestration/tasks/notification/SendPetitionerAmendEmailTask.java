@@ -92,30 +92,6 @@ public class SendPetitionerAmendEmailTask implements Task<Map<String, Object>> {
         return personalisation;
     }
 
-    public static boolean isEventSupported(String eventId) {
-        return Stream.of(
-            PRE_STATE_AWAITING_HWF_DECISION,
-            PRE_STATE_SUBMITTED,
-            PRE_STATE_ISSUED,
-            PRE_STATE_REJECTED,
-            PRE_STATE_PENDING_REJECTION,
-            PRE_STATE_SOLICITOR_AWAITING_PAYMENT_CONFIRMATION,
-            PRE_STATE_SOLICITOR_AWAITING_PAYMENT_CONFIRMATION,
-            PRE_STATE_AOS_AWAITING,
-            PRE_STATE_AOS_STARTED,
-            PRE_STATE_AOS_OVERDUE,
-            PRE_STATE_AWAITING_REISSUE,
-            PRE_STATE_AOS_COMPLETED,
-            PRE_STATE_AOS_AWAITING_SOLICITOR,
-            PRE_STATE_AOS_PRE_SUBMITTED,
-            PRE_STATE_AOS_DRAFTED,
-            PRE_STATE_AWAITING_SERVICE,
-            PRE_STATE_AOS_SUBMITTED_AWAITING_ANSWER,
-            PRE_STATE_AWAITING_DECREE_NISI
-        )
-            .anyMatch(supportEvent -> supportEvent.equalsIgnoreCase(eventId));
-    }
-
     public static String printPreviousState(String eventId) {
         String[] preStates = {
             PRE_STATE_AWAITING_HWF_DECISION,
@@ -146,7 +122,7 @@ public class SendPetitionerAmendEmailTask implements Task<Map<String, Object>> {
     }
 
     public void logEvent(String caseId, String eventId) {
-        log.info("CaseId: {}. " + EMAIL_DESCRIPTION + " Previous state "+ printPreviousState(eventId) + ".", caseId);
+        log.info("CaseId: {}. " + EMAIL_DESCRIPTION + " Previous state " + printPreviousState(eventId) + ". Task executed", caseId);
     }
 
     private String getFormattedFeeAmount(TaskContext context) {
