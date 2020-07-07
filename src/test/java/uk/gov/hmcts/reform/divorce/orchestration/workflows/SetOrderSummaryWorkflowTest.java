@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetAmendPetitionFeeTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetPetitionIssueFeeTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetOrderSummary;
@@ -28,6 +29,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_A
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_DESCRIPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_VERSION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features.SOLICITOR_DN_REJECT_AND_AMEND;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_CCD_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
@@ -43,6 +45,9 @@ public class SetOrderSummaryWorkflowTest {
 
     @Mock
     private SetOrderSummary setOrderSummary;
+
+    @Mock
+    private FeatureToggleService featureToggleService;
 
     @InjectMocks
     private SetOrderSummaryWorkflow setOrderSummaryWorkflow;
@@ -72,7 +77,9 @@ public class SetOrderSummaryWorkflowTest {
     }
 
     @Test
-    public void runGetPetitionIssueFees_WhenCaseIsNotAmendment() throws Exception {
+    public void runGetPetitionIssueFees_WhenCaseIsNotAmendment_AndFeatureIsSwitchedOn() throws Exception {
+        when(featureToggleService.isFeatureEnabled(SOLICITOR_DN_REJECT_AND_AMEND)).thenReturn(true);
+
         Map<String, Object> returnedCaseData = setOrderSummaryWorkflow.run(testData);
 
         assertThat(returnedCaseData, equalTo(expectedCaseData));
@@ -81,13 +88,37 @@ public class SetOrderSummaryWorkflowTest {
     }
 
     @Test
-    public void runGetAmendFees_WhenCaseIsAmendment() throws Exception {
+    public void runGetAmendFees_WhenCaseIsAmendment_AndFeatureIsSwitchedOn() throws Exception {
+        when(featureToggleService.isFeatureEnabled(SOLICITOR_DN_REJECT_AND_AMEND)).thenReturn(true);
         testData.put(PREVIOUS_CASE_ID_CCD_KEY, new CaseLink("1234567890123456"));
 
         Map<String, Object> returnedCaseData = setOrderSummaryWorkflow.run(testData);
 
         assertThat(returnedCaseData, equalTo(expectedCaseData));
         verifyTasksCalledInOrder(testData, getAmendPetitionFeeTask, setOrderSummary);
+        verifyZeroInteractions(getPetitionIssueFeeTask);
+    }
+
+    @Test
+    public void runGetPetitionIssueFees_WhenCaseIsNotAmendment_AndFeatureIsSwitchedOff() throws Exception {
+        when(featureToggleService.isFeatureEnabled(SOLICITOR_DN_REJECT_AND_AMEND)).thenReturn(false);
+
+        Map<String, Object> returnedCaseData = setOrderSummaryWorkflow.run(testData);
+
+        assertThat(returnedCaseData, equalTo(expectedCaseData));
+        verifyTasksCalledInOrder(testData, getPetitionIssueFeeTask, setOrderSummary);
+        verifyZeroInteractions(getAmendPetitionFeeTask);
+    }
+
+    @Test
+    public void runGetAmendFees_WhenCaseIsAmendment_AndFeatureIsSwitchedOff() throws Exception {
+        when(featureToggleService.isFeatureEnabled(SOLICITOR_DN_REJECT_AND_AMEND)).thenReturn(false);
+        testData.put(PREVIOUS_CASE_ID_CCD_KEY, new CaseLink("1234567890123456"));
+
+        Map<String, Object> returnedCaseData = setOrderSummaryWorkflow.run(testData);
+
+        assertThat(returnedCaseData, equalTo(expectedCaseData));
+        verifyTasksCalledInOrder(testData, getPetitionIssueFeeTask, setOrderSummary);
         verifyZeroInteractions(getPetitionIssueFeeTask);
     }
 
