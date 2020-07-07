@@ -24,13 +24,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_V
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_FEE_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GetPetitionIssueFeeTest {
+public class GetPetitionIssueFeeTaskTest {
 
     @Mock
     FeesAndPaymentsClient feesAndPaymentsClient;
 
     @InjectMocks
-    GetPetitionIssueFee getPetitionIssueFee;
+    GetPetitionIssueFeeTask getPetitionIssueFeeTask;
 
     private Map<String, Object> testData;
     private TaskContext context;
@@ -52,7 +52,7 @@ public class GetPetitionIssueFeeTest {
 
         when(feesAndPaymentsClient.getPetitionIssueFee()).thenReturn(feeResponse);
 
-        assertEquals(testData, getPetitionIssueFee.execute(context, testData));
+        assertEquals(testData, getPetitionIssueFeeTask.execute(context, testData));
         assertEquals(feeResponse, context.getTransientObject(PETITION_FEE_JSON_KEY));
 
         verify(feesAndPaymentsClient).getPetitionIssueFee();

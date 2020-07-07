@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetAmendPetitionFeeTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetPetitionIssueFee;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetPetitionIssueFeeTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetOrderSummary;
 
 import java.util.Map;
@@ -20,10 +20,10 @@ public class SetOrderSummaryWorkflow extends DefaultWorkflow<Map<String, Object>
     private final Task<?>[] amendmentTasks;
 
     @Autowired
-    public SetOrderSummaryWorkflow(GetPetitionIssueFee getPetitionIssueFee,
+    public SetOrderSummaryWorkflow(GetPetitionIssueFeeTask getPetitionIssueFeeTask,
                                    GetAmendPetitionFeeTask getAmendPetitionFeeTask,
                                    SetOrderSummary setOrderSummary) {
-        issueTasks = new Task<?>[] {getPetitionIssueFee, setOrderSummary};
+        issueTasks = new Task<?>[] {getPetitionIssueFeeTask, setOrderSummary};
         amendmentTasks = new Task<?>[] {getAmendPetitionFeeTask, setOrderSummary};
     }
 
