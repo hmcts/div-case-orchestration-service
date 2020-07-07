@@ -147,9 +147,7 @@ public class CallbackController {
     public ResponseEntity<CcdCallbackResponse> getPetitionIssueFees(
         @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        final CcdCallbackResponse response = caseOrchestrationService.setOrderSummaryAssignRole(ccdCallbackRequest, authorizationToken);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(caseOrchestrationService.setOrderSummaryAssignRole(ccdCallbackRequest, authorizationToken));
     }
 
     @SuppressWarnings("unchecked")
@@ -910,8 +908,8 @@ public class CallbackController {
         @ApiParam(value = "Authorisation token issued by IDAM", required = true) String authToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest,
         @PathVariable("party")
-        @ApiParam(value = "Party in divorce (respondent or co-respondent)" ,
-                  allowableValues = "respondent, co-respondent") DivorceParty party) {
+        @ApiParam(value = "Party in divorce (respondent or co-respondent)",
+            allowableValues = "respondent, co-respondent") DivorceParty party) {
         CcdCallbackResponse response;
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
 
@@ -940,7 +938,7 @@ public class CallbackController {
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest,
         @PathVariable("party")
         @ApiParam(value = "Party in divorce (respondent or co-respondent)",
-                  allowableValues = "respondent, co-respondent") DivorceParty party) {
+            allowableValues = "respondent, co-respondent") DivorceParty party) {
         CcdCallbackResponse.CcdCallbackResponseBuilder responseBuilder = CcdCallbackResponse.builder();
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
 

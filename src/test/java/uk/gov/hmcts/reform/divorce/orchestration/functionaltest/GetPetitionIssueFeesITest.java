@@ -2,18 +2,22 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
+import com.google.common.collect.ImmutableMap;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -32,55 +36,98 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_D
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_VERSION;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_CCD_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_APPLICATION_FEE_IN_POUNDS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class GetPetitionIssueFeesITest extends MockedFunctionalTest {
+
     private static final String API_URL = "/petition-issue-fees";
     private static final String PETITION_ISSUE_FEE_CONTEXT_PATH = "/fees-and-payments/version/1/petition-issue-fee";
+    private static final String PETITION_AMENDMENT_ISSUE_FEE_CONTEXT_PATH = "/fees-and-payments/version/1/amend-fee";
     private static final String ADD_PETITIONER_SOLICITOR_ROLE = String
         .format("/casemaintenance/version/1/add-petitioner-solicitor-role/%s", TEST_CASE_ID);
 
-    private static final Map<String, Object> CASE_DATA = Collections.emptyMap();
-    private static final CaseDetails CASE_DETAILS =
-            CaseDetails.builder()
-                    .caseData(CASE_DATA)
-                    .caseId(TEST_CASE_ID)
-                    .state(TEST_STATE)
-                    .build();
-
-    private static final CcdCallbackRequest CREATE_EVENT = CcdCallbackRequest.builder()
-            .caseDetails(CASE_DETAILS)
-            .build();
+    private CcdCallbackRequest callbackRequest;
 
     @Autowired
     private MockMvc webClient;
 
+    @Before
+    public void setUp() {
+        Map<String, Object> caseData = new HashMap<>();
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .build();
+        callbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .build();
+    }
+
     @Test
     public void givenCaseData_whenGetPetitionIssueFee_thenReturnUpdatedResponseWithFees() throws Exception {
         FeeResponse feeResponse = FeeResponse.builder()
-                .amount(TEST_FEE_AMOUNT)
-                .feeCode(TEST_FEE_CODE)
-                .version(TEST_FEE_VERSION)
-                .description(TEST_FEE_DESCRIPTION)
-                .build();
+            .amount(550d)
+            .feeCode(TEST_FEE_CODE)
+            .version(TEST_FEE_VERSION)
+            .description(TEST_FEE_DESCRIPTION)
+            .build();
 
-        stubGetFeeFromFeesAndPayments(HttpStatus.OK, feeResponse);
+        stubGetFeeFromFeesAndPayments(feeResponse, false);
         stubMaintenanceServerEndpointForAddPetitionerSolicitorRole(HttpStatus.OK);
 
         OrderSummary orderSummary = new OrderSummary();
         orderSummary.add(feeResponse);
 
-        CcdCallbackResponse expected = CcdCallbackResponse.builder()
-                .data(Collections.singletonMap(PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY, orderSummary))
-                .build();
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
+            .data(ImmutableMap.of(
+                PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY, orderSummary,
+                SOL_APPLICATION_FEE_IN_POUNDS_JSON_KEY, "550"
+            ))
+            .build();
 
         webClient.perform(post(API_URL)
-                .header(AUTHORIZATION, AUTH_TOKEN)
-                .content(convertObjectToJsonString(CREATE_EVENT))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(convertObjectToJsonString(expected)));
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(callbackRequest))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
+    }
+
+    @Test
+    public void givenCaseAmendment_whenGetPetitionIssueFee_thenReturnUpdatedResponseWithFees() throws Exception {
+        callbackRequest.getCaseDetails().getCaseData().put(PREVIOUS_CASE_ID_CCD_KEY, new CaseLink("1234567890123456"));
+
+        FeeResponse feeResponse = FeeResponse.builder()
+            .amount(95d)
+            .feeCode(TEST_FEE_CODE)
+            .version(TEST_FEE_VERSION)
+            .description(TEST_FEE_DESCRIPTION)
+            .build();
+
+        stubGetFeeFromFeesAndPayments(feeResponse, true);
+        stubMaintenanceServerEndpointForAddPetitionerSolicitorRole(HttpStatus.OK);
+
+        OrderSummary orderSummary = new OrderSummary();
+        orderSummary.add(feeResponse);
+
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
+            .data(ImmutableMap.of(
+                PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY, orderSummary,
+                SOL_APPLICATION_FEE_IN_POUNDS_JSON_KEY, "95"
+            ))
+            .build();
+
+        webClient.perform(post(API_URL)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(callbackRequest))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
     }
 
     @Test
@@ -92,11 +139,8 @@ public class GetPetitionIssueFeesITest extends MockedFunctionalTest {
             .description(TEST_FEE_DESCRIPTION)
             .build();
 
-        stubGetFeeFromFeesAndPayments(HttpStatus.OK, feeResponse);
+        stubGetFeeFromFeesAndPayments(feeResponse, false);
         stubMaintenanceServerEndpointForAddPetitionerSolicitorRole(HttpStatus.BAD_GATEWAY);
-
-        OrderSummary orderSummary = new OrderSummary();
-        orderSummary.add(feeResponse);
 
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
             .errors(Collections.singletonList("Problem setting the [PETSOLICITOR] role to the case"))
@@ -104,7 +148,7 @@ public class GetPetitionIssueFeesITest extends MockedFunctionalTest {
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(CREATE_EVENT))
+            .content(convertObjectToJsonString(callbackRequest))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -114,37 +158,35 @@ public class GetPetitionIssueFeesITest extends MockedFunctionalTest {
     @Test
     public void givenUnauthorizedRequest_whenGetPetitionIssueFees_thenReturnErrorData() throws Exception {
         FeeResponse feeResponse = FeeResponse.builder()
-                .amount(TEST_FEE_AMOUNT)
-                .feeCode(TEST_FEE_CODE)
-                .version(TEST_FEE_VERSION)
-                .description(TEST_FEE_DESCRIPTION)
-                .build();
+            .amount(TEST_FEE_AMOUNT)
+            .feeCode(TEST_FEE_CODE)
+            .version(TEST_FEE_VERSION)
+            .description(TEST_FEE_DESCRIPTION)
+            .build();
 
         stubMaintenanceServerEndpointForAddPetitionerSolicitorRole(HttpStatus.FORBIDDEN);
-        stubGetFeeFromFeesAndPayments(HttpStatus.OK, feeResponse);
-
-        OrderSummary orderSummary = new OrderSummary();
-        orderSummary.add(feeResponse);
+        stubGetFeeFromFeesAndPayments(feeResponse, false);
 
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
-                .errors(Collections.singletonList("Problem setting the [PETSOLICITOR] role to the case"))
-                .build();
+            .errors(Collections.singletonList("Problem setting the [PETSOLICITOR] role to the case"))
+            .build();
 
         webClient.perform(post(API_URL)
-                .header(AUTHORIZATION, AUTH_TOKEN)
-                .content(convertObjectToJsonString(CREATE_EVENT))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(convertObjectToJsonString(expected)));
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(callbackRequest))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(expected)));
     }
 
-    private void stubGetFeeFromFeesAndPayments(HttpStatus status, FeeResponse feeResponse) {
-        feesAndPaymentsServer.stubFor(WireMock.get(PETITION_ISSUE_FEE_CONTEXT_PATH)
-                .willReturn(aResponse()
-                        .withStatus(status.value())
-                        .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                        .withBody(convertObjectToJsonString(feeResponse))));
+    private void stubGetFeeFromFeesAndPayments(FeeResponse feeResponse, boolean petitionAmendment) {
+        String url = petitionAmendment ? PETITION_AMENDMENT_ISSUE_FEE_CONTEXT_PATH : PETITION_ISSUE_FEE_CONTEXT_PATH;
+        feesAndPaymentsServer.stubFor(WireMock.get(url)
+            .willReturn(aResponse()
+                .withStatus(HttpStatus.OK.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withBody(convertObjectToJsonString(feeResponse))));
     }
 
     private void stubMaintenanceServerEndpointForAddPetitionerSolicitorRole(HttpStatus status) {
@@ -154,4 +196,5 @@ public class GetPetitionIssueFeesITest extends MockedFunctionalTest {
                 .withStatus(status.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)));
     }
+
 }
