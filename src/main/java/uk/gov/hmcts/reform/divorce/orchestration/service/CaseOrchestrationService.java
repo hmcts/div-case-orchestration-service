@@ -158,4 +158,6 @@ public interface CaseOrchestrationService {
     CcdCallbackResponse sendClarificationSubmittedNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
     Map<String, Object> decreeNisiDecisionState(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+
+    Map<String, Object> sendAmendApplicationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 }
