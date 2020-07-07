@@ -2,7 +2,7 @@
 echo ${TEST_URL}
 export LC_ALL=C.UTF-8
 export LANG=C.UTF-8
-zap-api-scan.py -t ${TEST_URL}/v2/api-docs -f openapi -S -d -u ${SecurityRules} -P 1001 -l FAIL -c ignore_scan_rule.conf
+zap-api-scan.py -t ${TEST_URL}/v2/api-docs -f openapi -S -d -c ./ignore_scan_rule.conf -u ${SecurityRules} -P 1001 -l FAIL
 cat zap.out
 curl --fail http://0.0.0.0:1001/OTHER/core/other/jsonreport/?formMethod=GET --output report.json
 cp *.* functional-output/
