@@ -36,6 +36,14 @@ public interface CaseMaintenanceClient {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken
     );
 
+    @ApiOperation("Amend Petition For Refusal using case ID")
+    @PutMapping(value = "/casemaintenance/version/1/amended-petition-draft-refusal/{caseId}",
+        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE)
+    Map<String, Object> amendPetitionForRefusalFromCaseId(
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken,
+        @PathVariable("caseId") String caseId
+    );
+
     @ApiOperation("Submit Case")
     @PostMapping(value = "/casemaintenance/version/1/submit",
         headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE)
