@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetAmendPetitionFeeTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetPetitionIssueFee;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetPetitionIssueFeeTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetOrderSummary;
 
 import java.util.Collections;
@@ -22,7 +22,6 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_AMOUNT;
@@ -31,12 +30,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_D
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_VERSION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_CCD_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SetOrderSummaryWorkflowTest {
 
     @Mock
-    private GetPetitionIssueFee getPetitionIssueFee;
+    private GetPetitionIssueFeeTask getPetitionIssueFeeTask;
 
     @Mock
     private GetAmendPetitionFeeTask getAmendPetitionFeeTask;
@@ -66,7 +66,7 @@ public class SetOrderSummaryWorkflowTest {
         orderSummary.add(feeResponse);
         expectedCaseData = Collections.singletonMap(PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY, orderSummary);
 
-        when(getPetitionIssueFee.execute(context, testData)).thenReturn(testData);
+        when(getPetitionIssueFeeTask.execute(context, testData)).thenReturn(testData);
         when(getAmendPetitionFeeTask.execute(context, testData)).thenReturn(testData);
         when(setOrderSummary.execute(context, testData)).thenReturn(expectedCaseData);
     }
@@ -76,8 +76,7 @@ public class SetOrderSummaryWorkflowTest {
         Map<String, Object> returnedCaseData = setOrderSummaryWorkflow.run(testData);
 
         assertThat(returnedCaseData, equalTo(expectedCaseData));
-        verify(getPetitionIssueFee).execute(context, testData);
-        verify(setOrderSummary).execute(context, testData);
+        verifyTasksCalledInOrder(testData, getPetitionIssueFeeTask, setOrderSummary);
         verifyZeroInteractions(getAmendPetitionFeeTask);
     }
 
@@ -88,9 +87,8 @@ public class SetOrderSummaryWorkflowTest {
         Map<String, Object> returnedCaseData = setOrderSummaryWorkflow.run(testData);
 
         assertThat(returnedCaseData, equalTo(expectedCaseData));
-        verify(getAmendPetitionFeeTask).execute(context, testData);
-        verify(setOrderSummary).execute(context, testData);
-        verifyZeroInteractions(getPetitionIssueFee);
+        verifyTasksCalledInOrder(testData, getAmendPetitionFeeTask, setOrderSummary);
+        verifyZeroInteractions(getPetitionIssueFeeTask);
     }
 
 }

@@ -11,12 +11,12 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_FEE_JSON_KEY;
 
 @Component
-public class GetPetitionIssueFee implements Task<Map<String, Object>> {
+public class GetPetitionIssueFeeTask implements Task<Map<String, Object>> {
 
     private final FeesAndPaymentsClient feesAndPaymentsClient;
 
     @Autowired
-    public GetPetitionIssueFee(FeesAndPaymentsClient feesAndPaymentsClient) {
+    public GetPetitionIssueFeeTask(FeesAndPaymentsClient feesAndPaymentsClient) {
         this.feesAndPaymentsClient = feesAndPaymentsClient;
     }
 
@@ -25,4 +25,5 @@ public class GetPetitionIssueFee implements Task<Map<String, Object>> {
         context.setTransientObject(PETITION_FEE_JSON_KEY, feesAndPaymentsClient.getPetitionIssueFee());
         return caseData;
     }
+
 }
