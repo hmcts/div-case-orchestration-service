@@ -69,10 +69,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerUpdateNotificationsEmailTask.RESP_ANSWER_NOT_RECVD_EVENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerUpdateNotificationsEmailTask.RESP_ANSWER_RECVD_EVENT;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-public class SendPetitionerUpdateNotificationEmailTest {
+public class SendPetitionerUpdateNotificationsEmailTaskTest {
 
     @Mock
     EmailService emailService;
@@ -80,15 +82,12 @@ public class SendPetitionerUpdateNotificationEmailTest {
     @Autowired
     TemplateConfig templateConfig;
 
-    SendPetitionerUpdateNotificationsEmail sendPetitionerUpdateNotificationsEmail;
+    @InjectMocks
+    SendPetitionerUpdateNotificationsEmailTask sendPetitionerUpdateNotificationsEmailTask;
 
     private Map<String, Object> testData;
     private TaskContext context;
     private Map<String, String> expectedTemplateVars;
-
-
-    private static final String RESP_ANSWER_RECVD_EVENT = "answerReceived";
-    private static final String RESP_ANSWER_NOT_RECVD_EVENT = "answerNotReceived";
 
     @Before
     public void setup() {
@@ -142,16 +141,16 @@ public class SendPetitionerUpdateNotificationEmailTest {
 
     private void verifyCallsEmailTemplate(String emailTemplateName) throws Exception {
         testData.put(LANGUAGE_PREFERENCE_WELSH, "No");
-        Map returnPayload = sendPetitionerUpdateNotificationsEmail.execute(context, testData);
+        Map returnPayload = sendPetitionerUpdateNotificationsEmailTask.execute(context, testData);
 
         assertEquals(testData, returnPayload);
 
         verify(emailService).sendEmailAndReturnExceptionIfFails(
-                eq(TEST_USER_EMAIL),
-                eq(emailTemplateName),
-                eq(expectedTemplateVars),
-                anyString(),
-                eq(LanguagePreference.ENGLISH));
+            eq(TEST_USER_EMAIL),
+            eq(emailTemplateName),
+            eq(expectedTemplateVars),
+            anyString(),
+            eq(LanguagePreference.ENGLISH));
     }
 
     @Test
@@ -160,7 +159,7 @@ public class SendPetitionerUpdateNotificationEmailTest {
         testData.put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         testData.put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
 
-        sendPetitionerUpdateNotificationsEmail.execute(context, testData);
+        sendPetitionerUpdateNotificationsEmailTask.execute(context, testData);
 
         verifyZeroInteractions(emailService);
     }
@@ -209,7 +208,7 @@ public class SendPetitionerUpdateNotificationEmailTest {
         addSolicitorTestData();
         testData.replace(RESP_FIRST_NAME_CCD_FIELD, null);
         try {
-            sendPetitionerUpdateNotificationsEmail.execute(context, testData);
+            sendPetitionerUpdateNotificationsEmailTask.execute(context, testData);
             fail("Failed to catch task exception");
         } catch (TaskException e) {
             verifyZeroInteractions(emailService);
@@ -259,6 +258,27 @@ public class SendPetitionerUpdateNotificationEmailTest {
     }
 
     @Test
+    public void shouldCallGenericUpdateEmailServiceWhenRespAdmitsAdultery() throws Exception {
+        addPetTestData();
+        testData.replace(D_8_REASON_FOR_DIVORCE, TEST_REASON_ADULTERY);
+        testData.replace(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
+        setEventIdTo(RESP_ANSWER_RECVD_EVENT);
+
+        verifyCallsEmailTemplate(EmailTemplateNames.GENERIC_UPDATE.name());
+    }
+
+    @Test
+    public void shouldCallGenericUpdateEmailServiceWhen2YearsSeparationAndRespondentAdmits() throws Exception {
+        addPetTestData();
+        testData.replace(D_8_REASON_FOR_DIVORCE, TEST_REASON_2_YEAR_SEP);
+        testData.replace(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
+
+        setEventIdTo(RESP_ANSWER_RECVD_EVENT);
+
+        verifyCallsEmailTemplate(EmailTemplateNames.GENERIC_UPDATE.name());
+    }
+
+    @Test
     public void shouldCallAppropriateEmailServiceWhenRespDoesNotAdmitAdulteryCoRespNoReply() throws Exception {
         addPetTestData();
         testData.replace(D_8_REASON_FOR_DIVORCE, TEST_REASON_ADULTERY);
@@ -268,6 +288,18 @@ public class SendPetitionerUpdateNotificationEmailTest {
         setEventIdTo(RESP_ANSWER_RECVD_EVENT);
 
         verifyCallsEmailTemplate(EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED.name());
+    }
+
+    @Test
+    public void shouldCallAppropriateEmailServiceWhenRespDoesNotAdmitAdulteryCoRespReplied() throws Exception {
+        addPetTestData();
+        testData.replace(D_8_REASON_FOR_DIVORCE, TEST_REASON_ADULTERY);
+        testData.replace(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
+        testData.put(D_8_CO_RESPONDENT_NAMED, YES_VALUE);
+        testData.put(RECEIVED_AOS_FROM_CO_RESP, YES_VALUE);
+        setEventIdTo(RESP_ANSWER_RECVD_EVENT);
+
+        verifyCallsEmailTemplate(EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name());
     }
 
     @Test
@@ -294,7 +326,7 @@ public class SendPetitionerUpdateNotificationEmailTest {
         addPetTestData();
         testData.replace(D_8_DIVORCED_WHO, null);
         try {
-            sendPetitionerUpdateNotificationsEmail.execute(context, testData);
+            sendPetitionerUpdateNotificationsEmailTask.execute(context, testData);
             fail("Failed to catch task exception");
         } catch (TaskException e) {
             verifyZeroInteractions(emailService);

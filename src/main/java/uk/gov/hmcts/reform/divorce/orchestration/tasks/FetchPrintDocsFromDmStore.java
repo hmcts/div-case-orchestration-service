@@ -60,19 +60,13 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
         return caseData;
     }
 
-    /**
-     * I'm not using object mapper here to keep it consistent with rest of code, when we migrate the formatter
-     * service to as module dependency this method could be simplified.
-     */
-    @SuppressWarnings("unchecked")
     private Map<String, GeneratedDocumentInfo> extractGeneratedDocumentList(Map<String, Object> caseData) {
-        List<CollectionMember<Document>> documentList = ofNullable(caseData.get(D8DOCUMENTS_GENERATED))
+        List<CollectionMember<Document>> generatedDocumentList = ofNullable(caseData.get(D8DOCUMENTS_GENERATED))
             .map(i -> objectMapper.convertValue(i, new TypeReference<List<CollectionMember<Document>>>() {
             }))
             .orElse(new ArrayList<>());
         Map<String, GeneratedDocumentInfo> generatedDocumentInfoList = new HashMap<>();
-
-        for (CollectionMember<Document> document : documentList) {
+        for (CollectionMember<Document> document : generatedDocumentList) {
             Document value = document.getValue();
             String documentType = value.getDocumentType();
             DocumentLink documentLink = value.getDocumentLink();
@@ -91,9 +85,9 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
         return generatedDocumentInfoList;
     }
 
-    private void populateDocumentBytes(TaskContext context, Map<String, GeneratedDocumentInfo> generatedDocumentInfos) {
+    private void populateDocumentBytes(TaskContext context, Map<String, GeneratedDocumentInfo> generatedDocumentsInfo) {
         CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
-        for (GeneratedDocumentInfo generatedDocumentInfo : generatedDocumentInfos.values()) {
+        for (GeneratedDocumentInfo generatedDocumentInfo : generatedDocumentsInfo.values()) {
             HttpHeaders headers = new HttpHeaders();
             headers.set(SERVICE_AUTHORIZATION, authTokenGenerator.generate());
             headers.set(USER_ROLES, CASEWORKER_DIVORCE);

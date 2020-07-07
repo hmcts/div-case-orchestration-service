@@ -126,6 +126,32 @@ public class NotifyForRefusalOrderTaskTest {
     }
 
     @Test
+    public void notificationServiceForSolicitorIsCalledWhenRefusalDecisionIsMoreInfo() throws TaskException {
+        incomingPayload.put(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE);
+        incomingPayload.put(REFUSAL_DECISION_CCD_FIELD, REFUSAL_DECISION_MORE_INFO_VALUE);
+        incomingPayload.put(PETITIONER_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL);
+        incomingPayload.put(PETITIONER_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
+        incomingPayload.put(RESP_FIRST_NAME_CCD_FIELD, TEST_USER_FIRST_NAME);
+        incomingPayload.put(RESP_LAST_NAME_CCD_FIELD, TEST_USER_LAST_NAME);
+
+        executeTask();
+
+        verify(emailService).sendEmail(
+            eq(TEST_SOLICITOR_EMAIL),
+            eq(EmailTemplateNames.SOL_DN_DECISION_MADE.name()),
+            argThat(new HamcrestArgumentMatcher<>(
+                allOf(
+                    hasEntry(NOTIFICATION_CCD_REFERENCE_KEY, TEST_CASE_ID),
+                    hasEntry(NOTIFICATION_PET_NAME, PETITIONER_FIRST_NAME + " " + PETITIONER_LAST_NAME),
+                    hasEntry(NOTIFICATION_RESP_NAME, TEST_USER_FIRST_NAME + " " + TEST_USER_LAST_NAME),
+                    hasEntry(NOTIFICATION_SOLICITOR_NAME, TEST_SOLICITOR_NAME)
+                )
+            )),
+            anyString()
+        );
+    }
+
+    @Test
     public void notificationServiceIsCalledWithExpectedParametersWhenRefusalDecisionIsRejection() throws TaskException {
         incomingPayload.put(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE);
         incomingPayload.put(REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION);

@@ -872,9 +872,6 @@ public class CallbackController {
         log.info("DN Decision made - cleaning state for case ID: {}", caseId);
         callbackResponseBuilder.data(caseOrchestrationService.cleanStateCallback(ccdCallbackRequest, authorizationToken));
 
-        log.info("DN Decision made - process other tasks for case ID: {}", caseId);
-        caseOrchestrationService.processDnDecisionMade(ccdCallbackRequest);
-
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
