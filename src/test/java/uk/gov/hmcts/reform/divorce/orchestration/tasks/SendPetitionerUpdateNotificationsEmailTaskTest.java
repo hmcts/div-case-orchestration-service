@@ -82,7 +82,6 @@ public class SendPetitionerUpdateNotificationsEmailTaskTest {
     @Autowired
     TemplateConfig templateConfig;
 
-    @InjectMocks
     SendPetitionerUpdateNotificationsEmailTask sendPetitionerUpdateNotificationsEmailTask;
 
     private Map<String, Object> testData;
@@ -91,7 +90,7 @@ public class SendPetitionerUpdateNotificationsEmailTaskTest {
 
     @Before
     public void setup() {
-        sendPetitionerUpdateNotificationsEmail = new SendPetitionerUpdateNotificationsEmail(emailService,
+        sendPetitionerUpdateNotificationsEmailTask = new SendPetitionerUpdateNotificationsEmailTask(emailService,
                 templateConfig);
 
         testData = new HashMap<>();

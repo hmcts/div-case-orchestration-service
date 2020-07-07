@@ -77,12 +77,6 @@ public class SendPetitionerUpdateNotificationsEmailTask implements Task<Map<Stri
     private final EmailService emailService;
     private final TemplateConfig templateConfig;
 
-    @Autowired
-    public SendPetitionerUpdateNotificationsEmail(EmailService emailService, TemplateConfig templateConfig) {
-        this.emailService = emailService;
-        this.templateConfig = templateConfig;
-    }
-
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
 

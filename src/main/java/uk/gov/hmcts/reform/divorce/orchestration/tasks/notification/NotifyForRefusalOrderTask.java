@@ -176,8 +176,8 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
 
     private Map<String, Object> sendDnRejectedToPetitionerSolicitor(TaskContext context, Map<String, Object> payload) throws TaskException {
         String solicitorEmail = getMandatoryStringValue(payload, PETITIONER_SOLICITOR_EMAIL);
-
         LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(payload);
+
         emailService.sendEmail(
             solicitorEmail,
             EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_REJECTION_SOLICITOR.name(),
@@ -192,12 +192,14 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
     private Map<String, Object> sendDnRefusalToPetitionerSolicitor(TaskContext context, Map<String, Object> payload)
         throws TaskException {
         String solicitorEmail = getMandatoryStringValue(payload, PETITIONER_SOLICITOR_EMAIL);
+        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(payload);
 
         emailService.sendEmail(
             solicitorEmail,
             EmailTemplateNames.SOL_DN_DECISION_MADE.name(),
             getPersonalisationForSolicitor(context, payload),
-            SOL_PERSONAL_SERVICE_EMAIL
+            SOL_PERSONAL_SERVICE_EMAIL,
+            languagePreference
         );
 
         return payload;

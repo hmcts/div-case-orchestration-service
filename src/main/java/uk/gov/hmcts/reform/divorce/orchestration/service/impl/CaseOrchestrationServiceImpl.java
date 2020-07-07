@@ -179,7 +179,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final NotifyForRefusalOrderWorkflow notifyForRefusalOrderWorkflow;
     private final RemoveDNDocumentsWorkflow removeDNDocumentsWorkflow;
     private final SendClarificationSubmittedNotificationWorkflow sendClarificationSubmittedNotificationWorkflow;
-    private final DnDecisionMadeWorkflow dnDecisionMadeWorkflow;
     private final DocumentTemplateService documentTemplateService;
 
     @Override
@@ -862,11 +861,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> removeDNGrantedDocuments(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return removeDNDocumentsWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
-    }
-
-    @Override
-    public Map<String, Object> processDnDecisionMade(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        return dnDecisionMadeWorkflow.run(ccdCallbackRequest);
     }
 
     @Override

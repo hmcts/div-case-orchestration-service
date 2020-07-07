@@ -999,7 +999,6 @@ public class CallbackControllerTest {
 
         verify(caseOrchestrationService, never()).notifyForRefusalOrder(ccdCallbackRequest);
         verify(caseOrchestrationService, never()).cleanStateCallback(ccdCallbackRequest, AUTH_TOKEN);
-        verify(caseOrchestrationService, never()).processDnDecisionMade(ccdCallbackRequest);
     }
 
     @Test

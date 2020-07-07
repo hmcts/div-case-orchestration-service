@@ -147,7 +147,8 @@ public class NotifyForRefusalOrderTaskTest {
                     hasEntry(NOTIFICATION_SOLICITOR_NAME, TEST_SOLICITOR_NAME)
                 )
             )),
-            anyString()
+            anyString(),
+            eq(LanguagePreference.ENGLISH)
         );
     }
 
