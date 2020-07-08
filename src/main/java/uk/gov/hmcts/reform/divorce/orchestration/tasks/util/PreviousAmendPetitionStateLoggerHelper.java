@@ -1,7 +1,11 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.util;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+
 import java.util.stream.Stream;
 
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PreviousAmendPetitionStateLoggerHelper {
     public static final String INVALID_STATE = "Invalid state";
     public static final String AWAITING_HWF_DECISION = "AwaitingHWFDecision";
