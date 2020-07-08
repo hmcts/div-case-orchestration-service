@@ -32,6 +32,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateHearing
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForHearingWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackBulkPrintWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CleanStatusCallbackWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.CreateNewAmendedCaseAndSubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DecreeNisiAboutToBeGrantedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
@@ -315,6 +316,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private SendClarificationSubmittedNotificationWorkflow sendClarificationSubmittedNotificationWorkflow;
+
+    @Mock
+    private CreateNewAmendedCaseAndSubmitToCCDWorkflow createNewAmendedCaseAndSubmitToCCDWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -756,6 +760,20 @@ public class CaseOrchestrationServiceImplTest {
         assertEquals(caseDetails.getCaseData(), actual);
 
         verify(solicitorUpdateWorkflow).run(caseDetails, AUTH_TOKEN);
+    }
+
+    @Test
+    public void givenCaseData_whenCreateNewAmendedCaseAndSubmitToCCD_thenReturnPayload() throws Exception {
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+
+        when(createNewAmendedCaseAndSubmitToCCDWorkflow.run(caseDetails, AUTH_TOKEN))
+            .thenReturn(requestPayload);
+
+        Map<String, Object> actual = classUnderTest.solicitorAmendPetitionForRefusal(ccdCallbackRequest, AUTH_TOKEN);
+
+        assertEquals(caseDetails.getCaseData(), actual);
+
+        verify(createNewAmendedCaseAndSubmitToCCDWorkflow).run(caseDetails, AUTH_TOKEN);
     }
 
     @Test

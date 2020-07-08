@@ -208,7 +208,7 @@ public class CallbackController {
         @ApiResponse(code = 200, message = "Successfully amended the current petition and created a new case.",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
-    public ResponseEntity<CcdCallbackResponse> amendPetition(
+    public ResponseEntity<CcdCallbackResponse> solicitorAmendPetitionForRefusal(
         @RequestHeader(value = AUTHORIZATION_HEADER, required = false) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return ResponseEntity.ok(CcdCallbackResponse.builder()

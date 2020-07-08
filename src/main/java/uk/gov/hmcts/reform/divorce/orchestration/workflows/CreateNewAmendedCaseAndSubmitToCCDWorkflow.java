@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CreateAmendPetitionDraftForRefusalFromCaseIdTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseData;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitCaseToCCD;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SolicitorSubmitCaseToCCDTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseDataTask;
 
@@ -24,32 +24,32 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class CreateNewAmendedCaseAndSubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final CreateAmendPetitionDraftForRefusalFromCaseIdTask amendPetitionDraftForRefusalFromCaseId;
+    private final CreateAmendPetitionDraftForRefusalFromCaseIdTask createAmendPetitionDraftForRefusalFromCaseId;
     private final UpdateCaseInCCD updateCaseInCCD;
     private final FormatDivorceSessionToCaseData formatDivorceSessionToCaseData;
     private final ValidateCaseDataTask validateCaseDataTask;
-    private final SubmitCaseToCCD submitCaseToCCD;
+    private final SolicitorSubmitCaseToCCDTask solicitorSubmitCaseToCCD;
 
     @Autowired
     public CreateNewAmendedCaseAndSubmitToCCDWorkflow(
         CreateAmendPetitionDraftForRefusalFromCaseIdTask amendPetitionDraftForRefusalFromCaseId,
         UpdateCaseInCCD updateCaseInCCD, FormatDivorceSessionToCaseData formatDivorceSessionToCaseData,
-        ValidateCaseDataTask validateCaseDataTask, SubmitCaseToCCD submitCaseToCCD) {
-        this.amendPetitionDraftForRefusalFromCaseId = amendPetitionDraftForRefusalFromCaseId;
+        ValidateCaseDataTask validateCaseDataTask, SolicitorSubmitCaseToCCDTask solicitorSubmitCaseToCCD) {
+        this.createAmendPetitionDraftForRefusalFromCaseId = amendPetitionDraftForRefusalFromCaseId;
         this.updateCaseInCCD = updateCaseInCCD;
         this.formatDivorceSessionToCaseData = formatDivorceSessionToCaseData;
         this.validateCaseDataTask = validateCaseDataTask;
-        this.submitCaseToCCD = submitCaseToCCD;
+        this.solicitorSubmitCaseToCCD = solicitorSubmitCaseToCCD;
     }
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
         this.execute(
             new Task[]{
-                updateCaseInCCD,
-                amendPetitionDraftForRefusalFromCaseId,
+                createAmendPetitionDraftForRefusalFromCaseId,
                 formatDivorceSessionToCaseData,
                 validateCaseDataTask,
-                submitCaseToCCD
+                solicitorSubmitCaseToCCD,
+                updateCaseInCCD
 
             },
             new HashMap<>(),

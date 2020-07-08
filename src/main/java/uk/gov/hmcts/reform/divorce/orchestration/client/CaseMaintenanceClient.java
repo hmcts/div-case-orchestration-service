@@ -52,6 +52,14 @@ public interface CaseMaintenanceClient {
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken
     );
 
+    @ApiOperation("Submit Case with solicitor")
+    @PostMapping(value = "/casemaintenance/version/1/solicitor-submit",
+        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE)
+    Map<String, Object> solicitorSubmitCase(
+        @RequestBody Map<String, Object> newCase,
+        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken
+    );
+
     @ApiOperation("Update Case")
     @PostMapping(value = "/casemaintenance/version/1/updateCase/{caseId}/{eventId}",
         headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE)
