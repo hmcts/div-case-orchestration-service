@@ -8,6 +8,7 @@ This application orchestrates a workflow based on the requested business require
 
 - [JDK 8](https://www.oracle.com/java)
 
+
 **Building**
 
 The project uses [Gradle](https://gradle.org) as a build tool but you don't have to install it locally since there is a
