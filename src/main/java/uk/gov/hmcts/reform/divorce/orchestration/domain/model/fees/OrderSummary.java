@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -44,6 +45,7 @@ public class OrderSummary {
         this.setPaymentTotal(getValueInPence(totalAmount));
     }
 
+    @JsonIgnore
     public String getPaymentTotalInPounds() {
         return NUMBER_FORMATTER.format(new BigDecimal(paymentTotal).movePointLeft(2));
     }

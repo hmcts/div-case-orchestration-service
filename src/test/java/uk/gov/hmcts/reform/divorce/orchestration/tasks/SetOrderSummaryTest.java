@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.Matchers.hasEntry;
@@ -33,6 +35,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_V
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features.SOLICITOR_DN_REJECT_AND_AMEND;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_FEE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SetOrderSummaryTest {
@@ -67,15 +70,7 @@ public class SetOrderSummaryTest {
 
         Map<String, Object> returnedCaseData = setOrderSummary.execute(context, testData);
 
-        OrderSummary returnedOrderSummary = (OrderSummary) returnedCaseData.get(PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY);
-        assertThat(returnedOrderSummary.getPaymentTotal(), is("55000"));
-        List<FeeItem> fees = returnedOrderSummary.getFees();
-        assertThat(fees, hasSize(1));
-        FeeValue fee = fees.get(0).getValue();
-        assertThat(fee.getFeeCode(), is(TEST_FEE_CODE));
-        assertThat(fee.getFeeVersion(), is(TEST_FEE_VERSION.toString()));
-        assertThat(fee.getFeeDescription(), is(TEST_FEE_DESCRIPTION));
-        assertThat(fee.getFeeAmount(), is("55000"));
+        assertReturnedOrderSummary(returnedCaseData, "55000");
         assertThat(returnedCaseData, hasEntry(SOL_APPLICATION_FEE_IN_POUNDS, "550"));
     }
 
@@ -92,15 +87,7 @@ public class SetOrderSummaryTest {
 
         Map<String, Object> returnedCaseData = setOrderSummary.execute(context, testData);
 
-        OrderSummary returnedOrderSummary = (OrderSummary) returnedCaseData.get(PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY);
-        assertThat(returnedOrderSummary.getPaymentTotal(), is("8543"));
-        List<FeeItem> fees = returnedOrderSummary.getFees();
-        assertThat(fees, hasSize(1));
-        FeeValue fee = fees.get(0).getValue();
-        assertThat(fee.getFeeCode(), is(TEST_FEE_CODE));
-        assertThat(fee.getFeeVersion(), is(TEST_FEE_VERSION.toString()));
-        assertThat(fee.getFeeDescription(), is(TEST_FEE_DESCRIPTION));
-        assertThat(fee.getFeeAmount(), is("8543"));
+        assertReturnedOrderSummary(returnedCaseData, "8543");
         assertThat(returnedCaseData, hasEntry(SOL_APPLICATION_FEE_IN_POUNDS, "85.43"));
     }
 
@@ -117,16 +104,31 @@ public class SetOrderSummaryTest {
 
         Map<String, Object> returnedCaseData = setOrderSummary.execute(context, testData);
 
+        assertReturnedOrderSummary(returnedCaseData, "55000");
+        assertThat(returnedCaseData, not(hasKey(SOL_APPLICATION_FEE_IN_POUNDS)));
+    }
+
+    private void assertReturnedOrderSummary(Map<String, Object> returnedCaseData, String expectedAmountInPence) {
+        String jsonOrderSummary = convertObjectToJsonString(returnedCaseData.get(PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY));
+        assertThat(jsonOrderSummary, hasJsonPath("PaymentTotal", is(expectedAmountInPence)));
+        assertThat(jsonOrderSummary, hasJsonPath("Fees", hasSize(1)));
+        assertThat(jsonOrderSummary, hasJsonPath("Fees[0].value", allOf(
+            hasJsonPath("FeeCode", is(TEST_FEE_CODE)),
+            hasJsonPath("FeeVersion", is(TEST_FEE_VERSION.toString())),
+            hasJsonPath("FeeDescription", is(TEST_FEE_DESCRIPTION)),
+            hasJsonPath("FeeAmount", is(expectedAmountInPence))
+        )));
+        assertThat(jsonOrderSummary, hasJsonPath("$.*", hasSize(3)));//Making sure we don't have any accidental extra properties
+
         OrderSummary returnedOrderSummary = (OrderSummary) returnedCaseData.get(PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY);
-        assertThat(returnedOrderSummary.getPaymentTotal(), is("55000"));
+        assertThat(returnedOrderSummary.getPaymentTotal(), is(expectedAmountInPence));
         List<FeeItem> fees = returnedOrderSummary.getFees();
         assertThat(fees, hasSize(1));
         FeeValue fee = fees.get(0).getValue();
         assertThat(fee.getFeeCode(), is(TEST_FEE_CODE));
         assertThat(fee.getFeeVersion(), is(TEST_FEE_VERSION.toString()));
         assertThat(fee.getFeeDescription(), is(TEST_FEE_DESCRIPTION));
-        assertThat(fee.getFeeAmount(), is("55000"));
-        assertThat(returnedCaseData, not(hasKey(SOL_APPLICATION_FEE_IN_POUNDS)));
+        assertThat(fee.getFeeAmount(), is(expectedAmountInPence));
     }
 
     @Test(expected = TaskException.class)
