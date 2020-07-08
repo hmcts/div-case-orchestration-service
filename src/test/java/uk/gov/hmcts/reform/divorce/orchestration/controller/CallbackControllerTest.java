@@ -1244,6 +1244,20 @@ public class CallbackControllerTest {
     }
 
     @Test
+    public void testSendAmendApplicationEmailException_returnsError_whenExecuted() throws WorkflowException {
+
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(DUMMY_CASE_DATA).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        when(caseOrchestrationService.sendAmendApplicationEmail(ccdCallbackRequest)).thenThrow(new WorkflowException("Workflow error"));
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.amendApplication(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getErrors(), contains("Workflow error"));
+    }
+
+    @Test
     public void testSendAmendApplicationEmail_returnsPayload_whenExecuted() throws WorkflowException {
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(DUMMY_CASE_DATA).build();
