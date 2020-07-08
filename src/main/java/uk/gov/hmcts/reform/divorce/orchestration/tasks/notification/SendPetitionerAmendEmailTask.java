@@ -13,12 +13,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AMEND_PETITION_FEE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_RESPONDENT_GENDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_FEES_KEY;
@@ -26,10 +25,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.PreviousAmendPetitionStateLoggerHelper.getAmendPetitionPreviousState;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRelationshipTermByGender;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerRepresented;
 
 @Slf4j
 @Component
@@ -39,37 +38,15 @@ public class SendPetitionerAmendEmailTask implements Task<Map<String, Object>> {
 
     private final EmailService emailService;
 
-    public static final String PRE_STATE_AWAITING_HWF_DECISION = "AwaitingHWFDecision";
-    public static final String PRE_STATE_SUBMITTED = "Submitted";
-    public static final String PRE_STATE_ISSUED = "Issued";
-    public static final String PRE_STATE_REJECTED = "Rejected";
-    public static final String PRE_STATE_PENDING_REJECTION = "PendingRejection";
-    public static final String PRE_STATE_SOLICITOR_AWAITING_PAYMENT_CONFIRMATION = "solicitorAwaitingPaymentConfirmation";
-    public static final String PRE_STATE_AOS_AWAITING = "AosAwaiting";
-    public static final String PRE_STATE_AOS_STARTED = "AosStarted";
-    public static final String PRE_STATE_AOS_OVERDUE = "AosOverdue";
-    public static final String PRE_STATE_AWAITING_REISSUE = "AwaitingReissue";
-    public static final String PRE_STATE_AOS_COMPLETED = "AosCompleted";
-    public static final String PRE_STATE_AOS_AWAITING_SOLICITOR = "AosAwaitingSol";
-    public static final String PRE_STATE_AOS_PRE_SUBMITTED = "AosPreSubmit";
-    public static final String PRE_STATE_AOS_DRAFTED = "AosDrafted";
-    public static final String PRE_STATE_AWAITING_SERVICE = "AwaitingService";
-    public static final String PRE_STATE_AOS_SUBMITTED_AWAITING_ANSWER = "AosSubmittedAwaitingAnswer";
-    public static final String PRE_STATE_AWAITING_DECREE_NISI = "AwaitingDecreeNisi";
-
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
         return sendAmendApplicationEmailToPetitioner(context, caseData);
     }
 
     private Map<String, Object> sendAmendApplicationEmailToPetitioner(TaskContext context, Map<String, Object> payload) throws TaskException {
-        final CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
-
         String petitionerEmail = getMandatoryStringValue(payload, D_8_PETITIONER_EMAIL);
-        String caseId = getCaseId(context);
-        String eventId = caseDetails.getState();
 
-        logEvent(caseId, eventId);
+        logEvent(context);
 
         emailService.sendEmail(
             petitionerEmail,
@@ -92,37 +69,12 @@ public class SendPetitionerAmendEmailTask implements Task<Map<String, Object>> {
         return personalisation;
     }
 
-    public static String printPreviousState(String eventId) {
-        String[] preStates = {
-            PRE_STATE_AWAITING_HWF_DECISION,
-            PRE_STATE_SUBMITTED,
-            PRE_STATE_ISSUED,
-            PRE_STATE_REJECTED,
-            PRE_STATE_PENDING_REJECTION,
-            PRE_STATE_SOLICITOR_AWAITING_PAYMENT_CONFIRMATION,
-            PRE_STATE_SOLICITOR_AWAITING_PAYMENT_CONFIRMATION,
-            PRE_STATE_AOS_AWAITING,
-            PRE_STATE_AOS_STARTED,
-            PRE_STATE_AOS_OVERDUE,
-            PRE_STATE_AWAITING_REISSUE,
-            PRE_STATE_AOS_COMPLETED,
-            PRE_STATE_AOS_AWAITING_SOLICITOR,
-            PRE_STATE_AOS_PRE_SUBMITTED,
-            PRE_STATE_AOS_DRAFTED,
-            PRE_STATE_AWAITING_SERVICE,
-            PRE_STATE_AOS_SUBMITTED_AWAITING_ANSWER,
-            PRE_STATE_AWAITING_DECREE_NISI
-        };
+    private void logEvent(TaskContext context) throws TaskException {
+        final CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
+        String caseId = getCaseId(context);
+        String stateId = caseDetails.getState();
 
-        for (String state: preStates) {
-            if (state.equals(eventId))
-                return state;
-        }
-        return "Not valid state";
-    }
-
-    public void logEvent(String caseId, String eventId) {
-        log.info("CaseId: {}. " + EMAIL_DESCRIPTION + " Previous state " + printPreviousState(eventId) + ". Task executed", caseId);
+        log.info("CaseId: {}. " + EMAIL_DESCRIPTION + " Previous state " + getAmendPetitionPreviousState(stateId) + ". Task executed", caseId);
     }
 
     private String getFormattedFeeAmount(TaskContext context) {
@@ -131,6 +83,6 @@ public class SendPetitionerAmendEmailTask implements Task<Map<String, Object>> {
 
     private String getHusbandOrWife(Map<String, Object> payload) throws TaskException {
         return getRelationshipTermByGender(getMandatoryPropertyValueAsString(payload,
-            D_8_INFERRED_PETITIONER_GENDER));
+            D_8_INFERRED_RESPONDENT_GENDER));
     }
 }
