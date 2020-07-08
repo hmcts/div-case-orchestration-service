@@ -99,6 +99,7 @@
   "90033_Loosely Scoped Cookie_http://div-cos-aat.service.core-compute-aat.internal/solicitor-link-case_POST": "ignore",
   "90033_Loosely Scoped Cookie_http://div-cos-aat.service.core-compute-aat.internal/cases/data-extraction/family-man/status/AOS/lastModifiedDate/lastModifiedDate_POST": "ignore",
   "90033_Loosely Scoped Cookie_http://div-cos-aat.service.core-compute-aat.internal/submit-aos/caseId_POST": "ignore",
+  "90033_Loosely Scoped Cookie_http://div-cos-aat.service.core-compute-aat.internal/_GET": "ignore",
   "100001_Unexpected Content-Type was returned_http://div-cos-aat.service.core-compute-aat.internal/dn-submitted_POST": "ignore",
   "100001_Unexpected Content-Type was returned_http://div-cos-aat.service.core-compute-aat.internal/cases/da/make-overdue_POST": "ignore",
   "100001_Unexpected Content-Type was returned_http://div-cos-aat.service.core-compute-aat.internal/handle-post-make-case-eligible-for-da-submitted_POST": "ignore",
