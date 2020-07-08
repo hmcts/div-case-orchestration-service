@@ -896,6 +896,7 @@ public class CallbackControllerTest {
         assertEquals(expected, actual.getBody());
     }
 
+    @Test
     public void testDnAboutToBeGrantedCallsRightServiceMethod() throws CaseOrchestrationServiceException {
         when(caseOrchestrationService.processCaseBeforeDecreeNisiIsGranted(any(), eq(AUTH_TOKEN)))
             .thenReturn(singletonMap("newKey", "newValue"));
@@ -1243,18 +1244,16 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getErrors(), contains("Workflow error"));
     }
 
-    @Test
+    @Test(expected = WorkflowException.class)
     public void testSendAmendApplicationEmailException_returnsError_whenExecuted() throws WorkflowException {
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(DUMMY_CASE_DATA).build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
-        when(caseOrchestrationService.sendAmendApplicationEmail(ccdCallbackRequest)).thenThrow(new WorkflowException("Workflow error"));
+        when(caseOrchestrationService
+            .sendAmendApplicationEmail(ccdCallbackRequest)).thenThrow(new WorkflowException("Workflow error"));
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.amendApplication(ccdCallbackRequest);
-
-        assertThat(response.getStatusCode(), equalTo(OK));
-        assertThat(response.getBody().getErrors(), contains("Workflow error"));
+        classUnderTest.amendApplication(ccdCallbackRequest);
     }
 
     @Test
