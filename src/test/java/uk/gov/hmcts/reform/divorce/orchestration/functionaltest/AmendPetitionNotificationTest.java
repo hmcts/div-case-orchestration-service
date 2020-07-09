@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplat
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.service.notify.NotificationClientException;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,6 +47,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETIT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_RESPONDENT_GENDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
@@ -64,6 +64,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class AmendPetitionNotificationTest extends MockedFunctionalTest {
     private static final String API_URL = "/amend-application";
     private static final String AMEND_PETITION_FEE_CONTEXT_PATH = "/fees-and-payments/version/1/amend-fee";
+    private static String testEventId;
     private static Map<String, Object> testData;
     private static Map<String, Object> testTemplateVars;
 
@@ -104,6 +105,7 @@ public class AmendPetitionNotificationTest extends MockedFunctionalTest {
     }
 
     private void runTestProcedureUsing(EmailTemplateNames expectedTemplate) throws Exception {
+        setEventIdTo(AOS_AWAITING);
         setUpEmailClientMockWith(expectedTemplate.name(), testTemplateVars);
 
         stubGetFeeFromFeesAndPayments(HttpStatus.OK, FeeResponse.builder().amount(TEST_FEE_AMOUNT).build());
@@ -140,11 +142,8 @@ public class AmendPetitionNotificationTest extends MockedFunctionalTest {
             .thenReturn(null);
     }
 
-    private void setUpEmailClientMockThrowsExceptionWith(String templateName, Map emailArgs) throws NotificationClientException {
-        NotificationClientException exception = new NotificationClientException("test exception");
-        when(mockEmailClient
-            .sendEmail(eq(templateIdOf(templateName)), eq(TEST_USER_EMAIL), eq(emailArgs), anyString()))
-            .thenThrow(exception);
+    private void setEventIdTo(String eventId) {
+        testEventId = eventId;
     }
 
     private void verifySendEmailIsCalledWithUserDataAnd(String templateName) throws NotificationClientException {
