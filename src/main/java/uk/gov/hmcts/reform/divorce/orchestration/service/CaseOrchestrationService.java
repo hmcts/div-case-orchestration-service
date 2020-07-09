@@ -67,6 +67,9 @@ public interface CaseOrchestrationService {
     Map<String, Object> solicitorUpdate(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
         throws WorkflowException;
 
+    Map<String, Object> solicitorAmendPetitionForRefusal(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
+        throws WorkflowException;
+
     Map<String, Object> submitRespondentAosCase(Map<String, Object> payload, String authorizationToken, String caseId)
         throws WorkflowException;
 
