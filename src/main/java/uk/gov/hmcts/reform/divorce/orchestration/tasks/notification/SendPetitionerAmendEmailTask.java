@@ -34,7 +34,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRe
 @Component
 @RequiredArgsConstructor
 public class SendPetitionerAmendEmailTask implements Task<Map<String, Object>> {
-    private static final String EMAIL_DESCRIPTION = "Petitioner - You can amend your application";
+    private static final String EMAIL_DESCRIPTION = "Petitioner - You can amend your application notification";
 
     private final EmailService emailService;
 
