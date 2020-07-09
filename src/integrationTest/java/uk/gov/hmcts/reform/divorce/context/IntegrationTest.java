@@ -29,9 +29,9 @@ import javax.annotation.PostConstruct;
 @RunWith(SerenityRunner.class)
 @ContextConfiguration(classes = {ServiceContextConfiguration.class})
 public abstract class IntegrationTest {
-    private static final String CASE_WORKER_USERNAME = "TEST_CASE_WORKER_USER";
-    private static final String CASE_WORKER_SUPERUSER = "TEST_CASE_WORKER_SUPERUSER";
-    private static final String SOLICITOR_USER_NAME = "TEST_SOLICITOR";
+    private static final String CASE_WORKER_USERNAME = "TEST_CASE_WORKER_TEST";
+    private static final String CASE_WORKER_SUPERUSER = "TEST_CASE_SUPERUSER_TEST";
+    private static final String SOLICITOR_USER_NAME = "TEST_SOLICITOR_TEST";
     private static final String EMAIL_DOMAIN = "@mailinator.com";
     private static final String CITIZEN_ROLE = "citizen";
     private static final String PASSWORD = "genericPassword123";
