@@ -89,6 +89,7 @@ public abstract class MockedFunctionalTest {
         return WireMockSpring
             .options()
             .port(port)
+            .jettyStopTimeout(20L)
             .extensions(new ConnectionCloseExtension());
     }
 

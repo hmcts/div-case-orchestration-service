@@ -108,11 +108,17 @@ public class IdamUtils {
         String userLoginDetails = String.join(":", username, password);
         final String authHeader = "Basic " + new String(Base64.getEncoder().encode(userLoginDetails.getBytes()));
 
-        Response response = SerenityRest.given()
-            .header("Authorization", authHeader)
-            .header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-            .relaxedHTTPSValidation()
-            .post(idamCodeUrl());
+        int retryCount = 0;
+        Response response = null;
+        do {
+            response = SerenityRest.given()
+                .header("Authorization", authHeader)
+                .header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                .relaxedHTTPSValidation()
+                .post(idamCodeUrl());
+            retryCount++;
+        }
+        while (response.getStatusCode() > 300 && retryCount <= 3);
 
         if (response.getStatusCode() >= 300) {
             throw new IllegalStateException("Token generation failed with code: " + response.getStatusCode()
