@@ -145,6 +145,26 @@ public class CallbackControllerTest {
     }
 
     @Test
+    public void whenSolicitorAmendPetitionForRefusal_thenReturnCcdResponse() throws Exception {
+        final Map<String, Object> caseData = Collections.emptyMap();
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .build();
+
+        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(caseDetails);
+
+        when(caseOrchestrationService.solicitorAmendPetitionForRefusal(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(caseData);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorAmendPetitionForRefusal(AUTH_TOKEN, ccdCallbackRequest);
+
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+
+        assertEquals(OK, response.getStatusCode());
+        assertEquals(expectedResponse, response.getBody());
+    }
+
+    @Test
     public void whenProcessPbaPayment_thenReturnCcdResponse() throws Exception {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder()
