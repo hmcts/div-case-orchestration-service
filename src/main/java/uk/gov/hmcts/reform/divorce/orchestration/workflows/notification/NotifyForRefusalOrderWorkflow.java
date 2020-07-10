@@ -18,8 +18,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RequiredArgsConstructor
 public class NotifyForRefusalOrderWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final NotifyForRefusalOrderTask notifyForRefusalOrderTask;
     private final GetAmendPetitionFeeTask getAmendPetitionFeeTask;
+    private final NotifyForRefusalOrderTask notifyForRefusalOrderTask;
 
     public Map<String, Object> run(CaseDetails caseDetails) throws WorkflowException {
         return this.execute(
