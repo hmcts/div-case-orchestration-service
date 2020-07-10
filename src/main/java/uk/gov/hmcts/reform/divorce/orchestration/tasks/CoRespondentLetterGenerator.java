@@ -25,8 +25,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_INVITATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_FEE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_FEE_FOR_LETTER;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_FEE_JSON_KEY;
 
 @Component
 public class CoRespondentLetterGenerator implements Task<Map<String, Object>> {
@@ -42,7 +42,7 @@ public class CoRespondentLetterGenerator implements Task<Map<String, Object>> {
         final CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
 
         final NumberFormat poundsOnlyFormat = new DecimalFormat("#");
-        final String petitionIssueFee = poundsOnlyFormat.format(((FeeResponse) context.getTransientObject(PETITION_ISSUE_FEE_JSON_KEY)).getAmount());
+        final String petitionIssueFee = poundsOnlyFormat.format(((FeeResponse) context.getTransientObject(PETITION_FEE_JSON_KEY)).getAmount());
 
         GeneratedDocumentInfo coRespondentInvitation =
             documentGeneratorClient.generatePDF(

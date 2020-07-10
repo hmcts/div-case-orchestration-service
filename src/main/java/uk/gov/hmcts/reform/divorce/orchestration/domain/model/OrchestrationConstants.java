@@ -205,6 +205,7 @@ public class OrchestrationConstants {
     public static final String CASE_ID_JSON_KEY = "caseId";
     public static final String PREVIOUS_CASE_ID_JSON_KEY = "previousCaseId";
     public static final String NEW_AMENDED_PETITION_DRAFT_KEY = "newAmendedPetitionDraft";
+    public static final String NEW_SUBMITTED_CASE_KEY = "newSubmittedCase";
     public static final String CASE_STATE_JSON_KEY = "state";
     public static final String CREATED_DATE_JSON_KEY = "createdDate";
     public static final String ID = "id";
@@ -342,9 +343,9 @@ public class OrchestrationConstants {
     // Fees
     public static final String CURRENCY = "GBP";
     public static final String FEE_PAY_BY_ACCOUNT = "feePayByAccount";
-    public static final String PETITION_ISSUE_FEE_JSON_KEY = "petitionIssueFee";
-    public static final String AMEND_PETITION_FEE_JSON_KEY = "amendPetitionFee";
+    public static final String PETITION_FEE_JSON_KEY = "petitionFee";
     public static final String PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY = "solApplicationFeeOrderSummary";
+    public static final String SOL_APPLICATION_FEE_IN_POUNDS_JSON_KEY = "solApplicationFeeInPounds";
     public static final String SERVICE = "DIVORCE";
 
     // Solicitors - Suggest refactoring into a common model library for all JSON keys
