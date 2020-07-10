@@ -81,8 +81,8 @@ public class CreateNewAmendedCaseAndSubmitToCCDWorkflowTest {
         when(createAmendPetitionDraftForRefusalFromCaseIdTask.execute(context, testData)).thenReturn(newDivorceCaseData);
         when(formatDivorceSessionToCaseData.execute(context, newDivorceCaseData)).thenReturn(newCCDCaseData);
         when(validateCaseDataTask.execute(context, newCCDCaseData)).thenReturn(newCCDCaseData);
-        when(solicitorSubmitCaseToCCDTask.execute(context, newCCDCaseData)).thenReturn(newCCDCaseData);
-        when(updateCaseInCCD.execute(context, newCCDCaseData)).thenReturn(testData);
+        when(solicitorSubmitCaseToCCDTask.execute(context, newCCDCaseData)).thenReturn(testData);
+        when(updateCaseInCCD.execute(context, testData)).thenReturn(testData);
 
         assertEquals(testData, createNewAmendedCaseAndSubmitToCCDWorkflow.run(caseDetails, AUTH_TOKEN));
 
@@ -94,7 +94,7 @@ public class CreateNewAmendedCaseAndSubmitToCCDWorkflowTest {
         inOrder.verify(formatDivorceSessionToCaseData).execute(context, newDivorceCaseData);
         inOrder.verify(validateCaseDataTask).execute(context, newCCDCaseData);
         inOrder.verify(solicitorSubmitCaseToCCDTask).execute(context, newCCDCaseData);
-        inOrder.verify(updateCaseInCCD).execute(context, newCCDCaseData);
+        inOrder.verify(updateCaseInCCD).execute(context, testData);
     }
 
 }
