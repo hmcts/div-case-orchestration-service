@@ -139,6 +139,26 @@ public class CallbackControllerTest {
     }
 
     @Test
+    public void whenSolicitorAmendPetitionForRefusal_thenReturnCcdResponse() throws Exception {
+        final Map<String, Object> caseData = Collections.emptyMap();
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .build();
+
+        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        ccdCallbackRequest.setCaseDetails(caseDetails);
+
+        when(caseOrchestrationService.solicitorAmendPetitionForRefusal(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(caseData);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorAmendPetitionForRefusal(AUTH_TOKEN, ccdCallbackRequest);
+
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+
+        assertEquals(OK, response.getStatusCode());
+        assertEquals(expectedResponse, response.getBody());
+    }
+
+    @Test
     public void whenProcessPbaPayment_thenReturnCcdResponse() throws Exception {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder()
@@ -896,6 +916,7 @@ public class CallbackControllerTest {
         assertEquals(expected, actual.getBody());
     }
 
+    @Test
     public void testDnAboutToBeGrantedCallsRightServiceMethod() throws CaseOrchestrationServiceException {
         when(caseOrchestrationService.processCaseBeforeDecreeNisiIsGranted(any(), eq(AUTH_TOKEN)))
             .thenReturn(singletonMap("newKey", "newValue"));
@@ -1241,6 +1262,33 @@ public class CallbackControllerTest {
 
         assertThat(response.getStatusCode(), equalTo(OK));
         assertThat(response.getBody().getErrors(), contains("Workflow error"));
+    }
+
+    @Test(expected = WorkflowException.class)
+    public void testSendAmendApplicationEmailException_returnsError_whenExecuted() throws WorkflowException {
+
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(DUMMY_CASE_DATA).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        when(caseOrchestrationService
+            .sendAmendApplicationEmail(ccdCallbackRequest)).thenThrow(new WorkflowException("Workflow error"));
+
+        classUnderTest.amendApplication(ccdCallbackRequest);
+    }
+
+    @Test
+    public void testSendAmendApplicationEmail_returnsPayload_whenExecuted() throws WorkflowException {
+
+        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(DUMMY_CASE_DATA).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        when(caseOrchestrationService.sendAmendApplicationEmail(ccdCallbackRequest)).thenReturn(DUMMY_CASE_DATA);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.amendApplication(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getData(), is(DUMMY_CASE_DATA));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
     }
 
     @Test

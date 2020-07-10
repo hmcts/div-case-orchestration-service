@@ -202,6 +202,20 @@ public class CallbackController {
             .build());
     }
 
+    @PostMapping(path = "/solicitor-amend-petition-dn-rejection", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback to amend current petition and create a new case")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Successfully amended the current petition and created a new case.",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> solicitorAmendPetitionForRefusal(
+        @RequestHeader(value = AUTHORIZATION_HEADER, required = false) String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        return ResponseEntity.ok(CcdCallbackResponse.builder()
+            .data(caseOrchestrationService.solicitorAmendPetitionForRefusal(ccdCallbackRequest, authorizationToken))
+            .build());
+    }
+
     @PostMapping(path = "/aos-submitted", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Trigger notification email to Respondent that their AOS has been submitted")
     @ApiResponses(value = {
@@ -1016,6 +1030,19 @@ public class CallbackController {
             log.error("Failed to delete DN granted documents for case ID: {}", ccdCallbackRequest.getCaseDetails().getCaseId(), exception);
         }
         return ResponseEntity.ok(response.build());
+    }
+
+    @PostMapping(path = "/amend-application")
+    @ApiOperation(value = "Trigger notification email to Petitioner that they are able to amend their application.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Amend application notification callback processed.")})
+    public ResponseEntity<CcdCallbackResponse> amendApplication(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(caseOrchestrationService.sendAmendApplicationEmail(ccdCallbackRequest))
+                .build());
     }
 
     private List<String> getErrors(Map<String, Object> response) {
