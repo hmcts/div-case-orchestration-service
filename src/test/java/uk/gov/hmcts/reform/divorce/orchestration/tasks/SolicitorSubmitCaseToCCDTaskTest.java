@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -18,7 +17,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NEW_SUBMITTED_CASE_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SolicitorSubmitCaseToCCDTaskTest {
@@ -40,8 +38,7 @@ public class SolicitorSubmitCaseToCCDTaskTest {
 
         when(caseMaintenanceClient.solicitorSubmitCase(testData, AUTH_TOKEN)).thenReturn(resultData);
 
-        assertEquals(new HashMap<>(), solicitorSubmitCaseToCCD.execute(context, testData));
-        assertEquals(resultData, context.getTransientObject(NEW_SUBMITTED_CASE_KEY));
+        assertEquals(resultData, solicitorSubmitCaseToCCD.execute(context, testData));
 
         verify(caseMaintenanceClient).solicitorSubmitCase(testData, AUTH_TOKEN);
     }
