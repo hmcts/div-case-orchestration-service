@@ -67,6 +67,9 @@ public interface CaseOrchestrationService {
     Map<String, Object> solicitorUpdate(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
         throws WorkflowException;
 
+    Map<String, Object> solicitorAmendPetitionForRefusal(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
+        throws WorkflowException;
+
     Map<String, Object> submitRespondentAosCase(Map<String, Object> payload, String authorizationToken, String caseId)
         throws WorkflowException;
 
@@ -158,4 +161,6 @@ public interface CaseOrchestrationService {
     CcdCallbackResponse sendClarificationSubmittedNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
     Map<String, Object> decreeNisiDecisionState(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+
+    Map<String, Object> sendAmendApplicationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 }
