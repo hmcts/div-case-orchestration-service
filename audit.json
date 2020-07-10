@@ -115,6 +115,7 @@
   "100001_Unexpected Content-Type was returned_http://div-cos-aat.service.core-compute-aat.internal/link-respondent/caseId/pin_POST": "ignore",
   "100001_Unexpected Content-Type was returned_http://div-cos-aat.service.core-compute-aat.internal/amend-petition-dn-rejection/caseId_PUT": "ignore",
   "100001_Unexpected Content-Type was returned_http://div-cos-aat.service.core-compute-aat.internal/cases/da/make-eligible_POST": "ignore",
+  "10010_Cookie No HttpOnly Flag_http://div-cos-aat.service.core-compute-aat.internal/aos-solicitor-nominated_POST": "ignore",
   "10010_Cookie No HttpOnly Flag_http://div-cos-aat.service.core-compute-aat.internal/authenticate-respondent_POST": "ignore",
   "10010_Cookie No HttpOnly Flag_http://div-cos-aat.service.core-compute-aat.internal/dn-decision-made_POST": "ignore",
   "10010_Cookie No HttpOnly Flag_http://div-cos-aat.service.core-compute-aat.internal/retrieve-case_GET": "ignore",
