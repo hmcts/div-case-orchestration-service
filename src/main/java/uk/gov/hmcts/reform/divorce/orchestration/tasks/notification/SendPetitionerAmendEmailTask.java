@@ -55,6 +55,12 @@ public class SendPetitionerAmendEmailTask implements Task<Map<String, Object>> {
             EMAIL_DESCRIPTION
         );
 
+        log.info(
+            "CaseID: {}, Email {} sent to petitioner.",
+            getCaseId(context),
+            EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name()
+        );
+
         return payload;
     }
 
@@ -74,7 +80,12 @@ public class SendPetitionerAmendEmailTask implements Task<Map<String, Object>> {
         String caseId = getCaseId(context);
         String stateId = caseDetails.getState();
 
-        log.info("CaseId: {}. " + EMAIL_DESCRIPTION + " Previous state " + getAmendPetitionPreviousState(stateId) + ". Task executed", caseId);
+        log.info(
+            "CaseID: {}, {} Previous state,  {} Task executed",
+            caseId,
+            EMAIL_DESCRIPTION,
+            getAmendPetitionPreviousState(stateId)
+        );
     }
 
     private String getFormattedFeeAmount(TaskContext context) {
