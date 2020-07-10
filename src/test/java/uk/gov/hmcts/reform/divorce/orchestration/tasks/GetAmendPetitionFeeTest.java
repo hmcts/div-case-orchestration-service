@@ -20,7 +20,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_A
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_DESCRIPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_VERSION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AMEND_PETITION_FEE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_FEE_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GetAmendPetitionFeeTest {
@@ -43,15 +43,15 @@ public class GetAmendPetitionFeeTest {
     @Test
     public void executeShouldPopulateAmendFee() {
         FeeResponse feeResponse = FeeResponse.builder()
-                .amount(TEST_FEE_AMOUNT)
-                .feeCode(TEST_FEE_CODE)
-                .version(TEST_FEE_VERSION)
-                .description(TEST_FEE_DESCRIPTION)
-                .build();
+            .amount(TEST_FEE_AMOUNT)
+            .feeCode(TEST_FEE_CODE)
+            .version(TEST_FEE_VERSION)
+            .description(TEST_FEE_DESCRIPTION)
+            .build();
 
-        when(feesAndPaymentsClient.getAmendPetitioneFee()).thenReturn(feeResponse);
+        when(feesAndPaymentsClient.getAmendPetitionerFee()).thenReturn(feeResponse);
 
         assertEquals(testData, classToTest.execute(context, testData));
-        assertEquals(feeResponse, context.getTransientObject(AMEND_PETITION_FEE_JSON_KEY));
+        assertEquals(feeResponse, context.getTransientObject(PETITION_FEE_JSON_KEY));
     }
 }
