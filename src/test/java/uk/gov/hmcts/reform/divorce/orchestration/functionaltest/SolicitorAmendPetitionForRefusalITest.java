@@ -27,7 +27,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AMEND_PETITION_FOR_REFUSAL_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
@@ -41,11 +40,6 @@ public class SolicitorAmendPetitionForRefusalITest extends MockedFunctionalTest 
     private static final String CMS_AMEND_PETITION_CONTEXT_PATH = String.format(
         "/casemaintenance/version/1/amended-petition-draft-refusal/%s",
         CASE_ID
-    );
-    private static final String CMS_UPDATE_CONTEXT_PATH = String.format(
-        "/casemaintenance/version/1/updateCase/%s/%s",
-        CASE_ID,
-        AMEND_PETITION_FOR_REFUSAL_EVENT
     );
 
     private static final ValidationResponse validationResponseOk = ValidationResponse.builder().build();
@@ -86,7 +80,6 @@ public class SolicitorAmendPetitionForRefusalITest extends MockedFunctionalTest 
         stubCmsAmendPetitionDraftEndpoint(HttpStatus.OK, content);
         stubFormatterServerEndpoint(HttpStatus.OK, formattedContent);
         stubMaintenanceServerEndpointForSubmit(HttpStatus.OK, formattedContent);
-        stubCmsUpdateCaseEndpoint(HttpStatus.OK, "");
         when(validationService.validate(any())).thenReturn(validationResponseOk);
 
         webClient.perform(post(API_URL)
@@ -98,14 +91,6 @@ public class SolicitorAmendPetitionForRefusalITest extends MockedFunctionalTest 
 
     private void stubCmsAmendPetitionDraftEndpoint(HttpStatus status, String body) {
         maintenanceServiceServer.stubFor(WireMock.put(CMS_AMEND_PETITION_CONTEXT_PATH)
-            .willReturn(aResponse()
-                .withStatus(status.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withBody(body)));
-    }
-
-    private void stubCmsUpdateCaseEndpoint(HttpStatus status, String body) {
-        maintenanceServiceServer.stubFor(WireMock.post(CMS_UPDATE_CONTEXT_PATH)
             .willReturn(aResponse()
                 .withStatus(status.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
