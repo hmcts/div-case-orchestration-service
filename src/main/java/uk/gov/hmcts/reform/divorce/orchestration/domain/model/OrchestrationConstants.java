@@ -205,7 +205,6 @@ public class OrchestrationConstants {
     public static final String CASE_ID_JSON_KEY = "caseId";
     public static final String PREVIOUS_CASE_ID_JSON_KEY = "previousCaseId";
     public static final String NEW_AMENDED_PETITION_DRAFT_KEY = "newAmendedPetitionDraft";
-    public static final String NEW_SUBMITTED_CASE_KEY = "newSubmittedCase";
     public static final String CASE_STATE_JSON_KEY = "state";
     public static final String CREATED_DATE_JSON_KEY = "createdDate";
     public static final String ID = "id";
