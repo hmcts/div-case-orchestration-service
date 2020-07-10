@@ -1032,6 +1032,19 @@ public class CallbackController {
         return ResponseEntity.ok(response.build());
     }
 
+    @PostMapping(path = "/amend-application")
+    @ApiOperation(value = "Trigger notification email to Petitioner that they are able to amend their application.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Amend application notification callback processed.")})
+    public ResponseEntity<CcdCallbackResponse> amendApplication(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(caseOrchestrationService.sendAmendApplicationEmail(ccdCallbackRequest))
+                .build());
+    }
+
     private List<String> getErrors(Map<String, Object> response) {
         ValidationResponse validationResponse = (ValidationResponse) response.get(VALIDATION_ERROR_KEY);
         return validationResponse.getErrors();
