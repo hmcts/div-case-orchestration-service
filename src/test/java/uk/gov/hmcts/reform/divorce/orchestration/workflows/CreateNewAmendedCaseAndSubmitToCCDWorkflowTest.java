@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CreateAmendPetitionDraftForRefusalFromCaseIdTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseData;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SolicitorSubmitCaseToCCDTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseDataTask;
 
 import java.util.HashMap;
@@ -37,8 +36,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RunWith(MockitoJUnitRunner.class)
 public class CreateNewAmendedCaseAndSubmitToCCDWorkflowTest {
 
-    @Mock
-    private UpdateCaseInCCD updateCaseInCCD;
 
     @Mock
     private CreateAmendPetitionDraftForRefusalFromCaseIdTask createAmendPetitionDraftForRefusalFromCaseIdTask;
@@ -82,19 +79,17 @@ public class CreateNewAmendedCaseAndSubmitToCCDWorkflowTest {
         when(formatDivorceSessionToCaseData.execute(context, newDivorceCaseData)).thenReturn(newCCDCaseData);
         when(validateCaseDataTask.execute(context, newCCDCaseData)).thenReturn(newCCDCaseData);
         when(solicitorSubmitCaseToCCDTask.execute(context, newCCDCaseData)).thenReturn(newCCDCaseData);
-        when(updateCaseInCCD.execute(context, newCCDCaseData)).thenReturn(testData);
 
         assertEquals(testData, createNewAmendedCaseAndSubmitToCCDWorkflow.run(caseDetails, AUTH_TOKEN));
 
         InOrder inOrder =
             inOrder(createAmendPetitionDraftForRefusalFromCaseIdTask, formatDivorceSessionToCaseData,
-                validateCaseDataTask, solicitorSubmitCaseToCCDTask, updateCaseInCCD);
+                validateCaseDataTask, solicitorSubmitCaseToCCDTask);
 
         inOrder.verify(createAmendPetitionDraftForRefusalFromCaseIdTask).execute(context, testData);
         inOrder.verify(formatDivorceSessionToCaseData).execute(context, newDivorceCaseData);
         inOrder.verify(validateCaseDataTask).execute(context, newCCDCaseData);
         inOrder.verify(solicitorSubmitCaseToCCDTask).execute(context, newCCDCaseData);
-        inOrder.verify(updateCaseInCCD).execute(context, newCCDCaseData);
     }
 
 }

@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AMEND_PETITION_FEE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_RESPONDENT_GENDER;
@@ -23,6 +22,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_FEES_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_FEE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.PreviousAmendPetitionStateLoggerHelper.getAmendPetitionPreviousState;
@@ -55,6 +55,12 @@ public class SendPetitionerAmendEmailTask implements Task<Map<String, Object>> {
             EMAIL_DESCRIPTION
         );
 
+        log.info(
+            "CaseID: {}, Email {} sent to petitioner.",
+            getCaseId(context),
+            EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name()
+        );
+
         return payload;
     }
 
@@ -74,11 +80,16 @@ public class SendPetitionerAmendEmailTask implements Task<Map<String, Object>> {
         String caseId = getCaseId(context);
         String stateId = caseDetails.getState();
 
-        log.info("CaseId: {}. " + EMAIL_DESCRIPTION + " Previous state " + getAmendPetitionPreviousState(stateId) + ". Task executed", caseId);
+        log.info(
+            "CaseID: {}, {} Previous state,  {} Task executed",
+            caseId,
+            EMAIL_DESCRIPTION,
+            getAmendPetitionPreviousState(stateId)
+        );
     }
 
     private String getFormattedFeeAmount(TaskContext context) {
-        return ((FeeResponse) context.getTransientObject(AMEND_PETITION_FEE_JSON_KEY)).getFormattedFeeAmount();
+        return ((FeeResponse) context.getTransientObject(PETITION_FEE_JSON_KEY)).getFormattedFeeAmount();
     }
 
     private String getHusbandOrWife(Map<String, Object> payload) throws TaskException {

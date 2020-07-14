@@ -21,16 +21,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_A
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_DESCRIPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_VERSION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_FEE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_FEE_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GetPetitionIssueFeeTest {
+public class GetPetitionIssueFeeTaskTest {
 
     @Mock
     FeesAndPaymentsClient feesAndPaymentsClient;
 
     @InjectMocks
-    GetPetitionIssueFee getPetitionIssueFee;
+    GetPetitionIssueFeeTask getPetitionIssueFeeTask;
 
     private Map<String, Object> testData;
     private TaskContext context;
@@ -52,8 +52,8 @@ public class GetPetitionIssueFeeTest {
 
         when(feesAndPaymentsClient.getPetitionIssueFee()).thenReturn(feeResponse);
 
-        assertEquals(testData, getPetitionIssueFee.execute(context, testData));
-        assertEquals(feeResponse, context.getTransientObject(PETITION_ISSUE_FEE_JSON_KEY));
+        assertEquals(testData, getPetitionIssueFeeTask.execute(context, testData));
+        assertEquals(feeResponse, context.getTransientObject(PETITION_FEE_JSON_KEY));
 
         verify(feesAndPaymentsClient).getPetitionIssueFee();
     }

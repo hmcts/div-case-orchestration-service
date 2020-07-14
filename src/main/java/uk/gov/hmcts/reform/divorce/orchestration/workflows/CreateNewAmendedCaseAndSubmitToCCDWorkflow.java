@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CreateAmendPetitionDraftForRefusalFromCaseIdTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseData;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SolicitorSubmitCaseToCCDTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseDataTask;
 
 import java.util.HashMap;
@@ -25,7 +24,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class CreateNewAmendedCaseAndSubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final CreateAmendPetitionDraftForRefusalFromCaseIdTask createAmendPetitionDraftForRefusalFromCaseId;
-    private final UpdateCaseInCCD updateCaseInCCD;
     private final FormatDivorceSessionToCaseData formatDivorceSessionToCaseData;
     private final ValidateCaseDataTask validateCaseDataTask;
     private final SolicitorSubmitCaseToCCDTask solicitorSubmitCaseToCCD;
@@ -33,10 +31,9 @@ public class CreateNewAmendedCaseAndSubmitToCCDWorkflow extends DefaultWorkflow<
     @Autowired
     public CreateNewAmendedCaseAndSubmitToCCDWorkflow(
         CreateAmendPetitionDraftForRefusalFromCaseIdTask amendPetitionDraftForRefusalFromCaseId,
-        UpdateCaseInCCD updateCaseInCCD, FormatDivorceSessionToCaseData formatDivorceSessionToCaseData,
-        ValidateCaseDataTask validateCaseDataTask, SolicitorSubmitCaseToCCDTask solicitorSubmitCaseToCCD) {
+        FormatDivorceSessionToCaseData formatDivorceSessionToCaseData, ValidateCaseDataTask validateCaseDataTask,
+        SolicitorSubmitCaseToCCDTask solicitorSubmitCaseToCCD) {
         this.createAmendPetitionDraftForRefusalFromCaseId = amendPetitionDraftForRefusalFromCaseId;
-        this.updateCaseInCCD = updateCaseInCCD;
         this.formatDivorceSessionToCaseData = formatDivorceSessionToCaseData;
         this.validateCaseDataTask = validateCaseDataTask;
         this.solicitorSubmitCaseToCCD = solicitorSubmitCaseToCCD;
@@ -48,9 +45,7 @@ public class CreateNewAmendedCaseAndSubmitToCCDWorkflow extends DefaultWorkflow<
                 createAmendPetitionDraftForRefusalFromCaseId,
                 formatDivorceSessionToCaseData,
                 validateCaseDataTask,
-                solicitorSubmitCaseToCCD,
-                updateCaseInCCD
-
+                solicitorSubmitCaseToCCD
             },
             new HashMap<>(),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseDetails.getCaseId()),

@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.bulk.scan;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,7 +80,6 @@ public class ValidationBulkScanITest {
     }
 
     @Test
-    @Ignore
     public void shouldReturnSuccessResponseForValidationEndpoint() throws Exception {
         mockMvc.perform(
             post("/forms/{form-type}/validate-ocr", D8_FORM)
@@ -100,7 +98,6 @@ public class ValidationBulkScanITest {
     }
 
     @Test
-    @Ignore
     public void shouldReturnFailureResponseForValidationEndpoint() throws Exception {
         String formToValidate = loadResourceAsString("jsonExamples/payloads/bulk/scan/d8/validation/incompleteForm.json");
 
@@ -133,7 +130,6 @@ public class ValidationBulkScanITest {
     }
 
     @Test
-    @Ignore
     public void shouldReturnWarningResponseForValidationEndpoint() throws Exception {
         String formToValidate = loadResourceAsString("jsonExamples/payloads/bulk/scan/d8/validation/warningsD8Form.json");
 
