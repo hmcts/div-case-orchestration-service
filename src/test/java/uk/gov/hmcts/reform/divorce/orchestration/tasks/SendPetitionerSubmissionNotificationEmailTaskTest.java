@@ -46,7 +46,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RDC_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RELATIONSHIP_KEY;
@@ -88,7 +87,6 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
         testData = new HashMap<>();
         expectedTemplateVars = new HashMap<>();
 
-        expectedTemplateVars.put(NOTIFICATION_EMAIL, TEST_USER_EMAIL);
         expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_PETITIONER_FIRST_NAME);
         expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_PETITIONER_LAST_NAME);
         expectedTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, D8_CASE_ID);
@@ -224,7 +222,6 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
     private void setupSolicitorDocumentData() {
         expectedTemplateVars.remove(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY);
         expectedTemplateVars.remove(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY);
-        expectedTemplateVars.replace(NOTIFICATION_EMAIL, TEST_SOLICITOR_EMAIL);
         expectedTemplateVars.replace(NOTIFICATION_CCD_REFERENCE_KEY, UNFORMATTED_CASE_ID);
         expectedTemplateVars.put(NOTIFICATION_RDC_NAME_KEY, TEST_COURT_DISPLAY_NAME);
         expectedTemplateVars.put(NOTIFICATION_PET_NAME, TEST_PETITIONER_FULL_NAME);

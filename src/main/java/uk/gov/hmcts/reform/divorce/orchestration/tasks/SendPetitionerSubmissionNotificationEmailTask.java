@@ -21,7 +21,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RDC_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
@@ -75,7 +74,6 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
     private Map<String, String> getPersonalisation(TaskContext context, Map<String, Object> caseData) throws TaskException {
         Map<String, String> personalisation = new HashMap<>();
 
-        personalisation.put(NOTIFICATION_EMAIL, (String) caseData.get(D_8_PETITIONER_EMAIL));
         personalisation.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, (String) caseData.get(D_8_PETITIONER_FIRST_NAME));
         personalisation.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, (String) caseData.get(D_8_PETITIONER_LAST_NAME));
 
@@ -100,7 +98,6 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
         String divorceUnitKey = caseData.get(DIVORCE_UNIT_JSON_KEY).toString();
         Court court = taskCommons.getCourt(divorceUnitKey);
         personalisation.put(NOTIFICATION_RDC_NAME_KEY, court.getIdentifiableCentreName());
-        personalisation.put(NOTIFICATION_EMAIL, (String) caseData.get(PETITIONER_SOLICITOR_EMAIL));
         personalisation.put(NOTIFICATION_CCD_REFERENCE_KEY, context.getTransientObject(CASE_ID_JSON_KEY));
         personalisation.put(NOTIFICATION_PET_NAME, petitionerFirstName + " " + petitionerLastName);
         personalisation.put(NOTIFICATION_RESP_NAME, respondentFirstName + " " + respondentLastName);
