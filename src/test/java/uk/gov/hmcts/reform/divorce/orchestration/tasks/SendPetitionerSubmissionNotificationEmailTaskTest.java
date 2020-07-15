@@ -208,7 +208,7 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
     @Test
     public void shouldCallEmailService_WithAmendSolicitorTemplate_WhenPreviousCaseIdExists() throws TaskException {
         addSolicitorTestData();
-        setupSolicitorExpectedTempVars();
+        setupSolicitorDocumentData();
 
         Map returnPayload = sendPetitionerSubmissionNotificationEmailTask.execute(context, testData);
 
@@ -221,7 +221,7 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
             any());
     }
 
-    private void setupSolicitorExpectedTempVars() {
+    private void setupSolicitorDocumentData() {
         expectedTemplateVars.remove(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY);
         expectedTemplateVars.remove(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY);
         expectedTemplateVars.replace(NOTIFICATION_EMAIL, TEST_SOLICITOR_EMAIL);

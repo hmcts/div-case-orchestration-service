@@ -52,7 +52,6 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
-
         if (isPetitionAmended(caseData)) {
             sendApplicationAmendSubmittedEmailToCorrectRecipient(context, caseData);
         } else {
