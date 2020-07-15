@@ -66,7 +66,7 @@ public class CostOrderCoRespondentCoverLetterGenerationTaskTest extends BasePayl
         runCommonVerifications(caseData,
             returnedCaseData,
             COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE,
-            "FL-DIV-LET-ENG-00358.docx",
+            "FL-DIV-LET-ENG-00358A.docx",
             coRespondentCoverLetter);
     }
 
