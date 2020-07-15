@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.notification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
@@ -52,7 +53,8 @@ public class SendPetitionerAmendEmailTask implements Task<Map<String, Object>> {
             petitionerEmail,
             EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name(),
             getPersonalisation(context, payload),
-            EMAIL_DESCRIPTION
+            EMAIL_DESCRIPTION,
+            LanguagePreference.ENGLISH
         );
 
         log.info(

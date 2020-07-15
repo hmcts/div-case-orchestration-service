@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.internal.hamcrest.HamcrestArgumentMatcher;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.TestConstants;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
@@ -88,7 +89,8 @@ public class SendPetitionerAmendEmailTaskTest {
                     )
                 )
             ),
-            anyString()
+            anyString(),
+            eq(LanguagePreference.ENGLISH)
         );
     }
 
