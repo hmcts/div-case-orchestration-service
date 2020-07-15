@@ -23,7 +23,6 @@ import java.util.Set;
 
 import static java.lang.String.format;
 import static java.util.Collections.singletonMap;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AMEND_PETITION_FEE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
@@ -45,6 +44,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_OTHER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_TO_PAY_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_FEE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
 
@@ -101,7 +101,7 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
             documentCollection.add(generatedDocumentInfo);
             setDraftLinkInContext(context, DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE, DN_REFUSAL_DRAFT);
         } else if (DN_REFUSED_REJECT_OPTION.equalsIgnoreCase((String) caseData.get(REFUSAL_DECISION_CCD_FIELD))) {
-            FeeResponse amendFee = context.getTransientObject(AMEND_PETITION_FEE_JSON_KEY);
+            FeeResponse amendFee = context.getTransientObject(PETITION_FEE_JSON_KEY);
 
             // Remove reference to existing caseDetails so the context case details is not updated
             Map<String, Object> caseDataToSend = new HashMap<>(caseData);

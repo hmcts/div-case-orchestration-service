@@ -59,6 +59,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_FEE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
@@ -99,7 +100,7 @@ public class NotifyForRefusalOrderTaskTest {
         incomingPayload.put(D_8_CASE_REFERENCE, TEST_CASE_REFERENCE);
         incomingPayload.put(D_8_INFERRED_PETITIONER_GENDER, MALE_GENDER);
         taskContext = new DefaultTaskContext();
-        taskContext.setTransientObject(AMEND_PETITION_FEE_JSON_KEY, TEST_FEES);
+        taskContext.setTransientObject(PETITION_FEE_JSON_KEY, TEST_FEES);
         taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
     }
 

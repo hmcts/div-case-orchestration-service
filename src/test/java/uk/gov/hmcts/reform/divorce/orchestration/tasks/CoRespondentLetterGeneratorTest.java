@@ -37,8 +37,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_INVITATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_FEE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_FEE_FOR_LETTER;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_FEE_JSON_KEY;
 
 
 @RunWith(MockitoJUnitRunner.class)
@@ -77,7 +77,7 @@ public class CoRespondentLetterGeneratorTest {
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
         context.setTransientObject(CO_RESPONDENT_PIN, TEST_PIN);
-        context.setTransientObject(PETITION_ISSUE_FEE_JSON_KEY, feeResponse);
+        context.setTransientObject(PETITION_FEE_JSON_KEY, feeResponse);
 
         final GenerateDocumentRequest generateDocumentRequest =
             GenerateDocumentRequest.builder()

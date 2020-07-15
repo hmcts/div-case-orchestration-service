@@ -121,6 +121,7 @@ feature-toggle:
     feature_resp_solicitor_details: ${FEATURE_RESP_SOLICITOR_DETAILS:false}
     dn_refusal: ${FEATURE_DN_REFUSAL:true}
     paper_update: ${FEATURE_PAPER_UPDATE:false}
+    solicitor_dn_reject_and_amend: ${SOLICITOR_DN_REJECT_AND_AMEND:false}
 
 send-letter:
   url: ${SEND_LETTER_SERIVCE_BASEURL:http://localhost:4021}
@@ -218,6 +219,7 @@ uk:
             AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY: a101afaa-7e81-47f3-9cfa-69db861a7260
             AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED: 980f0c4c-81e7-42b0-abf4-f28678e7c13d
             AOS_RECEIVED_UNDEFENDED_NO_CONSENT_2_YEARS: 815ba122-d6bd-43da-9cee-3bd6ec64ae32
+            PETITIONER_AMEND_APPLICATION: b79ef313-13c6-4926-9738-f0818825ccb7
             PETITIONER_RESP_NOT_RESPONDED: a8bfc951-9682-49cb-95f0-47ba92ac0b2c
             PETITIONER_NOTICE_OF_PROCEEDINGS: fcc7ea62-5e70-4adf-a5b8-f5e2e7bec35c
             SOL_PETITIONER_NOTICE_OF_PROCEEDINGS: 96950c76-9b1e-4017-a56b-0e5d3bf4f0b9

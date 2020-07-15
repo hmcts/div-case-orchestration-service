@@ -85,6 +85,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.DnSubmit
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.NotifyApplicantCanFinaliseDivorceWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.NotifyForRefusalOrderWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.SendDaGrantedNotificationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.SendPetitionerAmendEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.math.BigDecimal;
@@ -326,6 +327,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private CreateNewAmendedCaseAndSubmitToCCDWorkflow createNewAmendedCaseAndSubmitToCCDWorkflow;
+
+    @Mock
+    private SendPetitionerAmendEmailNotificationWorkflow sendPetitionerAmendEmailNotificationWorkflow;
 
     @Mock
     private DocumentTemplateService documentTemplateService;
@@ -693,6 +697,17 @@ public class CaseOrchestrationServiceImplTest {
 
         assertEquals(requestPayload, actual);
         verify(sendPetitionerEmailNotificationWorkflow).run(ccdCallbackRequest);
+    }
+
+    @Test
+    public void givenCaseData_whenSendPetitionerAmendEmailNotificationWorkflow_thenReturnPayload() throws Exception {
+        when(sendPetitionerAmendEmailNotificationWorkflow.run(ccdCallbackRequest))
+            .thenReturn(requestPayload);
+
+        Map<String, Object> actual = classUnderTest.sendAmendApplicationEmail(ccdCallbackRequest);
+
+        assertEquals(requestPayload, actual);
+        verify(sendPetitionerAmendEmailNotificationWorkflow).run(ccdCallbackRequest);
     }
 
     @Test
