@@ -28,6 +28,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helpe
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.PreviousAmendPetitionStateLoggerHelper.getAmendPetitionPreviousState;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRelationshipTermByGender;
 
 @Slf4j
@@ -61,7 +62,9 @@ public class SendPetitionerAmendEmailTask implements Task<Map<String, Object>> {
     private Map<String, String> getPersonalisation(TaskContext context, Map<String, Object> payload) throws TaskException {
         Map<String, String> personalisation = new HashMap<>();
 
-        personalisation.put(NOTIFICATION_CASE_NUMBER_KEY, getMandatoryStringValue(payload, D_8_CASE_REFERENCE));
+        String familyManCaseId = getOptionalPropertyValueAsString(payload, D_8_CASE_REFERENCE, null);
+
+        personalisation.put(NOTIFICATION_CASE_NUMBER_KEY, familyManCaseId);
         personalisation.put(NOTIFICATION_PET_NAME, getPetitionerFullName(payload));
         personalisation.put(NOTIFICATION_FEES_KEY, getFormattedFeeAmount(context));
         personalisation.put(NOTIFICATION_HUSBAND_OR_WIFE, getHusbandOrWife(payload));
