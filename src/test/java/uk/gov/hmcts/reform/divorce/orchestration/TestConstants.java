@@ -82,6 +82,8 @@ public class TestConstants {
     public static final String TEST_D8_CASE_REFERENCE = "LV17D80102";
     public static final String TEST_CO_RESPONDENT_SOLICITOR_NAME = "CoResp Solicitor";
     public static final String TEST_CO_RESPONDENT_SOLICITOR_ADDRESS = "789 CoRespondent Solicitor Str\nCoRespondent\nCounty\nRE5 P0N";
+    public static final String TEST_YES_VALUE = "Yes";
+    public static final String TEST_NO_VALUE = "No";
 
     public static final String TEST_PETITIONER_FIRST_NAME = "Clark";
     public static final String TEST_PETITIONER_LAST_NAME = "Kent";

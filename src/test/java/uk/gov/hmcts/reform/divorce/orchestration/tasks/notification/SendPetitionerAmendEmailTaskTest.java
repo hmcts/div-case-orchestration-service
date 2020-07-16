@@ -29,6 +29,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AOS_AWAITING_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
@@ -37,9 +38,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_PRESENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_FEES_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_FEE_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -81,6 +84,7 @@ public class SendPetitionerAmendEmailTaskTest {
             eq(EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name()),
             argThat(new HamcrestArgumentMatcher<>(
                     allOf(
+                        hasEntry(NOTIFICATION_CASE_NUMBER_PRESENT, TEST_YES_VALUE),
                         hasEntry(NOTIFICATION_CASE_NUMBER_KEY, TestConstants.TEST_CASE_FAMILY_MAN_ID),
                         hasEntry(NOTIFICATION_PET_NAME, TestConstants.TEST_USER_FIRST_NAME + " " + TestConstants.TEST_USER_LAST_NAME),
                         hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING),
@@ -103,6 +107,7 @@ public class SendPetitionerAmendEmailTaskTest {
             eq(EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name()),
             argThat(new HamcrestArgumentMatcher<>(
                     allOf(
+                        hasEntry(NOTIFICATION_CASE_NUMBER_PRESENT, NO_VALUE),
                         hasEntry(NOTIFICATION_CASE_NUMBER_KEY, null),
                         hasEntry(NOTIFICATION_PET_NAME, TestConstants.TEST_USER_FIRST_NAME + " " + TestConstants.TEST_USER_LAST_NAME),
                         hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING),

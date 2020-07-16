@@ -255,6 +255,7 @@ public class OrchestrationConstants {
     public static final String NOTIFICATION_PET_NAME = "petitioner name";
     public static final String NOTIFICATION_RESP_NAME = "respondent name";
     public static final String NOTIFICATION_SOLICITOR_NAME = "solicitor name";
+    public static final String NOTIFICATION_CASE_NUMBER_PRESENT = "caseReferencePresent";
 
     // CCD Respondent Fields
     public static final String RECEIVED_AOS_FROM_RESP = "ReceivedAOSfromResp";
