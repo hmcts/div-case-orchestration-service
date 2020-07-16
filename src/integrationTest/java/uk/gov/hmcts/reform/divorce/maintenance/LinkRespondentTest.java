@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.maintenance;
 import io.restassured.response.Response;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.http.entity.ContentType;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Value;
@@ -141,6 +142,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         assertCaseDetailsRespondent(respondentUserDetails, String.valueOf(caseDetails.getId()));
     }
 
+    @Ignore //NOSONAR
     @Test
     @Category(ExtendedTest.class)
     public void givenValidCaseDetails_whenLinkCoRespondent_thenCaseShouldBeLinked() {
