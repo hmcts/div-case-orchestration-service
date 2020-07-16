@@ -47,7 +47,7 @@ public class SendPetitionerAmendEmailTask implements Task<Map<String, Object>> {
     private Map<String, Object> sendAmendApplicationEmailToPetitioner(TaskContext context, Map<String, Object> payload) throws TaskException {
         String petitionerEmail = getMandatoryStringValue(payload, D_8_PETITIONER_EMAIL);
 
-        logEventWithPreviousState(context);
+        logEventWithPreviousState(context, payload);
 
         emailService.sendEmail(
             petitionerEmail,
@@ -56,7 +56,7 @@ public class SendPetitionerAmendEmailTask implements Task<Map<String, Object>> {
             EMAIL_DESCRIPTION
         );
 
-        logEventWithPreviousState(context);
+        logEventWithPreviousState(context, payload);
 
         return payload;
     }
@@ -74,17 +74,27 @@ public class SendPetitionerAmendEmailTask implements Task<Map<String, Object>> {
         return personalisation;
     }
 
-    private void logEventWithPreviousState(TaskContext context) throws TaskException {
+    private void logEventWithPreviousState(TaskContext context, Map<String, Object> payload) throws TaskException {
         final CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
         String caseId = getCaseId(context);
         String stateId = caseDetails.getState();
+        String familyManCaseId = getOptionalPropertyValueAsString(payload, D_8_CASE_REFERENCE, null);
 
         log.info(
-            "CaseID: {}, {} Previous state,  {} Task executed",
+            "CaseID: {}, CaseReference: {}, Description: {}, Previous state {}.",
             caseId,
+            getFamilyManCaseReference(familyManCaseId),
             EMAIL_DESCRIPTION,
             getAmendPetitionPreviousState(stateId)
         );
+    }
+
+    private String getFamilyManCaseReference(String familyManCaseReference) {
+        if (familyManCaseReference != null) {
+            return familyManCaseReference;
+        } else {
+            return "Not present";
+        }
     }
 
     private String getFormattedFeeAmount(TaskContext context) {
