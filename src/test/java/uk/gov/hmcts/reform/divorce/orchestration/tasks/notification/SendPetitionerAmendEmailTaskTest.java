@@ -112,7 +112,8 @@ public class SendPetitionerAmendEmailTaskTest {
                     )
                 )
             ),
-            anyString()
+            anyString(),
+            eq(LanguagePreference.ENGLISH)
         );
     }
 
@@ -134,7 +135,8 @@ public class SendPetitionerAmendEmailTaskTest {
                     )
                 )
             ),
-            anyString()
+            anyString(),
+            eq(LanguagePreference.ENGLISH)
         );
     }
 
