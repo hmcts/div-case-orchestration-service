@@ -3,10 +3,12 @@ package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerUpdateNotificationsEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.notification.SendNoticeOfProceedingsEmailTask;
 
@@ -22,6 +24,8 @@ public class SendPetitionerEmailNotificationWorkflow extends DefaultWorkflow<Map
     private final SendPetitionerUpdateNotificationsEmailTask sendPetitionerUpdateNotificationsEmailTask;
     private final SendNoticeOfProceedingsEmailTask sendNoticeOfProceedingsEmailTask;
 
+    private final FeatureToggleService featureToggleService;
+
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return this.execute(
             getTasks(ccdCallbackRequest.getEventId()),
@@ -32,7 +36,7 @@ public class SendPetitionerEmailNotificationWorkflow extends DefaultWorkflow<Map
     }
 
     private Task<Map<String, Object>>[] getTasks(String eventId) {
-        if (SendNoticeOfProceedingsEmailTask.isEventSupported(eventId)) {
+        if (isSolicitorDnRejectedEnabled() && SendNoticeOfProceedingsEmailTask.isEventSupported(eventId)) {
             return new Task[] {
                 sendNoticeOfProceedingsEmailTask
             };
@@ -41,5 +45,9 @@ public class SendPetitionerEmailNotificationWorkflow extends DefaultWorkflow<Map
         return new Task[] {
             sendPetitionerUpdateNotificationsEmailTask
         };
+    }
+
+    private boolean isSolicitorDnRejectedEnabled() {
+        return featureToggleService.isFeatureEnabled(Features.SOLICITOR_DN_REJECT_AND_AMEND);
     }
 }
