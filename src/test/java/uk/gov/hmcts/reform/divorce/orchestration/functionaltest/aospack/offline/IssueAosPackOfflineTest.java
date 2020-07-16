@@ -39,16 +39,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.AOS_OFFLINE_ADULTERY_CO_RESPONDENT_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.RESPONDENT_AOS_INVITATION_LETTER_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
@@ -69,6 +65,11 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
         .put(Base64.getEncoder().encodeToString(SECOND_FILE_BYTES))
         .toString();
 
+    private static final String RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID = "FL-DIV-LET-ENG-00075.doc";
+    private static final String CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID = "FL-DIV-LET-ENG-00076.doc";
+    private static final String AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID = "FL-DIV-APP-ENG-00080.docx";
+    private static final String AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID = "FL-DIV-APP-ENG-00084.docx";
+
     private static final String TEST_PAYLOAD = "/jsonExamples/payloads/genericPetitionerDataWithPreviouslyGeneratedDocument.json";
     private static final String TEST_DOCUMENT_ID_IN_EXAMPLE_PAYLOAD = "1234";
 
@@ -88,19 +89,19 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
     public void testEndpointReturnsAdequateResponse_ForRespondent() throws Exception {
         CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(TEST_PAYLOAD, CcdCallbackRequest.class);
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
-        caseDetails.getCaseData().put("D8ReasonForDivorce", SEPARATION_TWO_YEARS);
+        caseDetails.getCaseData().put("D8ReasonForDivorce", SEPARATION_TWO_YEARS.getValue());
 
-        String invitationLetterDocumentId = stubDocumentGeneratorService(RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
+        String invitationLetterDocumentId = stubDocumentGeneratorServiceBaseOnContextPath(RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
-            RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE
+            RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE.getValue()
         );
-        String invitationLetterFilename = RESPONDENT_AOS_INVITATION_LETTER_FILENAME + caseDetails.getCaseId();
+        String invitationLetterFilename = RESPONDENT_AOS_INVITATION_LETTER_FILENAME.getValue() + caseDetails.getCaseId();
 
-        String formDocumentId = stubDocumentGeneratorService(AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID,
+        String formDocumentId = stubDocumentGeneratorServiceBaseOnContextPath(AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
-            AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE
+            AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE.getValue()
         );
-        String formFilename = AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME + caseDetails.getCaseId();
+        String formFilename = AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME.getValue() + caseDetails.getCaseId();
 
         stubDMStore(invitationLetterDocumentId, FIRST_FILE_BYTES);
         stubDMStore(formDocumentId, SECOND_FILE_BYTES);
@@ -138,19 +139,19 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
     public void testEndpointReturnsAdequateResponse_ForCoRespondent() throws Exception {
         CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(TEST_PAYLOAD, CcdCallbackRequest.class);
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
-        caseDetails.getCaseData().put("D8ReasonForDivorce", ADULTERY);
+        caseDetails.getCaseData().put("D8ReasonForDivorce", ADULTERY.getValue());
 
-        String invitationLetterDocumentId = stubDocumentGeneratorService(CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
+        String invitationLetterDocumentId = stubDocumentGeneratorServiceBaseOnContextPath(CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
-            CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE
+            CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE.getValue()
         );
-        String invitationLetterFilename = CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME + caseDetails.getCaseId();
+        String invitationLetterFilename = CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME.getValue() + caseDetails.getCaseId();
 
-        String formDocumentId = stubDocumentGeneratorService(AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID,
+        String formDocumentId = stubDocumentGeneratorServiceBaseOnContextPath(AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
-            AOS_OFFLINE_ADULTERY_CO_RESPONDENT_DOCUMENT_TYPE
+            AOS_OFFLINE_ADULTERY_CO_RESPONDENT_DOCUMENT_TYPE.getValue()
         );
-        String formFilename = AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME + caseDetails.getCaseId();
+        String formFilename = AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME.getValue()  + caseDetails.getCaseId();
 
         stubDMStore(invitationLetterDocumentId, FIRST_FILE_BYTES);
         stubDMStore(formDocumentId, SECOND_FILE_BYTES);
@@ -202,16 +203,16 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
 
         CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(TEST_PAYLOAD, CcdCallbackRequest.class);
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
-        caseDetails.getCaseData().put("D8ReasonForDivorce", SEPARATION_TWO_YEARS);
+        caseDetails.getCaseData().put("D8ReasonForDivorce", SEPARATION_TWO_YEARS.getValue());
 
-        String invitationLetterDocumentId = stubDocumentGeneratorService(RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
+        String invitationLetterDocumentId = stubDocumentGeneratorServiceBaseOnContextPath(RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
-            RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE
+            RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE.getValue()
         );
 
-        String formDocumentId = stubDocumentGeneratorService(AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID,
+        String formDocumentId = stubDocumentGeneratorServiceBaseOnContextPath(AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
-            AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE
+            AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE.getValue()
         );
 
         stubDMStore(invitationLetterDocumentId, FIRST_FILE_BYTES);
@@ -233,16 +234,16 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
     public void testEndpointReturnsNoDueDateInResponse_ForCoRespondent() throws Exception {
         CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(TEST_PAYLOAD, CcdCallbackRequest.class);
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
-        caseDetails.getCaseData().put("D8ReasonForDivorce", ADULTERY);
+        caseDetails.getCaseData().put("D8ReasonForDivorce", ADULTERY.getValue());
 
-        String invitationLetterDocumentId = stubDocumentGeneratorService(CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
+        String invitationLetterDocumentId = stubDocumentGeneratorServiceBaseOnContextPath(CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
-            CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE
+            CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE.getValue()
         );
 
-        String formDocumentId = stubDocumentGeneratorService(AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID,
+        String formDocumentId = stubDocumentGeneratorServiceBaseOnContextPath(AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
-            AOS_OFFLINE_ADULTERY_CO_RESPONDENT_DOCUMENT_TYPE
+            AOS_OFFLINE_ADULTERY_CO_RESPONDENT_DOCUMENT_TYPE.getValue()
         );
 
         stubDMStore(invitationLetterDocumentId, FIRST_FILE_BYTES);

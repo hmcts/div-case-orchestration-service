@@ -59,7 +59,7 @@ public class DaGrantedCitizenLetterGenerationTaskTest extends BasePayloadSpecifi
         runCommonVerifications(caseData,
             returnedCaseData,
             DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_DOCUMENT_TYPE,
-            DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_TEMPLATE_ID,
+            DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_TEMPLATE_ID.getValue(),
             expectedDocmosisTemplateVars);
     }
 

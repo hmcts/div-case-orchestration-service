@@ -4,10 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
@@ -78,8 +80,9 @@ public class DnSubmittedEmailNotificationTask implements Task<Map<String, Object
             emailToBeSentTo = petitionerEmail;
         }
         try {
+            LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(data);
             emailService.sendEmailAndReturnExceptionIfFails(emailToBeSentTo,
-                template, notificationTemplateVars, "DN Submission");
+                template, notificationTemplateVars, "DN Submission", languagePreference);
         } catch (NotificationClientException e) {
             log.warn("Error sending email on DN submitted for case {}", ccdReference, e);
         }

@@ -58,7 +58,7 @@ public class SolicitorAosEventServiceImpl implements SolicitorAosEventService {
         final String respAos2yrConsent = (String) caseData.get(RESP_AOS_2_YR_CONSENT);
         final String respAosAdmitAdultery = (String) caseData.get(RESP_AOS_ADMIT_ADULTERY);
 
-        if (SEPARATION_TWO_YEARS.equalsIgnoreCase(reasonForDivorce) || ADULTERY.equalsIgnoreCase(reasonForDivorce)) {
+        if (SEPARATION_TWO_YEARS.getValue().equalsIgnoreCase(reasonForDivorce) || ADULTERY.getValue().equalsIgnoreCase(reasonForDivorce)) {
             if (YES_VALUE.equalsIgnoreCase(respAos2yrConsent) || YES_VALUE.equalsIgnoreCase(respAosAdmitAdultery)) {
                 // for 2yr separation and adultery, if respondent admits fact, assume not defended
                 updateData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
@@ -69,7 +69,7 @@ public class SolicitorAosEventServiceImpl implements SolicitorAosEventService {
                 updateData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
                 updateData.put(RESP_WILL_DEFEND_DIVORCE, caseData.get(UI_ONLY_RESP_WILL_DEFEND_DIVORCE));
             }
-        } else if (SEPARATION_FIVE_YEARS.equalsIgnoreCase(reasonForDivorce)) {
+        } else if (SEPARATION_FIVE_YEARS.getValue().equalsIgnoreCase(reasonForDivorce)) {
             // for 5 yr separation, no consent is asked, we just map over
             // UI_ONLY_RESP_WILL_DEFEND_DIVORCE to RESP_WILL_DEFEND_DIVORCE
             updateData.put(RESP_WILL_DEFEND_DIVORCE, caseData.get(UI_ONLY_RESP_WILL_DEFEND_DIVORCE));

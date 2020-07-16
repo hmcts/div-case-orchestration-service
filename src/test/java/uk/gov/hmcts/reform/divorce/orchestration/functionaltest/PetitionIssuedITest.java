@@ -46,7 +46,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN_C
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ACCESS_CODE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_INVITATION_TEMPLATE_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_INVITATION;
@@ -59,9 +58,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.GENERATE_AOS_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ISSUE_DATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_TEMPLATE_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_FEE_FOR_LETTER;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_INVITATION_TEMPLATE_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
@@ -70,6 +67,9 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
     private static final String API_URL = "/petition-issued";
     private static final String PETITION_ISSUE_FEE_CONTEXT_PATH = "/fees-and-payments/version/1/petition-issue-fee";
+    private static final String MINI_PETITION_TEMPLATE_NAME = "divorceminipetition";
+    private static final String RESPONDENT_INVITATION_TEMPLATE_NAME = "aosinvitation";
+    public static final String CO_RESPONDENT_INVITATION_TEMPLATE_NAME = "co-respondentinvitation";
 
     private static final Map<String, Object> CASE_DATA = new HashMap<>();
 
@@ -145,7 +145,8 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
         final Map<String, Object> formattedCaseData = emptyMap();
 
-        stubDocumentGeneratorService(MINI_PETITION_TEMPLATE_NAME, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS), DOCUMENT_TYPE_PETITION);
+        stubDocumentGeneratorServiceBaseOnContextPath(MINI_PETITION_TEMPLATE_NAME,
+            singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS), DOCUMENT_TYPE_PETITION);
         when(validationService.validate(any())).thenReturn(VALIDATION_RESPONSE);
 
         webClient.perform(post(API_URL)
@@ -161,7 +162,8 @@ public class PetitionIssuedITest extends IdamTestSupport {
     public void givenGenerateAOSInvitationIsFalse_whenPetitionIssued_thenReturnCaseExpectedChanges() throws Exception {
         final Map<String, Object> formattedCaseData = emptyMap();
 
-        stubDocumentGeneratorService(MINI_PETITION_TEMPLATE_NAME, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS), DOCUMENT_TYPE_PETITION);
+        stubDocumentGeneratorServiceBaseOnContextPath(MINI_PETITION_TEMPLATE_NAME,
+            singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS), DOCUMENT_TYPE_PETITION);
         when(validationService.validate(any())).thenReturn(VALIDATION_RESPONSE);
 
         webClient.perform(post(API_URL)
@@ -188,7 +190,8 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
         stubSignIn();
         stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
-        stubDocumentGeneratorService(MINI_PETITION_TEMPLATE_NAME, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS), DOCUMENT_TYPE_PETITION);
+        stubDocumentGeneratorServiceBaseOnContextPath(MINI_PETITION_TEMPLATE_NAME,
+            singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS), DOCUMENT_TYPE_PETITION);
         when(validationService.validate(any())).thenReturn(VALIDATION_RESPONSE);
 
         webClient.perform(post(API_URL)
@@ -218,10 +221,10 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
         stubSignIn();
         stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
-        stubDocumentGeneratorService(MINI_PETITION_TEMPLATE_NAME,
+        stubDocumentGeneratorServiceBaseOnContextPath(MINI_PETITION_TEMPLATE_NAME,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequestWithServiceCentre.getCaseDetails()),
             DOCUMENT_TYPE_RESPONDENT_INVITATION);
-        stubDocumentGeneratorService(RESPONDENT_INVITATION_TEMPLATE_NAME,
+        stubDocumentGeneratorServiceBaseOnContextPath(RESPONDENT_INVITATION_TEMPLATE_NAME,
             ImmutableMap.of(
                 DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequestWithServiceCentre.getCaseDetails(),
                 ACCESS_CODE, TEST_PIN_CODE
@@ -244,7 +247,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
         CcdCallbackRequest ccdCallbackRequestWithServiceCentre = CREATE_EVENT;
         ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData().put(D_8_DIVORCE_UNIT,
             CourtEnum.SERVICE_CENTER.getId());
-        ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData().put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData().put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue());
         ccdCallbackRequestWithServiceCentre.getCaseDetails().getCaseData().put(D_8_CO_RESPONDENT_NAMED, "YES");
 
         final GeneratePinRequest pinRequest =
@@ -259,9 +262,9 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
         stubSignIn();
         stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
-        stubDocumentGeneratorService(MINI_PETITION_TEMPLATE_NAME, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
+        stubDocumentGeneratorServiceBaseOnContextPath(MINI_PETITION_TEMPLATE_NAME, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
             ccdCallbackRequestWithServiceCentre.getCaseDetails()), DOCUMENT_TYPE_PETITION);
-        stubDocumentGeneratorService(RESPONDENT_INVITATION_TEMPLATE_NAME,
+        stubDocumentGeneratorServiceBaseOnContextPath(RESPONDENT_INVITATION_TEMPLATE_NAME,
             ImmutableMap.of(
                 DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequestWithServiceCentre.getCaseDetails(),
                 ACCESS_CODE, TEST_PIN_CODE),
@@ -273,7 +276,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
         stubGetFeeFromFeesAndPayments(HttpStatus.OK, feeResponse);
 
-        stubDocumentGeneratorService(CO_RESPONDENT_INVITATION_TEMPLATE_NAME,
+        stubDocumentGeneratorServiceBaseOnContextPath(CO_RESPONDENT_INVITATION_TEMPLATE_NAME,
             ImmutableMap.of(
                 DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequestWithServiceCentre.getCaseDetails(),
                 ACCESS_CODE, TEST_PIN_CODE,

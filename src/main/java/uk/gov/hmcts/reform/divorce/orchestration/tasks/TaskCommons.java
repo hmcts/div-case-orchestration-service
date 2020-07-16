@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.DnCourt;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
@@ -42,12 +43,14 @@ public class TaskCommons {
     public void sendEmail(EmailTemplateNames emailTemplate,
                           String emailDescription,
                           String destinationEmailAddress,
-                          Map<String, String> templateParameters) throws TaskException {
+                          Map<String, String> templateParameters,
+                          LanguagePreference languagePreference) throws TaskException {
         try {
             emailService.sendEmailAndReturnExceptionIfFails(destinationEmailAddress,
-                    emailTemplate.name(),
-                    templateParameters,
-                    emailDescription);
+                emailTemplate.name(),
+                templateParameters,
+                emailDescription,
+                languagePreference);
         } catch (NotificationClientException e) {
             log.error(e.getMessage(), e);
             throw new TaskException("Failed to send e-mail", e);

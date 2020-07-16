@@ -68,7 +68,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLIC
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_SOLICITOR_ADDRESS;
@@ -167,6 +166,8 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
 
     @Captor
     private ArgumentCaptor<List<GeneratedDocumentInfo>> documentsToPrintCaptor;
+
+    private static String COSTS_ORDER_TEMPLATE_ID = "FL-DIV-DEC-ENG-00060.docx";
 
     @Test
     public void givenCaseDataWithNoPaysCosts_whenDnPronounced_thenSendGenericNotifications() throws Exception {
@@ -453,7 +454,7 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
             .put(CO_RESPONDENT_REPRESENTED, YES_VALUE)
             .put(D_8_CO_RESPONDENT_NAMED, YES_VALUE)
             .put(CO_RESPONDENT_SOLICITOR_NAME, TEST_CO_RESPONDENT_SOLICITOR_NAME)
-            .put(D_8_REASON_FOR_DIVORCE, ADULTERY)
+            .put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue())
             .build();
     }
 
@@ -461,7 +462,7 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
         return new HashMap<>(ImmutableMap.<String, Object>builder()
             .putAll(BASE_CASE_DATA)
             .put(CO_RESPONDENT_REPRESENTED, NO_VALUE)
-            .put(D_8_REASON_FOR_DIVORCE, ADULTERY)
+            .put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue())
             .put(D_8_CO_RESPONDENT_NAMED, YES_VALUE)
             .put(RESPONDENT_ADDRESS, "address of resp")
             .build());

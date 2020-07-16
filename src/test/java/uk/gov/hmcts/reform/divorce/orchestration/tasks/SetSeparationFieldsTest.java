@@ -65,7 +65,7 @@ public class SetSeparationFieldsTest {
         String pastDate5Yrs8Mnths = DateUtils.formatDateFromDateTime(LocalDateTime.now(clock).minusYears(5).minusMonths(8));
         String pastDate5Yrs9Mnths = DateUtils.formatDateFromDateTime(LocalDateTime.now(clock).minusYears(5).minusMonths(9));
 
-        testData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_FIVE_YEARS);
+        testData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_FIVE_YEARS.getValue());
         testData.put(D_8_MENTAL_SEP_DATE, pastDate5Yrs8Mnths);
         testData.put(D_8_PHYSICAL_SEP_DAIE, pastDate5Yrs9Mnths);
 
@@ -87,7 +87,7 @@ public class SetSeparationFieldsTest {
         String pastDate5Yrs8Mnths = DateUtils.formatDateFromDateTime(LocalDateTime.now(clock).minusYears(5).minusMonths(8));
         String todayDate = DateUtils.formatDateFromDateTime(LocalDateTime.now(clock));
 
-        testData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_FIVE_YEARS);
+        testData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_FIVE_YEARS.getValue());
         testData.put(D_8_MENTAL_SEP_DATE, pastDate5Yrs8Mnths);
         testData.put(D_8_PHYSICAL_SEP_DAIE, todayDate);
 
@@ -102,7 +102,7 @@ public class SetSeparationFieldsTest {
         String pastDate2Yrs8Mnths = DateUtils.formatDateFromDateTime(LocalDateTime.now(clock).minusYears(2).minusMonths(8));
         String pastDate2Yrs9Mnths = DateUtils.formatDateFromDateTime(LocalDateTime.now(clock).minusYears(2).minusMonths(9));
 
-        testData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS);
+        testData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS.getValue());
         testData.put(D_8_MENTAL_SEP_DATE, pastDate2Yrs8Mnths);
         testData.put(D_8_PHYSICAL_SEP_DAIE, pastDate2Yrs9Mnths);
 
@@ -125,7 +125,7 @@ public class SetSeparationFieldsTest {
         String pastDate2Yrs6MnthsPlus1dayInClientFormat = DateUtils.formatDateWithCustomerFacingFormat(
             LocalDate.now(clock).minusYears(2).minusMonths(6).plusDays(1)
         );
-        testData.put(D_8_REASON_FOR_DIVORCE, DESERTION);
+        testData.put(D_8_REASON_FOR_DIVORCE, DESERTION.getValue());
         testData.put(D_8_REASON_FOR_DIVORCE_DESERTION_DAIE, pastDate2Yrs6MnthsPlus1day);
 
         Map<String, Object> resultMap = setSeparationFields.execute(context, testData);
