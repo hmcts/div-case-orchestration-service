@@ -31,12 +31,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @AllArgsConstructor
 @Component
 public class CcdUtil {
-
     private static final String UK_HUMAN_READABLE_DATE_FORMAT = "dd/MM/yyyy";
     private static final String PAYMENT_DATE_PATTERN = "ddMMyyyy";
 
     private final Clock clock;
     private final ObjectMapper objectMapper;
+    private final LocalDateToWelshStringConverter localDateToWelshStringConverter;
+
+
 
     public String getCurrentDateCcdFormat() {
         return LocalDate.now(clock).format(DateUtils.Formatters.CCD_DATE);
@@ -64,9 +66,18 @@ public class CcdUtil {
     }
 
     public String getFormattedDueDate(Map<String, Object> caseData, String dateToFormat) throws TaskException {
-        String dateAsString = getMandatoryPropertyValueAsString(caseData, dateToFormat);
-        LocalDate dueDate = LocalDate.parse(dateAsString);
+        LocalDate dueDate = getLocalDate(caseData, dateToFormat);
         return DateUtils.formatDateWithCustomerFacingFormat(dueDate);
+    }
+
+    public String getWelshFormattedDate(Map<String, Object> caseData, String dateToFormat) throws TaskException {
+        LocalDate localDate = getLocalDate(caseData, dateToFormat);
+        return localDateToWelshStringConverter.convert(localDate);
+    }
+
+    private LocalDate getLocalDate(Map<String, Object> caseData, String dateToFormat) throws TaskException {
+        String dateAsString = getMandatoryPropertyValueAsString(caseData, dateToFormat);
+        return LocalDate.parse(dateAsString);
     }
 
     public boolean isCcdDateTimeInThePast(String date) {

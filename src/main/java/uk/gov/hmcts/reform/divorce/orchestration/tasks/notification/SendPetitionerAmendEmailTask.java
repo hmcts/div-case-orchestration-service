@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.notification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
@@ -10,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,12 +50,14 @@ public class SendPetitionerAmendEmailTask implements Task<Map<String, Object>> {
         String petitionerEmail = getMandatoryStringValue(payload, D_8_PETITIONER_EMAIL);
 
         logEventWithPreviousState(context);
+        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(payload);
 
         emailService.sendEmail(
             petitionerEmail,
             EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name(),
             getPersonalisation(context, payload),
-            EMAIL_DESCRIPTION
+            EMAIL_DESCRIPTION,
+            languagePreference
         );
 
         logEventWithPreviousState(context);

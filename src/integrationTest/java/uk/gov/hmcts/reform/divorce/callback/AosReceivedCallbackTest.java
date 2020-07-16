@@ -12,13 +12,14 @@ import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_ANSWERS;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
 
 public class AosReceivedCallbackTest extends IntegrationTest {
 
     private static final String BASE_CASE_RESPONSE = "fixtures/retrieve-aos-case/aos-received.json";
     private static final String ERROR_CASE_RESPONSE = "fixtures/retrieve-aos-case/aos-received-error.json";
+    private static final String DOCUMENT_TYPE_RESPONDENT_ANSWERS = "respondentAnswers";
+
 
     @Autowired
     private CosApiClient cosApiClient;

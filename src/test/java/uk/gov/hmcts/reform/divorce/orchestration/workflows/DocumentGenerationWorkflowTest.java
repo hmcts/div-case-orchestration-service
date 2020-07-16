@@ -6,11 +6,14 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetFormattedDnCourtDetails;
@@ -20,6 +23,7 @@ import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -30,6 +34,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DocumentGenerationWorkflowTest {
@@ -43,8 +49,13 @@ public class DocumentGenerationWorkflowTest {
     @Mock
     private AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
+    @Mock
+    private DocumentTemplateService documentTemplateService;
+
     @InjectMocks
     private DocumentGenerationWorkflow documentGenerationWorkflow;
+
+    private static final String COE_WELSH_TEMPLATE_ID = "FL-DIV-GNO-WEL-00238.docx";
 
     @Test
     public void callsTheRequiredTasksInOrder() throws WorkflowException {
@@ -79,4 +90,75 @@ public class DocumentGenerationWorkflowTest {
         inOrder.verify(documentGenerationTask).execute(context, payload);
         inOrder.verify(addNewDocumentsToCaseDataTask).execute(context, payload);
     }
+
+    @Test
+    public void testToPickTemplateIdFromConfiguration() throws WorkflowException {
+        final TaskContext context = new DefaultTaskContext();
+        final Map<String, Object> payload = new HashMap<>();
+        payload.put(LANGUAGE_PREFERENCE_WELSH, YES_VALUE);
+
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .caseData(payload)
+            .build();
+
+        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        context.setTransientObject(DOCUMENT_TEMPLATE_ID, COE_WELSH_TEMPLATE_ID);
+        context.setTransientObject(DOCUMENT_TYPE, "coe");
+        context.setTransientObject(DOCUMENT_FILENAME, "c");
+
+        final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        when(setFormattedDnCourtDetails.execute(context, payload)).thenReturn(payload);
+        when(documentGenerationTask.execute(context, payload)).thenReturn(payload);
+        when(addNewDocumentsToCaseDataTask.execute(context, payload)).thenReturn(payload);
+        when(documentTemplateService.getTemplateId(LanguagePreference.WELSH, DocumentType.COE))
+            .thenReturn(COE_WELSH_TEMPLATE_ID);
+
+        documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN, "a", "coe", "c");
+
+        final InOrder inOrder = inOrder(documentTemplateService, setFormattedDnCourtDetails, documentGenerationTask, addNewDocumentsToCaseDataTask);
+        inOrder.verify(documentTemplateService).getTemplateId(same(LanguagePreference.WELSH), same(DocumentType.COE));
+        inOrder.verify(setFormattedDnCourtDetails).execute(context, payload);
+        inOrder.verify(documentGenerationTask).execute(context, payload);
+        inOrder.verify(addNewDocumentsToCaseDataTask).execute(context, payload);
+    }
+
+    @Test
+    public void testToContinueWithProvidedTempateId() throws WorkflowException {
+        final TaskContext context = new DefaultTaskContext();
+        final Map<String, Object> payload = new HashMap<>();
+        payload.put(LANGUAGE_PREFERENCE_WELSH, YES_VALUE);
+
+        final CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .caseData(payload)
+            .build();
+
+        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        context.setTransientObject(DOCUMENT_TEMPLATE_ID, "a");
+        context.setTransientObject(DOCUMENT_TYPE, "coe");
+        context.setTransientObject(DOCUMENT_FILENAME, "c");
+
+        final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        when(setFormattedDnCourtDetails.execute(context, payload)).thenReturn(payload);
+        when(documentGenerationTask.execute(context, payload)).thenReturn(payload);
+        when(addNewDocumentsToCaseDataTask.execute(context, payload)).thenReturn(payload);
+        when(documentTemplateService.getTemplateId(LanguagePreference.WELSH, DocumentType.COE))
+            .thenThrow(new IllegalArgumentException("No template found"));
+
+        documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN, "a", "coe", "c");
+
+        final InOrder inOrder = inOrder(documentTemplateService, setFormattedDnCourtDetails, documentGenerationTask, addNewDocumentsToCaseDataTask);
+        inOrder.verify(documentTemplateService).getTemplateId(same(LanguagePreference.WELSH), same(DocumentType.COE));
+        inOrder.verify(setFormattedDnCourtDetails).execute(context, payload);
+        inOrder.verify(documentGenerationTask).execute(context, payload);
+        inOrder.verify(addNewDocumentsToCaseDataTask).execute(context, payload);
+    }
+
 }

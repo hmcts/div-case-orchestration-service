@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.config.EmailTemplatesConfig;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailToSend;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -24,29 +25,35 @@ public class EmailService {
     @Autowired
     private EmailTemplatesConfig emailTemplatesConfig;
 
+
     public Map<String, Object> sendEmail(String destinationAddress,
                                          String templateName,
                                          Map<String, String> templateVars,
-                                         String emailDescription) {
+                                         String emailDescription,
+                                         LanguagePreference languagePreference) {
 
-        EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars);
+        EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars, languagePreference);
         return sendEmailAndReturnErrorsInResponse(emailToSend, emailDescription);
     }
 
-    public void sendEmailAndReturnExceptionIfFails(String destinationAddress,
-                           String templateName,
-                           Map<String, String> templateVars,
-                           String emailDescription) throws NotificationClientException {
 
-        EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars);
+    public void sendEmailAndReturnExceptionIfFails(String destinationAddress,
+                                                   String templateName,
+                                                   Map<String, String> templateVars,
+                                                   String emailDescription,
+                                                   LanguagePreference languagePreference) throws NotificationClientException {
+
+        EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars, languagePreference);
         sendEmailUsingClient(emailToSend, emailDescription);
     }
 
     private EmailToSend generateEmail(String destinationAddress,
                                       String templateName,
-                                      Map<String, String> templateVars) {
+                                      Map<String, String> templateVars,
+                                      LanguagePreference languagePreference) {
         String referenceId = UUID.randomUUID().toString();
-        String templateId = emailTemplatesConfig.getTemplates().get(templateName);
+
+        String templateId = emailTemplatesConfig.getTemplates().get(languagePreference).get(templateName);
         Map<String, String> templateFields = (templateVars != null ? templateVars :
             emailTemplatesConfig.getTemplateVars().get(templateName));
 

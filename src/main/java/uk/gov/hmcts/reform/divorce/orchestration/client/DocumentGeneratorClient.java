@@ -20,4 +20,10 @@ public interface DocumentGeneratorClient {
     GeneratedDocumentInfo generatePDF(
         @RequestBody GenerateDocumentRequest generateDocumentRequest,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken);
+
+    @ApiOperation("Generate Draft PDF Document")
+    @PostMapping(value = "/version/1/generateDraftPDF", headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE)
+    GeneratedDocumentInfo generateDraftPDF(
+            @RequestBody GenerateDocumentRequest generateDocumentRequest,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken);
 }

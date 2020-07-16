@@ -5,6 +5,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
@@ -53,7 +54,8 @@ public class GenericEmailNotificationUTest {
                 .sendEmailAndReturnExceptionIfFails(TEST_USER_EMAIL,
                         RESPONDENT_SUBMISSION_CONSENT.name(),
                         vars,
-                        GENERIC_SUBMISSION_NOTIFICATION_EMAIL_DESCRIPTION);
+                        GENERIC_SUBMISSION_NOTIFICATION_EMAIL_DESCRIPTION,
+                        LanguagePreference.ENGLISH);
         assertEquals(taskResponse, data);
     }
 
@@ -73,7 +75,8 @@ public class GenericEmailNotificationUTest {
                 .when(emailService).sendEmailAndReturnExceptionIfFails(TEST_USER_EMAIL,
                     RESPONDENT_SUBMISSION_CONSENT.name(),
                     vars,
-                    GENERIC_SUBMISSION_NOTIFICATION_EMAIL_DESCRIPTION);
+                    GENERIC_SUBMISSION_NOTIFICATION_EMAIL_DESCRIPTION,
+                    LanguagePreference.ENGLISH);
 
         Map<String, Object> taskResponse = genericEmailNotification.execute(context, data);
 

@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -33,6 +34,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
@@ -97,7 +99,8 @@ public class SendPetitionerGenericUpdateNotificationEmailTaskTest {
                         eq(TEST_USER_EMAIL),
                         eq(EmailTemplateNames.GENERIC_UPDATE.name()),
                         eq(expectedTemplateVars),
-                        any());
+                        any(),
+                        eq((LanguagePreference.ENGLISH)));
     }
 
     @Test
@@ -107,6 +110,7 @@ public class SendPetitionerGenericUpdateNotificationEmailTaskTest {
         testData.put(RESP_FIRST_NAME_CCD_FIELD, TEST_USER_FIRST_NAME);
         testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_USER_LAST_NAME);
         testData.put(PETITIONER_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
+        testData.put(LANGUAGE_PREFERENCE_WELSH, "No");
 
 
         expectedTemplateVars.put(NOTIFICATION_PET_NAME, TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME);
@@ -123,6 +127,7 @@ public class SendPetitionerGenericUpdateNotificationEmailTaskTest {
                 eq(TEST_USER_EMAIL),
                 eq(EmailTemplateNames.SOL_GENERAL_CASE_UPDATE.name()),
                 eq(expectedTemplateVars),
-                any());
+                any(),
+                eq(LanguagePreference.ENGLISH));
     }
 }

@@ -29,7 +29,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_ANSWERS_TEMPLATE_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
@@ -38,6 +37,9 @@ public class GenerateCoRespondentAnswersITest extends MockedFunctionalTest {
     private static final String API_URL = "/co-respondent-generate-answers";
 
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
+
+    private static final String USER_TOKEN = "anytoken";
+    public static final String CO_RESPONDENT_ANSWERS_TEMPLATE_NAME = "co-respondent-answers";
 
     @Autowired
     private MockMvc webClient;
@@ -50,7 +52,7 @@ public class GenerateCoRespondentAnswersITest extends MockedFunctionalTest {
                 .build())
             .build();
 
-        stubDocumentGeneratorService(CO_RESPONDENT_ANSWERS_TEMPLATE_NAME,
+        stubDocumentGeneratorServiceBaseOnContextPath(CO_RESPONDENT_ANSWERS_TEMPLATE_NAME,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequest.getCaseDetails()),
             DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS);
 
