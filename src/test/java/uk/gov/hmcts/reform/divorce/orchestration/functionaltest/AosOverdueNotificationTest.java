@@ -12,10 +12,12 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.config.EmailTemplatesConfig;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Collections;
@@ -69,6 +71,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.GENERIC_UPDATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.PETITIONER_NOTICE_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.PETITIONER_RESP_NOT_RESPONDED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.SOL_APPLICANT_RESP_NOT_RESPONDED;
@@ -91,12 +94,16 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
     private EmailTemplatesConfig emailTemplatesConfig;
 
     @MockBean
-    EmailClient mockEmailClient;
+    private EmailClient mockEmailClient;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     @Before
     public void setup() {
         testData = new HashMap<>();
         testTemplateVars = new HashMap<>();
+        featureToggleOn();
     }
 
     @Test
@@ -136,10 +143,18 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
     }
 
     @Test
-    public void givenCorrectPetitionerDetails_WithIssueAosEventId_ThenOkResponse() throws Exception {
+    public void givenCorrectPetitionerDetails_WithIssueAosEventIdAndToggleOn_ThenOkResponse() throws Exception {
         addPetitionerTestDataForNoticeOfProceeding();
 
         runTestProcedureUsing(EVENT_ISSUE_AOS, PETITIONER_NOTICE_OF_PROCEEDINGS);
+    }
+
+    @Test
+    public void givenCorrectPetitionerDetails_WithIssueAosEventIdAndToggleOff_ThenOkResponse() throws Exception {
+        featureToggleOff();
+        addPetitionerTestData();
+
+        runTestProcedureUsing(EVENT_ISSUE_AOS, GENERIC_UPDATE);
     }
 
     @Test
@@ -307,5 +322,13 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(statusCondition)
             .andExpect(MockMvcResultMatchers.content().json(convertObjectToJsonString(expectedResponse)));
+    }
+
+    private void featureToggleOff() {
+        when(featureToggleService.isFeatureEnabled(Features.SOLICITOR_DN_REJECT_AND_AMEND)).thenReturn(false);
+    }
+
+    private void featureToggleOn() {
+        when(featureToggleService.isFeatureEnabled(Features.SOLICITOR_DN_REJECT_AND_AMEND)).thenReturn(true);
     }
 }
