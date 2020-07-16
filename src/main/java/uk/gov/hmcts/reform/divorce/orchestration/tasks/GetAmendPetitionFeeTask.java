@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AMEND_PETITION_FEE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_FEE_JSON_KEY;
 
 @Component
 @RequiredArgsConstructor
@@ -18,7 +18,8 @@ public class GetAmendPetitionFeeTask implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
-        context.setTransientObject(AMEND_PETITION_FEE_JSON_KEY, feesAndPaymentsClient.getAmendPetitioneFee());
+        context.setTransientObject(PETITION_FEE_JSON_KEY, feesAndPaymentsClient.getAmendPetitionerFee());
         return caseData;
     }
+
 }

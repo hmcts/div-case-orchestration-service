@@ -19,5 +19,5 @@ public interface FeesAndPaymentsClient {
     @ApiOperation("Returns amend Petitioner Fee")
     @GetMapping(value = "/fees-and-payments/version/1/amend-fee",
         headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE)
-    FeeResponse getAmendPetitioneFee();
+    FeeResponse getAmendPetitionerFee();
 }
