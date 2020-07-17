@@ -29,6 +29,7 @@ public class AosInternalController {
     public ResponseEntity<String> markCasesForBeingMovedToAosOverdue(@RequestHeader(value = "Authorization") String authorizationToken)
         throws CaseOrchestrationServiceException {
 
+        log.info("Will look for cases that are eligible to be moved to 'AOSOverdue' state");
         caseOrchestrationService.markCasesToBeMovedToAosOverdue(authorizationToken);
 
         return ResponseEntity.ok().build();

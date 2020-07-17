@@ -431,7 +431,9 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         try {
             aosOverdueWorkflow.run(authToken);
         } catch (WorkflowException e) {
-            throw new CaseOrchestrationServiceException(e);
+            CaseOrchestrationServiceException caseOrchestrationServiceException = new CaseOrchestrationServiceException(e);
+            log.error("Error trying to find cases to move to AOSOverdue", caseOrchestrationServiceException);
+            throw caseOrchestrationServiceException;
         }
     }
 
