@@ -62,7 +62,7 @@ public class DaGrantedSolicitorLetterGenerationTaskTest extends BasePayloadSpeci
         runCommonVerifications(caseData,
             returnedCaseData,
             DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER_DOCUMENT_TYPE,
-            DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER_TEMPLATE_ID,
+            DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER_TEMPLATE_ID.getValue(),
             expectedTemplateVars);
     }
 

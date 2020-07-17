@@ -24,11 +24,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_CENTRE_SITEID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DRAFT_MINI_PETITION_TEMPLATE_NAME;
 
 public class SolicitorCreateITest extends MockedFunctionalTest {
 
     private static final String API_URL_CREATE = "/solicitor-create";
+
+    private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generateDraftPDF";
+    private static final String FORMAT_ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
+    private static final String DRAFT_MINI_PETITION_TEMPLATE_NAME = "divorcedraftminipetition";
 
     @Autowired
     private CcdUtil ccdUtil;
@@ -54,7 +57,7 @@ public class SolicitorCreateITest extends MockedFunctionalTest {
             .caseDetails(fullCase)
             .build();
 
-        stubDocumentGeneratorService(DRAFT_MINI_PETITION_TEMPLATE_NAME,
+        stubDraftDocumentGeneratorService(DRAFT_MINI_PETITION_TEMPLATE_NAME,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, fullCase),
             AddMiniPetitionDraftTask.DOCUMENT_TYPE);
 

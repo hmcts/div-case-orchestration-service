@@ -35,6 +35,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EXPECTED_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EXPECTED_DUE_DATE_FORMATTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FORM_WESLH_SUBMISSION_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
@@ -54,6 +55,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RDC_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE_VARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_FORM_SUBMISSION_DATE_LIMIT_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SendCoRespondSubmissionNotificationWorkflowTest {
@@ -104,6 +106,10 @@ public class SendCoRespondSubmissionNotificationWorkflowTest {
         when(ccdUtil.getFormattedDueDate(ccdCallbackRequest.getCaseDetails().getCaseData(),
             CO_RESPONDENT_DUE_DATE)).thenReturn(TEST_EXPECTED_DUE_DATE_FORMATTED);
 
+        when(ccdUtil.getWelshFormattedDate(ccdCallbackRequest.getCaseDetails().getCaseData(),
+                CO_RESPONDENT_DUE_DATE)).thenReturn(TEST_FORM_WESLH_SUBMISSION_DUE_DATE);
+
+
         classToTest.run(ccdCallbackRequest);
 
         ArgumentCaptor<TaskContext> argument = ArgumentCaptor.forClass(TaskContext.class);
@@ -114,6 +120,7 @@ public class SendCoRespondSubmissionNotificationWorkflowTest {
         DefaultTaskContext expectedContext = createdExpectedContext(ImmutableMap.of(
             NOTIFICATION_RDC_NAME_KEY, court.getIdentifiableCentreName(),
             NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY, TEST_EXPECTED_DUE_DATE_FORMATTED,
+            NOTIFICATION_WELSH_FORM_SUBMISSION_DATE_LIMIT_KEY, TEST_FORM_WESLH_SUBMISSION_DUE_DATE,
             NOTIFICATION_COURT_ADDRESS_KEY, court.getFormattedAddress()
             ),
             EmailTemplateNames.CO_RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION);

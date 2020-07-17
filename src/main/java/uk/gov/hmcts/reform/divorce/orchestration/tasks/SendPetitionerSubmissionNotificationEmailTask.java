@@ -3,12 +3,14 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -115,12 +117,14 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
         String petitionerEmail = getMandatoryStringValue(caseData, D_8_PETITIONER_EMAIL);
 
         logEvent(context, AMEND_DESC);
+        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
 
         emailService.sendEmail(
             petitionerEmail,
             EmailTemplateNames.APPLIC_SUBMISSION_AMEND.name(),
             getPersonalisation(context, caseData),
-            AMEND_DESC
+            AMEND_DESC,
+            languagePreference
         );
 
         return caseData;
@@ -130,12 +134,14 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
         String solicitorEmail = getMandatoryStringValue(caseData, PETITIONER_SOLICITOR_EMAIL);
 
         logEvent(context, AMEND_SOL_DESC);
+        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
 
         emailService.sendEmail(
             solicitorEmail,
             EmailTemplateNames.APPLIC_SUBMISSION_AMEND_SOLICITOR.name(),
             getSolicitorPersonalisation(context, caseData),
-            AMEND_SOL_DESC
+            AMEND_SOL_DESC,
+            languagePreference
         );
 
         return caseData;
@@ -145,12 +151,14 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
         String petitionerEmail = getMandatoryStringValue(caseData, D_8_PETITIONER_EMAIL);
 
         logEvent(context, SUBMITTED_DESC);
+        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
 
         emailService.sendEmail(
             petitionerEmail,
             EmailTemplateNames.APPLIC_SUBMISSION.name(),
             getPersonalisation(context, caseData),
-            SUBMITTED_DESC);
+            SUBMITTED_DESC,
+            languagePreference);
 
         return caseData;
     }

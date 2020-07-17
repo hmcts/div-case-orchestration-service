@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -24,6 +26,9 @@ import java.util.stream.Collectors;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_REFERENCE_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.VALUE_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADDITIONAL_INFRORMATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_ADDITIONAL_INFO;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_ADDITIONAL_INFO_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATE_OF_HEARING_CCD_FIELD;
@@ -31,9 +36,19 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_COSTS_ENDCLAIM_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_COSTS_OPTIONS_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_REJECT_OPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED_OLD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_CLARIFICATION_ADDITIONAL_INFO;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_CLARIFICATION_ADDITIONAL_INFO_WELSH;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO_WELSH;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.TYPE_COSTS_DECISION_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_LA_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsObject;
@@ -121,8 +136,62 @@ public class CaseDataUtils {
         final String coRespondentNamedOld = getOptionalPropertyValueAsString(caseData, D_8_CO_RESPONDENT_NAMED_OLD, EMPTY);
 
         // we need to ensure older cases can be used before we fixed config in DIV-5068
-        return ADULTERY.equals(divorceReason)
+        return ADULTERY.getValue().equals(divorceReason)
             && (YES_VALUE.equalsIgnoreCase(coRespondentNamed) || YES_VALUE.equalsIgnoreCase(coRespondentNamedOld));
+    }
+
+    public static boolean isRejectReasonAddInfoAwaitingTranslation(Map<String, Object> caseData) {
+        return Optional.of(isLanguagePreferenceWelsh(caseData)).filter(Boolean::booleanValue)
+            .map(yes -> {
+                boolean isRefusalReject = Optional.ofNullable(caseData.get(REFUSAL_DECISION_CCD_FIELD))
+                    .map(String.class::cast).filter(value -> value.equals(DN_REFUSED_REJECT_OPTION)).isPresent();
+                boolean isAwaitingClarification = Optional.ofNullable(caseData.get(REFUSAL_DECISION_CCD_FIELD))
+                    .map(String.class::cast).filter(value -> value.equals(REFUSAL_DECISION_MORE_INFO_VALUE)).isPresent();
+                boolean isRefusalRejectionStop = shouldStopValidation(caseData,
+                    REFUSAL_REJECTION_ADDITIONAL_INFO, REFUSAL_REJECTION_ADDITIONAL_INFO_WELSH);
+                boolean isRefusalClarificationStop = shouldStopValidation(caseData,
+                    REFUSAL_CLARIFICATION_ADDITIONAL_INFO, REFUSAL_CLARIFICATION_ADDITIONAL_INFO_WELSH);
+                boolean isCostClaimGranted = Optional.ofNullable(caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD))
+                    .map(String.class::cast).filter(value -> value.equals(YES_VALUE)).isPresent();
+                boolean isTypeCostDecision = Optional.ofNullable(caseData.get(TYPE_COSTS_DECISION_CCD_FIELD))
+                    .map(String.class::cast).filter(value -> value.equals(ADDITIONAL_INFRORMATION)).isPresent();
+                boolean isCostOrderStop = shouldStopValidation(caseData, COSTS_ORDER_ADDITIONAL_INFO, COSTS_ORDER_ADDITIONAL_INFO_WELSH);
+                return ((isRefusalReject && isRefusalRejectionStop) || (isAwaitingClarification
+                    && isRefusalClarificationStop) || (isCostClaimGranted && isTypeCostDecision && isCostOrderStop));
+            })
+            .orElse(false);
+    }
+
+    private static boolean shouldStopValidation(Map<String, Object> caseData, String englishField, String welshField) {
+        boolean englishPresent = Optional.ofNullable(caseData.get(englishField))
+            .filter(Objects::nonNull).map(String.class::cast).map(String::trim).filter(value -> !value.isEmpty()).isPresent();
+        boolean welshPresent = Optional.ofNullable(caseData.get(welshField))
+            .filter(Objects::nonNull).map(String.class::cast).map(String::trim).filter(value -> !value.isEmpty()).isPresent();
+        return englishPresent && !welshPresent;
+    }
+
+    public static boolean isWelshLADecisionTranslationRequired(CaseDetails caseDetails) {
+        return WELSH_LA_DECISION.equals(caseDetails.getState());
+    }
+
+    public static boolean isLanguagePreferenceWelsh(Map<String, Object> caseData) {
+        return (Optional.ofNullable(caseData)
+            .map(data -> data.get(LANGUAGE_PREFERENCE_WELSH))
+            .filter(Objects::nonNull)
+            .map(String.class::cast)
+            .filter(YES_VALUE::equalsIgnoreCase)
+            .map(languagePreferenceWelsh -> Boolean.TRUE)
+            .orElse(Boolean.FALSE));
+    }
+
+    public static LanguagePreference getLanguagePreference(Map<String, Object> caseData) {
+        return  Optional.ofNullable(caseData)
+            .map(data -> data.get(LANGUAGE_PREFERENCE_WELSH))
+            .filter(Objects::nonNull)
+            .map(String.class::cast)
+            .filter(YES_VALUE::equalsIgnoreCase)
+            .map(languagePreferenceWelsh -> LanguagePreference.WELSH)
+            .orElse(LanguagePreference.ENGLISH);
     }
 
     public static Map<String, Object> removeDocumentsByDocumentType(Map<String, Object> caseData, String ...documentTypes) {

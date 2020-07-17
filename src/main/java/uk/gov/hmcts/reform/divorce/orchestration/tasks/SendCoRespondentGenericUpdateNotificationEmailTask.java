@@ -3,11 +3,13 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,7 +54,9 @@ public class SendCoRespondentGenericUpdateNotificationEmailTask implements Task<
             templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, coRespLastName);
             templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, caseNumber);
 
-            emailService.sendEmail(coRespEmail, EmailTemplateNames.GENERIC_UPDATE_RESPONDENT.name(), templateVars, EMAIL_DESC);
+            LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
+
+            emailService.sendEmail(coRespEmail, EmailTemplateNames.GENERIC_UPDATE_RESPONDENT.name(), templateVars, EMAIL_DESC, languagePreference);
         }
 
         return caseData;

@@ -250,7 +250,7 @@ public class SendPetitionerCoENotificationEmailTaskTest {
                 fail("Should have caught TaskException, but got the following: " + throwable.getClass().getName());
             }
 
-            verify(taskCommons, never()).sendEmail(any(), any(), any(), any());
+            verify(taskCommons, never()).sendEmail(any(), any(), any(), any(), any());
         }
     }
 
@@ -273,7 +273,7 @@ public class SendPetitionerCoENotificationEmailTaskTest {
                 fail("Should have caught TaskException, but got the following: " + throwable.getClass().getName());
             }
 
-            verify(taskCommons, never()).sendEmail(any(), any(), any(), any());
+            verify(taskCommons, never()).sendEmail(any(), any(), any(), any(), any());
         }
     }
 
@@ -292,7 +292,7 @@ public class SendPetitionerCoENotificationEmailTaskTest {
                     hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "7 April 2019"),
                     hasEntry(COURT_NAME_TEMPLATE_ID, "Court Name")
                 )
-            )));
+            )),any());
     }
 
     private void verifySolEmailParameters(Matcher<Map<? extends String, ?>> optionalTextParametersMatcher) throws TaskException {
@@ -311,7 +311,7 @@ public class SendPetitionerCoENotificationEmailTaskTest {
                     hasEntry(LIMIT_DATE_TO_CONTACT_COURT, "7 April 2019"),
                     hasEntry(COURT_NAME_TEMPLATE_ID, "Court Name")
                 )
-            )));
+            )),any());
     }
 
 }

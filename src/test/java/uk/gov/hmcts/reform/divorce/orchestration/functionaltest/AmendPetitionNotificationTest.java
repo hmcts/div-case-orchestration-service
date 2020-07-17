@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.config.EmailTemplatesConfig;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
@@ -155,7 +156,7 @@ public class AmendPetitionNotificationTest extends MockedFunctionalTest {
     }
 
     private String templateIdOf(String templateName) {
-        return emailTemplatesConfig.getTemplates().get(templateName);
+        return emailTemplatesConfig.getTemplates().get(LanguagePreference.ENGLISH).get(templateName);
     }
 
     private CaseDetails caseDetailsOf(Map data) {
