@@ -21,13 +21,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_RESPONDENT_GENDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_PRESENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_FEES_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_FEE_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.PreviousAmendPetitionStateLoggerHelper.getAmendPetitionPreviousState;
@@ -71,9 +68,8 @@ public class SendPetitionerAmendEmailTask implements Task<Map<String, Object>> {
     private Map<String, String> getPersonalisation(TaskContext context, Map<String, Object> payload) throws TaskException {
         Map<String, String> personalisation = new HashMap<>();
 
-        String familyManCaseId = getOptionalPropertyValueAsString(payload, D_8_CASE_REFERENCE, null);
+        String familyManCaseId = getOptionalPropertyValueAsString(payload, D_8_CASE_REFERENCE, "Not Present");
 
-        personalisation.put(NOTIFICATION_CASE_NUMBER_PRESENT, isCaseNumberPresent(familyManCaseId));
         personalisation.put(NOTIFICATION_CASE_NUMBER_KEY, familyManCaseId);
         personalisation.put(NOTIFICATION_PET_NAME, getPetitionerFullName(payload));
         personalisation.put(NOTIFICATION_FEES_KEY, getFormattedFeeAmount(context));
@@ -86,27 +82,13 @@ public class SendPetitionerAmendEmailTask implements Task<Map<String, Object>> {
         final CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
         String caseId = getCaseId(context);
         String stateId = caseDetails.getState();
-        String familyManCaseId = getOptionalPropertyValueAsString(payload, D_8_CASE_REFERENCE, null);
 
         log.info(
-            "CaseID: {}, CaseReference: {}, Description: {}, Previous state {}.",
+            "CaseID: {}, Description: {}, Previous state {}.",
             caseId,
-            getFamilyManCaseReference(familyManCaseId),
             EMAIL_DESCRIPTION,
             getAmendPetitionPreviousState(stateId)
         );
-    }
-
-    private String getFamilyManCaseReference(String familyManCaseReference) {
-        if (familyManCaseReference != null) {
-            return familyManCaseReference;
-        } else {
-            return "Not present";
-        }
-    }
-
-    private String isCaseNumberPresent(String familyManCaseId) {
-        return familyManCaseId == null ? NO_VALUE : YES_VALUE;
     }
 
     private String getFormattedFeeAmount(TaskContext context) {

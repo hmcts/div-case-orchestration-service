@@ -38,13 +38,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_PRESENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_FEES_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_FEE_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SendPetitionerAmendEmailTaskTest {
@@ -85,32 +82,7 @@ public class SendPetitionerAmendEmailTaskTest {
             eq(EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name()),
             argThat(new HamcrestArgumentMatcher<>(
                     allOf(
-                        hasEntry(NOTIFICATION_CASE_NUMBER_PRESENT, YES_VALUE),
                         hasEntry(NOTIFICATION_CASE_NUMBER_KEY, TestConstants.TEST_CASE_FAMILY_MAN_ID),
-                        hasEntry(NOTIFICATION_PET_NAME, TestConstants.TEST_USER_FIRST_NAME + " " + TestConstants.TEST_USER_LAST_NAME),
-                        hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING),
-                        hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, RELATION)
-                    )
-                )
-            ),
-            anyString(),
-            eq(LanguagePreference.ENGLISH)
-        );
-    }
-
-    @Test
-    public void should_SendPetitionerAmendEmail_whenValidAnd_NoCaseNumber() throws TaskException {
-        incomingPayload.put(D_8_CASE_REFERENCE, null);
-
-        executeTask();
-
-        verify(emailService).sendEmail(
-            eq(TestConstants.TEST_PETITIONER_EMAIL),
-            eq(EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name()),
-            argThat(new HamcrestArgumentMatcher<>(
-                    allOf(
-                        hasEntry(NOTIFICATION_CASE_NUMBER_PRESENT, NO_VALUE),
-                        hasEntry(NOTIFICATION_CASE_NUMBER_KEY, null),
                         hasEntry(NOTIFICATION_PET_NAME, TestConstants.TEST_USER_FIRST_NAME + " " + TestConstants.TEST_USER_LAST_NAME),
                         hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING),
                         hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, RELATION)
@@ -133,7 +105,6 @@ public class SendPetitionerAmendEmailTaskTest {
             eq(EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name()),
             argThat(new HamcrestArgumentMatcher<>(
                     allOf(
-                        hasEntry(NOTIFICATION_CASE_NUMBER_PRESENT, YES_VALUE),
                         hasEntry(NOTIFICATION_CASE_NUMBER_KEY, ""),
                         hasEntry(NOTIFICATION_PET_NAME, TestConstants.TEST_USER_FIRST_NAME + " " + TestConstants.TEST_USER_LAST_NAME),
                         hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING),
@@ -144,13 +115,6 @@ public class SendPetitionerAmendEmailTaskTest {
             anyString(),
             eq(LanguagePreference.ENGLISH)
         );
-
-        /*
-         This test has NOTIFICATION_CASE_NUMBER_PRESENT set to Yes because
-         the code implementing it is ensuring that if its not null, it is true.
-         This is due to limitations in the GovNotify service in relation to
-         conditional logic not being able to support showing variables inside a conditional block.
-         */
     }
 
     @Test
@@ -162,7 +126,6 @@ public class SendPetitionerAmendEmailTaskTest {
             eq(EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name()),
             argThat(new HamcrestArgumentMatcher<>(
                     allOf(
-                        hasEntry(NOTIFICATION_CASE_NUMBER_PRESENT, YES_VALUE),
                         hasEntry(NOTIFICATION_CASE_NUMBER_KEY, TestConstants.TEST_CASE_FAMILY_MAN_ID),
                         hasEntry(NOTIFICATION_PET_NAME, TestConstants.TEST_USER_FIRST_NAME + " " + TestConstants.TEST_USER_LAST_NAME),
                         hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING),
@@ -177,7 +140,7 @@ public class SendPetitionerAmendEmailTaskTest {
 
     @Test
     public void should_SendPetitionerAmendEmail_whenValidAnd_CaseReferenceNumberIs_NO() throws TaskException {
-        incomingPayload.put(D_8_CASE_REFERENCE, null);
+        incomingPayload.put(D_8_CASE_REFERENCE, "Not Present");
         executeTask();
 
         verify(emailService).sendEmail(
@@ -185,8 +148,7 @@ public class SendPetitionerAmendEmailTaskTest {
             eq(EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name()),
             argThat(new HamcrestArgumentMatcher<>(
                     allOf(
-                        hasEntry(NOTIFICATION_CASE_NUMBER_PRESENT, NO_VALUE),
-                        hasEntry(NOTIFICATION_CASE_NUMBER_KEY, null),
+                        hasEntry(NOTIFICATION_CASE_NUMBER_KEY, "Not Present"),
                         hasEntry(NOTIFICATION_PET_NAME, TestConstants.TEST_USER_FIRST_NAME + " " + TestConstants.TEST_USER_LAST_NAME),
                         hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING),
                         hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, RELATION)
@@ -208,7 +170,6 @@ public class SendPetitionerAmendEmailTaskTest {
             eq(EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name()),
             argThat(new HamcrestArgumentMatcher<>(
                     allOf(
-                        hasEntry(NOTIFICATION_CASE_NUMBER_PRESENT, NO_VALUE),
                         hasEntry(NOTIFICATION_PET_NAME, TestConstants.TEST_USER_FIRST_NAME + " " + TestConstants.TEST_USER_LAST_NAME),
                         hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING),
                         hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, RELATION)
