@@ -377,6 +377,9 @@ public class OrchestrationConstants {
     public static final String D8DOCUMENTS_GENERATED = "D8DocumentsGenerated";
     public static final String PETITIONER_SOLICITOR_EMAIL = "PetitionerSolicitorEmail";
     public static final String PETITIONER_SOLICITOR_NAME = "PetitionerSolicitorName";
+    public static final String PETITIONER_SOLICITOR_PHONE = "PetitionerSolicitorPhone";
+    public static final String PETITIONER_SOLICITOR_DERIVED_ADDRESS = "DerivedPetitionerSolicitorAddr";
+    public static final String PETITIONER_SOLICITOR_AGREES_EMAIL_CONTACT = "SolicitorAgreeToReceiveEmails";
 
     // Payment
     public static final String PAYMENT = "payment";
