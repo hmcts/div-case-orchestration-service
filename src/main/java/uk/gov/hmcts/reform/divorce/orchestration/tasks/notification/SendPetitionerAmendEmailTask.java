@@ -47,7 +47,7 @@ public class SendPetitionerAmendEmailTask implements Task<Map<String, Object>> {
     private Map<String, Object> sendAmendApplicationEmailToPetitioner(TaskContext context, Map<String, Object> payload) throws TaskException {
         String petitionerEmail = getMandatoryStringValue(payload, D_8_PETITIONER_EMAIL);
 
-        logEventWithPreviousState(context, payload);
+        logEventWithPreviousState(context);
         LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(payload);
 
         emailService.sendEmail(
@@ -58,7 +58,7 @@ public class SendPetitionerAmendEmailTask implements Task<Map<String, Object>> {
             languagePreference
         );
 
-        logEventWithPreviousState(context, payload);
+        log.info("CaseID: {}, Email {} sent.", getCaseId(context), EMAIL_DESCRIPTION);
 
         return payload;
     }
@@ -75,7 +75,7 @@ public class SendPetitionerAmendEmailTask implements Task<Map<String, Object>> {
         return personalisation;
     }
 
-    private void logEventWithPreviousState(TaskContext context, Map<String, Object> payload) throws TaskException {
+    private void logEventWithPreviousState(TaskContext context) throws TaskException {
         final CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
         String caseId = getCaseId(context);
         String stateId = caseDetails.getState();
