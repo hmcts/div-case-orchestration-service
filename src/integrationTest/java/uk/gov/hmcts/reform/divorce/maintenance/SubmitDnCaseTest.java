@@ -26,7 +26,6 @@ public class SubmitDnCaseTest extends CcdSubmissionSupport {
         caseDetails = submitCase("submit-complete-case.json", userDetails);
     }
 
-    @Ignore //NOSONAR
     @Test
     public void whenSubmitDn_thenProceedAsExpected() throws Exception {
         updateCaseForCitizen(TEST_AOS_STARTED_EVENT_ID);
