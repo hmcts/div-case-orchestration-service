@@ -37,7 +37,7 @@ public class SubmitDnCaseTest extends CcdSubmissionSupport {
         assertEquals(caseDetails.getId(), cosResponse.path("id"));
         assertEquals(AWAITING_LEGAL_ADVISOR_REFERRAL, cosResponse.path(CASE_STATE_JSON_KEY));
     }
-    LinkRespondentTestLinkRespondentTest
+
     @Ignore // Needs config to pass
     @Test
     public void whenSubmitDnWithAwaitingClarification_thenProceedAsExpected() throws Exception {
