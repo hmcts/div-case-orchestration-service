@@ -142,7 +142,6 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         assertCaseDetailsRespondent(respondentUserDetails, String.valueOf(caseDetails.getId()));
     }
 
-    @Ignore //NOSONAR
     @Test
     @Category(ExtendedTest.class)
     public void givenValidCaseDetails_whenLinkCoRespondent_thenCaseShouldBeLinked() {

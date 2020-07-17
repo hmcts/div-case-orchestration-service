@@ -26,7 +26,6 @@ public class SubmitDnCaseTest extends CcdSubmissionSupport {
         caseDetails = submitCase("submit-complete-case.json", userDetails);
     }
 
-    @Ignore //NOSONAR
     @Test
     public void whenSubmitDn_thenProceedAsExpected() throws Exception {
         updateCaseForCitizen(TEST_AOS_STARTED_EVENT_ID);
@@ -38,7 +37,7 @@ public class SubmitDnCaseTest extends CcdSubmissionSupport {
         assertEquals(caseDetails.getId(), cosResponse.path("id"));
         assertEquals(AWAITING_LEGAL_ADVISOR_REFERRAL, cosResponse.path(CASE_STATE_JSON_KEY));
     }
-
+    LinkRespondentTestLinkRespondentTest
     @Ignore // Needs config to pass
     @Test
     public void whenSubmitDnWithAwaitingClarification_thenProceedAsExpected() throws Exception {
