@@ -64,7 +64,6 @@ public class SendPetitionerAmendEmailTaskTest {
         incomingPayload.put(D_8_PETITIONER_FIRST_NAME, TestConstants.TEST_USER_FIRST_NAME);
         incomingPayload.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME);
         incomingPayload.put(D_8_PETITIONER_EMAIL, TestConstants.TEST_PETITIONER_EMAIL);
-        incomingPayload.put(D_8_CASE_REFERENCE, TestConstants.TEST_CASE_FAMILY_MAN_ID);
         incomingPayload.put(D_8_INFERRED_RESPONDENT_GENDER, "male");
 
         taskContext = new DefaultTaskContext();
@@ -82,7 +81,7 @@ public class SendPetitionerAmendEmailTaskTest {
             eq(EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name()),
             argThat(new HamcrestArgumentMatcher<>(
                     allOf(
-                        hasEntry(NOTIFICATION_CASE_NUMBER_KEY, TestConstants.TEST_CASE_FAMILY_MAN_ID),
+                        hasEntry(NOTIFICATION_CASE_NUMBER_KEY, TestConstants.TEST_CASE_ID),
                         hasEntry(NOTIFICATION_PET_NAME, TestConstants.TEST_USER_FIRST_NAME + " " + TestConstants.TEST_USER_LAST_NAME),
                         hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING),
                         hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, RELATION)
@@ -105,7 +104,7 @@ public class SendPetitionerAmendEmailTaskTest {
             eq(EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name()),
             argThat(new HamcrestArgumentMatcher<>(
                     allOf(
-                        hasEntry(NOTIFICATION_CASE_NUMBER_KEY, ""),
+                        hasEntry(NOTIFICATION_CASE_NUMBER_KEY, TEST_CASE_ID),
                         hasEntry(NOTIFICATION_PET_NAME, TestConstants.TEST_USER_FIRST_NAME + " " + TestConstants.TEST_USER_LAST_NAME),
                         hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING),
                         hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, RELATION)
@@ -126,7 +125,7 @@ public class SendPetitionerAmendEmailTaskTest {
             eq(EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name()),
             argThat(new HamcrestArgumentMatcher<>(
                     allOf(
-                        hasEntry(NOTIFICATION_CASE_NUMBER_KEY, TestConstants.TEST_CASE_FAMILY_MAN_ID),
+                        hasEntry(NOTIFICATION_CASE_NUMBER_KEY, TestConstants.TEST_CASE_ID),
                         hasEntry(NOTIFICATION_PET_NAME, TestConstants.TEST_USER_FIRST_NAME + " " + TestConstants.TEST_USER_LAST_NAME),
                         hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING),
                         hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, RELATION)
@@ -148,7 +147,7 @@ public class SendPetitionerAmendEmailTaskTest {
             eq(EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name()),
             argThat(new HamcrestArgumentMatcher<>(
                     allOf(
-                        hasEntry(NOTIFICATION_CASE_NUMBER_KEY, "Not Present"),
+                        hasEntry(NOTIFICATION_CASE_NUMBER_KEY, TEST_CASE_ID),
                         hasEntry(NOTIFICATION_PET_NAME, TestConstants.TEST_USER_FIRST_NAME + " " + TestConstants.TEST_USER_LAST_NAME),
                         hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING),
                         hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, RELATION)
@@ -170,6 +169,7 @@ public class SendPetitionerAmendEmailTaskTest {
             eq(EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name()),
             argThat(new HamcrestArgumentMatcher<>(
                     allOf(
+                        hasEntry(NOTIFICATION_CASE_NUMBER_KEY, TEST_CASE_ID),
                         hasEntry(NOTIFICATION_PET_NAME, TestConstants.TEST_USER_FIRST_NAME + " " + TestConstants.TEST_USER_LAST_NAME),
                         hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING),
                         hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, RELATION)
@@ -180,7 +180,6 @@ public class SendPetitionerAmendEmailTaskTest {
             eq(LanguagePreference.ENGLISH)
         );
     }
-
 
     private void executeTask() throws TaskException {
         Map<String, Object> returnedPayload = sendPetitionerAmendEmailTask.execute(taskContext, incomingPayload);

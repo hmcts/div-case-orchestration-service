@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_RESPONDENT_GENDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
@@ -30,7 +29,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helpe
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.PreviousAmendPetitionStateLoggerHelper.getAmendPetitionPreviousState;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRelationshipTermByGender;
 
 @Slf4j
@@ -68,9 +66,8 @@ public class SendPetitionerAmendEmailTask implements Task<Map<String, Object>> {
     private Map<String, String> getPersonalisation(TaskContext context, Map<String, Object> payload) throws TaskException {
         Map<String, String> personalisation = new HashMap<>();
 
-        String familyManCaseId = getOptionalPropertyValueAsString(payload, D_8_CASE_REFERENCE, "Not Present");
-
-        personalisation.put(NOTIFICATION_CASE_NUMBER_KEY, familyManCaseId);
+        // we use ccd case id and not d8caseReference because in some scenarios d8caseReference wouldn't be populated yet
+        personalisation.put(NOTIFICATION_CASE_NUMBER_KEY, getCaseId(context));
         personalisation.put(NOTIFICATION_PET_NAME, getPetitionerFullName(payload));
         personalisation.put(NOTIFICATION_FEES_KEY, getFormattedFeeAmount(context));
         personalisation.put(NOTIFICATION_HUSBAND_OR_WIFE, getHusbandOrWife(payload));
