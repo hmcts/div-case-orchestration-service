@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionForRefusalWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.AosSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseCancelPronouncementEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseRemoveCasesWorkflow;
@@ -78,6 +77,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListi
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshContinueInterceptWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshContinueWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshSetPreviousStateWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.ApplicantDecreeAbsoluteEligibilityWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.DecreeAbsoluteAboutToBeGrantedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.DnSubmittedEmailNotificationWorkflow;
@@ -184,6 +185,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SendClarificationSubmittedNotificationWorkflow sendClarificationSubmittedNotificationWorkflow;
     private final CreateNewAmendedCaseAndSubmitToCCDWorkflow createNewAmendedCaseAndSubmitToCCDWorkflow;
     private final DocumentTemplateService documentTemplateService;
+    private final AosOverdueWorkflow aosOverdueWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -420,6 +422,22 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> sendAmendApplicationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return sendPetitionerAmendEmailNotificationWorkflow.run(ccdCallbackRequest);
+    }
+
+    @Override
+    public void markCasesToBeMovedToAosOverdue(String authToken) throws CaseOrchestrationServiceException {
+        log.info("Searching for cases that are eligible to be moved to AosOverdue");
+
+        try {
+            aosOverdueWorkflow.run(authToken);
+        } catch (WorkflowException e) {
+            throw new CaseOrchestrationServiceException(e);
+        }
+    }
+
+    @Override
+    public void makeCaseAosOverdue(String authToken, String caseId) {
+        log.info("Case id {} should be moved to AOSOverdue.", caseId);
     }
 
     private List<String> getNotificationErrors(Map<String, Object> notificationErrors) {

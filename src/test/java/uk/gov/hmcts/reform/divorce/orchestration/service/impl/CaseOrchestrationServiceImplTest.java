@@ -27,7 +27,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionForRefusalWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.AosSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseCancelPronouncementEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateDnPronounceDatesWorkflow;
@@ -79,6 +78,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListi
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshContinueInterceptWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshContinueWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshSetPreviousStateWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.ApplicantDecreeAbsoluteEligibilityWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.DecreeAbsoluteAboutToBeGrantedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.DnSubmittedEmailNotificationWorkflow;
@@ -106,6 +107,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -342,6 +344,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private WelshSetPreviousStateWorkflow welshSetPreviousStateWorkflow;
+
+    @Mock
+    private AosOverdueWorkflow aosOverdueWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -1762,10 +1767,29 @@ public class CaseOrchestrationServiceImplTest {
     }
 
 
+    @Test
+    public void shouldCallAppropriateWorkflowWhenMarkingCasesToBeMovedToAosOverdue() throws WorkflowException, CaseOrchestrationServiceException {
+        classUnderTest.markCasesToBeMovedToAosOverdue(AUTH_TOKEN);
+
+        verify(aosOverdueWorkflow).run(AUTH_TOKEN);
+    }
+
+    @Test
+    public void shouldThrowAppropriateException_WhenCatchingWorkflowException() throws WorkflowException, CaseOrchestrationServiceException {
+        doThrow(WorkflowException.class).when(aosOverdueWorkflow).run(AUTH_TOKEN);
+        expectedException.expect(CaseOrchestrationServiceException.class);
+        expectedException.expectCause(instanceOf(WorkflowException.class));
+
+        classUnderTest.markCasesToBeMovedToAosOverdue(AUTH_TOKEN);
+
+        verify(aosOverdueWorkflow).run(AUTH_TOKEN);
+    }
+
     @After
     public void tearDown() {
         ccdCallbackRequest = null;
         requestPayload = null;
         expectedPayload = null;
     }
+
 }

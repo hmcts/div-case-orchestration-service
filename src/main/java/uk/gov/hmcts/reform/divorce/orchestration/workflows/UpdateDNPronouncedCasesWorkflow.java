@@ -16,7 +16,6 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DA_PERIOD_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASES_ELIGIBLE_FOR_DA_PROCESSED_COUNT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEARCH_PAGE_KEY;
 
 
 @Component
@@ -43,7 +42,6 @@ public class UpdateDNPronouncedCasesWorkflow extends DefaultWorkflow<Map<String,
             },
             null,
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
-            ImmutablePair.of(SEARCH_PAGE_KEY, 0),
             ImmutablePair.of(AWAITING_DA_PERIOD_KEY, awaitingDAPeriod),
             ImmutablePair.of(CASES_ELIGIBLE_FOR_DA_PROCESSED_COUNT, 0)
         );

@@ -169,4 +169,9 @@ public interface CaseOrchestrationService {
     Map<String, Object> sendAmendApplicationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
     CcdCallbackResponse welshSetPreviousState(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+
+    void markCasesToBeMovedToAosOverdue(String authToken) throws CaseOrchestrationServiceException;
+
+    void makeCaseAosOverdue(String authToken, String caseId);
+
 }
