@@ -53,7 +53,6 @@ public class SendPetitionerAmendEmailTask implements Task<Map<String, Object>> {
         String petitionerEmail = getMandatoryStringValue(payload, D_8_PETITIONER_EMAIL);
 
         logEventWithPreviousState(context, payload);
-        logEventWithPreviousState(context);
         LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(payload);
 
         emailService.sendEmail(

@@ -170,7 +170,8 @@ public class SendPetitionerAmendEmailTaskTest {
                     )
                 )
             ),
-            anyString()
+            anyString(),
+            eq(LanguagePreference.ENGLISH)
         );
     }
 
@@ -192,9 +193,33 @@ public class SendPetitionerAmendEmailTaskTest {
                     )
                 )
             ),
-            anyString()
+            anyString(),
+            eq(LanguagePreference.ENGLISH)
         );
     }
+
+    @Test
+    public void should_SendPetitionerAmendEmail_whenValidAnd_Without_D_8_CASE_REFERENCE() throws TaskException {
+        incomingPayload.remove(D_8_CASE_REFERENCE);
+        executeTask();
+
+        verify(emailService).sendEmail(
+            eq(TestConstants.TEST_PETITIONER_EMAIL),
+            eq(EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name()),
+            argThat(new HamcrestArgumentMatcher<>(
+                    allOf(
+                        hasEntry(NOTIFICATION_CASE_NUMBER_PRESENT, NO_VALUE),
+                        hasEntry(NOTIFICATION_PET_NAME, TestConstants.TEST_USER_FIRST_NAME + " " + TestConstants.TEST_USER_LAST_NAME),
+                        hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING),
+                        hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, RELATION)
+                    )
+                )
+            ),
+            anyString(),
+            eq(LanguagePreference.ENGLISH)
+        );
+    }
+
 
     private void executeTask() throws TaskException {
         Map<String, Object> returnedPayload = sendPetitionerAmendEmailTask.execute(taskContext, incomingPayload);
