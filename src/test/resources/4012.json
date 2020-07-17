@@ -1,0 +1,46 @@
+{
+  "status": "DOWN",
+  "details": {
+    "caseFormatterServiceHealthCheck": {
+      "status": "DOWN"
+    },
+    "caseMaintenanceServiceHealthCheck": {
+      "status": "DOWN"
+    },
+    "documentGeneratorServiceHealthCheck": {
+      "status": "DOWN"
+    },
+    "featureToggleServiceHealthCheck": {
+      "status": "DOWN"
+    },
+    "feesAndPaymentsServiceHealthCheck": {
+      "status": "DOWN"
+    },
+    "idamApiHealthCheck": {
+      "status": "DOWN"
+    },
+    "paymentServiceHealthCheck": {
+      "status": "DOWN"
+    },
+    "sendLetterServiceHealthCheck": {
+      "status": "DOWN"
+    },
+    "serviceAuthProviderHealthCheck": {
+      "status": "DOWN"
+    },
+    "diskSpace": {
+      "status": "UP",
+      "details": {
+        "total": 263140806656,
+        "free": 190340845568,
+        "threshold": 10485760
+      }
+    },
+    "liveness": {
+      "status": "UP"
+    },
+    "refreshScope": {
+      "status": "UP"
+    }
+  }
+}

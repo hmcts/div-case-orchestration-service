@@ -199,7 +199,7 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
         stubFormatterServerEndpoint(OK, caseData, caseDataString);
 
         final Map<String, Object> existingCaseData = new HashMap<>();
-        existingCaseData.put(CCD_CASE_DATA_FIELD, singletonMap(D_8_REASON_FOR_DIVORCE, ADULTERY));
+        existingCaseData.put(CCD_CASE_DATA_FIELD, singletonMap(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue()));
         stubMaintenanceServerEndpointForRetrieveCaseById(OK, existingCaseData);
 
         stubMaintenanceServerEndpointForUpdate(OK, COMPLETED_AOS_EVENT_ID, caseData, caseDataString);
@@ -219,7 +219,7 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
         final String caseDataString = convertObjectToJsonString(caseData);
 
         final Map<String, Object> existingCaseData = new HashMap<>();
-        existingCaseData.put(CCD_CASE_DATA_FIELD, singletonMap(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS));
+        existingCaseData.put(CCD_CASE_DATA_FIELD, singletonMap(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS.getValue()));
         stubMaintenanceServerEndpointForRetrieveCaseById(OK, existingCaseData);
 
         stubFormatterServerEndpoint(OK, caseData, caseDataString);

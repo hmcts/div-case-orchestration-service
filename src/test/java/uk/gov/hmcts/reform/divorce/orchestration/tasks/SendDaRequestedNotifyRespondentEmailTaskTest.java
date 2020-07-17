@@ -6,12 +6,14 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.TemplateConfigService;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
@@ -24,9 +26,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_DECREE_ABSOLUTE_GRANTED_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
@@ -37,6 +41,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH_FEMALE_GENDER_IN_RELATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_NAME;
@@ -45,6 +50,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
@@ -54,6 +60,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_SOLICITOR_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
@@ -66,6 +73,9 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
 
     @Mock
     EmailService emailService;
+
+    @Mock
+    TemplateConfigService templateConfigService;
 
     @InjectMocks
     SendDaRequestedNotifyRespondentEmailTask sendDaRequestedNotifyRespondentEmailTask;
@@ -90,6 +100,7 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
         expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_RESPONDENT_FIRST_NAME);
         expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_RESPONDENT_LAST_NAME);
         expectedTemplateVars.put(NOTIFICATION_HUSBAND_OR_WIFE, TEST_RELATIONSHIP);
+        expectedTemplateVars.put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TEST_WELSH_FEMALE_GENDER_IN_RELATION);
     }
 
     @Test
@@ -112,6 +123,12 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
         testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME);
         testData.put(NOTIFICATION_HUSBAND_OR_WIFE, TEST_RELATIONSHIP);
         testData.put(D_8_INFERRED_PETITIONER_GENDER, TEST_INFERRED_GENDER);
+        testData.put(LANGUAGE_PREFERENCE_WELSH, "Yes");
+
+        when(templateConfigService.getRelationshipTermByGender(same(TEST_INFERRED_GENDER),eq(LanguagePreference.ENGLISH)))
+            .thenReturn(TEST_RELATIONSHIP);
+        when(templateConfigService.getRelationshipTermByGender(same(TEST_INFERRED_GENDER),eq(LanguagePreference.WELSH)))
+            .thenReturn(TEST_WELSH_FEMALE_GENDER_IN_RELATION);
 
         doThrow(new NotificationClientException(new Exception(TEST_ERROR)))
             .when(emailService)
@@ -119,7 +136,9 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
                 eq(TEST_RESPONDENT_EMAIL),
                 eq(EmailTemplateNames.DECREE_ABSOLUTE_REQUESTED_NOTIFICATION.name()),
                 anyMap(),
-                eq(REQUESTED_BY_APPLICANT)
+                eq(REQUESTED_BY_APPLICANT),
+                eq(LanguagePreference.WELSH)
+
             );
 
         sendDaRequestedNotifyRespondentEmailTask.execute(context, testData);
@@ -133,6 +152,12 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
         testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME);
         testData.put(NOTIFICATION_HUSBAND_OR_WIFE, TEST_RELATIONSHIP);
         testData.put(D_8_INFERRED_PETITIONER_GENDER, TEST_INFERRED_GENDER);
+        testData.put(LANGUAGE_PREFERENCE_WELSH, "No");
+
+        when(templateConfigService.getRelationshipTermByGender(same(TEST_INFERRED_GENDER),eq(LanguagePreference.ENGLISH)))
+            .thenReturn(TEST_RELATIONSHIP);
+        when(templateConfigService.getRelationshipTermByGender(same(TEST_INFERRED_GENDER),eq(LanguagePreference.WELSH)))
+            .thenReturn(TEST_WELSH_FEMALE_GENDER_IN_RELATION);
 
         Map returnPayload = sendDaRequestedNotifyRespondentEmailTask.execute(context, testData);
 
@@ -144,7 +169,8 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
                     eq(TEST_RESPONDENT_EMAIL),
                     eq(EmailTemplateNames.DECREE_ABSOLUTE_REQUESTED_NOTIFICATION.name()),
                     eq(expectedTemplateVars),
-                    eq(REQUESTED_BY_APPLICANT));
+                    eq(REQUESTED_BY_APPLICANT),
+                    eq(LanguagePreference.ENGLISH));
         } catch (NotificationClientException e) {
             fail("exception occurred in test");
         }
@@ -160,6 +186,7 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
         testData.put(D_8_PETITIONER_FIRST_NAME, TEST_RESPONDENT_LAST_NAME);
         testData.put(D_8_PETITIONER_LAST_NAME, TEST_RELATIONSHIP);
         testData.put(D8_RESPONDENT_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
+        testData.put(LANGUAGE_PREFERENCE_WELSH, "No");
         Map<String, String> expectedTempVars = prepareExpectedTemplateVarsForSolicitor(testData);
 
         Map returnPayload = sendDaRequestedNotifyRespondentEmailTask.execute(context, testData);
@@ -172,7 +199,8 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
                     eq(TEST_RESPONDENT_SOLICITOR_EMAIL),
                     eq(EmailTemplateNames.DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_SOLICITOR.name()),
                     eq(expectedTempVars),
-                    eq(REQUESTED_BY_SOLICITOR));
+                    eq(REQUESTED_BY_SOLICITOR),
+                    eq(LanguagePreference.ENGLISH));
         } catch (NotificationClientException e) {
             fail("exception occurred in test");
         }

@@ -28,7 +28,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVI
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ACCESS_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_INVITATION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_INVITATION_TEMPLATE_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
@@ -37,6 +36,10 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
 
     private static final String API_URL = "/aos-solicitor-nominated";
     private static final String AOS_SOL_NOMINATED_JSON = "/jsonExamples/payloads/aosSolicitorNominated.json";
+
+    private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
+    private static final String FORMAT_ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
+    private static final String RESPONDENT_INVITATION_TEMPLATE_NAME = "aosinvitation";
 
     @Autowired
     private MockMvc webClient;
@@ -59,7 +62,7 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         caseDetails.getCaseData().put(RESPONDENT_LETTER_HOLDER_ID, TEST_LETTER_HOLDER_ID_CODE);
 
-        String documentId = stubDocumentGeneratorService(RESPONDENT_INVITATION_TEMPLATE_NAME,
+        String documentId = stubDocumentGeneratorServiceBaseOnContextPath(RESPONDENT_INVITATION_TEMPLATE_NAME,
             ImmutableMap.of(
                 DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails,
                 ACCESS_CODE, TEST_PIN_CODE
