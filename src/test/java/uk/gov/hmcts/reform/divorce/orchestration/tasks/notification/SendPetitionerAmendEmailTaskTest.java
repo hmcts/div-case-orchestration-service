@@ -199,7 +199,7 @@ public class SendPetitionerAmendEmailTaskTest {
     }
 
     @Test
-    public void should_SendPetitionerAmendEmail_whenValidAnd_Without_D_8_CASE_REFERENCE() throws TaskException {
+    public void should_SendPetitionerAmendEmail_whenValidAnd_Without_D8caseReference() throws TaskException {
         incomingPayload.remove(D_8_CASE_REFERENCE);
         executeTask();
 
