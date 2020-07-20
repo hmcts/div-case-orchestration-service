@@ -36,7 +36,7 @@ public class CopyPetitionerSolicitorDetailsTaskTest {
     private CopyPetitionerSolicitorDetailsTask copyPetitionerSolicitorDetailsTask;
 
     @Test
-    public void executeShouldCallCaseMaintenanceClientSolicitorSubmitEndpoint() {
+    public void executeShouldCopyPetitionerSolicitorDetailsToNewCase() {
         Map<String, String> oldCaseData = new HashMap<>();
         final Map<String, Object> newCaseData = new HashMap<>();
         final TaskContext context = new DefaultTaskContext();
