@@ -122,6 +122,8 @@ public class OrchestrationConstants {
     public static final String PREVIOUS_CASE_ID_CCD_KEY = "PreviousCaseId";
     public static final String WELSH_NEXT_EVENT = "WelshNextEvent";
     public static final String WELSH_PREVIOUS_STATE = "WelshPreviousState";
+    public static final String AMENDED_CASE_ID_CCD_KEY = "AmendedCaseId";
+    public static final String CASE_REFERENCE_CCD_KEY = "CaseReference";
 
     //This is misspelled in the CCD definition file
     public static final String D_8_REASON_FOR_DIVORCE_SEPARATION_DAY = "D8ReasonForDivorceSeperationDay";
