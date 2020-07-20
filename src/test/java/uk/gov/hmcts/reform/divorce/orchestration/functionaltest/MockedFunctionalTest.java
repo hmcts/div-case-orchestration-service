@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
+import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -14,10 +16,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -44,6 +50,7 @@ public abstract class MockedFunctionalTest {
     protected static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
     private static final String SERVICE_AUTH_CONTEXT_PATH = "/lease";
     protected static final String GENERATE_DRAFT_DOCUMENT_CONTEXT_PATH = "/version/1/generateDraftPDF";
+    protected static final String CASE_MAINTENANCE_CLIENT_SEARCH_URL = "/casemaintenance/version/1/search";
 
     @ClassRule
     public static WireMockClassRule maintenanceServiceServer = new WireMockClassRule(buildWireMockConfig(4010));
@@ -189,18 +196,29 @@ public abstract class MockedFunctionalTest {
                 .withBody(response)));
     }
 
-    protected final void resetAllMockServices() {
-        maintenanceServiceServer.resetAll();
-        documentGeneratorServiceServer.resetAll();
-        featureToggleService.resetAll();
-        feesAndPaymentsServer.resetAll();
-        formatterServiceServer.resetAll();
-        idamServer.resetAll();
-        paymentServiceServer.resetAll();
-        sendLetterService.resetAll();
-        serviceAuthProviderServer.resetAll();
-        validationServiceServer.resetAll();
-        documentStore.resetAll();
+    protected String stubCaseMaintenanceSearchEndpoint(List<CaseDetails> casesToReturn, QueryBuilder... expectedQueryBuilders) {
+        SearchResult searchResult = SearchResult.builder()
+            .total(casesToReturn.size())
+            .cases(casesToReturn)
+            .build();
+
+        MappingBuilder mappingBuilder = WireMock.post(CASE_MAINTENANCE_CLIENT_SEARCH_URL);
+
+        String expectedElasticSearchQuery = null;
+        if (expectedQueryBuilders.length > 0) {
+            expectedElasticSearchQuery = CMSElasticSearchSupport.buildCMSBooleanSearchSource(0, 50, expectedQueryBuilders);
+            mappingBuilder = mappingBuilder.withRequestBody(equalTo(expectedElasticSearchQuery));
+        }
+
+        mappingBuilder = mappingBuilder.willReturn(
+            aResponse()
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withStatus(HttpStatus.OK.value())
+                .withBody(convertObjectToJsonString(searchResult))
+        );
+
+        maintenanceServiceServer.stubFor(mappingBuilder);
+        return expectedElasticSearchQuery;
     }
 
     public String stubDocumentGeneratorService(String templateName, Map<String, Object> templateValues, String documentTypeToReturn) {
@@ -249,6 +267,18 @@ public abstract class MockedFunctionalTest {
         return documentId;
     }
 
-
+    protected final void resetAllMockServices() {
+        maintenanceServiceServer.resetAll();
+        documentGeneratorServiceServer.resetAll();
+        featureToggleService.resetAll();
+        feesAndPaymentsServer.resetAll();
+        formatterServiceServer.resetAll();
+        idamServer.resetAll();
+        paymentServiceServer.resetAll();
+        sendLetterService.resetAll();
+        serviceAuthProviderServer.resetAll();
+        validationServiceServer.resetAll();
+        documentStore.resetAll();
+    }
 
 }

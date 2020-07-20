@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -11,6 +12,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline.AosPackOfflineAnswersWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline.IssueAosPackOfflineWorkflow;
 
@@ -27,6 +29,7 @@ import static org.junit.rules.ExpectedException.none;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -37,7 +40,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.Div
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AosPackOfflineServiceImplTest {
+public class AosServiceImplTest {
 
     @Rule
     public ExpectedException expectedException = none();
@@ -48,8 +51,11 @@ public class AosPackOfflineServiceImplTest {
     @Mock
     private AosPackOfflineAnswersWorkflow aosPackOfflineAnswersWorkflow;
 
+    @Mock
+    private AosOverdueWorkflow aosOverdueWorkflow;
+
     @InjectMocks
-    private AosPackOfflineServiceImpl classUnderTest;
+    private AosServiceImpl classUnderTest;
 
     private String testAuthToken;
     private CaseDetails caseDetails;
@@ -124,6 +130,25 @@ public class AosPackOfflineServiceImplTest {
 
         CaseDetails caseDetails = CaseDetails.builder().build();
         classUnderTest.processAosPackOfflineAnswers(AUTH_TOKEN, caseDetails, RESPONDENT);
+    }
+
+
+    @Test
+    public void shouldCallAppropriateWorkflowWhenMarkingCasesToBeMovedToAosOverdue() throws WorkflowException, CaseOrchestrationServiceException {
+        classUnderTest.markCasesToBeMovedToAosOverdue(AUTH_TOKEN);
+
+        verify(aosOverdueWorkflow).run(AUTH_TOKEN);
+    }
+
+    @Test
+    public void shouldThrowAppropriateException_WhenCatchingWorkflowException() throws WorkflowException, CaseOrchestrationServiceException {
+        doThrow(WorkflowException.class).when(aosOverdueWorkflow).run(AUTH_TOKEN);
+        expectedException.expect(CaseOrchestrationServiceException.class);
+        expectedException.expectCause(CoreMatchers.instanceOf(WorkflowException.class));
+
+        classUnderTest.markCasesToBeMovedToAosOverdue(AUTH_TOKEN);
+
+        verify(aosOverdueWorkflow).run(AUTH_TOKEN);
     }
 
 }

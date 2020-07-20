@@ -22,7 +22,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.AosPackOfflineService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
@@ -62,7 +62,7 @@ public class CallbackController {
     private CaseOrchestrationService caseOrchestrationService;
 
     @Autowired
-    private AosPackOfflineService aosPackOfflineService;
+    private AosService aosService;
 
     @PostMapping(path = "/request-clarification-petitioner")
     @ApiOperation(value = "Trigger notification email to request clarification from Petitioner")
@@ -955,7 +955,7 @@ public class CallbackController {
 
         try {
             response = CcdCallbackResponse.builder()
-                .data(aosPackOfflineService.issueAosPackOffline(authToken, caseDetails, party))
+                .data(aosService.issueAosPackOffline(authToken, caseDetails, party))
                 .build();
             log.info("Issued offline AOS pack for case ID: {}", caseDetails.getCaseId());
         } catch (CaseOrchestrationServiceException exception) {
@@ -983,7 +983,7 @@ public class CallbackController {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
 
         try {
-            responseBuilder.data(aosPackOfflineService.processAosPackOfflineAnswers(authorizationToken, caseDetails, party));
+            responseBuilder.data(aosService.processAosPackOfflineAnswers(authorizationToken, caseDetails, party));
             log.info("Processed AOS offline answers for {} of case {}", party.getDescription(), caseDetails.getCaseId());
         } catch (CaseOrchestrationServiceException exception) {
             log.info("Error processing AOS offline answers for {} of case {}", party.getDescription(), caseDetails.getCaseId());
