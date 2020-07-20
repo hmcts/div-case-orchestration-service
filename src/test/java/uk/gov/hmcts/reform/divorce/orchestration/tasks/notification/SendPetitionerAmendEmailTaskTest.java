@@ -37,7 +37,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_FEES_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
@@ -81,7 +81,7 @@ public class SendPetitionerAmendEmailTaskTest {
             eq(EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name()),
             argThat(new HamcrestArgumentMatcher<>(
                     allOf(
-                        hasEntry(NOTIFICATION_CASE_NUMBER_KEY, TestConstants.TEST_CASE_ID),
+                        hasEntry(NOTIFICATION_CCD_REFERENCE_KEY, TestConstants.TEST_CASE_ID),
                         hasEntry(NOTIFICATION_PET_NAME, TestConstants.TEST_USER_FIRST_NAME + " " + TestConstants.TEST_USER_LAST_NAME),
                         hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING),
                         hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, RELATION)
@@ -104,7 +104,7 @@ public class SendPetitionerAmendEmailTaskTest {
             eq(EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name()),
             argThat(new HamcrestArgumentMatcher<>(
                     allOf(
-                        hasEntry(NOTIFICATION_CASE_NUMBER_KEY, TEST_CASE_ID),
+                        hasEntry(NOTIFICATION_CCD_REFERENCE_KEY, TEST_CASE_ID),
                         hasEntry(NOTIFICATION_PET_NAME, TestConstants.TEST_USER_FIRST_NAME + " " + TestConstants.TEST_USER_LAST_NAME),
                         hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING),
                         hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, RELATION)
@@ -125,7 +125,7 @@ public class SendPetitionerAmendEmailTaskTest {
             eq(EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name()),
             argThat(new HamcrestArgumentMatcher<>(
                     allOf(
-                        hasEntry(NOTIFICATION_CASE_NUMBER_KEY, TestConstants.TEST_CASE_ID),
+                        hasEntry(NOTIFICATION_CCD_REFERENCE_KEY, TestConstants.TEST_CASE_ID),
                         hasEntry(NOTIFICATION_PET_NAME, TestConstants.TEST_USER_FIRST_NAME + " " + TestConstants.TEST_USER_LAST_NAME),
                         hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING),
                         hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, RELATION)
@@ -147,7 +147,7 @@ public class SendPetitionerAmendEmailTaskTest {
             eq(EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name()),
             argThat(new HamcrestArgumentMatcher<>(
                     allOf(
-                        hasEntry(NOTIFICATION_CASE_NUMBER_KEY, TEST_CASE_ID),
+                        hasEntry(NOTIFICATION_CCD_REFERENCE_KEY, TEST_CASE_ID),
                         hasEntry(NOTIFICATION_PET_NAME, TestConstants.TEST_USER_FIRST_NAME + " " + TestConstants.TEST_USER_LAST_NAME),
                         hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING),
                         hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, RELATION)
@@ -169,7 +169,7 @@ public class SendPetitionerAmendEmailTaskTest {
             eq(EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name()),
             argThat(new HamcrestArgumentMatcher<>(
                     allOf(
-                        hasEntry(NOTIFICATION_CASE_NUMBER_KEY, TEST_CASE_ID),
+                        hasEntry(NOTIFICATION_CCD_REFERENCE_KEY, TEST_CASE_ID),
                         hasEntry(NOTIFICATION_PET_NAME, TestConstants.TEST_USER_FIRST_NAME + " " + TestConstants.TEST_USER_LAST_NAME),
                         hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING),
                         hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, RELATION)

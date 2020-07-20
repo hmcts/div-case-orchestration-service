@@ -19,7 +19,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_RESPONDENT_GENDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_FEES_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
@@ -66,8 +66,7 @@ public class SendPetitionerAmendEmailTask implements Task<Map<String, Object>> {
     private Map<String, String> getPersonalisation(TaskContext context, Map<String, Object> payload) throws TaskException {
         Map<String, String> personalisation = new HashMap<>();
 
-        // we use ccd case id and not d8caseReference because in some scenarios d8caseReference wouldn't be populated yet
-        personalisation.put(NOTIFICATION_CASE_NUMBER_KEY, getCaseId(context));
+        personalisation.put(NOTIFICATION_CCD_REFERENCE_KEY, getCaseId(context));
         personalisation.put(NOTIFICATION_PET_NAME, getPetitionerFullName(payload));
         personalisation.put(NOTIFICATION_FEES_KEY, getFormattedFeeAmount(context));
         personalisation.put(NOTIFICATION_HUSBAND_OR_WIFE, getHusbandOrWife(payload));
