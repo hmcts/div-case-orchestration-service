@@ -179,10 +179,9 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
     }
 
     private void stubJsonResponse(String desiredStates, String caseData) {
-        maintenanceServiceServer.stubFor(WireMock.post("/casemaintenance/version/1/search")
+        maintenanceServiceServer.stubFor(WireMock.post(CASE_MAINTENANCE_CLIENT_SEARCH_URL)
             .withHeader("Authorization", equalTo(AUTH_TOKEN))
-            .withRequestBody(matchingJsonPath("$.query.bool.filter[*].terms.state[*]",
-                equalToJson(desiredStates, true, false)))
+            .withRequestBody(matchingJsonPath("$.query.bool.filter[*].terms.state[*]", equalToJson(desiredStates, true, false)))
             .willReturn(okJson(caseData))
         );
     }
@@ -191,9 +190,8 @@ public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
                                               String destinationEmailAddress,
                                               String desiredStates,
                                               String... contentLines) throws MessagingException, IOException {
-        maintenanceServiceServer.verify(1, postRequestedFor(urlEqualTo("/casemaintenance/version/1/search"))
-            .withRequestBody(matchingJsonPath("$.query.bool.filter[*].terms.state[*]",
-                equalToJson(desiredStates, true, false))));
+        maintenanceServiceServer.verify(1, postRequestedFor(urlEqualTo(CASE_MAINTENANCE_CLIENT_SEARCH_URL))
+            .withRequestBody(matchingJsonPath("$.query.bool.filter[*].terms.state[*]", equalToJson(desiredStates, true, false))));
 
         verify(mockEmailClient).sendEmailWithAttachment(eq(destinationEmailAddress),
             eq(format("%s_%s.csv", filePrefix, yesterday)),

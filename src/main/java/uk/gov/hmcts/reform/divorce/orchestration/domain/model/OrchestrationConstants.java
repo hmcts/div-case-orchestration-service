@@ -403,8 +403,6 @@ public class OrchestrationConstants {
     public static final String PAYMENT_FEE_ID_KEY = "PaymentFeeId";
     public static final String PAYMENT_SITE_ID_KEY = "PaymentSiteId";
 
-    public static final String SEARCH_PAGE_KEY = "SEARCH_PAGE";
-
     // DA related
     public static final String AWAITING_DA_PERIOD_KEY = "awaitingDAPeriod";
     public static final String DA_OVERDUE_PERIOD_KEY = "daOverduePeriod";
@@ -413,7 +411,6 @@ public class OrchestrationConstants {
 
     // Validation
     public static final String ERROR_STATUS = "error";
-    public static final String FORM_ID = "case-progression";
     public static final String UPDATE_RESPONDENT_DATA_ERROR_KEY = "respondent.data.not.updated_Error";
     public static final String SOLICITOR_VALIDATION_ERROR_KEY
         = "uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSolicitorCaseData_Error";
@@ -426,7 +423,6 @@ public class OrchestrationConstants {
 
     // Elastic Search
     public static final String ES_CASE_ID_KEY = "reference";
-    public static final String QUERY_BUILDERS = "queryBuilders";
 
     // Case Data Formatter Meta Fields
     public static final String FORMATTER_CASE_DATA_KEY = "caseData";
@@ -439,4 +435,5 @@ public class OrchestrationConstants {
 
     // Bulk Scan
     public static final String CASE_TYPE_ID = "DIVORCE";
+
 }

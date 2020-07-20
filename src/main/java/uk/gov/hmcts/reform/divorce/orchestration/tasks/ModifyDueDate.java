@@ -20,8 +20,8 @@ public class ModifyDueDate implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload)  {
-        LocalDate plus9Days = LocalDate.now().plus(dueDate, ChronoUnit.DAYS);
-        payload.put(DUE_DATE, plus9Days.format(DateTimeFormatter.ISO_LOCAL_DATE));
+        LocalDate newDueDate = LocalDate.now().plus(dueDate, ChronoUnit.DAYS);
+        payload.put(DUE_DATE, newDueDate.format(DateTimeFormatter.ISO_LOCAL_DATE));
         return payload;
     }
 }

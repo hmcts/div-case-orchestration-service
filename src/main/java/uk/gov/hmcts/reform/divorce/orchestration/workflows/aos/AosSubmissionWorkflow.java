@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.workflows;
+package uk.gov.hmcts.reform.divorce.orchestration.workflows.aos;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

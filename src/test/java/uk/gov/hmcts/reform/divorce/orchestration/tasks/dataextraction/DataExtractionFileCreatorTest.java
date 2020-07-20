@@ -75,7 +75,7 @@ public class DataExtractionFileCreatorTest {
 
     @Test
     public void givenTransformedCaseDetails_shouldAddExtractionFileToContext() throws TaskException, IOException {
-        when(cmsElasticSearchSupport.searchCMSCases(eq(0), eq(50), eq(TEST_AUTHORISATION_TOKEN), any(), any()))
+        when(cmsElasticSearchSupport.searchCMSCases(eq(TEST_AUTHORISATION_TOKEN), any(), any()))
             .thenReturn(Stream.of(
                 CaseDetails.builder().build(),
                 CaseDetails.builder().build(),
@@ -96,7 +96,7 @@ public class DataExtractionFileCreatorTest {
         assertThat(fileLines.get(1), is("line1"));
         assertThat(fileLines.get(2), is("line2"));
 
-        verify(cmsElasticSearchSupport).searchCMSCases(eq(0), eq(50), eq(TEST_AUTHORISATION_TOKEN),
+        verify(cmsElasticSearchSupport).searchCMSCases(eq(TEST_AUTHORISATION_TOKEN),
             eq(QueryBuilders.termQuery("last_modified", testLastModifiedDate)),
             eq(QueryBuilders.termsQuery("state", singletonList(TEST_RELEVANT_STATE.toLowerCase())))
         );

@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionForRefusalWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.AosSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseCancelPronouncementEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseRemoveCasesWorkflow;
@@ -78,6 +77,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListi
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshContinueInterceptWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshContinueWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshSetPreviousStateWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.ApplicantDecreeAbsoluteEligibilityWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.DecreeAbsoluteAboutToBeGrantedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.DnSubmittedEmailNotificationWorkflow;
@@ -699,14 +699,14 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
             LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
             String templateId = documentTemplateService.getTemplateId(languagePreference, DocumentType.DECREE_NISI_TEMPLATE_ID);
             caseData.putAll(documentGenerationWorkflow.run(ccdCallbackRequest, authToken,
-                    templateId, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME));
+                templateId, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME));
 
             if (isPetitionerClaimingCosts(caseData)) {
                 templateId = documentTemplateService.getTemplateId(languagePreference, DocumentType.COSTS_ORDER_TEMPLATE_ID);
 
                 // DocumentType is clear enough to use as the file name
                 caseData.putAll(documentGenerationWorkflow.run(ccdCallbackRequest, authToken,
-                        templateId, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE));
+                    templateId, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE));
             }
         }
 
@@ -890,7 +890,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                 .build();
         } else {
             Map<String, Object> workflowErrors = welshContinueInterceptWorkflow.errors();
-            log.error("welshContinueInterceptWorkflow with CASE ID: {} failed {}."  ,
+            log.error("welshContinueInterceptWorkflow with CASE ID: {} failed {}.",
                 ccdCallbackRequest.getCaseDetails().getCaseId(), workflowErrors);
             return CcdCallbackResponse
                 .builder()
@@ -910,7 +910,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         } else {
             Map<String, Object> workflowErrors = welshSetPreviousStateWorkflow.errors();
             log.error("CASE ID: {} failed {}. ",
-                ccdCallbackRequest.getCaseDetails().getCaseId() , workflowErrors);
+                ccdCallbackRequest.getCaseDetails().getCaseId(), workflowErrors);
             return CcdCallbackResponse
                 .builder()
                 .errors(workflowErrors.values().stream().map(String.class::cast).collect(Collectors.toList()))

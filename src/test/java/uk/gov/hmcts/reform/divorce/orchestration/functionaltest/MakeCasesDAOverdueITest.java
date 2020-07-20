@@ -12,8 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
-import uk.gov.hmcts.reform.divorce.orchestration.service.SearchSourceFactory;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,9 +20,10 @@ import java.util.List;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
@@ -40,21 +39,19 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport.buildDateForTodayMinusGivenPeriod;
 
 @RunWith(SpringRunner.class)
 public class MakeCasesDAOverdueITest extends MockedFunctionalTest {
 
     private static final String API_URL = "/cases/da/make-overdue";
     private static final String CASE_MAINTENANCE_CLIENT_UPDATE_URL = "/casemaintenance/version/1/updateCase/test.case.id/DecreeAbsoluteOverdue";
-    private static final String CASE_MAINTENANCE_CLIENT_SEARCH_URL = "/casemaintenance/version/1/search";
     private static final String TEST_CASE_REFERENCE_ONE = "1519-8183-5982-2007";
     private static final String TEST_CASE_REFERENCE_TWO = "1519-8183-5982-2008";
     private static final String DN_GRANTED_DATE = "2019-03-31";
     private static final String DN_GRANTED_DATA_REFERENCE = "data.DecreeNisiGrantedDate";
-    private SearchResult searchResult;
-    private List<String> caseIds = new ArrayList<>();
     private List<CaseDetails> cases = new ArrayList<>();
-    private String expectedRequestBody;
+    private QueryBuilder[] queryBuilders;
 
     @Autowired
     private MockMvc webClient;
@@ -62,6 +59,7 @@ public class MakeCasesDAOverdueITest extends MockedFunctionalTest {
     @Before
     public void setup() {
         maintenanceServiceServer.resetAll();
+
         Map<String, Object> caseData1 = new HashMap<>();
         caseData1.put(DECREE_NISI_GRANTED_DATE_CCD_FIELD, DN_GRANTED_DATE);
         caseData1.put(CASE_STATE_JSON_KEY, AWAITING_DA);
@@ -87,26 +85,17 @@ public class MakeCasesDAOverdueITest extends MockedFunctionalTest {
         cases.add(caseDetails1);
         cases.add(caseDetails2);
 
-        caseIds.add((String) caseData1.get(CASE_ID_JSON_KEY));
-        caseIds.add((String) caseData2.get(CASE_ID_JSON_KEY));
-
-        QueryBuilder stateQuery = QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AWAITING_DA);
-        QueryBuilder dateFilter = QueryBuilders.rangeQuery(DN_GRANTED_DATA_REFERENCE).lte(buildCoolOffPeriodForDAOverdue("1y"));
-
-        expectedRequestBody = SearchSourceFactory.buildCMSBooleanSearchSource(0, 50, stateQuery, dateFilter);
+        queryBuilders = new QueryBuilder[] {
+            QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AWAITING_DA),
+            QueryBuilders.rangeQuery(DN_GRANTED_DATA_REFERENCE).lte(buildDateForTodayMinusGivenPeriod("1y"))
+        };
     }
 
     @Test
     public void givenCaseIsInAwaitingDA_WhenMakeCaseOverdueForDAIsCalled_CaseMaintenanceServiceIsCalled() throws Exception {
-
-        searchResult = SearchResult.builder()
-            .total(2)
-            .cases(cases)
-            .build();
-
         Map<String, Object> responseData = Collections.singletonMap(ID, TEST_CASE_ID);
         stubCaseMaintenanceUpdateEndpoint(responseData);
-        stubCaseMaintenanceSearchEndpoint(expectedRequestBody, searchResult);
+        stubCaseMaintenanceSearchEndpoint(cases, queryBuilders);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -120,14 +109,8 @@ public class MakeCasesDAOverdueITest extends MockedFunctionalTest {
 
     @Test
     public void givenNoCasesInAwaitingDA_WhenMakeCaseOverdueForDAIsCalled_UpdateInCcdIsNotCalled() throws Exception {
-
-        searchResult = SearchResult.builder()
-            .total(0)
-            .cases(Collections.emptyList())
-            .build();
-
-        stubCaseMaintenanceUpdateEndpoint(Collections.emptyMap());
-        stubCaseMaintenanceSearchEndpoint(expectedRequestBody, searchResult);
+        stubCaseMaintenanceUpdateEndpoint(emptyMap());
+        stubCaseMaintenanceSearchEndpoint(emptyList(), queryBuilders);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -141,13 +124,7 @@ public class MakeCasesDAOverdueITest extends MockedFunctionalTest {
 
     @Test
     public void givenExceptionEncounteredInJob_WhenMakeCaseOverdueForDAIsCalled_ReturnInternalServerError() throws Exception {
-
-        searchResult = SearchResult.builder()
-            .total(0)
-            .cases(Collections.emptyList())
-            .build();
-
-        stubCaseMaintenanceUpdateEndpoint(Collections.emptyMap());
+        stubCaseMaintenanceUpdateEndpoint(emptyMap());
         stubCaseMaintenanceSearchEndpointToReturnHttp500();
 
         webClient.perform(post(API_URL)
@@ -168,15 +145,6 @@ public class MakeCasesDAOverdueITest extends MockedFunctionalTest {
                 .withBody(convertObjectToJsonString(response))));
     }
 
-    private void stubCaseMaintenanceSearchEndpoint(String body, SearchResult response) {
-        maintenanceServiceServer.stubFor(WireMock.post(CASE_MAINTENANCE_CLIENT_SEARCH_URL)
-            .withRequestBody(equalTo(body))
-            .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withStatus(HttpStatus.OK.value())
-                .withBody(convertObjectToJsonString(response))));
-    }
-
     private void stubCaseMaintenanceSearchEndpointToReturnHttp500() {
         maintenanceServiceServer.stubFor(WireMock.post(CASE_MAINTENANCE_CLIENT_SEARCH_URL)
             .willReturn(aResponse()
@@ -184,8 +152,4 @@ public class MakeCasesDAOverdueITest extends MockedFunctionalTest {
                 .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())));
     }
 
-    private static String buildCoolOffPeriodForDAOverdue(final String coolOffPeriod) {
-        String timeUnit = String.valueOf(coolOffPeriod.charAt(coolOffPeriod.length() - 1));
-        return String.format("now/%s-%s", timeUnit, coolOffPeriod);
-    }
 }
