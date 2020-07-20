@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -19,7 +19,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 public class AosInternalControllerTest {
 
     @Mock
-    private CaseOrchestrationService caseOrchestrationService;
+    private AosService aosService;
 
     @InjectMocks
     private AosInternalController controller;
@@ -28,7 +28,7 @@ public class AosInternalControllerTest {
     public void shouldCallRightServiceMethod() throws CaseOrchestrationServiceException {
         ResponseEntity<String> response = controller.markCasesForBeingMovedToAosOverdue(AUTH_TOKEN);
 
-        verify(caseOrchestrationService).markCasesToBeMovedToAosOverdue(AUTH_TOKEN);
+        verify(aosService).markCasesToBeMovedToAosOverdue(AUTH_TOKEN);
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
     }
 

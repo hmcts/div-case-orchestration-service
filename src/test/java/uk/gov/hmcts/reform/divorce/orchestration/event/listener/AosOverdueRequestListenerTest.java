@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.event.domain.AosOverdueRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
 import static org.mockito.Mockito.verify;
@@ -17,7 +17,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 public class AosOverdueRequestListenerTest {
 
     @Mock
-    private CaseOrchestrationService caseOrchestrationService;
+    private AosService aosService;
 
     @Mock
     private AuthUtil authUtil;
@@ -31,7 +31,7 @@ public class AosOverdueRequestListenerTest {
 
         classUnderTest.onApplicationEvent(new AosOverdueRequest(this, "123"));
 
-        verify(caseOrchestrationService).makeCaseAosOverdue(AUTH_TOKEN, "123");
+        verify(aosService).makeCaseAosOverdue(AUTH_TOKEN, "123");
     }
 
 }

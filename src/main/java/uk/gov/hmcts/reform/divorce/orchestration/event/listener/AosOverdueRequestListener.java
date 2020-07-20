@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.event.domain.AosOverdueRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
 @Component
@@ -14,13 +14,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 public class AosOverdueRequestListener implements ApplicationListener<AosOverdueRequest> {
 
     private final AuthUtil authUtil;
-    private final CaseOrchestrationService caseOrchestrationService;
+    private final AosService aosService;
 
     @Override
     public void onApplicationEvent(AosOverdueRequest aosOverdueRequest) {
         String caseId = aosOverdueRequest.getCaseId();
         log.info("Listened to request to make case [{}] overdue.", caseId);
-        caseOrchestrationService.makeCaseAosOverdue(authUtil.getCaseworkerToken(), caseId);
+        aosService.makeCaseAosOverdue(authUtil.getCaseworkerToken(), caseId);
     }
 
 }

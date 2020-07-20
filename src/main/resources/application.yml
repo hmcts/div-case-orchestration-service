@@ -82,6 +82,12 @@ scheduler:
       description: 'Cron job to extract and publish cases updated on the previous day'
       jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.DataExtractionJob'
       cron: ${SCHEDULER_SEND_UPDATED_CASES_TO_ROBOTICS_CRON:0 0 2 ? * * *} #Every day at 2:00
+    - name: 'AosOverdueJob'
+      enabled: ${SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_ENABLED:false}
+      cronGroup: "NIGHTLY_CRON"
+      description: 'Cron job to move eligible cases to AOS Overdue state'
+      jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.AosOverdueJob'
+      cron: ${SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_CRON:0 0 3 ? * * *} #Every day at 3:00
 
 server:
   port: ${CASE_ORCHESTRATION_SERVICE_URL:4012}

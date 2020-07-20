@@ -5,11 +5,16 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorcePar
 
 import java.util.Map;
 
-public interface AosPackOfflineService {
+public interface AosService {
 
     Map<String, Object> issueAosPackOffline(String authToken, CaseDetails caseDetails, DivorceParty divorceParty)
         throws CaseOrchestrationServiceException;
 
     Map<String, Object> processAosPackOfflineAnswers(String authToken, CaseDetails caseDetails, DivorceParty divorceParty)
         throws CaseOrchestrationServiceException;
+
+    void markCasesToBeMovedToAosOverdue(String authToken) throws CaseOrchestrationServiceException;
+
+    void makeCaseAosOverdue(String authToken, String caseId);
+
 }

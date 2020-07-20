@@ -77,7 +77,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListi
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshContinueInterceptWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshContinueWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshSetPreviousStateWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.ApplicantDecreeAbsoluteEligibilityWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.DecreeAbsoluteAboutToBeGrantedWorkflow;
@@ -185,7 +184,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SendClarificationSubmittedNotificationWorkflow sendClarificationSubmittedNotificationWorkflow;
     private final CreateNewAmendedCaseAndSubmitToCCDWorkflow createNewAmendedCaseAndSubmitToCCDWorkflow;
     private final DocumentTemplateService documentTemplateService;
-    private final AosOverdueWorkflow aosOverdueWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -422,24 +420,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> sendAmendApplicationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return sendPetitionerAmendEmailNotificationWorkflow.run(ccdCallbackRequest);
-    }
-
-    @Override
-    public void markCasesToBeMovedToAosOverdue(String authToken) throws CaseOrchestrationServiceException {
-        log.info("Searching for cases that are eligible to be moved to AosOverdue");
-
-        try {
-            aosOverdueWorkflow.run(authToken);
-        } catch (WorkflowException e) {
-            CaseOrchestrationServiceException caseOrchestrationServiceException = new CaseOrchestrationServiceException(e);
-            log.error("Error trying to find cases to move to AOSOverdue", caseOrchestrationServiceException);
-            throw caseOrchestrationServiceException;
-        }
-    }
-
-    @Override
-    public void makeCaseAosOverdue(String authToken, String caseId) {
-        log.info("Case id {} should be moved to AOSOverdue.", caseId);
     }
 
     private List<String> getNotificationErrors(Map<String, Object> notificationErrors) {
@@ -719,14 +699,14 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
             LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
             String templateId = documentTemplateService.getTemplateId(languagePreference, DocumentType.DECREE_NISI_TEMPLATE_ID);
             caseData.putAll(documentGenerationWorkflow.run(ccdCallbackRequest, authToken,
-                    templateId, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME));
+                templateId, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME));
 
             if (isPetitionerClaimingCosts(caseData)) {
                 templateId = documentTemplateService.getTemplateId(languagePreference, DocumentType.COSTS_ORDER_TEMPLATE_ID);
 
                 // DocumentType is clear enough to use as the file name
                 caseData.putAll(documentGenerationWorkflow.run(ccdCallbackRequest, authToken,
-                        templateId, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE));
+                    templateId, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE));
             }
         }
 
@@ -910,7 +890,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                 .build();
         } else {
             Map<String, Object> workflowErrors = welshContinueInterceptWorkflow.errors();
-            log.error("welshContinueInterceptWorkflow with CASE ID: {} failed {}."  ,
+            log.error("welshContinueInterceptWorkflow with CASE ID: {} failed {}.",
                 ccdCallbackRequest.getCaseDetails().getCaseId(), workflowErrors);
             return CcdCallbackResponse
                 .builder()
@@ -930,7 +910,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         } else {
             Map<String, Object> workflowErrors = welshSetPreviousStateWorkflow.errors();
             log.error("CASE ID: {} failed {}. ",
-                ccdCallbackRequest.getCaseDetails().getCaseId() , workflowErrors);
+                ccdCallbackRequest.getCaseDetails().getCaseId(), workflowErrors);
             return CcdCallbackResponse
                 .builder()
                 .errors(workflowErrors.values().stream().map(String.class::cast).collect(Collectors.toList()))

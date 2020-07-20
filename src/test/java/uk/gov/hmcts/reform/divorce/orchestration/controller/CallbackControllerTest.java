@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMemb
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DocumentLink;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.AosPackOfflineService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 
@@ -70,7 +70,7 @@ public class CallbackControllerTest {
     private CaseOrchestrationService caseOrchestrationService;
 
     @Mock
-    private AosPackOfflineService aosPackOfflineService;
+    private AosService aosService;
 
     @InjectMocks
     private CallbackController classUnderTest;
@@ -1125,7 +1125,7 @@ public class CallbackControllerTest {
 
     @Test
     public void testIssueAosOffline_ForRespondent_callsRightService() throws CaseOrchestrationServiceException {
-        when(aosPackOfflineService.issueAosPackOffline(any(), any(), any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
+        when(aosService.issueAosPackOffline(any(), any(), any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
@@ -1134,12 +1134,12 @@ public class CallbackControllerTest {
 
         assertThat(response.getStatusCode(), equalTo(OK));
         assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
-        verify(aosPackOfflineService).issueAosPackOffline(eq(AUTH_TOKEN), eq(caseDetails), eq(RESPONDENT));
+        verify(aosService).issueAosPackOffline(eq(AUTH_TOKEN), eq(caseDetails), eq(RESPONDENT));
     }
 
     @Test
     public void testIssueAosOffline_ForCoRespondent_callsRightService() throws CaseOrchestrationServiceException {
-        when(aosPackOfflineService.issueAosPackOffline(any(), any(), any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
+        when(aosService.issueAosPackOffline(any(), any(), any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
@@ -1148,12 +1148,12 @@ public class CallbackControllerTest {
 
         assertThat(response.getStatusCode(), equalTo(OK));
         assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
-        verify(aosPackOfflineService).issueAosPackOffline(eq(AUTH_TOKEN), eq(caseDetails), eq(CO_RESPONDENT));
+        verify(aosService).issueAosPackOffline(eq(AUTH_TOKEN), eq(caseDetails), eq(CO_RESPONDENT));
     }
 
     @Test
     public void testIssueAosOffline_returnsErrors_whenServiceThrowsException() throws CaseOrchestrationServiceException {
-        when(aosPackOfflineService.issueAosPackOffline(any(), any(), any()))
+        when(aosService.issueAosPackOffline(any(), any(), any()))
             .thenThrow(new CaseOrchestrationServiceException(new RuntimeException("Error message")));
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
@@ -1167,7 +1167,7 @@ public class CallbackControllerTest {
 
     @Test
     public void testProcessAosOfflineAnswers_callsRightService() throws CaseOrchestrationServiceException {
-        when(aosPackOfflineService.processAosPackOfflineAnswers(any(), any(), any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
+        when(aosService.processAosPackOfflineAnswers(any(), any(), any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(singletonMap("incomingKey", "incomingValue")).build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
@@ -1176,12 +1176,12 @@ public class CallbackControllerTest {
 
         assertThat(response.getStatusCode(), equalTo(OK));
         assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
-        verify(aosPackOfflineService).processAosPackOfflineAnswers(eq(AUTH_TOKEN), eq(caseDetails), eq(RESPONDENT));
+        verify(aosService).processAosPackOfflineAnswers(eq(AUTH_TOKEN), eq(caseDetails), eq(RESPONDENT));
     }
 
     @Test
     public void testProcessAosOfflineAnswers_returnsErrors_whenServiceThrowsException() throws CaseOrchestrationServiceException {
-        when(aosPackOfflineService.processAosPackOfflineAnswers(any(), any(), any()))
+        when(aosService.processAosPackOfflineAnswers(any(), any(), any()))
             .thenThrow(new CaseOrchestrationServiceException(new RuntimeException("Error message")));
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();

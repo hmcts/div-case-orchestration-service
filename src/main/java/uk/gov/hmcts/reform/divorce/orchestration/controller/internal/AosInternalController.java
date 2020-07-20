@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 
 @RestController
@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 @RequiredArgsConstructor
 public class AosInternalController {
 
-    private final CaseOrchestrationService caseOrchestrationService;
+    private final AosService aosService;
 
     @PostMapping(path = "/cases/aos/make-overdue")
     @ApiOperation(value = "Moves eligible cases to AOSOverdue state")
@@ -30,7 +30,7 @@ public class AosInternalController {
         throws CaseOrchestrationServiceException {
 
         log.info("Will look for cases that are eligible to be moved to 'AOSOverdue' state");
-        caseOrchestrationService.markCasesToBeMovedToAosOverdue(authorizationToken);
+        aosService.markCasesToBeMovedToAosOverdue(authorizationToken);
 
         return ResponseEntity.ok().build();
     }

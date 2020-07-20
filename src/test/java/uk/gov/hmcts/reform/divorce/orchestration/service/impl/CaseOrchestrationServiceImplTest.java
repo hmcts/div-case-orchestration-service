@@ -107,7 +107,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -1030,7 +1029,7 @@ public class CaseOrchestrationServiceImplTest {
             .build();
 
         when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
-                .thenReturn(DECREE_NISI_TEMPLATE_ID);
+            .thenReturn(DECREE_NISI_TEMPLATE_ID);
 
         classUnderTest
             .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
@@ -1055,7 +1054,7 @@ public class CaseOrchestrationServiceImplTest {
             .build();
 
         when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
-                .thenReturn(DECREE_NISI_TEMPLATE_ID);
+            .thenReturn(DECREE_NISI_TEMPLATE_ID);
 
         classUnderTest
             .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
@@ -1080,10 +1079,10 @@ public class CaseOrchestrationServiceImplTest {
             .build();
 
         when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
-                .thenReturn(DECREE_NISI_TEMPLATE_ID);
+            .thenReturn(DECREE_NISI_TEMPLATE_ID);
 
         when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.COSTS_ORDER_TEMPLATE_ID))
-                .thenReturn(COSTS_ORDER_TEMPLATE_ID);
+            .thenReturn(COSTS_ORDER_TEMPLATE_ID);
 
         classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
@@ -1106,9 +1105,9 @@ public class CaseOrchestrationServiceImplTest {
             .build();
 
         when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.COSTS_ORDER_TEMPLATE_ID))
-                .thenReturn(COSTS_ORDER_TEMPLATE_ID);
+            .thenReturn(COSTS_ORDER_TEMPLATE_ID);
         when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
-                .thenReturn(DECREE_NISI_TEMPLATE_ID);
+            .thenReturn(DECREE_NISI_TEMPLATE_ID);
 
         classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
@@ -1131,10 +1130,10 @@ public class CaseOrchestrationServiceImplTest {
             .build();
 
         when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
-                .thenReturn(DECREE_NISI_TEMPLATE_ID);
+            .thenReturn(DECREE_NISI_TEMPLATE_ID);
 
         when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.COSTS_ORDER_TEMPLATE_ID))
-                .thenReturn(COSTS_ORDER_TEMPLATE_ID);
+            .thenReturn(COSTS_ORDER_TEMPLATE_ID);
 
         classUnderTest
             .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
@@ -1170,7 +1169,7 @@ public class CaseOrchestrationServiceImplTest {
             .build();
 
         when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.COSTS_ORDER_TEMPLATE_ID))
-                .thenReturn(COSTS_ORDER_TEMPLATE_ID);
+            .thenReturn(COSTS_ORDER_TEMPLATE_ID);
 
         when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN,
             COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE))
@@ -1363,11 +1362,11 @@ public class CaseOrchestrationServiceImplTest {
 
 
         when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
-                .thenReturn(DECREE_NISI_TEMPLATE_ID);
+            .thenReturn(DECREE_NISI_TEMPLATE_ID);
 
 
         when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.COSTS_ORDER_TEMPLATE_ID))
-                .thenReturn(COSTS_ORDER_TEMPLATE_ID);
+            .thenReturn(COSTS_ORDER_TEMPLATE_ID);
 
 
         when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN,
@@ -1764,25 +1763,6 @@ public class CaseOrchestrationServiceImplTest {
 
         List<String> errors = workflowErrors.values().stream().map(String.class::cast).collect(Collectors.toList());
         assertThat(ccdCallbackResponse.getErrors(), is(errors));
-    }
-
-
-    @Test
-    public void shouldCallAppropriateWorkflowWhenMarkingCasesToBeMovedToAosOverdue() throws WorkflowException, CaseOrchestrationServiceException {
-        classUnderTest.markCasesToBeMovedToAosOverdue(AUTH_TOKEN);
-
-        verify(aosOverdueWorkflow).run(AUTH_TOKEN);
-    }
-
-    @Test
-    public void shouldThrowAppropriateException_WhenCatchingWorkflowException() throws WorkflowException, CaseOrchestrationServiceException {
-        doThrow(WorkflowException.class).when(aosOverdueWorkflow).run(AUTH_TOKEN);
-        expectedException.expect(CaseOrchestrationServiceException.class);
-        expectedException.expectCause(instanceOf(WorkflowException.class));
-
-        classUnderTest.markCasesToBeMovedToAosOverdue(AUTH_TOKEN);
-
-        verify(aosOverdueWorkflow).run(AUTH_TOKEN);
     }
 
     @After
