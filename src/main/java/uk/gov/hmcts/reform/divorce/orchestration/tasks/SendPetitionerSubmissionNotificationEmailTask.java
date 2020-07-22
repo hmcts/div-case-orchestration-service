@@ -41,9 +41,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentation
 @RequiredArgsConstructor
 public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<String, Object>> {
 
-    private static final String SUBMITTED_DESC = "Submission Notification - Petitioner";
-    private static final String AMEND_DESC = "Submission Notification For Amend - Petitioner";
-    private static final String AMEND_SOL_DESC = "Submission Notification For Amend - Solicitor";
+    public static final String SUBMITTED_DESC = "Submission Notification - Petitioner";
+    public static final String AMEND_DESC = "Submission Notification For Amend - Petitioner";
+    public static final String AMEND_SOL_DESC = "Submission Notification For Amend - Solicitor";
 
     private final EmailService emailService;
     private final TaskCommons taskCommons;

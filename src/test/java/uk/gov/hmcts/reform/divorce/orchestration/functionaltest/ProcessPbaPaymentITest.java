@@ -5,19 +5,23 @@ import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeValue;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentItem;
+import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -25,6 +29,10 @@ import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static java.util.Collections.EMPTY_MAP;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
@@ -38,8 +46,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_C
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_DESCRIPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_VERSION;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_ACCOUNT_NUMBER;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_FIRM_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
@@ -48,8 +61,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_CENTRE_SITEID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_PAY_BY_ACCOUNT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_CCD_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_AUTHORIZATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY;
@@ -58,6 +77,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_STATEMENT_OF_TRUTH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.STATEMENT_OF_TRUTH;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmailTask.AMEND_DESC;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmailTask.AMEND_SOL_DESC;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmailTask.SUBMITTED_DESC;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class ProcessPbaPaymentITest extends MockedFunctionalTest {
@@ -67,6 +89,9 @@ public class ProcessPbaPaymentITest extends MockedFunctionalTest {
     private static final String FORMAT_REMOVE_PETITION_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/remove-all-petition-documents";
     private static final String YES_VALUE = "YES";
     private static final String NO_VALUE = "NO";
+
+    @MockBean
+    private EmailService emailService;
 
     @Autowired
     private MockMvc webClient;
@@ -98,6 +123,10 @@ public class ProcessPbaPaymentITest extends MockedFunctionalTest {
         caseData.put(PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY, orderSummary);
         caseData.put(CASE_ID_JSON_KEY, TEST_CASE_ID);
         caseData.put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
+        caseData.put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
+        caseData.put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
+        caseData.put(RESP_FIRST_NAME_CCD_FIELD, TEST_RESPONDENT_FIRST_NAME);
+        caseData.put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME);
         caseData.put(DIVORCE_CENTRE_SITEID_JSON_KEY, CourtEnum.EASTMIDLANDS.getSiteId());
         caseData.put(DIVORCE_UNIT_JSON_KEY, CourtEnum.EASTMIDLANDS.getId());
         caseData.put(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY, TEST_SOLICITOR_ACCOUNT_NUMBER);
@@ -125,10 +154,62 @@ public class ProcessPbaPaymentITest extends MockedFunctionalTest {
     }
 
     @Test
-    public void givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn() throws Exception {
+    public void givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_PetitionerNewCase() throws Exception {
         caseData.put(STATEMENT_OF_TRUTH, YES_VALUE);
         caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, YES_VALUE);
 
+        caseData.remove(PETITIONER_SOLICITOR_EMAIL);
+
+        makePaymentAndReturn();
+
+        verify(emailService).sendEmail(
+            eq(TEST_PETITIONER_EMAIL),
+            eq(EmailTemplateNames.APPLIC_SUBMISSION.name()),
+            anyMap(),
+            eq(SUBMITTED_DESC),
+            eq(LanguagePreference.ENGLISH)
+        );
+    }
+
+    @Test
+    public void givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_PetitionerAmendedCase() throws Exception {
+        caseData.put(STATEMENT_OF_TRUTH, YES_VALUE);
+        caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, YES_VALUE);
+        caseData.put(PREVIOUS_CASE_ID_CCD_KEY, EMPTY_MAP);
+
+        caseData.remove(PETITIONER_SOLICITOR_EMAIL);
+
+        makePaymentAndReturn();
+
+        verify(emailService).sendEmail(
+            eq(TEST_PETITIONER_EMAIL),
+            eq(EmailTemplateNames.APPLIC_SUBMISSION_AMEND.name()),
+            anyMap(),
+            eq(AMEND_DESC),
+            eq(LanguagePreference.ENGLISH)
+        );
+    }
+
+    @Test
+    public void givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_SolicitorPetitionerAmendedCase() throws Exception {
+        caseData.put(STATEMENT_OF_TRUTH, YES_VALUE);
+        caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, YES_VALUE);
+        caseData.put(PREVIOUS_CASE_ID_CCD_KEY, EMPTY_MAP);
+
+        caseData.put(PETITIONER_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL);
+
+        makePaymentAndReturn();
+
+        verify(emailService).sendEmail(
+            eq(TEST_SOLICITOR_EMAIL),
+            eq(EmailTemplateNames.APPLIC_SUBMISSION_AMEND_SOLICITOR.name()),
+            anyMap(),
+            eq(AMEND_SOL_DESC),
+            eq(LanguagePreference.ENGLISH)
+        );
+    }
+
+    private void makePaymentAndReturn() throws Exception {
         caseDetails = CaseDetails.builder()
             .caseData(caseData)
             .caseId(TEST_CASE_ID)
