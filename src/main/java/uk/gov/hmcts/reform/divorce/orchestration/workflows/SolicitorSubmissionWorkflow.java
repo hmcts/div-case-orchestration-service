@@ -28,7 +28,7 @@ public class SolicitorSubmissionWorkflow extends DefaultWorkflow<Map<String, Obj
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
 
-        return this.execute(new Task[] {
+        return this.execute(new Task[]{
             validateSolicitorCaseData,
             processPbaPayment,
             removeMiniPetitionDraftDocumentsTask,

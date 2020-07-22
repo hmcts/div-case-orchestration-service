@@ -62,13 +62,13 @@ public class SolicitorSubmissionWorkflowTest {
             .caseData(testData)
             .build();
         ccdCallbackRequestRequest =
-                CcdCallbackRequest.builder()
-                        .eventId(TEST_EVENT_ID)
-                        .token(TEST_TOKEN)
-                        .caseDetails(
-                            caseDetails
-                        )
-                        .build();
+            CcdCallbackRequest.builder()
+                .eventId(TEST_EVENT_ID)
+                .token(TEST_TOKEN)
+                .caseDetails(
+                    caseDetails
+                )
+                .build();
 
         context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
