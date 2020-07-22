@@ -1113,12 +1113,9 @@ public class CallbackController {
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> receivedServiceAddedDate(
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-
-        Map<String, Object> x =caseOrchestrationService.receivedServiceAddedDate(ccdCallbackRequest);
-
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
-                .data(x)
+                .data(caseOrchestrationService.receivedServiceAddedDate(ccdCallbackRequest))
                 .build()
         );
     }
