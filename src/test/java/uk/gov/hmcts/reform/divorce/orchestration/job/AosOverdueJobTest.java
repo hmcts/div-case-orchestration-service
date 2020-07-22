@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.isA;
 import static org.junit.rules.ExpectedException.none;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -51,7 +51,7 @@ public class AosOverdueJobTest {
     public void shouldThrowJobExecutionException_WhenServiceFails() throws CaseOrchestrationServiceException, JobExecutionException {
         doThrow(CaseOrchestrationServiceException.class).when(aosService).markCasesToBeMovedToAosOverdue(AUTH_TOKEN);
         expectedException.expect(JobExecutionException.class);
-        expectedException.expectCause(instanceOf(CaseOrchestrationServiceException.class));
+        expectedException.expectCause(isA(CaseOrchestrationServiceException.class));
 
         classUnderTest.execute(null);
     }

@@ -9,35 +9,40 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.aos.MarkAosCasesAsOverdueTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 
-import static org.hamcrest.CoreMatchers.is;
+import static java.util.Collections.emptyMap;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOT_RECEIVED_AOS_EVENT_ID;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AosOverdueWorkflowTest {
 
     @Mock
-    private MarkAosCasesAsOverdueTask markCasesToBeMovedToAosOverdue;
+    private UpdateCaseInCCD updateCaseInCCD;
 
     @InjectMocks
-    private AosOverdueWorkflow aosOverdueWorkflow;
+    private AosOverdueWorkflow classUnderTest;
 
     @Captor
-    private ArgumentCaptor<TaskContext> argumentCaptor;
+    private ArgumentCaptor<TaskContext> contextArgumentCaptor;
 
     @Test
-    public void shouldCallAppropriateTasks() throws TaskException, WorkflowException {
-        aosOverdueWorkflow.run(AUTH_TOKEN);
+    public void shouldCallAppropriateTask() throws WorkflowException {
+        classUnderTest.run(AUTH_TOKEN, "123");
 
-        verify(markCasesToBeMovedToAosOverdue).execute(argumentCaptor.capture(), isNull());
-        TaskContext context = argumentCaptor.getValue();
-        assertThat(context.getTransientObject(AUTH_TOKEN_JSON_KEY), is(AUTH_TOKEN));
+        verify(updateCaseInCCD).execute(contextArgumentCaptor.capture(), eq(emptyMap()));
+        TaskContext taskContext = contextArgumentCaptor.getValue();
+        assertThat(taskContext.getTransientObject(AUTH_TOKEN_JSON_KEY), is(AUTH_TOKEN));
+        assertThat(taskContext.getTransientObject(CASE_ID_JSON_KEY), is("123"));
+        assertThat(taskContext.getTransientObject(CASE_EVENT_ID_JSON_KEY), is(NOT_RECEIVED_AOS_EVENT_ID));
     }
 
 }

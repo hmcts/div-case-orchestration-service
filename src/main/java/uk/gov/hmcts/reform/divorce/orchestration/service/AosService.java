@@ -15,6 +15,6 @@ public interface AosService {
 
     void markCasesToBeMovedToAosOverdue(String authToken) throws CaseOrchestrationServiceException;
 
-    void makeCaseAosOverdue(String authToken, String caseId);
+    void makeCaseAosOverdue(String authToken, String caseId) throws CaseOrchestrationServiceException;
 
 }

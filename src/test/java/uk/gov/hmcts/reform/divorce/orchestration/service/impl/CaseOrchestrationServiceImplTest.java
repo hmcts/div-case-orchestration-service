@@ -78,7 +78,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListi
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshContinueInterceptWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshContinueWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshSetPreviousStateWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueEligibilityWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.ApplicantDecreeAbsoluteEligibilityWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.DecreeAbsoluteAboutToBeGrantedWorkflow;
@@ -345,7 +345,7 @@ public class CaseOrchestrationServiceImplTest {
     private WelshSetPreviousStateWorkflow welshSetPreviousStateWorkflow;
 
     @Mock
-    private AosOverdueWorkflow aosOverdueWorkflow;
+    private AosOverdueEligibilityWorkflow aosOverdueEligibilityWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
