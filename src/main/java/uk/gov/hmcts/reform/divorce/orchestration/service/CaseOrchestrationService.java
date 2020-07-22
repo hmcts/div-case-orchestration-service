@@ -67,6 +67,9 @@ public interface CaseOrchestrationService {
     Map<String, Object> solicitorUpdate(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
         throws WorkflowException;
 
+    Map<String, Object> solicitorAmendPetitionForRefusal(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
+        throws WorkflowException;
+
     Map<String, Object> submitRespondentAosCase(Map<String, Object> payload, String authorizationToken, String caseId)
         throws WorkflowException;
 
@@ -151,6 +154,10 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> removeLegalAdvisorMakeDecisionFields(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
+    Map<String, Object> welshContinue(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+
+    CcdCallbackResponse welshContinueIntercept(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
+
     Map<String, Object> notifyForRefusalOrder(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
     Map<String, Object> removeDNGrantedDocuments(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
@@ -159,5 +166,8 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> decreeNisiDecisionState(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
-    Map<String, Object> processDnDecisionMade(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+    Map<String, Object> sendAmendApplicationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+
+    CcdCallbackResponse welshSetPreviousState(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+
 }

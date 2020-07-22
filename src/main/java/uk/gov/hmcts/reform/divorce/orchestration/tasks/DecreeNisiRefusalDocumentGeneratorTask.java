@@ -3,12 +3,14 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.ArrayList;
@@ -21,15 +23,12 @@ import java.util.Set;
 
 import static java.lang.String.format;
 import static java.util.Collections.singletonMap;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AMEND_PETITION_FEE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_REJECTION_DOCUMENT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSAL_DRAFT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_REJECT_OPTION;
@@ -45,6 +44,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_OTHER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_TO_PAY_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_FEE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
 
@@ -55,6 +55,7 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
     private static final String VALUE_KEY = "value";
 
     private final DocumentGeneratorClient documentGeneratorClient;
+    private final DocumentTemplateService documentTemplateService;
     private final CcdUtil ccdUtil;
 
     @Override
@@ -85,8 +86,12 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
         });
 
         if (REFUSAL_DECISION_MORE_INFO_VALUE.equalsIgnoreCase((String) caseData.get(REFUSAL_DECISION_CCD_FIELD))) {
+            String templateId = getTemplateId(documentTemplateService,
+                    DocumentType.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID,
+                    caseData);
+
             GeneratedDocumentInfo generatedDocumentInfo = generatePdfDocument(
-                DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID,
+                    templateId,
                 DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE,
                 DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME,
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY),
@@ -96,14 +101,18 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
             documentCollection.add(generatedDocumentInfo);
             setDraftLinkInContext(context, DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE, DN_REFUSAL_DRAFT);
         } else if (DN_REFUSED_REJECT_OPTION.equalsIgnoreCase((String) caseData.get(REFUSAL_DECISION_CCD_FIELD))) {
-            FeeResponse amendFee = context.getTransientObject(AMEND_PETITION_FEE_JSON_KEY);
+            FeeResponse amendFee = context.getTransientObject(PETITION_FEE_JSON_KEY);
 
             // Remove reference to existing caseDetails so the context case details is not updated
             Map<String, Object> caseDataToSend = new HashMap<>(caseData);
             caseDataToSend.put(FEE_TO_PAY_JSON_KEY, amendFee.getFormattedFeeAmount());
 
+            String templateId = getTemplateId(documentTemplateService,
+                    DocumentType.DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID,
+                    caseData);
+
             GeneratedDocumentInfo generatedDocumentInfo = generatePdfDocument(
-                DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID,
+                    templateId,
                 DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE,
                 DECREE_NISI_REFUSAL_REJECTION_DOCUMENT_NAME,
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY),

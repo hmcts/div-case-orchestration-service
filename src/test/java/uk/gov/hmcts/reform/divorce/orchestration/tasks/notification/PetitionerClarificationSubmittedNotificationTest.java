@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.internal.hamcrest.HamcrestArgumentMatcher;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
@@ -31,7 +32,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AMEND_PETITION_FEE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COURT_NAME_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
@@ -45,6 +45,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_FEE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
 
@@ -79,7 +80,7 @@ public class PetitionerClarificationSubmittedNotificationTest {
         incomingPayload.put(DIVORCE_UNIT_JSON_KEY, COURT_NAME);
 
         taskContext = new DefaultTaskContext();
-        taskContext.setTransientObject(AMEND_PETITION_FEE_JSON_KEY, COURT_NAME);
+        taskContext.setTransientObject(PETITION_FEE_JSON_KEY, COURT_NAME);
         court = new Court();
         court.setDivorceCentreName(CourtEnum.EASTMIDLANDS.getDisplayName());
     }
@@ -103,7 +104,8 @@ public class PetitionerClarificationSubmittedNotificationTest {
                     hasEntry(COURT_NAME_TEMPLATE_ID, court.getDivorceCentreName())
                 )
             )),
-            anyString()
+            anyString(),
+            eq(LanguagePreference.ENGLISH)
         );
     }
 
@@ -117,7 +119,7 @@ public class PetitionerClarificationSubmittedNotificationTest {
         doThrow(new NotificationClientException("Notification Error"))
             .when(emailService).sendEmailAndReturnExceptionIfFails(eq(PETITIONER_EMAIL),
                 eq(EmailTemplateNames.DECREE_NISI_CLARIFICATION_SUBMISSION.name()),
-                anyMap(), anyString());
+                anyMap(), anyString(), eq(LanguagePreference.ENGLISH));
 
         classToTest.execute(taskContext, incomingPayload);
 

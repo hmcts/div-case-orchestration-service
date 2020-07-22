@@ -22,6 +22,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_PRONOUNCED;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport.buildDateForTodayMinusGivenPeriod;
 
 @Component
 @Slf4j
@@ -38,16 +39,15 @@ public class SearchDNPronouncedCases implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
-        int start = context.<Integer>getTransientObjectOptional("FROM").orElse(0);
-        int pageSize = context.<Integer>getTransientObjectOptional("PAGE_SIZE").orElse(50);
         String authToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY);
         String coolOffPeriodInDN = context.getTransientObject(AWAITING_DA_PERIOD_KEY);
 
         QueryBuilder stateQuery = QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, DN_PRONOUNCED);
-        QueryBuilder dateFilter = QueryBuilders.rangeQuery(DN_GRANTED_DATE).lte(buildCoolOffPeriodInDNBoundary(coolOffPeriodInDN));
+        String limitDate = buildDateForTodayMinusGivenPeriod(coolOffPeriodInDN);
+        QueryBuilder dateFilter = QueryBuilders.rangeQuery(DN_GRANTED_DATE).lte(limitDate);
 
         try {
-            List<String> caseIdList = cmsElasticSearchSupport.searchCMSCases(start, pageSize, authToken, stateQuery, dateFilter)
+            List<String> caseIdList = cmsElasticSearchSupport.searchCMSCases(authToken, stateQuery, dateFilter)
                 .map(CaseDetails::getCaseId)
                 .collect(Collectors.toList());
             context.setTransientObject(SEARCH_RESULT_KEY, caseIdList);
@@ -57,11 +57,6 @@ public class SearchDNPronouncedCases implements Task<Map<String, Object>> {
         }
 
         return payload;
-    }
-
-    protected static String buildCoolOffPeriodInDNBoundary(final String coolOffPeriodInDN) {
-        String timeUnit = String.valueOf(coolOffPeriodInDN.charAt(coolOffPeriodInDN.length() - 1));
-        return String.format("now/%s-%s", timeUnit, coolOffPeriodInDN);
     }
 
 }

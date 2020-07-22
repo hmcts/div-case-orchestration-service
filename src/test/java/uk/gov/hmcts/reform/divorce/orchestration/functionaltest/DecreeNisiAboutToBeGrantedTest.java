@@ -52,9 +52,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_DECISION_DATE_FIELD;
@@ -82,6 +80,9 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
     private static final String AMEND_PETITION_FEE_CONTEXT_PATH = "/fees-and-payments/version/1/amend-fee";
     private static final String FIXED_DATE = "2010-10-10";
     private static final String CCD_RESPONSE_DATA_FIELD = "data";
+    private static final String DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00088.docx";
+    private static final String DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00098.docx";
+
 
     @Autowired
     private MockMvc webClient;
@@ -188,7 +189,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(expectedRequestData).build();
 
         stubGetFeeFromFeesAndPayments(HttpStatus.OK, FeeResponse.builder().amount(TEST_FEE_AMOUNT).build());
-        stubDocumentGeneratorService(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID,
+        stubDocumentGeneratorServiceBaseOnContextPath(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
             DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE);
 
@@ -235,7 +236,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(documentGenerationRequestCaseData).build();
 
         stubGetFeeFromFeesAndPayments(HttpStatus.OK, FeeResponse.builder().amount(TEST_FEE_AMOUNT).build());
-        stubDocumentGeneratorService(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID,
+        stubDocumentGeneratorServiceBaseOnContextPath(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
             DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE);
 
@@ -320,7 +321,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
             .build();
 
         stubGetFeeFromFeesAndPayments(HttpStatus.OK, amendFee);
-        stubDocumentGeneratorService(DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID,
+        stubDocumentGeneratorServiceBaseOnContextPath(DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
             DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE);
 

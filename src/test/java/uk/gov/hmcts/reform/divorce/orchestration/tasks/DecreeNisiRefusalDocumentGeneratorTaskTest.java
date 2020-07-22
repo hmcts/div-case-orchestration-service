@@ -6,11 +6,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.ArrayList;
@@ -31,16 +34,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_AMOUNT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.VALUE_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AMEND_PETITION_FEE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_REFUSAL_REJECTION_DOCUMENT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_REJECT_OPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
@@ -51,6 +51,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_OTHER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_TO_PAY_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_FEE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.MultipleDocumentGenerationTaskTest.matchesDocumentInputParameters;
@@ -59,9 +60,15 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.MultipleDocumentGe
 public class DecreeNisiRefusalDocumentGeneratorTaskTest {
 
     private static final String FIXED_DATE = "2010-10-10";
+    private static final String DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00088.docx";
+    private static final String DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00098.docx";
+
 
     @Mock
     private DocumentGeneratorClient documentGeneratorClient;
+
+    @Mock
+    private DocumentTemplateService documentTemplateService;
 
     @Mock
     private CcdUtil ccdUtil;
@@ -87,6 +94,10 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
             .documentType(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE)
             .fileName(DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME + TEST_CASE_ID)
             .build();
+
+        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
+                DocumentType.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID))
+                .thenReturn(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID);
 
         //given
         when(documentGeneratorClient
@@ -149,6 +160,11 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
                 caseDetails), eq(AUTH_TOKEN))
         ).thenReturn(expectedDocument);
 
+        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
+                DocumentType.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID))
+                .thenReturn(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID);
+
+
         //when
         decreeNisiRefusalDocumentGeneratorTask.execute(context, payload);
 
@@ -192,7 +208,7 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
         final TaskContext context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        context.setTransientObject(AMEND_PETITION_FEE_JSON_KEY, amendFee);
+        context.setTransientObject(PETITION_FEE_JSON_KEY, amendFee);
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
 
         final GeneratedDocumentInfo expectedDocument = GeneratedDocumentInfo.builder()
@@ -212,6 +228,11 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
         when(documentGeneratorClient
             .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID, expectedCaseDetails), eq(AUTH_TOKEN))
         ).thenReturn(expectedDocument);
+
+
+        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
+                DocumentType.DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID))
+                .thenReturn(DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID);
 
         //when
         decreeNisiRefusalDocumentGeneratorTask.execute(context, payload);

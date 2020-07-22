@@ -61,6 +61,7 @@ public class ValidationBulkScanITest {
     }
 
     @Test
+    @Ignore
     public void shouldReturnForbiddenStatusWhenInvalidToken() throws Exception {
         mockMvc.perform(
             post("/forms/{form-type}/validate-ocr", D8_FORM)
@@ -71,6 +72,7 @@ public class ValidationBulkScanITest {
     }
 
     @Test
+    @Ignore
     public void shouldReturnUnauthorizedStatusWhenNoAuthServiceHeader() throws Exception {
         mockMvc.perform(
             post("/forms/{form-type}/validate-ocr", D8_FORM)
@@ -162,6 +164,7 @@ public class ValidationBulkScanITest {
     }
 
     @Test
+    @Ignore
     public void shouldReturnResourceNotFoundResponseForUnsupportedFormType() throws Exception {
         mockMvc.perform(
             post("/forms/{form-type}/validate-ocr", "unsupportedFormType")

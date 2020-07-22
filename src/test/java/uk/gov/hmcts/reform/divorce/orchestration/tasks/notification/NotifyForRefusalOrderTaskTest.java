@@ -7,12 +7,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.internal.hamcrest.HamcrestArgumentMatcher;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.TemplateConfigService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,12 +29,15 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INFERRED_MALE_GENDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RELATIONSHIP_HUSBAND;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AMEND_PETITION_FEE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH_MALE_GENDER_IN_RELATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_REJECT_OPTION;
@@ -50,8 +55,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_FEE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
@@ -75,6 +82,9 @@ public class NotifyForRefusalOrderTaskTest {
     private TaskContext taskContext;
 
     @Mock
+    TemplateConfigService templateConfigService;
+
+    @Mock
     private EmailService emailService;
 
     @InjectMocks
@@ -89,7 +99,7 @@ public class NotifyForRefusalOrderTaskTest {
         incomingPayload.put(D_8_CASE_REFERENCE, TEST_CASE_REFERENCE);
         incomingPayload.put(D_8_INFERRED_PETITIONER_GENDER, MALE_GENDER);
         taskContext = new DefaultTaskContext();
-        taskContext.setTransientObject(AMEND_PETITION_FEE_JSON_KEY, TEST_FEES);
+        taskContext.setTransientObject(PETITION_FEE_JSON_KEY, TEST_FEES);
         taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
     }
 
@@ -110,7 +120,35 @@ public class NotifyForRefusalOrderTaskTest {
                     hasEntry(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, PETITIONER_LAST_NAME)
                 )
             )),
-            anyString()
+            anyString(),
+            eq(LanguagePreference.ENGLISH)
+        );
+    }
+
+    @Test
+    public void notificationServiceForSolicitorIsCalledWhenRefusalDecisionIsMoreInfo() throws TaskException {
+        incomingPayload.put(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE);
+        incomingPayload.put(REFUSAL_DECISION_CCD_FIELD, REFUSAL_DECISION_MORE_INFO_VALUE);
+        incomingPayload.put(PETITIONER_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL);
+        incomingPayload.put(PETITIONER_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
+        incomingPayload.put(RESP_FIRST_NAME_CCD_FIELD, TEST_USER_FIRST_NAME);
+        incomingPayload.put(RESP_LAST_NAME_CCD_FIELD, TEST_USER_LAST_NAME);
+
+        executeTask();
+
+        verify(emailService).sendEmail(
+            eq(TEST_SOLICITOR_EMAIL),
+            eq(EmailTemplateNames.SOL_DN_DECISION_MADE.name()),
+            argThat(new HamcrestArgumentMatcher<>(
+                allOf(
+                    hasEntry(NOTIFICATION_CCD_REFERENCE_KEY, TEST_CASE_ID),
+                    hasEntry(NOTIFICATION_PET_NAME, PETITIONER_FIRST_NAME + " " + PETITIONER_LAST_NAME),
+                    hasEntry(NOTIFICATION_RESP_NAME, TEST_USER_FIRST_NAME + " " + TEST_USER_LAST_NAME),
+                    hasEntry(NOTIFICATION_SOLICITOR_NAME, TEST_SOLICITOR_NAME)
+                )
+            )),
+            anyString(),
+            eq(LanguagePreference.ENGLISH)
         );
     }
 
@@ -118,6 +156,10 @@ public class NotifyForRefusalOrderTaskTest {
     public void notificationServiceIsCalledWithExpectedParametersWhenRefusalDecisionIsRejection() throws TaskException {
         incomingPayload.put(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE);
         incomingPayload.put(REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION);
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.ENGLISH)))
+            .thenReturn(TEST_RELATIONSHIP_HUSBAND);
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.WELSH)))
+            .thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
 
         executeTask();
 
@@ -130,10 +172,12 @@ public class NotifyForRefusalOrderTaskTest {
                     hasEntry(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, PETITIONER_FIRST_NAME),
                     hasEntry(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, PETITIONER_LAST_NAME),
                     hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, RELATION),
-                    hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING)
+                    hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING),
+                    hasEntry(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TEST_WELSH_MALE_GENDER_IN_RELATION)
                 )
             )),
-            anyString()
+            anyString(),
+            eq(LanguagePreference.ENGLISH)
         );
     }
 
@@ -161,7 +205,8 @@ public class NotifyForRefusalOrderTaskTest {
                     hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING)
                 )
             )),
-            anyString()
+            anyString(),
+            eq(LanguagePreference.ENGLISH)
         );
     }
 
@@ -204,7 +249,8 @@ public class NotifyForRefusalOrderTaskTest {
             eq(email),
             eq(templateId.name()),
             anyMap(),
-            anyString()
+            anyString(),
+            eq(LanguagePreference.ENGLISH)
         );
     }
 }

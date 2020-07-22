@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -14,10 +16,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpd
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionForRefusalWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.AosSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseCancelPronouncementEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseRemoveCasesWorkflow;
@@ -27,11 +30,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForHearingW
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackBulkPrintWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CleanStatusCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CoRespondentAnswerReceivedWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.CreateNewAmendedCaseAndSubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DecreeNisiAboutToBeGrantedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DecreeNisiDecisionStateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.DnDecisionMadeWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DocumentGenerationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GenerateCoRespondentAnswersWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWithIdWorkflow;
@@ -71,12 +74,17 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitRespondentAosCa
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListingWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshContinueInterceptWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshContinueWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshSetPreviousStateWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.ApplicantDecreeAbsoluteEligibilityWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.DecreeAbsoluteAboutToBeGrantedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.DnSubmittedEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.NotifyApplicantCanFinaliseDivorceWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.NotifyForRefusalOrderWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.SendDaGrantedNotificationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.SendPetitionerAmendEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.math.BigDecimal;
@@ -93,10 +101,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_DATA_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isPetitionerClaimingCosts;
@@ -156,6 +162,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final RespondentSolicitorLinkCaseWorkflow respondentSolicitorLinkCaseWorkflow;
     private final DecreeNisiAboutToBeGrantedWorkflow decreeNisiAboutToBeGrantedWorkflow;
     private final DecreeNisiDecisionStateWorkflow decreeNisiDecisionStateWorkflow;
+    private final SendPetitionerAmendEmailNotificationWorkflow sendPetitionerAmendEmailNotificationWorkflow;
     private final BulkCaseUpdateDnPronounceDatesWorkflow bulkCaseUpdateDnPronounceDatesWorkflow;
     private final CleanStatusCallbackWorkflow cleanStatusCallbackWorkflow;
     private final MakeCaseEligibleForDecreeAbsoluteWorkflow makeCaseEligibleForDecreeAbsoluteWorkflow;
@@ -169,10 +176,14 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final RemoveLinkFromListedWorkflow removeLinkFromListedWorkflow;
     private final RemoveDnOutcomeCaseFlagWorkflow removeDnOutcomeCaseFlagWorkflow;
     private final RemoveLegalAdvisorMakeDecisionFieldsWorkflow removeLegalAdvisorMakeDecisionFieldsWorkflow;
+    private final WelshContinueWorkflow welshContinueWorkflow;
+    private final WelshContinueInterceptWorkflow welshContinueInterceptWorkflow;
+    private final WelshSetPreviousStateWorkflow welshSetPreviousStateWorkflow;
     private final NotifyForRefusalOrderWorkflow notifyForRefusalOrderWorkflow;
     private final RemoveDNDocumentsWorkflow removeDNDocumentsWorkflow;
     private final SendClarificationSubmittedNotificationWorkflow sendClarificationSubmittedNotificationWorkflow;
-    private final DnDecisionMadeWorkflow dnDecisionMadeWorkflow;
+    private final CreateNewAmendedCaseAndSubmitToCCDWorkflow createNewAmendedCaseAndSubmitToCCDWorkflow;
+    private final DocumentTemplateService documentTemplateService;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -406,6 +417,11 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         return decreeNisiDecisionStateWorkflow.run(ccdCallbackRequest.getCaseDetails());
     }
 
+    @Override
+    public Map<String, Object> sendAmendApplicationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        return sendPetitionerAmendEmailNotificationWorkflow.run(ccdCallbackRequest);
+    }
+
     private List<String> getNotificationErrors(Map<String, Object> notificationErrors) {
         return notificationErrors.entrySet()
             .stream()
@@ -507,6 +523,12 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     public Map<String, Object> solicitorUpdate(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
         throws WorkflowException {
         return solicitorUpdateWorkflow.run(ccdCallbackRequest.getCaseDetails(), authorizationToken);
+    }
+
+    @Override
+    public Map<String, Object> solicitorAmendPetitionForRefusal(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
+        throws WorkflowException {
+        return createNewAmendedCaseAndSubmitToCCDWorkflow.run(ccdCallbackRequest.getCaseDetails(), authorizationToken);
     }
 
     @Override
@@ -674,14 +696,17 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
 
         if (Objects.nonNull(caseData.get(BULK_LISTING_CASE_ID_FIELD))) {
-
+            LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
+            String templateId = documentTemplateService.getTemplateId(languagePreference, DocumentType.DECREE_NISI_TEMPLATE_ID);
             caseData.putAll(documentGenerationWorkflow.run(ccdCallbackRequest, authToken,
-                DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME));
+                templateId, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME));
 
             if (isPetitionerClaimingCosts(caseData)) {
+                templateId = documentTemplateService.getTemplateId(languagePreference, DocumentType.COSTS_ORDER_TEMPLATE_ID);
+
                 // DocumentType is clear enough to use as the file name
                 caseData.putAll(documentGenerationWorkflow.run(ccdCallbackRequest, authToken,
-                    COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE));
+                    templateId, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE));
             }
         }
 
@@ -837,6 +862,11 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
+    public Map<String, Object> welshContinue(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        return welshContinueWorkflow.run(ccdCallbackRequest, authUtil.getCaseworkerToken());
+    }
+
+    @Override
     public Map<String, Object> notifyForRefusalOrder(CcdCallbackRequest ccdCallbackRequest)
         throws WorkflowException {
 
@@ -849,7 +879,42 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> processDnDecisionMade(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        return dnDecisionMadeWorkflow.run(ccdCallbackRequest);
+    public CcdCallbackResponse welshContinueIntercept(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
+        Map<String, Object> response = welshContinueInterceptWorkflow.run(ccdCallbackRequest, authToken);
+        log.info("welshContinueIntercept completed with CASE ID: {}.",
+            ccdCallbackRequest.getCaseDetails().getCaseId());
+
+        if (welshContinueInterceptWorkflow.errors().isEmpty()) {
+            return CcdCallbackResponse.builder()
+                .data(response)
+                .build();
+        } else {
+            Map<String, Object> workflowErrors = welshContinueInterceptWorkflow.errors();
+            log.error("welshContinueInterceptWorkflow with CASE ID: {} failed {}.",
+                ccdCallbackRequest.getCaseDetails().getCaseId(), workflowErrors);
+            return CcdCallbackResponse
+                .builder()
+                .errors(workflowErrors.values().stream().map(String.class::cast).collect(Collectors.toList()))
+                .build();
+        }
+    }
+
+    @Override
+    public CcdCallbackResponse welshSetPreviousState(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        Map<String, Object> response = welshSetPreviousStateWorkflow.run(ccdCallbackRequest, authUtil.getCaseworkerToken());
+
+        if (welshSetPreviousStateWorkflow.errors().isEmpty()) {
+            return CcdCallbackResponse.builder()
+                .data(response)
+                .build();
+        } else {
+            Map<String, Object> workflowErrors = welshSetPreviousStateWorkflow.errors();
+            log.error("CASE ID: {} failed {}. ",
+                ccdCallbackRequest.getCaseDetails().getCaseId(), workflowErrors);
+            return CcdCallbackResponse
+                .builder()
+                .errors(workflowErrors.values().stream().map(String.class::cast).collect(Collectors.toList()))
+                .build();
+        }
     }
 }

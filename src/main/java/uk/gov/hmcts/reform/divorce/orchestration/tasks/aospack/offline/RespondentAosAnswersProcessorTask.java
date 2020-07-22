@@ -67,7 +67,8 @@ public class RespondentAosAnswersProcessorTask implements Task<Map<String, Objec
     }
 
     private boolean isReasonAdulteryOrTwoYearsSeparation(String reasonForDivorce) {
-        return ADULTERY.equalsIgnoreCase(reasonForDivorce) || SEPARATION_TWO_YEARS.equalsIgnoreCase(reasonForDivorce);
+        return ADULTERY.getValue().equalsIgnoreCase(reasonForDivorce)
+            || SEPARATION_TWO_YEARS.getValue().equalsIgnoreCase(reasonForDivorce);
     }
 
 }

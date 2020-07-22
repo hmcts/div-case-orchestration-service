@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentLetterGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentPinGenerator;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetPetitionIssueFee;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetPetitionIssueFeeTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetCoRespondentLinkingFields;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetRespondentLinkingFields;
@@ -44,7 +44,7 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
     private final RespondentLetterGenerator respondentLetterGenerator;
     private final CoRespondentLetterGenerator coRespondentLetterGenerator;
     private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
-    private final GetPetitionIssueFee getPetitionIssueFee;
+    private final GetPetitionIssueFeeTask getPetitionIssueFeeTask;
     private final ResetRespondentLinkingFields resetRespondentLinkingFields;
     private final ResetCoRespondentLinkingFields resetCoRespondentLinkingFields;
     private final CaseDataUtils caseDataUtils;
@@ -69,7 +69,7 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
                 log.info("Adultery case with co-respondent: {}. Calculating current petition fee and generating"
                     + " co-respondent letter", caseDetails.getCaseId());
 
-                tasks.add(getPetitionIssueFee);
+                tasks.add(getPetitionIssueFeeTask);
                 tasks.add(coRespondentPinGenerator);
                 tasks.add(coRespondentLetterGenerator);
             }

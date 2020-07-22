@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentLetterGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentPinGenerator;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetPetitionIssueFee;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetPetitionIssueFeeTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetCoRespondentLinkingFields;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetRespondentLinkingFields;
@@ -70,7 +70,7 @@ public class IssueEventWorkflowTest {
     private AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     @Mock
-    private GetPetitionIssueFee getPetitionIssueFee;
+    private GetPetitionIssueFeeTask getPetitionIssueFeeTask;
 
     @Mock
     private ResetRespondentLinkingFields resetRespondentLinkingFields;
@@ -122,7 +122,7 @@ public class IssueEventWorkflowTest {
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
-        when(getPetitionIssueFee.execute(context, payload)).thenReturn(payload);
+        when(getPetitionIssueFeeTask.execute(context, payload)).thenReturn(payload);
         when(coRespondentPinGenerator.execute(context, payload)).thenReturn(payload);
         when(coRespondentLetterGenerator.execute(context, payload)).thenReturn(payload);
         when(addNewDocumentsToCaseDataTask.execute(context, payload)).thenReturn(payload);
@@ -158,7 +158,7 @@ public class IssueEventWorkflowTest {
         //Then
         assertThat(response, is(payload));
 
-        verifyZeroInteractions(getPetitionIssueFee);
+        verifyZeroInteractions(getPetitionIssueFeeTask);
         verifyZeroInteractions(coRespondentPinGenerator);
         verifyZeroInteractions(coRespondentLetterGenerator);
     }
@@ -184,7 +184,7 @@ public class IssueEventWorkflowTest {
         //Then
         assertThat(response, is(payload));
 
-        verifyZeroInteractions(getPetitionIssueFee);
+        verifyZeroInteractions(getPetitionIssueFeeTask);
         verifyZeroInteractions(coRespondentPinGenerator);
         verifyZeroInteractions(coRespondentLetterGenerator);
     }
@@ -205,7 +205,7 @@ public class IssueEventWorkflowTest {
         assertThat(response, is(payload));
 
         verifyZeroInteractions(respondentPinGenerator);
-        verifyZeroInteractions(getPetitionIssueFee);
+        verifyZeroInteractions(getPetitionIssueFeeTask);
         verifyZeroInteractions(coRespondentPinGenerator);
         verifyZeroInteractions(respondentLetterGenerator);
         verifyZeroInteractions(coRespondentLetterGenerator);
@@ -227,7 +227,7 @@ public class IssueEventWorkflowTest {
         assertThat(response, is(payload));
 
         verifyZeroInteractions(respondentPinGenerator);
-        verifyZeroInteractions(getPetitionIssueFee);
+        verifyZeroInteractions(getPetitionIssueFeeTask);
         verifyZeroInteractions(coRespondentPinGenerator);
         verifyZeroInteractions(respondentLetterGenerator);
         verifyZeroInteractions(coRespondentLetterGenerator);
