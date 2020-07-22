@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
@@ -20,21 +20,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NEW_AMENDED_PETITION_DRAFT_KEY;
 
 @Component
+@RequiredArgsConstructor
 public class AmendPetitionWorkflow extends DefaultWorkflow<Map<String, Object>> {
-
 
     private final CreateAmendPetitionDraft amendPetitionDraft;
     private final UpdateCaseInCCD updateCaseInCCD;
     private final AddCourtsToPayloadTask addCourtsToPayloadTask;
-
-    @Autowired
-    public AmendPetitionWorkflow(CreateAmendPetitionDraft amendPetitionDraft,
-                                 UpdateCaseInCCD updateCaseInCCD,
-                                 AddCourtsToPayloadTask addCourtsToPayloadTask) {
-        this.amendPetitionDraft = amendPetitionDraft;
-        this.updateCaseInCCD = updateCaseInCCD;
-        this.addCourtsToPayloadTask = addCourtsToPayloadTask;
-    }
 
     public Map<String, Object> run(String caseId, String authToken) throws WorkflowException {
         execute(
