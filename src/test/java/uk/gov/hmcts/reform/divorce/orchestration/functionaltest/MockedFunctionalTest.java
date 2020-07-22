@@ -196,7 +196,7 @@ public abstract class MockedFunctionalTest {
                 .withBody(response)));
     }
 
-    protected String stubCaseMaintenanceSearchEndpoint(List<CaseDetails> casesToReturn, QueryBuilder... expectedQueryBuilders) {
+    protected void stubCaseMaintenanceSearchEndpoint(List<CaseDetails> casesToReturn, QueryBuilder... expectedQueryBuilders) {
         SearchResult searchResult = SearchResult.builder()
             .total(casesToReturn.size())
             .cases(casesToReturn)
@@ -204,9 +204,8 @@ public abstract class MockedFunctionalTest {
 
         MappingBuilder mappingBuilder = WireMock.post(CASE_MAINTENANCE_CLIENT_SEARCH_URL);
 
-        String expectedElasticSearchQuery = null;
         if (expectedQueryBuilders.length > 0) {
-            expectedElasticSearchQuery = CMSElasticSearchSupport.buildCMSBooleanSearchSource(0, 50, expectedQueryBuilders);
+            String expectedElasticSearchQuery = CMSElasticSearchSupport.buildCMSBooleanSearchSource(0, 50, expectedQueryBuilders);
             mappingBuilder = mappingBuilder.withRequestBody(equalTo(expectedElasticSearchQuery));
         }
 
@@ -218,7 +217,6 @@ public abstract class MockedFunctionalTest {
         );
 
         maintenanceServiceServer.stubFor(mappingBuilder);
-        return expectedElasticSearchQuery;
     }
 
     public String stubDocumentGeneratorService(String templateName, Map<String, Object> templateValues, String documentTypeToReturn) {

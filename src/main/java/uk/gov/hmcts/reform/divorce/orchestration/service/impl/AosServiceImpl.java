@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorcePar
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueEligibilityWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline.AosPackOfflineAnswersWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline.IssueAosPackOfflineWorkflow;
@@ -25,6 +26,7 @@ public class AosServiceImpl implements AosService {
 
     private final IssueAosPackOfflineWorkflow issueAosPackOfflineWorkflow;
     private final AosPackOfflineAnswersWorkflow aosPackOfflineAnswersWorkflow;
+    private final AosOverdueEligibilityWorkflow aosOverdueEligibilityWorkflow;
     private final AosOverdueWorkflow aosOverdueWorkflow;
 
     @Override
@@ -63,7 +65,7 @@ public class AosServiceImpl implements AosService {
         log.info("Searching for cases that are eligible to be moved to AosOverdue");
 
         try {
-            aosOverdueWorkflow.run(authToken);
+            aosOverdueEligibilityWorkflow.run(authToken);
         } catch (WorkflowException e) {
             CaseOrchestrationServiceException caseOrchestrationServiceException = new CaseOrchestrationServiceException(e);
             log.error("Error trying to find cases to move to AOSOverdue", caseOrchestrationServiceException);
@@ -72,8 +74,18 @@ public class AosServiceImpl implements AosService {
     }
 
     @Override
-    public void makeCaseAosOverdue(String authToken, String caseId) {
-        log.info("Case id {} should be moved to AOSOverdue.", caseId);
+    public void makeCaseAosOverdue(String authToken, String caseId) throws CaseOrchestrationServiceException {
+        log.info("Will move case [id: {}] to AOSOverdue.", caseId);
+
+        try {
+            aosOverdueWorkflow.run(authToken, caseId);
+        } catch (WorkflowException e) {
+            CaseOrchestrationServiceException caseOrchestrationServiceException = new CaseOrchestrationServiceException(e);
+            log.error("Error trying to move case {} to AOS Overdue", caseId, caseOrchestrationServiceException);
+            throw caseOrchestrationServiceException;
+        }
+
+        log.info("Moved case [id: {}] to AOSOverdue.", caseId);
     }
 
 }

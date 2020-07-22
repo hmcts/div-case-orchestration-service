@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.aos;
 
+import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport.buildDateForTodayMinusGivenPeriod;
 
 @Component
+@Slf4j
 public class MarkAosCasesAsOverdueTask extends AsyncTask<Void> {
 
     private static final String AOS_TIME_LIMIT = "30d";
@@ -41,10 +43,14 @@ public class MarkAosCasesAsOverdueTask extends AsyncTask<Void> {
 
     @Override
     public List<ApplicationEvent> getApplicationEvent(TaskContext context, Void payload) {
-        return cmsElasticSearchSupport.searchCMSCases(context.getTransientObject(AUTH_TOKEN_JSON_KEY), queryBuilders)
+        List<ApplicationEvent> events = cmsElasticSearchSupport.searchCMSCases(context.getTransientObject(AUTH_TOKEN_JSON_KEY), queryBuilders)
             .map(CaseDetails::getCaseId)
             .map(caseId -> new AosOverdueRequest(this, caseId))
             .collect(Collectors.toList());
+
+        log.info("Found {} cases eligible to be moved to AOS Overdue.");
+
+        return events;
     }
 
 }
