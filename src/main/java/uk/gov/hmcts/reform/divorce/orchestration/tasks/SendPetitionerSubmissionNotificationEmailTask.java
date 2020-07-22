@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
@@ -38,6 +38,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentation
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<String, Object>> {
 
     private static final String SUBMITTED_DESC = "Submission Notification - Petitioner";
@@ -45,14 +46,7 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
     private static final String AMEND_SOL_DESC = "Submission Notification For Amend - Solicitor";
 
     private final EmailService emailService;
-
     private final TaskCommons taskCommons;
-
-    @Autowired
-    public SendPetitionerSubmissionNotificationEmailTask(EmailService emailService, TaskCommons taskCommons) {
-        this.emailService = emailService;
-        this.taskCommons = taskCommons;
-    }
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
@@ -61,6 +55,8 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
         } else {
             sendApplicationSubmittedEmail(context, caseData);
         }
+
+        log.info("CaseID: {} email sent.", getCaseId(context));
 
         return caseData;
     }
@@ -113,8 +109,8 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
         return previousCaseId != null;
     }
 
-    private Map<String, Object> sendApplicationAmendSubmittedEmail(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        String petitionerEmail = getMandatoryStringValue(caseData, D_8_PETITIONER_EMAIL);
+    private void sendApplicationAmendSubmittedEmail(TaskContext context, Map<String, Object> caseData) throws TaskException {
+        String petitionerEmail = getPetitionerEmail(caseData);
 
         logEvent(context, AMEND_DESC);
         LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
@@ -126,11 +122,9 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
             AMEND_DESC,
             languagePreference
         );
-
-        return caseData;
     }
 
-    private Map<String, Object> sendApplicationAmendSubmittedSolicitorEmail(TaskContext context, Map<String, Object> caseData) throws TaskException {
+    private void sendApplicationAmendSubmittedSolicitorEmail(TaskContext context, Map<String, Object> caseData) throws TaskException {
         String solicitorEmail = getMandatoryStringValue(caseData, PETITIONER_SOLICITOR_EMAIL);
 
         logEvent(context, AMEND_SOL_DESC);
@@ -143,12 +137,10 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
             AMEND_SOL_DESC,
             languagePreference
         );
-
-        return caseData;
     }
 
-    private Map<String, Object> sendApplicationSubmittedEmail(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        String petitionerEmail = getMandatoryStringValue(caseData, D_8_PETITIONER_EMAIL);
+    private void sendApplicationSubmittedEmail(TaskContext context, Map<String, Object> caseData) throws TaskException {
+        String petitionerEmail = getPetitionerEmail(caseData);
 
         logEvent(context, SUBMITTED_DESC);
         LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
@@ -159,8 +151,6 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
             getPersonalisation(context, caseData),
             SUBMITTED_DESC,
             languagePreference);
-
-        return caseData;
     }
 
     private void logEvent(TaskContext context, String emailDescription) throws TaskException {
@@ -171,5 +161,9 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
             caseId,
             emailDescription
         );
+    }
+
+    private String getPetitionerEmail(Map<String, Object> caseData) {
+        return getMandatoryStringValue(caseData, D_8_PETITIONER_EMAIL);
     }
 }
