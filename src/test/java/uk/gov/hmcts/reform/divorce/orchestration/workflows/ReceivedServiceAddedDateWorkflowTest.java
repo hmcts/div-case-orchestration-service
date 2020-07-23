@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ReceivedServiceAddedDateTask;
 
 import java.util.HashMap;
@@ -28,7 +29,7 @@ public class ReceivedServiceAddedDateWorkflowTest extends TestCase {
         Map<String, Object> caseData = new HashMap<>();
         mockTasksExecution(caseData, receivedServiceAddedDateTask);
 
-        receivedServiceAddedDateWorkflow.run(caseData);
+        receivedServiceAddedDateWorkflow.run(CaseDetails.builder().caseData(caseData).build());
 
         verifyTaskWasCalled(caseData, receivedServiceAddedDateTask);
     }
