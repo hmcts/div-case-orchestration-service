@@ -120,7 +120,6 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
         testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME);
         testData.put(DIVORCE_UNIT_JSON_KEY, TEST_COURT_KEY);
         testData.put(PREVIOUS_CASE_ID_CCD_KEY, Collections.singletonMap(CASE_REFERENCE_KEY, TEST_CASE_ID));
-
     }
 
     private void mockTestCourtsLookup() throws TaskException {
