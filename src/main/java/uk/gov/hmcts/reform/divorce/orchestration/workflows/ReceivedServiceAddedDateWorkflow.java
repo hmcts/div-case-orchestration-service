@@ -11,8 +11,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.ReceivedServiceAddedDateT
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
-
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -26,19 +24,11 @@ public class ReceivedServiceAddedDateWorkflow extends DefaultWorkflow<Map<String
 
         log.info("CaseID: {} received service added date workflow is going to be executed.", caseId);
 
-        this.execute(
+        return this.execute(
             new Task[] {
                 receivedServiceAddedDateTask
             },
             caseDetails.getCaseData()
         );
-
-        log.info("CaseID: {} received service added date setup {}.", caseId, getReceivedServiceAddedDate(caseDetails));
-
-        return caseDetails.getCaseData();
-    }
-
-    private String getReceivedServiceAddedDate(CaseDetails caseDetails) {
-        return getMandatoryStringValue(caseDetails.getCaseData(), ReceivedServiceAddedDateTask.RECEIVED_SERVICE_ADDED_DATE);
     }
 }
