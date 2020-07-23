@@ -1072,14 +1072,14 @@ public class CallbackController {
     @PostMapping(path = "/welsh-event-intercept")
     @ApiOperation(value = "Callback to set next event upon receival of translation.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Callback processed.")})
+        @ApiResponse(code = 200, message = "Callback processed.")})
     public ResponseEntity<CcdCallbackResponse> welshContinue(
-            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
         return ResponseEntity.ok(
-                CcdCallbackResponse.builder()
-                        .data(caseOrchestrationService.welshContinue(ccdCallbackRequest))
-                        .build());
+            CcdCallbackResponse.builder()
+                .data(caseOrchestrationService.welshContinue(ccdCallbackRequest))
+                .build());
     }
 
     @PostMapping(path = "/welshSetPreviousState")
@@ -1103,6 +1103,21 @@ public class CallbackController {
         @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return ResponseEntity.ok(caseOrchestrationService.welshContinueIntercept(ccdCallbackRequest, authorizationToken));
+    }
+
+    @PostMapping(path = "/received-service-added-date", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback to set ReceivedServiceAddedDate field to 'now'")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> receivedServiceAddedDate(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(caseOrchestrationService.receivedServiceAddedDate(ccdCallbackRequest))
+                .build()
+        );
     }
 
     private List<String> getErrors(Map<String, Object> response) {

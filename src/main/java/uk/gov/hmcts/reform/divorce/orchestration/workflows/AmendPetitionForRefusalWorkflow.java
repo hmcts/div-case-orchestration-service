@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
@@ -19,22 +19,15 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NEW_AMENDED_PETITION_DRAFT_KEY;
 
 @Component
+@RequiredArgsConstructor
 public class AmendPetitionForRefusalWorkflow extends DefaultWorkflow<Map<String, Object>> {
-
 
     private final CreateAmendPetitionDraftForRefusalTask amendPetitionDraftForRefusal;
     private final UpdateCaseInCCD updateCaseInCCD;
 
-    @Autowired
-    public AmendPetitionForRefusalWorkflow(CreateAmendPetitionDraftForRefusalTask amendPetitionDraftForRefusal,
-                                           UpdateCaseInCCD updateCaseInCCD) {
-        this.amendPetitionDraftForRefusal = amendPetitionDraftForRefusal;
-        this.updateCaseInCCD = updateCaseInCCD;
-    }
-
     public Map<String, Object> run(String caseId, String authToken) throws WorkflowException {
         this.execute(
-            new Task[]{
+            new Task[] {
                 amendPetitionDraftForRefusal,
                 updateCaseInCCD
             },

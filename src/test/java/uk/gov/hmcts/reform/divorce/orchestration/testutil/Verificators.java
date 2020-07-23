@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Verificators {
 
-    public static void verifyTaskWasCalled(Task<Map<String, Object>> task, Map<String, Object> caseData) throws TaskException {
+    public static void verifyTaskWasCalled(Map<String, Object> caseData, Task<Map<String, Object>> task) throws TaskException {
         verify(task).execute(any(TaskContext.class), eq(caseData));
     }
 
