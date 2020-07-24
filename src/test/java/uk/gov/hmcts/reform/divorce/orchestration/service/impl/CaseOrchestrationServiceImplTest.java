@@ -47,6 +47,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflo
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDecreeAbsoluteWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.PetitionerSolicitorRoleWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.ReceivedServiceAddedDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveDNDocumentsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveDnOutcomeCaseFlagWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLegalAdvisorMakeDecisionFieldsWorkflow;
@@ -346,6 +347,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private AosOverdueWorkflow aosOverdueWorkflow;
+
+    @Mock
+    private ReceivedServiceAddedDateWorkflow receivedServiceAddedDateWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -1763,6 +1767,17 @@ public class CaseOrchestrationServiceImplTest {
 
         List<String> errors = workflowErrors.values().stream().map(String.class::cast).collect(Collectors.toList());
         assertThat(ccdCallbackResponse.getErrors(), is(errors));
+    }
+
+    @Test
+    public void receivedServiceAddedDateShouldCallWorkflow() throws Exception {
+        CcdCallbackRequest input = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder().caseId("21431").build())
+            .build();
+
+        classUnderTest.receivedServiceAddedDate(input);
+
+        verify(receivedServiceAddedDateWorkflow, times(1)).run(input.getCaseDetails());
     }
 
     @After
