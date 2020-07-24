@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,10 +90,18 @@ public class ProcessPbaPayment implements Task<Map<String, Object>> {
 
                 String userToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString();
                 String serviceToken = serviceAuthGenerator.generate();
-                log.warn("THIS IS NOT TO BE MERGED TO MASTER. \nUser token is {}. \nS2S token is {}. \nRequest is {}.",
-                    userToken,
-                    serviceToken,
-                    request.toString());
+                try {
+                    log.warn("THIS IS NOT TO BE MERGED TO MASTER. \nUser token is {}. \nS2S token is {}. \nRequest is {}.",
+                        userToken,
+                        serviceToken,
+                        new ObjectMapper().writeValueAsString(request));
+                } catch (JsonProcessingException e) {
+                    log.warn("THIS IS NOT TO BE MERGED TO MASTER. \nUser token is {}. \nS2S token is {}. \nRequest is {}.",
+                        userToken,
+                        serviceToken,
+                        request.toString());
+                    throw new RuntimeException("our bad");
+                }
                 paymentClient.creditAccountPayment(
                     userToken,
                         serviceToken,
