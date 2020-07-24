@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateDivorceCaseWithinBu
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEARCH_PAGE_KEY;
 
 @Component
 @AllArgsConstructor
@@ -26,14 +25,13 @@ public class ProcessAwaitingPronouncementCasesWorkflow extends DefaultWorkflow<M
     public Map<String, Object> run(String authToken) throws WorkflowException {
 
         return this.execute(
-                new Task[]{
-                    searchAwaitingPronouncementCases,
-                    createBulkCase,
-                    updateDivorceCaseWithinBulk
-                },
-                null,
-                ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
-                ImmutablePair.of(SEARCH_PAGE_KEY, 0)
+            new Task[] {
+                searchAwaitingPronouncementCases,
+                createBulkCase,
+                updateDivorceCaseWithinBulk
+            },
+            null,
+            ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken)
         );
 
     }

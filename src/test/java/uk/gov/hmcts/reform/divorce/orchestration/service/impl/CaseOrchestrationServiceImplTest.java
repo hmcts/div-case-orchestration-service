@@ -27,7 +27,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionForRefusalWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.AosSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseCancelPronouncementEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateDnPronounceDatesWorkflow;
@@ -48,6 +47,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflo
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDecreeAbsoluteWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.PetitionerSolicitorRoleWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.ReceivedServiceAddedDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveDNDocumentsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveDnOutcomeCaseFlagWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLegalAdvisorMakeDecisionFieldsWorkflow;
@@ -79,6 +79,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListi
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshContinueInterceptWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshContinueWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshSetPreviousStateWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.ApplicantDecreeAbsoluteEligibilityWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.DecreeAbsoluteAboutToBeGrantedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.DnSubmittedEmailNotificationWorkflow;
@@ -342,6 +344,12 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private WelshSetPreviousStateWorkflow welshSetPreviousStateWorkflow;
+
+    @Mock
+    private AosOverdueWorkflow aosOverdueWorkflow;
+
+    @Mock
+    private ReceivedServiceAddedDateWorkflow receivedServiceAddedDateWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -1025,7 +1033,7 @@ public class CaseOrchestrationServiceImplTest {
             .build();
 
         when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
-                .thenReturn(DECREE_NISI_TEMPLATE_ID);
+            .thenReturn(DECREE_NISI_TEMPLATE_ID);
 
         classUnderTest
             .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
@@ -1050,7 +1058,7 @@ public class CaseOrchestrationServiceImplTest {
             .build();
 
         when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
-                .thenReturn(DECREE_NISI_TEMPLATE_ID);
+            .thenReturn(DECREE_NISI_TEMPLATE_ID);
 
         classUnderTest
             .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
@@ -1075,10 +1083,10 @@ public class CaseOrchestrationServiceImplTest {
             .build();
 
         when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
-                .thenReturn(DECREE_NISI_TEMPLATE_ID);
+            .thenReturn(DECREE_NISI_TEMPLATE_ID);
 
         when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.COSTS_ORDER_TEMPLATE_ID))
-                .thenReturn(COSTS_ORDER_TEMPLATE_ID);
+            .thenReturn(COSTS_ORDER_TEMPLATE_ID);
 
         classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
@@ -1101,9 +1109,9 @@ public class CaseOrchestrationServiceImplTest {
             .build();
 
         when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.COSTS_ORDER_TEMPLATE_ID))
-                .thenReturn(COSTS_ORDER_TEMPLATE_ID);
+            .thenReturn(COSTS_ORDER_TEMPLATE_ID);
         when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
-                .thenReturn(DECREE_NISI_TEMPLATE_ID);
+            .thenReturn(DECREE_NISI_TEMPLATE_ID);
 
         classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
@@ -1126,10 +1134,10 @@ public class CaseOrchestrationServiceImplTest {
             .build();
 
         when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
-                .thenReturn(DECREE_NISI_TEMPLATE_ID);
+            .thenReturn(DECREE_NISI_TEMPLATE_ID);
 
         when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.COSTS_ORDER_TEMPLATE_ID))
-                .thenReturn(COSTS_ORDER_TEMPLATE_ID);
+            .thenReturn(COSTS_ORDER_TEMPLATE_ID);
 
         classUnderTest
             .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
@@ -1165,7 +1173,7 @@ public class CaseOrchestrationServiceImplTest {
             .build();
 
         when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.COSTS_ORDER_TEMPLATE_ID))
-                .thenReturn(COSTS_ORDER_TEMPLATE_ID);
+            .thenReturn(COSTS_ORDER_TEMPLATE_ID);
 
         when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN,
             COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE))
@@ -1358,11 +1366,11 @@ public class CaseOrchestrationServiceImplTest {
 
 
         when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
-                .thenReturn(DECREE_NISI_TEMPLATE_ID);
+            .thenReturn(DECREE_NISI_TEMPLATE_ID);
 
 
         when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.COSTS_ORDER_TEMPLATE_ID))
-                .thenReturn(COSTS_ORDER_TEMPLATE_ID);
+            .thenReturn(COSTS_ORDER_TEMPLATE_ID);
 
 
         when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN,
@@ -1761,6 +1769,16 @@ public class CaseOrchestrationServiceImplTest {
         assertThat(ccdCallbackResponse.getErrors(), is(errors));
     }
 
+    @Test
+    public void receivedServiceAddedDateShouldCallWorkflow() throws Exception {
+        CcdCallbackRequest input = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder().caseId("21431").build())
+            .build();
+
+        classUnderTest.receivedServiceAddedDate(input);
+
+        verify(receivedServiceAddedDateWorkflow, times(1)).run(input.getCaseDetails());
+    }
 
     @After
     public void tearDown() {
@@ -1768,4 +1786,5 @@ public class CaseOrchestrationServiceImplTest {
         requestPayload = null;
         expectedPayload = null;
     }
+
 }

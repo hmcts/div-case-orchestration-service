@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CopyPetitionerSolicitorDetailsTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CreateAmendPetitionDraftForRefusalFromCaseIdTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseData;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetAmendedCaseIdTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SolicitorSubmitCaseToCCDTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseDataTask;
 
@@ -30,17 +31,20 @@ public class CreateNewAmendedCaseAndSubmitToCCDWorkflow extends DefaultWorkflow<
     private final CopyPetitionerSolicitorDetailsTask copyPetitionerSolicitorDetailsTask;
     private final ValidateCaseDataTask validateCaseDataTask;
     private final SolicitorSubmitCaseToCCDTask solicitorSubmitCaseToCCD;
+    private final SetAmendedCaseIdTask setAmendedCaseIdTask;
 
     @Autowired
     public CreateNewAmendedCaseAndSubmitToCCDWorkflow(
         CreateAmendPetitionDraftForRefusalFromCaseIdTask amendPetitionDraftForRefusalFromCaseId,
         FormatDivorceSessionToCaseData formatDivorceSessionToCaseData, CopyPetitionerSolicitorDetailsTask copyPetitionerSolicitorDetailsTask,
-        ValidateCaseDataTask validateCaseDataTask, SolicitorSubmitCaseToCCDTask solicitorSubmitCaseToCCD) {
+        ValidateCaseDataTask validateCaseDataTask, SolicitorSubmitCaseToCCDTask solicitorSubmitCaseToCCD,
+        SetAmendedCaseIdTask setAmendedCaseIdTask) {
         this.createAmendPetitionDraftForRefusalFromCaseId = amendPetitionDraftForRefusalFromCaseId;
         this.formatDivorceSessionToCaseData = formatDivorceSessionToCaseData;
         this.copyPetitionerSolicitorDetailsTask = copyPetitionerSolicitorDetailsTask;
         this.validateCaseDataTask = validateCaseDataTask;
         this.solicitorSubmitCaseToCCD = solicitorSubmitCaseToCCD;
+        this.setAmendedCaseIdTask = setAmendedCaseIdTask;
     }
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
@@ -50,7 +54,8 @@ public class CreateNewAmendedCaseAndSubmitToCCDWorkflow extends DefaultWorkflow<
                 formatDivorceSessionToCaseData,
                 copyPetitionerSolicitorDetailsTask,
                 validateCaseDataTask,
-                solicitorSubmitCaseToCCD
+                solicitorSubmitCaseToCCD,
+                setAmendedCaseIdTask
             },
             new HashMap<>(),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseDetails.getCaseId()),
@@ -59,6 +64,6 @@ public class CreateNewAmendedCaseAndSubmitToCCDWorkflow extends DefaultWorkflow<
             ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, AMEND_PETITION_FOR_REFUSAL_EVENT)
         );
 
-        return caseDetails.getCaseData();
+        return getContext().getTransientObject(CCD_CASE_DATA);
     }
 }

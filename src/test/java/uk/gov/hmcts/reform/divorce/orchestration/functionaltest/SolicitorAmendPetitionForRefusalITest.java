@@ -18,23 +18,27 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AMENDED_CASE_ID_CCD_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_REFERENCE_CCD_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class SolicitorAmendPetitionForRefusalITest extends MockedFunctionalTest {
     private static final String CASE_ID = "1234567890";
+    private static final String NEW_CASE_ID = "1234";
     private static final String API_URL = "/solicitor-amend-petition-dn-rejection";
-    private static final String PREVIOUS_ID = "Test.Id";
     private static final String CCD_FORMAT_CONTEXT_PATH = "/caseformatter/version/1/to-ccd-format";
     private static final String SOLICITOR_SUBMISSION_CONTEXT_PATH = "/casemaintenance/version/1/solicitor-submit";
     private static final String CMS_AMEND_PETITION_CONTEXT_PATH = String.format(
@@ -70,9 +74,9 @@ public class SolicitorAmendPetitionForRefusalITest extends MockedFunctionalTest 
         throws Exception {
 
         Map<String, Object> draftData = new HashMap<>();
-        draftData.put(PREVIOUS_CASE_ID_JSON_KEY, PREVIOUS_ID);
+        draftData.put(PREVIOUS_CASE_ID_JSON_KEY, CASE_ID);
         Map<String, Object> formattedDraftData = new HashMap<>();
-        formattedDraftData.put(D_8_CASE_REFERENCE, TEST_CASE_ID);
+        formattedDraftData.put(ID, NEW_CASE_ID);
 
         String content = convertObjectToJsonString(draftData);
         String formattedContent = convertObjectToJsonString(formattedDraftData);
@@ -86,7 +90,12 @@ public class SolicitorAmendPetitionForRefusalITest extends MockedFunctionalTest 
             .header(AUTHORIZATION, AUTH_TOKEN)
             .content(convertObjectToJsonString(ccdCallbackRequest))
             .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
+            .andExpect(status().isOk())
+            .andExpect(content().string(
+                hasJsonPath("data" ,
+                    hasJsonPath(AMENDED_CASE_ID_CCD_KEY,
+                        hasJsonPath(CASE_REFERENCE_CCD_KEY, is(NEW_CASE_ID)))
+                )));
     }
 
     private void stubCmsAmendPetitionDraftEndpoint(HttpStatus status, String body) {

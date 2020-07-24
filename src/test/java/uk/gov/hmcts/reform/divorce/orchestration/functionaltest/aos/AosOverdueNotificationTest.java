@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
+package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.aos;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
+import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.service.notify.NotificationClientException;
 

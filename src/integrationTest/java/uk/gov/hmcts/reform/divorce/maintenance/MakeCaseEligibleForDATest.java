@@ -36,7 +36,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_PRONOUNCED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ES_CASE_ID_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.SearchSourceFactory.buildCMSBooleanSearchSource;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport.buildCMSBooleanSearchSource;
 
 @Slf4j
 public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {

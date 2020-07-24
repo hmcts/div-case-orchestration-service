@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.workflows;
+package uk.gov.hmcts.reform.divorce.orchestration.workflows.aos;
 
 import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotification;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.QueueAosSolicitorSubmitTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForDefendedDivorceEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForUndefendedDivorceEmail;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosSubmissionWorkflow;
 
 import java.io.IOException;
 import java.util.HashMap;

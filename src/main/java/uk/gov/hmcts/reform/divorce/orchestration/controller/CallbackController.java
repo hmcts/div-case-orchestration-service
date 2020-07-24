@@ -22,7 +22,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.AosPackOfflineService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
@@ -62,7 +62,7 @@ public class CallbackController {
     private CaseOrchestrationService caseOrchestrationService;
 
     @Autowired
-    private AosPackOfflineService aosPackOfflineService;
+    private AosService aosService;
 
     @PostMapping(path = "/request-clarification-petitioner")
     @ApiOperation(value = "Trigger notification email to request clarification from Petitioner")
@@ -955,7 +955,7 @@ public class CallbackController {
 
         try {
             response = CcdCallbackResponse.builder()
-                .data(aosPackOfflineService.issueAosPackOffline(authToken, caseDetails, party))
+                .data(aosService.issueAosPackOffline(authToken, caseDetails, party))
                 .build();
             log.info("Issued offline AOS pack for case ID: {}", caseDetails.getCaseId());
         } catch (CaseOrchestrationServiceException exception) {
@@ -983,7 +983,7 @@ public class CallbackController {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
 
         try {
-            responseBuilder.data(aosPackOfflineService.processAosPackOfflineAnswers(authorizationToken, caseDetails, party));
+            responseBuilder.data(aosService.processAosPackOfflineAnswers(authorizationToken, caseDetails, party));
             log.info("Processed AOS offline answers for {} of case {}", party.getDescription(), caseDetails.getCaseId());
         } catch (CaseOrchestrationServiceException exception) {
             log.info("Error processing AOS offline answers for {} of case {}", party.getDescription(), caseDetails.getCaseId());
@@ -1072,14 +1072,14 @@ public class CallbackController {
     @PostMapping(path = "/welsh-event-intercept")
     @ApiOperation(value = "Callback to set next event upon receival of translation.")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Callback processed.")})
+        @ApiResponse(code = 200, message = "Callback processed.")})
     public ResponseEntity<CcdCallbackResponse> welshContinue(
-            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
         return ResponseEntity.ok(
-                CcdCallbackResponse.builder()
-                        .data(caseOrchestrationService.welshContinue(ccdCallbackRequest))
-                        .build());
+            CcdCallbackResponse.builder()
+                .data(caseOrchestrationService.welshContinue(ccdCallbackRequest))
+                .build());
     }
 
     @PostMapping(path = "/welshSetPreviousState")
@@ -1103,6 +1103,21 @@ public class CallbackController {
         @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return ResponseEntity.ok(caseOrchestrationService.welshContinueIntercept(ccdCallbackRequest, authorizationToken));
+    }
+
+    @PostMapping(path = "/received-service-added-date", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback to set ReceivedServiceAddedDate field to 'now'")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> receivedServiceAddedDate(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(caseOrchestrationService.receivedServiceAddedDate(ccdCallbackRequest))
+                .build()
+        );
     }
 
     private List<String> getErrors(Map<String, Object> response) {
