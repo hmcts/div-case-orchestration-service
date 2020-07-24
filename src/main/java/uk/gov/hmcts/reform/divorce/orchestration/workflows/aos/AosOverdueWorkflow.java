@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows.aos;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOT_RECEIVED_AOS_EVENT_ID;
 
 @Component
+@Slf4j
 public class AosOverdueWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final Task[] tasks;
@@ -33,6 +35,7 @@ public class AosOverdueWorkflow extends DefaultWorkflow<Map<String, Object>> {
             ImmutablePair.of(CASE_ID_JSON_KEY, caseId),
             ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, NOT_RECEIVED_AOS_EVENT_ID)
         );
+        log.info("Executed workflow tasks for case id {}", caseId);
     }
 
 }
