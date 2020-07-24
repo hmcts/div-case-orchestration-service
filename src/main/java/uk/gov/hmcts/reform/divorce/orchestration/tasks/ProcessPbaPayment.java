@@ -87,9 +87,15 @@ public class ProcessPbaPayment implements Task<Map<String, Object>> {
                 log.info("About to make payment on case Id - "
                         + context.getTransientObject(CASE_ID_JSON_KEY));
 
+                String userToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString();
+                String serviceToken = serviceAuthGenerator.generate();
+                log.warn("THIS IS NOT TO BE MERGED TO MASTER. \nUser token is {}. \nS2S token is {}. \nRequest is {}.",
+                    userToken,
+                    serviceToken,
+                    request.toString());
                 paymentClient.creditAccountPayment(
-                        context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(),
-                        serviceAuthGenerator.generate(),
+                    userToken,
+                        serviceToken,
                         request
                 );
 
