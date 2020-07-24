@@ -102,8 +102,8 @@ case:
       api:
         baseurl: ${CASE_MAINTENANCE_SERVICE_API_BASEURL:http://div-cms-aat.service.core-compute-aat.internal}
   event:
-    awaiting-da-period: 43 #in days
-    da-overdue-period: 365 #in days
+    awaiting-da-period: 43d #in days
+    da-overdue-period: 365d #in days
 
 fees-and-payments:
   service:
