@@ -107,7 +107,7 @@ public class CoERespondentCoverLetterGenerationTaskTest extends BasePayloadSpeci
             .build();
         runCommonVerifications(caseData,
             returnedCaseData,
-            COE_RESPONDENT_LETTER_DOCUMENT_TYPE,
+            COE_RESPONDENT_LETTER_DOCUMENT_TYPE.getValue(),
             CoERespondentCoverLetterGenerationTask.FileMetadata.TEMPLATE_ID,
             expectedDocmosisTemplateVars);
     }

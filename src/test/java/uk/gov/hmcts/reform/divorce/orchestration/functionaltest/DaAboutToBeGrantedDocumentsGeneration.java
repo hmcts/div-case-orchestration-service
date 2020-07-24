@@ -20,6 +20,7 @@ import java.util.Map;
 
 import static java.time.ZoneOffset.UTC;
 import static java.util.Collections.singletonMap;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -39,7 +40,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
@@ -54,6 +54,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class DaAboutToBeGrantedDocumentsGeneration extends MockedFunctionalTest {
 
     private static final String API_URL = "/da-about-to-be-granted";
+    private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
+    private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
+    private static final String DECREE_ABSOLUTE_TEMPLATE_ID = "FL-DIV-GOR-ENG-00062.docx";
+
 
     private static final Map<String, Object> CASE_DATA = ImmutableMap.<String, Object>builder()
         .put(PRONOUNCEMENT_JUDGE_CCD_FIELD, TEST_PRONOUNCEMENT_JUDGE)
@@ -98,10 +102,10 @@ public class DaAboutToBeGrantedDocumentsGeneration extends MockedFunctionalTest 
 
     @Test
     public void assertCallBackFromDaAboutToBeGrantedRequest() throws Exception {
-        stubDocumentGeneratorService(DECREE_ABSOLUTE_TEMPLATE_ID,
+        stubDocumentGeneratorServiceBaseOnContextPath(DECREE_ABSOLUTE_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS),
             DECREE_ABSOLUTE_DOCUMENT_TYPE);
-        when(mockEmailService.sendEmail(anyString(), anyString(), anyMap(), anyString())).thenReturn(null);
+        when(mockEmailService.sendEmail(anyString(), anyString(), anyMap(), anyString(), any())).thenReturn(null);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(CASE_DATA).build();
 

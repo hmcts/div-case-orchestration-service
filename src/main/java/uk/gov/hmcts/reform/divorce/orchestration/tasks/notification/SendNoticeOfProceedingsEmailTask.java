@@ -4,11 +4,13 @@ import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -56,12 +58,14 @@ public class SendNoticeOfProceedingsEmailTask implements Task<Map<String, Object
 
     private Map<String, Object> sendNoticeOfProceedingsToPetitionerSolicitor(TaskContext context, Map<String, Object> payload) throws TaskException {
         String solicitorEmail = getMandatoryStringValue(payload, PETITIONER_SOLICITOR_EMAIL);
+        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(payload);
 
         emailService.sendEmail(
             solicitorEmail,
             EmailTemplateNames.SOL_PETITIONER_NOTICE_OF_PROCEEDINGS.name(),
             getPersonalisationForSolicitor(context, payload),
-            EMAIL_DESCRIPTION + "- Solicitor"
+            EMAIL_DESCRIPTION + "- Solicitor",
+            languagePreference
         );
 
         return payload;
@@ -69,12 +73,14 @@ public class SendNoticeOfProceedingsEmailTask implements Task<Map<String, Object
 
     private Map<String, Object> sendNoticeOfProceedingsToPetitioner(Map<String, Object> payload) {
         String petitionerEmail = getMandatoryStringValue(payload, D_8_PETITIONER_EMAIL);
+        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(payload);
 
         emailService.sendEmail(
             petitionerEmail,
             EmailTemplateNames.PETITIONER_NOTICE_OF_PROCEEDINGS.name(),
             getPersonalisationForPetitioner(payload),
-            EMAIL_DESCRIPTION
+            EMAIL_DESCRIPTION,
+            languagePreference
         );
 
         return payload;

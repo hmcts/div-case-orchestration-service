@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.internal.hamcrest.HamcrestArgumentMatcher;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.TestConstants;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
@@ -36,7 +37,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_FEES_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
@@ -63,7 +64,6 @@ public class SendPetitionerAmendEmailTaskTest {
         incomingPayload.put(D_8_PETITIONER_FIRST_NAME, TestConstants.TEST_USER_FIRST_NAME);
         incomingPayload.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME);
         incomingPayload.put(D_8_PETITIONER_EMAIL, TestConstants.TEST_PETITIONER_EMAIL);
-        incomingPayload.put(D_8_CASE_REFERENCE, TestConstants.TEST_CASE_FAMILY_MAN_ID);
         incomingPayload.put(D_8_INFERRED_RESPONDENT_GENDER, "male");
 
         taskContext = new DefaultTaskContext();
@@ -81,14 +81,103 @@ public class SendPetitionerAmendEmailTaskTest {
             eq(EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name()),
             argThat(new HamcrestArgumentMatcher<>(
                     allOf(
-                        hasEntry(NOTIFICATION_CASE_NUMBER_KEY, TestConstants.TEST_CASE_FAMILY_MAN_ID),
+                        hasEntry(NOTIFICATION_CCD_REFERENCE_KEY, TestConstants.TEST_CASE_ID),
                         hasEntry(NOTIFICATION_PET_NAME, TestConstants.TEST_USER_FIRST_NAME + " " + TestConstants.TEST_USER_LAST_NAME),
                         hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING),
                         hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, RELATION)
                     )
                 )
             ),
-            anyString()
+            anyString(),
+            eq(LanguagePreference.ENGLISH)
+        );
+    }
+
+    @Test
+    public void should_SendPetitionerAmendEmail_whenValidAnd_EmptyString() throws TaskException {
+        incomingPayload.put(D_8_CASE_REFERENCE, "");
+
+        executeTask();
+
+        verify(emailService).sendEmail(
+            eq(TestConstants.TEST_PETITIONER_EMAIL),
+            eq(EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name()),
+            argThat(new HamcrestArgumentMatcher<>(
+                    allOf(
+                        hasEntry(NOTIFICATION_CCD_REFERENCE_KEY, TEST_CASE_ID),
+                        hasEntry(NOTIFICATION_PET_NAME, TestConstants.TEST_USER_FIRST_NAME + " " + TestConstants.TEST_USER_LAST_NAME),
+                        hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING),
+                        hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, RELATION)
+                    )
+                )
+            ),
+            anyString(),
+            eq(LanguagePreference.ENGLISH)
+        );
+    }
+
+    @Test
+    public void should_SendPetitionerAmendEmail_whenValidAnd_CaseReferenceNumberIs_Yes() throws TaskException {
+        executeTask();
+
+        verify(emailService).sendEmail(
+            eq(TestConstants.TEST_PETITIONER_EMAIL),
+            eq(EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name()),
+            argThat(new HamcrestArgumentMatcher<>(
+                    allOf(
+                        hasEntry(NOTIFICATION_CCD_REFERENCE_KEY, TestConstants.TEST_CASE_ID),
+                        hasEntry(NOTIFICATION_PET_NAME, TestConstants.TEST_USER_FIRST_NAME + " " + TestConstants.TEST_USER_LAST_NAME),
+                        hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING),
+                        hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, RELATION)
+                    )
+                )
+            ),
+            anyString(),
+            eq(LanguagePreference.ENGLISH)
+        );
+    }
+
+    @Test
+    public void should_SendPetitionerAmendEmail_whenValidAnd_CaseReferenceNumberIs_NO() throws TaskException {
+        incomingPayload.put(D_8_CASE_REFERENCE, "Not Present");
+        executeTask();
+
+        verify(emailService).sendEmail(
+            eq(TestConstants.TEST_PETITIONER_EMAIL),
+            eq(EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name()),
+            argThat(new HamcrestArgumentMatcher<>(
+                    allOf(
+                        hasEntry(NOTIFICATION_CCD_REFERENCE_KEY, TEST_CASE_ID),
+                        hasEntry(NOTIFICATION_PET_NAME, TestConstants.TEST_USER_FIRST_NAME + " " + TestConstants.TEST_USER_LAST_NAME),
+                        hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING),
+                        hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, RELATION)
+                    )
+                )
+            ),
+            anyString(),
+            eq(LanguagePreference.ENGLISH)
+        );
+    }
+
+    @Test
+    public void should_SendPetitionerAmendEmail_whenValidAnd_Without_D8caseReference() throws TaskException {
+        incomingPayload.remove(D_8_CASE_REFERENCE);
+        executeTask();
+
+        verify(emailService).sendEmail(
+            eq(TestConstants.TEST_PETITIONER_EMAIL),
+            eq(EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name()),
+            argThat(new HamcrestArgumentMatcher<>(
+                    allOf(
+                        hasEntry(NOTIFICATION_CCD_REFERENCE_KEY, TEST_CASE_ID),
+                        hasEntry(NOTIFICATION_PET_NAME, TestConstants.TEST_USER_FIRST_NAME + " " + TestConstants.TEST_USER_LAST_NAME),
+                        hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING),
+                        hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, RELATION)
+                    )
+                )
+            ),
+            anyString(),
+            eq(LanguagePreference.ENGLISH)
         );
     }
 

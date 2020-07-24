@@ -31,6 +31,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -131,8 +132,8 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
-        verify(mockEmailService).sendEmailAndReturnExceptionIfFails(eq(TEST_PETITIONER_EMAIL), anyString(), anyMap(), anyString());
-        verify(mockEmailService).sendEmailAndReturnExceptionIfFails(eq(TEST_RESPONDENT_EMAIL), anyString(), anyMap(), anyString());
+        verify(mockEmailService).sendEmailAndReturnExceptionIfFails(eq(TEST_PETITIONER_EMAIL), anyString(), anyMap(), anyString(),any());
+        verify(mockEmailService).sendEmailAndReturnExceptionIfFails(eq(TEST_RESPONDENT_EMAIL), anyString(), anyMap(), anyString(),any());
     }
 
     @Test
@@ -144,7 +145,8 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         //Newly generated document
         byte[] decreeAbsoluteLetterBytes = new byte[] {1, 2, 3};
         String daGrantedLetterDocumentId =
-            stubDocumentGeneratorService(DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_TEMPLATE_ID, DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_DOCUMENT_TYPE);
+            stubDocumentGeneratorService(DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_TEMPLATE_ID.getValue(),
+                    DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_DOCUMENT_TYPE);
         stubDMStore(daGrantedLetterDocumentId, decreeAbsoluteLetterBytes);
 
         //Existing document
@@ -190,7 +192,7 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         //Newly generated document
         byte[] decreeAbsoluteLetterBytes = new byte[] {1, 2, 3};
         String daGrantedLetterDocumentId = stubDocumentGeneratorService(
-            DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER_TEMPLATE_ID,
+            DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER_TEMPLATE_ID.getValue(),
             DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER_DOCUMENT_TYPE
         );
         stubDMStore(daGrantedLetterDocumentId, decreeAbsoluteLetterBytes);
@@ -233,7 +235,7 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
     @Test
     public void responseShouldContainErrorsIfServiceFails() throws Exception {
         doThrow(new NotificationClientException("This has failed."))
-            .when(mockEmailService).sendEmailAndReturnExceptionIfFails(anyString(), anyString(), anyMap(), anyString());
+            .when(mockEmailService).sendEmailAndReturnExceptionIfFails(anyString(), anyString(), anyMap(), anyString(),any());
 
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(BASE_CASE_DATA)

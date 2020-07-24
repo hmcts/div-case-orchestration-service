@@ -71,7 +71,7 @@ def versions = [
         springfoxSwagger             : '2.9.2',
         springSecurityCrypto         : '5.2.4.RELEASE',
         springSecurityRsa            : '1.0.8.RELEASE',
-        tomcat                       : '9.0.36',
+        tomcat                       : '9.0.37',
         unirest                      : '1.4.9'
 ]
 
@@ -160,6 +160,10 @@ allprojects {
                 entry 'tomcat-embed-core'
                 entry 'tomcat-embed-websocket'
                 entry 'tomcat-embed-el'
+            }
+            //CVE-2019-14900
+            dependencySet(group: 'org.hibernate', version: '5.4.18.Final') {
+                entry 'hibernate-core'
             }
         }
     }

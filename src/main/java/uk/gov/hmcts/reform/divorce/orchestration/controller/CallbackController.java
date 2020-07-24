@@ -16,14 +16,16 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.divorce.model.response.ValidationResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.AosPackOfflineService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -39,12 +41,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_ANSWERS_LINK;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_ANSWERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.GENERATE_AOS_INVITATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_LINK;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ANSWERS_LINK;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_VALIDATION_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
+
 
 @RestController
 @Slf4j
@@ -58,7 +62,7 @@ public class CallbackController {
     private CaseOrchestrationService caseOrchestrationService;
 
     @Autowired
-    private AosPackOfflineService aosPackOfflineService;
+    private AosService aosService;
 
     @PostMapping(path = "/request-clarification-petitioner")
     @ApiOperation(value = "Trigger notification email to request clarification from Petitioner")
@@ -282,7 +286,27 @@ public class CallbackController {
             .build());
     }
 
-    @PostMapping(path = "/confirm-service", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @PostMapping(path = "/default-values",
+        consumes = MediaType.APPLICATION_JSON,
+        produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Default application state")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Default state set",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> defaultValue(
+        @RequestHeader(value = "Authorization", required = false) String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+
+        ccdCallbackRequest.getCaseDetails().getCaseData().computeIfAbsent(LANGUAGE_PREFERENCE_WELSH, value -> NO_VALUE);
+
+        return ResponseEntity.ok(CcdCallbackResponse.builder()
+            .data(ccdCallbackRequest.getCaseDetails().getCaseData())
+            .build());
+    }
+
+    @PostMapping(path = "/confirm-service",
+        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Caseworker confirm personal service from CCD")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback was processed successfully or in case of an error message is attached to the case",
@@ -483,8 +507,7 @@ public class CallbackController {
         try {
             callbackResponseBuilder.data(
                 caseOrchestrationService.processSolDnDoc(
-                    ccdCallbackRequest,
-                    DOCUMENT_TYPE_RESPONDENT_ANSWERS,
+                    ccdCallbackRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateName(),
                     RESP_ANSWERS_LINK
                 )
             );
@@ -849,12 +872,15 @@ public class CallbackController {
         @RequestHeader(AUTHORIZATION_HEADER)
         @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
 
+        if (CaseDataUtils.isWelshLADecisionTranslationRequired(ccdCallbackRequest.getCaseDetails())) {
+            callbackResponseBuilder.data(ccdCallbackRequest.getCaseDetails().getCaseData());
+            return ResponseEntity.ok(callbackResponseBuilder.build());
+        }
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         log.info("DN Decision made - Notifying refusal order. Case ID: {}", caseId);
         caseOrchestrationService.notifyForRefusalOrder(ccdCallbackRequest);
-
-        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
         log.info("DN Decision made - cleaning state for case ID: {}", caseId);
         callbackResponseBuilder.data(caseOrchestrationService.cleanStateCallback(ccdCallbackRequest, authorizationToken));
 
@@ -929,7 +955,7 @@ public class CallbackController {
 
         try {
             response = CcdCallbackResponse.builder()
-                .data(aosPackOfflineService.issueAosPackOffline(authToken, caseDetails, party))
+                .data(aosService.issueAosPackOffline(authToken, caseDetails, party))
                 .build();
             log.info("Issued offline AOS pack for case ID: {}", caseDetails.getCaseId());
         } catch (CaseOrchestrationServiceException exception) {
@@ -957,7 +983,7 @@ public class CallbackController {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
 
         try {
-            responseBuilder.data(aosPackOfflineService.processAosPackOfflineAnswers(authorizationToken, caseDetails, party));
+            responseBuilder.data(aosService.processAosPackOfflineAnswers(authorizationToken, caseDetails, party));
             log.info("Processed AOS offline answers for {} of case {}", party.getDescription(), caseDetails.getCaseId());
         } catch (CaseOrchestrationServiceException exception) {
             log.info("Error processing AOS offline answers for {} of case {}", party.getDescription(), caseDetails.getCaseId());
@@ -1041,6 +1067,57 @@ public class CallbackController {
             CcdCallbackResponse.builder()
                 .data(caseOrchestrationService.sendAmendApplicationEmail(ccdCallbackRequest))
                 .build());
+    }
+
+    @PostMapping(path = "/welsh-event-intercept")
+    @ApiOperation(value = "Callback to set next event upon receival of translation.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.")})
+    public ResponseEntity<CcdCallbackResponse> welshContinue(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(caseOrchestrationService.welshContinue(ccdCallbackRequest))
+                .build());
+    }
+
+    @PostMapping(path = "/welshSetPreviousState")
+    @ApiOperation(value = "Callback to set next event based on previous state.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.")})
+    public ResponseEntity<CcdCallbackResponse> welshSetPreviousState(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        return ResponseEntity.ok(caseOrchestrationService.welshSetPreviousState(ccdCallbackRequest));
+    }
+
+    @PostMapping(path = "/welsh-state-intercept", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback to set next state of current Event based on previous state")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> welshContinueIntercept(
+        @RequestHeader(AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        return ResponseEntity.ok(caseOrchestrationService.welshContinueIntercept(ccdCallbackRequest, authorizationToken));
+    }
+
+    @PostMapping(path = "/received-service-added-date", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback to set ReceivedServiceAddedDate field to 'now'")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> receivedServiceAddedDate(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(caseOrchestrationService.receivedServiceAddedDate(ccdCallbackRequest))
+                .build()
+        );
     }
 
     private List<String> getErrors(Map<String, Object> response) {

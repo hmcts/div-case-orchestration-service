@@ -13,14 +13,14 @@ import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_TEMPLATE_NAME;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
 
 public class DocumentGeneratedTest extends IntegrationTest {
 
     private static final String CCD_CALLBACK_REQUEST = "fixtures/callback/basic-case.json";
     private static final String TEST_CASE_ID = "0123456789012345";
-
+    public static final String MINI_PETITION_TEMPLATE_NAME = "divorceminipetition";
+    
     @Autowired
     private CosApiClient cosApiClient;
 
