@@ -28,11 +28,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_CCD_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerFullName;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getRespondentFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.formatCaseIdToReferenceNumber;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerRepresented;
 
@@ -68,10 +67,10 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
         String caseId = getCaseId(context);
 
         if (isPetitionerRepresented(caseData)) {
-            log.info("CaseID: {} petitioner is represented - email to solicitor", caseId);
+            log.info("CaseID: {} petitioner is represented - email to solicitor.", caseId);
             sendApplicationAmendSubmittedSolicitorEmail(context, caseData);
         } else {
-            log.info("CaseID: {} petitioner NOT represented - email to petitioner", caseId);
+            log.info("CaseID: {} petitioner NOT represented - email to petitioner.", caseId);
             sendApplicationAmendSubmittedEmail(context, caseData);
         }
     }
@@ -95,17 +94,12 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
     private Map<String, String> getSolicitorPersonalisation(TaskContext context, Map<String, Object> caseData) throws TaskException {
         Map<String, String> personalisation = new HashMap<>();
 
-        String petitionerFirstName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME);
-        String petitionerLastName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME);
-        String respondentFirstName = getMandatoryPropertyValueAsString(caseData, RESP_FIRST_NAME_CCD_FIELD);
-        String respondentLastName = getMandatoryPropertyValueAsString(caseData, RESP_LAST_NAME_CCD_FIELD);
-
         String divorceUnitKey = caseData.get(DIVORCE_UNIT_JSON_KEY).toString();
         Court court = taskCommons.getCourt(divorceUnitKey);
         personalisation.put(NOTIFICATION_RDC_NAME_KEY, court.getIdentifiableCentreName());
         personalisation.put(NOTIFICATION_CCD_REFERENCE_KEY, context.getTransientObject(CASE_ID_JSON_KEY));
-        personalisation.put(NOTIFICATION_PET_NAME, petitionerFirstName + " " + petitionerLastName);
-        personalisation.put(NOTIFICATION_RESP_NAME, respondentFirstName + " " + respondentLastName);
+        personalisation.put(NOTIFICATION_PET_NAME, getPetitionerFullName(caseData));
+        personalisation.put(NOTIFICATION_RESP_NAME, getRespondentFullName(caseData));
 
         return personalisation;
     }
@@ -131,7 +125,7 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
         );
 
         log.info(
-            "CaseID: {} email {} successfully sent to petitioner",
+            "CaseID: {} email {} successfully sent to petitioner.",
             getCaseId(context),
             EmailTemplateNames.APPLIC_SUBMISSION_AMEND.name()
         );
@@ -152,7 +146,7 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
         );
 
         log.info(
-            "CaseID: {} email {} successfully sent to solicitor",
+            "CaseID: {} email {} successfully sent to solicitor.",
             getCaseId(context),
             EmailTemplateNames.APPLIC_SUBMISSION_AMEND_SOLICITOR.name()
         );
@@ -169,17 +163,20 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
             EmailTemplateNames.APPLIC_SUBMISSION.name(),
             getPersonalisation(context, caseData),
             SUBMITTED_DESC,
-            languagePreference);
+            languagePreference
+        );
+
+        log.info(
+            "CaseID: {} email {} successfully sent to petitioner.",
+            getCaseId(context),
+            EmailTemplateNames.APPLIC_SUBMISSION.name()
+        );
     }
 
     private void logEvent(TaskContext context, String emailDescription) throws TaskException {
         String caseId = getCaseId(context);
 
-        log.info(
-            "CaseID: {}, {} has been executed.",
-            caseId,
-            emailDescription
-        );
+        log.info("CaseID: {}, {} is going to be sent.", caseId, emailDescription);
     }
 
     private String getPetitionerEmail(Map<String, Object> caseData) {
