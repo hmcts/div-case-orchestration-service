@@ -50,6 +50,8 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
+        log.info("CaseID: {} email to petitioner/solicitor is going to be send.", getCaseId(context));
+
         if (isPetitionAmended(caseData)) {
             sendApplicationAmendSubmittedEmailToCorrectRecipient(context, caseData);
         } else {
@@ -61,10 +63,15 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
         return caseData;
     }
 
-    private void sendApplicationAmendSubmittedEmailToCorrectRecipient(TaskContext context, Map<String, Object> caseData) throws TaskException {
+    private void sendApplicationAmendSubmittedEmailToCorrectRecipient(TaskContext context, Map<String, Object> caseData)
+        throws TaskException {
+        String caseId = getCaseId(context);
+
         if (isPetitionerRepresented(caseData)) {
+            log.info("CaseID: {} petitioner is represented - email to solicitor", caseId);
             sendApplicationAmendSubmittedSolicitorEmail(context, caseData);
         } else {
+            log.info("CaseID: {} petitioner NOT represented - email to petitioner", caseId);
             sendApplicationAmendSubmittedEmail(context, caseData);
         }
     }
@@ -122,6 +129,12 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
             AMEND_DESC,
             languagePreference
         );
+
+        log.info(
+            "CaseID: {} email {} successfully sent to petitioner",
+            getCaseId(context),
+            EmailTemplateNames.APPLIC_SUBMISSION_AMEND.name()
+        );
     }
 
     private void sendApplicationAmendSubmittedSolicitorEmail(TaskContext context, Map<String, Object> caseData) throws TaskException {
@@ -136,6 +149,12 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
             getSolicitorPersonalisation(context, caseData),
             AMEND_SOL_DESC,
             languagePreference
+        );
+
+        log.info(
+            "CaseID: {} email {} successfully sent to solicitor",
+            getCaseId(context),
+            EmailTemplateNames.APPLIC_SUBMISSION_AMEND_SOLICITOR.name()
         );
     }
 
