@@ -35,6 +35,7 @@ import uk.gov.hmcts.reform.divorce.support.IdamUtils;
 import uk.gov.hmcts.reform.divorce.support.cms.CmsClientSupport;
 import uk.gov.hmcts.reform.divorce.support.cos.CosApiClient;
 import uk.gov.hmcts.reform.divorce.support.cos.DraftsSubmissionSupport;
+import uk.gov.hmcts.reform.divorce.util.ElasticSearchTestHelper;
 
 @Lazy
 @Configuration
@@ -55,6 +56,11 @@ public class ServiceContextConfiguration {
     @Bean
     public DraftsSubmissionSupport getDraftSubmissionSupport() {
         return new DraftsSubmissionSupport();
+    }
+
+    @Bean
+    public ElasticSearchTestHelper getElasticSearchTestHelper() {
+        return new ElasticSearchTestHelper(getCmsClientSupport());
     }
 
     @Bean
