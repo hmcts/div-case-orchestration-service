@@ -34,6 +34,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.UNFORMATTED_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
@@ -52,7 +53,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RDC_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RELATIONSHIP_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_CCD_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
@@ -118,6 +121,7 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
         testData.put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
         testData.put(RESP_FIRST_NAME_CCD_FIELD, TEST_RESPONDENT_FIRST_NAME);
         testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME);
+        testData.put(PETITIONER_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
         testData.put(DIVORCE_UNIT_JSON_KEY, TEST_COURT_KEY);
         testData.put(PREVIOUS_CASE_ID_CCD_KEY, Collections.singletonMap(CASE_REFERENCE_KEY, TEST_CASE_ID));
     }
@@ -144,11 +148,11 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
         assertEquals(testData, returnPayload);
 
         verify(emailService).sendEmail(
-                eq(TEST_USER_EMAIL),
-                eq(EmailTemplateNames.APPLIC_SUBMISSION.name()),
-                eq(expectedTemplateVars),
-                any(),
-                eq(LanguagePreference.ENGLISH));
+            eq(TEST_USER_EMAIL),
+            eq(EmailTemplateNames.APPLIC_SUBMISSION.name()),
+            eq(expectedTemplateVars),
+            any(),
+            eq(LanguagePreference.ENGLISH));
     }
 
     @Test
@@ -165,17 +169,17 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
         assertEquals(testData, returnPayload);
 
         verify(emailService).sendEmail(
-                eq(TEST_USER_EMAIL),
-                eq(EmailTemplateNames.APPLIC_SUBMISSION.name()),
-                eq(expectedTemplateVars),
-                any(),
-                eq(LanguagePreference.WELSH));
+            eq(TEST_USER_EMAIL),
+            eq(EmailTemplateNames.APPLIC_SUBMISSION.name()),
+            eq(expectedTemplateVars),
+            any(),
+            eq(LanguagePreference.WELSH));
     }
 
     @Test
     public void shouldCallEmailServiceWithNoCaseIdFormatWhenNoUnableToFormatIdForSubmission() throws TaskException {
         addPetitionerTestData();
-        testData.put(LANGUAGE_PREFERENCE_WELSH,  null);
+        testData.put(LANGUAGE_PREFERENCE_WELSH, null);
         expectedTemplateVars.replace(NOTIFICATION_CCD_REFERENCE_KEY, UNFORMATTED_CASE_ID);
         expectedTemplateVars.put(NOTIFICATION_RDC_NAME_KEY, TEST_COURT_DISPLAY_NAME);
 
@@ -184,11 +188,11 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
         assertEquals(testData, returnPayload);
 
         verify(emailService).sendEmail(
-                eq(TEST_USER_EMAIL),
-                eq(EmailTemplateNames.APPLIC_SUBMISSION.name()),
-                eq(expectedTemplateVars),
-                any(),
-                eq(LanguagePreference.ENGLISH));
+            eq(TEST_USER_EMAIL),
+            eq(EmailTemplateNames.APPLIC_SUBMISSION.name()),
+            eq(expectedTemplateVars),
+            any(),
+            eq(LanguagePreference.ENGLISH));
     }
 
     @Test
@@ -236,5 +240,6 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
         expectedTemplateVars.put(NOTIFICATION_RDC_NAME_KEY, TEST_COURT_DISPLAY_NAME);
         expectedTemplateVars.put(NOTIFICATION_PET_NAME, TEST_PETITIONER_FULL_NAME);
         expectedTemplateVars.put(NOTIFICATION_RESP_NAME, TEST_RESPONDENT_FULL_NAME);
+        expectedTemplateVars.put(NOTIFICATION_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
     }
 }
