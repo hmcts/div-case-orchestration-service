@@ -27,7 +27,7 @@
   "D8MarriageRespondentName": "Resp first last",
   "D8MarriedInUk": "Yes",
   "D8PetitionerContactDetailsConfidential": "keep",
-  "D8PetitionerEmail": null,
+  "D8PetitionerEmail": "petitioner@example.com",
   "D8PetitionerFirstName": "Pet first name",
   "D8PetitionerLastName": "Pet last name",
   "D8PetitionerNameDifferentToMarriageCert": "No",
