@@ -24,4 +24,9 @@ public class CcdCallbackResponse {
     private List<String> errors;
     @ApiModelProperty(value = "Warning messages")
     private List<String> warnings;
+    /**
+     * Populate when you want to update a state of case. Use it instead of STATE_CCD_FIELD and /clean-state endpoint
+     */
+    @ApiModelProperty(value = "State")
+    private String state;
 }

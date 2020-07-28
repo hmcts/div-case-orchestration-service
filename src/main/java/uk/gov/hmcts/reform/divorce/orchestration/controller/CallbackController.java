@@ -842,6 +842,10 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
+    /**
+     * This solution will be removed from CCD, see https://tools.hmcts.net/jira/browse/RDM-6970 for more details
+     */
+    @Deprecated
     @PostMapping(path = "/clean-state")
     @ApiOperation(value = "Clear state from CCD Case Data")
     @ApiResponses(value = {
