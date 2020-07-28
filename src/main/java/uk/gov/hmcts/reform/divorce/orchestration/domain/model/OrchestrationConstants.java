@@ -36,7 +36,11 @@ public class OrchestrationConstants {
     public static final String IS_RESPONDENT = "isRespondent";
 
     // Core Case Data
+    /**
+     * This solution will be removed from CCD, see https://tools.hmcts.net/jira/browse/RDM-6970 for more details
+     */
     public static final String STATE_CCD_FIELD = "state";
+
     public static final String CASE_DETAILS_JSON_KEY = "case_details";
     public static final String CASE_EVENT_DATA_JSON_KEY = "eventData";
     public static final String CASE_EVENT_ID_JSON_KEY = "eventId";
@@ -275,7 +279,7 @@ public class OrchestrationConstants {
     public static final String NOTIFICATION_OPTIONAL_TEXT_NO_VALUE = "no";
     public static final String NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE = "limit date to download certificate";
     public static final String NOTIFICATION_WELSH_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE
-                = "welsh limit date to download certificate";
+        = "welsh limit date to download certificate";
     public static final String NOTIFICATION_PET_NAME = "petitioner name";
     public static final String NOTIFICATION_RESP_NAME = "respondent name";
     public static final String NOTIFICATION_SOLICITOR_NAME = "solicitor name";
