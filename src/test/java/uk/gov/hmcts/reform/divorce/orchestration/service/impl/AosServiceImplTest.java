@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
-import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -12,6 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueEligibilityWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline.AosPackOfflineAnswersWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline.IssueAosPackOfflineWorkflow;
@@ -24,7 +24,7 @@ import static java.util.Collections.singletonMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
-import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.rules.ExpectedException.none;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -50,6 +50,9 @@ public class AosServiceImplTest {
 
     @Mock
     private AosPackOfflineAnswersWorkflow aosPackOfflineAnswersWorkflow;
+
+    @Mock
+    private AosOverdueEligibilityWorkflow aosOverdueEligibilityWorkflow;
 
     @Mock
     private AosOverdueWorkflow aosOverdueWorkflow;
@@ -93,7 +96,7 @@ public class AosServiceImplTest {
     public void shouldNotCallWorkflowForCoRespondentIfReasonIsNotAdultery() throws CaseOrchestrationServiceException {
         expectedException.expect(CaseOrchestrationServiceException.class);
         expectedException.expectMessage(format("Co-respondent AOS pack (offline) cannot be issued for reason \"%s\"",
-                SEPARATION_TWO_YEARS.getValue()));
+            SEPARATION_TWO_YEARS.getValue()));
 
         caseDetails.setCaseData(singletonMap(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS.getValue()));
 
@@ -104,7 +107,7 @@ public class AosServiceImplTest {
     public void shouldThrowServiceException() throws WorkflowException, CaseOrchestrationServiceException {
         when(issueAosPackOfflineWorkflow.run(any(), any(), any())).thenThrow(WorkflowException.class);
         expectedException.expect(CaseOrchestrationServiceException.class);
-        expectedException.expectCause(instanceOf(WorkflowException.class));
+        expectedException.expectCause(isA(WorkflowException.class));
 
         CaseDetails caseDetails = CaseDetails.builder().caseId("123456789").build();
         classUnderTest.issueAosPackOffline(null, caseDetails, RESPONDENT);
@@ -126,29 +129,45 @@ public class AosServiceImplTest {
     public void shouldThrowServiceException_WhenWorkflowExceptionIsThrown() throws WorkflowException, CaseOrchestrationServiceException {
         when(aosPackOfflineAnswersWorkflow.run(any(), any(CaseDetails.class), notNull())).thenThrow(WorkflowException.class);
         expectedException.expect(CaseOrchestrationServiceException.class);
-        expectedException.expectCause(instanceOf(WorkflowException.class));
+        expectedException.expectCause(isA(WorkflowException.class));
 
         CaseDetails caseDetails = CaseDetails.builder().build();
         classUnderTest.processAosPackOfflineAnswers(AUTH_TOKEN, caseDetails, RESPONDENT);
     }
 
-
     @Test
     public void shouldCallAppropriateWorkflowWhenMarkingCasesToBeMovedToAosOverdue() throws WorkflowException, CaseOrchestrationServiceException {
         classUnderTest.markCasesToBeMovedToAosOverdue(AUTH_TOKEN);
 
-        verify(aosOverdueWorkflow).run(AUTH_TOKEN);
+        verify(aosOverdueEligibilityWorkflow).run(AUTH_TOKEN);
     }
 
     @Test
     public void shouldThrowAppropriateException_WhenCatchingWorkflowException() throws WorkflowException, CaseOrchestrationServiceException {
-        doThrow(WorkflowException.class).when(aosOverdueWorkflow).run(AUTH_TOKEN);
+        doThrow(WorkflowException.class).when(aosOverdueEligibilityWorkflow).run(AUTH_TOKEN);
         expectedException.expect(CaseOrchestrationServiceException.class);
-        expectedException.expectCause(CoreMatchers.instanceOf(WorkflowException.class));
+        expectedException.expectCause(isA(WorkflowException.class));
 
         classUnderTest.markCasesToBeMovedToAosOverdue(AUTH_TOKEN);
 
-        verify(aosOverdueWorkflow).run(AUTH_TOKEN);
+        verify(aosOverdueEligibilityWorkflow).run(AUTH_TOKEN);
+    }
+
+    @Test
+    public void shouldCallAppropriateWorkflow_WhenMakingCasesAosOverdue() throws WorkflowException, CaseOrchestrationServiceException {
+        classUnderTest.makeCaseAosOverdue(AUTH_TOKEN, "123");
+
+        verify(aosOverdueWorkflow).run(AUTH_TOKEN, "123");
+    }
+
+    @Test
+    public void shouldThrowAppropriateException_WhenCatchingWorkflowException_AosOverdue()
+        throws WorkflowException, CaseOrchestrationServiceException {
+        doThrow(WorkflowException.class).when(aosOverdueWorkflow).run(AUTH_TOKEN, "123");
+        expectedException.expect(CaseOrchestrationServiceException.class);
+        expectedException.expectCause(isA(WorkflowException.class));
+
+        classUnderTest.makeCaseAosOverdue(AUTH_TOKEN, "123");
     }
 
 }
