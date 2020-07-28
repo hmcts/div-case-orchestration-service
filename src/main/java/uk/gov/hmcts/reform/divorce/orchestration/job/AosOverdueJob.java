@@ -18,6 +18,8 @@ public class AosOverdueJob implements Job {
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
+        log.info("Running {} job", this.getClass().getSimpleName());
+
         try {
             aosService.markCasesToBeMovedToAosOverdue(authUtil.getCaseworkerToken());
         } catch (CaseOrchestrationServiceException e) {
