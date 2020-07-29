@@ -1124,16 +1124,16 @@ public class CallbackController {
     }
 
     @PostMapping(path = "/make-service-decision", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
-    @ApiOperation(value = "Callback to set service decision")
+    @ApiOperation(value = "Callback to set state on service decision")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback processed.",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> makeServiceDecision(
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
-                .data(caseOrchestrationService.makeServiceDecision(ccdCallbackRequest))
+                .state(caseOrchestrationService.makeServiceDecision(ccdCallbackRequest.getCaseDetails()))
                 .build()
         );
     }
