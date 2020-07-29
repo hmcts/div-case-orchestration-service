@@ -22,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.D8_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
@@ -54,6 +55,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RELATIONSHIP_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_CCD_KEY;
@@ -159,7 +161,7 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
     public void shouldCallEmailService_WithServiceCentreName_WhenCaseIsAssignedToServiceCentre() throws TaskException {
         addPetitionerTestData();
         testData.put(DIVORCE_UNIT_JSON_KEY, SERVICE_CENTRE_KEY);
-        testData.put(LANGUAGE_PREFERENCE_WELSH, "Yes");
+        testData.put(LANGUAGE_PREFERENCE_WELSH, YES_VALUE);
 
         expectedTemplateVars.replace(NOTIFICATION_CCD_REFERENCE_KEY, UNFORMATTED_CASE_ID);
         expectedTemplateVars.put(NOTIFICATION_RDC_NAME_KEY, SERVICE_CENTRE_DISPLAY_NAME);
@@ -200,7 +202,7 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
         addPetitionerTestData();
         testData.put(DIVORCE_UNIT_JSON_KEY, SERVICE_CENTRE_KEY);
         testData.put(PREVIOUS_CASE_ID_CCD_KEY, Collections.singletonMap(CASE_REFERENCE_KEY, TEST_CASE_ID));
-        testData.put(LANGUAGE_PREFERENCE_WELSH, "No");
+        testData.put(LANGUAGE_PREFERENCE_WELSH, NO_VALUE);
         expectedTemplateVars.replace(NOTIFICATION_CCD_REFERENCE_KEY, UNFORMATTED_CASE_ID);
         expectedTemplateVars.put(NOTIFICATION_RDC_NAME_KEY, SERVICE_CENTRE_DISPLAY_NAME);
 
@@ -231,6 +233,19 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
             eq(expectedTemplateVars),
             any(),
             eq(LanguagePreference.ENGLISH));
+    }
+
+    @Test
+    public void shouldNotCallEmailService_whenNewCaseAndNoPetitionerEmail() throws TaskException {
+        addPetitionerTestData();
+        testData.remove(D_8_PETITIONER_EMAIL);
+        testData.remove(PREVIOUS_CASE_ID_CCD_KEY);
+
+        Map<String, Object> returnedPayload = sendPetitionerSubmissionNotificationEmailTask.execute(context, testData);
+
+        assertEquals(testData, returnedPayload);
+
+        verifyZeroInteractions(emailService);
     }
 
     private void setupSolicitorDocumentData() {
