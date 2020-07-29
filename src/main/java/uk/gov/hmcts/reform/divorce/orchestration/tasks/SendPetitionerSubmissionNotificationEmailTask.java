@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
@@ -51,17 +52,26 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        log.info("CaseID: {} email to petitioner/solicitor is going to be send.", getCaseId(context));
+        final String caseId = getCaseId(context);
+        log.info("CaseID: {} email to petitioner/solicitor is going to be send.", caseId);
 
         if (isPetitionAmended(caseData)) {
             sendApplicationAmendSubmittedEmailToCorrectRecipient(context, caseData);
+            log.info("CaseID: {} email sent.", caseId);
         } else {
-            sendApplicationSubmittedEmail(context, caseData);
+            if (isPetitionerEmailPopulated(caseData)) {
+                sendApplicationSubmittedEmail(context, caseData);
+                log.info("CaseID: {} email sent.", caseId);
+            } else {
+                log.info("CaseID: {} no email sent. There is no petitioner email in this case", caseId);
+            }
         }
 
-        log.info("CaseID: {} email sent.", getCaseId(context));
-
         return caseData;
+    }
+
+    private boolean isPetitionerEmailPopulated(Map<String, Object> caseData) {
+        return Optional.ofNullable(caseData.get(D_8_PETITIONER_EMAIL)).isPresent();
     }
 
     private void sendApplicationAmendSubmittedEmailToCorrectRecipient(TaskContext context, Map<String, Object> caseData)
