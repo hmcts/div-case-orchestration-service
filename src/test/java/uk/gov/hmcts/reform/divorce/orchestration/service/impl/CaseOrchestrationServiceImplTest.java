@@ -131,6 +131,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_APPLICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
@@ -150,6 +151,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_APPLICATION_GRANTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.ALLOCATED_COURT_KEY;
 
@@ -1693,6 +1696,28 @@ public class CaseOrchestrationServiceImplTest {
             is(CcdCallbackResponse.builder()
                 .errors(Collections.singletonList("ErrorValue"))
                 .build()));
+    }
+
+    @Test
+    public void whenServiceApplicationGranted_IsFalse_thenReturnServiceApplicationNotApproved() {
+        Map<String, Object> payload = ImmutableMap.of(SERVICE_APPLICATION_GRANTED, NO_VALUE);
+
+        CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
+
+        String response = classUnderTest.makeServiceDecision(caseDetails);
+
+        assertThat(response, is(SERVICE_APPLICATION_NOT_APPROVED));
+    }
+
+    @Test
+    public void whenServiceApplicationGranted_IsTrue_thenReturnAwaitingDNApplication() {
+        Map<String, Object> payload = ImmutableMap.of(SERVICE_APPLICATION_GRANTED, YES_VALUE);
+
+        CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
+
+        String response = classUnderTest.makeServiceDecision(caseDetails);
+
+        assertThat(response, is(AWAITING_DN_APPLICATION));
     }
 
     @Test

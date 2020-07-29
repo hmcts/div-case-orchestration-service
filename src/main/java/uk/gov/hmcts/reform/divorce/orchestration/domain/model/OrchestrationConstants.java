@@ -146,6 +146,7 @@ public class OrchestrationConstants {
     public static final String DN_REFUSED_ADMIN_ERROR_OPTION = "adminError";
     public static final String DN_APPLICATION_SUBMITTED_DATE = "DNApplicationSubmittedDate";
     public static final String DN_REFUSAL_DRAFT = "DNRefusalDraft";
+    public static final String SERVICE_APPLICATION_GRANTED = "serviceApplicationGranted";
 
     // CCD Events
     public static final String DN_RECEIVED = "dnReceived";
@@ -253,6 +254,9 @@ public class OrchestrationConstants {
     // Case state
     public static final String AWAITING_PAYMENT = "AwaitingPayment";
     public static final String AWAITING_HWF_DECISION = "AwaitingHWFDecision";
+    public static final String AWAITING_DN_APPLICATION = "AwaitingDNApplication";
+    public static final String SERVICE_APPLICATION_NOT_APPROVED = "ServiceApplicationNotApproved";
+
 
     // Notification
     public static final String NOTIFICATION_EMAIL = "email address";
