@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_REFERENCE_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.VALUE_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.WELSH_LA_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADDITIONAL_INFRORMATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_ADDITIONAL_INFO;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_ADDITIONAL_INFO_WELSH;
@@ -48,7 +49,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.TYPE_COSTS_DECISION_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.WELSH_LA_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsObject;
@@ -185,7 +185,7 @@ public class CaseDataUtils {
     }
 
     public static LanguagePreference getLanguagePreference(Map<String, Object> caseData) {
-        return  Optional.ofNullable(caseData)
+        return Optional.ofNullable(caseData)
             .map(data -> data.get(LANGUAGE_PREFERENCE_WELSH))
             .filter(Objects::nonNull)
             .map(String.class::cast)
@@ -194,7 +194,7 @@ public class CaseDataUtils {
             .orElse(LanguagePreference.ENGLISH);
     }
 
-    public static Map<String, Object> removeDocumentsByDocumentType(Map<String, Object> caseData, String ...documentTypes) {
+    public static Map<String, Object> removeDocumentsByDocumentType(Map<String, Object> caseData, String... documentTypes) {
         List<?> generatedDocuments = Optional.ofNullable(caseData.get(D8DOCUMENTS_GENERATED))
             .map(i -> (List<?>) i)
             .orElse(new ArrayList<>());

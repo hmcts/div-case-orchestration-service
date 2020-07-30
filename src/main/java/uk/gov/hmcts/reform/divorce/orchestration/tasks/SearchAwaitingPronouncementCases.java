@@ -21,8 +21,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.SEARCH_RESULT_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PRONOUNCEMENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
@@ -34,7 +34,7 @@ public class SearchAwaitingPronouncementCases implements Task<Map<String, Object
 
     private static final String DATA = "data.%s";
     private static final String HEARING_DATE = String.format(DATA, DATETIME_OF_HEARING_CCD_FIELD);
-    private static final String BULK_LISTING_CASE_ID = String.format(DATA,BULK_LISTING_CASE_ID_FIELD);
+    private static final String BULK_LISTING_CASE_ID = String.format(DATA, BULK_LISTING_CASE_ID_FIELD);
     private static final String IS_DN_OUTCOME_CASE = String.format(DATA, DN_OUTCOME_FLAG_CCD_FIELD);
     private static final String DN_DECISION_DATE_DATA_FIELD = String.format(DATA, DN_DECISION_DATE_FIELD);
 
@@ -70,7 +70,7 @@ public class SearchAwaitingPronouncementCases implements Task<Map<String, Object
                 .mustNot(hearingDate)
                 .mustNot(bulkListingCaseId);
 
-            SearchSourceBuilder sourceBuilder =  SearchSourceBuilder
+            SearchSourceBuilder sourceBuilder = SearchSourceBuilder
                 .searchSource()
                 .sort(DN_DECISION_DATE_DATA_FIELD, SortOrder.ASC)
                 .query(query)
@@ -90,7 +90,7 @@ public class SearchAwaitingPronouncementCases implements Task<Map<String, Object
                 .collect(Collectors.toList()));
 
             result.getCases().stream()
-                    .forEach(caseDetails -> processedCaseIds.add(caseDetails.getCaseId()));
+                .forEach(caseDetails -> processedCaseIds.add(caseDetails.getCaseId()));
 
             if (!result.getCases().isEmpty()) {
                 searchResultList.add(result);

@@ -30,9 +30,9 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_COMPLETED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BO_WELSH_DN_RECEIVED_AOS_COMPLETED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BO_WELSH_DN_RECEIVED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BO_WELSH_DN_RECEIVED_REVIEW;
@@ -89,7 +89,7 @@ public class SubmitDnCaseUTest {
             .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(DN_RECEIVED), eq(caseDetails.getCaseData()));
 
         verify(welshNextEventUtil).storeNextEventAndReturnStopEvent(isWelsh.capture(), eq(caseDetails.getCaseData()),
-            eq(DN_RECEIVED),  eq(BO_WELSH_DN_RECEIVED_EVENT_ID), eq(BO_WELSH_DN_RECEIVED_REVIEW));
+            eq(DN_RECEIVED), eq(BO_WELSH_DN_RECEIVED_EVENT_ID), eq(BO_WELSH_DN_RECEIVED_REVIEW));
         assertThat(isWelsh.getValue().getAsBoolean(), equalTo(false));
     }
 
@@ -110,7 +110,7 @@ public class SubmitDnCaseUTest {
             .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(DN_RECEIVED_AOS_COMPLETE), eq(caseDetails.getCaseData()));
 
         verify(welshNextEventUtil).storeNextEventAndReturnStopEvent(isWelsh.capture(), eq(caseDetails.getCaseData()),
-            eq(DN_RECEIVED_AOS_COMPLETE),  eq(BO_WELSH_DN_RECEIVED_AOS_COMPLETED_EVENT_ID), eq(BO_WELSH_DN_RECEIVED_REVIEW));
+            eq(DN_RECEIVED_AOS_COMPLETE), eq(BO_WELSH_DN_RECEIVED_AOS_COMPLETED_EVENT_ID), eq(BO_WELSH_DN_RECEIVED_REVIEW));
         assertThat(isWelsh.getValue().getAsBoolean(), equalTo(false));
     }
 
@@ -131,13 +131,13 @@ public class SubmitDnCaseUTest {
             .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(DN_RECEIVED_CLARIFICATION), eq(caseDetails.getCaseData()));
 
         verify(welshNextEventUtil).storeNextEventAndReturnStopEvent(isWelsh.capture(), eq(caseDetails.getCaseData()),
-            eq(DN_RECEIVED_CLARIFICATION),  eq(BO_WELSH_SUBMIT_DN_CLARIFICATION_EVENT_ID), eq(BO_WELSH_DN_RECEIVED_REVIEW));
+            eq(DN_RECEIVED_CLARIFICATION), eq(BO_WELSH_SUBMIT_DN_CLARIFICATION_EVENT_ID), eq(BO_WELSH_DN_RECEIVED_REVIEW));
         assertThat(isWelsh.getValue().getAsBoolean(), equalTo(false));
     }
 
     @Test
     public void givenDnSubmitAndAwaitingClarification_whenExecute_thenProceedAsExpected_welsh() {
-        final Map<String, Object> divorceSession =  new HashMap<>();
+        final Map<String, Object> divorceSession = new HashMap<>();
         divorceSession.put(LANGUAGE_PREFERENCE_WELSH, YES_VALUE);
         CaseDetails caseDetails = CaseDetails.builder().caseData(divorceSession).build();
 
@@ -153,13 +153,13 @@ public class SubmitDnCaseUTest {
             .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(BO_WELSH_DN_RECEIVED_REVIEW), eq(expectedData));
 
         verify(welshNextEventUtil).storeNextEventAndReturnStopEvent(isWelsh.capture(), eq(caseDetails.getCaseData()),
-            eq(DN_RECEIVED_CLARIFICATION),  eq(BO_WELSH_SUBMIT_DN_CLARIFICATION_EVENT_ID), eq(BO_WELSH_DN_RECEIVED_REVIEW));
+            eq(DN_RECEIVED_CLARIFICATION), eq(BO_WELSH_SUBMIT_DN_CLARIFICATION_EVENT_ID), eq(BO_WELSH_DN_RECEIVED_REVIEW));
         assertThat(isWelsh.getValue().getAsBoolean(), equalTo(true));
     }
 
     @Test
     public void givenDnSubmitAndAosComplete_whenExecute_thenProceedAsExpected_welsh() {
-        final Map<String, Object> divorceSession =  new HashMap<>();
+        final Map<String, Object> divorceSession = new HashMap<>();
         divorceSession.put(LANGUAGE_PREFERENCE_WELSH, YES_VALUE);
         CaseDetails caseDetails = CaseDetails.builder().caseData(divorceSession).build();
 
@@ -175,13 +175,13 @@ public class SubmitDnCaseUTest {
             .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(BO_WELSH_DN_RECEIVED_REVIEW), eq(expectedData));
 
         verify(welshNextEventUtil).storeNextEventAndReturnStopEvent(isWelsh.capture(), eq(caseDetails.getCaseData()),
-            eq(DN_RECEIVED_AOS_COMPLETE),  eq(BO_WELSH_DN_RECEIVED_AOS_COMPLETED_EVENT_ID), eq(BO_WELSH_DN_RECEIVED_REVIEW));
+            eq(DN_RECEIVED_AOS_COMPLETE), eq(BO_WELSH_DN_RECEIVED_AOS_COMPLETED_EVENT_ID), eq(BO_WELSH_DN_RECEIVED_REVIEW));
         assertThat(isWelsh.getValue().getAsBoolean(), equalTo(true));
     }
 
     @Test
     public void givenDnSubmitAndAosNotComplete_whenExecute_thenProceedAsExpected_welsh() {
-        final Map<String, Object> divorceSession =  new HashMap<>();
+        final Map<String, Object> divorceSession = new HashMap<>();
         divorceSession.put(LANGUAGE_PREFERENCE_WELSH, YES_VALUE);
         CaseDetails caseDetails = CaseDetails.builder().caseData(divorceSession).build();
 
@@ -197,7 +197,7 @@ public class SubmitDnCaseUTest {
             .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(BO_WELSH_DN_RECEIVED_REVIEW), eq(expectedData));
 
         verify(welshNextEventUtil).storeNextEventAndReturnStopEvent(isWelsh.capture(), eq(caseDetails.getCaseData()),
-            eq(DN_RECEIVED),  eq(BO_WELSH_DN_RECEIVED_EVENT_ID), eq(BO_WELSH_DN_RECEIVED_REVIEW));
+            eq(DN_RECEIVED), eq(BO_WELSH_DN_RECEIVED_EVENT_ID), eq(BO_WELSH_DN_RECEIVED_REVIEW));
         assertThat(isWelsh.getValue().getAsBoolean(), equalTo(true));
     }
 }

@@ -31,10 +31,10 @@ public abstract class DateFieldSetupTask implements Task<Map<String, Object>> {
         return payload;
     }
 
-    abstract protected String getFieldName();
+    protected abstract String getFieldName();
 
     /**
-     * Overwrite if you need other date than default CCD date format of today
+     * Overwrite if you need other date than default CCD date format of today.
      */
     protected String getFormattedDate() {
         return getFormattedStringDateForTodayAsDefault();
