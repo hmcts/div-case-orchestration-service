@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
@@ -14,7 +15,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
@@ -71,7 +71,8 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
     }
 
     private boolean isPetitionerEmailPopulated(Map<String, Object> caseData) {
-        return Optional.ofNullable(caseData.get(D_8_PETITIONER_EMAIL)).isPresent();
+        String email = (String) caseData.get(D_8_PETITIONER_EMAIL);
+        return StringUtils.isNotEmpty(email);
     }
 
     private void sendApplicationAmendSubmittedEmailToCorrectRecipient(TaskContext context, Map<String, Object> caseData)
