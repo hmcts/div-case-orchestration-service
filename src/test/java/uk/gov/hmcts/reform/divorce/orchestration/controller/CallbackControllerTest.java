@@ -1408,6 +1408,8 @@ public class CallbackControllerTest {
 
     @Test
     public void testMakeServiceDecisionStateChange() throws WorkflowException {
+        when(caseOrchestrationService.makeServiceDecision(any()))
+            .thenReturn(CcdCallbackResponse.builder().build());
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
