@@ -45,7 +45,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDecreeAbsoluteWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeServiceDecisionDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.PetitionerSolicitorRoleWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ReceivedServiceAddedDateWorkflow;
@@ -74,7 +73,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDaCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitDnCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitRespondentAosCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateDNPronouncedCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListingWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshContinueInterceptWorkflow;
@@ -131,8 +129,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_APPLICATION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PAYMENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
@@ -151,8 +148,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_APPLICATION_GRANTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.ALLOCATED_COURT_KEY;
 
@@ -277,9 +272,6 @@ public class CaseOrchestrationServiceImplTest {
     private BulkCaseUpdateDnPronounceDatesWorkflow bulkCaseUpdateDnPronounceDatesWorkflow;
 
     @Mock
-    private UpdateDNPronouncedCasesWorkflow updateDNPronouncedCasesWorkflow;
-
-    @Mock
     private CleanStatusCallbackWorkflow cleanStatusCallbackWorkflow;
 
     @Mock
@@ -350,9 +342,6 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private ReceivedServiceAddedDateWorkflow receivedServiceAddedDateWorkflow;
-
-    @Mock
-    private MakeServiceDecisionDateWorkflow makeServiceDecisionDateWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -1696,30 +1685,6 @@ public class CaseOrchestrationServiceImplTest {
             is(CcdCallbackResponse.builder()
                 .errors(Collections.singletonList("ErrorValue"))
                 .build()));
-    }
-
-    @Test
-    public void whenServiceApplicationGranted_IsFalse_thenReturnServiceApplicationNotApproved() throws WorkflowException {
-        Map<String, Object> payload = ImmutableMap.of(SERVICE_APPLICATION_GRANTED, NO_VALUE);
-        CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
-
-        when(makeServiceDecisionDateWorkflow.run(caseDetails)).thenReturn(payload);
-
-        CcdCallbackResponse response = classUnderTest.makeServiceDecision(caseDetails);
-
-        assertThat(response.getState(), is(SERVICE_APPLICATION_NOT_APPROVED));
-    }
-
-    @Test
-    public void whenServiceApplicationGranted_IsTrue_thenReturnAwaitingDNApplication() throws WorkflowException {
-        Map<String, Object> payload = ImmutableMap.of(SERVICE_APPLICATION_GRANTED, YES_VALUE);
-        CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
-
-        when(makeServiceDecisionDateWorkflow.run(caseDetails)).thenReturn(payload);
-
-        CcdCallbackResponse response = classUnderTest.makeServiceDecision(caseDetails);
-
-        assertThat(response.getState(), is(AWAITING_DN_APPLICATION));
     }
 
     @Test

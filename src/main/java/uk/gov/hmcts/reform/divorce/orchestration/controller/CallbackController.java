@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.Collections;
@@ -60,6 +61,9 @@ public class CallbackController {
 
     @Autowired
     private CaseOrchestrationService caseOrchestrationService;
+
+    @Autowired
+    private ServiceJourneyService serviceJourneyService;
 
     @Autowired
     private AosService aosService;
@@ -1132,7 +1136,7 @@ public class CallbackController {
     public ResponseEntity<CcdCallbackResponse> makeServiceDecision(
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
-        return ResponseEntity.ok(caseOrchestrationService.makeServiceDecision(ccdCallbackRequest.getCaseDetails()));
+        return ResponseEntity.ok(serviceJourneyService.makeServiceDecision(ccdCallbackRequest.getCaseDetails()));
     }
 
     private List<String> getErrors(Map<String, Object> response) {

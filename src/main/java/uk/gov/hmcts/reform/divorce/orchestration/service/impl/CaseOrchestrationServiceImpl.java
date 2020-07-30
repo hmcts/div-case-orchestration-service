@@ -98,8 +98,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_APPLICATION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PAYMENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DN_APPLICATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_DATA_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
@@ -109,7 +109,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_APPLICATION_GRANTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_APPLICATION_NOT_APPROVED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isPetitionerClaimingCosts;
 
@@ -929,20 +929,5 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> receivedServiceAddedDate(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return receivedServiceAddedDateWorkflow.run(ccdCallbackRequest.getCaseDetails());
-    }
-
-    @Override
-    public CcdCallbackResponse makeServiceDecision(CaseDetails caseDetails) throws WorkflowException {
-        CcdCallbackResponse.CcdCallbackResponseBuilder builder = CcdCallbackResponse.builder();
-
-        if (YES_VALUE.equalsIgnoreCase((String) caseDetails.getCaseData().get(SERVICE_APPLICATION_GRANTED))) {
-            builder.state(AWAITING_DN_APPLICATION);
-        } else {
-            builder.state(SERVICE_APPLICATION_NOT_APPROVED);
-        }
-
-        builder.data(makeServiceDecisionDateWorkflow.run(caseDetails));
-
-        return builder.build();
     }
 }

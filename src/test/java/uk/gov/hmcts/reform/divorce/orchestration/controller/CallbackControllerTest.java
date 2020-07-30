@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,7 +55,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.DUMMY_CASE_DATA;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_APPLICATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DN_APPLICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_OUTCOME_FLAG_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
@@ -72,6 +73,9 @@ public class CallbackControllerTest {
 
     @Mock
     private AosService aosService;
+
+    @Mock
+    private ServiceJourneyService serviceJourneyService;
 
     @InjectMocks
     private CallbackController classUnderTest;
@@ -1408,7 +1412,7 @@ public class CallbackControllerTest {
 
     @Test
     public void testMakeServiceDecisionStateChange() throws WorkflowException {
-        when(caseOrchestrationService.makeServiceDecision(any()))
+        when(serviceJourneyService.makeServiceDecision(any()))
             .thenReturn(CcdCallbackResponse.builder().build());
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()

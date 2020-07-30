@@ -251,13 +251,6 @@ public class OrchestrationConstants {
     public static final String WELSH_LIMIT_DATE_TO_CONTACT_COURT = "welsh limit date to contact court";
     public static final Period PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT = Period.ofWeeks(2);
 
-    // Case state
-    public static final String AWAITING_PAYMENT = "AwaitingPayment";
-    public static final String AWAITING_HWF_DECISION = "AwaitingHWFDecision";
-    public static final String AWAITING_DN_APPLICATION = "AwaitingDNApplication";
-    public static final String SERVICE_APPLICATION_NOT_APPROVED = "ServiceApplicationNotApproved";
-
-
     // Notification
     public static final String NOTIFICATION_EMAIL = "email address";
     public static final String NOTIFICATION_SEND_EMAIL = "send_email";
