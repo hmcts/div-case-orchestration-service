@@ -1133,6 +1133,7 @@ public class CallbackController {
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
+                .data(ccdCallbackRequest.getCaseDetails().getCaseData())
                 .state(caseOrchestrationService.makeServiceDecision(ccdCallbackRequest.getCaseDetails()))
                 .build()
         );
