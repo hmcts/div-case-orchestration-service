@@ -1130,13 +1130,9 @@ public class CallbackController {
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> makeServiceDecision(
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
-        return ResponseEntity.ok(
-            CcdCallbackResponse.builder()
-                .data(ccdCallbackRequest.getCaseDetails().getCaseData())
-                .state(caseOrchestrationService.makeServiceDecision(ccdCallbackRequest.getCaseDetails()))
-                .build()
-        );
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        return ResponseEntity.ok(caseOrchestrationService.makeServiceDecision(ccdCallbackRequest.getCaseDetails()));
     }
 
     private List<String> getErrors(Map<String, Object> response) {

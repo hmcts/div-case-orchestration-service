@@ -45,6 +45,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDecreeAbsoluteWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeServiceDecisionDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.PetitionerSolicitorRoleWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ReceivedServiceAddedDateWorkflow;
@@ -79,7 +80,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateBulkCaseListi
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshContinueInterceptWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshContinueWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshSetPreviousStateWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueEligibilityWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.ApplicantDecreeAbsoluteEligibilityWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.DecreeAbsoluteAboutToBeGrantedWorkflow;
@@ -349,10 +349,10 @@ public class CaseOrchestrationServiceImplTest {
     private WelshSetPreviousStateWorkflow welshSetPreviousStateWorkflow;
 
     @Mock
-    private AosOverdueEligibilityWorkflow aosOverdueEligibilityWorkflow;
+    private ReceivedServiceAddedDateWorkflow receivedServiceAddedDateWorkflow;
 
     @Mock
-    private ReceivedServiceAddedDateWorkflow receivedServiceAddedDateWorkflow;
+    private MakeServiceDecisionDateWorkflow makeServiceDecisionDateWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -1699,25 +1699,27 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void whenServiceApplicationGranted_IsFalse_thenReturnServiceApplicationNotApproved() {
+    public void whenServiceApplicationGranted_IsFalse_thenReturnServiceApplicationNotApproved() throws WorkflowException {
         Map<String, Object> payload = ImmutableMap.of(SERVICE_APPLICATION_GRANTED, NO_VALUE);
-
         CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
 
-        String response = classUnderTest.makeServiceDecision(caseDetails);
+        when(makeServiceDecisionDateWorkflow.run(caseDetails)).thenReturn(payload);
 
-        assertThat(response, is(SERVICE_APPLICATION_NOT_APPROVED));
+        CcdCallbackResponse response = classUnderTest.makeServiceDecision(caseDetails);
+
+        assertThat(response.getState(), is(SERVICE_APPLICATION_NOT_APPROVED));
     }
 
     @Test
-    public void whenServiceApplicationGranted_IsTrue_thenReturnAwaitingDNApplication() {
+    public void whenServiceApplicationGranted_IsTrue_thenReturnAwaitingDNApplication() throws WorkflowException {
         Map<String, Object> payload = ImmutableMap.of(SERVICE_APPLICATION_GRANTED, YES_VALUE);
-
         CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
 
-        String response = classUnderTest.makeServiceDecision(caseDetails);
+        when(makeServiceDecisionDateWorkflow.run(caseDetails)).thenReturn(payload);
 
-        assertThat(response, is(AWAITING_DN_APPLICATION));
+        CcdCallbackResponse response = classUnderTest.makeServiceDecision(caseDetails);
+
+        assertThat(response.getState(), is(AWAITING_DN_APPLICATION));
     }
 
     @Test

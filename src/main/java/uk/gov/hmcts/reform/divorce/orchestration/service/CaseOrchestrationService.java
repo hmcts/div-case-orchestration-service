@@ -160,7 +160,7 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> receivedServiceAddedDate(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
-    String makeServiceDecision(CaseDetails caseDetails);
+    CcdCallbackResponse makeServiceDecision(CaseDetails caseDetails) throws WorkflowException;
 
     Map<String, Object> notifyForRefusalOrder(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 

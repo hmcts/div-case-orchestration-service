@@ -42,6 +42,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDecreeAbsoluteWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeServiceDecisionDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.PetitionerSolicitorRoleWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ReceivedServiceAddedDateWorkflow;
@@ -190,6 +191,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final CreateNewAmendedCaseAndSubmitToCCDWorkflow createNewAmendedCaseAndSubmitToCCDWorkflow;
     private final DocumentTemplateService documentTemplateService;
     private final ReceivedServiceAddedDateWorkflow receivedServiceAddedDateWorkflow;
+    private final MakeServiceDecisionDateWorkflow makeServiceDecisionDateWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -885,14 +887,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public String makeServiceDecision(CaseDetails caseDetails) {
-        if (YES_VALUE.equalsIgnoreCase((String) caseDetails.getCaseData().get(SERVICE_APPLICATION_GRANTED))) {
-            return AWAITING_DN_APPLICATION;
-        }
-        return SERVICE_APPLICATION_NOT_APPROVED;
-    }
-
-    @Override
     public CcdCallbackResponse welshContinueIntercept(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
         Map<String, Object> response = welshContinueInterceptWorkflow.run(ccdCallbackRequest, authToken);
         log.info("welshContinueIntercept completed with CASE ID: {}.",
@@ -935,5 +929,20 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> receivedServiceAddedDate(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return receivedServiceAddedDateWorkflow.run(ccdCallbackRequest.getCaseDetails());
+    }
+
+    @Override
+    public CcdCallbackResponse makeServiceDecision(CaseDetails caseDetails) throws WorkflowException {
+        CcdCallbackResponse.CcdCallbackResponseBuilder builder = CcdCallbackResponse.builder();
+
+        if (YES_VALUE.equalsIgnoreCase((String) caseDetails.getCaseData().get(SERVICE_APPLICATION_GRANTED))) {
+            builder.state(AWAITING_DN_APPLICATION);
+        } else {
+            builder.state(SERVICE_APPLICATION_NOT_APPROVED);
+        }
+
+        builder.data(makeServiceDecisionDateWorkflow.run(caseDetails));
+
+        return builder.build();
     }
 }

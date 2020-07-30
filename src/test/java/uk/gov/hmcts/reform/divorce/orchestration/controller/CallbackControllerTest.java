@@ -1407,7 +1407,7 @@ public class CallbackControllerTest {
     }
 
     @Test
-    public void testMakeServiceDecisionStateChange() {
+    public void testMakeServiceDecisionStateChange() throws WorkflowException {
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -1420,6 +1420,4 @@ public class CallbackControllerTest {
         assertThat(response.getStatusCode(), equalTo(OK));
         assertThat(response.getBody().getErrors(), is(nullValue()));
     }
-
-
 }
