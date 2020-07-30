@@ -925,9 +925,4 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                 .build();
         }
     }
-
-    @Override
-    public Map<String, Object> receivedServiceAddedDate(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        return receivedServiceAddedDateWorkflow.run(ccdCallbackRequest.getCaseDetails());
-    }
 }

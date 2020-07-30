@@ -1122,7 +1122,7 @@ public class CallbackController {
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
-                .data(caseOrchestrationService.receivedServiceAddedDate(ccdCallbackRequest))
+                .data(serviceJourneyService.receivedServiceAddedDate(ccdCallbackRequest))
                 .build()
         );
     }

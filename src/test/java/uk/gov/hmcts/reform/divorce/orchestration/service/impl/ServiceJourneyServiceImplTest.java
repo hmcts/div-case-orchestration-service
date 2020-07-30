@@ -8,14 +8,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeServiceDecisionDateWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.ReceivedServiceAddedDateWorkflow;
 
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DN_APPLICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
@@ -29,6 +32,9 @@ public class ServiceJourneyServiceImplTest extends TestCase {
     @Mock
     private MakeServiceDecisionDateWorkflow makeServiceDecisionDateWorkflow;
 
+    @Mock
+    private ReceivedServiceAddedDateWorkflow receivedServiceAddedDateWorkflow;
+
     @InjectMocks
     private ServiceJourneyServiceImpl classUnderTest;
 
@@ -40,6 +46,17 @@ public class ServiceJourneyServiceImplTest extends TestCase {
     @Test
     public void whenServiceApplicationNotGrantedThenReturnAwaitingDNApplication() throws WorkflowException {
         runTestMakeServiceDecision(YES_VALUE, AWAITING_DN_APPLICATION);
+    }
+
+    @Test
+    public void receivedServiceAddedDateShouldCallWorkflow() throws Exception {
+        CcdCallbackRequest input = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder().caseId("21431").build())
+            .build();
+
+        classUnderTest.receivedServiceAddedDate(input);
+
+        verify(receivedServiceAddedDateWorkflow).run(input.getCaseDetails());
     }
 
     protected void runTestMakeServiceDecision(String decision, String expectedState)

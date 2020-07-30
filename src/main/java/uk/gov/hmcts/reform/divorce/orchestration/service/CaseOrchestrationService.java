@@ -158,8 +158,6 @@ public interface CaseOrchestrationService {
 
     CcdCallbackResponse welshContinueIntercept(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
-    Map<String, Object> receivedServiceAddedDate(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
-
     Map<String, Object> notifyForRefusalOrder(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
     Map<String, Object> removeDNGrantedDocuments(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
