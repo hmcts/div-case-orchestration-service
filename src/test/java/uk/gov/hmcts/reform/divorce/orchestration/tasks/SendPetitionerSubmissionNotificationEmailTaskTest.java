@@ -236,9 +236,22 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
     }
 
     @Test
-    public void shouldNotCallEmailService_whenNewCaseAndNoPetitionerEmail() throws TaskException {
+    public void shouldNotCallEmailService_whenNewCaseAndPetitionerEmailDoesntExist() throws TaskException {
         addPetitionerTestData();
-        testData.remove(D_8_PETITIONER_EMAIL);
+        testData.put(D_8_PETITIONER_EMAIL, "");
+        testData.remove(PREVIOUS_CASE_ID_CCD_KEY);
+
+        Map<String, Object> returnedPayload = sendPetitionerSubmissionNotificationEmailTask.execute(context, testData);
+
+        assertEquals(testData, returnedPayload);
+
+        verifyZeroInteractions(emailService);
+    }
+
+    @Test
+    public void shouldNotCallEmailService_whenNewCaseAndNoPetitionerEmailIsEmpty() throws TaskException {
+        addPetitionerTestData();
+        testData.put(D_8_PETITIONER_EMAIL, "");
         testData.remove(PREVIOUS_CASE_ID_CCD_KEY);
 
         Map<String, Object> returnedPayload = sendPetitionerSubmissionNotificationEmailTask.execute(context, testData);
