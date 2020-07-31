@@ -31,7 +31,7 @@ public class MakeServiceDecisionDateTaskTest extends TestCase {
         assertThat(returnedCaseData.isEmpty(), is(false));
         assertSame(returnedCaseData, caseData);
         assertThat(
-            returnedCaseData.get(MakeServiceDecisionDateTask.SERVICE_APPLICATION_DECISION_DATE),
+            returnedCaseData.get(makeServiceDecisionDateTask.getFieldName()),
             is(DateUtils.formatDateFromLocalDate(LocalDate.now()))
         );
     }
