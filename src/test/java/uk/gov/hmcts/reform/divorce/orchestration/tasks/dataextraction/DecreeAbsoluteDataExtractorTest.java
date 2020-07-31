@@ -14,7 +14,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_GRANTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.DIVORCE_GRANTED;
 
 public class DecreeAbsoluteDataExtractorTest {
 

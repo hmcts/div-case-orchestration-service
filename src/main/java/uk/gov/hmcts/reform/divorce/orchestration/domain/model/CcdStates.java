@@ -1,0 +1,33 @@
+package uk.gov.hmcts.reform.divorce.orchestration.domain.model;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class CcdStates {
+    public static final String SERVICE_APPLICATION_NOT_APPROVED = "ServiceApplicationNotApproved";
+    public static final String AWAITING_PAYMENT = "AwaitingPayment";
+    public static final String AWAITING_HWF_DECISION = "AwaitingHWFDecision";
+    public static final String AWAITING_DN_APPLICATION = "AwaitingDNApplication";
+    public static final String BO_WELSH_RESPONSE_AWAITING_REVIEW = "WelshResponseAwaitingReview";
+    public static final String AOS_AWAITING = "AosAwaiting";
+    public static final String AOS_AWAITING_SOLICITOR = "AosAwaitingSol";
+    public static final String AOS_COMPLETED = "AosCompleted";
+    public static final String AOS_OVERDUE = "AosOverdue";
+    public static final String AOS_STARTED = "AosStarted";
+    public static final String AOS_SUBMITTED_AWAITING_ANSWER = "AosSubmittedAwaitingAnswer";
+    public static final String AWAITING_DECREE_NISI = "AwaitingDecreeNisi";
+    public static final String AWAITING_LEGAL_ADVISOR_REFERRAL = "AwaitingLegalAdvisorReferral";
+    public static final String AWAITING_PRONOUNCEMENT = "AwaitingPronouncement";
+    public static final String AWAITING_CLARIFICATION = "AwaitingClarification";
+    public static final String AWAITING_REISSUE = "AwaitingReissue";
+    public static final String DEFENDED = "DefendedDivorce";
+    public static final String DN_PRONOUNCED = "DNPronounced";
+    public static final String AWAITING_DA = "AwaitingDecreeAbsolute";
+    public static final String DN_REFUSED = "DNisRefused";
+    public static final String WELSH_LA_DECISION = "WelshLADecision";
+    public static final String AWAITING_ADMIN_CLARIFICATION = "AwaitingAdminClarification";
+    public static final String DA_REQUESTED = "DARequested";
+    public static final String DA_OVERDUE = "DAOverdue";
+    public static final String DIVORCE_GRANTED = "DivorceGranted";
+}

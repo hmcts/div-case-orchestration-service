@@ -1,10 +1,11 @@
-package uk.gov.hmcts.reform.divorce.orchestration.tasks;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney;
 
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
 import java.time.LocalDate;
@@ -22,9 +23,10 @@ public class ReceivedServiceAddedDateTaskTest extends TestCase {
     private ReceivedServiceAddedDateTask receivedServiceAddedDateTask;
 
     @Test
-    public void executeShouldAddPopulatedField() {
+    public void executeShouldAddPopulatedField() throws TaskException {
         Map<String, Object> caseData = new HashMap<>();
-        Map<String, Object> returnedCaseData = receivedServiceAddedDateTask.execute(prepareTaskContext(), caseData);
+        Map<String, Object> returnedCaseData = receivedServiceAddedDateTask
+            .execute(prepareTaskContext(), caseData);
 
         assertThat(returnedCaseData.isEmpty(), is(false));
         assertSame(returnedCaseData, caseData);

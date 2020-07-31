@@ -11,6 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.divorce.model.response.ValidationResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -23,6 +24,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,6 +56,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.DUMMY_CASE_DATA;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DN_APPLICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_OUTCOME_FLAG_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
@@ -71,6 +74,9 @@ public class CallbackControllerTest {
 
     @Mock
     private AosService aosService;
+
+    @Mock
+    private ServiceJourneyService serviceJourneyService;
 
     @InjectMocks
     private CallbackController classUnderTest;
@@ -546,7 +552,7 @@ public class CallbackControllerTest {
 
         when(caseOrchestrationService
             .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateName(),
-                    OrchestrationConstants.RESP_ANSWERS_LINK)
+                OrchestrationConstants.RESP_ANSWERS_LINK)
         ).thenReturn(incomingPayload);
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.solDnRespAnswersDoc(incomingRequest);
@@ -1008,14 +1014,14 @@ public class CallbackControllerTest {
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .caseData(inputPayload)
-                .state(OrchestrationConstants.WELSH_LA_DECISION)
+                .state(CcdStates.WELSH_LA_DECISION)
                 .build())
             .build();
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.dnDecisionMadeCallback(AUTH_TOKEN, ccdCallbackRequest);
 
         assertThat(response.getStatusCode(), equalTo(OK));
-        assertThat(response.getBody().getData(), hasEntry(OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO_WELSH,EMPTY_STRING));
+        assertThat(response.getBody().getData(), hasEntry(OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO_WELSH, EMPTY_STRING));
         assertThat(response.getBody().getErrors(), is(nullValue()));
 
         verify(caseOrchestrationService, never()).notifyForRefusalOrder(ccdCallbackRequest);
@@ -1403,5 +1409,22 @@ public class CallbackControllerTest {
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.welshContinueIntercept(AUTH_TOKEN, ccdCallbackRequest);
 
         assertThat(response.getStatusCode(), equalTo(OK));
+    }
+
+    @Test
+    public void testMakeServiceDecisionStateChange() throws WorkflowException {
+        when(serviceJourneyService.makeServiceDecision(any()))
+            .thenReturn(CcdCallbackResponse.builder().build());
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .state(AWAITING_DN_APPLICATION)
+                .build())
+            .build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.makeServiceDecision(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
     }
 }
