@@ -13,11 +13,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.Receiv
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DN_APPLICATION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_APPLICATION_GRANTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -30,13 +25,15 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
     public CcdCallbackResponse makeServiceDecision(CaseDetails caseDetails) throws WorkflowException {
         CcdCallbackResponse.CcdCallbackResponseBuilder builder = CcdCallbackResponse.builder();
 
-        if (isServiceApplicationGranted(caseDetails)) {
-            builder.state(AWAITING_DN_APPLICATION);
-        } else {
-            builder.state(SERVICE_APPLICATION_NOT_APPROVED);
-        }
+        Map<String, Object> caseData = makeServiceDecisionDateWorkflow.run(caseDetails);
 
-        builder.data(makeServiceDecisionDateWorkflow.run(caseDetails));
+        //        if (isServiceApplicationGranted(caseDetails)) {
+        //            caseData.put(STATE_CCD_FIELD, AWAITING_DN_APPLICATION);
+        //        } else {
+        //            caseData.put(STATE_CCD_FIELD, SERVICE_APPLICATION_NOT_APPROVED);
+        //        }
+
+        builder.data(caseData);
 
         return builder.build();
     }
@@ -47,7 +44,8 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
         return receivedServiceAddedDateWorkflow.run(ccdCallbackRequest.getCaseDetails());
     }
 
-    protected boolean isServiceApplicationGranted(CaseDetails caseDetails) {
-        return YES_VALUE.equalsIgnoreCase((String) caseDetails.getCaseData().get(SERVICE_APPLICATION_GRANTED));
-    }
+    //    protected boolean isServiceApplicationGranted(CaseDetails caseDetails) {
+    //        return YES_VALUE.equalsIgnoreCase((String) caseDetails.getCaseData()
+    //        .get(SERVICE_APPLICATION_GRANTED));
+    //    }
 }

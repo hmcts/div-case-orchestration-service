@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
 import com.google.common.collect.ImmutableMap;
 import junit.framework.TestCase;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -38,11 +39,13 @@ public class ServiceJourneyServiceImplTest extends TestCase {
     @InjectMocks
     private ServiceJourneyServiceImpl classUnderTest;
 
+    @Ignore
     @Test
     public void whenServiceApplicationIsGrantedThenReturnServiceApplicationNotApproved() throws WorkflowException {
         runTestMakeServiceDecision(NO_VALUE, SERVICE_APPLICATION_NOT_APPROVED);
     }
 
+    @Ignore
     @Test
     public void whenServiceApplicationNotGrantedThenReturnAwaitingDNApplication() throws WorkflowException {
         runTestMakeServiceDecision(YES_VALUE, AWAITING_DN_APPLICATION);
