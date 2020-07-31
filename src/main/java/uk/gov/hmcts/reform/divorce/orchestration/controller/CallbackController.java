@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.Collections;
@@ -60,6 +61,9 @@ public class CallbackController {
 
     @Autowired
     private CaseOrchestrationService caseOrchestrationService;
+
+    @Autowired
+    private ServiceJourneyService serviceJourneyService;
 
     @Autowired
     private AosService aosService;
@@ -1118,9 +1122,21 @@ public class CallbackController {
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
-                .data(caseOrchestrationService.receivedServiceAddedDate(ccdCallbackRequest))
+                .data(serviceJourneyService.receivedServiceAddedDate(ccdCallbackRequest))
                 .build()
         );
+    }
+
+    @PostMapping(path = "/make-service-decision", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback to set state on service decision")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> makeServiceDecision(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        return ResponseEntity.ok(serviceJourneyService.makeServiceDecision(ccdCallbackRequest.getCaseDetails()));
     }
 
     private List<String> getErrors(Map<String, Object> response) {

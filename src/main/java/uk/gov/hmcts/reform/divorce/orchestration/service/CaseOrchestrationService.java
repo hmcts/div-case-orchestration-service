@@ -84,7 +84,7 @@ public interface CaseOrchestrationService {
         throws WorkflowException;
 
     Map<String, Object> submitDaCase(Map<String, Object> divorceSession, String authorizationToken, String caseId)
-            throws WorkflowException;
+        throws WorkflowException;
 
     Map<String, Object> amendPetition(String caseId, String authorisation) throws WorkflowException;
 
@@ -157,8 +157,6 @@ public interface CaseOrchestrationService {
     Map<String, Object> welshContinue(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
     CcdCallbackResponse welshContinueIntercept(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
-
-    Map<String, Object> receivedServiceAddedDate(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
     Map<String, Object> notifyForRefusalOrder(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 

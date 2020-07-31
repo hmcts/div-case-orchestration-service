@@ -20,8 +20,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PAYMENTS;
@@ -70,7 +70,7 @@ public class UpdatePaymentMadeCaseUTest {
         final Map<String, Object> resultData = Collections.singletonMap(D_8_PAYMENTS, "World");
 
         when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, PAYMENT_MADE_EVENT, resultData))
-                .thenReturn(CMS_RESPONSE_DATA);
+            .thenReturn(CMS_RESPONSE_DATA);
 
         assertEquals(CMS_RESPONSE_DATA, target.execute(context, resultData));
 

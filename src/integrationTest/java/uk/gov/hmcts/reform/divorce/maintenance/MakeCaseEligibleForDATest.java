@@ -31,9 +31,9 @@ import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DA;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DA;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.DN_PRONOUNCED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_PRONOUNCED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ES_CASE_ID_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport.buildCMSBooleanSearchSource;
@@ -71,7 +71,7 @@ public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
 
         updateCase(caseId, null, NO_STATE_CHANGE_EVENT_ID,
             ImmutablePair.of(DECREE_NISI_GRANTED_DATE_KEY, DECREE_NISI_GRANTED_DATE));
-        log.debug("{}={} updated in the case {}",  DECREE_NISI_GRANTED_DATE_KEY, DECREE_NISI_GRANTED_DATE, caseId);
+        log.debug("{}={} updated in the case {}", DECREE_NISI_GRANTED_DATE_KEY, DECREE_NISI_GRANTED_DATE, caseId);
 
         updateCaseForCitizen(caseId, null, TEST_DN_PRONOUNCED, citizenUser);
         log.debug("Case {} moved to DNPronounced.", caseId);
@@ -90,7 +90,7 @@ public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
         await().pollInterval(fibonacci(SECONDS)).atMost(60, SECONDS).untilAsserted(() -> {
             List<CaseDetails> foundCases = searchCasesWithElasticSearch(caseId, authToken);
             assertThat("The number of cases found by ElasticSearch was not expected",
-                        foundCases.size(), is(1));
+                foundCases.size(), is(1));
         });
     }
 
@@ -108,9 +108,9 @@ public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
         await().pollInterval(fibonacci(SECONDS)).atMost(360, SECONDS).untilAsserted(() -> {
             final Response retrievedCase = retrieveCase(authToken);
             log.debug("Retrieved case {} with state {}",
-                        retrievedCase.path("caseId"), retrievedCase.path("state"));
+                retrievedCase.path("caseId"), retrievedCase.path("state"));
             String msgForFailedAssertion = format("Case %s was not in expected state %s",
-                                                            retrievedCase.path("caseId"), expectedState);
+                retrievedCase.path("caseId"), expectedState);
             assertThat(msgForFailedAssertion, retrievedCase.path(STATE_KEY), equalTo(expectedState));
         });
     }

@@ -7,8 +7,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ReceivedServiceAddedDateTask;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.MakeServiceDecisionDateTask;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionDateWorkflow;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,21 +17,21 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mo
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTaskWasCalled;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ReceivedServiceAddedDateWorkflowTest extends TestCase {
+public class MakeServiceDecisionDateWorkflowTest extends TestCase {
 
     @Mock
-    private ReceivedServiceAddedDateTask receivedServiceAddedDateTask;
+    private MakeServiceDecisionDateTask makeServiceDecisionDateTask;
 
     @InjectMocks
-    private ReceivedServiceAddedDateWorkflow receivedServiceAddedDateWorkflow;
+    private MakeServiceDecisionDateWorkflow makeServiceDecisionDateWorkflow;
 
     @Test
     public void runShouldBeExecuted() throws Exception {
         Map<String, Object> caseData = new HashMap<>();
-        mockTasksExecution(caseData, receivedServiceAddedDateTask);
+        mockTasksExecution(caseData, makeServiceDecisionDateTask);
 
-        receivedServiceAddedDateWorkflow.run(CaseDetails.builder().caseData(caseData).build());
+        makeServiceDecisionDateWorkflow.run(CaseDetails.builder().caseData(caseData).build());
 
-        verifyTaskWasCalled(caseData, receivedServiceAddedDateTask);
+        verifyTaskWasCalled(caseData, makeServiceDecisionDateTask);
     }
 }

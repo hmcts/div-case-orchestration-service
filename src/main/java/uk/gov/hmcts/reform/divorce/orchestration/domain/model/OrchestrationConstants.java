@@ -146,6 +146,7 @@ public class OrchestrationConstants {
     public static final String DN_REFUSED_ADMIN_ERROR_OPTION = "adminError";
     public static final String DN_APPLICATION_SUBMITTED_DATE = "DNApplicationSubmittedDate";
     public static final String DN_REFUSAL_DRAFT = "DNRefusalDraft";
+    public static final String SERVICE_APPLICATION_GRANTED = "serviceApplicationGranted";
 
     // CCD Events
     public static final String DN_RECEIVED = "dnReceived";
@@ -177,29 +178,6 @@ public class OrchestrationConstants {
     public static final String BO_WELSH_REVIEW = "boWelshReview";
     public static final String BO_WELSH_DN_RECEIVED_REVIEW = "boWelshDnReceivedReview";
     public static final String BO_WELSH_GRANT_DN_MAKE_DECISION = "boWelshGrantDnMakeDecision";
-
-    // CCD Case States
-    public static final String BO_WELSH_RESPONSE_AWAITING_REVIEW = "WelshResponseAwaitingReview";
-    public static final String AOS_AWAITING = "AosAwaiting";
-    public static final String AOS_AWAITING_SOLICITOR = "AosAwaitingSol";
-    public static final String AOS_COMPLETED = "AosCompleted";
-    public static final String AOS_OVERDUE = "AosOverdue";
-    public static final String AOS_STARTED = "AosStarted";
-    public static final String AOS_SUBMITTED_AWAITING_ANSWER = "AosSubmittedAwaitingAnswer";
-    public static final String AWAITING_DECREE_NISI = "AwaitingDecreeNisi";
-    public static final String AWAITING_LEGAL_ADVISOR_REFERRAL = "AwaitingLegalAdvisorReferral";
-    public static final String AWAITING_PRONOUNCEMENT = "AwaitingPronouncement";
-    public static final String AWAITING_CLARIFICATION = "AwaitingClarification";
-    public static final String AWAITING_REISSUE = "AwaitingReissue";
-    public static final String DEFENDED = "DefendedDivorce";
-    public static final String DN_PRONOUNCED = "DNPronounced";
-    public static final String AWAITING_DA = "AwaitingDecreeAbsolute";
-    public static final String DN_REFUSED = "DNisRefused";
-    public static final String WELSH_LA_DECISION = "WelshLADecision";
-    public static final String AWAITING_ADMIN_CLARIFICATION = "AwaitingAdminClarification";
-    public static final String DA_REQUESTED = "DARequested";
-    public static final String DA_OVERDUE = "DAOverdue";
-    public static final String DIVORCE_GRANTED = "DivorceGranted";
 
     // CCD Co-Respondent Fields
     public static final String CO_RESP_LINKED_TO_CASE = "CoRespLinkedToCase";
@@ -249,10 +227,6 @@ public class OrchestrationConstants {
     public static final String LIMIT_DATE_TO_CONTACT_COURT = "limit date to contact court";
     public static final String WELSH_LIMIT_DATE_TO_CONTACT_COURT = "welsh limit date to contact court";
     public static final Period PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT = Period.ofWeeks(2);
-
-    // Case state
-    public static final String AWAITING_PAYMENT = "AwaitingPayment";
-    public static final String AWAITING_HWF_DECISION = "AwaitingHWFDecision";
 
     // Notification
     public static final String NOTIFICATION_EMAIL = "email address";
@@ -343,8 +317,6 @@ public class OrchestrationConstants {
 
     //Bulk print letter types
     public static final String DA_GRANTED_OFFLINE_PACK_RESPONDENT = "da-granted-offline-pack-respondent";
-    public static final String COE_OFFLINE_PACK_RESPONDENT = "coe-offline-pack-respondent";
-    public static final String COST_ORDER_OFFLINE_PACK_CO_RESPONDENT = "co-respondent-offline-pack-respondent";
 
     public static final String DOCUMENT_TYPE_COE = "coe";
     public static final String DOCUMENT_TYPE_OTHER = "other";
@@ -441,5 +413,4 @@ public class OrchestrationConstants {
 
     // Bulk Scan
     public static final String CASE_TYPE_ID = "DIVORCE";
-
 }
