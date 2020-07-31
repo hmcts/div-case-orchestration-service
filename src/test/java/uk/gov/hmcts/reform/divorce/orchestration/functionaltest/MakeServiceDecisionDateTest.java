@@ -5,9 +5,9 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.MakeServiceDecisionDateTask;
 import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
 import java.time.LocalDate;
@@ -38,7 +38,7 @@ public class MakeServiceDecisionDateTest extends IdamTestSupport {
         );
 
         Map<String, Object> expectedCaseData = ImmutableMap.of(
-            MakeServiceDecisionDateTask.SERVICE_APPLICATION_DECISION_DATE,
+            CcdFields.SERVICE_APPLICATION_DECISION_DATE,
             DateUtils.formatDateFromLocalDate(LocalDate.now())
         );
 
