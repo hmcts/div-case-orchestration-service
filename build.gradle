@@ -36,7 +36,7 @@ def versions = [
         commonsIo                    : '2.6',
         commonsLang3                 : '3.9',
         commonsMath3                 : '3.6.1',
-        divCommonLib                 : '1.1.23',
+        divCommonLib                 : '1.1.26',
         dumbster                     : '1.7.1',
         elasticsearch                : '7.7.0',
         feignHttpClient              : '10.3.0',
