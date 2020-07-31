@@ -27,12 +27,6 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
 
         Map<String, Object> caseData = makeServiceDecisionDateWorkflow.run(caseDetails);
 
-        //        if (isServiceApplicationGranted(caseDetails)) {
-        //            caseData.put(STATE_CCD_FIELD, AWAITING_DN_APPLICATION);
-        //        } else {
-        //            caseData.put(STATE_CCD_FIELD, SERVICE_APPLICATION_NOT_APPROVED);
-        //        }
-
         builder.data(caseData);
 
         return builder.build();
@@ -43,9 +37,4 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
         throws WorkflowException {
         return receivedServiceAddedDateWorkflow.run(ccdCallbackRequest.getCaseDetails());
     }
-
-    //    protected boolean isServiceApplicationGranted(CaseDetails caseDetails) {
-    //        return YES_VALUE.equalsIgnoreCase((String) caseDetails.getCaseData()
-    //        .get(SERVICE_APPLICATION_GRANTED));
-    //    }
 }

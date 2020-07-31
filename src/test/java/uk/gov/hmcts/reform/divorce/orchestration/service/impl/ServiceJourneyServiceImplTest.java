@@ -39,13 +39,13 @@ public class ServiceJourneyServiceImplTest extends TestCase {
     @InjectMocks
     private ServiceJourneyServiceImpl classUnderTest;
 
-    @Ignore
+    @Ignore("this is so stupid I need to add explanaintion for skipping test in draft PR that is created only for tests")
     @Test
     public void whenServiceApplicationIsGrantedThenReturnServiceApplicationNotApproved() throws WorkflowException {
         runTestMakeServiceDecision(NO_VALUE, SERVICE_APPLICATION_NOT_APPROVED);
     }
 
-    @Ignore
+    @Ignore("this is so stupid I need to add explanaintion for skipping test in draft PR that is created only for tests")
     @Test
     public void whenServiceApplicationNotGrantedThenReturnAwaitingDNApplication() throws WorkflowException {
         runTestMakeServiceDecision(YES_VALUE, AWAITING_DN_APPLICATION);
