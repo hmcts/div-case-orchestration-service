@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
@@ -15,7 +16,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DN_APPLICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_APPLICATION_GRANTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
@@ -48,6 +49,8 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
     }
 
     protected boolean isServiceApplicationGranted(CaseDetails caseDetails) {
-        return YES_VALUE.equalsIgnoreCase((String) caseDetails.getCaseData().get(SERVICE_APPLICATION_GRANTED));
+        return YES_VALUE.equalsIgnoreCase(
+            (String) caseDetails.getCaseData().get(CcdFields.SERVICE_APPLICATION_GRANTED)
+        );
     }
 }
