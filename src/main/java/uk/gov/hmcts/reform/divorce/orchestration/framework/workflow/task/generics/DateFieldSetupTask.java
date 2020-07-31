@@ -26,7 +26,7 @@ public abstract class DateFieldSetupTask implements Task<Map<String, Object>> {
 
         log.info("CaseID: {} setting up date {} for field {}", caseId, formattedDateValue, fieldName);
 
-        payload.put(getFieldName(), getFormattedDate());
+        payload.put(fieldName, formattedDateValue);
 
         return payload;
     }
