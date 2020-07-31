@@ -9,9 +9,9 @@ import java.util.Map;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.assertThat;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_COMPLETED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_SUBMITTED_AWAITING_ANSWER;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DECREE_NISI;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_COMPLETED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_SUBMITTED_AWAITING_ANSWER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOT_DEFENDING_NOT_ADMITTING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
@@ -33,7 +33,7 @@ public class RespondentAosAnswersProcessorTaskTest {
         Map<String, Object> payload = new HashMap<String, Object>() {
             {
                 put("testKey", "testValue");
-                put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+                put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue());
                 put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
             }
         };
@@ -51,7 +51,7 @@ public class RespondentAosAnswersProcessorTaskTest {
         Map<String, Object> payload = new HashMap<String, Object>() {
             {
                 put("testKey", "testValue");
-                put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+                put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue());
                 put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
                 put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
             }
@@ -70,7 +70,7 @@ public class RespondentAosAnswersProcessorTaskTest {
         Map<String, Object> payload = new HashMap<String, Object>() {
             {
                 put("testKey", "testValue");
-                put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+                put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue());
                 put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
                 put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
             }
@@ -89,7 +89,7 @@ public class RespondentAosAnswersProcessorTaskTest {
         Map<String, Object> payload = new HashMap<String, Object>() {
             {
                 put("testKey", "testValue");
-                put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS);
+                put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS.getValue());
                 put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
             }
         };
@@ -109,7 +109,7 @@ public class RespondentAosAnswersProcessorTaskTest {
         Map<String, Object> payload = new HashMap<String, Object>() {
             {
                 put("testKey", "testValue");
-                put(D_8_REASON_FOR_DIVORCE, DESERTION);
+                put(D_8_REASON_FOR_DIVORCE, DESERTION.getValue());
                 put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
             }
         };
@@ -129,7 +129,7 @@ public class RespondentAosAnswersProcessorTaskTest {
         Map<String, Object> payload = new HashMap<String, Object>() {
             {
                 put("testKey", "testValue");
-                put(D_8_REASON_FOR_DIVORCE, DESERTION);
+                put(D_8_REASON_FOR_DIVORCE, DESERTION.getValue());
                 put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
                 put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
             }
@@ -150,7 +150,7 @@ public class RespondentAosAnswersProcessorTaskTest {
         Map<String, Object> payload = new HashMap<String, Object>() {
             {
                 put("testKey", "testValue");
-                put(D_8_REASON_FOR_DIVORCE, DESERTION);
+                put(D_8_REASON_FOR_DIVORCE, DESERTION.getValue());
                 put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
                 put(RESP_WILL_DEFEND_DIVORCE, NOT_DEFENDING_NOT_ADMITTING);
             }
@@ -169,7 +169,7 @@ public class RespondentAosAnswersProcessorTaskTest {
         Map<String, Object> payload = new HashMap<String, Object>() {
             {
                 put("testKey", "testValue");
-                put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS);
+                put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS.getValue());
                 put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
             }
         };

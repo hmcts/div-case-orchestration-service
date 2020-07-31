@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.divorce.support.CcdSubmissionSupport;
 
 import static org.junit.Assert.assertEquals;
 import static org.springframework.http.HttpStatus.OK;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_LEGAL_ADVISOR_REFERRAL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_LEGAL_ADVISOR_REFERRAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 
 public class SubmitDnCaseTest extends CcdSubmissionSupport {

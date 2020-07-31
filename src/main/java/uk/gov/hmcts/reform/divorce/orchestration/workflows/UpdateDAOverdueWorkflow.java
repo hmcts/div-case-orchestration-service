@@ -16,7 +16,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASES_OVERDUE_FOR_DA_PROCESSED_COUNT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MAKE_CASE_DA_OVERDUE_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEARCH_PAGE_KEY;
 
 @Component
 @Slf4j
@@ -40,7 +39,6 @@ public class UpdateDAOverdueWorkflow extends DefaultWorkflow<Map<String, Object>
             },
             null,
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
-            ImmutablePair.of(SEARCH_PAGE_KEY, 0),
             ImmutablePair.of(CASES_OVERDUE_FOR_DA_PROCESSED_COUNT, 0),
             ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, MAKE_CASE_DA_OVERDUE_EVENT_ID)
         );

@@ -24,7 +24,7 @@ public class CostOrderCoRespondentCoverLetterGenerationTask extends BasePayloadS
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FileMetadata {
-        public static final String TEMPLATE_ID = "FL-DIV-LET-ENG-00358.docx";
+        public static final String TEMPLATE_ID = "FL-DIV-LET-ENG-00358A.docx";
         public static final String DOCUMENT_TYPE = COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE;
     }
 

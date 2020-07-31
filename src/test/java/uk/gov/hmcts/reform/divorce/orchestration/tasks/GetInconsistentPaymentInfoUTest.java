@@ -34,8 +34,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PAYMENTS;
@@ -165,7 +165,8 @@ public class GetInconsistentPaymentInfoUTest {
 
     private Map<String, Object> getDraftObject(String status) throws Exception {
         Map<String, Object> paymentObject = ObjectMapperTestUtil
-            .getJsonFromResourceFile(PAYLOADS_PAYMENT_FROM_CMS_JSON, new TypeReference<HashMap<String, Object>>() {});
+            .getJsonFromResourceFile(PAYLOADS_PAYMENT_FROM_CMS_JSON, new TypeReference<HashMap<String, Object>>() {
+            });
         paymentObject.put(PAYMENT_STATUS, status);
 
         return ImmutableMap.of(

@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.DnCourt;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -49,12 +50,14 @@ public class TaskCommonsTest {
                 .sendEmailAndReturnExceptionIfFails("test@hmcts.net",
                     RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION.name(),
                     templateParameters,
-                    "test description");
+                    "test description",
+                    LanguagePreference.ENGLISH);
 
         taskCommons.sendEmail(RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION,
                 "test description",
                 "test@hmcts.net",
-                templateParameters);
+                templateParameters,
+                LanguagePreference.ENGLISH);
     }
 
     @Test

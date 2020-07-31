@@ -26,8 +26,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.SEARCH_RESULT_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PRONOUNCEMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_PRONOUNCEMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.JsonPathMatcher.jsonPathExisteMatcher;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.JsonPathMatcher.jsonPathValueMatcher;
 
@@ -50,10 +50,10 @@ public class SearchAwaitingPronouncementCasesTest {
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         classUnderTest.setPageSize(2);
         final SearchResult cmsSearchResponse =
-                SearchResult.builder()
-                        .total(0)
-                        .cases(Collections.emptyList())
-                        .build();
+            SearchResult.builder()
+                .total(0)
+                .cases(Collections.emptyList())
+                .build();
 
         when(caseMaintenanceClient.searchCases(eq(AUTH_TOKEN), any())).thenReturn(cmsSearchResponse);
 
@@ -68,17 +68,17 @@ public class SearchAwaitingPronouncementCasesTest {
         for (int i = 0; i < expectedIterations; i++) {
             int expectedFrom = i * 2;
             verify(caseMaintenanceClient).searchCases(eq(AUTH_TOKEN), argThat(
-                    jsonPathValueMatcher("$.from", is(expectedFrom))));
+                jsonPathValueMatcher("$.from", is(expectedFrom))));
         }
 
         verify(caseMaintenanceClient, times(expectedIterations)).searchCases(eq(AUTH_TOKEN), argThat(
-                jsonPathValueMatcher("$.query.bool.must[*].match.state.query", hasItem(AWAITING_PRONOUNCEMENT))));
+            jsonPathValueMatcher("$.query.bool.must[*].match.state.query", hasItem(AWAITING_PRONOUNCEMENT))));
         verify(caseMaintenanceClient, times(expectedIterations)).searchCases(eq(AUTH_TOKEN), argThat(
-                jsonPathValueMatcher("$.query.bool.must_not[*].exists.field", hasItems("data.BulkListingCaseId", "data.DateAndTimeOfHearing"))));
+            jsonPathValueMatcher("$.query.bool.must_not[*].exists.field", hasItems("data.BulkListingCaseId", "data.DateAndTimeOfHearing"))));
         verify(caseMaintenanceClient, times(expectedIterations)).searchCases(eq(AUTH_TOKEN), argThat(
-                jsonPathValueMatcher("$.query.bool.must[*].exists.field", hasItem("data.DnOutcomeCase"))));
+            jsonPathValueMatcher("$.query.bool.must[*].exists.field", hasItem("data.DnOutcomeCase"))));
         verify(caseMaintenanceClient, times(expectedIterations)).searchCases(eq(AUTH_TOKEN), argThat(
-                jsonPathExisteMatcher("$.sort[*].['data.DNApprovalDate']")));
+            jsonPathExisteMatcher("$.sort[*].['data.DNApprovalDate']")));
     }
 
     @Test
@@ -90,8 +90,8 @@ public class SearchAwaitingPronouncementCasesTest {
             SearchResult.builder()
                 .total(3)
                 .cases(Arrays.asList(
-                        CaseDetails.builder().caseId(TEST_CASE_ID_1).build(),
-                        CaseDetails.builder().caseId(TEST_CASE_ID_2).build()))
+                    CaseDetails.builder().caseId(TEST_CASE_ID_1).build(),
+                    CaseDetails.builder().caseId(TEST_CASE_ID_2).build()))
                 .build();
 
         when(caseMaintenanceClient.searchCases(eq(AUTH_TOKEN), any())).thenReturn(cmsSearchResponse);
@@ -127,27 +127,27 @@ public class SearchAwaitingPronouncementCasesTest {
         classUnderTest.setPageSize(3);
 
         final SearchResult cmsSearchResponse =
-                SearchResult.builder()
-                        .total(5)
-                        .cases(Arrays.asList(
-                                CaseDetails.builder().caseId(TEST_CASE_ID_1).build(),
-                                CaseDetails.builder().caseId(TEST_CASE_ID_2).build(),
-                                CaseDetails.builder().caseId(TEST_CASE_ID_2).build()
-                        )).build();
+            SearchResult.builder()
+                .total(5)
+                .cases(Arrays.asList(
+                    CaseDetails.builder().caseId(TEST_CASE_ID_1).build(),
+                    CaseDetails.builder().caseId(TEST_CASE_ID_2).build(),
+                    CaseDetails.builder().caseId(TEST_CASE_ID_2).build()
+                )).build();
 
         final SearchResult cmsSearchResponseTwo = SearchResult.builder()
-                        .total(5)
-                        .cases(Arrays.asList(
-                                CaseDetails.builder().caseId(TEST_CASE_ID_1).build(),
-                                CaseDetails.builder().caseId(TEST_CASE_ID_2).build(),
-                                CaseDetails.builder().caseId(TEST_CASE_ID_3).build()
-                        )).build();
+            .total(5)
+            .cases(Arrays.asList(
+                CaseDetails.builder().caseId(TEST_CASE_ID_1).build(),
+                CaseDetails.builder().caseId(TEST_CASE_ID_2).build(),
+                CaseDetails.builder().caseId(TEST_CASE_ID_3).build()
+            )).build();
 
         final SearchResult expectedCmsResponseTwo = SearchResult.builder()
-                .total(5)
-                .cases(Collections.singletonList(
-                    CaseDetails.builder().caseId(TEST_CASE_ID_3).build()
-                )).build();
+            .total(5)
+            .cases(Collections.singletonList(
+                CaseDetails.builder().caseId(TEST_CASE_ID_3).build()
+            )).build();
 
         when(caseMaintenanceClient.searchCases(eq(AUTH_TOKEN), contains("\"from\":0"))).thenReturn(cmsSearchResponse);
         when(caseMaintenanceClient.searchCases(eq(AUTH_TOKEN), contains("\"from\":3"))).thenReturn(cmsSearchResponseTwo);
@@ -162,16 +162,16 @@ public class SearchAwaitingPronouncementCasesTest {
         for (int i = 0; i < expectedIterations; i++) {
             int expectedFrom = i * 3;
             verify(caseMaintenanceClient).searchCases(eq(AUTH_TOKEN), argThat(
-                    jsonPathValueMatcher("$.from", is(expectedFrom))));
+                jsonPathValueMatcher("$.from", is(expectedFrom))));
         }
 
         verify(caseMaintenanceClient, times(expectedIterations)).searchCases(eq(AUTH_TOKEN), argThat(
-                jsonPathValueMatcher("$.query.bool.must[*].match.state.query", hasItem(AWAITING_PRONOUNCEMENT))));
+            jsonPathValueMatcher("$.query.bool.must[*].match.state.query", hasItem(AWAITING_PRONOUNCEMENT))));
         verify(caseMaintenanceClient, times(expectedIterations)).searchCases(eq(AUTH_TOKEN), argThat(
-                jsonPathValueMatcher("$.query.bool.must_not[*].exists.field", hasItems("data.BulkListingCaseId", "data.DateAndTimeOfHearing"))));
+            jsonPathValueMatcher("$.query.bool.must_not[*].exists.field", hasItems("data.BulkListingCaseId", "data.DateAndTimeOfHearing"))));
         verify(caseMaintenanceClient, times(expectedIterations)).searchCases(eq(AUTH_TOKEN), argThat(
-                jsonPathValueMatcher("$.query.bool.must[*].exists.field", hasItem("data.DnOutcomeCase"))));
+            jsonPathValueMatcher("$.query.bool.must[*].exists.field", hasItem("data.DnOutcomeCase"))));
         verify(caseMaintenanceClient, times(expectedIterations)).searchCases(eq(AUTH_TOKEN), argThat(
-                jsonPathExisteMatcher("$.sort[*].['data.DNApprovalDate']")));
+            jsonPathExisteMatcher("$.sort[*].['data.DNApprovalDate']")));
     }
 }

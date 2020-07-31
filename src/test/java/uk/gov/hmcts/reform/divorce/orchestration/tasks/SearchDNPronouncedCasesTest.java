@@ -31,12 +31,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.SEARCH_RESULT_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.DN_PRONOUNCED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DA_PERIOD_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_PRONOUNCED;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SearchDNPronouncedCases.buildCoolOffPeriodInDNBoundary;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport.buildDateForTodayMinusGivenPeriod;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SearchDNPronouncedCasesTest {
@@ -49,9 +49,6 @@ public class SearchDNPronouncedCasesTest {
     @InjectMocks
     private SearchDNPronouncedCases classUnderTest;
 
-    private int pageSize;
-    private int start;
-
     private static final String TWO_MINUTES = "2m";
     private String timeSinceDNWasPronounced = TWO_MINUTES;
 
@@ -59,13 +56,8 @@ public class SearchDNPronouncedCasesTest {
 
     @Before
     public void setupTaskContextWithSearchSettings() {
-        pageSize = 10;
-        start = 0;
-
         Map<String, Object> searchSettings = new HashMap<String, Object>() {
             {
-                put("PAGE_SIZE", pageSize);
-                put("FROM", start);
                 put(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
                 put(AWAITING_DA_PERIOD_KEY, timeSinceDNWasPronounced);
             }
@@ -78,34 +70,34 @@ public class SearchDNPronouncedCasesTest {
     @Test
     public void shouldReturnNoResultIfNoneIsReturnedFromElasticSearchSupport() throws TaskException {
         final List<String> expectedCaseIdsInTheContext = Collections.emptyList();
-        when(mockCmsElasticSearchSupport.searchCMSCases(eq(start), eq(pageSize), eq(AUTH_TOKEN), any(), any())).thenReturn(Stream.empty());
+        when(mockCmsElasticSearchSupport.searchCMSCases(eq(AUTH_TOKEN), any(), any())).thenReturn(Stream.empty());
 
         final Map<String, Object> actualResult = classUnderTest.execute(contextBeingModified, null);
         assertEquals(expectedCaseIdsInTheContext, contextBeingModified.getTransientObject(SEARCH_RESULT_KEY));
         assertNull(actualResult);
 
-        verify(mockCmsElasticSearchSupport).searchCMSCases(eq(start), eq(pageSize), eq(AUTH_TOKEN),
+        verify(mockCmsElasticSearchSupport).searchCMSCases(eq(AUTH_TOKEN),
             eq(QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, DN_PRONOUNCED)),
-            eq(QueryBuilders.rangeQuery(DN_GRANTED_DATE).lte(buildCoolOffPeriodInDNBoundary(timeSinceDNWasPronounced))));
+            eq(QueryBuilders.rangeQuery(DN_GRANTED_DATE).lte(buildDateForTodayMinusGivenPeriod(timeSinceDNWasPronounced))));
     }
 
     @Test
     public void shouldReturnResults() throws TaskException {
         final List<String> expectedCaseIdsInTheContext = Arrays.asList("1", "2", "3", "4", "5");
-        when(mockCmsElasticSearchSupport.searchCMSCases(eq(start), eq(pageSize), eq(AUTH_TOKEN), any(), any())).thenReturn(buildCases(5));
+        when(mockCmsElasticSearchSupport.searchCMSCases(eq(AUTH_TOKEN), any(), any())).thenReturn(buildCases(5));
 
         final Map<String, Object> actualResult = classUnderTest.execute(contextBeingModified, null);
         assertEquals(expectedCaseIdsInTheContext, contextBeingModified.getTransientObject(SEARCH_RESULT_KEY));
         assertNull(actualResult);
 
-        verify(mockCmsElasticSearchSupport).searchCMSCases(eq(start), eq(pageSize), eq(AUTH_TOKEN),
+        verify(mockCmsElasticSearchSupport).searchCMSCases(eq(AUTH_TOKEN),
             eq(QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, DN_PRONOUNCED)),
-            eq(QueryBuilders.rangeQuery(DN_GRANTED_DATE).lte(buildCoolOffPeriodInDNBoundary(timeSinceDNWasPronounced))));
+            eq(QueryBuilders.rangeQuery(DN_GRANTED_DATE).lte(buildDateForTodayMinusGivenPeriod(timeSinceDNWasPronounced))));
     }
 
     @Test
     public void shouldRethrowFeignException() throws TaskException {
-        when(mockCmsElasticSearchSupport.searchCMSCases(eq(start), eq(pageSize), eq(AUTH_TOKEN), any(), any()))
+        when(mockCmsElasticSearchSupport.searchCMSCases(eq(AUTH_TOKEN), any(), any()))
             .thenThrow(new FeignException.BadRequest("Bad test request", "".getBytes()));
 
         Map<String, Object> actualResult = null;
@@ -117,9 +109,9 @@ public class SearchDNPronouncedCasesTest {
         }
 
         assertNull(actualResult);
-        verify(mockCmsElasticSearchSupport).searchCMSCases(eq(start), eq(pageSize), eq(AUTH_TOKEN),
+        verify(mockCmsElasticSearchSupport).searchCMSCases(eq(AUTH_TOKEN),
             eq(QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, DN_PRONOUNCED)),
-            eq(QueryBuilders.rangeQuery(DN_GRANTED_DATE).lte(buildCoolOffPeriodInDNBoundary(timeSinceDNWasPronounced))));
+            eq(QueryBuilders.rangeQuery(DN_GRANTED_DATE).lte(buildDateForTodayMinusGivenPeriod(timeSinceDNWasPronounced))));
     }
 
     private Stream<CaseDetails> buildCases(int caseCount) {

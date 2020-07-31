@@ -2,7 +2,8 @@ package uk.gov.hmcts.reform.divorce.orchestration.util;
 
 import feign.FeignException;
 import org.elasticsearch.index.query.QueryBuilder;
-import org.junit.Before;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.AdditionalAnswers;
@@ -12,13 +13,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
@@ -27,6 +25,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -36,7 +35,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_PRONOUNCED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.DN_PRONOUNCED;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.JsonPathMatcher.jsonPathValueMatcher;
 import static wiremock.org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
 
@@ -54,27 +53,6 @@ public class CMSElasticSearchSupportTest {
     @InjectMocks
     private CMSElasticSearchSupport classUnderTest;
 
-    private int pageSize;
-    private int start;
-
-    private DefaultTaskContext contextBeingModified;
-
-    @Before
-    public void setupTaskContextWithSearchSettings() {
-        pageSize = 10;
-        start = 0;
-
-        Map<String, Object> searchSettings = new HashMap<String, Object>() {
-            {
-                put("PAGE_SIZE", pageSize);
-                put("FROM", start);
-            }
-        };
-
-        contextBeingModified = new DefaultTaskContext();
-        contextBeingModified.setTransientObjects(searchSettings);
-    }
-
     @Test
     public void execute_pageSize10_totalResults0() {
         final List expectedCaseIds = Collections.emptyList();
@@ -84,7 +62,7 @@ public class CMSElasticSearchSupportTest {
                 .cases(Collections.emptyList())
                 .build());
 
-        List<CaseDetails> caseDetails = classUnderTest.searchCMSCases(start, pageSize, AUTH_TOKEN, TEST_QUERY_BUILDER).collect(Collectors.toList());
+        List<CaseDetails> caseDetails = classUnderTest.searchCMSCases(AUTH_TOKEN, TEST_QUERY_BUILDER).collect(Collectors.toList());
         assertThat(caseDetails, hasSize(0));
         assertThat(caseDetails, equalTo(expectedCaseIds));
 
@@ -101,7 +79,7 @@ public class CMSElasticSearchSupportTest {
                 .cases(buildCases(0, 5))
                 .build());
 
-        List<String> caseDetails = classUnderTest.searchCMSCases(start, pageSize, AUTH_TOKEN, TEST_QUERY_BUILDER)
+        List<String> caseDetails = classUnderTest.searchCMSCases(AUTH_TOKEN, TEST_QUERY_BUILDER)
             .map(CaseDetails::getCaseId)
             .collect(Collectors.toList());
         assertThat(caseDetails, equalTo(expectedCaseIds));
@@ -119,7 +97,7 @@ public class CMSElasticSearchSupportTest {
                 .cases(buildCases(0, 10))
                 .build());
 
-        List<String> caseDetails = classUnderTest.searchCMSCases(start, pageSize, AUTH_TOKEN, TEST_QUERY_BUILDER)
+        List<String> caseDetails = classUnderTest.searchCMSCases(AUTH_TOKEN, TEST_QUERY_BUILDER)
             .map(CaseDetails::getCaseId)
             .collect(Collectors.toList());
         assertThat(caseDetails, equalTo(expectedCaseIds));
@@ -146,7 +124,7 @@ public class CMSElasticSearchSupportTest {
         when(caseMaintenanceClient.searchCases(eq(AUTH_TOKEN), any()))
             .thenAnswer(AdditionalAnswers.returnsElementsOf(searchResultBatchList));
 
-        List<String> caseDetails = classUnderTest.searchCMSCases(start, pageSize, AUTH_TOKEN, TEST_QUERY_BUILDER)
+        List<String> caseDetails = classUnderTest.searchCMSCases(AUTH_TOKEN, TEST_QUERY_BUILDER)
             .map(CaseDetails::getCaseId)
             .collect(Collectors.toList());
         assertThat(caseDetails, equalTo(expectedCaseIds));
@@ -177,7 +155,7 @@ public class CMSElasticSearchSupportTest {
         when(caseMaintenanceClient.searchCases(eq(AUTH_TOKEN), any()))
             .thenAnswer(AdditionalAnswers.returnsElementsOf(searchResultBatchList));
 
-        List<String> caseDetails = classUnderTest.searchCMSCases(start, pageSize, AUTH_TOKEN, TEST_QUERY_BUILDER)
+        List<String> caseDetails = classUnderTest.searchCMSCases(AUTH_TOKEN, TEST_QUERY_BUILDER)
             .map(CaseDetails::getCaseId)
             .collect(Collectors.toList());
         assertThat(caseDetails, equalTo(expectedCaseIds));
@@ -198,7 +176,7 @@ public class CMSElasticSearchSupportTest {
 
         List<String> caseDetails = null;
         try {
-            caseDetails = classUnderTest.searchCMSCases(start, pageSize, AUTH_TOKEN, TEST_QUERY_BUILDER)
+            caseDetails = classUnderTest.searchCMSCases(AUTH_TOKEN, TEST_QUERY_BUILDER)
                 .map(CaseDetails::getCaseId)
                 .collect(Collectors.toList());
         } catch (FeignException fException) {
@@ -209,6 +187,59 @@ public class CMSElasticSearchSupportTest {
         assertNull(caseDetails);
         verify(caseMaintenanceClient, times(2)).searchCases(eq(AUTH_TOKEN), argThat(
             jsonPathValueMatcher("$.query.bool.filter[*].match.state.query", hasItem(DN_PRONOUNCED))));
+    }
+
+    @Test
+    public void shouldBuildDateForGivenTimeLimit() {
+        String limitDateParameter = CMSElasticSearchSupport.buildDateForTodayMinusGivenPeriod("1y");
+        assertThat(limitDateParameter, is("now/y-1y"));
+    }
+
+    @Test
+    public void buildCMSBooleanSearchSource_givenOneQuery() {
+        int pageSize = 10;
+        int start = 0;
+        QueryBuilder firstQuery = QueryBuilders.matchQuery("testKey", "AwaitingDA");
+
+        QueryBuilder testQuery = QueryBuilders
+            .boolQuery()
+            .filter(firstQuery);
+
+        SearchSourceBuilder expectedSearchSource = SearchSourceBuilder
+            .searchSource()
+            .query(testQuery)
+            .from(start)
+            .size(pageSize);
+
+        String actualSearchSource = CMSElasticSearchSupport.buildCMSBooleanSearchSource(0, 10, firstQuery);
+
+        assertEquals(expectedSearchSource.toString(), actualSearchSource);
+    }
+
+    @Test
+    public void buildCMSBooleanSearchSource_givenThreeQueries() {
+        int pageSize = 5;
+        int start = 0;
+        QueryBuilder firstQuery = QueryBuilders.matchQuery("testKey", "AwaitingDA");
+        QueryBuilder secondQuery = QueryBuilders.existsQuery("EXIST_KEY");
+        QueryBuilder thirdQuery = QueryBuilders.rangeQuery("DATE_KEY").lte("2019-11-02");
+
+
+        QueryBuilder testQuery = QueryBuilders
+            .boolQuery()
+            .filter(firstQuery)
+            .filter(secondQuery)
+            .filter(thirdQuery);
+
+        SearchSourceBuilder expectedSearchSource = SearchSourceBuilder
+            .searchSource()
+            .query(testQuery)
+            .from(start)
+            .size(pageSize);
+
+        String actualSearchSource = CMSElasticSearchSupport.buildCMSBooleanSearchSource(0, 5, firstQuery, secondQuery, thirdQuery);
+
+        assertEquals(expectedSearchSource.toString(), actualSearchSource);
     }
 
     private List<CaseDetails> buildCases(int startId, int caseCount) {

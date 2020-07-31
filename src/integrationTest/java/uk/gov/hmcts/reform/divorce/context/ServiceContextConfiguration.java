@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.divorce.context;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.google.common.collect.ImmutableList;
 import feign.Feign;
 import feign.Request;
@@ -35,6 +35,7 @@ import uk.gov.hmcts.reform.divorce.support.IdamUtils;
 import uk.gov.hmcts.reform.divorce.support.cms.CmsClientSupport;
 import uk.gov.hmcts.reform.divorce.support.cos.CosApiClient;
 import uk.gov.hmcts.reform.divorce.support.cos.DraftsSubmissionSupport;
+import uk.gov.hmcts.reform.divorce.util.ElasticSearchTestHelper;
 
 @Lazy
 @Configuration
@@ -55,6 +56,11 @@ public class ServiceContextConfiguration {
     @Bean
     public DraftsSubmissionSupport getDraftSubmissionSupport() {
         return new DraftsSubmissionSupport();
+    }
+
+    @Bean
+    public ElasticSearchTestHelper getElasticSearchTestHelper() {
+        return new ElasticSearchTestHelper(getCmsClientSupport());
     }
 
     @Bean
@@ -160,7 +166,7 @@ public class ServiceContextConfiguration {
     @Bean
     public ObjectMapper customObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JSR310Module());
+        objectMapper.registerModule(new JavaTimeModule());
         objectMapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);

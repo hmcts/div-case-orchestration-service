@@ -1,7 +1,9 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import org.junit.Test;
+import org.mockito.Mock;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
+import uk.gov.hmcts.reform.divorce.orchestration.util.LocalDateToWelshStringConverter;
 
 import java.time.Clock;
 import java.util.Map;
@@ -13,10 +15,12 @@ import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getObjectMapperInstance;
 
 public class AddDecreeNisiDecisionDateTaskTest {
+    @Mock
+    private LocalDateToWelshStringConverter localDateToWelshStringConverter;
 
     private static final String DN_DECISION_DATE_CCD_FIELD = "DNApprovalDate";
 
-    private CcdUtil ccdUtil = new CcdUtil(Clock.systemDefaultZone(), getObjectMapperInstance());
+    private CcdUtil ccdUtil = new CcdUtil(Clock.systemDefaultZone(), getObjectMapperInstance(), localDateToWelshStringConverter);
 
     @Test
     public void shouldAddDecreeNisiDecisionDateToPayload() {

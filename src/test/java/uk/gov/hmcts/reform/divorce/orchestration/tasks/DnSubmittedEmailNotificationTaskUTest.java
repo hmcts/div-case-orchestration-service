@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -36,6 +37,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
@@ -48,6 +50,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DnSubmittedEmailNotificationTaskUTest {
@@ -64,7 +67,8 @@ public class DnSubmittedEmailNotificationTaskUTest {
                 D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME,
                 D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME,
                 D_8_PETITIONER_EMAIL, TEST_USER_EMAIL,
-                D_8_CASE_REFERENCE, TEST_CASE_FAMILY_MAN_ID
+                D_8_CASE_REFERENCE, TEST_CASE_FAMILY_MAN_ID,
+                LANGUAGE_PREFERENCE_WELSH, YES_VALUE
         );
         TaskContext context = new DefaultTaskContext();
         Map<String, String> notificationTemplateVars = ImmutableMap.of(
@@ -77,7 +81,8 @@ public class DnSubmittedEmailNotificationTaskUTest {
         verify(emailService).sendEmailAndReturnExceptionIfFails(TEST_USER_EMAIL,
             EmailTemplateNames.DN_SUBMISSION.name(),
             notificationTemplateVars,
-            "DN Submission");
+            "DN Submission",
+            LanguagePreference.WELSH);
 
     }
 
@@ -106,7 +111,8 @@ public class DnSubmittedEmailNotificationTaskUTest {
         verify(emailService).sendEmailAndReturnExceptionIfFails(TEST_USER_EMAIL,
             EmailTemplateNames.SOL_APPLICANT_DN_SUBMITTED.name(),
             notificationTemplateVars,
-            "DN Submission");
+            "DN Submission",
+            LanguagePreference.ENGLISH);
 
     }
 
@@ -118,7 +124,7 @@ public class DnSubmittedEmailNotificationTaskUTest {
         Map<String, Object> payload = mock(Map.class);
 
         doThrow(new NotificationClientException(new Exception(TEST_ERROR)))
-                .when(emailService).sendEmailAndReturnExceptionIfFails(any(), any(), any(), any());
+                .when(emailService).sendEmailAndReturnExceptionIfFails(any(), any(), any(), any(), any());
 
         Map<String, Object> taskResponse = target.execute(context, payload);
 
@@ -145,7 +151,8 @@ public class DnSubmittedEmailNotificationTaskUTest {
         verify(emailService).sendEmailAndReturnExceptionIfFails(null,
             EmailTemplateNames.DN_SUBMISSION.name(),
             notificationTemplateVars,
-            "DN Submission");
+            "DN Submission",
+             LanguagePreference.ENGLISH);
 
     }
 

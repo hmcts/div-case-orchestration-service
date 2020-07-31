@@ -4,11 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.TaskCommons;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
@@ -47,6 +49,8 @@ public class PetitionerClarificationSubmittedNotificationEmailTask implements Ta
         String petitionerLastName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME);
         String courtName = getMandatoryPropertyValueAsString(caseData, DIVORCE_UNIT_JSON_KEY);
         String caseReference = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
+        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
+
         Map<String, String> templateVars = new HashMap<>();
         if (StringUtils.isNotBlank(petitionerEmail)) {
             templateVars.put(COURT_NAME_TEMPLATE_ID, taskCommons.getCourt(courtName).getDivorceCentreName());
@@ -57,7 +61,7 @@ public class PetitionerClarificationSubmittedNotificationEmailTask implements Ta
 
             try {
                 emailService.sendEmailAndReturnExceptionIfFails(petitionerEmail,
-                    DECREE_NISI_CLARIFICATION_SUBMISSION.name(), templateVars, EMAIL_DESC);
+                    DECREE_NISI_CLARIFICATION_SUBMISSION.name(), templateVars, EMAIL_DESC, languagePreference);
             } catch (NotificationClientException e) {
                 log.warn("Notification fail for case id: {}", caseReference, e);
                 context.setTransientObject(EMAIL_ERROR_KEY, e.getMessage());

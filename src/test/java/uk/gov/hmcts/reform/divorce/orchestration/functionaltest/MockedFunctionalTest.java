@@ -1,9 +1,11 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
+import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -14,10 +16,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -43,6 +49,8 @@ public abstract class MockedFunctionalTest {
     private static final String APPLICATION_VND_UK_GOV_HMCTS_LETTER_SERVICE_IN_LETTER = "application/vnd.uk.gov.hmcts.letter-service.in.letter";
     protected static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
     private static final String SERVICE_AUTH_CONTEXT_PATH = "/lease";
+    protected static final String GENERATE_DRAFT_DOCUMENT_CONTEXT_PATH = "/version/1/generateDraftPDF";
+    protected static final String CASE_MAINTENANCE_CLIENT_SEARCH_URL = "/casemaintenance/version/1/search";
 
     @ClassRule
     public static WireMockClassRule maintenanceServiceServer = new WireMockClassRule(buildWireMockConfig(4010));
@@ -94,7 +102,34 @@ public abstract class MockedFunctionalTest {
                 .withBody(convertObjectToJsonString(new SendLetterResponse(UUID.randomUUID())))));
     }
 
-    public String stubDocumentGeneratorService(String templateName, Map<String, Object> templateValues, String documentTypeToReturn) {
+    public String stubDraftDocumentGeneratorService(String templateName, Map<String, Object> templateValues, String documentTypeToReturn) {
+        String documentId = UUID.randomUUID().toString();
+
+        final GenerateDocumentRequest generateDocumentRequest =
+            GenerateDocumentRequest.builder()
+                .template(templateName)
+                .values(templateValues)
+                .build();
+
+        final GeneratedDocumentInfo dgsResponse =
+            GeneratedDocumentInfo.builder()
+                .documentType(documentTypeToReturn)
+                .url(getDocumentStoreTestUrl(documentId))
+                .build();
+
+        documentGeneratorServiceServer.stubFor(WireMock.post(GENERATE_DRAFT_DOCUMENT_CONTEXT_PATH)
+            .withRequestBody(equalToJson(convertObjectToJsonString(generateDocumentRequest)))
+            .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
+            .willReturn(aResponse()
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withStatus(HttpStatus.OK.value())
+                .withBody(convertObjectToJsonString(dgsResponse))));
+
+        return documentId;
+    }
+
+    public String stubDocumentGeneratorServiceBaseOnContextPath(String templateName, Map<String, Object> templateValues,
+                                                                String documentTypeToReturn) {
         String documentId = UUID.randomUUID().toString();
 
         final GenerateDocumentRequest generateDocumentRequest =
@@ -120,7 +155,7 @@ public abstract class MockedFunctionalTest {
         return documentId;
     }
 
-    public String stubDocumentGeneratorService(String templateName, String documentTypeToReturn) {
+    public String stubDocumentGeneratorServiceBaseOnContextPath(String templateName, String documentTypeToReturn) {
         String documentId = UUID.randomUUID().toString();
 
         final GeneratedDocumentInfo dgsResponse =
@@ -159,6 +194,75 @@ public abstract class MockedFunctionalTest {
             .willReturn(aResponse()
                 .withStatus(status.value())
                 .withBody(response)));
+    }
+
+    protected void stubCaseMaintenanceSearchEndpoint(List<CaseDetails> casesToReturn, QueryBuilder... expectedQueryBuilders) {
+        SearchResult searchResult = SearchResult.builder()
+            .total(casesToReturn.size())
+            .cases(casesToReturn)
+            .build();
+
+        MappingBuilder mappingBuilder = WireMock.post(CASE_MAINTENANCE_CLIENT_SEARCH_URL);
+
+        if (expectedQueryBuilders.length > 0) {
+            String expectedElasticSearchQuery = CMSElasticSearchSupport.buildCMSBooleanSearchSource(0, 50, expectedQueryBuilders);
+            mappingBuilder = mappingBuilder.withRequestBody(equalTo(expectedElasticSearchQuery));
+        }
+
+        mappingBuilder = mappingBuilder.willReturn(
+            aResponse()
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withStatus(HttpStatus.OK.value())
+                .withBody(convertObjectToJsonString(searchResult))
+        );
+
+        maintenanceServiceServer.stubFor(mappingBuilder);
+    }
+
+    public String stubDocumentGeneratorService(String templateName, Map<String, Object> templateValues, String documentTypeToReturn) {
+        String documentId = UUID.randomUUID().toString();
+
+        final GenerateDocumentRequest generateDocumentRequest =
+            GenerateDocumentRequest.builder()
+                .template(templateName)
+                .values(templateValues)
+                .build();
+
+        final GeneratedDocumentInfo dgsResponse =
+            GeneratedDocumentInfo.builder()
+                .documentType(documentTypeToReturn)
+                .url(getDocumentStoreTestUrl(documentId))
+                .build();
+
+        documentGeneratorServiceServer.stubFor(WireMock.post(GENERATE_DOCUMENT_CONTEXT_PATH)
+            .withRequestBody(equalToJson(convertObjectToJsonString(generateDocumentRequest)))
+            .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
+            .willReturn(aResponse()
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withStatus(HttpStatus.OK.value())
+                .withBody(convertObjectToJsonString(dgsResponse))));
+
+        return documentId;
+    }
+
+    public String stubDocumentGeneratorService(String templateName, String documentTypeToReturn) {
+        String documentId = UUID.randomUUID().toString();
+
+        final GeneratedDocumentInfo dgsResponse =
+            GeneratedDocumentInfo.builder()
+                .documentType(documentTypeToReturn)
+                .url(getDocumentStoreTestUrl(documentId))
+                .build();
+
+        documentGeneratorServiceServer.stubFor(WireMock.post(GENERATE_DOCUMENT_CONTEXT_PATH)
+            .withRequestBody(matchingJsonPath("$.template", equalTo(templateName)))
+            .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
+            .willReturn(aResponse()
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withStatus(HttpStatus.OK.value())
+                .withBody(convertObjectToJsonString(dgsResponse))));
+
+        return documentId;
     }
 
     protected final void resetAllMockServices() {

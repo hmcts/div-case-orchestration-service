@@ -22,11 +22,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_COSTS_ENDCLAIM_VALUE;
@@ -39,6 +37,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 
 public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
     private static final String API_URL = "/generate-dn-pronouncement-documents";
+    private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
+    private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
+    private  static final String COSTS_ORDER_TEMPLATE_ID = "FL-DIV-DEC-ENG-00060.docx";
+    private static final String DECREE_NISI_TEMPLATE_ID = "FL-DIV-GNO-ENG-00021.docx";
 
     private static final Map<String, Object> CASE_DATA = ImmutableMap.of(
         DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE,
@@ -105,7 +107,7 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
 
     @Test
     public void happyPathWithCostsOrder() throws Exception {
-        String firstDocumentId = stubDocumentGeneratorService(DECREE_NISI_TEMPLATE_ID,
+        String firstDocumentId = stubDocumentGeneratorServiceBaseOnContextPath(DECREE_NISI_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS),
             DECREE_NISI_DOCUMENT_TYPE);
 
@@ -116,7 +118,7 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
                     DECREE_NISI_DOCUMENT_TYPE,
                     DECREE_NISI_FILENAME + TEST_CASE_ID)
             )).build();
-        stubDocumentGeneratorService(COSTS_ORDER_TEMPLATE_ID, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
+        stubDocumentGeneratorServiceBaseOnContextPath(COSTS_ORDER_TEMPLATE_ID, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
             CaseDetails.builder()
                 .caseData(caseDataWithFirstDocumentAdded)
                 .caseId(TEST_CASE_ID)
@@ -149,7 +151,8 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
             .caseDetails(caseDetails)
             .build();
 
-        stubDocumentGeneratorService(DECREE_NISI_TEMPLATE_ID, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails), DECREE_NISI_DOCUMENT_TYPE);
+        stubDocumentGeneratorServiceBaseOnContextPath(DECREE_NISI_TEMPLATE_ID,
+            singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails), DECREE_NISI_DOCUMENT_TYPE);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
@@ -180,7 +183,8 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
             .caseDetails(caseDetails)
             .build();
 
-        stubDocumentGeneratorService(DECREE_NISI_TEMPLATE_ID, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails), DECREE_NISI_DOCUMENT_TYPE);
+        stubDocumentGeneratorServiceBaseOnContextPath(DECREE_NISI_TEMPLATE_ID,
+            singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails), DECREE_NISI_DOCUMENT_TYPE);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 

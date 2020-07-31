@@ -36,7 +36,11 @@ public class OrchestrationConstants {
     public static final String IS_RESPONDENT = "isRespondent";
 
     // Core Case Data
+    /**
+     * This solution will be removed from CCD, see https://tools.hmcts.net/jira/browse/RDM-6970 for more details
+     */
     public static final String STATE_CCD_FIELD = "state";
+
     public static final String CASE_DETAILS_JSON_KEY = "case_details";
     public static final String CASE_EVENT_DATA_JSON_KEY = "eventData";
     public static final String CASE_EVENT_ID_JSON_KEY = "eventId";
@@ -120,6 +124,10 @@ public class OrchestrationConstants {
     public static final String PERSONAL_SERVICE_VALUE = "personalService";
     public static final String NOT_DEFENDING_NOT_ADMITTING = "NoNoAdmission";
     public static final String PREVIOUS_CASE_ID_CCD_KEY = "PreviousCaseId";
+    public static final String WELSH_NEXT_EVENT = "WelshNextEvent";
+    public static final String WELSH_PREVIOUS_STATE = "WelshPreviousState";
+    public static final String AMENDED_CASE_ID_CCD_KEY = "AmendedCaseId";
+    public static final String CASE_REFERENCE_CCD_KEY = "CaseReference";
 
     //This is misspelled in the CCD definition file
     public static final String D_8_REASON_FOR_DIVORCE_SEPARATION_DAY = "D8ReasonForDivorceSeperationDay";
@@ -129,11 +137,16 @@ public class OrchestrationConstants {
     //CCD DN fields
     public static final String DN_OUTCOME_FLAG_CCD_FIELD = "DnOutcomeCase";
     public static final String REFUSAL_DECISION_CCD_FIELD = "RefusalDecision";
+    public static final String REFUSAL_REJECTION_ADDITIONAL_INFO = "RefusalRejectionAdditionalInfo";
+    public static final String REFUSAL_REJECTION_ADDITIONAL_INFO_WELSH = "RefusalRejectionAdditionalInfoWelsh";
+    public static final String REFUSAL_CLARIFICATION_ADDITIONAL_INFO = "RefusalClarificationAdditionalInfo";
+    public static final String REFUSAL_CLARIFICATION_ADDITIONAL_INFO_WELSH = "RefusalClarificationAdditionalInfoWelsh";
     public static final String REFUSAL_DECISION_MORE_INFO_VALUE = "moreInfo";
     public static final String DN_REFUSED_REJECT_OPTION = "reject";
     public static final String DN_REFUSED_ADMIN_ERROR_OPTION = "adminError";
     public static final String DN_APPLICATION_SUBMITTED_DATE = "DNApplicationSubmittedDate";
     public static final String DN_REFUSAL_DRAFT = "DNRefusalDraft";
+    public static final String SERVICE_APPLICATION_GRANTED = "serviceApplicationGranted";
 
     // CCD Events
     public static final String DN_RECEIVED = "dnReceived";
@@ -146,6 +159,12 @@ public class OrchestrationConstants {
     public static final String AWAITING_DN_AOS_EVENT_ID = "aosSubmittedUndefended";
     public static final String AWAITING_ANSWER_AOS_EVENT_ID = "aosSubmittedDefended";
     public static final String COMPLETED_AOS_EVENT_ID = "aosReceivedNoAdConStarted";
+    public static final String BO_WELSH_AOS_SUBMITTED_DEFENDED_EVENT_ID = "boWelshAosSubmittedDefended";
+    public static final String BO_WELSH_DN_RECEIVED_EVENT_ID = "boDnReceived";
+    public static final String BO_WELSH_DN_RECEIVED_AOS_COMPLETED_EVENT_ID = "boDnReceivedAosCompleted";
+    public static final String BO_WELSH_SUBMIT_DN_CLARIFICATION_EVENT_ID = "boSubmitDnClarification";
+    public static final String BO_WELSH_AOS_RECEIVED_NO_AD_CON_STARTED_EVENT_ID = "boWelshAosReceivedNoAdConStarted";
+    public static final String BO_WELSH_AOS_SUBMITTED_UNDEFENDED_EVENT_ID = "boWelshAosSubmittedUndefended";
     public static final String AOS_NOMINATE_SOLICITOR = "aosNominateSol";
     public static final String SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID = "solAosSubmittedDefended";
     public static final String SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID = "solAosSubmittedUndefended";
@@ -155,30 +174,10 @@ public class OrchestrationConstants {
     public static final String PAYMENT_MADE_EVENT = "paymentMade";
     public static final String MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER_EVENT_ID = "MakeEligibleForDA_Petitioner";
     public static final String MAKE_CASE_DA_OVERDUE_EVENT_ID = "DecreeAbsoluteOverdue";
-    public static final String AWAITING_DECREE_ABSOLUTE = "AwaitingDecreeAbsolute";
-    public static final String SOLICITOR_CREATE_EVENT = "solicitorCreate";
     public static final String SOLICITOR_SUBMIT_EVENT = "solicitorStatementOfTruthPaySubmit";
-
-    // CCD Case States
-    public static final String AOS_AWAITING = "AosAwaiting";
-    public static final String AOS_AWAITING_SOLICITOR = "AosAwaitingSol";
-    public static final String AOS_COMPLETED = "AosCompleted";
-    public static final String AOS_OVERDUE = "AosOverdue";
-    public static final String AOS_STARTED = "AosStarted";
-    public static final String AOS_SUBMITTED_AWAITING_ANSWER = "AosSubmittedAwaitingAnswer";
-    public static final String AWAITING_DECREE_NISI = "AwaitingDecreeNisi";
-    public static final String AWAITING_LEGAL_ADVISOR_REFERRAL = "AwaitingLegalAdvisorReferral";
-    public static final String AWAITING_PRONOUNCEMENT = "AwaitingPronouncement";
-    public static final String AWAITING_CLARIFICATION = "AwaitingClarification";
-    public static final String AWAITING_REISSUE = "AwaitingReissue";
-    public static final String DEFENDED = "DefendedDivorce";
-    public static final String DN_PRONOUNCED = "DNPronounced";
-    public static final String AWAITING_DA = "AwaitingDecreeAbsolute";
-    public static final String DN_REFUSED = "DNisRefused";
-    public static final String AWAITING_ADMIN_CLARIFICATION = "AwaitingAdminClarification";
-    public static final String DA_REQUESTED = "DARequested";
-    public static final String DA_OVERDUE = "DAOverdue";
-    public static final String DIVORCE_GRANTED = "DivorceGranted";
+    public static final String BO_WELSH_REVIEW = "boWelshReview";
+    public static final String BO_WELSH_DN_RECEIVED_REVIEW = "boWelshDnReceivedReview";
+    public static final String BO_WELSH_GRANT_DN_MAKE_DECISION = "boWelshGrantDnMakeDecision";
 
     // CCD Co-Respondent Fields
     public static final String CO_RESP_LINKED_TO_CASE = "CoRespLinkedToCase";
@@ -212,6 +211,7 @@ public class OrchestrationConstants {
     public static final String RESPONDENT_PIN = "pin";
     public static final String CO_RESPONDENT_PIN = "coRespondentPin";
     public static final String SUCCESS_STATUS = "success";
+    public static final String DOCUMENT_TYPE_RESPONDENT_ANSWERS = "respondentAnswers";
     /*
        Unfortunately, "court" is the name that is already used in the Divorce session format in many places, although it holds a list of courts.
        Changing it now would probably be more trouble than it's worth. At least our constant can be called the right thing.
@@ -223,12 +223,10 @@ public class OrchestrationConstants {
     public static final String COSTS_CLAIM_GRANTED = "costs claim granted";
     public static final String COSTS_CLAIM_NOT_GRANTED = "costs claim not granted";
     public static final String DATE_OF_HEARING = "date of hearing";
+    public static final String WELSH_DATE_OF_HEARING = "welsh date of hearing";
     public static final String LIMIT_DATE_TO_CONTACT_COURT = "limit date to contact court";
+    public static final String WELSH_LIMIT_DATE_TO_CONTACT_COURT = "welsh limit date to contact court";
     public static final Period PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT = Period.ofWeeks(2);
-
-    // Case state
-    public static final String AWAITING_PAYMENT = "AwaitingPayment";
-    public static final String AWAITING_HWF_DECISION = "AwaitingHWFDecision";
 
     // Notification
     public static final String NOTIFICATION_EMAIL = "email address";
@@ -239,8 +237,10 @@ public class OrchestrationConstants {
     public static final String NOTIFICATION_ADDRESSEE_LAST_NAME_KEY = "last name";
     public static final String NOTIFICATION_EMAIL_ADDRESS_KEY = "email address";
     public static final String NOTIFICATION_HUSBAND_OR_WIFE = "husband or wife";
+    public static final String NOTIFICATION_WELSH_HUSBAND_OR_WIFE = "welsh husband or wife";
     public static final String NOTIFICATION_FEES_KEY = "fees";
     public static final String NOTIFICATION_RELATIONSHIP_KEY = "relationship";
+    public static final String NOTIFICATION_WELSH_RELATIONSHIP_KEY = "welsh relationship";
     public static final String NOTIFICATION_CCD_REFERENCE_KEY = "CCD reference";
     public static final String NOTIFICATION_REFERENCE_KEY = "ref";
     public static final String NOTIFICATION_CASE_NUMBER_KEY = "case number";
@@ -252,9 +252,12 @@ public class OrchestrationConstants {
     public static final String NOTIFICATION_OPTIONAL_TEXT_YES_VALUE = "yes";
     public static final String NOTIFICATION_OPTIONAL_TEXT_NO_VALUE = "no";
     public static final String NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE = "limit date to download certificate";
+    public static final String NOTIFICATION_WELSH_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE
+        = "welsh limit date to download certificate";
     public static final String NOTIFICATION_PET_NAME = "petitioner name";
     public static final String NOTIFICATION_RESP_NAME = "respondent name";
     public static final String NOTIFICATION_SOLICITOR_NAME = "solicitor name";
+    public static final String NOTIFICATION_WELSH_FORM_SUBMISSION_DATE_LIMIT_KEY = "welsh form submission date limit";
 
     // CCD Respondent Fields
     public static final String RECEIVED_AOS_FROM_RESP = "ReceivedAOSfromResp";
@@ -282,18 +285,12 @@ public class OrchestrationConstants {
     public static final String DOCUMENT_EXTENSION = ".pdf";
     public static final String DOCUMENT_CASE_DETAILS_JSON_KEY = "caseDetails";
     public static final String DOCUMENT_TYPE_RESPONDENT_INVITATION = "aos";
-    public static final String DOCUMENT_TYPE_RESPONDENT_ANSWERS = "respondentAnswers";
     public static final String DOCUMENT_TYPE_PETITION = "petition";
     public static final String RESPONDENT_INVITATION_FILE_NAME_FORMAT = "aosinvitation%s";
     public static final String MINI_PETITION_FILE_NAME_FORMAT = "d8petition%s";
-    public static final String MINI_PETITION_TEMPLATE_NAME = "divorceminipetition";
-    public static final String DRAFT_MINI_PETITION_TEMPLATE_NAME = "divorcedraftminipetition";
-    public static final String RESPONDENT_INVITATION_TEMPLATE_NAME = "aosinvitation";
     public static final String DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS = "coRespondentAnswers";
     public static final String DOCUMENT_TYPE_CO_RESPONDENT_INVITATION = "aoscr";
-    public static final String CO_RESPONDENT_ANSWERS_TEMPLATE_NAME = "co-respondent-answers";
     public static final String CO_RESPONDENT_INVITATION_FILE_NAME_FORMAT = "co-respondentaosinvitation%s";
-    public static final String CO_RESPONDENT_INVITATION_TEMPLATE_NAME = "co-respondentinvitation";
     public static final String PETITION_ISSUE_FEE_FOR_LETTER = "petitionIssueFee";
     public static final String DOCUMENT_COLLECTION = "documentCollection";
     public static final String DOCUMENT_TYPE = "documentType";
@@ -303,14 +300,9 @@ public class OrchestrationConstants {
     public static final String DOCUMENT_FILENAME_FMT = "%s%s";
     public static final String DOCUMENTS_GENERATED = "DocumentsGenerated";
     public static final String COSTS_ORDER_DOCUMENT_TYPE = "costsOrder";
-    public static final String COSTS_ORDER_TEMPLATE_ID = "FL-DIV-DEC-ENG-00060.docx";
     public static final String DECREE_NISI_DOCUMENT_TYPE = "dnGranted";
     public static final String DECREE_NISI_FILENAME = "decreeNisi";
-    public static final String DECREE_NISI_TEMPLATE_ID = "FL-DIV-GNO-ENG-00021.docx";
     public static final String DOCUMENT_TYPE_DN_ANSWERS = "dnAnswers";
-    public static final String DN_ANSWERS_TEMPLATE_ID = "FL-DIV-GNO-ENG-00022.docx";
-    public static final String DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00088.docx";
-    public static final String DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00098.docx";
     public static final String DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE = "d79";
     public static final String DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME = "clarificationDnRefusalOrder";
     public static final String DECREE_NISI_REFUSAL_REJECTION_DOCUMENT_NAME = "rejectionDnRefusalOrder";
@@ -319,16 +311,12 @@ public class OrchestrationConstants {
     public static final String DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_DOCUMENT_TYPE = "daGrantedLetter";
     public static final String DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER_DOCUMENT_TYPE = "daGrantedLetterSol";
     public static final String DECREE_ABSOLUTE_FILENAME = "decreeAbsolute";
-    public static final String DECREE_ABSOLUTE_TEMPLATE_ID = "FL-DIV-GOR-ENG-00062.docx";
-    public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID = "FL-DIV-GNO-ENG-00073.docx";
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_FILENAME = "solicitor-personal-service-";
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE = "personalService";
     public static final String FEE_TO_PAY_JSON_KEY = "FeeToPay";
 
     //Bulk print letter types
     public static final String DA_GRANTED_OFFLINE_PACK_RESPONDENT = "da-granted-offline-pack-respondent";
-    public static final String COE_OFFLINE_PACK_RESPONDENT = "coe-offline-pack-respondent";
-    public static final String COST_ORDER_OFFLINE_PACK_CO_RESPONDENT = "co-respondent-offline-pack-respondent";
 
     public static final String DOCUMENT_TYPE_COE = "coe";
     public static final String DOCUMENT_TYPE_OTHER = "other";
@@ -348,6 +336,9 @@ public class OrchestrationConstants {
     public static final String SERVICE = "DIVORCE";
 
     // Solicitors - Suggest refactoring into a common model library for all JSON keys
+    public static final String COSTS_ORDER_ADDITIONAL_INFO = "CostsOrderAdditionalInfo";
+    public static final String COSTS_ORDER_ADDITIONAL_INFO_WELSH = "CostsOrderAdditionalInfoWelsh";
+    public static final String ADDITIONAL_INFRORMATION = "additionalInformation";
     public static final String SOLICITOR_HOW_TO_PAY_JSON_KEY = "SolPaymentHowToPay";
     public static final String SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY = "SolicitorFeeAccountNumber";
     public static final String SOLICITOR_FIRM_JSON_KEY = "PetitionerSolicitorFirm";
@@ -363,6 +354,9 @@ public class OrchestrationConstants {
     public static final String D8DOCUMENTS_GENERATED = "D8DocumentsGenerated";
     public static final String PETITIONER_SOLICITOR_EMAIL = "PetitionerSolicitorEmail";
     public static final String PETITIONER_SOLICITOR_NAME = "PetitionerSolicitorName";
+    public static final String PETITIONER_SOLICITOR_PHONE = "PetitionerSolicitorPhone";
+    public static final String PETITIONER_SOLICITOR_DERIVED_ADDRESS = "DerivedPetitionerSolicitorAddr";
+    public static final String PETITIONER_SOLICITOR_AGREES_EMAIL_CONTACT = "SolicitorAgreeToReceiveEmails";
 
     // Payment
     public static final String PAYMENT = "payment";
@@ -387,8 +381,6 @@ public class OrchestrationConstants {
     public static final String PAYMENT_FEE_ID_KEY = "PaymentFeeId";
     public static final String PAYMENT_SITE_ID_KEY = "PaymentSiteId";
 
-    public static final String SEARCH_PAGE_KEY = "SEARCH_PAGE";
-
     // DA related
     public static final String AWAITING_DA_PERIOD_KEY = "awaitingDAPeriod";
     public static final String DA_OVERDUE_PERIOD_KEY = "daOverduePeriod";
@@ -397,7 +389,6 @@ public class OrchestrationConstants {
 
     // Validation
     public static final String ERROR_STATUS = "error";
-    public static final String FORM_ID = "case-progression";
     public static final String UPDATE_RESPONDENT_DATA_ERROR_KEY = "respondent.data.not.updated_Error";
     public static final String SOLICITOR_VALIDATION_ERROR_KEY
         = "uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSolicitorCaseData_Error";
@@ -410,11 +401,15 @@ public class OrchestrationConstants {
 
     // Elastic Search
     public static final String ES_CASE_ID_KEY = "reference";
-    public static final String QUERY_BUILDERS = "queryBuilders";
 
     // Case Data Formatter Meta Fields
     public static final String FORMATTER_CASE_DATA_KEY = "caseData";
     public static final String FORMATTER_DIVORCE_SESSION_KEY = "divorceSession";
+
+    // Language preference
+    public static final String LANGUAGE_PREFERENCE_WELSH = "LanguagePreferenceWelsh";
+    public static final String TEMPLATE_RELATION = "relation";
+    public static final String TEMPLATE_MONTHS = "months";
 
     // Bulk Scan
     public static final String CASE_TYPE_ID = "DIVORCE";
