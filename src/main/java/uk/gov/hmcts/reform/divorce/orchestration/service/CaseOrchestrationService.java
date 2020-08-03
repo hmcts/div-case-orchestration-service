@@ -47,8 +47,7 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> deleteDraft(String authorizationToken) throws WorkflowException;
 
-    Map<String, Object> sendPetitionerSubmissionNotificationEmail(CcdCallbackRequest ccdCallbackRequest)
-        throws WorkflowException;
+    Map<String, Object> sendPetitionerSubmissionNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 
     Map<String, Object> sendPetitionerGenericUpdateNotificationEmail(CcdCallbackRequest ccdCallbackRequest)
         throws WorkflowException;

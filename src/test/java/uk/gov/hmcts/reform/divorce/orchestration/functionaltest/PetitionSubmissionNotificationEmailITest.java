@@ -59,25 +59,26 @@ public class PetitionSubmissionNotificationEmailITest extends MockedFunctionalTe
             .build();
 
         ccdCallbackRequest = CcdCallbackRequest.builder()
-                .caseDetails(caseDetails)
-                .build();
+            .caseDetails(caseDetails)
+            .build();
     }
 
     @Test
     public void givenCaseData_whenGetPetitionIssueFee_thenReturnUpdatedResponseWithFees() throws Exception {
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
-                .data(caseData)
-                .build();
+            .data(caseData)
+            .build();
 
         webClient.perform(post(API_URL)
-                .content(convertObjectToJsonString(ccdCallbackRequest))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().json(convertObjectToJsonString(expected)));
+            .content(convertObjectToJsonString(ccdCallbackRequest))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(expected)));
 
         verify(emailClient).sendEmail(eq(PETITION_SUBMITTED_TEMPLATE_ID),
-                eq(TEST_USER_EMAIL),
-                any(), any());
+            eq(TEST_USER_EMAIL),
+            any(), any());
     }
+
 }

@@ -93,6 +93,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonMap;
@@ -102,6 +103,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.junit.rules.ExpectedException.none;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -674,14 +676,27 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void givenCaseData_whenSendPetitionerSubmissionNotification_thenReturnPayload() throws Exception {
-        when(sendPetitionerSubmissionNotificationWorkflow.run(ccdCallbackRequest))
-            .thenReturn(requestPayload);
+        when(sendPetitionerSubmissionNotificationWorkflow.run(ccdCallbackRequest)).thenReturn(requestPayload);
 
         Map<String, Object> actual = classUnderTest.sendPetitionerSubmissionNotificationEmail(ccdCallbackRequest);
 
         assertEquals(requestPayload, actual);
-
         verify(sendPetitionerSubmissionNotificationWorkflow).run(ccdCallbackRequest);
+    }
+
+    @Test
+    public void shouldThrowException_whenSendPetitionerSubmissionNotification_throwsWorkflowException() throws Exception {
+        when(sendPetitionerSubmissionNotificationWorkflow.run(ccdCallbackRequest)).thenThrow(WorkflowException.class);
+
+        try {
+            classUnderTest.sendPetitionerSubmissionNotificationEmail(ccdCallbackRequest);
+            fail("Should have caught exception");
+        } catch (CaseOrchestrationServiceException exception) {
+            assertThat(exception.getCause(), instanceOf(WorkflowException.class));
+            Optional<String> caseId = exception.getCaseId();
+            assertThat(caseId.isPresent(), is(true));
+            assertThat(caseId.get(), is(TEST_CASE_ID));
+        }
     }
 
     @Test

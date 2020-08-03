@@ -254,14 +254,19 @@ public class CallbackController {
         @ApiResponse(code = 200, message = "Email sent to Petitioner that their application has been submitted",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
-    public ResponseEntity<CcdCallbackResponse> petitionSubmitted(
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+    public ResponseEntity<CcdCallbackResponse> petitionSubmitted(@RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
-        caseOrchestrationService.sendPetitionerSubmissionNotificationEmail(ccdCallbackRequest);
+        CcdCallbackResponse.CcdCallbackResponseBuilder ccdCallbackResponseBuilder = CcdCallbackResponse.builder();
 
-        return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .data(ccdCallbackRequest.getCaseDetails().getCaseData())
-            .build());
+        try {
+            caseOrchestrationService.sendPetitionerSubmissionNotificationEmail(ccdCallbackRequest);
+            ccdCallbackResponseBuilder.data(ccdCallbackRequest.getCaseDetails().getCaseData());
+        } catch (CaseOrchestrationServiceException exception) {
+            log.error(exception.getIdentifiableMessage(), exception);
+            ccdCallbackResponseBuilder.errors(ImmutableList.of(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
     }
 
     @PostMapping(path = "/petition-updated", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
