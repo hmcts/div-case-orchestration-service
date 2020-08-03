@@ -434,7 +434,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> sendPetitionerSubmissionNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+    public Map<String, Object> sendPetitionerSubmissionNotificationEmail(CcdCallbackRequest ccdCallbackRequest)
+        throws CaseOrchestrationServiceException {
         try {
             return sendPetitionerSubmissionNotificationWorkflow.run(ccdCallbackRequest);
         } catch (WorkflowException exception) {
