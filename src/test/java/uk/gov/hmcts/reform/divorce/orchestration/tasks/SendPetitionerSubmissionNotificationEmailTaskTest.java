@@ -236,7 +236,7 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
     }
 
     @Test
-    public void shouldNotCallEmailService_whenNewCaseAndPetitionerEmailDoesntExist() throws TaskException {
+    public void shouldNotCallEmailService_whenNewCaseAndPetitionerEmailDoesNotExist() throws TaskException {
         addPetitionerTestData();
         testData.remove(D_8_PETITIONER_EMAIL);
         testData.remove(PREVIOUS_CASE_ID_CCD_KEY);
