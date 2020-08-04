@@ -145,7 +145,7 @@ allprojects {
             }
 
             // solves CVE-2014-3488, CVE-2015-2156, CVE-2019-16869
-            dependencySet(group: 'io.netty', version: '4.1.49.Final') {
+            dependencySet(group: 'io.netty', version: '4.1.51.Final') {
                 entry 'netty-buffer'
                 entry 'netty-codec'
                 entry 'netty-codec-http'
@@ -174,7 +174,7 @@ apply plugin: 'net.serenity-bdd.aggregator'
 
 group = 'uk.gov.hmcts.reform.divorce'
 version = '0.0.1'
-sourceCompatibility = 1.11
+sourceCompatibility = 11
 
 bootJar {
     manifest {
@@ -277,7 +277,6 @@ dependencies {
     implementation group: 'uk.gov.hmcts.reform', name: 'logging-httpcomponents', version: versions.reformsJavaLogging
     implementation group: 'uk.gov.hmcts.reform', name: 'logging-spring', version: versions.reformsJavaLogging
     implementation group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: versions.reformHealth
-    implementation group: 'uk.gov.hmcts.reform', name: 'http-proxy-spring-boot-autoconfigure', version: versions.reformSpringBootAutoConfigure
     implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: versions.reformPropertiesVolume
     implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: versions.serviceTokenGenerator
     implementation group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: versions.sendLetterClient
@@ -322,7 +321,7 @@ dependencies {
     runtimeOnly('org.springframework.boot:spring-boot-devtools')
 
     testImplementation group: 'org.awaitility', name: 'awaitility', version: versions.awaitility
-    testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '2.2.3.RELEASE'
+    testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '2.2.4.RELEASE'
     testImplementation(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
         exclude(module: 'commons-logging')
         exclude(module: 'android-json')
