@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FULL_NAME;
@@ -45,7 +46,7 @@ public class OrderToDispenseGenerationTaskTest extends BasePayloadSpecificDocume
     }
 
     @Test
-    public void executeShouldPopulateDate() throws TaskException {
+    public void executeShouldGenerateAFile() throws TaskException {
         Map<String, Object> caseData = buildCaseData();
 
         OrderToDispense orderToDispense = OrderToDispense.orderToDispenseBuilder()
@@ -67,6 +68,8 @@ public class OrderToDispenseGenerationTaskTest extends BasePayloadSpecificDocume
             orderToDispenseGenerationTask.getTemplateId(),
             orderToDispense
         );
+
+        assertNotNull(returnedCaseData);
     }
 
     private Map<String, Object> buildCaseData() {

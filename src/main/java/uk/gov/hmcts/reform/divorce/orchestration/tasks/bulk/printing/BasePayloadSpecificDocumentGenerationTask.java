@@ -47,7 +47,7 @@ public abstract class BasePayloadSpecificDocumentGenerationTask implements Task<
         return ccdUtil.addNewDocumentsToCaseData(caseData, singletonList(documentInfo));
     }
 
-    protected abstract DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) throws TaskException;
+    protected abstract DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData);
 
     protected GeneratedDocumentInfo generatePdf(TaskContext context, DocmosisTemplateVars templateModel) throws TaskException {
         log.info("Case {}: Generating document from {}", getCaseId(context), getTemplateId());
