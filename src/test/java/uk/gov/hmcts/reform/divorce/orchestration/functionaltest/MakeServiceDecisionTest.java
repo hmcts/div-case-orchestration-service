@@ -46,7 +46,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHel
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateFromLocalDate;
 
-public class MakeServiceDecisionDateTest extends IdamTestSupport {
+public class MakeServiceDecisionTest extends IdamTestSupport {
 
     private static final String API_URL = "/make-service-decision";
 
