@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.Docmosi
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.OrderToDispense;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor;
@@ -14,8 +15,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BasePayload
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.Map;
-
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 
 @Component
 public class OrderToDispenseGenerationTask extends BasePayloadSpecificDocumentGenerationTask {
@@ -36,7 +35,7 @@ public class OrderToDispenseGenerationTask extends BasePayloadSpecificDocumentGe
     @Override
     protected DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) {
         return OrderToDispense.orderToDispenseBuilder()
-            .caseReference(getCaseId(context))
+            .caseReference(CaseDataExtractor.getCaseReference(caseData))
             .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
             .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
             .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))

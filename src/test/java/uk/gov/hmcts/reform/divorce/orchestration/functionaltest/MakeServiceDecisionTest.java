@@ -27,6 +27,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_FAMILY_MAN_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
@@ -38,6 +39,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.S
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DISPENSED;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.getCaseReference;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
@@ -92,12 +95,16 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
     private Map<String, Object> buildInputCaseData() {
         Map<String, Object> caseData = new HashMap<>();
 
+        caseData.put(CASE_REFERENCE, TEST_CASE_FAMILY_MAN_ID);
+
         caseData.put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         caseData.put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
         caseData.put(RESPONDENT_FIRST_NAME, TEST_RESPONDENT_FIRST_NAME);
         caseData.put(RESPONDENT_LAST_NAME, TEST_RESPONDENT_LAST_NAME);
+
         caseData.put(RECEIVED_SERVICE_APPLICATION_DATE, "2010-10-10");
         caseData.put(SERVICE_APPLICATION_TYPE, DISPENSED);
+
         return caseData;
     }
 
@@ -109,7 +116,7 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
             OrderToDispenseGenerationTask.FileMetadata.TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
                 ImmutableMap.of(
-                    "id", TEST_CASE_ID,
+                    "id", getCaseReference(caseDataBeforeGeneratingPdf),
                     "case_data", buildOrderToDispense(caseDataBeforeGeneratingPdf)
                 )
             ),
@@ -133,7 +140,7 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
 
     private OrderToDispense buildOrderToDispense(Map<String, Object> caseData) {
         return OrderToDispense.orderToDispenseBuilder()
-            .caseReference(TEST_CASE_ID)
+            .caseReference(TEST_CASE_FAMILY_MAN_ID)
             .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
             .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
             .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
