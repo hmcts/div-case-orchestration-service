@@ -42,10 +42,10 @@ public class MakeServiceDecisionDateWorkflow extends DefaultWorkflow<Map<String,
         tasks.add(makeServiceDecisionDateTask);
 
         if (isServiceApplicationDispensed(caseDetails.getCaseData())) {
-            log.info("CaseID: {} application type = disperse. Order to dispense will be generated", caseId);
+            log.info("CaseID: {} application type = dispensed. Order to Dispense will be generated", caseId);
             tasks.add(orderToDispenseGenerationTask);
         } else {
-            log.info("CaseID: {} application type is not disperse. No pdf will be generated", caseId);
+            log.info("CaseID: {} application type is not dispensed. No pdf will be generated", caseId);
         }
 
         return this.execute(
