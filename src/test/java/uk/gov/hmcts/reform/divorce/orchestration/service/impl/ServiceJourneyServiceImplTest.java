@@ -21,6 +21,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DN_APPLICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
@@ -64,9 +65,9 @@ public class ServiceJourneyServiceImplTest extends TestCase {
         Map<String, Object> payload = ImmutableMap.of(CcdFields.SERVICE_APPLICATION_GRANTED, decision);
         CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
 
-        when(makeServiceDecisionDateWorkflow.run(caseDetails)).thenReturn(payload);
+        when(makeServiceDecisionDateWorkflow.run(caseDetails, AUTH_TOKEN)).thenReturn(payload);
 
-        CcdCallbackResponse response = classUnderTest.makeServiceDecision(caseDetails);
+        CcdCallbackResponse response = classUnderTest.makeServiceDecision(caseDetails, AUTH_TOKEN);
 
         assertThat(response.getState(), is(expectedState));
     }
