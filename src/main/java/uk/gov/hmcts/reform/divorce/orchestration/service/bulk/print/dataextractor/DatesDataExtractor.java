@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextract
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -24,6 +25,8 @@ public class DatesDataExtractor {
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class CaseDataKeys {
         public static final String DA_GRANTED_DATE = OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
+        public static final String RECEIVED_SERVICE_APPLICATION_DATE = CcdFields.RECEIVED_SERVICE_APPLICATION_DATE;
+        public static final String SERVICE_APPLICATION_DECISION_DATE = CcdFields.SERVICE_APPLICATION_DECISION_DATE;
     }
 
     public static String getHearingDate(Map<String, Object> caseData) {
@@ -38,6 +41,18 @@ public class DatesDataExtractor {
 
     public static String getLetterDate() {
         return formatDateWithCustomerFacingFormat(LocalDate.now(ZONE_ID));
+    }
+
+    public static String getReceivedServiceApplicationDate(Map<String, Object> caseData) {
+        return formatDateWithCustomerFacingFormat(
+            getMandatoryStringValue(caseData, CaseDataKeys.RECEIVED_SERVICE_APPLICATION_DATE)
+        );
+    }
+
+    public static String getServiceApplicationDecisionDate(Map<String, Object> caseData) {
+        return formatDateWithCustomerFacingFormat(
+            getMandatoryStringValue(caseData, CaseDataKeys.SERVICE_APPLICATION_DECISION_DATE)
+        );
     }
 
     public static String getDaGrantedDate(Map<String, Object> caseData) {
