@@ -56,10 +56,10 @@ public class MakeServiceDecisionDateWorkflow extends DefaultWorkflow<Map<String,
                 log.info("CaseID: {} application type = deemed. Deemed Service Order will be generated.", caseId);
                 tasks.add(deemedServiceOrderGenerationTask);
             } else {
-                log.info("CaseID: {} application type != is dispensed/deemed. No pdf will be generated.", caseId);
+                log.info("CaseID: {} application type != dispensed/deemed. No pdf will be generated.", caseId);
             }
         } else {
-            log.info("CaseID: {} Service application is not greanted. No pdf will be generated.", caseId);
+            log.info("CaseID: {} Service application is not granted. No pdf will be generated.", caseId);
         }
 
         return this.execute(
