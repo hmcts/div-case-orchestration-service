@@ -20,4 +20,9 @@ public interface FeesAndPaymentsClient {
     @GetMapping(value = "/fees-and-payments/version/1/amend-fee",
         headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE)
     FeeResponse getAmendPetitionerFee();
+
+    @ApiOperation("Returns General Application Without Notice Fee")
+    @GetMapping(value = "/fees-and-payments/version/1/general-application-without-notice-fee",
+        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE)
+    FeeResponse getGeneralApplicationWithoutFee();
 }

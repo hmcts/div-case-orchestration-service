@@ -1447,4 +1447,21 @@ public class CallbackControllerTest {
         assertThat(response.getStatusCode(), equalTo(OK));
         assertThat(response.getBody().getErrors(), is(nullValue()));
     }
+
+    @Test
+    public void testX() throws WorkflowException {
+        when(serviceJourneyService.makeServiceDecision(any()))
+            .thenReturn(CcdCallbackResponse.builder().build());
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .state(AWAITING_DN_APPLICATION)
+                .build())
+            .build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.makeServiceDecision(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+    }
 }

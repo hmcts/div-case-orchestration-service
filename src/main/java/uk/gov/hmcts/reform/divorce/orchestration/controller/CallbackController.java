@@ -1144,6 +1144,19 @@ public class CallbackController {
         return ResponseEntity.ok(serviceJourneyService.makeServiceDecision(ccdCallbackRequest.getCaseDetails()));
     }
 
+    @PostMapping(path = "/fee-lookup")
+    @ApiOperation(value = "Return fee.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Fee Lookup Callback")})
+    public ResponseEntity<CcdCallbackResponse> getOrderSummaryFee(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(caseOrchestrationService.getOrderSummaryFee(ccdCallbackRequest))
+                .build());
+    }
+
     private List<String> getErrors(Map<String, Object> response) {
         ValidationResponse validationResponse = (ValidationResponse) response.get(VALIDATION_ERROR_KEY);
         return validationResponse.getErrors();

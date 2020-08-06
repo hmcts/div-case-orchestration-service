@@ -39,6 +39,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.DocumentGenerationWor
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GenerateCoRespondentAnswersWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWithIdWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetOrderSummaryFeeWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDecreeAbsoluteWorkflow;
@@ -188,6 +189,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final DocumentTemplateService documentTemplateService;
     private final ReceivedServiceAddedDateWorkflow receivedServiceAddedDateWorkflow;
     private final MakeServiceDecisionDateWorkflow makeServiceDecisionDateWorkflow;
+    private final GetOrderSummaryFeeWorkflow getOrderSummaryFeeWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -884,6 +886,11 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> removeDNGrantedDocuments(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return removeDNDocumentsWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
+    }
+
+    @Override
+    public Map<String, Object> getOrderSummaryFee(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        return getOrderSummaryFeeWorkflow.run(ccdCallbackRequest);
     }
 
     @Override
