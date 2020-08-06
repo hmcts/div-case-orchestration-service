@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DaGrantedRespondentSolicitorCoverLetter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
@@ -37,7 +36,7 @@ public class DaGrantedSolicitorLetterGenerationTask extends BasePayloadSpecificD
     }
 
     @Override
-    protected DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) throws TaskException {
+    protected DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) {
         return DaGrantedRespondentSolicitorCoverLetter.daGrantedRespondentSolicitorCoverLetterBuilder()
             .caseReference(getCaseId(context))
             .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())

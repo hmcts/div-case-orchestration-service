@@ -37,9 +37,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 
 public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
     private static final String API_URL = "/generate-dn-pronouncement-documents";
-    private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
-    private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
-    private  static final String COSTS_ORDER_TEMPLATE_ID = "FL-DIV-DEC-ENG-00060.docx";
+    private static final String COSTS_ORDER_TEMPLATE_ID = "FL-DIV-DEC-ENG-00060.docx";
     private static final String DECREE_NISI_TEMPLATE_ID = "FL-DIV-GNO-ENG-00021.docx";
 
     private static final Map<String, Object> CASE_DATA = ImmutableMap.of(
