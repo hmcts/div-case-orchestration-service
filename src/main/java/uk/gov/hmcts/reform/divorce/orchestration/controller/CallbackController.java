@@ -1139,9 +1139,14 @@ public class CallbackController {
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> makeServiceDecision(
+        @RequestHeader(AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
-        return ResponseEntity.ok(serviceJourneyService.makeServiceDecision(ccdCallbackRequest.getCaseDetails()));
+        return ResponseEntity.ok(
+            serviceJourneyService
+                .makeServiceDecision(ccdCallbackRequest.getCaseDetails(), authorizationToken)
+        );
     }
 
     @PostMapping(path = "/fee-lookup")

@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.Docmosi
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
@@ -72,7 +71,7 @@ public class BasePayloadSpecificDocumentGenerationTaskTest {
     }
 
     @Test
-    public void makeSureAbstractClassExecutesDesiredBehaviour() throws TaskException {
+    public void makeSureAbstractClassExecutesDesiredBehaviour() {
         BasePayloadSpecificDocumentGenerationTask testDocGenerationTask =
             new BasePayloadSpecificDocumentGenerationTask(ctscContactDetailsDataProviderService, pdfDocumentGenerationService, ccdUtil) {
                 @Override

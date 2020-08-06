@@ -1433,7 +1433,7 @@ public class CallbackControllerTest {
 
     @Test
     public void testMakeServiceDecisionStateChange() throws WorkflowException {
-        when(serviceJourneyService.makeServiceDecision(any()))
+        when(serviceJourneyService.makeServiceDecision(any(), anyString()))
             .thenReturn(CcdCallbackResponse.builder().build());
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
@@ -1442,7 +1442,7 @@ public class CallbackControllerTest {
                 .build())
             .build();
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.makeServiceDecision(ccdCallbackRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.makeServiceDecision(AUTH_TOKEN, ccdCallbackRequest);
 
         assertThat(response.getStatusCode(), equalTo(OK));
         assertThat(response.getBody().getErrors(), is(nullValue()));

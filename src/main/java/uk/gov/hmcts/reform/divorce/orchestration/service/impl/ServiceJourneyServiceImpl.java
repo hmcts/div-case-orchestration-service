@@ -28,7 +28,7 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
     private final ReceivedServiceAddedDateWorkflow receivedServiceAddedDateWorkflow;
 
     @Override
-    public CcdCallbackResponse makeServiceDecision(CaseDetails caseDetails) throws WorkflowException {
+    public CcdCallbackResponse makeServiceDecision(CaseDetails caseDetails, String authorisation) throws WorkflowException {
         CcdCallbackResponse.CcdCallbackResponseBuilder builder = CcdCallbackResponse.builder();
 
         if (isServiceApplicationGranted(caseDetails)) {
@@ -37,7 +37,7 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
             builder.state(SERVICE_APPLICATION_NOT_APPROVED);
         }
 
-        builder.data(makeServiceDecisionDateWorkflow.run(caseDetails));
+        builder.data(makeServiceDecisionDateWorkflow.run(caseDetails, authorisation));
 
         return builder.build();
     }
