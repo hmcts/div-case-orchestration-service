@@ -70,7 +70,7 @@ public class CoECoRespondentCoverLetterGenerationTask extends BasePayloadSpecifi
     }
 
     @Override
-    protected String getTemplateId() {
+    public String getTemplateId() {
         return FileMetadata.TEMPLATE_ID;
     }
 

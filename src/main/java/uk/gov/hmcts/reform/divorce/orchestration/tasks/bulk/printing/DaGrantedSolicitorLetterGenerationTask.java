@@ -49,7 +49,7 @@ public class DaGrantedSolicitorLetterGenerationTask extends BasePayloadSpecificD
     }
 
     @Override
-    protected String getTemplateId() {
+    public String getTemplateId() {
         return FileMetadata.TEMPLATE_ID;
     }
 
