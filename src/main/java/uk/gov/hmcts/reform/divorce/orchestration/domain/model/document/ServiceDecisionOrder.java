@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.Docmosi
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @ToString(callSuper = true)
-public class OrderToDispense extends DocmosisTemplateVars {
+public class ServiceDecisionOrder extends DocmosisTemplateVars {
 
     @JsonProperty("documentIssuedOn")
     private String documentIssuedOn;
@@ -26,8 +26,8 @@ public class OrderToDispense extends DocmosisTemplateVars {
     @JsonProperty("serviceApplicationDecisionDate")
     private String serviceApplicationDecisionDate;
 
-    @Builder(builderMethodName = "orderToDispenseBuilder")
-    public OrderToDispense(
+    @Builder(builderMethodName = "serviceDecisionOrderBuilder")
+    public ServiceDecisionOrder(
         CtscContactDetails ctscContactDetails,
         String caseReference,
         String letterDate,
