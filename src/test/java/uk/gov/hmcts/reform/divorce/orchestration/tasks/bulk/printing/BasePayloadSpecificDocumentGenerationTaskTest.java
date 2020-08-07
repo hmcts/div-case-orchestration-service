@@ -85,7 +85,7 @@ public class BasePayloadSpecificDocumentGenerationTaskTest {
                 }
 
                 @Override
-                protected String getTemplateId() {
+                public String getTemplateId() {
                     return TEST_TEMPLATE_ID;
                 }
             };

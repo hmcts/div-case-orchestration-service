@@ -7,14 +7,14 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 @RunWith(MockitoJUnitRunner.class)
-public class OrderToDispenseGenerationTaskTest extends ServiceDecisionOrderGenerationTaskTest {
+public class DeemedServiceOrderGenerationTaskTest extends ServiceDecisionOrderGenerationTaskTest {
 
     @InjectMocks
-    private OrderToDispenseGenerationTask orderToDispenseGenerationTask;
+    private DeemedServiceOrderGenerationTask deemedServiceOrderGenerationTask;
 
     @Override
     public ServiceDecisionOrderGenerationTask getTask() {
-        return orderToDispenseGenerationTask;
+        return deemedServiceOrderGenerationTask;
     }
 
     @Test
