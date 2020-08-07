@@ -8,15 +8,15 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextracto
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 @Component
-public class OrderToDispenseGenerationTask extends ServiceDecisionOrderGenerationTask {
+public class DeemedServiceOrderGenerationTask extends ServiceDecisionOrderGenerationTask {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FileMetadata {
-        public static final String TEMPLATE_ID = "FL-DIV-DEC-ENG-00531.docx";
-        public static final String DOCUMENT_TYPE = "dispenseWithServiceGranted";
+        public static final String TEMPLATE_ID = "FL-DIV-DEC-ENG-00534.docx";
+        public static final String DOCUMENT_TYPE = "deemedAsServedGranted";
     }
 
-    public OrderToDispenseGenerationTask(
+    public DeemedServiceOrderGenerationTask(
         CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
         PdfDocumentGenerationService pdfDocumentGenerationService,
         CcdUtil ccdUtil) {

@@ -65,7 +65,7 @@ public abstract class BasePayloadSpecificDocumentGenerationTask implements Task<
         return documentInfo;
     }
 
-    protected abstract String getTemplateId();
+    public abstract String getTemplateId();
 
     public abstract String getDocumentType();
 
