@@ -1793,7 +1793,7 @@ public class CaseOrchestrationServiceImplTest {
 
         classUnderTest.getOrderSummaryFee(ccdCallbackRequest);
 
-        verify(setOrderSummaryWorkflow).run(eq(requestPayload));
+        verify(getOrderSummaryFeeWorkflow).run(eq(ccdCallbackRequest));
     }
 
 
