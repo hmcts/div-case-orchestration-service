@@ -42,6 +42,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.DocumentGenerationWor
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GenerateCoRespondentAnswersWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWithIdWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetOrderSummaryFeeWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDecreeAbsoluteWorkflow;
@@ -199,6 +200,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private SetOrderSummaryWorkflow setOrderSummaryWorkflow;
+
+    @Mock
+    private GetOrderSummaryFeeWorkflow getOrderSummaryFeeWorkflow;
 
     @Mock
     private SolicitorSubmissionWorkflow solicitorSubmissionWorkflow;
@@ -1771,6 +1775,28 @@ public class CaseOrchestrationServiceImplTest {
         List<String> errors = workflowErrors.values().stream().map(String.class::cast).collect(Collectors.toList());
         assertThat(ccdCallbackResponse.getErrors(), is(errors));
     }
+
+    @Test
+    public void givenCaseData_whenGetOrderSummaryFee_thenReturnPayload() throws Exception {
+        ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(
+                CaseDetails.builder()
+                    .caseData(requestPayload)
+                    .caseId(TEST_CASE_ID)
+                    .state(TEST_STATE)
+                    .build())
+            .eventId(TEST_EVENT_ID)
+            .token(TEST_TOKEN)
+            .build();
+
+        when(getOrderSummaryFeeWorkflow.run(eq(ccdCallbackRequest))).thenReturn(requestPayload);
+
+        classUnderTest.getOrderSummaryFee(ccdCallbackRequest);
+
+        verify(setOrderSummaryWorkflow).run(eq(requestPayload));
+    }
+
+
 
     @After
     public void tearDown() {
