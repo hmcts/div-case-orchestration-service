@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServ
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.OrderToDispenseGenerationTask;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static java.time.LocalDate.now;
@@ -138,7 +139,8 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
         return caseData;
     }
 
-    private CcdCallbackResponse buildExpectedResponse(Map<String, Object> caseData, String templateId, String documentType) {
+    private CcdCallbackResponse buildExpectedResponse(
+        Map<String, Object> caseData, String templateId, String documentType) {
         Map<String, Object> caseDataBeforeGeneratingPdf = new HashMap<>(caseData);
         addServiceApplicationDecisionDate(caseDataBeforeGeneratingPdf);
 
@@ -155,14 +157,25 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
 
         Map<String, Object> expectedCaseData = new HashMap<>(caseDataBeforeGeneratingPdf);
 
-        expectedCaseData.put(D8DOCUMENTS_GENERATED, singletonList(
-            createCollectionMemberDocumentAsMap(getDocumentStoreTestUrl(generatedDocumentId), documentType, null)
-        ));
+        expectedCaseData.put(
+            D8DOCUMENTS_GENERATED,
+            buildCollectionWithOneDocument(generatedDocumentId, documentType)
+        );
 
         return CcdCallbackResponse.builder()
             .state(CcdStates.AWAITING_DN_APPLICATION)
             .data(expectedCaseData)
             .build();
+    }
+
+    private List<Map<String, Object>> buildCollectionWithOneDocument(
+        String generatedDocumentId, String documentType) {
+
+        return singletonList(
+            createCollectionMemberDocumentAsMap(
+                getDocumentStoreTestUrl(generatedDocumentId), documentType, documentType
+            )
+        );
     }
 
     private Map<String, Object> addServiceApplicationDecisionDate(Map<String, Object> caseDataBeforeGeneratingPdf) {
