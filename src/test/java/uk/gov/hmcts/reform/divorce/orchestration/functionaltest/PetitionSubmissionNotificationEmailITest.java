@@ -4,18 +4,24 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -40,6 +46,9 @@ public class PetitionSubmissionNotificationEmailITest extends MockedFunctionalTe
 
     @MockBean
     private EmailClient emailClient;
+
+    @SpyBean
+    private CaseOrchestrationService caseOrchestrationService;
 
     @Autowired
     private MockMvc webClient;
@@ -79,6 +88,19 @@ public class PetitionSubmissionNotificationEmailITest extends MockedFunctionalTe
         verify(emailClient).sendEmail(eq(PETITION_SUBMITTED_TEMPLATE_ID),
             eq(TEST_USER_EMAIL),
             any(), any());
+    }
+
+    @Test
+    public void givenServiceThrowsCaseOrchestrationServiceException_ThenErrorMessagesShouldBeReturned() throws Exception {
+        CaseOrchestrationServiceException serviceException = new CaseOrchestrationServiceException("My error message.");
+        doThrow(serviceException).when(caseOrchestrationService).sendPetitionerSubmissionNotificationEmail(any());
+
+        webClient.perform(post(API_URL)
+            .content(convertObjectToJsonString(ccdCallbackRequest))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(hasJsonPath("$.errors", hasItem("My error message."))));
     }
 
 }

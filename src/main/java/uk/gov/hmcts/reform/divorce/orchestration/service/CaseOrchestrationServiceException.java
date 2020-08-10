@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public class CaseOrchestrationServiceException extends Exception {
 
-    private Optional<String> caseId = Optional.empty();
+    private String caseId;
 
     public CaseOrchestrationServiceException(String message) {
         super(message);
@@ -18,16 +18,16 @@ public class CaseOrchestrationServiceException extends Exception {
 
     public CaseOrchestrationServiceException(WorkflowException exception, String caseId) {
         this(exception);
-        this.caseId = Optional.ofNullable(caseId);
+        this.caseId = caseId;
     }
 
     public Optional<String> getCaseId() {
-        return caseId;
+        return Optional.ofNullable(caseId);
     }
 
     public String getIdentifiableMessage() {
         String exceptionMessage = getMessage();
-        return caseId.map(value -> "Case id [" + value + "]: " + exceptionMessage).orElse(exceptionMessage);
+        return getCaseId().map(value -> "Case id [" + value + "]: " + exceptionMessage).orElse(exceptionMessage);
     }
 
 }
