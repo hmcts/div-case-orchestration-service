@@ -38,6 +38,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
@@ -49,6 +50,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
@@ -265,26 +267,6 @@ public class CallbackControllerTest {
         assertThat(response.getStatusCode(), is(OK));
         assertThat(ccdCallbackResponse.getData(), is(caseData));
         assertThat(ccdCallbackResponse.getErrors(), is(nullValue()));
-    }
-
-    @Test
-    public void shouldReturnErrors_whenPetitionSubmittedCallbackThrowsException() throws Exception {
-        final Map<String, Object> caseData = Collections.emptyMap();
-        final CaseDetails caseDetails = CaseDetails.builder()
-            .caseData(caseData)
-            .build();
-        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
-        ccdCallbackRequest.setCaseDetails(caseDetails);
-
-        when(caseOrchestrationService.sendPetitionerSubmissionNotificationEmail(ccdCallbackRequest))
-            .thenThrow(new CaseOrchestrationServiceException("This is an error message"));
-
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.petitionSubmitted(ccdCallbackRequest);
-
-        CcdCallbackResponse ccdCallbackResponse = response.getBody();
-        assertThat(response.getStatusCode(), is(OK));
-        assertThat(ccdCallbackResponse.getData(), is(nullValue()));
-        assertThat(ccdCallbackResponse.getErrors(), hasItem("This is an error message"));
     }
 
     @Test
@@ -1447,4 +1429,19 @@ public class CallbackControllerTest {
         assertThat(response.getStatusCode(), equalTo(OK));
         assertThat(response.getBody().getErrors(), is(nullValue()));
     }
+
+    @Test
+    public void shouldReturnErrorMessageInResponse_whenCaseOrchestrationServiceExceptionIsThrown() {
+        CaseOrchestrationServiceException serviceException = spy(new CaseOrchestrationServiceException("This is a test error message"));
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.handleCaseOrchestrationServiceExceptionForCcdCallback(serviceException);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        CcdCallbackResponse ccdCallbackResponse = response.getBody();
+        assertThat(ccdCallbackResponse, is(notNullValue()));
+        assertThat(ccdCallbackResponse.getData(), is(nullValue()));
+        assertThat(ccdCallbackResponse.getErrors(), hasSize(1));
+        assertThat(ccdCallbackResponse.getErrors(), hasItem("This is a test error message"));
+        verify(serviceException).getIdentifiableMessage();
+    }
+
 }
