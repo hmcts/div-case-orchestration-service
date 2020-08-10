@@ -42,7 +42,12 @@ public abstract class BasePayloadSpecificDocumentGenerationTask implements Task<
         GeneratedDocumentInfo documentInfo = generatePdf(context, templateModel);
         documentInfo = populateMetadataForGeneratedDocument(documentInfo);
 
-        log.info("Case {}: Document {} generated", getCaseId(context), documentInfo.getDocumentType());
+        log.info(
+            "Case {}: Document {} generated. Name: {}",
+            getCaseId(context),
+            documentInfo.getDocumentType(),
+            documentInfo.getFileName()
+        );
 
         return ccdUtil.addNewDocumentsToCaseData(caseData, singletonList(documentInfo));
     }
