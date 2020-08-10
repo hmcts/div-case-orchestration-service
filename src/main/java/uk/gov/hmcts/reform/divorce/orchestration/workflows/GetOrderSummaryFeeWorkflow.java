@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -13,14 +14,11 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
+@RequiredArgsConstructor
 @Component
 public class GetOrderSummaryFeeWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final GetGeneralApplicationWithoutNoticeFeeTask getGeneralApplicationWithoutNoticeFeeTask;
-
-    public GetOrderSummaryFeeWorkflow(GetGeneralApplicationWithoutNoticeFeeTask getGeneralApplicationWithoutNoticeFeeTask) {
-        this.getGeneralApplicationWithoutNoticeFeeTask = getGeneralApplicationWithoutNoticeFeeTask;
-    }
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return this.execute(

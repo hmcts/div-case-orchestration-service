@@ -20,7 +20,7 @@ public class GetGeneralApplicationWithoutNoticeFeeTask implements Task<Map<Strin
         OrderSummary orderSummary = new OrderSummary();
         orderSummary.add(feesAndPaymentsClient.getGeneralApplicationWithoutFee());
 
-        caseData.put("paymentSummary", orderSummary);
+        caseData.put("generalApplicationWithoutNoticeFeeSummary", orderSummary);
 
         return caseData;
     }
