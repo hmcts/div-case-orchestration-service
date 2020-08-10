@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -254,19 +255,14 @@ public class CallbackController {
         @ApiResponse(code = 200, message = "Email sent to Petitioner that their application has been submitted",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
-    public ResponseEntity<CcdCallbackResponse> petitionSubmitted(@RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+    public ResponseEntity<CcdCallbackResponse> petitionSubmitted(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
-        CcdCallbackResponse.CcdCallbackResponseBuilder ccdCallbackResponseBuilder = CcdCallbackResponse.builder();
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(caseOrchestrationService.sendPetitionerSubmissionNotificationEmail(ccdCallbackRequest))
+                .build());
 
-        try {
-            caseOrchestrationService.sendPetitionerSubmissionNotificationEmail(ccdCallbackRequest);
-            ccdCallbackResponseBuilder.data(ccdCallbackRequest.getCaseDetails().getCaseData());
-        } catch (CaseOrchestrationServiceException exception) {
-            log.error(exception.getIdentifiableMessage(), exception);
-            ccdCallbackResponseBuilder.errors(ImmutableList.of(exception.getMessage()));
-        }
-
-        return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
     }
 
     @PostMapping(path = "/petition-updated", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
@@ -1149,8 +1145,20 @@ public class CallbackController {
         );
     }
 
+    @ExceptionHandler(CaseOrchestrationServiceException.class)
+    ResponseEntity<CcdCallbackResponse> handleCaseOrchestrationServiceExceptionForCcdCallback(CaseOrchestrationServiceException exception) {
+        log.error(exception.getIdentifiableMessage(), exception);
+
+        CcdCallbackResponse ccdCallbackResponse = CcdCallbackResponse.builder()
+            .errors(singletonList(exception.getMessage()))
+            .build();
+
+        return ResponseEntity.ok(ccdCallbackResponse);
+    }
+
     private List<String> getErrors(Map<String, Object> response) {
         ValidationResponse validationResponse = (ValidationResponse) response.get(VALIDATION_ERROR_KEY);
         return validationResponse.getErrors();
     }
+
 }
