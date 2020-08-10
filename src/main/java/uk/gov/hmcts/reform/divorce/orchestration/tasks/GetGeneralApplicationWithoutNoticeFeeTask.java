@@ -19,9 +19,9 @@ public class GetGeneralApplicationWithoutNoticeFeeTask implements Task<Map<Strin
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         OrderSummary orderSummary = new OrderSummary();
         orderSummary.add(feesAndPaymentsClient.getGeneralApplicationWithoutFee());
-        caseData.put("ABC", orderSummary);
 
-        // Rather than ABC, what is the key needed to add the fees?
+        caseData.put("paymentSummary", orderSummary);
+
         return caseData;
     }
 
