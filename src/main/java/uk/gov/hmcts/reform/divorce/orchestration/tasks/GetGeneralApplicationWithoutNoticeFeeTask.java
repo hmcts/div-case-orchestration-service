@@ -13,6 +13,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class GetGeneralApplicationWithoutNoticeFeeTask implements Task<Map<String, Object>> {
 
+    public static final String GENERAL_APPLICATION_WITHOUT_NOTICE_FEE_SUMMARY = "generalApplicationWithoutNoticeFeeSummary";
     private final FeesAndPaymentsClient feesAndPaymentsClient;
 
     @Override
@@ -20,7 +21,7 @@ public class GetGeneralApplicationWithoutNoticeFeeTask implements Task<Map<Strin
         OrderSummary orderSummary = new OrderSummary();
         orderSummary.add(feesAndPaymentsClient.getGeneralApplicationWithoutFee());
 
-        caseData.put("generalApplicationWithoutNoticeFeeSummary", orderSummary);
+        caseData.put(GENERAL_APPLICATION_WITHOUT_NOTICE_FEE_SUMMARY, orderSummary);
 
         return caseData;
     }
