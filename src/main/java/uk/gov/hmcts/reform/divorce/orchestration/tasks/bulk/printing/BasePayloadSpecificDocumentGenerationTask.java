@@ -66,6 +66,7 @@ public abstract class BasePayloadSpecificDocumentGenerationTask implements Task<
 
     protected GeneratedDocumentInfo populateMetadataForGeneratedDocument(GeneratedDocumentInfo documentInfo) {
         documentInfo.setDocumentType(getDocumentType());
+        documentInfo.setFileName(getDocumentType());
 
         return documentInfo;
     }
