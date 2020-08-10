@@ -24,5 +24,4 @@ public class GetGeneralApplicationWithoutNoticeFeeTask implements Task<Map<Strin
 
         return caseData;
     }
-
 }
