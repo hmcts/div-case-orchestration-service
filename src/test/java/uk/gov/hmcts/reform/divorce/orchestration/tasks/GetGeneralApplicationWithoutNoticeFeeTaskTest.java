@@ -33,13 +33,13 @@ public class GetGeneralApplicationWithoutNoticeFeeTaskTest {
     private GetGeneralApplicationWithoutNoticeFeeTask classToTest;
 
     public static final String TEST_GENERAL_APPLICATION_WITHOUT_NOTICE_CODE = "FEE0228";
-    public static final double TEST_FEE_AMOUNT = 50d;
+    public static final double TEST_FEE_AMOUNT_IN_POUNDS = 50d;
     public static final String TEST_FEE_AMOUNT_IN_PENNIES = "5000";
 
     @Test
     public void shouldReturnGeneralApplicationWithoutFeeValue() {
         FeeResponse feeResponse = FeeResponse.builder()
-            .amount(TEST_FEE_AMOUNT)
+            .amount(TEST_FEE_AMOUNT_IN_POUNDS)
             .feeCode(TEST_GENERAL_APPLICATION_WITHOUT_NOTICE_CODE)
             .version(TEST_FEE_VERSION)
             .description(TEST_FEE_DESCRIPTION)

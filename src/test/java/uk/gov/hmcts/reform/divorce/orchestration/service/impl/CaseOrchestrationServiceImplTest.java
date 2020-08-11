@@ -1796,7 +1796,20 @@ public class CaseOrchestrationServiceImplTest {
         verify(getOrderSummaryFeeWorkflow).run(eq(ccdCallbackRequest));
     }
 
+    @Test
+    public void shouldThrowException_whenGetOrderSummaryFeeWorkflow_throwsWorkflowException() throws Exception {
+        when(getOrderSummaryFeeWorkflow.run(ccdCallbackRequest)).thenThrow(WorkflowException.class);
 
+        try {
+            classUnderTest.getOrderSummaryFee(ccdCallbackRequest);
+            fail("Should have caught exception");
+        } catch (CaseOrchestrationServiceException exception) {
+            assertThat(exception.getCause(), instanceOf(WorkflowException.class));
+            Optional<String> caseId = exception.getCaseId();
+            assertThat(caseId.isPresent(), is(true));
+            assertThat(caseId.get(), is(TEST_CASE_ID));
+        }
+    }
 
     @After
     public void tearDown() {

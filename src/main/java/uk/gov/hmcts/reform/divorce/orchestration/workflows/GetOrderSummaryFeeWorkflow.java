@@ -25,9 +25,7 @@ public class GetOrderSummaryFeeWorkflow extends DefaultWorkflow<Map<String, Obje
             new Task[] {
                 getGeneralApplicationWithoutNoticeFeeTask
             },
-            ccdCallbackRequest.getCaseDetails().getCaseData(),
-            ImmutablePair.of(CASE_ID_JSON_KEY, ccdCallbackRequest.getCaseDetails().getCaseId()),
-            ImmutablePair.of(CASE_DETAILS_JSON_KEY, ccdCallbackRequest.getCaseDetails())
+            ccdCallbackRequest.getCaseDetails().getCaseData()
         );
     }
 }
