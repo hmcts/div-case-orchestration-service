@@ -1446,13 +1446,18 @@ public class CallbackControllerTest {
 
     @Test
     public void shouldReturnOK_FeeLookupIsCalled() throws CaseOrchestrationServiceException {
-        final Map<String, Object> caseData = Collections.emptyMap();
-        final CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
-        final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
-        final ResponseEntity<CcdCallbackResponse> response = classUnderTest.getOrderSummaryFee(ccdCallbackRequest);
-        final CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+        final Map<String, Object> caseData = ImmutableMap.of("a", 1);
+        final Map<String, Object> returnedCaseData = new HashMap<>(caseData);
+        returnedCaseData.put("b", 2);
+        final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(
+                CaseDetails.builder().caseData(caseData).build()
+            ).build();
 
-        when(caseOrchestrationService.getOrderSummaryFee(ccdCallbackRequest)).thenReturn(caseData);
+        when(caseOrchestrationService.getOrderSummaryFee(ccdCallbackRequest)).thenReturn(returnedCaseData);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.getOrderSummaryFee(ccdCallbackRequest);
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(returnedCaseData).build();
 
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody(), is(expectedResponse));
