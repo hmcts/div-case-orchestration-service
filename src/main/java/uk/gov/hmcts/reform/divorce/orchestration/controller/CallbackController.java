@@ -1150,7 +1150,7 @@ public class CallbackController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Fee Lookup Callback")})
     public ResponseEntity<CcdCallbackResponse> getOrderSummaryFee(
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()

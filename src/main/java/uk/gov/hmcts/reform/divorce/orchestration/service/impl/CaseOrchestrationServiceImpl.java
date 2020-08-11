@@ -889,8 +889,12 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> getOrderSummaryFee(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        return getOrderSummaryFeeWorkflow.run(ccdCallbackRequest);
+    public Map<String, Object> getOrderSummaryFee(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+        try {
+            return getOrderSummaryFeeWorkflow.run(ccdCallbackRequest);
+        } catch (WorkflowException exception) {
+            throw new CaseOrchestrationServiceException(exception, ccdCallbackRequest.getCaseDetails().getCaseId());
+        }
     }
 
     @Override

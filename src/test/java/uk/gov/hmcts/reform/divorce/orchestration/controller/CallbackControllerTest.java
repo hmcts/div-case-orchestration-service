@@ -1445,11 +1445,10 @@ public class CallbackControllerTest {
     }
 
     @Test
-    public void shouldReturnOK_FeeLookupIsCalled() throws WorkflowException {
+    public void shouldReturnOK_FeeLookupIsCalled() throws CaseOrchestrationServiceException {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
         final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
-
 
         when(caseOrchestrationService.getOrderSummaryFee(ccdCallbackRequest)).thenReturn(caseData);
 
