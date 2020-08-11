@@ -1174,5 +1174,3 @@ public class CallbackController {
         return validationResponse.getErrors();
     }
 }
-
-}

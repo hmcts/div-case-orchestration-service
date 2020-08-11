@@ -1460,5 +1460,3 @@ public class CallbackControllerTest {
         assertThat(response.getBody(), is(expectedResponse));
     }
 }
-
-}
