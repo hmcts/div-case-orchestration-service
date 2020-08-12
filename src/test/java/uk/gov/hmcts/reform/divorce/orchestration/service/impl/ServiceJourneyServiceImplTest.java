@@ -22,7 +22,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DN_APPLICATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -46,7 +46,7 @@ public class ServiceJourneyServiceImplTest extends TestCase {
 
     @Test
     public void whenServiceApplicationNotGrantedThenReturnAwaitingDNApplication() throws WorkflowException {
-        runTestMakeServiceDecision(YES_VALUE, AWAITING_DN_APPLICATION);
+        runTestMakeServiceDecision(YES_VALUE, AWAITING_DECREE_NISI);
     }
 
     @Test

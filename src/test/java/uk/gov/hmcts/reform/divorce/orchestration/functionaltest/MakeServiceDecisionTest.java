@@ -163,7 +163,7 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
         );
 
         return CcdCallbackResponse.builder()
-            .state(CcdStates.AWAITING_DN_APPLICATION)
+            .state(CcdStates.AWAITING_DECREE_NISI)
             .data(expectedCaseData)
             .build();
     }

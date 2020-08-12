@@ -14,8 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.Receiv
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DN_APPLICATION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
@@ -32,7 +31,7 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
         CcdCallbackResponse.CcdCallbackResponseBuilder builder = CcdCallbackResponse.builder();
 
         if (isServiceApplicationGranted(caseDetails)) {
-            builder.state(AWAITING_DN_APPLICATION);
+            builder.state(AWAITING_DECREE_NISI);
         } else {
             builder.state(SERVICE_APPLICATION_NOT_APPROVED);
         }
