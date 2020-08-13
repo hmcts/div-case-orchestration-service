@@ -37,6 +37,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -180,7 +181,7 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         assertThat(documentsSentToBulkPrint, hasSize(2));
         assertThat(documentsSentToBulkPrint.get(0).getBytes(), is(decreeAbsoluteLetterBytes));
         assertThat(documentsSentToBulkPrint.get(1).getBytes(), is(decreeAbsoluteBytes));
-        verifyZeroInteractions(mockEmailService);
+        verifyNoMoreInteractions(mockEmailService);
     }
 
     @Test
