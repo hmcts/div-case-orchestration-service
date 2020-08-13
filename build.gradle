@@ -41,6 +41,7 @@ def versions = [
         elasticsearch                : '7.9.0',
         feignHttpClient              : '10.3.0',
         flyway                       : '6.5.5',
+        googleAuth                   : '1.5.0',
         gradlePitest                 : '1.4.6',
         guava                        : '28.2-jre',
         hibernateTypes               : '2.4.4',
@@ -50,6 +51,7 @@ def versions = [
         jacksonDatatypeJsr           : '2.10.0',
         jakartaMail                  : '1.6.5',
         jakartaWsRs                  : '2.1.6',
+        javaMail                     : '1.6.2',
         jdbi                         : '2.78',
         jsonAssert                   : '1.2.3',
         jsonPathAssert               : '2.2.0',
@@ -60,13 +62,12 @@ def versions = [
         quartz                       : '2.3.2',
         reformHealth                 : '0.0.5',
         reformPropertiesVolume       : '0.0.4',
-        reformsJavaLogging           : '5.1.1',
-        reformSpringBootAutoConfigure: '2.0.0',
+        reformsJavaLogging           : '5.1.6',
         restAssured                  : '4.1.1',
         sendLetterClient             : '2.2.0',
-        serenity                     : '2.0.91',
+        serenity                     : '2.2.12',
         serenityCucumber             : '1.9.50',
-        serviceTokenGenerator        : '3.0.0',
+        serviceTokenGenerator        : '3.1.1',
         sonarPitest                  : '0.5',
         springfoxSwagger             : '2.9.2',
         springSecurityCrypto         : '5.2.4.RELEASE',
@@ -244,6 +245,7 @@ dependencies {
     implementation group: 'com.github.kirviq', name: 'dumbster', version: versions.dumbster
     implementation group: 'com.puppycrawl.tools', name: 'checkstyle', version: versions.puppyCrawl
     implementation group: 'com.vladmihalcea', name: 'hibernate-types-52', version: versions.hibernateTypes
+    implementation group: 'com.sun.mail', name: 'javax.mail', version: versions.javaMail
     implementation group: 'commons-io', name: 'commons-io', version: versions.commonsIo
     implementation group: 'info.solidsoft.gradle.pitest', name: 'gradle-pitest-plugin', version: versions.gradlePitest
     implementation group: 'io.github.openfeign', name: 'feign-httpclient', version: versions.feignHttpClient
@@ -316,6 +318,10 @@ dependencies {
 
     implementation(group: 'org.quartz-scheduler', name: 'quartz', version: versions.quartz) {
         force = true
+    }
+
+    constraints{
+        implementation group: 'com.warrenstrange', name: 'googleauth', version: '1.5.0'
     }
 
     runtimeOnly('org.springframework.boot:spring-boot-devtools')

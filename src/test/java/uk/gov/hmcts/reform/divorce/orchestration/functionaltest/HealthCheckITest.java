@@ -7,6 +7,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -33,7 +34,7 @@ public class HealthCheckITest extends MockedFunctionalTest {
 
     private HttpResponse getHealth() throws Exception {
         final HttpGet request = new HttpGet(healthUrl);
-        request.addHeader("Accept", "application/json;charset=UTF-8");
+        request.addHeader("Accept", "application/json");
 
         return httpClient.execute(request);
     }
@@ -41,6 +42,12 @@ public class HealthCheckITest extends MockedFunctionalTest {
     @Before
     public void setUp() {
         healthUrl = "http://localhost:" + port + "/health";
+    }
+
+    @After
+    public void tearDown() throws InterruptedException {
+        resetAllMockServices();
+        Thread.sleep(10000);
     }
 
     @Test
