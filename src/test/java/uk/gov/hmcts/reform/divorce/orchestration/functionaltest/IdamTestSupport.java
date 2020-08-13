@@ -95,10 +95,10 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
     }
 
     void stubPinDetailsEndpoint(String authHeader, GeneratePinRequest pinRequest, Pin response) {
-        final String AppJsonUtf8 = APPLICATION_JSON_VALUE + ";charset=UTF-8";
+        final String jsonApp = APPLICATION_JSON_VALUE;
         idamServer.stubFor(post(IDAM_PIN_DETAILS_CONTEXT_PATH)
             .withHeader(AUTHORIZATION, new EqualToPattern(authHeader))
-            .withHeader(CONTENT_TYPE, new EqualToPattern(AppJsonUtf8))
+            .withHeader(CONTENT_TYPE, new EqualToPattern(jsonApp))
             .withRequestBody(equalToJson(convertObjectToJsonString(pinRequest)))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
