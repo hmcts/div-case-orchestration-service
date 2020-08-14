@@ -35,7 +35,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 
 public class SetupServicePaymentEventTest extends IdamTestSupport {
     private CcdCallbackRequest ccdCallbackRequest;
-    private static final String API_URL = "/set-up-confirm-service-payment-event";
+    private static final String API_URL = "/set-up-confirm-service-payment";
     private static final String APPLICATION_WITHOUT_NOTICE_FEE_URL = "/fees-and-payments/version/1/application-without-notice-fee";
     public static final FeeResponse applicationWithoutNoticeFee = FeeResponse.builder()
         .amount(50d)
