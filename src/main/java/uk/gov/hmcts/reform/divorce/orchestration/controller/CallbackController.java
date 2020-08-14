@@ -51,7 +51,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_VALIDATION_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
 
-
 @RestController
 @Slf4j
 public class CallbackController {
@@ -1145,6 +1144,19 @@ public class CallbackController {
         );
     }
 
+    @PostMapping(path = "/set-up-confirm-service-payment")
+    @ApiOperation(value = "Return service payment fee.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Service payment callback")})
+    public ResponseEntity<CcdCallbackResponse> setupConfirmServicePaymentEvent(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(caseOrchestrationService.setupConfirmServicePaymentEvent(ccdCallbackRequest))
+                .build());
+    }
+
     @ExceptionHandler(CaseOrchestrationServiceException.class)
     ResponseEntity<CcdCallbackResponse> handleCaseOrchestrationServiceExceptionForCcdCallback(CaseOrchestrationServiceException exception) {
         log.error(exception.getIdentifiableMessage(), exception);
@@ -1160,5 +1172,4 @@ public class CallbackController {
         ValidationResponse validationResponse = (ValidationResponse) response.get(VALIDATION_ERROR_KEY);
         return validationResponse.getErrors();
     }
-
 }
