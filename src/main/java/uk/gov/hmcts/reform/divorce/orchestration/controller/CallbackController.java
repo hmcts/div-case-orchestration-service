@@ -29,10 +29,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
+import javax.ws.rs.core.MediaType;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.core.MediaType;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -1145,10 +1145,10 @@ public class CallbackController {
         );
     }
 
-    @PostMapping(path = "/fee-lookup")
-    @ApiOperation(value = "Return fee.")
+    @PostMapping(path = "/set-up-service-payment-event")
+    @ApiOperation(value = "Return service payment fee.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Fee Lookup Callback")})
+        @ApiResponse(code = 200, message = "Service payment callback")})
     public ResponseEntity<CcdCallbackResponse> getOrderSummaryFee(
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
