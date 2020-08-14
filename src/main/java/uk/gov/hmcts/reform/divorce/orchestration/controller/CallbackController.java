@@ -51,7 +51,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_VALIDATION_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
 
-
 @RestController
 @Slf4j
 public class CallbackController {
@@ -1145,16 +1144,16 @@ public class CallbackController {
         );
     }
 
-    @PostMapping(path = "/fee-lookup")
-    @ApiOperation(value = "Return fee.")
+    @PostMapping(path = "/set-up-confirm-service-payment")
+    @ApiOperation(value = "Return service payment fee.")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Fee Lookup Callback")})
-    public ResponseEntity<CcdCallbackResponse> getOrderSummaryFee(
+        @ApiResponse(code = 200, message = "Service payment callback")})
+    public ResponseEntity<CcdCallbackResponse> setupConfirmServicePaymentEvent(
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
-                .data(caseOrchestrationService.getOrderSummaryFee(ccdCallbackRequest))
+                .data(caseOrchestrationService.setupConfirmServicePaymentEvent(ccdCallbackRequest))
                 .build());
     }
 
