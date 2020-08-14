@@ -33,7 +33,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.GetGeneralApplicationWithoutNoticeFeeTask.GENERAL_APPLICATION_WITHOUT_NOTICE_FEE_SUMMARY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
-public class SetupServicePaymentEventTest extends IdamTestSupport {
+public class SetupServicePaymentTest extends IdamTestSupport {
 
     private static final String API_URL = "/set-up-confirm-service-payment";
     private static final String APPLICATION_WITHOUT_NOTICE_FEE_URL = "/fees-and-payments/version/1/application-without-notice-fee";

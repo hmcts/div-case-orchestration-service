@@ -64,7 +64,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerEmailNo
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetupConfirmServicePaymentEventWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetupConfirmServicePaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorUpdateWorkflow;
@@ -202,7 +202,7 @@ public class CaseOrchestrationServiceImplTest {
     private SetOrderSummaryWorkflow setOrderSummaryWorkflow;
 
     @Mock
-    private SetupConfirmServicePaymentEventWorkflow setupConfirmServicePaymentEventWorkflow;
+    private SetupConfirmServicePaymentWorkflow setupConfirmServicePaymentWorkflow;
 
     @Mock
     private SolicitorSubmissionWorkflow solicitorSubmissionWorkflow;
@@ -1789,16 +1789,16 @@ public class CaseOrchestrationServiceImplTest {
             .token(TEST_TOKEN)
             .build();
 
-        when(setupConfirmServicePaymentEventWorkflow.run(eq(ccdCallbackRequest))).thenReturn(requestPayload);
+        when(setupConfirmServicePaymentWorkflow.run(eq(ccdCallbackRequest))).thenReturn(requestPayload);
 
         classUnderTest.setupConfirmServicePaymentEvent(ccdCallbackRequest);
 
-        verify(setupConfirmServicePaymentEventWorkflow).run(eq(ccdCallbackRequest));
+        verify(setupConfirmServicePaymentWorkflow).run(eq(ccdCallbackRequest));
     }
 
     @Test
     public void shouldThrowException_whenSetupConfirmServicePaymentEventFeeWorkflow_throwsWorkflowException() throws Exception {
-        when(setupConfirmServicePaymentEventWorkflow.run(ccdCallbackRequest)).thenThrow(WorkflowException.class);
+        when(setupConfirmServicePaymentWorkflow.run(ccdCallbackRequest)).thenThrow(WorkflowException.class);
 
         try {
             classUnderTest.setupConfirmServicePaymentEvent(ccdCallbackRequest);

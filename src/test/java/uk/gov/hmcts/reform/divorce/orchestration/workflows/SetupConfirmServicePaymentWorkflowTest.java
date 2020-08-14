@@ -18,14 +18,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mo
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTaskWasCalled;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SetupConfirmServicePaymentEventWorkflowTest {
+public class SetupConfirmServicePaymentWorkflowTest {
 
     @Mock
     private GetGeneralApplicationWithoutNoticeFeeTask getGeneralApplicationWithoutNoticeFeeTask;
 
 
     @InjectMocks
-    private SetupConfirmServicePaymentEventWorkflow setupConfirmServicePaymentEventWorkflow;
+    private SetupConfirmServicePaymentWorkflow setupConfirmServicePaymentWorkflow;
 
     @Test
     public void whenGeneralApplicationWithoutNoticeFee_thenProcessAsExpected() throws Exception {
@@ -36,7 +36,7 @@ public class SetupConfirmServicePaymentEventWorkflowTest {
 
         );
 
-        Map<String, Object> returned = setupConfirmServicePaymentEventWorkflow.run(
+        Map<String, Object> returned = setupConfirmServicePaymentWorkflow.run(
             CcdCallbackRequest.builder()
                 .caseDetails(CaseDetails.builder()
                     .caseData(caseData)
