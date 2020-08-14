@@ -42,7 +42,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.DocumentGenerationWor
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GenerateCoRespondentAnswersWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWithIdWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetOrderSummaryFeeWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDecreeAbsoluteWorkflow;
@@ -65,6 +64,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerEmailNo
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetupConfirmServicePaymentEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorUpdateWorkflow;
@@ -202,7 +202,7 @@ public class CaseOrchestrationServiceImplTest {
     private SetOrderSummaryWorkflow setOrderSummaryWorkflow;
 
     @Mock
-    private GetOrderSummaryFeeWorkflow getOrderSummaryFeeWorkflow;
+    private SetupConfirmServicePaymentEventWorkflow setupConfirmServicePaymentEventWorkflow;
 
     @Mock
     private SolicitorSubmissionWorkflow solicitorSubmissionWorkflow;
@@ -1789,19 +1789,19 @@ public class CaseOrchestrationServiceImplTest {
             .token(TEST_TOKEN)
             .build();
 
-        when(getOrderSummaryFeeWorkflow.run(eq(ccdCallbackRequest))).thenReturn(requestPayload);
+        when(setupConfirmServicePaymentEventWorkflow.run(eq(ccdCallbackRequest))).thenReturn(requestPayload);
 
-        classUnderTest.getOrderSummaryFee(ccdCallbackRequest);
+        classUnderTest.setupConfirmServicePaymentEvent(ccdCallbackRequest);
 
-        verify(getOrderSummaryFeeWorkflow).run(eq(ccdCallbackRequest));
+        verify(setupConfirmServicePaymentEventWorkflow).run(eq(ccdCallbackRequest));
     }
 
     @Test
-    public void shouldThrowException_whenGetOrderSummaryFeeWorkflow_throwsWorkflowException() throws Exception {
-        when(getOrderSummaryFeeWorkflow.run(ccdCallbackRequest)).thenThrow(WorkflowException.class);
+    public void shouldThrowException_whenSetupConfirmServicePaymentEventFeeWorkflow_throwsWorkflowException() throws Exception {
+        when(setupConfirmServicePaymentEventWorkflow.run(ccdCallbackRequest)).thenThrow(WorkflowException.class);
 
         try {
-            classUnderTest.getOrderSummaryFee(ccdCallbackRequest);
+            classUnderTest.setupConfirmServicePaymentEvent(ccdCallbackRequest);
             fail("Should have caught exception");
         } catch (CaseOrchestrationServiceException exception) {
             assertThat(exception.getCause(), instanceOf(WorkflowException.class));

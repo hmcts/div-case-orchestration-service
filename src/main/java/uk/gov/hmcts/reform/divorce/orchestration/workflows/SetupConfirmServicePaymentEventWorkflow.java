@@ -12,7 +12,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 @Component
-public class GetOrderSummaryFeeWorkflow extends DefaultWorkflow<Map<String, Object>> {
+public class SetupConfirmServicePaymentEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final GetGeneralApplicationWithoutNoticeFeeTask getGeneralApplicationWithoutNoticeFeeTask;
 

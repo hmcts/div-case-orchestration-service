@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -11,11 +12,17 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
+import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static org.hamcrest.Matchers.hasItem;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -27,8 +34,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.GetGeneralApplicat
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class SetupServicePaymentEventTest extends IdamTestSupport {
-
-    private static final String API_URL = "/fee-lookup";
+    private CcdCallbackRequest ccdCallbackRequest;
+    private static final String API_URL = "/set-up-confirm-service-payment-event";
     private static final String APPLICATION_WITHOUT_NOTICE_FEE_URL = "/fees-and-payments/version/1/application-without-notice-fee";
     public static final FeeResponse applicationWithoutNoticeFee = FeeResponse.builder()
         .amount(50d)
@@ -39,6 +46,9 @@ public class SetupServicePaymentEventTest extends IdamTestSupport {
 
     @Autowired
     private MockMvc webClient;
+
+    @SpyBean
+    private CaseOrchestrationService caseOrchestrationService;
 
     @Test
     public void shouldPopulateGeneralApplicationWithoutNoticeFeeSummaryInResponse() throws Exception {
@@ -91,5 +101,18 @@ public class SetupServicePaymentEventTest extends IdamTestSupport {
             "",
             CaseDetails.builder().caseData(new HashMap<>()).caseId(TEST_CASE_ID).build()
         );
+    }
+
+    @Test
+    public void givenServiceThrowsCaseOrchestrationServiceException_ThenErrorMessagesShouldBeReturned() throws Exception {
+        CaseOrchestrationServiceException serviceException = new CaseOrchestrationServiceException("My error message.");
+        doThrow(serviceException).when(caseOrchestrationService).setupConfirmServicePaymentEvent(any());
+
+        webClient.perform(post(API_URL)
+            .content(convertObjectToJsonString(ccdCallbackRequest))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(hasJsonPath("$.errors", hasItem("My error message."))));
     }
 }

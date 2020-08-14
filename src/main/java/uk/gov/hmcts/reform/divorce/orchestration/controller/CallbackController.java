@@ -1145,7 +1145,7 @@ public class CallbackController {
         );
     }
 
-    @PostMapping(path = "/set-up-service-payment-event")
+    @PostMapping(path = "/set-up-confirm-service-payment-event")
     @ApiOperation(value = "Return service payment fee.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Service payment callback")})
@@ -1154,7 +1154,7 @@ public class CallbackController {
 
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
-                .data(caseOrchestrationService.getOrderSummaryFee(ccdCallbackRequest))
+                .data(caseOrchestrationService.setupConfirmServicePaymentEvent(ccdCallbackRequest))
                 .build());
     }
 
