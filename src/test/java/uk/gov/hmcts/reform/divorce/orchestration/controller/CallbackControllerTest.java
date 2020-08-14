@@ -1444,4 +1444,18 @@ public class CallbackControllerTest {
         verify(serviceException).getIdentifiableMessage();
     }
 
+    @Test
+    public void shouldReturnOK_SetupServicePaymentEventIsCalled() throws CaseOrchestrationServiceException {
+        final Map<String, Object> caseData = Collections.emptyMap();
+        final CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        when(caseOrchestrationService.setupConfirmServicePaymentEvent(ccdCallbackRequest)).thenReturn(caseData);
+
+        final ResponseEntity<CcdCallbackResponse> response = classUnderTest.setupConfirmServicePaymentEvent(ccdCallbackRequest);
+        final CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody(), is(expectedResponse));
+    }
 }
