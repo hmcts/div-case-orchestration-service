@@ -63,6 +63,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerEmailNo
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetupConfirmServicePaymentEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnFetchDocWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorSubmissionWorkflow;
@@ -188,6 +189,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final DocumentTemplateService documentTemplateService;
     private final ReceivedServiceAddedDateWorkflow receivedServiceAddedDateWorkflow;
     private final MakeServiceDecisionDateWorkflow makeServiceDecisionDateWorkflow;
+    private final SetupConfirmServicePaymentEventWorkflow setupConfirmServicePaymentEventWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -884,6 +886,15 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> removeDNGrantedDocuments(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return removeDNDocumentsWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
+    }
+
+    @Override
+    public Map<String, Object> setupConfirmServicePaymentEvent(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+        try {
+            return setupConfirmServicePaymentEventWorkflow.run(ccdCallbackRequest);
+        } catch (WorkflowException exception) {
+            throw new CaseOrchestrationServiceException(exception, ccdCallbackRequest.getCaseDetails().getCaseId());
+        }
     }
 
     @Override
