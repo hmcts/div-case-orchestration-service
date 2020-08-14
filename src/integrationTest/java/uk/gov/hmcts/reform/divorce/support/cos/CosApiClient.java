@@ -225,6 +225,11 @@ public interface CosApiClient {
         @RequestBody CcdCallbackRequest ccdCallbackRequest
     );
 
+
+    @ApiOperation("Handle callback for Fee lookup")
+    @PostMapping(value = "/fee-lookup")
+    CcdCallbackResponse feeLookup(@RequestBody CcdCallbackRequest ccdCallbackRequest);
+
     @ApiOperation("Validate bulk scanned fields")
     @PostMapping(value = "/forms/{form-type}/validate-ocr")
     SuccessfulUpdateResponse validateBulkScannedFields(
