@@ -1452,7 +1452,7 @@ public class CallbackControllerTest {
 
         when(caseOrchestrationService.setupConfirmServicePaymentEvent(ccdCallbackRequest)).thenReturn(caseData);
 
-        final ResponseEntity<CcdCallbackResponse> response = classUnderTest.getOrderSummaryFee(ccdCallbackRequest);
+        final ResponseEntity<CcdCallbackResponse> response = classUnderTest.setupConfirmServicePaymentEvent(ccdCallbackRequest);
         final CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
         assertThat(response.getStatusCode(), is(OK));

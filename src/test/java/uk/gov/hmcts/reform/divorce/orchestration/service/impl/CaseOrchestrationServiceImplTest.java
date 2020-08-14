@@ -1777,7 +1777,7 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void givenCaseData_whenGetOrderSummaryFee_thenReturnPayload() throws Exception {
+    public void givenCaseData_whenSetupConfirmServicePaymentEvent_thenReturnPayload() throws Exception {
         ccdCallbackRequest = CcdCallbackRequest.builder()
             .caseDetails(
                 CaseDetails.builder()

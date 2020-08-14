@@ -1149,7 +1149,7 @@ public class CallbackController {
     @ApiOperation(value = "Return service payment fee.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Service payment callback")})
-    public ResponseEntity<CcdCallbackResponse> getOrderSummaryFee(
+    public ResponseEntity<CcdCallbackResponse> setupConfirmServicePaymentEvent(
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
         return ResponseEntity.ok(
