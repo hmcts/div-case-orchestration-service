@@ -29,9 +29,9 @@ public class ApplicationWithoutNoticeTest extends CcdSubmissionSupport {
     private CosApiClient cosApiClient;
 
     @Test
-    public void givenServiceCentreCaseSubmitted_whenIssueEventFiredOnCCD_thenDocumentsAreGenerated() {
+    public void givenCase_whenServicePaymentIsTriggered_ApplicationWithoutNoticeFeeSummaryOrderIsReturned() {
 
-        CcdCallbackResponse response = cosApiClient.feeLookup(
+        CcdCallbackResponse response = cosApiClient.setupConfirmServicePayment(
             CcdCallbackRequest.builder()
                 .caseDetails(CaseDetails.builder().caseData(new HashMap<>()).build())
                 .build()

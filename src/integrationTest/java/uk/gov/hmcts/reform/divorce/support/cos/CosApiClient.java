@@ -227,8 +227,8 @@ public interface CosApiClient {
 
 
     @ApiOperation("Handle callback for Fee lookup")
-    @PostMapping(value = "/fee-lookup")
-    CcdCallbackResponse feeLookup(@RequestBody CcdCallbackRequest ccdCallbackRequest);
+    @PostMapping(value = "/set-up-confirm-service-payment")
+    CcdCallbackResponse setupConfirmServicePayment(@RequestBody CcdCallbackRequest ccdCallbackRequest);
 
     @ApiOperation("Validate bulk scanned fields")
     @PostMapping(value = "/forms/{form-type}/validate-ocr")
