@@ -78,7 +78,7 @@ public class ServiceRefusalOrderTaskTest {
 
     private static final String TEST_URL = "https://ds.url.com";
     private static final String TEST_FILE_NAME = "file_name";
-    private static final String TEST_REFUSAL_REASON = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
+    private static final String TEST_REFUSAL_REASON = "Lorem ipsum dolor sit amet, consectetur adipiscing elit.";
 
     @InjectMocks
     private ServiceRefusalOrderTask serviceRefusalOrderTask;
@@ -313,9 +313,7 @@ public class ServiceRefusalOrderTaskTest {
     }
 
     private Map<String, Object> getModifiedCaseDataWithNewDocument(Map<String, Object> caseData, GeneratedDocumentInfo generatedDocument) {
-        Map<String, Object> modifiedCaseData = new HashMap() {{
-            putAll(caseData);
-        }};
+        Map<String, Object> modifiedCaseData = new HashMap();
         modifiedCaseData.putAll(caseData);
         getDocumentCollection(modifiedCaseData).add(CcdMappers.mapDocumentInfoToCcdDocument(generatedDocument));
 

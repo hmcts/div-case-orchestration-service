@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceRefusalOrderTask;
 
 import java.util.ArrayList;
@@ -48,7 +47,7 @@ public class ServiceRefusalOrderWorkflow extends DefaultWorkflow<Map<String, Obj
     private Task[] getTasks(String caseState) {
         List<Task> tasks = new ArrayList<>();
 
-        if(isAwaitingServiceConsideration(caseState)){
+        if (isAwaitingServiceConsideration(caseState)) {
             tasks.add(serviceRefusalOrderTask);
         }
 

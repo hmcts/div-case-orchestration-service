@@ -85,8 +85,8 @@ public class ServiceRefusalOrderTask implements Task<Map<String, Object>> {
 
     String getRefusalOrderTemplateId(Map<String, Object> caseData) {
         String serviceType = CaseDataExtractor.getServiceApplicationType(caseData);
-        return ApplicationServiceTypes.DEEMED.equals(serviceType) ?
-            FileMetadata.DEEMED_TEMPLATE_ID : FileMetadata.DISPENSE_TEMPLATE_ID;
+        return ApplicationServiceTypes.DEEMED.equals(serviceType)
+            ? FileMetadata.DEEMED_TEMPLATE_ID : FileMetadata.DISPENSE_TEMPLATE_ID;
     }
 
     private String getDecision(TaskContext context) {

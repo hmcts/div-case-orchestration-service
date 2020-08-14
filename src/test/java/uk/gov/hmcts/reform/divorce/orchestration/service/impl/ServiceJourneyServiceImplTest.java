@@ -18,6 +18,10 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -31,10 +35,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.Ser
 
 @RunWith(MockitoJUnitRunner.class)
 public class ServiceJourneyServiceImplTest {
-
-    private static final String DEEMED_REFUSAL_ORDER_TEMPLATE_ID = "template_id";
-    private static final String DEEMED_REFUSAL_ORDER_FILE = "template_file";
-    private static final String DEEMED_REFUSAL_ORDER_FILE_URL = "file_url";
 
     @Mock
     private MakeServiceDecisionDateWorkflow makeServiceDecisionDateWorkflow;
@@ -60,18 +60,20 @@ public class ServiceJourneyServiceImplTest {
 
     @Test
     public void whenServiceDecisionIsMadeThenUpdateServiceApplicationRefusalOrderDocuments() throws Exception {
-        CcdCallbackRequest payload = CcdCallbackRequest.builder()
+        CcdCallbackRequest caseDetails = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
                 .caseId("21431")
                 .state(AWAITING_SERVICE_CONSIDERATION)
                 .build())
             .build();
 
-        CcdCallbackResponse response = classUnderTest.serviceDecisionMade(payload.getCaseDetails(), AUTH_TOKEN, FINAL_DECISION);
+        when(serviceRefusalOrderWorkflow.run(any(), anyString(), anyString())).thenReturn(caseDetails.getCaseDetails().getCaseData());
 
-        assertThat(response.getData(), is(payload));
+        CcdCallbackResponse response = classUnderTest.serviceDecisionMade(caseDetails.getCaseDetails(), AUTH_TOKEN, FINAL_DECISION);
 
-        verify(serviceRefusalOrderWorkflow).run(payload.getCaseDetails(), FINAL_DECISION, AUTH_TOKEN);
+        assertThat(response.getData(), is(caseDetails.getCaseDetails().getCaseData()));
+
+        verify(serviceRefusalOrderWorkflow).run(eq(caseDetails.getCaseDetails()), eq(FINAL_DECISION), eq(AUTH_TOKEN));
     }
 
     @Test

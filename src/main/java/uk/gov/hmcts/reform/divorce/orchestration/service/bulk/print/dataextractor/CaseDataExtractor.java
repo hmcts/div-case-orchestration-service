@@ -7,7 +7,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConst
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
