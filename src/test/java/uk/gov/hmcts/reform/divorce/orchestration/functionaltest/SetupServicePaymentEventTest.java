@@ -34,7 +34,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.GetGeneralApplicat
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class SetupServicePaymentEventTest extends IdamTestSupport {
-    private CcdCallbackRequest ccdCallbackRequest;
+
     private static final String API_URL = "/set-up-confirm-service-payment";
     private static final String APPLICATION_WITHOUT_NOTICE_FEE_URL = "/fees-and-payments/version/1/application-without-notice-fee";
     public static final FeeResponse applicationWithoutNoticeFee = FeeResponse.builder()
@@ -109,7 +109,7 @@ public class SetupServicePaymentEventTest extends IdamTestSupport {
         doThrow(serviceException).when(caseOrchestrationService).setupConfirmServicePaymentEvent(any());
 
         webClient.perform(post(API_URL)
-            .content(convertObjectToJsonString(ccdCallbackRequest))
+            .content(convertObjectToJsonString(CcdCallbackRequest.builder().build()))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
