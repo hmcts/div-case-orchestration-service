@@ -59,6 +59,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.DUMMY_CASE
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_OUTCOME_FLAG_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
@@ -67,6 +68,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceRefusalOrderTask.FINAL_DECISION;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CallbackControllerTest {
@@ -1425,6 +1427,24 @@ public class CallbackControllerTest {
             .build();
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.makeServiceDecision(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+    }
+
+    @Test
+    public void testServiceDecisionMade() throws CaseOrchestrationServiceException {
+
+        when(serviceJourneyService.serviceDecisionMade(any(), anyString(), anyString()))
+            .thenReturn(CcdCallbackResponse.builder().build());
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .state(AWAITING_SERVICE_CONSIDERATION)
+                .build())
+            .build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.serviceDecisionMade(AUTH_TOKEN, ccdCallbackRequest, FINAL_DECISION);
 
         assertThat(response.getStatusCode(), equalTo(OK));
         assertThat(response.getBody().getErrors(), is(nullValue()));

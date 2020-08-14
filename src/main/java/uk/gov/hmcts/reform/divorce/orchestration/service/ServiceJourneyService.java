@@ -11,4 +11,6 @@ public interface ServiceJourneyService {
     CcdCallbackResponse makeServiceDecision(CaseDetails caseDetails, String authorisation) throws WorkflowException;
 
     Map<String, Object> receivedServiceAddedDate(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+
+    CcdCallbackResponse serviceDecisionMade(CaseDetails caseDetails, String authorisation, String decision) throws CaseOrchestrationServiceException;
 }

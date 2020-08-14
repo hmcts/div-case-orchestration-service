@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -54,20 +55,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @RestController
 @Slf4j
+@RequiredArgsConstructor
 public class CallbackController {
 
     private static final String GENERIC_ERROR_MESSAGE = "An error happened when processing this request.";
     private static final String FAILED_TO_PROCESS_SOL_DN_ERROR = "Failed to process Solicitor DN review petition for case ID: %s";
     private static final String FAILED_TO_EXECUTE_SERVICE_ERROR = "Failed to execute service for case ID:  %s";
 
-    @Autowired
-    private CaseOrchestrationService caseOrchestrationService;
-
-    @Autowired
-    private ServiceJourneyService serviceJourneyService;
-
-    @Autowired
-    private AosService aosService;
+    private final CaseOrchestrationService caseOrchestrationService;
+    private final ServiceJourneyService serviceJourneyService;
+    private final AosService aosService;
 
     @PostMapping(path = "/request-clarification-petitioner")
     @ApiOperation(value = "Trigger notification email to request clarification from Petitioner")
@@ -1142,6 +1139,25 @@ public class CallbackController {
         return ResponseEntity.ok(
             serviceJourneyService
                 .makeServiceDecision(ccdCallbackRequest.getCaseDetails(), authorizationToken)
+        );
+    }
+
+    @PostMapping(path = "/service-decision-made/{decision}", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback to set state on service decision")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> serviceDecisionMade(
+        @RequestHeader(AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest,
+        @PathVariable("decision")
+        @ApiParam(value = "Decision by LA for refusal order",
+            allowableValues = "draft, final") String decision) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            serviceJourneyService
+                .serviceDecisionMade(ccdCallbackRequest.getCaseDetails(), authorizationToken, decision)
         );
     }
 
