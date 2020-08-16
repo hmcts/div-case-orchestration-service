@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes;
@@ -15,6 +17,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.Se
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision.FINAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ServiceApplicationRefusalHelper {
     public static String getServiceApplicationRefusalReason(Map<String, Object> caseData) {
         return getMandatoryStringValue(caseData, CcdFields.SERVICE_APPLICATION_REFUSAL_REASON);
