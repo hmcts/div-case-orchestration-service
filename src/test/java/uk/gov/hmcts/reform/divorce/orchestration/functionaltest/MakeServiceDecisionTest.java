@@ -6,36 +6,48 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultMatcher;
+import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DocumentLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceApplicationRefusalOrder;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceDecisionOrder;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecisionNotFoundException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceOrderGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceRefusalOrderDraftTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceRefusalOrderTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderDraftTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.OrderToDispenseGenerationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceRefusalOrderTask;
-import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
+import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
+import static java.lang.String.format;
 import static java.time.LocalDate.now;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -47,17 +59,21 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETIT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_APPLICATION_REFUSAL_REASON;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RECEIVED_SERVICE_APPLICATION_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_DECISION_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_GRANTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_REFUSAL_REASON;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_REFUSAL_DRAFT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision.DRAFT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision.FINAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.getCaseReference;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
@@ -66,12 +82,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocumentAsMap;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.getServiceApplicationRefusalReason;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateFromLocalDate;
 
 public class MakeServiceDecisionTest extends IdamTestSupport {
 
     private static final String API_URL = "/make-service-decision";
-    private static final String SERVICE_DECISION_API = "/service-decision-made";
+    private static final String SERVICE_REFUSAL_API = "/service-decision-made/%s";
+    private CtscContactDetails ctscContactDetails;
 
     @Autowired
     private MockMvc webClient;
@@ -81,6 +99,7 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
 
     @Before
     public void setup() {
+        ctscContactDetails = ctscContactDetailsDataProviderService.getCtscContactDetails();
         documentGeneratorServiceServer.resetAll();
     }
 
@@ -100,7 +119,7 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
     }
 
     @Test
-    public void shouldGenerateOderToDispenseAndAddItToResponse() throws Exception {
+    public void shouldGenerateOrderToDispenseAndAddItToResponse() throws Exception {
         Map<String, Object> caseData = buildInputCaseData(ApplicationServiceTypes.DISPENSED);
         CcdCallbackRequest input = buildRequest(caseData);
         CcdCallbackResponse expectedResponse = buildExpectedResponse(
@@ -138,32 +157,128 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
     }
 
     @Test
-    public void shouldRemoveDraftAndPopulateDocumentsWithDeemedRefusalOrderWhenSubmitted() throws Exception {
-        GeneratedDocumentInfo deemedRefusalDraftDocument = generateDocumentInfo(
-            ServiceRefusalOrderTask.FileMetadata.DEEMED_DOCUMENT_TYPE,
-            ServiceRefusalOrderTask.FileMetadata.DEEMED_TEMPLATE_ID);
+    public void shouldPopulateDocumentsWithDeemedRefusalOrderAndRemoveDraftWhenSubmitted() throws Exception {
+        String templateId = DeemedServiceRefusalOrderTask.FileMetadata.TEMPLATE_ID;
+        String serviceType = ApplicationServiceTypes.DEEMED;
+        String documentType = DeemedServiceRefusalOrderTask.FileMetadata.DOCUMENT_TYPE;
 
-        Map<String, Object> refusalOrderData = buildServiceRefusalOrderCaseData(ApplicationServiceTypes.DEEMED, deemedRefusalDraftDocument);
+        CcdCallbackRequest ccdCallbackRequest = buildServiceRefusalOrderFixture(templateId, serviceType, documentType);
+
+        webClient.perform(post(format(SERVICE_REFUSAL_API, FINAL.getValue()))
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(ccdCallbackRequest)))
+            .andExpect(status().isOk())
+            .andExpect(commonExpectationsForServiceRefusalOrder(documentType));
+    }
+
+    @Test
+    public void shouldPopulateDocumentsWithDispensedRefusalOrderAndRemoveDraftWhenSubmitted() throws Exception {
+        String templateId = DispensedServiceRefusalOrderTask.FileMetadata.TEMPLATE_ID;
+        String serviceType = ApplicationServiceTypes.DISPENSED;
+        String documentType = DispensedServiceRefusalOrderTask.FileMetadata.DOCUMENT_TYPE;
+
+        CcdCallbackRequest ccdCallbackRequest = buildServiceRefusalOrderFixture(templateId, serviceType, documentType);
+
+        webClient.perform(post(format(SERVICE_REFUSAL_API, FINAL.getValue()))
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(ccdCallbackRequest)))
+            .andExpect(status().isOk())
+            .andExpect(commonExpectationsForServiceRefusalOrder(documentType));
+    }
+
+    @Test
+    public void shouldGenerateDraftDeemedServiceRefusalOrderWhenInReview() throws Exception {
+        String templateId = DeemedServiceRefusalOrderDraftTask.FileMetadata.TEMPLATE_ID;
+        String serviceType = ApplicationServiceTypes.DEEMED;
+        String documentType = DeemedServiceRefusalOrderDraftTask.FileMetadata.DOCUMENT_TYPE;
+
+        CcdCallbackRequest ccdCallbackRequest = buildServiceRefusalOrderFixture(templateId, serviceType, documentType);
+
+        webClient.perform(post(format(SERVICE_REFUSAL_API, DRAFT.getValue()))
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(ccdCallbackRequest)))
+            .andExpect(status().isOk())
+            .andExpect(commonExpectationsForServiceRefusalDraft());
+    }
+
+    @Test
+    public void shouldGenerateDraftDispensedServiceRefusalOrderWhenInReview() throws Exception {
+        String templateId = DispensedServiceRefusalOrderDraftTask.FileMetadata.TEMPLATE_ID;
+        String serviceType = ApplicationServiceTypes.DISPENSED;
+        String documentType = DispensedServiceRefusalOrderDraftTask.FileMetadata.DOCUMENT_TYPE;
+
+        CcdCallbackRequest ccdCallbackRequest = buildServiceRefusalOrderFixture(templateId, serviceType, documentType);
+
+        webClient.perform(post(format(SERVICE_REFUSAL_API, DRAFT.getValue()))
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(ccdCallbackRequest)))
+            .andExpect(status().isOk())
+            .andExpect(commonExpectationsForServiceRefusalDraft());
+    }
+
+    @Test
+    public void shouldNotGenerateAnyRefusalOrderDocumentOrDraftsWhenServiceApplicationIsGrantedAndSubmitted() throws Exception {
+        Map<String, Object> caseData = buildInputCaseData(ApplicationServiceTypes.DISPENSED);
+        caseData.put(CASE_ID_JSON_KEY, TEST_CASE_ID);
+        CcdCallbackRequest ccdCallbackRequest = buildRequest(caseData);
+
+        webClient.perform(post(format(SERVICE_REFUSAL_API, FINAL.getValue()))
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(ccdCallbackRequest)))
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(
+                isJson(),
+                hasNoJsonPath("$.data.D8DocumentsGenerated"),
+                hasNoJsonPath("$.data.ServiceRefusalDraft"),
+                hasNoJsonPath("$.errors")
+            )));
+    }
+
+    private ResultMatcher commonExpectationsForServiceRefusalOrder(String documentType) {
+        return content().string(allOf(
+            isJson(),
+            hasNoJsonPath("$.data.ServiceRefusalDraft"),
+            hasJsonPath("$.data.D8DocumentsGenerated", hasSize(1)),
+            hasJsonPath("$.data.D8DocumentsGenerated[0].value.DocumentType",
+                is(documentType)),
+            hasNoJsonPath("$.errors")
+        ));
+    }
+
+    private ResultMatcher commonExpectationsForServiceRefusalDraft() {
+        return content().string(allOf(
+            isJson(),
+            hasJsonPath("$.data.D8DocumentsGenerated", hasSize(0)),
+            hasJsonPath("$.data.ServiceRefusalDraft"),
+            hasJsonPath("$.data.ServiceRefusalDraft.document_url", notNullValue()),
+            hasJsonPath("$.data.ServiceRefusalDraft.document_filename", notNullValue()),
+            hasJsonPath("$.data.ServiceRefusalDraft.document_binary_url", notNullValue()),
+            hasNoJsonPath("$.errors")
+        ));
+    }
+
+    private CcdCallbackRequest buildServiceRefusalOrderFixture(String deemedTemplateId, String deemedServiceType, String deemedDocumentType) {
+        DocumentLink deemedRefusalDraftDocument = generateDocumentLink(deemedTemplateId);
+        Map<String, Object> refusalOrderData = buildServiceRefusalOrderCaseData(deemedServiceType, deemedRefusalDraftDocument);
+
         CcdCallbackRequest ccdCallbackRequest = buildRequest(refusalOrderData);
         ccdCallbackRequest.getCaseDetails().setState(AWAITING_SERVICE_CONSIDERATION);
 
         stubDocumentGeneratorServiceBaseOnContextPath(
-            ServiceRefusalOrderTask.FileMetadata.DEEMED_TEMPLATE_ID,
-            singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, ObjectMapperTestUtil.convertObject(ccdCallbackRequest.getCaseDetails(), Map.class)),
-            ServiceRefusalOrderTask.FileMetadata.DEEMED_DOCUMENT_TYPE
+            deemedTemplateId,
+            singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
+                ImmutableMap.of(
+                    "id", refusalOrderData.get(CASE_ID_JSON_KEY),
+                    "case_data", buildPopulatedServiceRefusalOrderTemplateModel(refusalOrderData)
+                )),
+            deemedDocumentType
         );
-
-        MvcResult mvcResult = webClient.perform(post(SERVICE_DECISION_API + "/final")
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(ccdCallbackRequest))
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn();
-
-        String responseData = mvcResult.getResponse().getContentAsString();
-
-        assertThat(responseData, isJson());
-        assertThat(responseData, hasNoJsonPath("$.ServiceRefusalDraft"));
+        return ccdCallbackRequest;
     }
 
     private Map<String, Object> buildInputCaseData(String applicationType) {
@@ -231,12 +346,24 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
     private ServiceDecisionOrder buildPopulatedTemplateModel(Map<String, Object> caseData) {
         return ServiceDecisionOrder.serviceDecisionOrderBuilder()
             .caseReference(TEST_CASE_FAMILY_MAN_ID)
-            .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
+            .ctscContactDetails(ctscContactDetails)
             .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
             .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
             .documentIssuedOn(DatesDataExtractor.getLetterDate())
             .receivedServiceApplicationDate(DatesDataExtractor.getReceivedServiceApplicationDate(caseData))
             .serviceApplicationDecisionDate(DatesDataExtractor.getServiceApplicationDecisionDate(caseData))
+            .build();
+    }
+
+    private ServiceApplicationRefusalOrder buildPopulatedServiceRefusalOrderTemplateModel(Map<String, Object> caseData) {
+        return ServiceApplicationRefusalOrder.serviceApplicationRefusalOrderBuilder()
+            .ctscContactDetails(ctscContactDetails)
+            .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
+            .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
+            .caseReference((String) caseData.get(CASE_ID_JSON_KEY))
+            .receivedServiceApplicationDate(DatesDataExtractor.getReceivedServiceApplicationDate(caseData))
+            .serviceApplicationRefusalReason(getServiceApplicationRefusalReason(caseData))
+            .documentIssuedOn(DateUtils.formatDateWithCustomerFacingFormat(LocalDate.now()))
             .build();
     }
 
@@ -252,31 +379,30 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
         return buildRequest(new HashMap<>());
     }
 
-    private Map<String, Object> buildServiceRefusalOrderCaseData(String serviceApplicationType, GeneratedDocumentInfo serviceRefusalDraft) {
+    private Map<String, Object> buildServiceRefusalOrderCaseData(String serviceApplicationType, DocumentLink serviceRefusalDraft) {
         Map<String, Object> baseData = buildInputCaseData(serviceApplicationType);
-        baseData.remove(SERVICE_APPLICATION_GRANTED);
+        baseData.put(CASE_ID_JSON_KEY, TEST_CASE_ID);
 
-        List<GeneratedDocumentInfo> generatedDocumentInfoList = new ArrayList<>();
-        Map<String, Object> payload = ImmutableMap.of(  //TODO: refactor
+        List<CollectionMember<Document>> generatedDocumentInfoList = new ArrayList<>();
+
+        Map<String, Object> payload = ImmutableMap.of(
             SERVICE_APPLICATION_GRANTED, NO_VALUE,
             SERVICE_APPLICATION_TYPE, serviceApplicationType,
             SERVICE_REFUSAL_DRAFT, serviceRefusalDraft,
-            DOCUMENT_COLLECTION, generatedDocumentInfoList
+            D8DOCUMENTS_GENERATED, generatedDocumentInfoList,
+            SERVICE_APPLICATION_REFUSAL_REASON, TEST_SERVICE_APPLICATION_REFUSAL_REASON
         );
         baseData.putAll(payload);
 
         return baseData;
     }
 
-    private GeneratedDocumentInfo generateDocumentInfo(String templateId, String templateFile) {
-        return GeneratedDocumentInfo.builder() //TODO: refactor
-            .documentType(templateId)
-            .fileName(templateFile)
-            .url("test.url")
-            .build();
+    private DocumentLink generateDocumentLink(String templateFile) {
+        DocumentLink documentLink = new DocumentLink();
+        documentLink.setDocumentUrl("test.url");
+        documentLink.setDocumentFilename(templateFile);
+        documentLink.setDocumentBinaryUrl("binary_url");
+        return documentLink;
     }
 
-    private Set<GeneratedDocumentInfo> getDocumentCollection(Map<String, Object> returnedCaseData) {
-        return (LinkedHashSet<GeneratedDocumentInfo>) returnedCaseData.get(DOCUMENT_COLLECTION);
-    }
 }

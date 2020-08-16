@@ -9,10 +9,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceRefusalOrderWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceApplicationRefusalOrderWorkflow;
 
 import java.util.Map;
 
@@ -30,7 +31,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.A
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceRefusalOrderTask.FINAL_DECISION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision.FINAL;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ServiceJourneyServiceImplTest {
@@ -42,7 +43,7 @@ public class ServiceJourneyServiceImplTest {
     private ReceivedServiceAddedDateWorkflow receivedServiceAddedDateWorkflow;
 
     @Mock
-    private ServiceRefusalOrderWorkflow serviceRefusalOrderWorkflow;
+    private ServiceApplicationRefusalOrderWorkflow serviceApplicationRefusalOrderWorkflow;
 
     @InjectMocks
     private ServiceJourneyServiceImpl classUnderTest;
@@ -66,13 +67,14 @@ public class ServiceJourneyServiceImplTest {
                 .build())
             .build();
 
-        when(serviceRefusalOrderWorkflow.run(any(), anyString(), anyString())).thenReturn(caseDetails.getCaseDetails().getCaseData());
+        when(serviceApplicationRefusalOrderWorkflow.run(any(), anyString(), any(ServiceRefusalDecision.class)))
+            .thenReturn(caseDetails.getCaseDetails().getCaseData());
 
-        CcdCallbackResponse response = classUnderTest.serviceDecisionMade(caseDetails.getCaseDetails(), AUTH_TOKEN, FINAL_DECISION);
+        CcdCallbackResponse response = classUnderTest.serviceDecisionMade(caseDetails.getCaseDetails(), AUTH_TOKEN, FINAL);
 
         assertThat(response.getData(), is(caseDetails.getCaseDetails().getCaseData()));
 
-        verify(serviceRefusalOrderWorkflow).run(eq(caseDetails.getCaseDetails()), eq(FINAL_DECISION), eq(AUTH_TOKEN));
+        verify(serviceApplicationRefusalOrderWorkflow).run(eq(caseDetails.getCaseDetails()), eq(AUTH_TOKEN), eq(FINAL));
     }
 
     @Test

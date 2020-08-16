@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
@@ -1151,7 +1152,7 @@ public class CallbackController {
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest,
         @PathVariable("decision")
         @ApiParam(value = "Decision by LA for refusal order",
-            allowableValues = "draft, final") String decision) throws CaseOrchestrationServiceException {
+            allowableValues = "draft, final") ServiceRefusalDecision decision) throws CaseOrchestrationServiceException {
 
         return ResponseEntity.ok(
             serviceJourneyService
