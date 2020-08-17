@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.SendServiceApplicationNotificationsWorkflow;
 
 import java.util.Map;
 
@@ -38,6 +39,9 @@ public class ServiceJourneyServiceImplTest extends TestCase {
 
     @Mock
     private ReceivedServiceAddedDateWorkflow receivedServiceAddedDateWorkflow;
+
+    @Mock
+    private SendServiceApplicationNotificationsWorkflow sendServiceApplicationNotificationsWorkflow;
 
     @InjectMocks
     private ServiceJourneyServiceImpl classUnderTest;
@@ -90,6 +94,17 @@ public class ServiceJourneyServiceImplTest extends TestCase {
     @Test
     public void handleAwaitingServiceConsideration() throws ServiceJourneyServiceException {
         CcdCallbackRequest input = buildCcdCallbackRequest();
+
+        classUnderTest.handleAwaitingServiceConsideration(input);
+    }
+
+    @Test(expected = ServiceJourneyServiceException.class)
+    public void handleAwaitingServiceConsiderationShouldThrowServiceJourneyServiceException()
+        throws ServiceJourneyServiceException, WorkflowException {
+        CcdCallbackRequest input = buildCcdCallbackRequest();
+
+        when(sendServiceApplicationNotificationsWorkflow.run(any(CaseDetails.class)))
+            .thenThrow(WorkflowException.class);
 
         classUnderTest.handleAwaitingServiceConsideration(input);
     }
