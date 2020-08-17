@@ -74,7 +74,6 @@ public abstract class ServiceRefusalOrderDraftTaskTest extends BasePayloadSpecif
         DocumentLink documentLink = getDocumentLink();
 
         Map<String, Object> payload = new HashMap<>();
-        payload.put(CASE_ID_JSON_KEY, TEST_CASE_ID);
         payload.put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         payload.put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
         payload.put(RESPONDENT_FIRST_NAME, TEST_RESPONDENT_FIRST_NAME);
