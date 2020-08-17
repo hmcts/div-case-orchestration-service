@@ -20,6 +20,9 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -52,28 +55,53 @@ public class ServiceJourneyServiceImplTest extends TestCase {
         runTestMakeServiceDecision(YES_VALUE, AWAITING_DECREE_NISI);
     }
 
+    @Test(expected = ServiceJourneyServiceException.class)
+    public void serviceApplicationGrantedShouldThrowServiceJourneyServiceException()
+        throws ServiceJourneyServiceException, WorkflowException {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(ImmutableMap.of(CcdFields.SERVICE_APPLICATION_GRANTED, YES_VALUE))
+            .build();
+
+        when(makeServiceDecisionDateWorkflow.run(any(CaseDetails.class), anyString()))
+            .thenThrow(WorkflowException.class);
+
+        classUnderTest.makeServiceDecision(caseDetails, AUTH_TOKEN);
+    }
+
     @Test
     public void receivedServiceAddedDateShouldCallWorkflow()
         throws ServiceJourneyServiceException, WorkflowException {
-        CcdCallbackRequest input = CcdCallbackRequest.builder()
-            .caseDetails(CaseDetails.builder().caseId("21431").build())
-            .build();
+        CcdCallbackRequest input = buildCcdCallbackRequest();
 
         classUnderTest.receivedServiceAddedDate(input);
 
         verify(receivedServiceAddedDateWorkflow).run(input.getCaseDetails());
     }
 
+    @Test(expected = ServiceJourneyServiceException.class)
+    public void receivedServiceAddedDateShouldThrowServiceJourneyServiceException()
+        throws ServiceJourneyServiceException, WorkflowException {
+        CcdCallbackRequest input = buildCcdCallbackRequest();
+
+        when(receivedServiceAddedDateWorkflow.run(any(CaseDetails.class))).thenThrow(WorkflowException.class);
+
+        classUnderTest.receivedServiceAddedDate(input);
+    }
+
     @Test
     public void handleAwaitingServiceConsideration() throws ServiceJourneyServiceException {
-        CcdCallbackRequest input = CcdCallbackRequest.builder()
-            .caseDetails(CaseDetails.builder().caseId("21431").build())
-            .build();
+        CcdCallbackRequest input = buildCcdCallbackRequest();
 
         classUnderTest.handleAwaitingServiceConsideration(input);
     }
 
-    protected void runTestMakeServiceDecision(String decision, String expectedState)
+    private CcdCallbackRequest buildCcdCallbackRequest() {
+        return CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder().caseId("21431").build())
+            .build();
+    }
+
+    private void runTestMakeServiceDecision(String decision, String expectedState)
         throws ServiceJourneyServiceException, WorkflowException {
         Map<String, Object> payload = ImmutableMap.of(CcdFields.SERVICE_APPLICATION_GRANTED, decision);
         CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
