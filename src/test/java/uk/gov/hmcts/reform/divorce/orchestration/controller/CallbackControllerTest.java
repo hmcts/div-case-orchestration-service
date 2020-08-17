@@ -1459,4 +1459,22 @@ public class CallbackControllerTest {
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody(), is(expectedResponse));
     }
+
+    @Test
+    public void shouldReturnOK_handleAwaitingServiceConsiderationIsCalled() throws CaseOrchestrationServiceException {
+        final Map<String, Object> caseData = Collections.emptyMap();
+        final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder().caseData(caseData).build())
+            .build();
+
+        when(serviceJourneyService.handleAwaitingServiceConsideration(ccdCallbackRequest)).thenReturn(caseData);
+
+        final ResponseEntity<CcdCallbackResponse> response = classUnderTest
+            .handleAwaitingServiceConsideration(ccdCallbackRequest);
+
+        final CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody(), is(expectedResponse));
+    }
 }

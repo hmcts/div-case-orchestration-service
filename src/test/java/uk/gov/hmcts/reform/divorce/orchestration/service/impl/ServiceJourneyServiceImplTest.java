@@ -64,6 +64,15 @@ public class ServiceJourneyServiceImplTest extends TestCase {
         verify(receivedServiceAddedDateWorkflow).run(input.getCaseDetails());
     }
 
+    @Test
+    public void handleAwaitingServiceConsideration() throws ServiceJourneyServiceException {
+        CcdCallbackRequest input = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder().caseId("21431").build())
+            .build();
+
+        classUnderTest.handleAwaitingServiceConsideration(input);
+    }
+
     protected void runTestMakeServiceDecision(String decision, String expectedState)
         throws ServiceJourneyServiceException, WorkflowException {
         Map<String, Object> payload = ImmutableMap.of(CcdFields.SERVICE_APPLICATION_GRANTED, decision);
