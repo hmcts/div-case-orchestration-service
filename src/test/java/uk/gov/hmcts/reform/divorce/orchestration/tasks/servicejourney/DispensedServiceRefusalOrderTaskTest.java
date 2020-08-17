@@ -19,6 +19,6 @@ public class DispensedServiceRefusalOrderTaskTest extends ServiceRefusalOrderGen
 
     @Test
     public void testExecuteShouldGenerateAFile() throws TaskException {
-       executeShouldGenerateAFile();
+        executeShouldGenerateAFile();
     }
 }
