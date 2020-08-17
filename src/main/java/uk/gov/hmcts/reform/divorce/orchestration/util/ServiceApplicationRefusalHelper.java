@@ -11,7 +11,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.S
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_REFUSAL_REASON;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DEEMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DISPENSED;
@@ -31,10 +30,6 @@ public class ServiceApplicationRefusalHelper {
 
     public static String getServiceApplicationType(Map<String, Object> caseData) {
         return getMandatoryStringValue(caseData, SERVICE_APPLICATION_TYPE);
-    }
-
-    public static String getCaseReference(Map<String, Object> caseData) {
-        return getMandatoryStringValue(caseData, CASE_ID_JSON_KEY);
     }
 
     public static boolean isFinal(ServiceRefusalDecision serviceDecision) {

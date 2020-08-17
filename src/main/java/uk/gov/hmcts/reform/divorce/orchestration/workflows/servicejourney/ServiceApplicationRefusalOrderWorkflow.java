@@ -22,7 +22,6 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.getCaseReference;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.getServiceApplicationType;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isAwaitingServiceConsideration;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isDeemedApplication;
@@ -59,7 +58,7 @@ public class ServiceApplicationRefusalOrderWorkflow extends DefaultWorkflow<Map<
 
     private Task[] getTasks(CaseDetails caseDetails, ServiceRefusalDecision decision) {
         Map<String, Object> caseData = caseDetails.getCaseData();
-        String caseId = getCaseReference(caseData);
+        String caseId = caseDetails.getCaseId();
 
         List<Task> tasks = new ArrayList<>();
 

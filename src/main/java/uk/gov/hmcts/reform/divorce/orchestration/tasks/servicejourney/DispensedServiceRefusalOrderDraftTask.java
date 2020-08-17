@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DISPENSED;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.getCaseReference;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.getServiceApplicationRefusalReason;
 
 @Component
@@ -52,7 +52,7 @@ public class DispensedServiceRefusalOrderDraftTask extends ServiceRefusalOrderDr
     @Override
     public DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) {
         return ServiceApplicationRefusalOrder.serviceApplicationRefusalOrderBuilder()
-            .caseReference(getCaseReference(caseData))
+            .caseReference(getCaseId(context))
             .ctscContactDetails(getCtscContactDetails())
             .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
             .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
