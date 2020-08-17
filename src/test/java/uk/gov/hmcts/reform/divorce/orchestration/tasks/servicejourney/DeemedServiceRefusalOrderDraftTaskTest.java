@@ -37,8 +37,4 @@ public class DeemedServiceRefusalOrderDraftTaskTest extends ServiceRefusalOrderD
         shouldGenerateAndAddDraftDocument();
     }
 
-    @Test
-    public void shouldNotGenerateServiceRefusalDraft() {
-        shouldNotGenerateOrAddDraftDocument();
-    }
 }
