@@ -50,10 +50,10 @@ public abstract class ServiceRefusalOrderDraftTaskTest extends BasePayloadSpecif
 
     protected abstract String documentType();
 
-    protected abstract String getServiceApplicationType();
+    protected abstract String getApplicationType();
 
     protected void shouldGenerateAndAddDraftDocument() {
-        Map<String, Object> caseData = setUpFixturesForDraftAndReturnTestDataWith(getServiceApplicationType());
+        Map<String, Object> caseData = setUpFixturesForDraftAndReturnTestDataWith(getApplicationType());
 
         Map<String, Object> returnedCaseData = getTask().execute(prepareTaskContext(), caseData);
 

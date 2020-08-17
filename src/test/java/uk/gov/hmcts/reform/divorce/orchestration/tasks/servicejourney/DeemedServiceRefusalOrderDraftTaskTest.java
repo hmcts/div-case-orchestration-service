@@ -4,7 +4,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes;
+
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DEEMED;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeemedServiceRefusalOrderDraftTaskTest extends ServiceRefusalOrderDraftTaskTest {
@@ -28,8 +29,8 @@ public class DeemedServiceRefusalOrderDraftTaskTest extends ServiceRefusalOrderD
     }
 
     @Override
-    protected String getServiceApplicationType() {
-        return ApplicationServiceTypes.DEEMED;
+    protected String getApplicationType() {
+        return DEEMED;
     }
 
     @Test
