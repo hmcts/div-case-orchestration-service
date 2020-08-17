@@ -23,7 +23,6 @@ public class DeemedServiceRefusalOrderTaskTest extends ServiceRefusalOrderGenera
 
     @Test
     public void testExecuteShouldGenerateAFile() throws TaskException {
-        Map<String, Object> returnedCaseData = executeShouldGenerateAFile();
-        assertNotNull(returnedCaseData);
+        executeShouldGenerateAFile();
     }
 }

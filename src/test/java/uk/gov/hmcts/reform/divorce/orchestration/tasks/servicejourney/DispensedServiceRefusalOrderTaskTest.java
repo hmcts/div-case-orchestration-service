@@ -6,10 +6,6 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
-import java.util.Map;
-
-import static org.junit.Assert.assertNotNull;
-
 @RunWith(MockitoJUnitRunner.class)
 public class DispensedServiceRefusalOrderTaskTest extends ServiceRefusalOrderGenerationTaskTest {
 
@@ -23,7 +19,6 @@ public class DispensedServiceRefusalOrderTaskTest extends ServiceRefusalOrderGen
 
     @Test
     public void testExecuteShouldGenerateAFile() throws TaskException {
-        Map<String, Object> returnedCaseData = executeShouldGenerateAFile();
-        assertNotNull(returnedCaseData);
+       executeShouldGenerateAFile();
     }
 }

@@ -8,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BasePayloadSpecificDocumentGenerationTaskTest;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceRefusalOrderDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceRefusalOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderDraftTask;
@@ -29,7 +28,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.S
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DEEMED;
@@ -40,7 +38,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.ve
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksWereNeverCalled;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ServiceApplicationRefusalOrderWorkflowTest extends BasePayloadSpecificDocumentGenerationTaskTest {
+public class ServiceApplicationRefusalOrderWorkflowTest {
 
     @InjectMocks
     private ServiceApplicationRefusalOrderWorkflow classUnderTest;
@@ -66,7 +64,6 @@ public class ServiceApplicationRefusalOrderWorkflowTest extends BasePayloadSpeci
     @Test
     public void whenDeemedAndApplicationIsNotGrantedAndFinal() throws WorkflowException {
         Map<String, Object> caseData = ImmutableMap.of(
-            CASE_ID_JSON_KEY, TEST_CASE_ID,
             SERVICE_APPLICATION_TYPE, DEEMED,
             SERVICE_APPLICATION_GRANTED, NO_VALUE);
         CaseDetails caseDetails =  buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
@@ -90,7 +87,6 @@ public class ServiceApplicationRefusalOrderWorkflowTest extends BasePayloadSpeci
     @Test
     public void whenDispensedAndApplicationIsNotGrantedAndFinal() throws WorkflowException {
         Map<String, Object> caseData = ImmutableMap.of(
-            CASE_ID_JSON_KEY, TEST_CASE_ID,
             SERVICE_APPLICATION_TYPE, DISPENSED,
             SERVICE_APPLICATION_GRANTED, NO_VALUE);
         CaseDetails caseDetails =  buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
@@ -114,7 +110,6 @@ public class ServiceApplicationRefusalOrderWorkflowTest extends BasePayloadSpeci
     @Test
     public void whenDeemedAndApplicationIsNotGrantedAndDraft() throws WorkflowException {
         Map<String, Object> caseData = ImmutableMap.of(
-            CASE_ID_JSON_KEY, TEST_CASE_ID,
             SERVICE_APPLICATION_TYPE, DEEMED,
             SERVICE_APPLICATION_GRANTED, NO_VALUE);
         CaseDetails caseDetails =  buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
@@ -137,7 +132,6 @@ public class ServiceApplicationRefusalOrderWorkflowTest extends BasePayloadSpeci
     @Test
     public void whenDispensedAndApplicationIsNotGrantedAndDraft() throws WorkflowException {
         Map<String, Object> caseData = ImmutableMap.of(
-            CASE_ID_JSON_KEY, TEST_CASE_ID,
             SERVICE_APPLICATION_TYPE, DISPENSED,
             SERVICE_APPLICATION_GRANTED, NO_VALUE);
         CaseDetails caseDetails =  buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
@@ -160,7 +154,6 @@ public class ServiceApplicationRefusalOrderWorkflowTest extends BasePayloadSpeci
     @Test
     public void whenMakeServiceDecisionAndNotAwaitingServiceConsiderationNoTasksShouldRun() throws WorkflowException {
         Map<String, Object> caseData = ImmutableMap.of(
-            CASE_ID_JSON_KEY, TEST_CASE_ID,
             "anyKey", "anyValue");
         CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_CLARIFICATION);
 
@@ -173,7 +166,6 @@ public class ServiceApplicationRefusalOrderWorkflowTest extends BasePayloadSpeci
     @Test
     public void whenMakeServiceDecisionAndServiceApplicationIsGrantedNoTasksShouldRun() throws WorkflowException {
         Map<String, Object> caseData = ImmutableMap.of(
-            CASE_ID_JSON_KEY, TEST_CASE_ID,
             SERVICE_APPLICATION_GRANTED, YES_VALUE,
             "anyOtherKey", "anyOtherValue");
         CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);

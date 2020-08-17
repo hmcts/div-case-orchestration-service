@@ -10,8 +10,8 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_FAMILY_MAN_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FULL_NAME;
@@ -21,12 +21,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RECEIVED_SERVICE_APPLICATION_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_REFUSAL_REASON;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.CTSC_CONTACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.prepareTaskContext;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelperTest.TEST_SERVICE_APPLICATION_REFUSAL_REASON;
@@ -42,14 +42,14 @@ public abstract class ServiceRefusalOrderGenerationTaskTest extends BasePayloadS
 
     public abstract ServiceRefusalOrderGenerationTask getTask();
 
-    public Map<String, Object> executeShouldGenerateAFile() throws TaskException {
+    public void executeShouldGenerateAFile() throws TaskException {
         Map<String, Object> caseData = buildCaseData();
 
         ServiceApplicationRefusalOrder serviceApplicationRefusalOrder = ServiceApplicationRefusalOrder.serviceApplicationRefusalOrderBuilder()
             .ctscContactDetails(CTSC_CONTACT)
             .petitionerFullName(TEST_PETITIONER_FULL_NAME)
             .respondentFullName(TEST_RESPONDENT_FULL_NAME)
-            .caseReference(TEST_CASE_ID)
+            .caseReference(CASE_ID)
             .serviceApplicationRefusalReason(TEST_SERVICE_APPLICATION_REFUSAL_REASON)
             .receivedServiceApplicationDate(DateUtils.formatDateWithCustomerFacingFormat(TEST_RECEIVED_DATE))
             .documentIssuedOn(DateUtils.formatDateWithCustomerFacingFormat(LocalDate.now()))
@@ -65,15 +65,13 @@ public abstract class ServiceRefusalOrderGenerationTaskTest extends BasePayloadS
             serviceApplicationRefusalOrder
         );
 
-        return returnedCaseData;
+        assertNotNull(returnedCaseData);
     }
 
     private Map<String, Object> buildCaseData() {
         Map<String, Object> caseData = new HashMap<>();
 
-        caseData.put(CASE_REFERENCE, TEST_CASE_FAMILY_MAN_ID);
-        caseData.put(CASE_ID_JSON_KEY, TEST_CASE_ID);
-
+        caseData.put(CASE_REFERENCE, TEST_CASE_ID);
         caseData.put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         caseData.put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
         caseData.put(RESPONDENT_FIRST_NAME, TEST_RESPONDENT_FIRST_NAME);
