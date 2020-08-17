@@ -15,14 +15,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 public class CaseDataExtractorTest {
 
     @Test
-    public void getCaseReferenceShouldReturnValidValues() {
+    public void getCaseReferenceShouldReturnValidValue() {
         Map<String, Object> caseData = buildCaseDataWithField(CASE_REFERENCE, TEST_CASE_FAMILY_MAN_ID);
-
         assertThat(CaseDataExtractor.getCaseReference(caseData), is(TEST_CASE_FAMILY_MAN_ID));
     }
 
     @Test(expected = InvalidDataForTaskException.class)
-    public void getCaseReferenceShouldThrowInvalidDat() {
+    public void getCaseReferenceShouldThrowInvalidData() {
         CaseDataExtractor.getCaseReference(EMPTY_MAP);
     }
 

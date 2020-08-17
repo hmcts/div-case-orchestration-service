@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRes
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DocumentLink;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
@@ -59,12 +60,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.DUMMY_CASE
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_OUTCOME_FLAG_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision.FINAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
 
@@ -1425,6 +1428,24 @@ public class CallbackControllerTest {
             .build();
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.makeServiceDecision(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+    }
+
+    @Test
+    public void testServiceDecisionMade() throws CaseOrchestrationServiceException {
+
+        when(serviceJourneyService.serviceDecisionMade(any(), anyString(), any(ServiceRefusalDecision.class)))
+            .thenReturn(CcdCallbackResponse.builder().build());
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .state(AWAITING_SERVICE_CONSIDERATION)
+                .build())
+            .build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.serviceDecisionMade(AUTH_TOKEN, ccdCallbackRequest, FINAL);
 
         assertThat(response.getStatusCode(), equalTo(OK));
         assertThat(response.getBody().getErrors(), is(nullValue()));

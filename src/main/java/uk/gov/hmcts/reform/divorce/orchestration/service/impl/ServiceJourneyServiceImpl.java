@@ -7,10 +7,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceApplicationRefusalOrderWorkflow;
 
 import java.util.Map;
 
@@ -25,6 +28,7 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
 
     private final MakeServiceDecisionDateWorkflow makeServiceDecisionDateWorkflow;
     private final ReceivedServiceAddedDateWorkflow receivedServiceAddedDateWorkflow;
+    private final ServiceApplicationRefusalOrderWorkflow serviceApplicationRefusalOrderWorkflow;
 
     @Override
     public CcdCallbackResponse makeServiceDecision(CaseDetails caseDetails, String authorisation) throws WorkflowException {
@@ -45,6 +49,18 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
     public Map<String, Object> receivedServiceAddedDate(CcdCallbackRequest ccdCallbackRequest)
         throws WorkflowException {
         return receivedServiceAddedDateWorkflow.run(ccdCallbackRequest.getCaseDetails());
+    }
+
+    @Override
+    public CcdCallbackResponse serviceDecisionMade(CaseDetails caseDetails, String authorisation, ServiceRefusalDecision decision)
+        throws CaseOrchestrationServiceException {
+        CcdCallbackResponse.CcdCallbackResponseBuilder builder = CcdCallbackResponse.builder();
+        try {
+            builder.data(serviceApplicationRefusalOrderWorkflow.run(caseDetails, authorisation, decision));
+        } catch (WorkflowException e) {
+            throw new CaseOrchestrationServiceException(e, caseDetails.getCaseId());
+        }
+        return builder.build();
     }
 
     protected boolean isServiceApplicationGranted(CaseDetails caseDetails) {
