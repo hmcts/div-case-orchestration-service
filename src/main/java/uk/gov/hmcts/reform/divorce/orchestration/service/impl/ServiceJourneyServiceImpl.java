@@ -9,9 +9,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
@@ -27,7 +29,7 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
     private final ReceivedServiceAddedDateWorkflow receivedServiceAddedDateWorkflow;
 
     @Override
-    public CcdCallbackResponse makeServiceDecision(CaseDetails caseDetails, String authorisation) throws WorkflowException {
+    public CcdCallbackResponse makeServiceDecision(CaseDetails caseDetails, String authorisation) throws ServiceJourneyServiceException {
         CcdCallbackResponse.CcdCallbackResponseBuilder builder = CcdCallbackResponse.builder();
 
         if (isServiceApplicationGranted(caseDetails)) {
@@ -36,15 +38,28 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
             builder.state(SERVICE_APPLICATION_NOT_APPROVED);
         }
 
-        builder.data(makeServiceDecisionDateWorkflow.run(caseDetails, authorisation));
+        try {
+            builder.data(makeServiceDecisionDateWorkflow.run(caseDetails, authorisation));
+        } catch (WorkflowException workflowException) {
+            throw new ServiceJourneyServiceException(workflowException);
+        }
 
         return builder.build();
     }
 
     @Override
     public Map<String, Object> receivedServiceAddedDate(CcdCallbackRequest ccdCallbackRequest)
-        throws WorkflowException {
-        return receivedServiceAddedDateWorkflow.run(ccdCallbackRequest.getCaseDetails());
+        throws ServiceJourneyServiceException {
+        try {
+            return receivedServiceAddedDateWorkflow.run(ccdCallbackRequest.getCaseDetails());
+        } catch (WorkflowException workflowException) {
+            throw new ServiceJourneyServiceException(workflowException);
+        }
+    }
+
+    @Override
+    public Map<String, Object> handleAwaitingServiceConsideration(CcdCallbackRequest ccdCallbackRequest) throws ServiceJourneyServiceException {
+        return ccdCallbackRequest.getCaseDetails().getCaseData();
     }
 
     protected boolean isServiceApplicationGranted(CaseDetails caseDetails) {

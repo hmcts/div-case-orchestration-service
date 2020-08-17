@@ -8,7 +8,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import java.util.Map;
 
 public interface ServiceJourneyService {
-    CcdCallbackResponse makeServiceDecision(CaseDetails caseDetails, String authorisation) throws WorkflowException;
+    CcdCallbackResponse makeServiceDecision(CaseDetails caseDetails, String authorisation) throws ServiceJourneyServiceException;
 
-    Map<String, Object> receivedServiceAddedDate(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+    Map<String, Object> receivedServiceAddedDate(CcdCallbackRequest ccdCallbackRequest) throws ServiceJourneyServiceException;
+
+    Map<String, Object> handleAwaitingServiceConsideration(CcdCallbackRequest ccdCallbackRequest) throws ServiceJourneyServiceException;
 }

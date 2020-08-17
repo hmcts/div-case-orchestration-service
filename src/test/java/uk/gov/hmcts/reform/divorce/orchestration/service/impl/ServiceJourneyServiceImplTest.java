@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
 
@@ -40,17 +41,20 @@ public class ServiceJourneyServiceImplTest extends TestCase {
     private ServiceJourneyServiceImpl classUnderTest;
 
     @Test
-    public void whenServiceApplicationIsGrantedThenReturnServiceApplicationNotApproved() throws WorkflowException {
+    public void whenServiceApplicationIsGrantedThenReturnServiceApplicationNotApproved()
+        throws ServiceJourneyServiceException, WorkflowException {
         runTestMakeServiceDecision(NO_VALUE, SERVICE_APPLICATION_NOT_APPROVED);
     }
 
     @Test
-    public void whenServiceApplicationNotGrantedThenReturnAwaitingDNApplication() throws WorkflowException {
+    public void whenServiceApplicationNotGrantedThenReturnAwaitingDNApplication()
+        throws ServiceJourneyServiceException, WorkflowException {
         runTestMakeServiceDecision(YES_VALUE, AWAITING_DECREE_NISI);
     }
 
     @Test
-    public void receivedServiceAddedDateShouldCallWorkflow() throws Exception {
+    public void receivedServiceAddedDateShouldCallWorkflow()
+        throws ServiceJourneyServiceException, WorkflowException {
         CcdCallbackRequest input = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder().caseId("21431").build())
             .build();
@@ -61,7 +65,7 @@ public class ServiceJourneyServiceImplTest extends TestCase {
     }
 
     protected void runTestMakeServiceDecision(String decision, String expectedState)
-        throws WorkflowException {
+        throws ServiceJourneyServiceException, WorkflowException {
         Map<String, Object> payload = ImmutableMap.of(CcdFields.SERVICE_APPLICATION_GRANTED, decision);
         CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
 

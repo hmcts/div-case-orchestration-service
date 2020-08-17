@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1414,7 +1415,7 @@ public class CallbackControllerTest {
     }
 
     @Test
-    public void testMakeServiceDecisionStateChange() throws WorkflowException {
+    public void testMakeServiceDecisionStateChange() throws ServiceJourneyServiceException {
         when(serviceJourneyService.makeServiceDecision(any(), anyString()))
             .thenReturn(CcdCallbackResponse.builder().build());
 
