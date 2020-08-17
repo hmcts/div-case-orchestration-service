@@ -20,7 +20,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETIT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_APPLICATION_REFUSAL_REASON;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RECEIVED_SERVICE_APPLICATION_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_REFUSAL_REASON;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
@@ -31,12 +30,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.CTSC_CONTACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.prepareTaskContext;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelperTest.TEST_SERVICE_APPLICATION_REFUSAL_REASON;
 
 public abstract class ServiceRefusalOrderGenerationTaskTest extends BasePayloadSpecificDocumentGenerationTaskTest {
 
     public static final String TEST_RECEIVED_DATE = "2020-10-01";
-    public static final String TEST_SERVICE_DECISION_DATE = "2020-10-02";
-    public static final String TEST_DOCUMENT_ISSUED_ON = "2020-10-03";
 
     @Before
     public void setup() {
@@ -45,7 +43,7 @@ public abstract class ServiceRefusalOrderGenerationTaskTest extends BasePayloadS
 
     public abstract ServiceRefusalOrderGenerationTask getTask();
 
-    public void executeShouldGenerateAFile() throws TaskException {
+    public Map<String, Object> executeShouldGenerateAFile() throws TaskException {
         Map<String, Object> caseData = buildCaseData();
 
         ServiceApplicationRefusalOrder serviceApplicationRefusalOrder = ServiceApplicationRefusalOrder.serviceApplicationRefusalOrderBuilder()
@@ -68,7 +66,7 @@ public abstract class ServiceRefusalOrderGenerationTaskTest extends BasePayloadS
             serviceApplicationRefusalOrder
         );
 
-        assertNotNull(returnedCaseData);
+        return returnedCaseData;
     }
 
     private Map<String, Object> buildCaseData() {

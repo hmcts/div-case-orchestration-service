@@ -100,7 +100,4 @@ public class TestConstants {
     public static final String TEST_CO_RESPONDENT_FIRST_NAME = "Bruce";
     public static final String TEST_CO_RESPONDENT_LAST_NAME = "Wayne";
     public static final String TEST_CO_RESPONDENT_FULL_NAME = TEST_CO_RESPONDENT_FIRST_NAME + " " + TEST_CO_RESPONDENT_LAST_NAME;
-    public static final String TEST_SERVICE_APPLICATION_REFUSAL_REASON = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod";
-    public static final String TEST_SERVICE_APPLICATION_GRANTED = "Yes";
-    public static final String TEST_SERVICE_APPLICATION_TYPE_DEEMED = "deemed";
 }

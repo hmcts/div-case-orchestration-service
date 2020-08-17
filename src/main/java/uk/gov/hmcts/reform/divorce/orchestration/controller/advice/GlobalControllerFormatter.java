@@ -36,7 +36,7 @@ public class GlobalControllerFormatter {
 
         webdataBinder.registerCustomEditor(ServiceRefusalDecision.class, new PropertyEditorSupport() {
             @Override
-            public void setAsText(final String text) throws IllegalArgumentException {
+            public void setAsText(final String text) {
                 try {
                     setValue(ServiceRefusalDecision.getDecisionByName(text));
                 } catch (ServiceRefusalDecisionNotFoundException exception) {

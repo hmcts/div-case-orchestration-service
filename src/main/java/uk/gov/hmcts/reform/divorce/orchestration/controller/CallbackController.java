@@ -1142,7 +1142,7 @@ public class CallbackController {
     }
 
     @PostMapping(path = "/service-decision-made/{decision}", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
-    @ApiOperation(value = "Callback to set state on service decision")
+    @ApiOperation(value = "Callback to set document for service after decision")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})

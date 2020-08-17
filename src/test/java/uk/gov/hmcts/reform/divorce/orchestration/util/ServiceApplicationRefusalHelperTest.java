@@ -11,14 +11,13 @@ import java.util.Map;
 import static java.util.Collections.EMPTY_MAP;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_APPLICATION_GRANTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_APPLICATION_REFUSAL_REASON;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_APPLICATION_TYPE_DEEMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_REFUSAL_REASON;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DEEMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.getServiceApplicationGranted;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.getServiceApplicationRefusalReason;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.getServiceApplicationType;
@@ -30,6 +29,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationR
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isServiceApplicationGranted;
 
 public class ServiceApplicationRefusalHelperTest {
+
+    public static final String TEST_SERVICE_APPLICATION_REFUSAL_REASON = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod";
 
     @Test
     public void getServiceApplicationRefusalReasonShouldReturnValidValue() {
@@ -43,16 +44,16 @@ public class ServiceApplicationRefusalHelperTest {
     public void getServiceApplicationGrantedShouldReturnYesValue() {
         Map<String, Object> caseData = buildCaseDataWithField(
             SERVICE_APPLICATION_GRANTED,
-            TEST_SERVICE_APPLICATION_GRANTED);
-        assertThat(getServiceApplicationGranted(caseData), is(TEST_SERVICE_APPLICATION_GRANTED));
+            YES_VALUE);
+        assertThat(getServiceApplicationGranted(caseData), is(YES_VALUE));
     }
 
     @Test
     public void getServiceApplicationTypeShouldReturnDeemedValue() {
         Map<String, Object> caseData = buildCaseDataWithField(
             SERVICE_APPLICATION_TYPE,
-            TEST_SERVICE_APPLICATION_TYPE_DEEMED);
-        assertThat(getServiceApplicationType(caseData), is(TEST_SERVICE_APPLICATION_TYPE_DEEMED));
+            DEEMED);
+        assertThat(getServiceApplicationType(caseData), is(DEEMED));
     }
 
     @Test(expected = InvalidDataForTaskException.class)
@@ -118,7 +119,7 @@ public class ServiceApplicationRefusalHelperTest {
     public void isServiceApplicationGrantedShouldBeTrue() {
         Map<String, Object> caseData = buildCaseDataWithField(
             SERVICE_APPLICATION_GRANTED,
-            TEST_SERVICE_APPLICATION_GRANTED);
+            YES_VALUE);
 
         assertThat(isServiceApplicationGranted(caseData), is(true));
     }
