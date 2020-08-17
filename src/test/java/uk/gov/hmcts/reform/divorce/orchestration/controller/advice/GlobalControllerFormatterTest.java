@@ -10,6 +10,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.web.bind.WebDataBinder;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty;
 
 import java.beans.PropertyEditorSupport;
@@ -20,6 +21,7 @@ import static org.junit.rules.ExpectedException.none;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.Mockito.verify;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision.FINAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -45,6 +47,7 @@ public class GlobalControllerFormatterTest {
     @Test
     public void testWebDataBinderHasRightRightCustomEditors() {
         verify(webdataBinder).registerCustomEditor(eq(DivorceParty.class), isNotNull());
+        verify(webdataBinder).registerCustomEditor(eq(ServiceRefusalDecision.class), isNotNull());
     }
 
     @Test
@@ -62,6 +65,26 @@ public class GlobalControllerFormatterTest {
         expectedException.expectMessage("Could not find divorce party with the given description: " + "invalid-value");
 
         verify(webdataBinder).registerCustomEditor(eq(DivorceParty.class), customEditorCaptor.capture());
+        PropertyEditorSupport propertyEditor = customEditorCaptor.getValue();
+
+        propertyEditor.setAsText("invalid-value");
+    }
+
+    @Test
+    public void testServiceRefusalDecisionCustomEditorsWorksAsExpected() {
+        verify(webdataBinder).registerCustomEditor(eq(ServiceRefusalDecision.class), customEditorCaptor.capture());
+        PropertyEditorSupport propertyEditor = customEditorCaptor.getValue();
+
+        propertyEditor.setAsText("final");
+        assertThat(propertyEditor.getValue(), equalTo(FINAL));
+    }
+
+    @Test
+    public void testServiceRefusalDecisionCustomEditorsFailsAsExpected() {
+        expectedException.expect(IllegalArgumentException.class);
+        expectedException.expectMessage("Could not find refusal decision with the given description: " + "invalid-value");
+
+        verify(webdataBinder).registerCustomEditor(eq(ServiceRefusalDecision.class), customEditorCaptor.capture());
         PropertyEditorSupport propertyEditor = customEditorCaptor.getValue();
 
         propertyEditor.setAsText("invalid-value");

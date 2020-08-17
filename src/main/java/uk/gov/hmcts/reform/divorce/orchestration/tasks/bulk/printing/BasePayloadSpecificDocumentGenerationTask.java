@@ -49,13 +49,18 @@ public abstract class BasePayloadSpecificDocumentGenerationTask implements Task<
             documentInfo.getFileName()
         );
 
-        return ccdUtil.addNewDocumentsToCaseData(caseData, singletonList(documentInfo));
+        return addToCaseData(context, caseData, documentInfo);
     }
 
     protected abstract DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData);
 
+    protected Map<String, Object> addToCaseData(TaskContext context, Map<String, Object> caseData, GeneratedDocumentInfo documentInfo) {
+        log.info("CaseID: {} Adding document ({}) to d8document list", getCaseId(context), getDocumentType());
+        return ccdUtil.addNewDocumentsToCaseData(caseData, singletonList(documentInfo));
+    }
+
     protected GeneratedDocumentInfo generatePdf(TaskContext context, DocmosisTemplateVars templateModel) throws TaskException {
-        log.info("Case {}: Generating document from {}", getCaseId(context), getTemplateId());
+        log.info("CaseID: {} Generating document from {}", getCaseId(context), getTemplateId());
 
         return pdfDocumentGenerationService.generatePdf(
             templateModel,

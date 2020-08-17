@@ -6,8 +6,8 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
@@ -54,20 +55,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @RestController
 @Slf4j
+@RequiredArgsConstructor
 public class CallbackController {
 
     private static final String GENERIC_ERROR_MESSAGE = "An error happened when processing this request.";
     private static final String FAILED_TO_PROCESS_SOL_DN_ERROR = "Failed to process Solicitor DN review petition for case ID: %s";
     private static final String FAILED_TO_EXECUTE_SERVICE_ERROR = "Failed to execute service for case ID:  %s";
 
-    @Autowired
-    private CaseOrchestrationService caseOrchestrationService;
-
-    @Autowired
-    private ServiceJourneyService serviceJourneyService;
-
-    @Autowired
-    private AosService aosService;
+    private final CaseOrchestrationService caseOrchestrationService;
+    private final ServiceJourneyService serviceJourneyService;
+    private final AosService aosService;
 
     @PostMapping(path = "/request-clarification-petitioner")
     @ApiOperation(value = "Trigger notification email to request clarification from Petitioner")
@@ -1145,6 +1142,25 @@ public class CallbackController {
         );
     }
 
+    @PostMapping(path = "/service-decision-made/{decision}", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback to set document for service after decision")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> serviceDecisionMade(
+        @RequestHeader(AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest,
+        @PathVariable("decision")
+        @ApiParam(value = "Decision by LA for refusal order",
+            allowableValues = "draft, final") ServiceRefusalDecision decision) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            serviceJourneyService
+                .serviceDecisionMade(ccdCallbackRequest.getCaseDetails(), authorizationToken, decision)
+        );
+    }
+
     @PostMapping(path = "/set-up-confirm-service-payment")
     @ApiOperation(value = "Return service payment fee.")
     @ApiResponses(value = {
@@ -1155,19 +1171,6 @@ public class CallbackController {
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
                 .data(caseOrchestrationService.setupConfirmServicePaymentEvent(ccdCallbackRequest))
-                .build());
-    }
-
-    @PostMapping(path = "/handle-awaiting-service-consideration")
-    @ApiOperation(value = "Return service payment fee.")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Service payment callback")})
-    public ResponseEntity<CcdCallbackResponse> handleAwaitingServiceConsideration(
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws ServiceJourneyServiceException {
-
-        return ResponseEntity.ok(
-            CcdCallbackResponse.builder()
-                .data(serviceJourneyService.handleAwaitingServiceConsideration(ccdCallbackRequest))
                 .build());
     }
 

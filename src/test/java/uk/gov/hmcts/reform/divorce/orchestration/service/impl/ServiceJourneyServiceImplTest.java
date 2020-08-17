@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
 import com.google.common.collect.ImmutableMap;
-import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -11,11 +10,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.SendServiceApplicationNotificationsWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceApplicationRefusalOrderWorkflow;
 
 import java.util.Map;
 
@@ -23,16 +24,19 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision.FINAL;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ServiceJourneyServiceImplTest extends TestCase {
+public class ServiceJourneyServiceImplTest {
 
     @Mock
     private MakeServiceDecisionDateWorkflow makeServiceDecisionDateWorkflow;
@@ -42,6 +46,9 @@ public class ServiceJourneyServiceImplTest extends TestCase {
 
     @Mock
     private SendServiceApplicationNotificationsWorkflow sendServiceApplicationNotificationsWorkflow;
+
+    @Mock
+    private ServiceApplicationRefusalOrderWorkflow serviceApplicationRefusalOrderWorkflow;
 
     @InjectMocks
     private ServiceJourneyServiceImpl classUnderTest;
@@ -56,6 +63,27 @@ public class ServiceJourneyServiceImplTest extends TestCase {
     public void whenServiceApplicationNotGrantedThenReturnAwaitingDNApplication()
         throws ServiceJourneyServiceException, WorkflowException {
         runTestMakeServiceDecision(YES_VALUE, AWAITING_DECREE_NISI);
+    }
+
+    @Test
+    public void whenServiceDecisionIsMadeThenUpdateServiceApplicationRefusalOrderDocuments() throws Exception {
+        CcdCallbackRequest caseDetails = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .caseId("21431")
+                .state(AWAITING_SERVICE_CONSIDERATION)
+                .build())
+            .build();
+
+        when(serviceApplicationRefusalOrderWorkflow.run(any(), anyString(), any(ServiceRefusalDecision.class)))
+            .thenReturn(caseDetails.getCaseDetails().getCaseData());
+        when(sendServiceApplicationNotificationsWorkflow.run(any()))
+            .thenReturn(caseDetails.getCaseDetails().getCaseData());
+
+        CcdCallbackResponse response = classUnderTest.serviceDecisionMade(caseDetails.getCaseDetails(), AUTH_TOKEN, FINAL);
+
+        assertThat(response.getData(), is(caseDetails.getCaseDetails().getCaseData()));
+
+        verify(serviceApplicationRefusalOrderWorkflow).run(eq(caseDetails.getCaseDetails()), eq(AUTH_TOKEN), eq(FINAL));
     }
 
     @Test(expected = ServiceJourneyServiceException.class)
@@ -89,24 +117,6 @@ public class ServiceJourneyServiceImplTest extends TestCase {
         when(receivedServiceAddedDateWorkflow.run(any(CaseDetails.class))).thenThrow(WorkflowException.class);
 
         classUnderTest.receivedServiceAddedDate(input);
-    }
-
-    @Test
-    public void handleAwaitingServiceConsideration() throws ServiceJourneyServiceException {
-        CcdCallbackRequest input = buildCcdCallbackRequest();
-
-        classUnderTest.handleAwaitingServiceConsideration(input);
-    }
-
-    @Test(expected = ServiceJourneyServiceException.class)
-    public void handleAwaitingServiceConsiderationShouldThrowServiceJourneyServiceException()
-        throws ServiceJourneyServiceException, WorkflowException {
-        CcdCallbackRequest input = buildCcdCallbackRequest();
-
-        when(sendServiceApplicationNotificationsWorkflow.run(any(CaseDetails.class)))
-            .thenThrow(WorkflowException.class);
-
-        classUnderTest.handleAwaitingServiceConsideration(input);
     }
 
     private CcdCallbackRequest buildCcdCallbackRequest() {

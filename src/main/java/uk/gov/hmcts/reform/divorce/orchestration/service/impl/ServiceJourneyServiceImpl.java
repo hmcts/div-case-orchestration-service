@@ -6,12 +6,15 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.SendServiceApplicationNotificationsWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceApplicationRefusalOrderWorkflow;
 
 import java.util.Map;
 
@@ -27,6 +30,7 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
     private final MakeServiceDecisionDateWorkflow makeServiceDecisionDateWorkflow;
     private final ReceivedServiceAddedDateWorkflow receivedServiceAddedDateWorkflow;
     private final SendServiceApplicationNotificationsWorkflow sendServiceApplicationNotificationsWorkflow;
+    private final ServiceApplicationRefusalOrderWorkflow serviceApplicationRefusalOrderWorkflow;
 
     @Override
     public CcdCallbackResponse makeServiceDecision(CaseDetails caseDetails, String authorisation) throws ServiceJourneyServiceException {
@@ -58,11 +62,18 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
     }
 
     @Override
-    public Map<String, Object> handleAwaitingServiceConsideration(CcdCallbackRequest ccdCallbackRequest) throws ServiceJourneyServiceException {
+    public CcdCallbackResponse serviceDecisionMade(CaseDetails caseDetails, String authorisation, ServiceRefusalDecision decision)
+        throws CaseOrchestrationServiceException {
+        CcdCallbackResponse.CcdCallbackResponseBuilder builder = CcdCallbackResponse.builder();
         try {
-            return sendServiceApplicationNotificationsWorkflow.run(ccdCallbackRequest.getCaseDetails());
-        } catch (WorkflowException workflowException) {
-            throw new ServiceJourneyServiceException(workflowException);
+            Map<String, Object> caseData = serviceApplicationRefusalOrderWorkflow
+                .run(caseDetails, authorisation, decision);
+            caseDetails.setCaseData(caseData);
+            return CcdCallbackResponse.builder()
+                .data(sendServiceApplicationNotificationsWorkflow.run(caseDetails))
+                .build();
+        } catch (WorkflowException e) {
+            throw new CaseOrchestrationServiceException(e, caseDetails.getCaseId());
         }
     }
 }
