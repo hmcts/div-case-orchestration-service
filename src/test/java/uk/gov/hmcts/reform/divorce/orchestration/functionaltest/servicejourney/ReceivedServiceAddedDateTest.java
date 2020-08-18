@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
+package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.servicejourney;
 
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.IdamTestSupport;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ReceivedServiceAddedDateTask;
 import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 

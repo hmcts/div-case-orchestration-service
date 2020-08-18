@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
@@ -11,61 +10,65 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRe
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceApplicationRefusalOrderWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceDecisionMadeWorkflow;
 
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationGranted;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class ServiceJourneyServiceImpl implements ServiceJourneyService {
 
-    private final MakeServiceDecisionDateWorkflow makeServiceDecisionDateWorkflow;
     private final ReceivedServiceAddedDateWorkflow receivedServiceAddedDateWorkflow;
-    private final ServiceApplicationRefusalOrderWorkflow serviceApplicationRefusalOrderWorkflow;
+    private final MakeServiceDecisionDateWorkflow makeServiceDecisionDateWorkflow;
+    private final ServiceDecisionMadeWorkflow serviceDecisionMadeWorkflow;
 
     @Override
-    public CcdCallbackResponse makeServiceDecision(CaseDetails caseDetails, String authorisation) throws WorkflowException {
+    public CcdCallbackResponse makeServiceDecision(CaseDetails caseDetails, String authorisation) throws ServiceJourneyServiceException {
         CcdCallbackResponse.CcdCallbackResponseBuilder builder = CcdCallbackResponse.builder();
 
-        if (isServiceApplicationGranted(caseDetails)) {
+        if (isServiceApplicationGranted(caseDetails.getCaseData())) {
             builder.state(AWAITING_DECREE_NISI);
         } else {
             builder.state(SERVICE_APPLICATION_NOT_APPROVED);
         }
 
-        builder.data(makeServiceDecisionDateWorkflow.run(caseDetails, authorisation));
+        try {
+            builder.data(makeServiceDecisionDateWorkflow.run(caseDetails, authorisation));
+        } catch (WorkflowException workflowException) {
+            throw new ServiceJourneyServiceException(workflowException);
+        }
 
         return builder.build();
     }
 
     @Override
     public Map<String, Object> receivedServiceAddedDate(CcdCallbackRequest ccdCallbackRequest)
-        throws WorkflowException {
-        return receivedServiceAddedDateWorkflow.run(ccdCallbackRequest.getCaseDetails());
+        throws ServiceJourneyServiceException {
+        try {
+            return receivedServiceAddedDateWorkflow.run(ccdCallbackRequest.getCaseDetails());
+        } catch (WorkflowException workflowException) {
+            throw new ServiceJourneyServiceException(workflowException);
+        }
     }
 
     @Override
-    public CcdCallbackResponse serviceDecisionMade(CaseDetails caseDetails, String authorisation, ServiceRefusalDecision decision)
-        throws CaseOrchestrationServiceException {
-        CcdCallbackResponse.CcdCallbackResponseBuilder builder = CcdCallbackResponse.builder();
+    public CcdCallbackResponse serviceDecisionMade(
+        CaseDetails caseDetails, String authorisation, ServiceRefusalDecision decision
+    ) throws CaseOrchestrationServiceException {
         try {
-            builder.data(serviceApplicationRefusalOrderWorkflow.run(caseDetails, authorisation, decision));
+            return CcdCallbackResponse.builder()
+                .data(serviceDecisionMadeWorkflow.run(caseDetails, authorisation, decision))
+                .build();
         } catch (WorkflowException e) {
             throw new CaseOrchestrationServiceException(e, caseDetails.getCaseId());
         }
-        return builder.build();
-    }
-
-    protected boolean isServiceApplicationGranted(CaseDetails caseDetails) {
-        return YES_VALUE.equalsIgnoreCase(
-            (String) caseDetails.getCaseData().get(CcdFields.SERVICE_APPLICATION_GRANTED)
-        );
     }
 }

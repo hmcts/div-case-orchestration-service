@@ -10,7 +10,9 @@ import static java.util.Collections.EMPTY_MAP;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_FAMILY_MAN_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.PETITIONER_EMAIL;
 
 public class CaseDataExtractorTest {
 
@@ -18,6 +20,18 @@ public class CaseDataExtractorTest {
     public void getCaseReferenceShouldReturnValidValue() {
         Map<String, Object> caseData = buildCaseDataWithField(CASE_REFERENCE, TEST_CASE_FAMILY_MAN_ID);
         assertThat(CaseDataExtractor.getCaseReference(caseData), is(TEST_CASE_FAMILY_MAN_ID));
+    }
+
+    @Test(expected = InvalidDataForTaskException.class)
+    public void getPetitionerEmailShouldThrowInvalidDat() {
+        CaseDataExtractor.getPetitionerEmail(EMPTY_MAP);
+    }
+
+    @Test
+    public void getPetitionerEmailShouldReturnValidValues() {
+        Map<String, Object> caseData = buildCaseDataWithField(PETITIONER_EMAIL, TEST_EMAIL);
+
+        assertThat(CaseDataExtractor.getPetitionerEmail(caseData), is(TEST_EMAIL));
     }
 
     @Test(expected = InvalidDataForTaskException.class)
