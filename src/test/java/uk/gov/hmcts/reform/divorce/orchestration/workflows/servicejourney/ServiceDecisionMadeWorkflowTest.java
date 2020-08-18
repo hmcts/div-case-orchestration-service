@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedS
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceRefusalDraftRemovalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedApprovedEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedApprovedEmailTask;
 
 import java.util.Map;
 
@@ -34,6 +35,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.Se
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision.FINAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTaskWasCalled;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTaskWasNeverCalled;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksWereNeverCalled;
 
@@ -59,7 +61,10 @@ public class ServiceDecisionMadeWorkflowTest {
     private DispensedServiceRefusalOrderDraftTask dispensedServiceRefusalOrderDraftTask;
 
     @Mock
-    DeemedApprovedEmailTask deemedApprovedEmailTask;
+    private DeemedApprovedEmailTask deemedApprovedEmailTask;
+
+    @Mock
+    private DispensedApprovedEmailTask dispensedApprovedEmailTask;
 
     @Test
     public void whenDeemedAndApplicationIsNotGrantedAndFinal() throws WorkflowException {
@@ -158,17 +163,34 @@ public class ServiceDecisionMadeWorkflowTest {
 
         verifyTaskWasCalled(returnedCaseData, deemedApprovedEmailTask);
 
+        verifyTaskWasNeverCalled(dispensedApprovedEmailTask);
         runNoTasksToGeneratePdfs();
     }
 
     @Test
-    public void whenServiceDecisionMadeAndServiceApplicationIsGrantedAndDispensedShouldNotSendEmailYet() throws WorkflowException {
+    public void whenApplicationIsGrantedAndDispensedShouldSendDispensedApprovedEmail()
+        throws WorkflowException {
         Map<String, Object> caseData = buildCaseData(DISPENSED, YES_VALUE);
+        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
+
+        mockTasksExecution(caseData, dispensedApprovedEmailTask);
+
+        Map<String, Object> returnedCaseData = executeWorkflow(caseDetails, FINAL);
+
+        verifyTaskWasCalled(returnedCaseData, dispensedApprovedEmailTask);
+
+        verifyTaskWasNeverCalled(deemedApprovedEmailTask);
+        runNoTasksToGeneratePdfs();
+    }
+
+    @Test
+    public void whenApplicationIsGrantedAndUnknownTypeShouldNotExecuteAnyTask()
+        throws WorkflowException {
+        Map<String, Object> caseData = buildCaseData("I don't exist", YES_VALUE);
         CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
 
         executeWorkflow(caseDetails, FINAL);
 
-        // It will be changed when we implement more emails (this should happen in current sprint)
         runNoTasksAtAll();
     }
 
@@ -224,7 +246,10 @@ public class ServiceDecisionMadeWorkflowTest {
     }
 
     private void runNoTasksToSendEmails() {
-        verifyTasksWereNeverCalled(deemedApprovedEmailTask);
+        verifyTasksWereNeverCalled(
+            deemedApprovedEmailTask,
+            dispensedApprovedEmailTask
+        );
     }
 
     private void runNoTasksAtAll() {
