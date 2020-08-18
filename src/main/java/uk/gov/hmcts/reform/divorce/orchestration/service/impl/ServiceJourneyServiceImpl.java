@@ -64,7 +64,7 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
     @Override
     public CcdCallbackResponse serviceDecisionMade(CaseDetails caseDetails, String authorisation, ServiceRefusalDecision decision)
         throws CaseOrchestrationServiceException {
-        CcdCallbackResponse.CcdCallbackResponseBuilder builder = CcdCallbackResponse.builder();
+
         try {
             Map<String, Object> caseData = serviceApplicationRefusalOrderWorkflow
                 .run(caseDetails, authorisation, decision);

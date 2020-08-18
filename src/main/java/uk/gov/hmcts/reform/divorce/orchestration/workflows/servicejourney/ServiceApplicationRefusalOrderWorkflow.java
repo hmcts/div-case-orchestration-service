@@ -22,10 +22,10 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDeemed;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDispensed;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.getServiceApplicationType;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isAwaitingServiceConsideration;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isDeemedApplication;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isDispensedApplication;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isDraft;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isFinal;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isServiceApplicationGranted;
@@ -41,8 +41,8 @@ public class ServiceApplicationRefusalOrderWorkflow extends DefaultWorkflow<Map<
     private final DeemedServiceRefusalOrderDraftTask deemedServiceRefusalOrderDraftTask;
     private final DispensedServiceRefusalOrderDraftTask dispensedServiceRefusalOrderDraftTask;
 
-    public Map<String, Object> run(CaseDetails caseDetails, String authorisation, ServiceRefusalDecision decision) throws WorkflowException {
-
+    public Map<String, Object> run(CaseDetails caseDetails, String authorisation, ServiceRefusalDecision decision)
+        throws WorkflowException {
         String caseId = caseDetails.getCaseId();
         Map<String, Object> caseData = caseDetails.getCaseData();
 
@@ -63,10 +63,12 @@ public class ServiceApplicationRefusalOrderWorkflow extends DefaultWorkflow<Map<
         List<Task> tasks = new ArrayList<>();
 
         if (!isAwaitingServiceConsideration(caseDetails)) {
-            log.info("CaseID: {} Case is not {}. Cannot generate service application refusal order documents",
+            log.info("CaseID: {} Case state is not {}. No documents will be generated.",
                 caseId, AWAITING_SERVICE_CONSIDERATION);
             return tasks.toArray(new Task[] {});
         }
+
+        log.info("CaseID: {} Case state is {}.", caseId, AWAITING_SERVICE_CONSIDERATION);
 
         if (isServiceApplicationGranted(caseData)) {
             log.info("CaseID: {} Service application is granted. Cannot generate service application refusal order documents", caseId);
@@ -76,23 +78,43 @@ public class ServiceApplicationRefusalOrderWorkflow extends DefaultWorkflow<Map<
         String applicationType = getServiceApplicationType(caseData);
 
         if (isFinal(decision)) {
-            log.info("CaseID: {}, Service application type is {}. Generating Service Refusal Order document", caseId, applicationType);
+            log.info(
+                "CaseID: {}, Service application type is {}. Generating Service Refusal Order document",
+                caseId,
+                applicationType
+            );
 
-            if (isDeemedApplication(applicationType)) {
+            if (isServiceApplicationDeemed(caseData)) {
+                log.info("CaseID: {}, Deemed. Adding task to generate Deemed Refusal Order", caseId);
                 tasks.add(deemedServiceRefusalOrderTask);
-            } else if (isDispensedApplication(applicationType)) {
+            } else if (isServiceApplicationDispensed(caseData)) {
+                log.info("CaseID: {}, Dispensed. Adding task to generate Dispensed Refusal Order", caseId);
                 tasks.add(dispensedServiceRefusalOrderTask);
+            } else {
+                log.warn("CaseID: {}, NOT Deemed/Dispensed. Do nothing.", caseId);
             }
+
+            log.info("CaseID: {}, Adding task to remove Refusal Order Draft from case data.", caseId);
             tasks.add(serviceRefusalDraftRemovalTask);
 
         } else if (isDraft(decision)) {
-            log.info("CaseID: {}, Service application type is {}. Generating Service Refusal Order draft document", caseId, applicationType);
+            log.info(
+                "CaseID: {}, Service application type is {}. Generating Service Refusal Order draft document.",
+                caseId,
+                applicationType
+            );
 
-            if (isDeemedApplication(applicationType)) {
+            if (isServiceApplicationDeemed(caseData)) {
+                log.info("CaseID: {}, Deemed. Adding task to generate Refusal Order Draft.", caseId);
                 tasks.add(deemedServiceRefusalOrderDraftTask);
-            } else if (isDispensedApplication(applicationType)) {
+            } else if (isServiceApplicationDispensed(caseData)) {
+                log.info("CaseID: {}, Dispensed. Adding task to generate Refusal Order Draft.", caseId);
                 tasks.add(dispensedServiceRefusalOrderDraftTask);
+            } else {
+                log.warn("CaseID: {}, NOT Deemed/Dispensed. Do nothing.", caseId);
             }
+        } else {
+            log.warn("CaseID: {}, NOT draft/final. Do nothing.", caseId);
         }
 
         return tasks.toArray(new Task[] {});
