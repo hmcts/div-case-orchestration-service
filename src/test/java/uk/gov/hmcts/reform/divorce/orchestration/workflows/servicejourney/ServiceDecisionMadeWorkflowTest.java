@@ -9,12 +9,12 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedApprovedEmailNotificationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceRefusalOrderDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceRefusalOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceRefusalDraftRemovalTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedApprovedEmailTask;
 
 import java.util.Map;
 
@@ -59,7 +59,7 @@ public class ServiceDecisionMadeWorkflowTest {
     private DispensedServiceRefusalOrderDraftTask dispensedServiceRefusalOrderDraftTask;
 
     @Mock
-    DeemedApprovedEmailNotificationTask deemedApprovedEmailNotificationTask;
+    DeemedApprovedEmailTask deemedApprovedEmailTask;
 
     @Test
     public void whenDeemedAndApplicationIsNotGrantedAndFinal() throws WorkflowException {
@@ -152,11 +152,11 @@ public class ServiceDecisionMadeWorkflowTest {
         Map<String, Object> caseData = buildCaseData(DEEMED, YES_VALUE);
         CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
 
-        mockTasksExecution(caseData, deemedApprovedEmailNotificationTask);
+        mockTasksExecution(caseData, deemedApprovedEmailTask);
 
         Map<String, Object> returnedCaseData = executeWorkflow(caseDetails, FINAL);
 
-        verifyTaskWasCalled(returnedCaseData, deemedApprovedEmailNotificationTask);
+        verifyTaskWasCalled(returnedCaseData, deemedApprovedEmailTask);
 
         runNoTasksToGeneratePdfs();
     }
@@ -224,7 +224,7 @@ public class ServiceDecisionMadeWorkflowTest {
     }
 
     private void runNoTasksToSendEmails() {
-        verifyTasksWereNeverCalled(deemedApprovedEmailNotificationTask);
+        verifyTasksWereNeverCalled(deemedApprovedEmailTask);
     }
 
     private void runNoTasksAtAll() {
