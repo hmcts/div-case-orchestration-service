@@ -50,7 +50,7 @@ public abstract class SendEmailTask implements Task<Map<String, Object>> {
             getTemplate().name(),
             getPersonalisation(caseData),
             subject,
-            LanguagePreference.ENGLISH
+            getLanguage(caseData)
         );
 
         log.info("CaseId: {} email {} was sent.", caseId, subject);

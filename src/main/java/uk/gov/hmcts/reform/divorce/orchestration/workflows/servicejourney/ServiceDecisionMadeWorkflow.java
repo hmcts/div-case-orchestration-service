@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedS
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceRefusalDraftRemovalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedApprovedEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedApprovedEmailTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +43,7 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
     private final DispensedServiceRefusalOrderDraftTask dispensedServiceRefusalOrderDraftTask;
 
     private final DeemedApprovedEmailTask deemedApprovedEmailTask;
+    private final DispensedApprovedEmailTask dispensedApprovedEmailTask;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authorisation, ServiceRefusalDecision decision)
         throws WorkflowException {
@@ -79,6 +81,7 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
                 tasks.add(deemedApprovedEmailTask);
             } else {
                 log.info("CaseId: {} NOT deemed. To be implemented", caseId);
+                tasks.add(dispensedApprovedEmailTask);
             }
 
             return tasks.toArray(new Task[] {});

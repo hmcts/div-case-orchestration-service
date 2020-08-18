@@ -53,20 +53,20 @@ public class DeemedApprovedEmailTaskTest {
         );
     }
 
-    private Map<String, String> getExpectedNotificationTemplateVars() {
+    public static Map<String, String> getExpectedNotificationTemplateVars() {
         return ImmutableMap.of(
             NOTIFICATION_PET_NAME, TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME
         );
     }
 
-    private TaskContext getTaskContext() {
+    public static TaskContext getTaskContext() {
         TaskContext context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
 
         return context;
     }
 
-    private ImmutableMap<String, Object> buildCaseData() {
+    public static ImmutableMap<String, Object> buildCaseData() {
         return ImmutableMap.of(
             D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME,
             D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME,
