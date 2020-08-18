@@ -71,6 +71,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DEEMED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DISPENSED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision.DRAFT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision.FINAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.CASE_REFERENCE;
@@ -87,6 +88,7 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
 
     private static final String API_URL = "/service-decision-made/%s";
     private static final String DEEMED_APPROVED_EMAIL_ID = "00f27db6-2678-4ccd-8cdd-44971b330ca4";
+    private static final String DISPENSED_APPROVED_EMAIL_ID = "cf03cea1-a155-4f20-a3a6-3ad8fad7742f";
 
     private CtscContactDetails ctscContactDetails;
 
@@ -205,6 +207,26 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
 
         verify(emailClient).sendEmail(
             eq(DEEMED_APPROVED_EMAIL_ID),
+            eq(TEST_PETITIONER_EMAIL),
+            eq(expectedCitizenEmailVars(caseData)),
+            any()
+        );
+    }
+
+    @Test
+    public void shouldSendDispensedApprovedEmailWhenServiceApplicationIsGrantedAndDispensed() throws Exception {
+        Map<String, Object> caseData = buildInputCaseData(DISPENSED);
+        CcdCallbackRequest ccdCallbackRequest = buildRequest(caseData);
+
+        webClient.perform(post(format(API_URL, FINAL.getValue()))
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(ccdCallbackRequest)))
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(isJson(), hasNoJsonPath("$.errors"))));
+
+        verify(emailClient).sendEmail(
+            eq(DISPENSED_APPROVED_EMAIL_ID),
             eq(TEST_PETITIONER_EMAIL),
             eq(expectedCitizenEmailVars(caseData)),
             any()

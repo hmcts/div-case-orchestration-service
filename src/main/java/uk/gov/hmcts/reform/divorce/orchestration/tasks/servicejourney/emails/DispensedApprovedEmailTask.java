@@ -15,11 +15,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 
 @Component
 @Slf4j
-public class DeemedApprovedEmailTask extends SendEmailTask {
+public class DispensedApprovedEmailTask extends SendEmailTask {
 
-    private static final String SUBJECT = "Your ‘deemed service’ application has been approved";
+    private static final String SUBJECT = "Your ‘dispense with service’ application has been approved\n";
 
-    public DeemedApprovedEmailTask(EmailService emailService) {
+    public DispensedApprovedEmailTask(EmailService emailService) {
         super(emailService);
     }
 
@@ -37,7 +37,7 @@ public class DeemedApprovedEmailTask extends SendEmailTask {
 
     @Override
     protected EmailTemplateNames getTemplate() {
-        return EmailTemplateNames.CITIZEN_DEEMED_APPROVED;
+        return EmailTemplateNames.CITIZEN_DISPENSED_APPROVED;
     }
 
     @Override
