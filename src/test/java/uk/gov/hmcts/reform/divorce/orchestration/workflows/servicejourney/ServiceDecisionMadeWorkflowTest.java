@@ -163,11 +163,13 @@ public class ServiceDecisionMadeWorkflowTest {
 
         verifyTaskWasCalled(returnedCaseData, deemedApprovedEmailTask);
 
+        verifyTaskWasNeverCalled(dispensedApprovedEmailTask);
         runNoTasksToGeneratePdfs();
     }
 
     @Test
-    public void whenServiceDecisionMadeAndServiceApplicationIsGrantedAndDispensedShouldNotSendEmailYet() throws WorkflowException {
+    public void whenApplicationIsGrantedAndDispensedShouldSendDispensedApprovedEmail()
+        throws WorkflowException {
         Map<String, Object> caseData = buildCaseData(DISPENSED, YES_VALUE);
         CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
 
@@ -179,6 +181,17 @@ public class ServiceDecisionMadeWorkflowTest {
 
         verifyTaskWasNeverCalled(deemedApprovedEmailTask);
         runNoTasksToGeneratePdfs();
+    }
+
+    @Test
+    public void whenApplicationIsGrantedAndUnknownTypeShouldNotExecuteAnyTask()
+        throws WorkflowException {
+        Map<String, Object> caseData = buildCaseData("I don't exist", YES_VALUE);
+        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
+
+        executeWorkflow(caseDetails, FINAL);
+
+        runNoTasksAtAll();
     }
 
     @Test

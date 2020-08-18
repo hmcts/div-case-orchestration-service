@@ -79,9 +79,11 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
             if (isServiceApplicationDeemed(caseData)) {
                 log.info("CaseId: {} deemed citizen email task adding.", caseId);
                 tasks.add(deemedApprovedEmailTask);
-            } else {
-                log.info("CaseId: {} NOT deemed. To be implemented", caseId);
+            } else if (isServiceApplicationDispensed(caseData)) {
+                log.info("CaseId: {} dispensed citizen email task adding.", caseId);
                 tasks.add(dispensedApprovedEmailTask);
+            } else {
+                log.info("CaseId: {} NOT deemed/dispensed. No email will be sent.", caseId);
             }
 
             return tasks.toArray(new Task[] {});
