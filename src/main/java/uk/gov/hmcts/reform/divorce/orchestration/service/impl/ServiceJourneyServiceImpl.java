@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceEx
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.SendServiceApplicationNotificationsWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceApplicationRefusalOrderWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceDecisionMadeWorkflow;
 
 import java.util.Map;
 
@@ -30,7 +30,7 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
     private final MakeServiceDecisionDateWorkflow makeServiceDecisionDateWorkflow;
     private final ReceivedServiceAddedDateWorkflow receivedServiceAddedDateWorkflow;
     private final SendServiceApplicationNotificationsWorkflow sendServiceApplicationNotificationsWorkflow;
-    private final ServiceApplicationRefusalOrderWorkflow serviceApplicationRefusalOrderWorkflow;
+    private final ServiceDecisionMadeWorkflow serviceDecisionMadeWorkflow;
 
     @Override
     public CcdCallbackResponse makeServiceDecision(CaseDetails caseDetails, String authorisation) throws ServiceJourneyServiceException {
@@ -66,7 +66,7 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
         throws CaseOrchestrationServiceException {
 
         try {
-            Map<String, Object> caseData = serviceApplicationRefusalOrderWorkflow
+            Map<String, Object> caseData = serviceDecisionMadeWorkflow
                 .run(caseDetails, authorisation, decision);
             caseDetails.setCaseData(caseData);
             return CcdCallbackResponse.builder()

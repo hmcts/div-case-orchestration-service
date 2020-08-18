@@ -38,10 +38,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.ve
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksWereNeverCalled;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ServiceApplicationRefusalOrderWorkflowTest {
+public class ServiceDecisionMadeWorkflowTest {
 
     @InjectMocks
-    private ServiceApplicationRefusalOrderWorkflow classUnderTest;
+    private ServiceDecisionMadeWorkflow classUnderTest;
 
     @Mock
     private DeemedServiceRefusalOrderTask deemedServiceRefusalOrderTask;
@@ -58,7 +58,7 @@ public class ServiceApplicationRefusalOrderWorkflowTest {
     @Mock
     private DispensedServiceRefusalOrderDraftTask dispensedServiceRefusalOrderDraftTask;
 
-    public ServiceApplicationRefusalOrderWorkflowTest() {
+    public ServiceDecisionMadeWorkflowTest() {
     }
 
     @Test

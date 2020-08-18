@@ -33,7 +33,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationR
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class ServiceApplicationRefusalOrderWorkflow extends DefaultWorkflow<Map<String, Object>> {
+public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final DeemedServiceRefusalOrderTask deemedServiceRefusalOrderTask;
     private final DispensedServiceRefusalOrderTask dispensedServiceRefusalOrderTask;

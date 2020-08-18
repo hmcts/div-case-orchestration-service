@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceEx
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.SendServiceApplicationNotificationsWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceApplicationRefusalOrderWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceDecisionMadeWorkflow;
 
 import java.util.Map;
 
@@ -48,7 +48,7 @@ public class ServiceJourneyServiceImplTest {
     private SendServiceApplicationNotificationsWorkflow sendServiceApplicationNotificationsWorkflow;
 
     @Mock
-    private ServiceApplicationRefusalOrderWorkflow serviceApplicationRefusalOrderWorkflow;
+    private ServiceDecisionMadeWorkflow serviceDecisionMadeWorkflow;
 
     @InjectMocks
     private ServiceJourneyServiceImpl classUnderTest;
@@ -74,7 +74,7 @@ public class ServiceJourneyServiceImplTest {
                 .build())
             .build();
 
-        when(serviceApplicationRefusalOrderWorkflow.run(any(), anyString(), any(ServiceRefusalDecision.class)))
+        when(serviceDecisionMadeWorkflow.run(any(), anyString(), any(ServiceRefusalDecision.class)))
             .thenReturn(caseDetails.getCaseDetails().getCaseData());
         when(sendServiceApplicationNotificationsWorkflow.run(any()))
             .thenReturn(caseDetails.getCaseDetails().getCaseData());
@@ -83,7 +83,7 @@ public class ServiceJourneyServiceImplTest {
 
         assertThat(response.getData(), is(caseDetails.getCaseDetails().getCaseData()));
 
-        verify(serviceApplicationRefusalOrderWorkflow).run(eq(caseDetails.getCaseDetails()), eq(AUTH_TOKEN), eq(FINAL));
+        verify(serviceDecisionMadeWorkflow).run(eq(caseDetails.getCaseDetails()), eq(AUTH_TOKEN), eq(FINAL));
     }
 
     @Test(expected = ServiceJourneyServiceException.class)
