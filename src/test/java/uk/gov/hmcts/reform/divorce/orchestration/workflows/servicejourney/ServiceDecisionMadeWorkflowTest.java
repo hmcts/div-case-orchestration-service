@@ -109,7 +109,7 @@ public class ServiceDecisionMadeWorkflowTest {
         Map<String, Object> caseData = buildCaseData(DEEMED, NO_VALUE);
         CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
 
-        when(deemedServiceRefusalOrderDraftTask.execute(any(), anyMap())).thenReturn(caseData);
+        mockTasksExecution(caseData, deemedServiceRefusalOrderDraftTask);
 
         Map<String, Object> returnedData = executeWorkflow(caseDetails, DRAFT);
 
@@ -128,7 +128,7 @@ public class ServiceDecisionMadeWorkflowTest {
         Map<String, Object> caseData = buildCaseData(DISPENSED, NO_VALUE);
         CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
 
-        when(dispensedServiceRefusalOrderDraftTask.execute(any(), anyMap())).thenReturn(caseData);
+        mockTasksExecution(caseData, dispensedServiceRefusalOrderDraftTask);
 
         Map<String, Object> returnedData = executeWorkflow(caseDetails, DRAFT);
 
@@ -152,11 +152,43 @@ public class ServiceDecisionMadeWorkflowTest {
     }
 
     @Test
-    public void whenMakeServiceDecisionAndServiceApplicationIsGrantedNoTasksShouldRun() throws WorkflowException {
-        Map<String, Object> caseData = ImmutableMap.of(SERVICE_APPLICATION_GRANTED, YES_VALUE);
+    public void whenServiceDecisionMadeAndServiceApplicationIsGrantedAndDeemedShouldSendEmail() throws WorkflowException {
+        Map<String, Object> caseData = buildCaseData(DEEMED, YES_VALUE);
+        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
+
+        mockTasksExecution(caseData, deemedApprovedEmailNotificationTask);
+
+        Map<String, Object> returnedCaseData = executeWorkflow(caseDetails, FINAL);
+
+        verifyTaskWasCalled(returnedCaseData, deemedApprovedEmailNotificationTask);
+
+        runNoTasksToGeneratePdfs();
+    }
+
+    @Test
+    public void whenServiceDecisionMadeAndServiceApplicationIsGrantedAndDispensedShouldNotSendEmailYet() throws WorkflowException {
+        Map<String, Object> caseData = buildCaseData(DISPENSED, YES_VALUE);
         CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
 
         executeWorkflow(caseDetails, FINAL);
+
+        verifyTasksWereNeverCalled(deemedApprovedEmailNotificationTask);
+
+        runNoTasksToGeneratePdfs();
+    }
+
+    @Test
+    public void whenServiceDecisionMadeAndServiceApplicationIsNotGrantedAndAndTypeIsOtherDoNotGeneratePdfs() throws WorkflowException {
+        Map<String, Object> caseData = buildCaseData("someOtherValue", NO_VALUE);
+        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
+
+        mockTasksExecution(caseData, serviceRefusalDraftRemovalTask);
+
+        Map<String, Object> returnedCaseData = executeWorkflow(caseDetails, FINAL);
+
+        verifyTaskWasCalled(returnedCaseData, serviceRefusalDraftRemovalTask);
+
+        verifyTasksWereNeverCalled(deemedApprovedEmailNotificationTask);
         runNoTasksToGeneratePdfs();
     }
 
@@ -179,7 +211,6 @@ public class ServiceDecisionMadeWorkflowTest {
         verifyTasksWereNeverCalled(
             deemedServiceRefusalOrderTask,
             dispensedServiceRefusalOrderTask,
-            serviceRefusalDraftRemovalTask,
             deemedServiceRefusalOrderDraftTask,
             dispensedServiceRefusalOrderDraftTask
         );

@@ -81,6 +81,7 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
             } else {
                 log.info("CaseId: {} NOT deemed. To be implemented", caseId);
             }
+
             return tasks.toArray(new Task[] {});
         }
 
@@ -122,8 +123,6 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
             } else {
                 log.warn("CaseID: {}, NOT Deemed/Dispensed. Do nothing.", caseId);
             }
-        } else {
-            log.warn("CaseID: {}, NOT draft/final. Do nothing.", caseId);
         }
 
         return tasks.toArray(new Task[] {});
