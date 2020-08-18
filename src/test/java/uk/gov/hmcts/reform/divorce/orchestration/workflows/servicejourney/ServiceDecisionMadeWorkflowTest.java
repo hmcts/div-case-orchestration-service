@@ -21,14 +21,10 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -76,12 +72,9 @@ public class ServiceDecisionMadeWorkflowTest {
 
         verifyTasksCalledInOrder(returnedData, deemedServiceRefusalOrderTask, serviceRefusalDraftRemovalTask);
 
-        verifyTasksWereNeverCalled(
-            dispensedServiceRefusalOrderTask,
-            deemedServiceRefusalOrderDraftTask,
-            dispensedServiceRefusalOrderDraftTask,
-            deemedApprovedEmailNotificationTask
-        );
+        runNoTasksToGenerateDraftPdfs();
+        runNoTasksToSendEmails();
+        verifyTasksWereNeverCalled(dispensedServiceRefusalOrderTask);
     }
 
     @Test
@@ -93,15 +86,11 @@ public class ServiceDecisionMadeWorkflowTest {
 
         Map<String, Object> returnedData = executeWorkflow(caseDetails, FINAL);
 
-        verifyTaskWasCalled(returnedData, dispensedServiceRefusalOrderTask);
-        verifyTaskWasCalled(returnedData, serviceRefusalDraftRemovalTask);
+        verifyTasksCalledInOrder(returnedData, dispensedServiceRefusalOrderTask, serviceRefusalDraftRemovalTask);
 
-        verifyTasksWereNeverCalled(
-            deemedServiceRefusalOrderTask,
-            deemedServiceRefusalOrderDraftTask,
-            dispensedServiceRefusalOrderDraftTask,
-            deemedApprovedEmailNotificationTask
-        );
+        runNoTasksToGenerateDraftPdfs();
+        runNoTasksToSendEmails();
+        verifyTasksWereNeverCalled(deemedServiceRefusalOrderTask);
     }
 
     @Test
@@ -115,12 +104,10 @@ public class ServiceDecisionMadeWorkflowTest {
 
         verifyTaskWasCalled(returnedData, deemedServiceRefusalOrderDraftTask);
 
-        verifyTasksWereNeverCalled(
-            deemedServiceRefusalOrderTask,
-            serviceRefusalDraftRemovalTask,
-            dispensedServiceRefusalOrderDraftTask,
-            deemedApprovedEmailNotificationTask
-        );
+        runNoTasksToGenerateFinalPdfs();
+        runNoTasksToSendEmails();
+        verifyTasksWereNeverCalled(serviceRefusalDraftRemovalTask);
+        verifyTasksWereNeverCalled(dispensedServiceRefusalOrderDraftTask);
     }
 
     @Test
@@ -134,21 +121,20 @@ public class ServiceDecisionMadeWorkflowTest {
 
         verifyTaskWasCalled(returnedData, dispensedServiceRefusalOrderDraftTask);
 
-        verifyTasksWereNeverCalled(
-            dispensedServiceRefusalOrderTask,
-            serviceRefusalDraftRemovalTask,
-            deemedServiceRefusalOrderDraftTask,
-            deemedApprovedEmailNotificationTask
-        );
+        runNoTasksToGenerateFinalPdfs();
+        runNoTasksToSendEmails();
+        verifyTasksWereNeverCalled(serviceRefusalDraftRemovalTask);
+        verifyTasksWereNeverCalled(deemedServiceRefusalOrderDraftTask);
     }
 
     @Test
     public void whenMakeServiceDecisionAndNotAwaitingServiceConsiderationNoTasksShouldRun() throws WorkflowException {
         Map<String, Object> caseData = ImmutableMap.of("anyKey", "anyValue");
-        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_CLARIFICATION);
+        CaseDetails caseDetails = buildCaseDetails(caseData, "stateOtherThanExpected");
 
         executeWorkflow(caseDetails, FINAL);
-        runNoTasksToGeneratePdfs();
+
+        runNoTasksAtAll();
     }
 
     @Test
@@ -172,9 +158,8 @@ public class ServiceDecisionMadeWorkflowTest {
 
         executeWorkflow(caseDetails, FINAL);
 
-        verifyTasksWereNeverCalled(deemedApprovedEmailNotificationTask);
-
-        runNoTasksToGeneratePdfs();
+        // It will be changed when we implement more emails (this should happen in current sprint)
+        runNoTasksAtAll();
     }
 
     @Test
@@ -188,8 +173,9 @@ public class ServiceDecisionMadeWorkflowTest {
 
         verifyTaskWasCalled(returnedCaseData, serviceRefusalDraftRemovalTask);
 
-        verifyTasksWereNeverCalled(deemedApprovedEmailNotificationTask);
-        runNoTasksToGeneratePdfs();
+        runNoTasksToSendEmails();
+        runNoTasksToGenerateDraftPdfs();
+        runNoTasksToGenerateFinalPdfs();
     }
 
     private Map<String, Object> buildCaseData(String serviceApplicationType, String serviceApplicationGranted) {
@@ -207,13 +193,33 @@ public class ServiceDecisionMadeWorkflowTest {
             .build();
     }
 
-    private void runNoTasksToGeneratePdfs() {
+    private void runNoTasksToGenerateDraftPdfs() {
         verifyTasksWereNeverCalled(
-            deemedServiceRefusalOrderTask,
-            dispensedServiceRefusalOrderTask,
             deemedServiceRefusalOrderDraftTask,
             dispensedServiceRefusalOrderDraftTask
         );
+    }
+
+    private void runNoTasksToGenerateFinalPdfs() {
+        verifyTasksWereNeverCalled(
+            deemedServiceRefusalOrderTask,
+            dispensedServiceRefusalOrderTask
+        );
+    }
+
+    private void runNoTasksToGeneratePdfs() {
+        runNoTasksToGenerateDraftPdfs();
+        runNoTasksToGenerateFinalPdfs();
+        verifyTasksWereNeverCalled(serviceRefusalDraftRemovalTask);
+    }
+
+    private void runNoTasksToSendEmails() {
+        verifyTasksWereNeverCalled(deemedApprovedEmailNotificationTask);
+    }
+
+    private void runNoTasksAtAll() {
+        runNoTasksToGeneratePdfs();
+        runNoTasksToSendEmails();
     }
 
     private Map<String, Object> executeWorkflow(CaseDetails caseDetails, ServiceRefusalDecision decision)
