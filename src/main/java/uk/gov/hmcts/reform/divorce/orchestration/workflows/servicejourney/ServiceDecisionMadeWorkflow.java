@@ -59,11 +59,11 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
         );
     }
 
-    private Task[] getTasks(CaseDetails caseDetails, ServiceRefusalDecision decision) {
+    private Task<Map<String, Object>>[] getTasks(CaseDetails caseDetails, ServiceRefusalDecision decision) {
         Map<String, Object> caseData = caseDetails.getCaseData();
         String caseId = caseDetails.getCaseId();
 
-        List<Task> tasks = new ArrayList<>();
+        List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
         if (!isAwaitingServiceConsideration(caseDetails)) {
             log.info("CaseID: {} Case state is not {}. No documents will be generated.",
