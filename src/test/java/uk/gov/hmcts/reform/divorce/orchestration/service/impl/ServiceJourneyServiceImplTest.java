@@ -6,14 +6,16 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceApplicationRefusalOrderWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceDecisionMadeWorkflow;
 
 import java.util.Map;
 
@@ -25,7 +27,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
@@ -43,18 +44,20 @@ public class ServiceJourneyServiceImplTest {
     private ReceivedServiceAddedDateWorkflow receivedServiceAddedDateWorkflow;
 
     @Mock
-    private ServiceApplicationRefusalOrderWorkflow serviceApplicationRefusalOrderWorkflow;
+    private ServiceDecisionMadeWorkflow serviceDecisionMadeWorkflow;
 
     @InjectMocks
     private ServiceJourneyServiceImpl classUnderTest;
 
     @Test
-    public void whenServiceApplicationIsGrantedThenReturnServiceApplicationNotApproved() throws WorkflowException {
+    public void whenServiceApplicationIsGrantedThenReturnServiceApplicationNotApproved()
+        throws ServiceJourneyServiceException, WorkflowException {
         runTestMakeServiceDecision(NO_VALUE, SERVICE_APPLICATION_NOT_APPROVED);
     }
 
     @Test
-    public void whenServiceApplicationNotGrantedThenReturnAwaitingDNApplication() throws WorkflowException {
+    public void whenServiceApplicationNotGrantedThenReturnAwaitingDNApplication()
+        throws ServiceJourneyServiceException, WorkflowException {
         runTestMakeServiceDecision(YES_VALUE, AWAITING_DECREE_NISI);
     }
 
@@ -67,30 +70,58 @@ public class ServiceJourneyServiceImplTest {
                 .build())
             .build();
 
-        when(serviceApplicationRefusalOrderWorkflow.run(any(), anyString(), any(ServiceRefusalDecision.class)))
+        when(serviceDecisionMadeWorkflow.run(any(), anyString(), any(ServiceRefusalDecision.class)))
             .thenReturn(caseDetails.getCaseDetails().getCaseData());
 
         CcdCallbackResponse response = classUnderTest.serviceDecisionMade(caseDetails.getCaseDetails(), AUTH_TOKEN, FINAL);
 
         assertThat(response.getData(), is(caseDetails.getCaseDetails().getCaseData()));
 
-        verify(serviceApplicationRefusalOrderWorkflow).run(eq(caseDetails.getCaseDetails()), eq(AUTH_TOKEN), eq(FINAL));
+        verify(serviceDecisionMadeWorkflow).run(eq(caseDetails.getCaseDetails()), eq(AUTH_TOKEN), eq(FINAL));
+    }
+
+    @Test(expected = ServiceJourneyServiceException.class)
+    public void serviceApplicationGrantedShouldThrowServiceJourneyServiceException()
+        throws ServiceJourneyServiceException, WorkflowException {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(ImmutableMap.of(CcdFields.SERVICE_APPLICATION_GRANTED, YES_VALUE))
+            .build();
+
+        when(makeServiceDecisionDateWorkflow.run(any(CaseDetails.class), anyString()))
+            .thenThrow(WorkflowException.class);
+
+        classUnderTest.makeServiceDecision(caseDetails, AUTH_TOKEN);
     }
 
     @Test
-    public void receivedServiceAddedDateShouldCallWorkflow() throws Exception {
-        CcdCallbackRequest input = CcdCallbackRequest.builder()
-            .caseDetails(CaseDetails.builder().caseId("21431").build())
-            .build();
+    public void receivedServiceAddedDateShouldCallWorkflow()
+        throws ServiceJourneyServiceException, WorkflowException {
+        CcdCallbackRequest input = buildCcdCallbackRequest();
 
         classUnderTest.receivedServiceAddedDate(input);
 
         verify(receivedServiceAddedDateWorkflow).run(input.getCaseDetails());
     }
 
-    protected void runTestMakeServiceDecision(String decision, String expectedState)
-        throws WorkflowException {
-        Map<String, Object> payload = ImmutableMap.of(SERVICE_APPLICATION_GRANTED, decision);
+    @Test(expected = ServiceJourneyServiceException.class)
+    public void receivedServiceAddedDateShouldThrowServiceJourneyServiceException()
+        throws ServiceJourneyServiceException, WorkflowException {
+        CcdCallbackRequest input = buildCcdCallbackRequest();
+
+        when(receivedServiceAddedDateWorkflow.run(any(CaseDetails.class))).thenThrow(WorkflowException.class);
+
+        classUnderTest.receivedServiceAddedDate(input);
+    }
+
+    private CcdCallbackRequest buildCcdCallbackRequest() {
+        return CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder().caseId("21431").build())
+            .build();
+    }
+
+    private void runTestMakeServiceDecision(String decision, String expectedState)
+        throws ServiceJourneyServiceException, WorkflowException {
+        Map<String, Object> payload = ImmutableMap.of(CcdFields.SERVICE_APPLICATION_GRANTED, decision);
         CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
 
         when(makeServiceDecisionDateWorkflow.run(caseDetails, AUTH_TOKEN)).thenReturn(payload);

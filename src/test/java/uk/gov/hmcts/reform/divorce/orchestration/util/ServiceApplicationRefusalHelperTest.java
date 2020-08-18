@@ -22,8 +22,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationR
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.getServiceApplicationRefusalReason;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.getServiceApplicationType;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isAwaitingServiceConsideration;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isDeemedApplication;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isDispensedApplication;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isDraft;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isFinal;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isServiceApplicationGranted;
@@ -83,21 +81,6 @@ public class ServiceApplicationRefusalHelperTest {
     }
 
     @Test
-    public void isDeemedApplicationShouldBeTrue() {
-        assertThat(isDeemedApplication("deemed"), is(true));
-    }
-
-    @Test
-    public void isDeemedApplicationShouldBeFalse() {
-        assertThat(isDeemedApplication("another"), is(false));
-    }
-
-    @Test
-    public void isDispensedApplicationShouldBeTrue() {
-        assertThat(isDispensedApplication("dispensed"), is(true));
-    }
-
-    @Test
     public void isAwaitingServiceConsiderationShouldBeTrue() {
         CaseDetails caseDetails = CaseDetails.builder()
             .state(AWAITING_SERVICE_CONSIDERATION)
@@ -130,5 +113,4 @@ public class ServiceApplicationRefusalHelperTest {
 
         return caseData;
     }
-
 }
