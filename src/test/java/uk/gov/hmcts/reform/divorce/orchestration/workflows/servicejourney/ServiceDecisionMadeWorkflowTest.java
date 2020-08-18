@@ -138,6 +138,16 @@ public class ServiceDecisionMadeWorkflowTest {
     }
 
     @Test
+    public void whenMakeServiceDecisionAndNotAwaitingServiceConsiderationAndDraftNoTasksShouldRun() throws WorkflowException {
+        Map<String, Object> caseData = buildCaseData("other", NO_VALUE);
+        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
+
+        executeWorkflow(caseDetails, DRAFT);
+
+        runNoTasksAtAll();
+    }
+
+    @Test
     public void whenServiceDecisionMadeAndServiceApplicationIsGrantedAndDeemedShouldSendEmail() throws WorkflowException {
         Map<String, Object> caseData = buildCaseData(DEEMED, YES_VALUE);
         CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);

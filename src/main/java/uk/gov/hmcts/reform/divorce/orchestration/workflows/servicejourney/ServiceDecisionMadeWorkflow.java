@@ -27,7 +27,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Condition
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDispensed;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.getServiceApplicationType;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isAwaitingServiceConsideration;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isDraft;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isFinal;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isServiceApplicationGranted;
 
@@ -107,7 +106,7 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
             log.info("CaseID: {}, Adding task to remove Refusal Order Draft from case data.", caseId);
             tasks.add(serviceRefusalDraftRemovalTask);
 
-        } else if (isDraft(decision)) {
+        } else {
             log.info(
                 "CaseID: {}, Service application type is {}. Generating Service Refusal Order draft document.",
                 caseId,
