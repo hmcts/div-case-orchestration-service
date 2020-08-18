@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRe
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedApprovedEmailNotificationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceRefusalOrderDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceRefusalOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderDraftTask;
@@ -41,6 +42,8 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
     private final DeemedServiceRefusalOrderDraftTask deemedServiceRefusalOrderDraftTask;
     private final DispensedServiceRefusalOrderDraftTask dispensedServiceRefusalOrderDraftTask;
 
+    private final DeemedApprovedEmailNotificationTask deemedApprovedEmailNotificationTask;
+
     public Map<String, Object> run(CaseDetails caseDetails, String authorisation, ServiceRefusalDecision decision)
         throws WorkflowException {
         String caseId = caseDetails.getCaseId();
@@ -71,7 +74,13 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
         log.info("CaseID: {} Case state is {}.", caseId, AWAITING_SERVICE_CONSIDERATION);
 
         if (isServiceApplicationGranted(caseData)) {
-            log.info("CaseID: {} Service application is granted. Cannot generate service application refusal order documents", caseId);
+            log.info("CaseID: {} Service application is granted. No PDFs to generate. Emails might be sent.", caseId);
+            if (isServiceApplicationDeemed(caseData)) {
+                log.info("CaseId: {} deemed citizen email task adding.", caseId);
+                tasks.add(deemedApprovedEmailNotificationTask);
+            } else {
+                log.info("CaseId: {} NOT deemed. To be implemented", caseId);
+            }
             return tasks.toArray(new Task[] {});
         }
 

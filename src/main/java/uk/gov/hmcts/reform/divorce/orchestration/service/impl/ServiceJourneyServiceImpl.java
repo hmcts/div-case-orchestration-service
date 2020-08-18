@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.SendServiceApplicationNotificationsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceDecisionMadeWorkflow;
 
 import java.util.Map;
@@ -27,9 +26,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Condition
 @RequiredArgsConstructor
 public class ServiceJourneyServiceImpl implements ServiceJourneyService {
 
-    private final MakeServiceDecisionDateWorkflow makeServiceDecisionDateWorkflow;
     private final ReceivedServiceAddedDateWorkflow receivedServiceAddedDateWorkflow;
-    private final SendServiceApplicationNotificationsWorkflow sendServiceApplicationNotificationsWorkflow;
+    private final MakeServiceDecisionDateWorkflow makeServiceDecisionDateWorkflow;
     private final ServiceDecisionMadeWorkflow serviceDecisionMadeWorkflow;
 
     @Override
@@ -62,15 +60,12 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
     }
 
     @Override
-    public CcdCallbackResponse serviceDecisionMade(CaseDetails caseDetails, String authorisation, ServiceRefusalDecision decision)
-        throws CaseOrchestrationServiceException {
-
+    public CcdCallbackResponse serviceDecisionMade(
+        CaseDetails caseDetails, String authorisation, ServiceRefusalDecision decision
+    ) throws CaseOrchestrationServiceException {
         try {
-            Map<String, Object> caseData = serviceDecisionMadeWorkflow
-                .run(caseDetails, authorisation, decision);
-            caseDetails.setCaseData(caseData);
             return CcdCallbackResponse.builder()
-                .data(sendServiceApplicationNotificationsWorkflow.run(caseDetails))
+                .data(serviceDecisionMadeWorkflow.run(caseDetails, authorisation, decision))
                 .build();
         } catch (WorkflowException e) {
             throw new CaseOrchestrationServiceException(e, caseDetails.getCaseId());

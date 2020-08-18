@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.SendServiceApplicationNotificationsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceDecisionMadeWorkflow;
 
 import java.util.Map;
@@ -45,9 +44,6 @@ public class ServiceJourneyServiceImplTest {
     private ReceivedServiceAddedDateWorkflow receivedServiceAddedDateWorkflow;
 
     @Mock
-    private SendServiceApplicationNotificationsWorkflow sendServiceApplicationNotificationsWorkflow;
-
-    @Mock
     private ServiceDecisionMadeWorkflow serviceDecisionMadeWorkflow;
 
     @InjectMocks
@@ -75,8 +71,6 @@ public class ServiceJourneyServiceImplTest {
             .build();
 
         when(serviceDecisionMadeWorkflow.run(any(), anyString(), any(ServiceRefusalDecision.class)))
-            .thenReturn(caseDetails.getCaseDetails().getCaseData());
-        when(sendServiceApplicationNotificationsWorkflow.run(any()))
             .thenReturn(caseDetails.getCaseDetails().getCaseData());
 
         CcdCallbackResponse response = classUnderTest.serviceDecisionMade(caseDetails.getCaseDetails(), AUTH_TOKEN, FINAL);
