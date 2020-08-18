@@ -9,12 +9,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRe
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedApprovedEmailNotificationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceRefusalOrderDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceRefusalOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceRefusalDraftRemovalTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedApprovedEmailTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +41,7 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
     private final DeemedServiceRefusalOrderDraftTask deemedServiceRefusalOrderDraftTask;
     private final DispensedServiceRefusalOrderDraftTask dispensedServiceRefusalOrderDraftTask;
 
-    private final DeemedApprovedEmailNotificationTask deemedApprovedEmailNotificationTask;
+    private final DeemedApprovedEmailTask deemedApprovedEmailTask;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authorisation, ServiceRefusalDecision decision)
         throws WorkflowException {
@@ -76,7 +76,7 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
             log.info("CaseID: {} Service application is granted. No PDFs to generate. Emails might be sent.", caseId);
             if (isServiceApplicationDeemed(caseData)) {
                 log.info("CaseId: {} deemed citizen email task adding.", caseId);
-                tasks.add(deemedApprovedEmailNotificationTask);
+                tasks.add(deemedApprovedEmailTask);
             } else {
                 log.info("CaseId: {} NOT deemed. To be implemented", caseId);
             }

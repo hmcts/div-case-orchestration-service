@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails;
 
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
@@ -28,13 +28,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DeemedApprovedEmailNotificationTaskTest {
+public class DeemedApprovedEmailTaskTest {
 
     @Mock
     private EmailService emailService;
 
     @InjectMocks
-    private DeemedApprovedEmailNotificationTask deemedApprovedEmailNotificationTask;
+    private DeemedApprovedEmailTask deemedApprovedEmailTask;
 
     @Test
     public void whenExecuteEmailNotificationTask_thenSendEmail() {
@@ -42,13 +42,13 @@ public class DeemedApprovedEmailNotificationTaskTest {
         TaskContext context = getTaskContext();
         Map<String, String> notificationTemplateVars = getExpectedNotificationTemplateVars();
 
-        deemedApprovedEmailNotificationTask.execute(context, caseData);
+        deemedApprovedEmailTask.execute(context, caseData);
 
         verify(emailService).sendEmail(
             TEST_USER_EMAIL,
             EmailTemplateNames.CITIZEN_DEEMED_APPROVED.name(),
             notificationTemplateVars,
-            DeemedApprovedEmailNotificationTask.SUBJECT,
+            deemedApprovedEmailTask.getSubject(),
             LanguagePreference.ENGLISH
         );
     }
