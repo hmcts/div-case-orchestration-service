@@ -7,13 +7,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
 import java.util.Map;
 
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedApprovedEmailTaskTest.buildCaseData;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedApprovedEmailTaskTest.getExpectedNotificationTemplateVars;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedApprovedEmailTaskTest.getTaskContext;
@@ -30,17 +31,25 @@ public class DispensedApprovedEmailTaskTest {
     @Test
     public void whenExecuteEmailNotificationTask_thenSendEmail() {
         Map<String, Object> caseData = buildCaseData();
-        TaskContext context = getTaskContext();
-        Map<String, String> notificationTemplateVars = getExpectedNotificationTemplateVars();
 
-        dispensedApprovedEmailTask.execute(context, caseData);
+        dispensedApprovedEmailTask.execute(getTaskContext(), caseData);
 
         verify(emailService).sendEmail(
             TEST_USER_EMAIL,
-            EmailTemplateNames.CITIZEN_DISPENSED_APPROVED.name(),
-            notificationTemplateVars,
-            dispensedApprovedEmailTask.getSubject(),
+            EmailTemplateNames.CITIZEN_DEEMED_APPROVED.name(),
+            getExpectedNotificationTemplateVars(),
+            dispensedApprovedEmailTask.getSubject(caseData),
             LanguagePreference.ENGLISH
         );
+    }
+
+    @Test
+    public void whenEmptyRecipientEmail_thenDoNotSendEmail() {
+        Map<String, Object> caseData = buildCaseData();
+        caseData.remove(PETITIONER_EMAIL);
+
+        dispensedApprovedEmailTask.execute(getTaskContext(), caseData);
+
+        verifyZeroInteractions(emailService);
     }
 }

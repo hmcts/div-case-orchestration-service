@@ -12,9 +12,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
@@ -26,6 +28,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.PETITIONER_EMAIL;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeemedApprovedEmailTaskTest {
@@ -39,18 +42,26 @@ public class DeemedApprovedEmailTaskTest {
     @Test
     public void whenExecuteEmailNotificationTask_thenSendEmail() {
         Map<String, Object> caseData = buildCaseData();
-        TaskContext context = getTaskContext();
-        Map<String, String> notificationTemplateVars = getExpectedNotificationTemplateVars();
 
-        deemedApprovedEmailTask.execute(context, caseData);
+        deemedApprovedEmailTask.execute(getTaskContext(), caseData);
 
         verify(emailService).sendEmail(
             TEST_USER_EMAIL,
             EmailTemplateNames.CITIZEN_DEEMED_APPROVED.name(),
-            notificationTemplateVars,
-            deemedApprovedEmailTask.getSubject(),
+            getExpectedNotificationTemplateVars(),
+            deemedApprovedEmailTask.getSubject(caseData),
             LanguagePreference.ENGLISH
         );
+    }
+
+    @Test
+    public void whenEmptyRecipientEmail_thenDoNotSendEmail() {
+        Map<String, Object> caseData = buildCaseData();
+        caseData.remove(PETITIONER_EMAIL);
+
+        deemedApprovedEmailTask.execute(getTaskContext(), caseData);
+
+        verifyZeroInteractions(emailService);
     }
 
     public static Map<String, String> getExpectedNotificationTemplateVars() {
@@ -66,12 +77,14 @@ public class DeemedApprovedEmailTaskTest {
         return context;
     }
 
-    public static ImmutableMap<String, Object> buildCaseData() {
-        return ImmutableMap.of(
-            D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME,
-            D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME,
-            D_8_PETITIONER_EMAIL, TEST_USER_EMAIL,
-            LANGUAGE_PREFERENCE_WELSH, NO_VALUE
+    public static Map<String, Object> buildCaseData() {
+        return new HashMap<>(
+            ImmutableMap.of(
+                D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME,
+                D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME,
+                D_8_PETITIONER_EMAIL, TEST_USER_EMAIL,
+                LANGUAGE_PREFERENCE_WELSH, NO_VALUE
+            )
         );
     }
 }
