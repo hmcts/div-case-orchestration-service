@@ -16,7 +16,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 @Slf4j
 public class DispensedApprovedEmailTask extends SendEmailTask {
 
-    private static final String SUBJECT = "Your ‘dispense with service’ application has been approved]";
+    private static final String SUBJECT = "Your ‘dispense with service’ application has been approved";
 
     public DispensedApprovedEmailTask(EmailService emailService) {
         super(emailService);
