@@ -90,6 +90,7 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
     private static final String DEEMED_APPROVED_EMAIL_ID = "00f27db6-2678-4ccd-8cdd-44971b330ca4";
     private static final String DEEMED_NOT_APPROVED_EMAIL_ID = "5140a51a-fcda-42e4-adf4-0b469a1b927a";
     private static final String DISPENSED_APPROVED_EMAIL_ID = "cf03cea1-a155-4f20-a3a6-3ad8fad7742f";
+    private static final String DISPENSED_NOT_APPROVED_EMAIL_ID = "e40d8623-e801-4de1-834a-7de101c9d857";
 
     private CtscContactDetails ctscContactDetails;
 
@@ -147,6 +148,13 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
             .content(convertObjectToJsonString(ccdCallbackRequest)))
             .andExpect(status().isOk())
             .andExpect(commonExpectationsForServiceRefusalOrder(documentType));
+
+        verify(emailClient).sendEmail(
+            eq(DISPENSED_NOT_APPROVED_EMAIL_ID),
+            eq(TEST_PETITIONER_EMAIL),
+            eq(expectedCitizenEmailVars(ccdCallbackRequest.getCaseDetails().getCaseData())),
+            any()
+        );
     }
 
     @Test
