@@ -88,6 +88,7 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
 
     private static final String API_URL = "/service-decision-made/%s";
     private static final String DEEMED_APPROVED_EMAIL_ID = "00f27db6-2678-4ccd-8cdd-44971b330ca4";
+    private static final String DEEMED_NOT_APPROVED_EMAIL_ID = "5140a51a-fcda-42e4-adf4-0b469a1b927a";
     private static final String DISPENSED_APPROVED_EMAIL_ID = "cf03cea1-a155-4f20-a3a6-3ad8fad7742f";
 
     private CtscContactDetails ctscContactDetails;
@@ -122,6 +123,13 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
             .content(convertObjectToJsonString(ccdCallbackRequest)))
             .andExpect(status().isOk())
             .andExpect(commonExpectationsForServiceRefusalOrder(documentType));
+
+        verify(emailClient).sendEmail(
+            eq(DEEMED_NOT_APPROVED_EMAIL_ID),
+            eq(TEST_PETITIONER_EMAIL),
+            eq(expectedCitizenEmailVars(ccdCallbackRequest.getCaseDetails().getCaseData())),
+            any()
+        );
     }
 
     @Test
@@ -145,7 +153,6 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
     public void shouldGenerateDraftDeemedServiceRefusalOrderWhenInReview() throws Exception {
         String templateId = DeemedServiceRefusalOrderDraftTask.FileMetadata.TEMPLATE_ID;
         String documentType = DeemedServiceRefusalOrderDraftTask.FileMetadata.DOCUMENT_TYPE;
-
         CcdCallbackRequest ccdCallbackRequest = buildServiceRefusalOrderFixture(
             templateId, ApplicationServiceTypes.DEEMED, documentType
         );
@@ -260,21 +267,26 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
         ));
     }
 
-    private CcdCallbackRequest buildServiceRefusalOrderFixture(String deemedTemplateId, String deemedServiceType, String deemedDocumentType) {
-        DocumentLink deemedRefusalDraftDocument = generateDocumentLink(deemedTemplateId);
-        Map<String, Object> refusalOrderData = buildServiceRefusalOrderCaseData(deemedServiceType, deemedRefusalDraftDocument);
+    private CcdCallbackRequest buildServiceRefusalOrderFixture(
+        String templateId, String serviceType, String documentType) {
+        DocumentLink refusalDraftDocument = generateDocumentLink(templateId);
+        Map<String, Object> refusalOrderData = buildServiceRefusalOrderCaseData(
+            serviceType, refusalDraftDocument
+        );
 
         CcdCallbackRequest ccdCallbackRequest = buildRequest(refusalOrderData);
-        ccdCallbackRequest.getCaseDetails().setState(AWAITING_SERVICE_CONSIDERATION);
+        ccdCallbackRequest.getCaseDetails()
+            .setState(AWAITING_SERVICE_CONSIDERATION)
+        ;
 
         stubDocumentGeneratorServiceBaseOnContextPath(
-            deemedTemplateId,
+            templateId,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
                 ImmutableMap.of(
                     "id", refusalOrderData.get(CASE_ID_JSON_KEY),
                     "case_data", buildPopulatedServiceRefusalOrderTemplateModel(refusalOrderData)
                 )),
-            deemedDocumentType
+            documentType
         );
         return ccdCallbackRequest;
     }
@@ -329,7 +341,7 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
 
         Map<String, Object> payload = ImmutableMap.of(
             SERVICE_APPLICATION_GRANTED, NO_VALUE,
-            SERVICE_APPLICATION_TYPE, serviceApplicationType,
+//            SERVICE_APPLICATION_TYPE, serviceApplicationType,
             SERVICE_REFUSAL_DRAFT, serviceRefusalDraft,
             D8DOCUMENTS_GENERATED, generatedDocumentInfoList,
             SERVICE_APPLICATION_REFUSAL_REASON, TEST_SERVICE_APPLICATION_REFUSAL_REASON

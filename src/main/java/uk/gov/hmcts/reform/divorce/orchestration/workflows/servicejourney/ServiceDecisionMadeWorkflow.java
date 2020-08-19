@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedS
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceRefusalDraftRemovalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedApprovedEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedNotApprovedEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedApprovedEmailTask;
 
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
     private final DispensedServiceRefusalOrderDraftTask dispensedServiceRefusalOrderDraftTask;
 
     private final DeemedApprovedEmailTask deemedApprovedEmailTask;
+    private final DeemedNotApprovedEmailTask deemedNotApprovedEmailTask;
     private final DispensedApprovedEmailTask dispensedApprovedEmailTask;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authorisation, ServiceRefusalDecision decision)
@@ -103,6 +105,8 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
             if (isServiceApplicationDeemed(caseData)) {
                 log.info("CaseID: {}, Deemed. Adding task to generate Deemed Refusal Order", caseId);
                 tasks.add(deemedServiceRefusalOrderTask);
+                log.info("CaseID: {}, Deemed and not approved. Adding task to send citizen email", caseId);
+                tasks.add(deemedNotApprovedEmailTask);
             } else if (isServiceApplicationDispensed(caseData)) {
                 log.info("CaseID: {}, Dispensed. Adding task to generate Dispensed Refusal Order", caseId);
                 tasks.add(dispensedServiceRefusalOrderTask);
