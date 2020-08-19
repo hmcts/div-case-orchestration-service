@@ -10,12 +10,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceDecisionMadeWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceDecisionMakingWorkflow;
 
 import java.util.Map;
 
@@ -32,7 +32,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.A
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision.FINAL;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ServiceJourneyServiceImplTest {
@@ -45,6 +44,9 @@ public class ServiceJourneyServiceImplTest {
 
     @Mock
     private ServiceDecisionMadeWorkflow serviceDecisionMadeWorkflow;
+
+    @Mock
+    private ServiceDecisionMakingWorkflow serviceDecisionMakingWorkflow;
 
     @InjectMocks
     private ServiceJourneyServiceImpl classUnderTest;
@@ -70,14 +72,14 @@ public class ServiceJourneyServiceImplTest {
                 .build())
             .build();
 
-        when(serviceDecisionMadeWorkflow.run(any(), anyString(), any(ServiceRefusalDecision.class)))
+        when(serviceDecisionMadeWorkflow.run(any(), anyString()))
             .thenReturn(caseDetails.getCaseDetails().getCaseData());
 
-        CcdCallbackResponse response = classUnderTest.serviceDecisionMade(caseDetails.getCaseDetails(), AUTH_TOKEN, FINAL);
+        CcdCallbackResponse response = classUnderTest.serviceDecisionMade(caseDetails.getCaseDetails(), AUTH_TOKEN);
 
         assertThat(response.getData(), is(caseDetails.getCaseDetails().getCaseData()));
 
-        verify(serviceDecisionMadeWorkflow).run(eq(caseDetails.getCaseDetails()), eq(AUTH_TOKEN), eq(FINAL));
+        verify(serviceDecisionMadeWorkflow).run(eq(caseDetails.getCaseDetails()), eq(AUTH_TOKEN));
     }
 
     @Test(expected = ServiceJourneyServiceException.class)
@@ -111,6 +113,27 @@ public class ServiceJourneyServiceImplTest {
         when(receivedServiceAddedDateWorkflow.run(any(CaseDetails.class))).thenThrow(WorkflowException.class);
 
         classUnderTest.receivedServiceAddedDate(input);
+    }
+
+    @Test
+    public void serviceDecisionRefusalShouldCallWorkflow()
+        throws ServiceJourneyServiceException, WorkflowException {
+        CcdCallbackRequest input = buildCcdCallbackRequest();
+
+        classUnderTest.serviceDecisionRefusal(input.getCaseDetails(), AUTH_TOKEN);
+
+        verify(serviceDecisionMakingWorkflow).run(input.getCaseDetails(), AUTH_TOKEN);
+    }
+
+    @Test(expected = ServiceJourneyServiceException.class)
+    public void serviceDecisionRefusalShouldThrowServiceJourneyServiceException()
+        throws ServiceJourneyServiceException, WorkflowException {
+        CcdCallbackRequest input = buildCcdCallbackRequest();
+
+        when(serviceDecisionMakingWorkflow.run(any(CaseDetails.class), anyString()))
+            .thenThrow(WorkflowException.class);
+
+        classUnderTest.serviceDecisionRefusal(input.getCaseDetails(), AUTH_TOKEN);
     }
 
     private CcdCallbackRequest buildCcdCallbackRequest() {

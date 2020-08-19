@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRes
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DocumentLink;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
@@ -68,7 +67,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision.FINAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
 
@@ -1436,8 +1434,7 @@ public class CallbackControllerTest {
 
     @Test
     public void testServiceDecisionMade() throws CaseOrchestrationServiceException {
-
-        when(serviceJourneyService.serviceDecisionMade(any(), anyString(), any(ServiceRefusalDecision.class)))
+        when(serviceJourneyService.serviceDecisionMade(any(), anyString()))
             .thenReturn(CcdCallbackResponse.builder().build());
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
@@ -1446,7 +1443,7 @@ public class CallbackControllerTest {
                 .build())
             .build();
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.serviceDecisionMade(AUTH_TOKEN, ccdCallbackRequest, FINAL);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.serviceDecisionMade(AUTH_TOKEN, ccdCallbackRequest);
 
         assertThat(response.getStatusCode(), equalTo(OK));
         assertThat(response.getBody().getErrors(), is(nullValue()));
