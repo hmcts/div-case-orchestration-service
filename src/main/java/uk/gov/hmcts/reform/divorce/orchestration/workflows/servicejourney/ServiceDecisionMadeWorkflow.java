@@ -48,7 +48,7 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
         String caseId = caseDetails.getCaseId();
         Map<String, Object> caseData = caseDetails.getCaseData();
 
-        log.info("CaseID: {} Service decision made. ServiceDecisionMade workflow is going to be executed.", caseId);
+        log.info("CaseID: {} ServiceDecisionMade workflow is going to be executed.", caseId);
 
         return this.execute(
             getTasks(caseDetails),
@@ -87,23 +87,17 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
             return tasks.toArray(new Task[] {});
         }
 
-        String applicationType = getServiceApplicationType(caseData);
-
-        log.info(
-            "CaseID: {}, Service application type is {}. Generating Service Refusal Order document",
-            caseId,
-            applicationType
-        );
+        log.info("CaseID: {}, Service application type is {}.", caseId, getServiceApplicationType(caseData));
 
         if (isServiceApplicationDeemed(caseData)) {
-            log.info("CaseID: {}, Deemed. Adding task to generate Deemed Refusal Order", caseId);
+            log.info("CaseID: {}, Deemed. Adding task to generate Deemed Refusal Order.", caseId);
             tasks.add(deemedServiceRefusalOrderTask);
-            log.info("CaseID: {}, Deemed and not approved. Adding task to send citizen email", caseId);
+            log.info("CaseID: {}, Deemed and not approved. Adding task to send citizen email.", caseId);
             tasks.add(deemedNotApprovedEmailTask);
         } else if (isServiceApplicationDispensed(caseData)) {
-            log.info("CaseID: {}, Dispensed. Adding task to generate Dispensed Refusal Order", caseId);
+            log.info("CaseID: {}, Dispensed. Adding task to generate Dispensed Refusal Order.", caseId);
             tasks.add(dispensedServiceRefusalOrderTask);
-            log.info("CaseID: {}, Dispensed and not approved. Adding task to send citizen email", caseId);
+            log.info("CaseID: {}, Dispensed and not approved. Adding task to send citizen email.", caseId);
             tasks.add(dispensedNotApprovedEmailTask);
         } else {
             log.warn("CaseID: {}, NOT Deemed/Dispensed. Do nothing.", caseId);

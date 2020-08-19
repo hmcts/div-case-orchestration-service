@@ -83,6 +83,14 @@ public class ServiceJourneyServiceImplTest {
     }
 
     @Test(expected = ServiceJourneyServiceException.class)
+    public void serviceDecisionMadeThenThrowServiceJourneyServiceException() throws Exception {
+        CaseDetails caseDetails = CaseDetails.builder().build();
+        when(serviceDecisionMadeWorkflow.run(any(), anyString())).thenThrow(WorkflowException.class);
+
+        classUnderTest.serviceDecisionMade(caseDetails, AUTH_TOKEN);
+    }
+
+    @Test(expected = ServiceJourneyServiceException.class)
     public void serviceApplicationGrantedShouldThrowServiceJourneyServiceException()
         throws ServiceJourneyServiceException, WorkflowException {
         CaseDetails caseDetails = CaseDetails.builder()

@@ -36,7 +36,7 @@ public class ServiceDecisionMakingWorkflow extends DefaultWorkflow<Map<String, O
         String caseId = caseDetails.getCaseId();
         Map<String, Object> caseData = caseDetails.getCaseData();
 
-        log.info("CaseID: {} Service decision making. ServiceDecisionMaking workflow is going to be executed.", caseId);
+        log.info("CaseID: {} ServiceDecisionMaking workflow is going to be executed.", caseId);
 
         return this.execute(
             getTasks(caseDetails),
@@ -53,15 +53,11 @@ public class ServiceDecisionMakingWorkflow extends DefaultWorkflow<Map<String, O
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
         if (isServiceApplicationGranted(caseData) || !isAwaitingServiceConsideration(caseDetails)) {
-            log.warn("CaseID: {} Case state is in invalid state for this workflow", caseId);
+            log.warn("CaseID: {} Case is in invalid state for ServiceDecisionMaking workflow.", caseId);
             return tasks.toArray(new Task[] {});
         }
 
-        log.info(
-            "CaseID: {}, Service application type is {}. Generating Service Refusal Order draft document.",
-            caseId,
-            getServiceApplicationType(caseData)
-        );
+        log.info("CaseID: {}, Service application type is {}.", caseId, getServiceApplicationType(caseData));
 
         if (isServiceApplicationDeemed(caseData)) {
             log.info("CaseID: {}, Deemed. Adding task to generate Refusal Order Draft.", caseId);

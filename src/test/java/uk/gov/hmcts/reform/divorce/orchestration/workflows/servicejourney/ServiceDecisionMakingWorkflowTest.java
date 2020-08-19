@@ -68,7 +68,7 @@ public class ServiceDecisionMakingWorkflowTest {
     }
 
     @Test
-    public void whenMakeServiceDecisionAndNotAwaitingServiceConsiderationAndDraftNoTasksShouldRun() throws WorkflowException {
+    public void whenUnknownServiceApplicationTypeThenNoDraftIsGenerated() throws WorkflowException {
         Map<String, Object> caseData = buildCaseData("other", NO_VALUE);
         CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
 
@@ -78,10 +78,9 @@ public class ServiceDecisionMakingWorkflowTest {
     }
 
     @Test
-    public void whenApplicationIsGrantedAndDispensedButDraftShouldNotDoAnything()
-        throws WorkflowException {
-        Map<String, Object> caseData = buildCaseData(DISPENSED, YES_VALUE);
-        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
+    public void whenWrongStateThenNoDraftIsGenerated() throws WorkflowException {
+        Map<String, Object> caseData = buildCaseData(DEEMED, NO_VALUE);
+        CaseDetails caseDetails = buildCaseDetails(caseData, "wrongState!");
 
         executeWorkflow(caseDetails);
 
@@ -89,8 +88,8 @@ public class ServiceDecisionMakingWorkflowTest {
     }
 
     @Test
-    public void whenServiceDecisionMadeAndServiceApplicationIsNotGrantedAndAndTypeIsOtherDoNotGeneratePdfs() throws WorkflowException {
-        Map<String, Object> caseData = buildCaseData("someOtherValue", NO_VALUE);
+    public void whenApplicationGrantedThenNoDraftIsGenerated() throws WorkflowException {
+        Map<String, Object> caseData = buildCaseData(DISPENSED, YES_VALUE);
         CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
 
         executeWorkflow(caseDetails);
