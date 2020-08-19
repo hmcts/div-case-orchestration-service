@@ -341,7 +341,6 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
 
         Map<String, Object> payload = ImmutableMap.of(
             SERVICE_APPLICATION_GRANTED, NO_VALUE,
-//            SERVICE_APPLICATION_TYPE, serviceApplicationType,
             SERVICE_REFUSAL_DRAFT, serviceRefusalDraft,
             D8DOCUMENTS_GENERATED, generatedDocumentInfoList,
             SERVICE_APPLICATION_REFUSAL_REASON, TEST_SERVICE_APPLICATION_REFUSAL_REASON
