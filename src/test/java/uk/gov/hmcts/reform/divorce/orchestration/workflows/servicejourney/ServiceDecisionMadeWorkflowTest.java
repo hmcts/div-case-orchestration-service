@@ -184,6 +184,17 @@ public class ServiceDecisionMadeWorkflowTest {
     }
 
     @Test
+    public void whenApplicationIsGrantedAndDispensedButDraftShouldNotDoAnything()
+        throws WorkflowException {
+        Map<String, Object> caseData = buildCaseData(DISPENSED, YES_VALUE);
+        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
+
+        executeWorkflow(caseDetails, DRAFT);
+
+        runNoTasksAtAll();
+    }
+
+    @Test
     public void whenApplicationIsGrantedAndUnknownTypeShouldNotExecuteAnyTask()
         throws WorkflowException {
         Map<String, Object> caseData = buildCaseData("I don't exist", YES_VALUE);

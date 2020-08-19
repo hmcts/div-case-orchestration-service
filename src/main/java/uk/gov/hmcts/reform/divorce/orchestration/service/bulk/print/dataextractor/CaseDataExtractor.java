@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConst
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CaseDataExtractor {
@@ -19,6 +20,10 @@ public class CaseDataExtractor {
 
     public static String getCaseReference(Map<String, Object> caseData) {
         return getMandatoryStringValue(caseData, CaseDataKeys.CASE_REFERENCE);
+    }
+
+    public static String getPetitionerEmailOrEmpty(Map<String, Object> caseData) {
+        return getOptionalPropertyValueAsString(caseData, CaseDataKeys.PETITIONER_EMAIL, "");
     }
 
     public static String getPetitionerEmail(Map<String, Object> caseData) {
