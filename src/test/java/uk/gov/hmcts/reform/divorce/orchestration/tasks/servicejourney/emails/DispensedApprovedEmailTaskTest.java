@@ -36,7 +36,7 @@ public class DispensedApprovedEmailTaskTest {
 
         verify(emailService).sendEmail(
             TEST_USER_EMAIL,
-            EmailTemplateNames.CITIZEN_DEEMED_APPROVED.name(),
+            EmailTemplateNames.CITIZEN_DISPENSED_APPROVED.name(),
             getExpectedNotificationTemplateVars(),
             dispensedApprovedEmailTask.getSubject(caseData),
             LanguagePreference.ENGLISH
