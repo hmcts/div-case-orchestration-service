@@ -24,7 +24,7 @@ public abstract class SendEmailTask implements Task<Map<String, Object>> {
         this.emailService = emailService;
     }
 
-    protected abstract String getSubject();
+    protected abstract String getSubject(Map<String, Object> caseData);
 
     protected abstract Map<String, String> getPersonalisation(Map<String, Object> caseData);
 
@@ -38,22 +38,34 @@ public abstract class SendEmailTask implements Task<Map<String, Object>> {
         return CaseDataUtils.getLanguagePreference(caseData);
     }
 
+    protected boolean canEmailBeSent(Map<String, Object> caseData) {
+        return isPetitionerEmailPopulated(caseData);
+    }
+
+    protected boolean isPetitionerEmailPopulated(Map<String, Object> caseData) {
+        return !CaseDataExtractor.getPetitionerEmailOrEmpty(caseData).isEmpty();
+    }
+
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         final String caseId = getCaseId(context);
-        final String subject = getSubject();
+        final String subject = getSubject(caseData);
 
-        log.info("CaseId: {} email {} is going to be sent.", caseId, subject);
+        if (canEmailBeSent(caseData)) {
+            log.info("CaseID: {} email {} is going to be sent.", caseId, subject);
 
-        emailService.sendEmail(
-            getRecipientEmail(caseData),
-            getTemplate().name(),
-            getPersonalisation(caseData),
-            subject,
-            getLanguage(caseData)
-        );
+            emailService.sendEmail(
+                getRecipientEmail(caseData),
+                getTemplate().name(),
+                getPersonalisation(caseData),
+                subject,
+                getLanguage(caseData)
+            );
 
-        log.info("CaseId: {} email {} was sent.", caseId, subject);
+            log.info("CaseID: {} email {} was sent.", caseId, getTemplate().name());
+        } else {
+            log.warn("CaseID: {} recipient email is empty! Email {} not sent.", caseId, getTemplate().name());
+        }
 
         return caseData;
     }

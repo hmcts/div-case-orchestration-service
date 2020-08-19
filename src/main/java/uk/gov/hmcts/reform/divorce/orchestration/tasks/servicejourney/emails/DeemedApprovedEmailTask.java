@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generics.SendEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
@@ -24,7 +23,7 @@ public class DeemedApprovedEmailTask extends SendEmailTask {
     }
 
     @Override
-    protected String getSubject() {
+    protected String getSubject(Map<String, Object> caseData) {
         return SUBJECT;
     }
 
@@ -38,10 +37,5 @@ public class DeemedApprovedEmailTask extends SendEmailTask {
     @Override
     protected EmailTemplateNames getTemplate() {
         return EmailTemplateNames.CITIZEN_DEEMED_APPROVED;
-    }
-
-    @Override
-    protected LanguagePreference getLanguage(Map<String, Object> caseData) {
-        return LanguagePreference.ENGLISH;
     }
 }

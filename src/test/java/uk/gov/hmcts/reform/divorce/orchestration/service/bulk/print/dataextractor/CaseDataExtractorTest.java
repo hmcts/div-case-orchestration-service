@@ -3,10 +3,10 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextract
 import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.util.Collections.EMPTY_MAP;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_FAMILY_MAN_ID;
@@ -23,20 +23,47 @@ public class CaseDataExtractorTest {
     }
 
     @Test(expected = InvalidDataForTaskException.class)
-    public void getPetitionerEmailShouldThrowInvalidDat() {
-        CaseDataExtractor.getPetitionerEmail(EMPTY_MAP);
+    public void getCaseReferenceShouldThrowInvalidDataForTaskException() {
+        CaseDataExtractor.getCaseReference(Collections.emptyMap());
+    }
+
+    @Test
+    public void getPetitionerEmailShouldReturnValidValue() {
+        Map<String, Object> caseData = buildCaseDataWithField(PETITIONER_EMAIL, TEST_EMAIL);
+        assertThat(CaseDataExtractor.getPetitionerEmail(caseData), is(TEST_EMAIL));
+    }
+
+    @Test(expected = InvalidDataForTaskException.class)
+    public void getPetitionerEmailShouldThrowInvalidDataForTaskException() {
+        CaseDataExtractor.getPetitionerEmail(Collections.emptyMap());
     }
 
     @Test
     public void getPetitionerEmailShouldReturnValidValues() {
         Map<String, Object> caseData = buildCaseDataWithField(PETITIONER_EMAIL, TEST_EMAIL);
 
-        assertThat(CaseDataExtractor.getPetitionerEmail(caseData), is(TEST_EMAIL));
+        assertThat(CaseDataExtractor.getPetitionerEmailOrEmpty(caseData), is(TEST_EMAIL));
     }
 
-    @Test(expected = InvalidDataForTaskException.class)
-    public void getCaseReferenceShouldThrowInvalidData() {
-        CaseDataExtractor.getCaseReference(EMPTY_MAP);
+    @Test
+    public void getPetitionerEmailOrEmptyShouldReturnEmptyWhenNoFieldGiven() {
+        Map<String, Object> caseData = new HashMap<>();
+
+        assertThat(CaseDataExtractor.getPetitionerEmailOrEmpty(caseData), is(""));
+    }
+
+    @Test
+    public void getPetitionerEmailOrEmptyShouldReturnEmptyWhenNull() {
+        Map<String, Object> caseData = buildCaseDataWithField(PETITIONER_EMAIL, null);
+
+        assertThat(CaseDataExtractor.getPetitionerEmailOrEmpty(caseData), is(""));
+    }
+
+    @Test
+    public void getPetitionerEmailOrEmptyShouldReturnEmptyWhenEmpty() {
+        Map<String, Object> caseData = buildCaseDataWithField(PETITIONER_EMAIL, "");
+
+        assertThat(CaseDataExtractor.getPetitionerEmailOrEmpty(caseData), is(""));
     }
 
     private static Map<String, Object> buildCaseDataWithField(String field, String value) {
