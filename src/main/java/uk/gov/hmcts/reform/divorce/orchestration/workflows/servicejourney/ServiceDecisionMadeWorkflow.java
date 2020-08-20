@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.Dee
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedNotApprovedEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedApprovedEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedNotApprovedEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.SolicitorDeemedApprovedEmailTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDeemed;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDispensed;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerRepresented;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.getServiceApplicationType;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isServiceApplicationGranted;
 
@@ -36,6 +38,7 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
     private final DispensedServiceRefusalOrderTask dispensedServiceRefusalOrderTask;
     private final ServiceRefusalDraftRemovalTask serviceRefusalDraftRemovalTask;
 
+    private final SolicitorDeemedApprovedEmailTask solicitorDeemedApprovedEmailTask;
     private final DeemedApprovedEmailTask deemedApprovedEmailTask;
     private final DeemedNotApprovedEmailTask deemedNotApprovedEmailTask;
     private final DispensedApprovedEmailTask dispensedApprovedEmailTask;
@@ -67,11 +70,9 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
         if (isServiceApplicationGranted(caseData)) {
             log.info("CaseID: {} Service application is granted. No PDFs to generate. Emails might be sent.", caseId);
             if (isServiceApplicationDeemed(caseData)) {
-                log.info("CaseId: {} deemed citizen email task adding.", caseId);
-                tasks.add(deemedApprovedEmailTask);
+                tasks.add(getTaskForDeemedApproved(caseData, caseId));
             } else if (isServiceApplicationDispensed(caseData)) {
-                log.info("CaseId: {} dispensed citizen email task adding.", caseId);
-                tasks.add(dispensedApprovedEmailTask);
+                tasks.add(getTaskForDispensedApproved(caseData, caseId));
             } else {
                 log.info("CaseId: {} NOT deemed/dispensed. No email will be sent.", caseId);
             }
@@ -99,5 +100,20 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
         tasks.add(serviceRefusalDraftRemovalTask);
 
         return tasks.toArray(new Task[] {});
+    }
+
+    private Task<Map<String, Object>> getTaskForDispensedApproved(Map<String, Object> caseData, String caseId) {
+        log.info("CaseId: {} dispensed citizen email task adding.", caseId);
+        return dispensedApprovedEmailTask;
+    }
+
+    private Task<Map<String, Object>> getTaskForDeemedApproved(Map<String, Object> caseData, String caseId) {
+        if (isPetitionerRepresented(caseData)) {
+            log.info("CaseId: {} deemed approved solicitor email task adding.", caseId);
+            return solicitorDeemedApprovedEmailTask;
+        }
+
+        log.info("CaseId: {} deemed approved citizen email task adding.", caseId);
+        return deemedApprovedEmailTask;
     }
 }

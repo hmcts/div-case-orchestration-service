@@ -15,7 +15,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.Dee
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedNotApprovedEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedApprovedEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedNotApprovedEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.SolicitorDeemedApprovedEmailTask;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -23,11 +25,15 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DEEMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DISPENSED;
@@ -51,6 +57,9 @@ public class ServiceDecisionMadeWorkflowTest {
 
     @Mock
     private ServiceRefusalDraftRemovalTask serviceRefusalDraftRemovalTask;
+
+    @Mock
+    private SolicitorDeemedApprovedEmailTask solicitorDeemedApprovedEmailTask;
 
     @Mock
     private DeemedApprovedEmailTask deemedApprovedEmailTask;
@@ -117,7 +126,24 @@ public class ServiceDecisionMadeWorkflowTest {
     }
 
     @Test
-    public void whenServiceDecisionMadeAndServiceApplicationIsGrantedAndDeemedShouldSendEmail() throws WorkflowException {
+    public void whenServiceApplicationIsGrantedAndDeemedShouldSendEmailToPetitioner() throws WorkflowException {
+        Map<String, Object> caseData = petitionerRepresented(buildCaseData(DEEMED, YES_VALUE));
+        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_DECREE_NISI);
+
+        mockTasksExecution(caseData, solicitorDeemedApprovedEmailTask);
+
+        Map<String, Object> returnedCaseData = executeWorkflow(caseDetails);
+
+        verifyTaskWasCalled(returnedCaseData, solicitorDeemedApprovedEmailTask);
+
+        verifyTasksWereNeverCalled(dispensedApprovedEmailTask, deemedApprovedEmailTask);
+        runNoTasksToSendNotApprovedEmails();
+        runNoTasksToGeneratePdfs();
+    }
+
+    @Test
+    public void whenServiceApplicationIsGrantedAndDeemedAndRepresentedShouldSendEmailToSolicitor()
+        throws WorkflowException {
         Map<String, Object> caseData = buildCaseData(DEEMED, YES_VALUE);
         CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_DECREE_NISI);
 
@@ -175,6 +201,14 @@ public class ServiceDecisionMadeWorkflowTest {
         runNoTasksToGenerateFinalPdfs();
     }
 
+    public static Map<String, Object> petitionerRepresented(Map<String, Object> caseData) {
+        Map<String, Object> updatedCaseData = new HashMap<>(caseData);
+        updatedCaseData.put(PETITIONER_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL);
+        updatedCaseData.put(PETITIONER_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
+
+        return updatedCaseData;
+    }
+
     private Map<String, Object> buildCaseData(String serviceApplicationType, String serviceApplicationGranted) {
         return ImmutableMap.of(
             SERVICE_APPLICATION_TYPE, serviceApplicationType,
@@ -213,6 +247,7 @@ public class ServiceDecisionMadeWorkflowTest {
 
     private void runNoTasksToSendApprovedEmails() {
         verifyTasksWereNeverCalled(
+            solicitorDeemedApprovedEmailTask,
             deemedApprovedEmailTask,
             dispensedApprovedEmailTask
         );
