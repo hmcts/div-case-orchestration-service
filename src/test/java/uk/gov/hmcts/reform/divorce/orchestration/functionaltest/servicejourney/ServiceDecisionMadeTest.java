@@ -62,7 +62,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.S
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_REFUSAL_REASON;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_REFUSAL_DRAFT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
@@ -271,7 +271,7 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
         );
 
         CcdCallbackRequest ccdCallbackRequest = buildRequest(refusalOrderData);
-        ccdCallbackRequest.getCaseDetails().setState(AWAITING_SERVICE_CONSIDERATION);
+        ccdCallbackRequest.getCaseDetails().setState(SERVICE_APPLICATION_NOT_APPROVED);
 
         stubDocumentGeneratorServiceBaseOnContextPath(
             templateId,
@@ -320,7 +320,7 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
             AUTH_TOKEN,
             "",
             CaseDetails.builder()
-                .state(AWAITING_SERVICE_CONSIDERATION)
+                .state(SERVICE_APPLICATION_NOT_APPROVED)
                 .caseData(caseData)
                 .caseId(TEST_CASE_ID)
                 .build()

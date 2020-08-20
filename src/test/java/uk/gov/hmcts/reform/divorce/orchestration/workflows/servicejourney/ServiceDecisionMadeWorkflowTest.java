@@ -29,7 +29,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLIC
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
@@ -75,7 +76,7 @@ public class ServiceDecisionMadeWorkflowTest {
     @Test
     public void whenDeemedAndApplicationIsNotGranted() throws WorkflowException {
         Map<String, Object> caseData = buildCaseData(DEEMED, NO_VALUE);
-        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
+        CaseDetails caseDetails = buildCaseDetails(caseData, SERVICE_APPLICATION_NOT_APPROVED);
 
         mockTasksExecution(
             caseData,
@@ -101,7 +102,7 @@ public class ServiceDecisionMadeWorkflowTest {
     @Test
     public void whenDispensedAndApplicationIsNotGranted() throws WorkflowException {
         Map<String, Object> caseData = buildCaseData(DISPENSED, NO_VALUE);
-        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
+        CaseDetails caseDetails = buildCaseDetails(caseData, SERVICE_APPLICATION_NOT_APPROVED);
 
         mockTasksExecution(
             caseData,
@@ -125,19 +126,9 @@ public class ServiceDecisionMadeWorkflowTest {
     }
 
     @Test
-    public void whenMakeServiceDecisionAndNotAwaitingServiceConsiderationNoTasksShouldRun() throws WorkflowException {
-        Map<String, Object> caseData = ImmutableMap.of("anyKey", "anyValue");
-        CaseDetails caseDetails = buildCaseDetails(caseData, "stateOtherThanExpected");
-
-        executeWorkflow(caseDetails);
-
-        runNoTasksAtAll();
-    }
-
-    @Test
     public void whenServiceApplicationIsGrantedAndDeemedShouldSendEmailToPetitioner() throws WorkflowException {
         Map<String, Object> caseData = petitionerRepresented(buildCaseData(DEEMED, YES_VALUE));
-        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
+        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_DECREE_NISI);
 
         mockTasksExecution(caseData, solicitorDeemedApprovedEmailTask);
 
@@ -154,7 +145,7 @@ public class ServiceDecisionMadeWorkflowTest {
     public void whenServiceApplicationIsGrantedAndDeemedAndRepresentedShouldSendEmailToSolicitor()
         throws WorkflowException {
         Map<String, Object> caseData = buildCaseData(DEEMED, YES_VALUE);
-        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
+        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_DECREE_NISI);
 
         mockTasksExecution(caseData, deemedApprovedEmailTask);
 
@@ -171,7 +162,7 @@ public class ServiceDecisionMadeWorkflowTest {
     public void whenApplicationIsGrantedAndDispensedShouldSendDispensedApprovedEmail()
         throws WorkflowException {
         Map<String, Object> caseData = buildCaseData(DISPENSED, YES_VALUE);
-        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
+        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_DECREE_NISI);
 
         mockTasksExecution(caseData, dispensedApprovedEmailTask);
 
@@ -188,7 +179,7 @@ public class ServiceDecisionMadeWorkflowTest {
     public void whenApplicationIsGrantedAndUnknownTypeShouldNotExecuteAnyTask()
         throws WorkflowException {
         Map<String, Object> caseData = buildCaseData("I don't exist", YES_VALUE);
-        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
+        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_DECREE_NISI);
 
         executeWorkflow(caseDetails);
 
@@ -198,7 +189,7 @@ public class ServiceDecisionMadeWorkflowTest {
     @Test
     public void whenServiceDecisionMadeAndServiceApplicationIsNotGrantedAndAndTypeIsOtherDoNotGeneratePdfs() throws WorkflowException {
         Map<String, Object> caseData = buildCaseData("someOtherValue", NO_VALUE);
-        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
+        CaseDetails caseDetails = buildCaseDetails(caseData, SERVICE_APPLICATION_NOT_APPROVED);
 
         mockTasksExecution(caseData, serviceRefusalDraftRemovalTask);
 
