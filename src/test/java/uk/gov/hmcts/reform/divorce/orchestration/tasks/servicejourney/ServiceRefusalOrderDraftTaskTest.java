@@ -40,6 +40,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.CTSC_CONTACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceRefusalOrderGenerationTaskTest.TEST_RECEIVED_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelperTest.TEST_SERVICE_APPLICATION_REFUSAL_REASON;
 
 public abstract class ServiceRefusalOrderDraftTaskTest extends BasePayloadSpecificDocumentGenerationTaskTest {
@@ -55,9 +56,10 @@ public abstract class ServiceRefusalOrderDraftTaskTest extends BasePayloadSpecif
     protected void shouldGenerateAndAddDraftDocument() {
         Map<String, Object> caseData = setUpFixturesForDraftAndReturnTestDataWith(getApplicationType());
 
-        Map<String, Object> returnedCaseData = getTask().execute(prepareTaskContext(), caseData);
+        TaskContext context = prepareTaskContext();
+        Map<String, Object> returnedCaseData = getTask().execute(context, caseData);
 
-        runCommonDraftDocumentAssertions(returnedCaseData);
+        runCommonDraftDocumentAssertions(returnedCaseData, getCaseId(context));
         runCommonDraftDocumentVerifications();
     }
 
@@ -95,13 +97,14 @@ public abstract class ServiceRefusalOrderDraftTaskTest extends BasePayloadSpecif
         verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
     }
 
-    private void runCommonDraftDocumentAssertions(Map<String, Object> returnedCaseData) {
+    private void runCommonDraftDocumentAssertions(Map<String, Object> returnedCaseData, String caseId) {
         assertThat(returnedCaseData, notNullValue());
         assertThat(returnedCaseData, hasKey(SERVICE_REFUSAL_DRAFT));
         assertThat(getDocumentCollection(returnedCaseData), hasSize(0));
 
         DocumentLink documentLink = (DocumentLink) returnedCaseData.get(SERVICE_REFUSAL_DRAFT);
         assertThat(documentLink.getDocumentFilename(), containsString(".pdf"));
+        assertThat(documentLink.getDocumentFilename(), containsString(caseId));
         assertThat(documentLink.getDocumentBinaryUrl(), containsString( "binary"));
         assertThat(documentLink.getDocumentUrl(), notNullValue());
     }

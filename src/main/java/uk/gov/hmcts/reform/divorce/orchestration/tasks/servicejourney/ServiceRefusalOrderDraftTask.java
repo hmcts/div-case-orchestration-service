@@ -14,7 +14,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.mapper.CcdMappers;
 
 import java.util.Map;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_REFUSAL_DRAFT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_FMT;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isServiceApplicationGranted;
 
@@ -33,19 +35,20 @@ public abstract class ServiceRefusalOrderDraftTask extends BasePayloadSpecificDo
     protected CtscContactDetails getCtscContactDetails() {
         return ctscContactDetailsDataProviderService.getCtscContactDetails();
     }
-    
+
     @Override
     protected Map<String, Object> addToCaseData(TaskContext context, Map<String, Object> caseData, GeneratedDocumentInfo generatedDocumentInfo) {
 
         if (!isServiceApplicationGranted(caseData)) {
-            caseData.put(SERVICE_REFUSAL_DRAFT, generateRefusalDraftDocumentLink(generatedDocumentInfo));
+            caseData.put(SERVICE_REFUSAL_DRAFT, generateRefusalDraftDocumentLink(generatedDocumentInfo, getCaseId(context)));
             log.info("CaseID: {} Added Service Refusal Order draft document for {} service.", getCaseId(context), getApplicationType());
         }
 
         return caseData;
     }
 
-    private DocumentLink generateRefusalDraftDocumentLink(GeneratedDocumentInfo generatedDocumentInfo) {
+    private DocumentLink generateRefusalDraftDocumentLink(GeneratedDocumentInfo generatedDocumentInfo, String caseId) {
+        generatedDocumentInfo.setFileName(format(DOCUMENT_FILENAME_FMT, generatedDocumentInfo.getFileName(), caseId));
         return CcdMappers.mapDocumentInfoToCcdDocument(generatedDocumentInfo)
             .getValue()
             .getDocumentLink();
