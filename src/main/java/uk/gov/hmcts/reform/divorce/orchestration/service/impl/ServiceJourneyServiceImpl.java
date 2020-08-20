@@ -6,14 +6,13 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceDecisionMadeWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceDecisionMakingWorkflow;
 
 import java.util.Map;
 
@@ -29,6 +28,7 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
     private final ReceivedServiceAddedDateWorkflow receivedServiceAddedDateWorkflow;
     private final MakeServiceDecisionDateWorkflow makeServiceDecisionDateWorkflow;
     private final ServiceDecisionMadeWorkflow serviceDecisionMadeWorkflow;
+    private final ServiceDecisionMakingWorkflow serviceDecisionMakingWorkflow;
 
     @Override
     public CcdCallbackResponse makeServiceDecision(CaseDetails caseDetails, String authorisation) throws ServiceJourneyServiceException {
@@ -60,15 +60,25 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
     }
 
     @Override
-    public CcdCallbackResponse serviceDecisionMade(
-        CaseDetails caseDetails, String authorisation, ServiceRefusalDecision decision
-    ) throws CaseOrchestrationServiceException {
+    public CcdCallbackResponse serviceDecisionMade(CaseDetails caseDetails, String authorisation) throws ServiceJourneyServiceException {
         try {
             return CcdCallbackResponse.builder()
-                .data(serviceDecisionMadeWorkflow.run(caseDetails, authorisation, decision))
+                .data(serviceDecisionMadeWorkflow.run(caseDetails, authorisation))
                 .build();
         } catch (WorkflowException e) {
-            throw new CaseOrchestrationServiceException(e, caseDetails.getCaseId());
+            throw new ServiceJourneyServiceException(e, caseDetails.getCaseId());
+        }
+    }
+
+    @Override
+    public CcdCallbackResponse serviceDecisionRefusal(CaseDetails caseDetails, String authorisation)
+        throws ServiceJourneyServiceException {
+        try {
+            return CcdCallbackResponse.builder()
+                .data(serviceDecisionMakingWorkflow.run(caseDetails, authorisation))
+                .build();
+        } catch (WorkflowException e) {
+            throw new ServiceJourneyServiceException(e, caseDetails.getCaseId());
         }
     }
 }

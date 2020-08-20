@@ -5,13 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceRefusalOrderDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceRefusalOrderTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceRefusalDraftRemovalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedApprovedEmailTask;
@@ -30,7 +27,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Condition
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDispensed;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.getServiceApplicationType;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isAwaitingServiceConsideration;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isFinal;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isServiceApplicationGranted;
 
 @Component
@@ -41,30 +37,28 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
     private final DeemedServiceRefusalOrderTask deemedServiceRefusalOrderTask;
     private final DispensedServiceRefusalOrderTask dispensedServiceRefusalOrderTask;
     private final ServiceRefusalDraftRemovalTask serviceRefusalDraftRemovalTask;
-    private final DeemedServiceRefusalOrderDraftTask deemedServiceRefusalOrderDraftTask;
-    private final DispensedServiceRefusalOrderDraftTask dispensedServiceRefusalOrderDraftTask;
 
     private final DeemedApprovedEmailTask deemedApprovedEmailTask;
     private final DeemedNotApprovedEmailTask deemedNotApprovedEmailTask;
     private final DispensedApprovedEmailTask dispensedApprovedEmailTask;
     private final DispensedNotApprovedEmailTask dispensedNotApprovedEmailTask;
 
-    public Map<String, Object> run(CaseDetails caseDetails, String authorisation, ServiceRefusalDecision decision)
+    public Map<String, Object> run(CaseDetails caseDetails, String authorisation)
         throws WorkflowException {
         String caseId = caseDetails.getCaseId();
         Map<String, Object> caseData = caseDetails.getCaseData();
 
-        log.info("CaseID: {} Service decision made. ServiceDecisionMade workflow is going to be executed.", caseId);
+        log.info("CaseID: {} ServiceDecisionMade workflow is going to be executed.", caseId);
 
         return this.execute(
-            getTasks(caseDetails, decision),
+            getTasks(caseDetails),
             caseData,
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authorisation),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseId)
         );
     }
 
-    private Task<Map<String, Object>>[] getTasks(CaseDetails caseDetails, ServiceRefusalDecision decision) {
+    private Task<Map<String, Object>>[] getTasks(CaseDetails caseDetails) {
         Map<String, Object> caseData = caseDetails.getCaseData();
         String caseId = caseDetails.getCaseId();
 
@@ -80,64 +74,37 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
 
         if (isServiceApplicationGranted(caseData)) {
             log.info("CaseID: {} Service application is granted. No PDFs to generate. Emails might be sent.", caseId);
-            if (isFinal(decision)) {
-                if (isServiceApplicationDeemed(caseData)) {
-                    log.info("CaseId: {} deemed citizen email task adding.", caseId);
-                    tasks.add(deemedApprovedEmailTask);
-                } else if (isServiceApplicationDispensed(caseData)) {
-                    log.info("CaseId: {} dispensed citizen email task adding.", caseId);
-                    tasks.add(dispensedApprovedEmailTask);
-                } else {
-                    log.info("CaseId: {} NOT deemed/dispensed. No email will be sent.", caseId);
-                }
+            if (isServiceApplicationDeemed(caseData)) {
+                log.info("CaseId: {} deemed citizen email task adding.", caseId);
+                tasks.add(deemedApprovedEmailTask);
+            } else if (isServiceApplicationDispensed(caseData)) {
+                log.info("CaseId: {} dispensed citizen email task adding.", caseId);
+                tasks.add(dispensedApprovedEmailTask);
+            } else {
+                log.info("CaseId: {} NOT deemed/dispensed. No email will be sent.", caseId);
             }
 
             return tasks.toArray(new Task[] {});
         }
 
-        String applicationType = getServiceApplicationType(caseData);
+        log.info("CaseID: {}, Service application type is {}.", caseId, getServiceApplicationType(caseData));
 
-        if (isFinal(decision)) {
-            log.info(
-                "CaseID: {}, Service application type is {}. Generating Service Refusal Order document",
-                caseId,
-                applicationType
-            );
-
-            if (isServiceApplicationDeemed(caseData)) {
-                log.info("CaseID: {}, Deemed. Adding task to generate Deemed Refusal Order", caseId);
-                tasks.add(deemedServiceRefusalOrderTask);
-                log.info("CaseID: {}, Deemed and not approved. Adding task to send citizen email", caseId);
-                tasks.add(deemedNotApprovedEmailTask);
-            } else if (isServiceApplicationDispensed(caseData)) {
-                log.info("CaseID: {}, Dispensed. Adding task to generate Dispensed Refusal Order", caseId);
-                tasks.add(dispensedServiceRefusalOrderTask);
-                log.info("CaseID: {}, Dispensed and not approved. Adding task to send citizen email", caseId);
-                tasks.add(dispensedNotApprovedEmailTask);
-            } else {
-                log.warn("CaseID: {}, NOT Deemed/Dispensed. Do nothing.", caseId);
-            }
-
-            log.info("CaseID: {}, Adding task to remove Refusal Order Draft from case data.", caseId);
-            tasks.add(serviceRefusalDraftRemovalTask);
-
+        if (isServiceApplicationDeemed(caseData)) {
+            log.info("CaseID: {}, Deemed. Adding task to generate Deemed Refusal Order.", caseId);
+            tasks.add(deemedServiceRefusalOrderTask);
+            log.info("CaseID: {}, Deemed and not approved. Adding task to send citizen email.", caseId);
+            tasks.add(deemedNotApprovedEmailTask);
+        } else if (isServiceApplicationDispensed(caseData)) {
+            log.info("CaseID: {}, Dispensed. Adding task to generate Dispensed Refusal Order.", caseId);
+            tasks.add(dispensedServiceRefusalOrderTask);
+            log.info("CaseID: {}, Dispensed and not approved. Adding task to send citizen email.", caseId);
+            tasks.add(dispensedNotApprovedEmailTask);
         } else {
-            log.info(
-                "CaseID: {}, Service application type is {}. Generating Service Refusal Order draft document.",
-                caseId,
-                applicationType
-            );
-
-            if (isServiceApplicationDeemed(caseData)) {
-                log.info("CaseID: {}, Deemed. Adding task to generate Refusal Order Draft.", caseId);
-                tasks.add(deemedServiceRefusalOrderDraftTask);
-            } else if (isServiceApplicationDispensed(caseData)) {
-                log.info("CaseID: {}, Dispensed. Adding task to generate Refusal Order Draft.", caseId);
-                tasks.add(dispensedServiceRefusalOrderDraftTask);
-            } else {
-                log.warn("CaseID: {}, NOT Deemed/Dispensed. Do nothing.", caseId);
-            }
+            log.warn("CaseID: {}, NOT Deemed/Dispensed. Do nothing.", caseId);
         }
+
+        log.info("CaseID: {}, Adding task to remove Refusal Order Draft from case data.", caseId);
+        tasks.add(serviceRefusalDraftRemovalTask);
 
         return tasks.toArray(new Task[] {});
     }
