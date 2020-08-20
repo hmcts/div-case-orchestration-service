@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
@@ -1142,7 +1141,23 @@ public class CallbackController {
         );
     }
 
-    @PostMapping(path = "/service-decision-made/{decision}", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @PostMapping(path = "/service-decision-made/draft", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback to set document for service after decision")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> draftDocumentsForServiceDecision(
+        @RequestHeader(AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            serviceJourneyService
+                .serviceDecisionRefusal(ccdCallbackRequest.getCaseDetails(), authorizationToken)
+        );
+    }
+
+    @PostMapping(path = "/service-decision-made/final", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Callback to set document for service after decision")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
@@ -1150,14 +1165,10 @@ public class CallbackController {
     public ResponseEntity<CcdCallbackResponse> serviceDecisionMade(
         @RequestHeader(AUTHORIZATION_HEADER)
         @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest,
-        @PathVariable("decision")
-        @ApiParam(value = "Decision by LA for refusal order",
-            allowableValues = "draft, final") ServiceRefusalDecision decision) throws CaseOrchestrationServiceException {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
         return ResponseEntity.ok(
-            serviceJourneyService
-                .serviceDecisionMade(ccdCallbackRequest.getCaseDetails(), authorizationToken, decision)
+            serviceJourneyService.serviceDecisionMade(ccdCallbackRequest.getCaseDetails(), authorizationToken)
         );
     }
 
