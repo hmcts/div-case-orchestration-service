@@ -7,11 +7,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceRefusalOrderDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceRefusalOrderTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceRefusalDraftRemovalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedApprovedEmailTask;
@@ -33,8 +30,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DEEMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DISPENSED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision.DRAFT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision.FINAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTaskWasCalled;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTaskWasNeverCalled;
@@ -57,12 +52,6 @@ public class ServiceDecisionMadeWorkflowTest {
     private ServiceRefusalDraftRemovalTask serviceRefusalDraftRemovalTask;
 
     @Mock
-    private DeemedServiceRefusalOrderDraftTask deemedServiceRefusalOrderDraftTask;
-
-    @Mock
-    private DispensedServiceRefusalOrderDraftTask dispensedServiceRefusalOrderDraftTask;
-
-    @Mock
     private DeemedApprovedEmailTask deemedApprovedEmailTask;
 
     @Mock
@@ -75,7 +64,7 @@ public class ServiceDecisionMadeWorkflowTest {
     private DispensedNotApprovedEmailTask dispensedNotApprovedEmailTask;
 
     @Test
-    public void whenDeemedAndApplicationIsNotGrantedAndFinal() throws WorkflowException {
+    public void whenDeemedAndApplicationIsNotGranted() throws WorkflowException {
         Map<String, Object> caseData = buildCaseData(DEEMED, NO_VALUE);
         CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
 
@@ -86,7 +75,7 @@ public class ServiceDecisionMadeWorkflowTest {
             serviceRefusalDraftRemovalTask
         );
 
-        Map<String, Object> returnedData = executeWorkflow(caseDetails, FINAL);
+        Map<String, Object> returnedData = executeWorkflow(caseDetails);
 
         verifyTasksCalledInOrder(
             returnedData,
@@ -95,14 +84,13 @@ public class ServiceDecisionMadeWorkflowTest {
             serviceRefusalDraftRemovalTask
         );
 
-        runNoTasksToGenerateDraftPdfs();
         runNoTasksToSendApprovedEmails();
         verifyTasksWereNeverCalled(dispensedNotApprovedEmailTask);
         verifyTasksWereNeverCalled(dispensedServiceRefusalOrderTask);
     }
 
     @Test
-    public void whenDispensedAndApplicationIsNotGrantedAndFinal() throws WorkflowException {
+    public void whenDispensedAndApplicationIsNotGranted() throws WorkflowException {
         Map<String, Object> caseData = buildCaseData(DISPENSED, NO_VALUE);
         CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
 
@@ -113,7 +101,7 @@ public class ServiceDecisionMadeWorkflowTest {
             serviceRefusalDraftRemovalTask
         );
 
-        Map<String, Object> returnedData = executeWorkflow(caseDetails, FINAL);
+        Map<String, Object> returnedData = executeWorkflow(caseDetails);
 
         verifyTasksCalledInOrder(
             returnedData,
@@ -122,44 +110,9 @@ public class ServiceDecisionMadeWorkflowTest {
             serviceRefusalDraftRemovalTask
         );
 
-        runNoTasksToGenerateDraftPdfs();
         runNoTasksToSendApprovedEmails();
         verifyTasksWereNeverCalled(deemedNotApprovedEmailTask);
         verifyTasksWereNeverCalled(deemedServiceRefusalOrderTask);
-    }
-
-    @Test
-    public void whenDeemedAndApplicationIsNotGrantedAndDraft() throws WorkflowException {
-        Map<String, Object> caseData = buildCaseData(DEEMED, NO_VALUE);
-        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
-
-        mockTasksExecution(caseData, deemedServiceRefusalOrderDraftTask);
-
-        Map<String, Object> returnedData = executeWorkflow(caseDetails, DRAFT);
-
-        verifyTaskWasCalled(returnedData, deemedServiceRefusalOrderDraftTask);
-
-        runNoTasksToGenerateFinalPdfs();
-        runNoTasksToSendEmails();
-        verifyTasksWereNeverCalled(serviceRefusalDraftRemovalTask);
-        verifyTasksWereNeverCalled(dispensedServiceRefusalOrderDraftTask);
-    }
-
-    @Test
-    public void whenDispensedAndApplicationIsNotGrantedAndDraft() throws WorkflowException {
-        Map<String, Object> caseData = buildCaseData(DISPENSED, NO_VALUE);
-        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
-
-        mockTasksExecution(caseData, dispensedServiceRefusalOrderDraftTask);
-
-        Map<String, Object> returnedData = executeWorkflow(caseDetails, DRAFT);
-
-        verifyTaskWasCalled(returnedData, dispensedServiceRefusalOrderDraftTask);
-
-        runNoTasksToGenerateFinalPdfs();
-        runNoTasksToSendEmails();
-        verifyTasksWereNeverCalled(serviceRefusalDraftRemovalTask);
-        verifyTasksWereNeverCalled(deemedServiceRefusalOrderDraftTask);
     }
 
     @Test
@@ -167,17 +120,7 @@ public class ServiceDecisionMadeWorkflowTest {
         Map<String, Object> caseData = ImmutableMap.of("anyKey", "anyValue");
         CaseDetails caseDetails = buildCaseDetails(caseData, "stateOtherThanExpected");
 
-        executeWorkflow(caseDetails, FINAL);
-
-        runNoTasksAtAll();
-    }
-
-    @Test
-    public void whenMakeServiceDecisionAndNotAwaitingServiceConsiderationAndDraftNoTasksShouldRun() throws WorkflowException {
-        Map<String, Object> caseData = buildCaseData("other", NO_VALUE);
-        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
-
-        executeWorkflow(caseDetails, DRAFT);
+        executeWorkflow(caseDetails);
 
         runNoTasksAtAll();
     }
@@ -189,7 +132,7 @@ public class ServiceDecisionMadeWorkflowTest {
 
         mockTasksExecution(caseData, deemedApprovedEmailTask);
 
-        Map<String, Object> returnedCaseData = executeWorkflow(caseDetails, FINAL);
+        Map<String, Object> returnedCaseData = executeWorkflow(caseDetails);
 
         verifyTaskWasCalled(returnedCaseData, deemedApprovedEmailTask);
 
@@ -206,7 +149,7 @@ public class ServiceDecisionMadeWorkflowTest {
 
         mockTasksExecution(caseData, dispensedApprovedEmailTask);
 
-        Map<String, Object> returnedCaseData = executeWorkflow(caseDetails, FINAL);
+        Map<String, Object> returnedCaseData = executeWorkflow(caseDetails);
 
         verifyTaskWasCalled(returnedCaseData, dispensedApprovedEmailTask);
 
@@ -216,23 +159,12 @@ public class ServiceDecisionMadeWorkflowTest {
     }
 
     @Test
-    public void whenApplicationIsGrantedAndDispensedButDraftShouldNotDoAnything()
-        throws WorkflowException {
-        Map<String, Object> caseData = buildCaseData(DISPENSED, YES_VALUE);
-        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
-
-        executeWorkflow(caseDetails, DRAFT);
-
-        runNoTasksAtAll();
-    }
-
-    @Test
     public void whenApplicationIsGrantedAndUnknownTypeShouldNotExecuteAnyTask()
         throws WorkflowException {
         Map<String, Object> caseData = buildCaseData("I don't exist", YES_VALUE);
         CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_SERVICE_CONSIDERATION);
 
-        executeWorkflow(caseDetails, FINAL);
+        executeWorkflow(caseDetails);
 
         runNoTasksAtAll();
     }
@@ -244,12 +176,11 @@ public class ServiceDecisionMadeWorkflowTest {
 
         mockTasksExecution(caseData, serviceRefusalDraftRemovalTask);
 
-        Map<String, Object> returnedCaseData = executeWorkflow(caseDetails, FINAL);
+        Map<String, Object> returnedCaseData = executeWorkflow(caseDetails);
 
         verifyTaskWasCalled(returnedCaseData, serviceRefusalDraftRemovalTask);
 
         runNoTasksToSendEmails();
-        runNoTasksToGenerateDraftPdfs();
         runNoTasksToGenerateFinalPdfs();
     }
 
@@ -268,13 +199,6 @@ public class ServiceDecisionMadeWorkflowTest {
             .build();
     }
 
-    private void runNoTasksToGenerateDraftPdfs() {
-        verifyTasksWereNeverCalled(
-            deemedServiceRefusalOrderDraftTask,
-            dispensedServiceRefusalOrderDraftTask
-        );
-    }
-
     private void runNoTasksToGenerateFinalPdfs() {
         verifyTasksWereNeverCalled(
             deemedServiceRefusalOrderTask,
@@ -283,7 +207,6 @@ public class ServiceDecisionMadeWorkflowTest {
     }
 
     private void runNoTasksToGeneratePdfs() {
-        runNoTasksToGenerateDraftPdfs();
         runNoTasksToGenerateFinalPdfs();
         verifyTasksWereNeverCalled(serviceRefusalDraftRemovalTask);
     }
@@ -309,9 +232,9 @@ public class ServiceDecisionMadeWorkflowTest {
         runNoTasksToSendEmails();
     }
 
-    private Map<String, Object> executeWorkflow(CaseDetails caseDetails, ServiceRefusalDecision decision)
+    private Map<String, Object> executeWorkflow(CaseDetails caseDetails)
         throws WorkflowException {
-        Map<String, Object> returnedData = classUnderTest.run(caseDetails, AUTH_TOKEN, decision);
+        Map<String, Object> returnedData = classUnderTest.run(caseDetails, AUTH_TOKEN);
         assertThat(returnedData, is(notNullValue()));
 
         return returnedData;

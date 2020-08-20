@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.util;
 
 import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceRefusalDecision;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
 
 import java.util.HashMap;
@@ -22,8 +21,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationR
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.getServiceApplicationRefusalReason;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.getServiceApplicationType;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isAwaitingServiceConsideration;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isDraft;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isFinal;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isServiceApplicationGranted;
 
 public class ServiceApplicationRefusalHelperTest {
@@ -57,27 +54,6 @@ public class ServiceApplicationRefusalHelperTest {
     @Test(expected = InvalidDataForTaskException.class)
     public void getServiceApplicationRefusalReasonShouldThrowInvalidData() {
         getServiceApplicationRefusalReason(EMPTY_MAP);
-    }
-
-    @Test
-    public void isFinalShouldEvaluateToTrueValue() {
-        ServiceRefusalDecision decision = ServiceRefusalDecision.FINAL;
-
-        assertThat(isFinal(decision), is(true));
-    }
-
-    @Test
-    public void isDraftShouldEvaluateToTrueValue() {
-        ServiceRefusalDecision decision = ServiceRefusalDecision.DRAFT;
-
-        assertThat(isDraft(decision), is(true));
-    }
-
-    @Test
-    public void isFinalShouldEvaluateToFalseValue() {
-        ServiceRefusalDecision decision = ServiceRefusalDecision.DRAFT;
-
-        assertThat(isFinal(decision), is(false));
     }
 
     @Test
