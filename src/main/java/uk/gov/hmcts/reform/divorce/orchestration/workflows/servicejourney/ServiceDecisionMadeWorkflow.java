@@ -20,13 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDeemed;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDispensed;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.getServiceApplicationType;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isAwaitingServiceConsideration;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isServiceApplicationGranted;
 
 @Component
@@ -64,13 +62,7 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
 
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
-        if (!isAwaitingServiceConsideration(caseDetails)) {
-            log.info("CaseID: {} Case state is not {}. No documents will be generated.",
-                caseId, AWAITING_SERVICE_CONSIDERATION);
-            return tasks.toArray(new Task[] {});
-        }
-
-        log.info("CaseID: {} Case state is {}.", caseId, AWAITING_SERVICE_CONSIDERATION);
+        log.info("CaseID: {} Case state is {}.", caseId, caseDetails.getState());
 
         if (isServiceApplicationGranted(caseData)) {
             log.info("CaseID: {} Service application is granted. No PDFs to generate. Emails might be sent.", caseId);
