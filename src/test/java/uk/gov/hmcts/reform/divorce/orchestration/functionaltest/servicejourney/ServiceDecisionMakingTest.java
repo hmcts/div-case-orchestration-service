@@ -38,8 +38,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.servicejourney.ServiceDecisionMadeTest.buildInputCaseData;
-import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.servicejourney.ServiceDecisionMadeTest.buildRequest;
+import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.servicejourney.ServiceDecisionMadeTest.buildRefusalInputCaseData;
+import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.servicejourney.ServiceDecisionMadeTest.buildRefusalRequest;
 import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.servicejourney.ServiceDecisionMadeTest.buildServiceRefusalOrderCaseData;
 import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.servicejourney.ServiceDecisionMadeTest.generateDocumentLink;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerFullName;
@@ -99,8 +99,8 @@ public class ServiceDecisionMakingTest extends IdamTestSupport {
 
     @Test
     public void shouldNotGenerateAnyRefusalOrderDraftsWhenServiceApplicationIsGrantedAndSubmitted() throws Exception {
-        Map<String, Object> caseData = buildInputCaseData(ApplicationServiceTypes.DISPENSED);
-        CcdCallbackRequest ccdCallbackRequest = buildRequest(caseData);
+        Map<String, Object> caseData = buildRefusalInputCaseData(ApplicationServiceTypes.DISPENSED);
+        CcdCallbackRequest ccdCallbackRequest = buildRefusalRequest(caseData);
 
         webClient.perform(post(API_URL)
             .contentType(MediaType.APPLICATION_JSON)
@@ -146,7 +146,7 @@ public class ServiceDecisionMakingTest extends IdamTestSupport {
             serviceType, refusalDraftDocument
         );
 
-        CcdCallbackRequest ccdCallbackRequest = buildRequest(refusalOrderData);
+        CcdCallbackRequest ccdCallbackRequest = buildRefusalRequest(refusalOrderData);
         ccdCallbackRequest.getCaseDetails().setState(AWAITING_SERVICE_CONSIDERATION);
 
         stubDocumentGeneratorServiceBaseOnContextPath(
