@@ -11,8 +11,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceOrderGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceRefusalOrderTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.MakeServiceDecisionDateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.OrderToDispenseGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceRefusalDraftRemovalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionDateWorkflow;
 
 import java.util.HashMap;
@@ -37,6 +40,15 @@ public class MakeServiceDecisionDateWorkflowTest extends TestCase {
 
     @Mock
     private DeemedServiceOrderGenerationTask deemedServiceOrderGenerationTask;
+
+    @Mock
+    private DeemedServiceRefusalOrderTask deemedServiceRefusalOrderTask;
+
+    @Mock
+    private DispensedServiceRefusalOrderTask dispensedServiceRefusalOrderTask;
+
+    @Mock
+    private ServiceRefusalDraftRemovalTask serviceRefusalDraftRemovalTask;
 
     @InjectMocks
     private MakeServiceDecisionDateWorkflow makeServiceDecisionDateWorkflow;
@@ -65,7 +77,7 @@ public class MakeServiceDecisionDateWorkflowTest extends TestCase {
     }
 
     @Test
-    public void shouldTwoTasksWhenApplicationServiceTypeIsDispensed() throws WorkflowException {
+    public void shouldCallTwoTasksWhenApplicationServiceTypeIsDispensed() throws WorkflowException {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(CcdFields.SERVICE_APPLICATION_GRANTED, YES_VALUE);
         caseData.put(CcdFields.SERVICE_APPLICATION_TYPE, ApplicationServiceTypes.DISPENSED);
@@ -75,6 +87,40 @@ public class MakeServiceDecisionDateWorkflowTest extends TestCase {
         makeServiceDecisionDateWorkflow.run(CaseDetails.builder().caseData(caseData).build(), AUTH_TOKEN);
 
         verifyTasksCalledInOrder(caseData, makeServiceDecisionDateTask, orderToDispenseGenerationTask);
+        verifyTasksWereNeverCalled(deemedServiceOrderGenerationTask);
+    }
+
+    @Test
+    public void shouldCallTwoTasksWhenApplicationServiceTypeIsDeemedAndNotGranted() throws WorkflowException {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(CcdFields.SERVICE_APPLICATION_GRANTED, NO_VALUE);
+        caseData.put(CcdFields.SERVICE_APPLICATION_TYPE, ApplicationServiceTypes.DEEMED);
+
+        mockTasksExecution(caseData, makeServiceDecisionDateTask, deemedServiceRefusalOrderTask);
+
+        makeServiceDecisionDateWorkflow.run(CaseDetails.builder().caseData(caseData).build(), AUTH_TOKEN);
+
+        verifyTasksCalledInOrder(caseData,
+            makeServiceDecisionDateTask,
+            deemedServiceRefusalOrderTask,
+            serviceRefusalDraftRemovalTask);
+        verifyTasksWereNeverCalled(deemedServiceOrderGenerationTask);
+    }
+
+    @Test
+    public void shouldCallTwoTasksWhenApplicationServiceTypeIsDispensedAndNotGranted() throws WorkflowException {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(CcdFields.SERVICE_APPLICATION_GRANTED, NO_VALUE);
+        caseData.put(CcdFields.SERVICE_APPLICATION_TYPE, ApplicationServiceTypes.DISPENSED);
+
+        mockTasksExecution(caseData, makeServiceDecisionDateTask, dispensedServiceRefusalOrderTask);
+
+        makeServiceDecisionDateWorkflow.run(CaseDetails.builder().caseData(caseData).build(), AUTH_TOKEN);
+
+        verifyTasksCalledInOrder(caseData,
+            makeServiceDecisionDateTask,
+            dispensedServiceRefusalOrderTask,
+            serviceRefusalDraftRemovalTask);
         verifyTasksWereNeverCalled(deemedServiceOrderGenerationTask);
     }
 

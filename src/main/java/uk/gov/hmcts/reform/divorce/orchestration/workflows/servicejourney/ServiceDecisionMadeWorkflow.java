@@ -8,9 +8,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceRefusalOrderTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceRefusalDraftRemovalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedApprovedEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedNotApprovedEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedApprovedEmailTask;
@@ -34,15 +31,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationR
 @RequiredArgsConstructor
 public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final DeemedServiceRefusalOrderTask deemedServiceRefusalOrderTask;
-    private final DispensedServiceRefusalOrderTask dispensedServiceRefusalOrderTask;
-    private final ServiceRefusalDraftRemovalTask serviceRefusalDraftRemovalTask;
-
-    private final SolicitorDeemedApprovedEmailTask solicitorDeemedApprovedEmailTask;
     private final DeemedApprovedEmailTask deemedApprovedEmailTask;
     private final DeemedNotApprovedEmailTask deemedNotApprovedEmailTask;
     private final DispensedApprovedEmailTask dispensedApprovedEmailTask;
     private final DispensedNotApprovedEmailTask dispensedNotApprovedEmailTask;
+    private final SolicitorDeemedApprovedEmailTask solicitorDeemedApprovedEmailTask;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authorisation)
         throws WorkflowException {
@@ -83,21 +76,14 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
         log.info("CaseID: {}, Service application type is {}.", caseId, getServiceApplicationType(caseData));
 
         if (isServiceApplicationDeemed(caseData)) {
-            log.info("CaseID: {}, Deemed. Adding task to generate Deemed Refusal Order.", caseId);
-            tasks.add(deemedServiceRefusalOrderTask);
             log.info("CaseID: {}, Deemed and not approved. Adding task to send citizen email.", caseId);
             tasks.add(deemedNotApprovedEmailTask);
         } else if (isServiceApplicationDispensed(caseData)) {
-            log.info("CaseID: {}, Dispensed. Adding task to generate Dispensed Refusal Order.", caseId);
-            tasks.add(dispensedServiceRefusalOrderTask);
             log.info("CaseID: {}, Dispensed and not approved. Adding task to send citizen email.", caseId);
             tasks.add(dispensedNotApprovedEmailTask);
         } else {
             log.warn("CaseID: {}, NOT Deemed/Dispensed. Do nothing.", caseId);
         }
-
-        log.info("CaseID: {}, Adding task to remove Refusal Order Draft from case data.", caseId);
-        tasks.add(serviceRefusalDraftRemovalTask);
 
         return tasks.toArray(new Task[] {});
     }

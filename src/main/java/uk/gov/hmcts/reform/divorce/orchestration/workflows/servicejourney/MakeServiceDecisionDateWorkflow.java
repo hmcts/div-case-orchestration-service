@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
@@ -8,8 +9,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceOrderGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceRefusalOrderTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.MakeServiceDecisionDateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.OrderToDispenseGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceRefusalDraftRemovalTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,19 +27,15 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Condition
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class MakeServiceDecisionDateWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final MakeServiceDecisionDateTask makeServiceDecisionDateTask;
     private final OrderToDispenseGenerationTask orderToDispenseGenerationTask;
     private final DeemedServiceOrderGenerationTask deemedServiceOrderGenerationTask;
-
-    public MakeServiceDecisionDateWorkflow(MakeServiceDecisionDateTask makeServiceDecisionDateTask,
-                                           OrderToDispenseGenerationTask orderToDispenseGenerationTask,
-                                           DeemedServiceOrderGenerationTask deemedServiceOrderGenerationTask) {
-        this.makeServiceDecisionDateTask = makeServiceDecisionDateTask;
-        this.orderToDispenseGenerationTask = orderToDispenseGenerationTask;
-        this.deemedServiceOrderGenerationTask = deemedServiceOrderGenerationTask;
-    }
+    private final DeemedServiceRefusalOrderTask deemedServiceRefusalOrderTask;
+    private final DispensedServiceRefusalOrderTask dispensedServiceRefusalOrderTask;
+    private final ServiceRefusalDraftRemovalTask serviceRefusalDraftRemovalTask;
 
     public Map<String, Object> run(CaseDetails caseDetails, String auth) throws WorkflowException {
 
@@ -59,7 +59,18 @@ public class MakeServiceDecisionDateWorkflow extends DefaultWorkflow<Map<String,
                 log.info("CaseID: {} application type != dispensed/deemed. No pdf will be generated.", caseId);
             }
         } else {
-            log.info("CaseID: {} Service application is not granted. No pdf will be generated.", caseId);
+            if (isServiceApplicationDispensed(caseData)) {
+                log.info("CaseID: {}, Dispensed. Adding task to generate Dispensed Refusal Order.", caseId);
+                tasks.add(dispensedServiceRefusalOrderTask);
+            } else if (isServiceApplicationDeemed(caseData)) {
+                log.info("CaseID: {}, Deemed. Adding task to generate Deemed Refusal Order.", caseId);
+                tasks.add(deemedServiceRefusalOrderTask);
+            } else {
+                log.info("CaseID: {} application type != dispensed/deemed.. No draft pdf will be generated.", caseId);
+            }
+
+            log.info("CaseID: {}, Adding task to remove Refusal Order Draft from case data if exists.", caseId);
+            tasks.add(serviceRefusalDraftRemovalTask);
         }
 
         return this.execute(
