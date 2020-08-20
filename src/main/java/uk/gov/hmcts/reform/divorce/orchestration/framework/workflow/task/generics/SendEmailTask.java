@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generics;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
@@ -16,17 +17,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public abstract class SendEmailTask implements Task<Map<String, Object>> {
 
     private final EmailService emailService;
 
-    public SendEmailTask(EmailService emailService) {
-        this.emailService = emailService;
-    }
-
     protected abstract String getSubject(Map<String, Object> caseData);
 
-    protected abstract Map<String, String> getPersonalisation(Map<String, Object> caseData);
+    protected abstract Map<String, String> getPersonalisation(TaskContext context, Map<String, Object> caseData);
 
     protected abstract EmailTemplateNames getTemplate();
 
@@ -57,7 +55,7 @@ public abstract class SendEmailTask implements Task<Map<String, Object>> {
             emailService.sendEmail(
                 getRecipientEmail(caseData),
                 getTemplate().name(),
-                getPersonalisation(caseData),
+                getPersonalisation(context, caseData),
                 subject,
                 getLanguage(caseData)
             );
