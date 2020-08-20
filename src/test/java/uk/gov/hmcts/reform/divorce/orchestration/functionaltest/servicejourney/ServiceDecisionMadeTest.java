@@ -37,9 +37,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RECEIVED_SERVICE_APPLICATION_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_REFUSAL_REASON;
@@ -49,7 +53,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.S
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DEEMED;
@@ -62,11 +69,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelperTest.TEST_SERVICE_APPLICATION_REFUSAL_REASON;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceDecisionMadeWorkflowTest.petitionerRepresented;
 
 public class ServiceDecisionMadeTest extends IdamTestSupport {
 
     private static final String API_URL = "/service-decision-made/final";
 
+    private static final String PET_SOL_DEEMED_APPROVED_EMAIL_ID = "b762cdc0-fa4d-4699-b60d-1532e912cc3e";
     private static final String DEEMED_APPROVED_EMAIL_ID = "00f27db6-2678-4ccd-8cdd-44971b330ca4";
     private static final String DEEMED_NOT_APPROVED_EMAIL_ID = "5140a51a-fcda-42e4-adf4-0b469a1b927a";
     private static final String DISPENSED_APPROVED_EMAIL_ID = "cf03cea1-a155-4f20-a3a6-3ad8fad7742f";
@@ -110,6 +119,26 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
     }
 
     @Test
+    public void shouldSendSolicitorDeemedApprovedEmailWhenServiceApplicationIsGrantedAndDeemedAndPetRepresented() throws Exception {
+        Map<String, Object> caseData = petitionerRepresented(buildRefusalInputCaseData(DEEMED));
+        CcdCallbackRequest ccdCallbackRequest = buildRefusalRequest(caseData);
+
+        webClient.perform(post(API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(ccdCallbackRequest)))
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(isJson(), hasNoJsonPath("$.errors"))));
+
+        verify(emailClient).sendEmail(
+            eq(PET_SOL_DEEMED_APPROVED_EMAIL_ID),
+            eq(TEST_SOLICITOR_EMAIL),
+            eq(expectedSolicitorEmailVars(caseData)),
+            any()
+        );
+    }
+
+    @Test
     public void shouldSendDispensedApprovedEmailWhenServiceApplicationIsGrantedAndDispensed() throws Exception {
         Map<String, Object> caseData = buildRefusalInputCaseData(DISPENSED);
         CcdCallbackRequest ccdCallbackRequest = buildRefusalRequest(caseData);
@@ -131,6 +160,15 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
 
     private Map<String, String> expectedCitizenEmailVars(Map<String, Object> caseData) {
         return ImmutableMap.of(NOTIFICATION_PET_NAME, getPetitionerFullName(caseData));
+    }
+
+    private Map<String, String> expectedSolicitorEmailVars(Map<String, Object> caseData) {
+        return ImmutableMap.of(
+            NOTIFICATION_PET_NAME, TEST_PETITIONER_FULL_NAME,
+            NOTIFICATION_RESP_NAME, TEST_RESPONDENT_FULL_NAME,
+            NOTIFICATION_CCD_REFERENCE_KEY, TEST_CASE_ID,
+            NOTIFICATION_SOLICITOR_NAME, TEST_SOLICITOR_NAME
+        );
     }
 
     public static Map<String, Object> buildRefusalInputCaseData(String applicationType) {

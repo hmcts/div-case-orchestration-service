@@ -16,6 +16,7 @@ public class CaseDataExtractor {
     public static class CaseDataKeys {
         public static final String CASE_REFERENCE = OrchestrationConstants.D_8_CASE_REFERENCE;
         public static final String PETITIONER_EMAIL = OrchestrationConstants.D_8_PETITIONER_EMAIL;
+        public static final String PETITIONER_SOLICITOR_EMAIL = OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
     }
 
     public static String getCaseReference(Map<String, Object> caseData) {
@@ -28,5 +29,9 @@ public class CaseDataExtractor {
 
     public static String getPetitionerEmail(Map<String, Object> caseData) {
         return getMandatoryStringValue(caseData, CaseDataKeys.PETITIONER_EMAIL);
+    }
+
+    public static String getPetitionerSolicitorEmail(Map<String, Object> caseData) {
+        return getMandatoryStringValue(caseData, CaseDataKeys.PETITIONER_SOLICITOR_EMAIL);
     }
 }

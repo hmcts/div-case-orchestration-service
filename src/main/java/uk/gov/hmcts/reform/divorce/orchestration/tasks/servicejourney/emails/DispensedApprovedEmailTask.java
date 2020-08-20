@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generics.SendEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
@@ -28,7 +29,7 @@ public class DispensedApprovedEmailTask extends SendEmailTask {
     }
 
     @Override
-    protected Map<String, String> getPersonalisation(Map<String, Object> caseData) {
+    protected Map<String, String> getPersonalisation(TaskContext taskContext, Map<String, Object> caseData) {
         return ImmutableMap.of(
             NOTIFICATION_PET_NAME, getPetitionerFullName(caseData)
         );
