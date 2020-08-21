@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.Dee
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedApprovedEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedNotApprovedEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.SolicitorDeemedApprovedEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.SolicitorDispensedApprovedEmailTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,7 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
     private final DispensedApprovedEmailTask dispensedApprovedEmailTask;
     private final DispensedNotApprovedEmailTask dispensedNotApprovedEmailTask;
     private final SolicitorDeemedApprovedEmailTask solicitorDeemedApprovedEmailTask;
+    private final SolicitorDispensedApprovedEmailTask solicitorDispensedApprovedEmailTask;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authorisation)
         throws WorkflowException {
@@ -65,7 +67,7 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
             if (isServiceApplicationDeemed(caseData)) {
                 tasks.add(getTaskForDeemedApproved(caseData, caseId));
             } else if (isServiceApplicationDispensed(caseData)) {
-                tasks.add(getTaskForDispensedApproved(caseData, caseId));
+                sendDispensedApprovedEmail(caseData, caseId, tasks);
             } else {
                 log.info("CaseId: {} NOT deemed/dispensed. No email will be sent.", caseId);
             }
@@ -88,9 +90,22 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
         return tasks.toArray(new Task[] {});
     }
 
+    private void sendDispensedApprovedEmail(Map<String, Object> caseData, String caseId, List<Task<Map<String, Object>>> tasks) {
+        if (isPetitionerRepresented(caseData)) {
+            tasks.add(getTaskForSolicitorDispensedApproved(caseData, caseId));
+        } else {
+            tasks.add(getTaskForDispensedApproved(caseData, caseId));
+        }
+    }
+
     private Task<Map<String, Object>> getTaskForDispensedApproved(Map<String, Object> caseData, String caseId) {
         log.info("CaseId: {} dispensed citizen email task adding.", caseId);
         return dispensedApprovedEmailTask;
+    }
+
+    private Task<Map<String, Object>> getTaskForSolicitorDispensedApproved(Map<String, Object> caseData, String caseId) {
+        log.info("CaseId: {} dispensed solicitor email task adding.", caseId);
+        return solicitorDispensedApprovedEmailTask;
     }
 
     private Task<Map<String, Object>> getTaskForDeemedApproved(Map<String, Object> caseData, String caseId) {
