@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.Dee
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedApprovedEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedNotApprovedEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.SolicitorDeemedApprovedEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.SolicitorDispensedApprovedEmailTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +29,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.S
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
@@ -36,7 +38,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.Ap
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DISPENSED;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTaskWasCalled;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTaskWasNeverCalled;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksWereNeverCalled;
 
@@ -60,6 +61,9 @@ public class ServiceDecisionMadeWorkflowTest {
 
     @Mock
     private SolicitorDeemedApprovedEmailTask solicitorDeemedApprovedEmailTask;
+
+    @Mock
+    private SolicitorDispensedApprovedEmailTask solicitorDispensedApprovedEmailTask;
 
     @Test
     public void whenDeemedAndApplicationIsNotGranted() throws WorkflowException {
@@ -114,7 +118,7 @@ public class ServiceDecisionMadeWorkflowTest {
 
         verifyTaskWasCalled(returnedCaseData, solicitorDeemedApprovedEmailTask);
 
-        verifyTasksWereNeverCalled(dispensedApprovedEmailTask, deemedApprovedEmailTask);
+        verifyTasksWereNeverCalled(dispensedApprovedEmailTask, deemedApprovedEmailTask, solicitorDispensedApprovedEmailTask);
         runNoTasksToSendNotApprovedEmails();
     }
 
@@ -130,12 +134,12 @@ public class ServiceDecisionMadeWorkflowTest {
 
         verifyTaskWasCalled(returnedCaseData, deemedApprovedEmailTask);
 
-        verifyTaskWasNeverCalled(dispensedApprovedEmailTask);
+        verifyTasksWereNeverCalled(dispensedApprovedEmailTask, solicitorDispensedApprovedEmailTask);
         runNoTasksToSendNotApprovedEmails();
     }
 
     @Test
-    public void whenApplicationIsGrantedAndDispensedShouldSendDispensedApprovedEmail()
+    public void shouldSendDispensedApprovedEmail_ToPetitioner_whenApplicationIsGrantedAndDispensed()
         throws WorkflowException {
         Map<String, Object> caseData = buildCaseData(DISPENSED, YES_VALUE);
         CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_DECREE_NISI);
@@ -146,7 +150,30 @@ public class ServiceDecisionMadeWorkflowTest {
 
         verifyTaskWasCalled(returnedCaseData, dispensedApprovedEmailTask);
 
-        verifyTaskWasNeverCalled(deemedApprovedEmailTask);
+        verifyTasksWereNeverCalled(deemedApprovedEmailTask, solicitorDispensedApprovedEmailTask);
+        runNoTasksToSendNotApprovedEmails();
+    }
+
+    @Test
+    public void shouldSendDispensedApprovedEmail_ToSolicitor_whenApplicationIsGrantedAndDispensed()
+        throws WorkflowException {
+        Map<String, Object> caseData = new HashMap<>();
+
+        caseData.put(SERVICE_APPLICATION_TYPE, DISPENSED);
+        caseData.put(SERVICE_APPLICATION_GRANTED, YES_VALUE);
+        caseData.put(PETITIONER_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL);
+        caseData.put(PETITIONER_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
+        caseData.remove(D_8_PETITIONER_EMAIL);
+
+        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_DECREE_NISI);
+
+        mockTasksExecution(caseData, solicitorDispensedApprovedEmailTask);
+
+        Map<String, Object> returnedCaseData = executeWorkflow(caseDetails);
+
+        verifyTaskWasCalled(returnedCaseData, solicitorDispensedApprovedEmailTask);
+
+        verifyTasksWereNeverCalled(deemedApprovedEmailTask, dispensedApprovedEmailTask);
         runNoTasksToSendNotApprovedEmails();
     }
 
@@ -197,7 +224,8 @@ public class ServiceDecisionMadeWorkflowTest {
         verifyTasksWereNeverCalled(
             solicitorDeemedApprovedEmailTask,
             deemedApprovedEmailTask,
-            dispensedApprovedEmailTask
+            dispensedApprovedEmailTask,
+            solicitorDispensedApprovedEmailTask
         );
     }
 
