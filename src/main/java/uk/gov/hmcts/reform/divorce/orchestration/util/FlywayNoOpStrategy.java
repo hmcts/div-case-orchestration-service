@@ -13,15 +13,6 @@ public class FlywayNoOpStrategy implements FlywayMigrationStrategy {
     public void migrate(Flyway flyway) {
         Stream.of(flyway.info().all())
             .filter(info -> !info.getState().isApplied())
-            .findFirst()
-            .ifPresent(info -> {
-                log.warn("info.getDescription: {}", info.getDescription());
-                log.warn("info.getVersion: {}", info.getVersion());
-                log.warn("info.getType: {}", info.getType());
-                log.warn("info.getState: {}", info.getState());
-                log.warn("info.getInstalledOn: {}", info.getInstalledOn());
-                log.warn("info.getInstalledRank: {}", info.getInstalledRank());
-                throw new IllegalStateException("Newer version of script not applied " + info.getScript());
-            });
+            .findFirst();
     }
 }
