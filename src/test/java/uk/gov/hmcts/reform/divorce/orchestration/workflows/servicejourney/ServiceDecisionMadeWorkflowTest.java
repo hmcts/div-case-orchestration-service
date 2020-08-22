@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.Dee
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedApprovedEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedNotApprovedEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.SolicitorDeemedApprovedEmailTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.SolicitorDispensedApprovedEmailTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,7 +28,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.S
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
@@ -61,9 +59,6 @@ public class ServiceDecisionMadeWorkflowTest {
 
     @Mock
     private SolicitorDeemedApprovedEmailTask solicitorDeemedApprovedEmailTask;
-
-    @Mock
-    private SolicitorDispensedApprovedEmailTask solicitorDispensedApprovedEmailTask;
 
     @Test
     public void whenDeemedAndApplicationIsNotGranted() throws WorkflowException {
@@ -118,7 +113,7 @@ public class ServiceDecisionMadeWorkflowTest {
 
         verifyTaskWasCalled(returnedCaseData, solicitorDeemedApprovedEmailTask);
 
-        verifyTasksWereNeverCalled(dispensedApprovedEmailTask, deemedApprovedEmailTask, solicitorDispensedApprovedEmailTask);
+        verifyTasksWereNeverCalled(dispensedApprovedEmailTask, deemedApprovedEmailTask);
         runNoTasksToSendNotApprovedEmails();
     }
 
@@ -134,7 +129,7 @@ public class ServiceDecisionMadeWorkflowTest {
 
         verifyTaskWasCalled(returnedCaseData, deemedApprovedEmailTask);
 
-        verifyTasksWereNeverCalled(dispensedApprovedEmailTask, solicitorDispensedApprovedEmailTask);
+        verifyTasksWereNeverCalled(dispensedApprovedEmailTask);
         runNoTasksToSendNotApprovedEmails();
     }
 
@@ -150,30 +145,7 @@ public class ServiceDecisionMadeWorkflowTest {
 
         verifyTaskWasCalled(returnedCaseData, dispensedApprovedEmailTask);
 
-        verifyTasksWereNeverCalled(deemedApprovedEmailTask, solicitorDispensedApprovedEmailTask);
-        runNoTasksToSendNotApprovedEmails();
-    }
-
-    @Test
-    public void shouldSendDispensedApprovedEmail_ToSolicitor_whenApplicationIsGrantedAndDispensed()
-        throws WorkflowException {
-        Map<String, Object> caseData = new HashMap<>();
-
-        caseData.put(SERVICE_APPLICATION_TYPE, DISPENSED);
-        caseData.put(SERVICE_APPLICATION_GRANTED, YES_VALUE);
-        caseData.put(PETITIONER_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL);
-        caseData.put(PETITIONER_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
-        caseData.remove(D_8_PETITIONER_EMAIL);
-
-        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_DECREE_NISI);
-
-        mockTasksExecution(caseData, solicitorDispensedApprovedEmailTask);
-
-        Map<String, Object> returnedCaseData = executeWorkflow(caseDetails);
-
-        verifyTaskWasCalled(returnedCaseData, solicitorDispensedApprovedEmailTask);
-
-        verifyTasksWereNeverCalled(deemedApprovedEmailTask, dispensedApprovedEmailTask);
+        verifyTasksWereNeverCalled(deemedApprovedEmailTask);
         runNoTasksToSendNotApprovedEmails();
     }
 
@@ -224,8 +196,7 @@ public class ServiceDecisionMadeWorkflowTest {
         verifyTasksWereNeverCalled(
             solicitorDeemedApprovedEmailTask,
             deemedApprovedEmailTask,
-            dispensedApprovedEmailTask,
-            solicitorDispensedApprovedEmailTask
+            dispensedApprovedEmailTask
         );
     }
 

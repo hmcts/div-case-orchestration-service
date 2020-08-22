@@ -58,7 +58,7 @@ public class SolicitorDeemedApprovedEmailTask extends SendEmailTask {
     }
 
     @Override
-    protected EmailTemplateNames getTemplate() {
+    protected EmailTemplateNames getTemplate(Map<String, Object> caseData) {
         return EmailTemplateNames.PET_SOL_DEEMED_APPROVED;
     }
 }

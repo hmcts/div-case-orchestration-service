@@ -26,7 +26,7 @@ public abstract class SendEmailTask implements Task<Map<String, Object>> {
 
     protected abstract Map<String, String> getPersonalisation(TaskContext context, Map<String, Object> caseData);
 
-    protected abstract EmailTemplateNames getTemplate();
+    protected abstract EmailTemplateNames getTemplate(Map<String, Object> caseData);
 
     protected String getRecipientEmail(Map<String, Object> caseData) {
         return CaseDataExtractor.getPetitionerEmail(caseData);
@@ -54,15 +54,15 @@ public abstract class SendEmailTask implements Task<Map<String, Object>> {
 
             emailService.sendEmail(
                 getRecipientEmail(caseData),
-                getTemplate().name(),
+                getTemplate(caseData).name(),
                 getPersonalisation(context, caseData),
                 subject,
                 getLanguage(caseData)
             );
 
-            log.info("CaseID: {} email {} was sent.", caseId, getTemplate().name());
+            log.info("CaseID: {} email {} was sent.", caseId, getTemplate(caseData).name());
         } else {
-            log.warn("CaseID: {} recipient email is empty! Email {} not sent.", caseId, getTemplate().name());
+            log.warn("CaseID: {} recipient email is empty! Email {} not sent.", caseId, getTemplate(caseData).name());
         }
 
         return caseData;
