@@ -14,6 +14,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.CITIZEN_DISPENSED_APPROVED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.SOL_DISPENSED_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerSolicitorFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getRespondentFullName;
@@ -32,35 +34,31 @@ public class DispensedApprovedEmailTask extends SendEmailTask {
 
     @Override
     protected String getSubject(Map<String, Object> caseData) {
-        if (isPetitionerRepresented(caseData)) {
-            return SOLICITOR_SUBJECT;
-        } else {
-            return CITIZEN_SUBJECT;
-        }
+        return isPetitionerRepresented(caseData) ? SOLICITOR_SUBJECT : CITIZEN_SUBJECT;
     }
 
     @Override
     protected Map<String, String> getPersonalisation(TaskContext taskContext, Map<String, Object> caseData) {
-        if (isPetitionerRepresented(caseData)) {
-            return ImmutableMap.of(
-                NOTIFICATION_PET_NAME, getPetitionerFullName(caseData),
-                NOTIFICATION_RESP_NAME, getRespondentFullName(caseData),
-                NOTIFICATION_CCD_REFERENCE_KEY, getCaseId(taskContext),
-                NOTIFICATION_SOLICITOR_NAME, getPetitionerSolicitorFullName(caseData)
-            );
-        } else {
-            return ImmutableMap.of(
-                NOTIFICATION_PET_NAME, getPetitionerFullName(caseData)
-            );
-        }
+        return isPetitionerRepresented(caseData) ? solicitorTemplateVariables(taskContext, caseData) : citizenTemplateVariables(caseData);
+    }
+
+    private ImmutableMap<String, String> citizenTemplateVariables(Map<String, Object> caseData) {
+        return ImmutableMap.of(
+            NOTIFICATION_PET_NAME, getPetitionerFullName(caseData)
+        );
+    }
+
+    private ImmutableMap<String, String> solicitorTemplateVariables(TaskContext taskContext, Map<String, Object> caseData) {
+        return ImmutableMap.of(
+            NOTIFICATION_PET_NAME, getPetitionerFullName(caseData),
+            NOTIFICATION_RESP_NAME, getRespondentFullName(caseData),
+            NOTIFICATION_CCD_REFERENCE_KEY, getCaseId(taskContext),
+            NOTIFICATION_SOLICITOR_NAME, getPetitionerSolicitorFullName(caseData)
+        );
     }
 
     @Override
     protected EmailTemplateNames getTemplate(Map<String, Object> caseData) {
-        if (isPetitionerRepresented(caseData)) {
-            return EmailTemplateNames.SOL_DISPENSED_APPROVED;
-        } else {
-            return EmailTemplateNames.CITIZEN_DISPENSED_APPROVED;
-        }
+        return isPetitionerRepresented(caseData) ? SOL_DISPENSED_APPROVED : CITIZEN_DISPENSED_APPROVED;
     }
 }
