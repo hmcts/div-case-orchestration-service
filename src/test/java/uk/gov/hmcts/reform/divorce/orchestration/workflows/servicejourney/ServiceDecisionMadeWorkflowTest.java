@@ -150,6 +150,22 @@ public class ServiceDecisionMadeWorkflowTest {
     }
 
     @Test
+    public void shouldSendDispensedApprovedEmail_ToSolicitor_whenApplicationIsGrantedAndDispensed()
+        throws WorkflowException {
+        Map<String, Object> caseData = petitionerRepresented(buildCaseData(DISPENSED, YES_VALUE));
+        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_DECREE_NISI);
+
+        mockTasksExecution(caseData, dispensedApprovedEmailTask);
+
+        Map<String, Object> returnedCaseData = executeWorkflow(caseDetails);
+
+        verifyTaskWasCalled(returnedCaseData, dispensedApprovedEmailTask);
+
+        verifyTasksWereNeverCalled(deemedApprovedEmailTask);
+        runNoTasksToSendNotApprovedEmails();
+    }
+
+    @Test
     public void whenApplicationIsGrantedAndUnknownTypeShouldNotExecuteAnyTask()
         throws WorkflowException {
         Map<String, Object> caseData = buildCaseData("I don't exist", YES_VALUE);
