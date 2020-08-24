@@ -585,6 +585,11 @@ logging:
   level:
     org.springframework.web: ERROR
     uk.gov.hmcts.reform.divorce.orchestration: DEBUG
+    org.flywaydb.core: DEBUG
   pattern:
     console: "%d{yyyy-MMM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} - %msg%n"
+
+org:
+  flywaydb:
+    core: DEBUG
 

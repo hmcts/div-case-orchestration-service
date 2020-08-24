@@ -36,7 +36,7 @@ public class FlywayNoOpStrategyUTest {
         when(migrationInfoServiceMock.all()).thenReturn(migrationInfo);
     }
 
-    @Test // (expected = IllegalStateException.class)
+    @Test(expected = IllegalStateException.class)
     public void givenMigrationNotApplied_thenThrowException() {
         when(migrationInfoMock.getState()).thenReturn(MigrationState.AVAILABLE);
 
