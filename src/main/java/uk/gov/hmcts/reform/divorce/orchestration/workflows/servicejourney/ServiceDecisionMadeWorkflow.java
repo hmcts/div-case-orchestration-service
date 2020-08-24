@@ -65,7 +65,7 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
             if (isServiceApplicationDeemed(caseData)) {
                 tasks.add(getTaskForDeemedApproved(caseData, caseId));
             } else if (isServiceApplicationDispensed(caseData)) {
-                sendDispensedApprovedEmail(caseData, caseId, tasks);
+                tasks.add(getTaskForDispensedApproved(caseData, caseId));
             } else {
                 log.info("CaseId: {} NOT deemed/dispensed. No email will be sent.", caseId);
             }
@@ -88,12 +88,13 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
         return tasks.toArray(new Task[] {});
     }
 
-    private void sendDispensedApprovedEmail(Map<String, Object> caseData, String caseId, List<Task<Map<String, Object>>> tasks) {
-        tasks.add(getTaskForDispensedApproved(caseId));
-    }
+    private Task<Map<String, Object>> getTaskForDispensedApproved(Map<String, Object> caseData, String caseId) {
+        if (isPetitionerRepresented(caseData)) {
+            log.info("CaseId: {} dispensed approved solicitor email task adding.", caseId);
+        } else {
+            log.info("CaseId: {} dispensed approved citizen email task adding.", caseId);
+        }
 
-    private Task<Map<String, Object>> getTaskForDispensedApproved(String caseId) {
-        log.info("CaseId: {} dispensed citizen email task adding.", caseId);
         return dispensedApprovedEmailTask;
     }
 

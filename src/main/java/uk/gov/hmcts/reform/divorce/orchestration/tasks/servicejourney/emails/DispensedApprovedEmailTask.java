@@ -23,7 +23,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentation
 @Component
 @Slf4j
 public class DispensedApprovedEmailTask extends SendEmailTask {
-
     public DispensedApprovedEmailTask(EmailService emailService) {
         super(emailService);
     }
