@@ -23,6 +23,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentation
 @Component
 @Slf4j
 public class DispensedApprovedEmailTask extends SendEmailTask {
+    protected static String SOLICITOR_SUBJECT = "%s vs %s: Dispense with service application has been approved";
+    protected static String CITIZEN_SUBJECT = "Your ‘dispense with service’ application has been approved";
+
     public DispensedApprovedEmailTask(EmailService emailService) {
         super(emailService);
     }
@@ -30,9 +33,9 @@ public class DispensedApprovedEmailTask extends SendEmailTask {
     @Override
     protected String getSubject(Map<String, Object> caseData) {
         if (isPetitionerRepresented(caseData)) {
-            return "%s vs %s: Dispense with service application has been approved";
+            return SOLICITOR_SUBJECT;
         } else {
-            return "Your ‘dispense with service’ application has been approved";
+            return CITIZEN_SUBJECT;
         }
     }
 

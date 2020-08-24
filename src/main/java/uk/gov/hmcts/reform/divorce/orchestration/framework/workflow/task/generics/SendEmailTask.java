@@ -30,11 +30,9 @@ public abstract class SendEmailTask implements Task<Map<String, Object>> {
     protected abstract EmailTemplateNames getTemplate(Map<String, Object> caseData);
 
     protected String getRecipientEmail(Map<String, Object> caseData) {
-        if (isPetitionerRepresented(caseData)){
-            return CaseDataExtractor.getPetitionerSolicitorEmail(caseData);
-        } else {
-            return CaseDataExtractor.getPetitionerEmail(caseData);
-        }
+        return isPetitionerRepresented(caseData)
+            ? CaseDataExtractor.getPetitionerSolicitorEmail(caseData)
+            : CaseDataExtractor.getPetitionerEmail(caseData);
     }
 
     protected LanguagePreference getLanguage(Map<String, Object> caseData) {
@@ -42,11 +40,7 @@ public abstract class SendEmailTask implements Task<Map<String, Object>> {
     }
 
     protected boolean canEmailBeSent(Map<String, Object> caseData) {
-        if (isPetitionerRepresented(caseData)){
-            return true;
-        } else {
-            return isPetitionerEmailPopulated(caseData);
-        }
+        return isPetitionerRepresented(caseData) ? true : isPetitionerEmailPopulated(caseData);
     }
 
     protected boolean isPetitionerEmailPopulated(Map<String, Object> caseData) {
