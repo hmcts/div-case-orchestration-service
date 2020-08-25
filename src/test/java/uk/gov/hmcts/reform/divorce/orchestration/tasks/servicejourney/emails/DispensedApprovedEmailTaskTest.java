@@ -205,7 +205,7 @@ public class DispensedApprovedEmailTaskTest {
             );
         } else {
             return ImmutableMap.of(
-                NOTIFICATION_PET_NAME, TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME
+                NOTIFICATION_PET_NAME, getPetitionerFullName(caseData)
             );
         }
     }

@@ -81,6 +81,8 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
     private static final String DISPENSED_APPROVED_EMAIL_ID = "cf03cea1-a155-4f20-a3a6-3ad8fad7742f";
     private static final String SOL_DISPENSED_APPROVED_EMAIL_ID = "2cb5e2c4-8090-4f7e-b0ae-574491cd8680";
     private static final String DISPENSED_NOT_APPROVED_EMAIL_ID = "e40d8623-e801-4de1-834a-7de101c9d857";
+    private static final String SOL_DISPENSED_NOT_APPROVED_EMAIL_ID = "d4de177b-b5b9-409c-95bc-cc8f85afd136";
+    private static final String CITIZEN_DISPENSED_NOT_APPROVED_EMAIL_ID = "e40d8623-e801-4de1-834a-7de101c9d857";
 
     private CtscContactDetails ctscContactDetails;
 
@@ -101,7 +103,7 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
 
     @Test
     public void shouldSendDeemedApprovedEmailWhenServiceApplicationIsGrantedAndDeemed() throws Exception {
-        Map<String, Object> caseData = buildRefusalInputCaseData(DEEMED);
+        Map<String, Object> caseData = buildInputCaseData(YES_VALUE, DEEMED);
         CcdCallbackRequest ccdCallbackRequest = buildRefusalRequest(caseData);
 
         webClient.perform(post(API_URL)
@@ -121,7 +123,7 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
 
     @Test
     public void shouldSendSolicitorDeemedApprovedEmailWhenServiceApplicationIsGrantedAndDeemedAndPetRepresented() throws Exception {
-        Map<String, Object> caseData = petitionerRepresented(buildRefusalInputCaseData(DEEMED));
+        Map<String, Object> caseData = petitionerRepresented(buildInputCaseData(YES_VALUE, DEEMED));
         CcdCallbackRequest ccdCallbackRequest = buildRefusalRequest(caseData);
 
         webClient.perform(post(API_URL)
@@ -141,7 +143,7 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
 
     @Test
     public void shouldSendDispensedApprovedEmailToCitizenWhenServiceApplicationIsGrantedAndDispensed() throws Exception {
-        Map<String, Object> caseData = buildRefusalInputCaseData(DISPENSED);
+        Map<String, Object> caseData = buildInputCaseData(YES_VALUE, DISPENSED);
         CcdCallbackRequest ccdCallbackRequest = buildRefusalRequest(caseData);
 
         webClient.perform(post(API_URL)
@@ -161,7 +163,7 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
 
     @Test
     public void shouldSendDispensedApprovedEmailToSolicitorWhenServiceApplicationIsGrantedAndDispensed() throws Exception {
-        Map<String, Object> caseData = petitionerRepresented(buildRefusalInputCaseData(DISPENSED));
+        Map<String, Object> caseData = petitionerRepresented(buildInputCaseData(YES_VALUE, DISPENSED));
         CcdCallbackRequest ccdCallbackRequest = buildRefusalRequest(caseData);
 
         webClient.perform(post(API_URL)
@@ -179,6 +181,46 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
         );
     }
 
+    @Test
+    public void shouldSendDispensedNotApprovedEmail_ToSolicitor_WhenServiceApplicationIsNotGrantedAndDispensed() throws Exception {
+        Map<String, Object> caseData = petitionerRepresented(buildInputCaseData(NO_VALUE, DISPENSED));
+        CcdCallbackRequest ccdCallbackRequest = buildRefusalRequest(caseData);
+
+        webClient.perform(post(API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(ccdCallbackRequest)))
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(isJson(), hasNoJsonPath("$.errors"))));
+
+        verify(emailClient).sendEmail(
+            eq(SOL_DISPENSED_NOT_APPROVED_EMAIL_ID),
+            eq(TEST_SOLICITOR_EMAIL),
+            eq(expectedSolicitorEmailVars()),
+            any()
+        );
+    }
+
+    @Test
+    public void shouldSendDispensedNotApprovedEmail_ToCitizen_WhenServiceApplicationIsNotGrantedAndDispensed() throws Exception {
+        Map<String, Object> caseData = buildInputCaseData(NO_VALUE, DISPENSED);
+        CcdCallbackRequest ccdCallbackRequest = buildRefusalRequest(caseData);
+
+        webClient.perform(post(API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(ccdCallbackRequest)))
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(isJson(), hasNoJsonPath("$.errors"))));
+
+        verify(emailClient).sendEmail(
+            eq(CITIZEN_DISPENSED_NOT_APPROVED_EMAIL_ID),
+            eq(TEST_PETITIONER_EMAIL),
+            eq(expectedCitizenEmailVars(caseData)),
+            any()
+        );
+    }
+
     private Map<String, String> expectedCitizenEmailVars(Map<String, Object> caseData) {
         return ImmutableMap.of(NOTIFICATION_PET_NAME, getPetitionerFullName(caseData));
     }
@@ -192,7 +234,7 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
         );
     }
 
-    public static Map<String, Object> buildRefusalInputCaseData(String applicationType) {
+    public static Map<String, Object> buildInputCaseData(String isApplicationGranted, String applicationType) {
         Map<String, Object> caseData = new HashMap<>();
 
         caseData.put(CASE_REFERENCE, TEST_CASE_FAMILY_MAN_ID);
@@ -204,7 +246,25 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
         caseData.put(RESPONDENT_LAST_NAME, TEST_RESPONDENT_LAST_NAME);
 
         caseData.put(RECEIVED_SERVICE_APPLICATION_DATE, "2010-10-10");
-        caseData.put(SERVICE_APPLICATION_GRANTED, YES_VALUE);
+        caseData.put(SERVICE_APPLICATION_GRANTED, isApplicationGranted);
+        caseData.put(SERVICE_APPLICATION_TYPE, applicationType);
+
+        return caseData;
+    }
+
+    public static Map<String, Object> xxCaseData(String applicationType) {
+        Map<String, Object> caseData = new HashMap<>();
+
+        caseData.put(CASE_REFERENCE, TEST_CASE_FAMILY_MAN_ID);
+
+        caseData.put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
+        caseData.put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
+        caseData.put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
+        caseData.put(RESPONDENT_FIRST_NAME, TEST_RESPONDENT_FIRST_NAME);
+        caseData.put(RESPONDENT_LAST_NAME, TEST_RESPONDENT_LAST_NAME);
+
+        caseData.put(RECEIVED_SERVICE_APPLICATION_DATE, "2010-10-10");
+        caseData.put(SERVICE_APPLICATION_GRANTED, NO_VALUE);
         caseData.put(SERVICE_APPLICATION_TYPE, applicationType);
 
         return caseData;
@@ -225,7 +285,7 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
     public static Map<String, Object> buildServiceRefusalOrderCaseData(
         String serviceApplicationType, DocumentLink serviceRefusalDraft
     ) {
-        Map<String, Object> baseData = buildRefusalInputCaseData(serviceApplicationType);
+        Map<String, Object> baseData = buildInputCaseData(YES_VALUE, serviceApplicationType);
         baseData.put(CASE_ID_JSON_KEY, TEST_CASE_ID);
 
         List<CollectionMember<Document>> generatedDocumentInfoList = new ArrayList<>();
