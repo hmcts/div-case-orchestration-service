@@ -79,6 +79,7 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
     private static final String DEEMED_APPROVED_EMAIL_ID = "00f27db6-2678-4ccd-8cdd-44971b330ca4";
     private static final String DEEMED_NOT_APPROVED_EMAIL_ID = "5140a51a-fcda-42e4-adf4-0b469a1b927a";
     private static final String DISPENSED_APPROVED_EMAIL_ID = "cf03cea1-a155-4f20-a3a6-3ad8fad7742f";
+    private static final String SOL_DISPENSED_APPROVED_EMAIL_ID = "2cb5e2c4-8090-4f7e-b0ae-574491cd8680";
     private static final String DISPENSED_NOT_APPROVED_EMAIL_ID = "e40d8623-e801-4de1-834a-7de101c9d857";
 
     private CtscContactDetails ctscContactDetails;
@@ -133,13 +134,13 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
         verify(emailClient).sendEmail(
             eq(PET_SOL_DEEMED_APPROVED_EMAIL_ID),
             eq(TEST_SOLICITOR_EMAIL),
-            eq(expectedSolicitorEmailVars(caseData)),
+            eq(expectedSolicitorEmailVars()),
             any()
         );
     }
 
     @Test
-    public void shouldSendDispensedApprovedEmailWhenServiceApplicationIsGrantedAndDispensed() throws Exception {
+    public void shouldSendDispensedApprovedEmailToCitizenWhenServiceApplicationIsGrantedAndDispensed() throws Exception {
         Map<String, Object> caseData = buildRefusalInputCaseData(DISPENSED);
         CcdCallbackRequest ccdCallbackRequest = buildRefusalRequest(caseData);
 
@@ -158,11 +159,31 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
         );
     }
 
+    @Test
+    public void shouldSendDispensedApprovedEmailToSolicitorWhenServiceApplicationIsGrantedAndDispensed() throws Exception {
+        Map<String, Object> caseData = petitionerRepresented(buildRefusalInputCaseData(DISPENSED));
+        CcdCallbackRequest ccdCallbackRequest = buildRefusalRequest(caseData);
+
+        webClient.perform(post(API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(ccdCallbackRequest)))
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(isJson(), hasNoJsonPath("$.errors"))));
+
+        verify(emailClient).sendEmail(
+            eq(SOL_DISPENSED_APPROVED_EMAIL_ID),
+            eq(TEST_SOLICITOR_EMAIL),
+            eq(expectedSolicitorEmailVars()),
+            any()
+        );
+    }
+
     private Map<String, String> expectedCitizenEmailVars(Map<String, Object> caseData) {
         return ImmutableMap.of(NOTIFICATION_PET_NAME, getPetitionerFullName(caseData));
     }
 
-    private Map<String, String> expectedSolicitorEmailVars(Map<String, Object> caseData) {
+    private Map<String, String> expectedSolicitorEmailVars() {
         return ImmutableMap.of(
             NOTIFICATION_PET_NAME, TEST_PETITIONER_FULL_NAME,
             NOTIFICATION_RESP_NAME, TEST_RESPONDENT_FULL_NAME,
