@@ -32,7 +32,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.CITIZEN_DISPENSED_NOT_APPROVED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.CITIZEN_DISPENSED_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.SOL_DISPENSED_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
@@ -122,7 +122,7 @@ public class DispensedApprovedEmailTaskTest {
         caseData = buildCaseData(false);
         dispensedApprovedEmailTask.getTemplate(caseData);
 
-        assertEquals(CITIZEN_DISPENSED_NOT_APPROVED, dispensedApprovedEmailTask.getTemplate(caseData));
+        assertEquals(CITIZEN_DISPENSED_APPROVED, dispensedApprovedEmailTask.getTemplate(caseData));
     }
 
     @Test
@@ -182,7 +182,7 @@ public class DispensedApprovedEmailTaskTest {
     private void verifyCitizenEmailSent(Map<String, Object> caseData) {
         verify(emailService).sendEmail(
             TEST_PETITIONER_EMAIL,
-            CITIZEN_DISPENSED_NOT_APPROVED.name(),
+            CITIZEN_DISPENSED_APPROVED.name(),
             getExpectedNotificationTemplateVars(false, testContext, caseData),
             dispensedApprovedEmailTask.getSubject(caseData),
             LanguagePreference.ENGLISH
