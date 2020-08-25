@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,10 +26,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.CITIZEN_DISPENSED_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.SOL_DISPENSED_NOT_APPROVED;
@@ -39,13 +34,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerFullName;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerSolicitorFullName;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getRespondentFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedApprovedEmailTaskTest.getTaskContext;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedNotApprovedEmailTask.citizenSubject;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedNotApprovedEmailTask.solicitorSubject;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.EmailGenerationTaskHelper.executeTask;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.EmailGenerationTaskHelper.getCitizenNotificationExpectedTemplateVars;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.EmailGenerationTaskHelper.getSolicitorNotificationExpectedTemplateVars;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.EmailGenerationTaskHelper.removeAllEmailAddresses;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DispensedNotApprovedEmailTaskTest {
@@ -70,7 +65,7 @@ public class DispensedNotApprovedEmailTaskTest {
         caseData = buildCaseData(false);
         caseData.remove(PETITIONER_SOLICITOR_EMAIL);
 
-        executeTask(caseData);
+        executeTask(dispensedNotApprovedEmailTask, caseData);
 
         verifyCitizenEmailSent(caseData);
     }
@@ -79,7 +74,7 @@ public class DispensedNotApprovedEmailTaskTest {
     public void shouldSendEmail_ToSolicitor_whenExecuteEmailNotificationTask() throws TaskException {
         caseData = buildCaseData(true);
 
-        executeTask(caseData);
+        executeTask(dispensedNotApprovedEmailTask, caseData);
 
         verifySolicitorEmailSent(caseData);
     }
@@ -90,7 +85,7 @@ public class DispensedNotApprovedEmailTaskTest {
 
         removeAllEmailAddresses(caseData);
 
-        executeTask(caseData);
+        executeTask(dispensedNotApprovedEmailTask, caseData);
 
         verifyZeroInteractions(emailService);
     }
@@ -156,11 +151,6 @@ public class DispensedNotApprovedEmailTaskTest {
         return caseData;
     }
 
-    private void executeTask(Map<String, Object> caseData) {
-        Map returnPayload = dispensedNotApprovedEmailTask.execute(getTaskContext(), caseData);
-        assertEquals(caseData, returnPayload);
-    }
-
     private void executePersonalisation(boolean isPetitionerRepresented, Map<String, Object> caseData) {
         Map returnPayload = dispensedNotApprovedEmailTask.getPersonalisation(getTaskContext(), caseData);
 
@@ -189,24 +179,12 @@ public class DispensedNotApprovedEmailTaskTest {
         );
     }
 
-    private void removeAllEmailAddresses(Map<String, Object> caseData) {
-        caseData.remove(PETITIONER_EMAIL);
-        caseData.remove(PETITIONER_SOLICITOR_EMAIL);
-    }
-
     private static Map<String, String> getExpectedNotificationTemplateVars(
         boolean isPetitionerRepresented, TaskContext taskContext, Map<String, Object> caseData) {
         if (isPetitionerRepresented) {
-            return ImmutableMap.of(
-                NOTIFICATION_PET_NAME, getPetitionerFullName(caseData),
-                NOTIFICATION_RESP_NAME, getRespondentFullName(caseData),
-                NOTIFICATION_CCD_REFERENCE_KEY, getCaseId(taskContext),
-                NOTIFICATION_SOLICITOR_NAME, getPetitionerSolicitorFullName(caseData)
-            );
+            return getSolicitorNotificationExpectedTemplateVars(taskContext, caseData);
         } else {
-            return ImmutableMap.of(
-                NOTIFICATION_PET_NAME, TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME
-            );
+            return getCitizenNotificationExpectedTemplateVars(caseData);
         }
     }
 }
