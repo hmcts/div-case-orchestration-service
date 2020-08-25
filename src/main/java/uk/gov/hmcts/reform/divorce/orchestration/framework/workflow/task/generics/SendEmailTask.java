@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerRepresented;
 
 @Component
 @Slf4j
@@ -26,10 +27,12 @@ public abstract class SendEmailTask implements Task<Map<String, Object>> {
 
     protected abstract Map<String, String> getPersonalisation(TaskContext context, Map<String, Object> caseData);
 
-    protected abstract EmailTemplateNames getTemplate();
+    protected abstract EmailTemplateNames getTemplate(Map<String, Object> caseData);
 
     protected String getRecipientEmail(Map<String, Object> caseData) {
-        return CaseDataExtractor.getPetitionerEmail(caseData);
+        return isPetitionerRepresented(caseData)
+            ? CaseDataExtractor.getPetitionerSolicitorEmail(caseData)
+            : CaseDataExtractor.getPetitionerEmail(caseData);
     }
 
     protected LanguagePreference getLanguage(Map<String, Object> caseData) {
@@ -37,7 +40,7 @@ public abstract class SendEmailTask implements Task<Map<String, Object>> {
     }
 
     protected boolean canEmailBeSent(Map<String, Object> caseData) {
-        return isPetitionerEmailPopulated(caseData);
+        return isPetitionerRepresented(caseData) ? true : isPetitionerEmailPopulated(caseData);
     }
 
     protected boolean isPetitionerEmailPopulated(Map<String, Object> caseData) {
@@ -54,15 +57,15 @@ public abstract class SendEmailTask implements Task<Map<String, Object>> {
 
             emailService.sendEmail(
                 getRecipientEmail(caseData),
-                getTemplate().name(),
+                getTemplate(caseData).name(),
                 getPersonalisation(context, caseData),
                 subject,
                 getLanguage(caseData)
             );
 
-            log.info("CaseID: {} email {} was sent.", caseId, getTemplate().name());
+            log.info("CaseID: {} email {} was sent.", caseId, getTemplate(caseData).name());
         } else {
-            log.warn("CaseID: {} recipient email is empty! Email {} not sent.", caseId, getTemplate().name());
+            log.warn("CaseID: {} recipient email is empty! Email {} not sent.", caseId, getTemplate(caseData).name());
         }
 
         return caseData;

@@ -89,7 +89,12 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
     }
 
     private Task<Map<String, Object>> getTaskForDispensedApproved(Map<String, Object> caseData, String caseId) {
-        log.info("CaseId: {} dispensed citizen email task adding.", caseId);
+        if (isPetitionerRepresented(caseData)) {
+            log.info("CaseId: {} dispensed approved solicitor email task adding.", caseId);
+        } else {
+            log.info("CaseId: {} dispensed approved citizen email task adding.", caseId);
+        }
+
         return dispensedApprovedEmailTask;
     }
 

@@ -36,7 +36,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.Ap
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DISPENSED;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTaskWasCalled;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTaskWasNeverCalled;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksWereNeverCalled;
 
@@ -130,12 +129,12 @@ public class ServiceDecisionMadeWorkflowTest {
 
         verifyTaskWasCalled(returnedCaseData, deemedApprovedEmailTask);
 
-        verifyTaskWasNeverCalled(dispensedApprovedEmailTask);
+        verifyTasksWereNeverCalled(dispensedApprovedEmailTask);
         runNoTasksToSendNotApprovedEmails();
     }
 
     @Test
-    public void whenApplicationIsGrantedAndDispensedShouldSendDispensedApprovedEmail()
+    public void shouldSendDispensedApprovedEmail_ToPetitioner_whenApplicationIsGrantedAndDispensed()
         throws WorkflowException {
         Map<String, Object> caseData = buildCaseData(DISPENSED, YES_VALUE);
         CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_DECREE_NISI);
@@ -146,7 +145,23 @@ public class ServiceDecisionMadeWorkflowTest {
 
         verifyTaskWasCalled(returnedCaseData, dispensedApprovedEmailTask);
 
-        verifyTaskWasNeverCalled(deemedApprovedEmailTask);
+        verifyTasksWereNeverCalled(deemedApprovedEmailTask);
+        runNoTasksToSendNotApprovedEmails();
+    }
+
+    @Test
+    public void shouldSendDispensedApprovedEmail_ToSolicitor_whenApplicationIsGrantedAndDispensed()
+        throws WorkflowException {
+        Map<String, Object> caseData = petitionerRepresented(buildCaseData(DISPENSED, YES_VALUE));
+        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_DECREE_NISI);
+
+        mockTasksExecution(caseData, dispensedApprovedEmailTask);
+
+        Map<String, Object> returnedCaseData = executeWorkflow(caseDetails);
+
+        verifyTaskWasCalled(returnedCaseData, dispensedApprovedEmailTask);
+
+        verifyTasksWereNeverCalled(deemedApprovedEmailTask);
         runNoTasksToSendNotApprovedEmails();
     }
 

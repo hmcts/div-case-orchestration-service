@@ -36,7 +36,7 @@ public class DispensedNotApprovedEmailTask extends SendEmailTask {
     }
 
     @Override
-    protected EmailTemplateNames getTemplate() {
+    protected EmailTemplateNames getTemplate(Map<String, Object> caseData) {
         return EmailTemplateNames.CITIZEN_DISPENSED_NOT_APPROVED;
     }
 }

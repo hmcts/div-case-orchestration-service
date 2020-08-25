@@ -36,7 +36,7 @@ public class DeemedNotApprovedEmailTask extends SendEmailTask {
     }
 
     @Override
-    protected EmailTemplateNames getTemplate() {
+    protected EmailTemplateNames getTemplate(Map<String, Object> caseData) {
         return EmailTemplateNames.CITIZEN_DEEMED_NOT_APPROVED;
     }
 }
