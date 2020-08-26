@@ -38,8 +38,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ema
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedNotApprovedEmailTask.citizenSubject;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedNotApprovedEmailTask.solicitorSubject;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.EmailGenerationTaskHelper.executeTask;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.EmailGenerationTaskHelper.getCitizenNotificationExpectedTemplateVars;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.EmailGenerationTaskHelper.getSolicitorNotificationExpectedTemplateVars;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.EmailGenerationTaskHelper.getCitizenTemplateVariables;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.EmailGenerationTaskHelper.getSolicitorTemplateVariables;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.EmailGenerationTaskHelper.removeAllEmailAddresses;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -182,9 +182,9 @@ public class DispensedNotApprovedEmailTaskTest {
     private static Map<String, String> getExpectedNotificationTemplateVars(
         boolean isPetitionerRepresented, TaskContext taskContext, Map<String, Object> caseData) {
         if (isPetitionerRepresented) {
-            return getSolicitorNotificationExpectedTemplateVars(taskContext, caseData);
+            return getSolicitorTemplateVariables(taskContext, caseData);
         } else {
-            return getCitizenNotificationExpectedTemplateVars(caseData);
+            return getCitizenTemplateVariables(caseData);
         }
     }
 }

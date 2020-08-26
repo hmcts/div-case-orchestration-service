@@ -23,7 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 
 public class EmailGenerationTaskHelper {
 
-    public static Map<String, String> getSolicitorNotificationExpectedTemplateVars(TaskContext taskContext, Map<String, Object> caseData) {
+    public static Map<String, String> getSolicitorTemplateVariables(TaskContext taskContext, Map<String, Object> caseData) {
         return ImmutableMap.of(
             NOTIFICATION_PET_NAME, getPetitionerFullName(caseData),
             NOTIFICATION_RESP_NAME, getRespondentFullName(caseData),
@@ -32,7 +32,7 @@ public class EmailGenerationTaskHelper {
         );
     }
 
-    public static Map<String, String> getCitizenNotificationExpectedTemplateVars(Map<String, Object> caseData) {
+    public static Map<String, String> getCitizenTemplateVariables(Map<String, Object> caseData) {
         return ImmutableMap.of(
             NOTIFICATION_PET_NAME, getPetitionerFullName(caseData)
         );
