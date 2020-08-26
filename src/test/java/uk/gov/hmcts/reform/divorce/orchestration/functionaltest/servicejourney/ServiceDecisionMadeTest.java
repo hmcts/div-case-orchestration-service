@@ -252,24 +252,6 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
         return caseData;
     }
 
-    public static Map<String, Object> xxCaseData(String applicationType) {
-        Map<String, Object> caseData = new HashMap<>();
-
-        caseData.put(CASE_REFERENCE, TEST_CASE_FAMILY_MAN_ID);
-
-        caseData.put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
-        caseData.put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
-        caseData.put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
-        caseData.put(RESPONDENT_FIRST_NAME, TEST_RESPONDENT_FIRST_NAME);
-        caseData.put(RESPONDENT_LAST_NAME, TEST_RESPONDENT_LAST_NAME);
-
-        caseData.put(RECEIVED_SERVICE_APPLICATION_DATE, "2010-10-10");
-        caseData.put(SERVICE_APPLICATION_GRANTED, NO_VALUE);
-        caseData.put(SERVICE_APPLICATION_TYPE, applicationType);
-
-        return caseData;
-    }
-
     public static CcdCallbackRequest buildRefusalRequest(Map<String, Object> caseData) {
         return new CcdCallbackRequest(
             AUTH_TOKEN,

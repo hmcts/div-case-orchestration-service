@@ -14,7 +14,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getRespondentFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 
-public class EmailTaskHelper {
+public class ServiceJourneyEmailTaskHelper {
     public static ImmutableMap<String, String> citizenTemplateVariables(Map<String, Object> caseData) {
         return ImmutableMap.of(
             NOTIFICATION_PET_NAME, getPetitionerFullName(caseData)

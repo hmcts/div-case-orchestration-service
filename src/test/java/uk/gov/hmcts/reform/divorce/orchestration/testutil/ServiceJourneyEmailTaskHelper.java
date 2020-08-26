@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedApprovedEmailTaskTest.getTaskContext;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 
-public class EmailGenerationTaskHelper {
+public class ServiceJourneyEmailTaskHelper {
 
     public static Map<String, String> getSolicitorTemplateVariables(TaskContext taskContext, Map<String, Object> caseData) {
         return ImmutableMap.of(
