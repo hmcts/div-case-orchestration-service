@@ -9,13 +9,18 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.CITIZEN_DEEMED_NOT_APPROVED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.SOL_DEEMED_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.EmailTaskHelper.citizenTemplateVariables;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.EmailTaskHelper.solicitorTemplateVariables;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerRepresented;
 
 @Component
 @Slf4j
 public class DeemedNotApprovedEmailTask extends SendEmailTask {
 
-    private static final String SUBJECT = "Your ‘deemed service’ application has been refused";
+    protected static String solicitorSubject = "%s vs %s: Deemed service application has been refused";
+    protected static String citizenSubject = "Your ‘deemed service’ application has been refused";
 
     public DeemedNotApprovedEmailTask(EmailService emailService) {
         super(emailService);
@@ -23,16 +28,16 @@ public class DeemedNotApprovedEmailTask extends SendEmailTask {
 
     @Override
     protected String getSubject(Map<String, Object> caseData) {
-        return SUBJECT;
+        return isPetitionerRepresented(caseData) ? solicitorSubject : citizenSubject;
     }
 
     @Override
     protected Map<String, String> getPersonalisation(TaskContext taskContext, Map<String, Object> caseData) {
-        return citizenTemplateVariables(caseData);
+        return isPetitionerRepresented(caseData) ? solicitorTemplateVariables(taskContext, caseData) : citizenTemplateVariables(caseData);
     }
 
     @Override
     protected EmailTemplateNames getTemplate(Map<String, Object> caseData) {
-        return EmailTemplateNames.CITIZEN_DEEMED_NOT_APPROVED;
+        return isPetitionerRepresented(caseData) ? SOL_DEEMED_NOT_APPROVED : CITIZEN_DEEMED_NOT_APPROVED;
     }
 }
