@@ -21,7 +21,6 @@ public class FlywayNoOpStrategy implements FlywayMigrationStrategy {
                 log.warn("info.getState: {}", info.getState());
                 log.warn("info.getInstalledOn: {}", info.getInstalledOn());
                 log.warn("info.getInstalledRank: {}", info.getInstalledRank());
-                throw new IllegalStateException("Newer version of script not applied " + info.getScript());
             });
     }
 }
