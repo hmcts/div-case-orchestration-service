@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasItem;
@@ -22,11 +23,16 @@ import static org.hamcrest.core.Is.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_GRANTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DEEMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class SolicitorDnFetchDocWorkflowITest extends MockedFunctionalTest {
 
     private static final String API_URL = "/sol-dn-review-petition";
+    private static final String API_URL_RESP_ANSWERS = "/sol-dn-resp-answers-doc";
     private static final String MINI_PETITION_LINK = "minipetitionlink";
 
     @Autowired
@@ -58,6 +64,34 @@ public class SolicitorDnFetchDocWorkflowITest extends MockedFunctionalTest {
                                 hasItem("petition document not found")
                         )
                 )));
+    }
+
+    @Test
+    public void givenValidServiceApplicationGranted_whenRequestingRespondentAnswers_thenResponseDoesNotSetRespondentAnswersDocumentLinkAndContainsNoErrors() throws Exception {
+
+        final Map<String, Object> caseData = new HashMap<>();
+        caseData.put(SERVICE_APPLICATION_TYPE, DEEMED);
+        caseData.put(SERVICE_APPLICATION_GRANTED, YES_VALUE);
+
+        final CaseDetails caseDetails =
+            CaseDetails.builder()
+                .caseData(caseData)
+                .build();
+
+        CcdCallbackRequest request = CcdCallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .build();
+
+        webClient.perform(post(API_URL_RESP_ANSWERS)
+            .content(convertObjectToJsonString(request))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(
+                isJson(),
+                hasJsonPath("$.data", is(caseData)),
+                hasNoJsonPath("$.errors")
+            )));
     }
 
     @SuppressWarnings("unchecked")
