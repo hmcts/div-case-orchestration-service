@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails;
 
-import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
@@ -10,14 +9,17 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerFullName;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.CITIZEN_DISPENSED_NOT_APPROVED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.SOL_DISPENSED_NOT_APPROVED;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ServiceJourneyEmailTaskHelper.citizenTemplateVariables;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ServiceJourneyEmailTaskHelper.solicitorTemplateVariables;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerRepresented;
 
 @Component
 @Slf4j
 public class DispensedNotApprovedEmailTask extends SendEmailTask {
-
-    private static final String SUBJECT = "Your ‘dispense with service’ application has been refused";
+    protected static String solicitorSubject = "%s vs %s: Solicitor dispensed application not approved";
+    protected static String citizenSubject = "Your ‘dispense with service’ application has been refused";
 
     public DispensedNotApprovedEmailTask(EmailService emailService) {
         super(emailService);
@@ -25,18 +27,16 @@ public class DispensedNotApprovedEmailTask extends SendEmailTask {
 
     @Override
     protected String getSubject(Map<String, Object> caseData) {
-        return SUBJECT;
+        return isPetitionerRepresented(caseData) ? solicitorSubject : citizenSubject;
     }
 
     @Override
     protected Map<String, String> getPersonalisation(TaskContext taskContext, Map<String, Object> caseData) {
-        return ImmutableMap.of(
-            NOTIFICATION_PET_NAME, getPetitionerFullName(caseData)
-        );
+        return isPetitionerRepresented(caseData) ? solicitorTemplateVariables(taskContext, caseData) : citizenTemplateVariables(caseData);
     }
 
     @Override
     protected EmailTemplateNames getTemplate(Map<String, Object> caseData) {
-        return EmailTemplateNames.CITIZEN_DISPENSED_NOT_APPROVED;
+        return isPetitionerRepresented(caseData) ? SOL_DISPENSED_NOT_APPROVED : CITIZEN_DISPENSED_NOT_APPROVED;
     }
 }
