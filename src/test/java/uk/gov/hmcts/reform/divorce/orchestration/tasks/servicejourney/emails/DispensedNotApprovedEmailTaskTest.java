@@ -63,7 +63,7 @@ public class DispensedNotApprovedEmailTaskTest {
         caseData = buildCaseData(false);
         caseData.remove(PETITIONER_SOLICITOR_EMAIL);
 
-        task.execute(getTaskContext(), caseData);
+        executeTask(caseData);
 
         verifyCitizenEmailSent(caseData);
     }
@@ -72,7 +72,7 @@ public class DispensedNotApprovedEmailTaskTest {
     public void shouldSendEmail_ToSolicitor_whenExecuteEmailNotificationTask() throws TaskException {
         caseData = buildCaseData(true);
 
-        task.execute(getTaskContext(), caseData);
+        executeTask(caseData);
 
         verifySolicitorEmailSent(caseData);
     }
@@ -83,7 +83,7 @@ public class DispensedNotApprovedEmailTaskTest {
 
         removeAllEmailAddresses(caseData);
 
-        task.execute(getTaskContext(), caseData);
+        executeTask(caseData);
 
         verifyZeroInteractions(emailService);
     }
@@ -151,6 +151,11 @@ public class DispensedNotApprovedEmailTaskTest {
         caseData.put(PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
 
         return caseData;
+    }
+
+    private void executeTask(Map<String, Object> caseData) {
+        Map returnPayload = task.execute(getTaskContext(), caseData);
+        assertEquals(caseData, returnPayload);
     }
 
     private void executePersonalisation(boolean isPetitionerRepresented, Map<String, Object> caseData) {
