@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails;
 
-import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
@@ -10,8 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerFullName;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ServiceJourneyEmailTaskHelper.citizenTemplateVariables;
 
 @Component
 @Slf4j
@@ -30,9 +28,7 @@ public class DeemedApprovedEmailTask extends SendEmailTask {
 
     @Override
     protected Map<String, String> getPersonalisation(TaskContext taskContext, Map<String, Object> caseData) {
-        return ImmutableMap.of(
-            NOTIFICATION_PET_NAME, getPetitionerFullName(caseData)
-        );
+        return citizenTemplateVariables(caseData);
     }
 
     @Override
