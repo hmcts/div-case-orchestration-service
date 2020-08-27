@@ -37,7 +37,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedApprovedEmailTaskTest.getTaskContext;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedNotApprovedEmailTask.citizenSubject;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedNotApprovedEmailTask.solicitorSubject;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.executeTask;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.getCitizenTemplateVariables;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.getSolicitorTemplateVariables;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.removeAllEmailAddresses;
@@ -65,7 +64,7 @@ public class DispensedNotApprovedEmailTaskTest {
         caseData = buildCaseData(false);
         caseData.remove(PETITIONER_SOLICITOR_EMAIL);
 
-        executeTask(dispensedNotApprovedEmailTask, caseData);
+        dispensedNotApprovedEmailTask.execute(getTaskContext(), caseData);
 
         verifyCitizenEmailSent(caseData);
     }
@@ -74,7 +73,7 @@ public class DispensedNotApprovedEmailTaskTest {
     public void shouldSendEmail_ToSolicitor_whenExecuteEmailNotificationTask() throws TaskException {
         caseData = buildCaseData(true);
 
-        executeTask(dispensedNotApprovedEmailTask, caseData);
+        dispensedNotApprovedEmailTask.execute(getTaskContext(), caseData);
 
         verifySolicitorEmailSent(caseData);
     }
@@ -85,7 +84,7 @@ public class DispensedNotApprovedEmailTaskTest {
 
         removeAllEmailAddresses(caseData);
 
-        executeTask(dispensedNotApprovedEmailTask, caseData);
+        dispensedNotApprovedEmailTask.execute(getTaskContext(), caseData);
 
         verifyZeroInteractions(emailService);
     }
