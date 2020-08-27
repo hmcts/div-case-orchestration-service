@@ -7,8 +7,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest;
@@ -37,8 +37,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedApprovedEmailTaskTest.getTaskContext;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedNotApprovedEmailTask.citizenSubject;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedNotApprovedEmailTask.solicitorSubject;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.getCitizenTemplateVariables;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.getSolicitorTemplateVariables;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.getExpectedNotificationTemplateVars;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.removeAllEmailAddresses;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -48,7 +47,7 @@ public class DispensedNotApprovedEmailTaskTest {
     private EmailService emailService;
 
     @InjectMocks
-    private DispensedNotApprovedEmailTask dispensedNotApprovedEmailTask;
+    private DispensedNotApprovedEmailTask task;
 
     private Map<String, Object> caseData;
     private DefaultTaskContext testContext;
@@ -64,7 +63,7 @@ public class DispensedNotApprovedEmailTaskTest {
         caseData = buildCaseData(false);
         caseData.remove(PETITIONER_SOLICITOR_EMAIL);
 
-        dispensedNotApprovedEmailTask.execute(getTaskContext(), caseData);
+        task.execute(getTaskContext(), caseData);
 
         verifyCitizenEmailSent(caseData);
     }
@@ -73,7 +72,7 @@ public class DispensedNotApprovedEmailTaskTest {
     public void shouldSendEmail_ToSolicitor_whenExecuteEmailNotificationTask() throws TaskException {
         caseData = buildCaseData(true);
 
-        dispensedNotApprovedEmailTask.execute(getTaskContext(), caseData);
+        task.execute(getTaskContext(), caseData);
 
         verifySolicitorEmailSent(caseData);
     }
@@ -84,7 +83,7 @@ public class DispensedNotApprovedEmailTaskTest {
 
         removeAllEmailAddresses(caseData);
 
-        dispensedNotApprovedEmailTask.execute(getTaskContext(), caseData);
+        task.execute(getTaskContext(), caseData);
 
         verifyZeroInteractions(emailService);
     }
@@ -106,33 +105,37 @@ public class DispensedNotApprovedEmailTaskTest {
     @Test
     public void shouldReturnTemplateFor_Solicitor() {
         caseData = buildCaseData(true);
-        dispensedNotApprovedEmailTask.getTemplate(caseData);
 
-        assertEquals(SOL_DISPENSED_NOT_APPROVED, dispensedNotApprovedEmailTask.getTemplate(caseData));
+        EmailTemplateNames returnedTemplate = task.getTemplate(caseData);
+
+        assertEquals(SOL_DISPENSED_NOT_APPROVED, returnedTemplate);
     }
 
     @Test
     public void shouldReturnTemplateFor_Citizen() {
         caseData = buildCaseData(false);
-        dispensedNotApprovedEmailTask.getTemplate(caseData);
 
-        assertEquals(CITIZEN_DISPENSED_NOT_APPROVED, dispensedNotApprovedEmailTask.getTemplate(caseData));
+        EmailTemplateNames returnedTemplate = task.getTemplate(caseData);
+
+        assertEquals(CITIZEN_DISPENSED_NOT_APPROVED, returnedTemplate);
     }
 
     @Test
     public void shouldReturnSubjectFor_Solicitor() {
         caseData = buildCaseData(true);
-        dispensedNotApprovedEmailTask.getSubject(caseData);
 
-        assertEquals(dispensedNotApprovedEmailTask.getSubject(caseData), solicitorSubject);
+        String returnedSubject = task.getSubject(caseData);
+
+        assertEquals(returnedSubject, solicitorSubject);
     }
 
     @Test
     public void shouldReturnSubjectFor_Citizen() {
         caseData = buildCaseData(false);
-        dispensedNotApprovedEmailTask.getSubject(caseData);
 
-        assertEquals(dispensedNotApprovedEmailTask.getSubject(caseData), citizenSubject);
+        String returnedSubject = task.getSubject(caseData);
+
+        assertEquals(returnedSubject, citizenSubject);
     }
 
     private Map<String, Object> buildCaseData(boolean isPetitionerRepresented) {
@@ -151,7 +154,7 @@ public class DispensedNotApprovedEmailTaskTest {
     }
 
     private void executePersonalisation(boolean isPetitionerRepresented, Map<String, Object> caseData) {
-        Map returnPayload = dispensedNotApprovedEmailTask.getPersonalisation(getTaskContext(), caseData);
+        Map returnPayload = task.getPersonalisation(getTaskContext(), caseData);
 
         Map expectedPayload = getExpectedNotificationTemplateVars(isPetitionerRepresented, testContext, caseData);
 
@@ -163,7 +166,7 @@ public class DispensedNotApprovedEmailTaskTest {
             TEST_SOLICITOR_EMAIL,
             SOL_DISPENSED_NOT_APPROVED.name(),
             getExpectedNotificationTemplateVars(true, testContext, caseData),
-            dispensedNotApprovedEmailTask.getSubject(caseData),
+            task.getSubject(caseData),
             LanguagePreference.ENGLISH
         );
     }
@@ -173,17 +176,8 @@ public class DispensedNotApprovedEmailTaskTest {
             TEST_PETITIONER_EMAIL,
             CITIZEN_DISPENSED_NOT_APPROVED.name(),
             getExpectedNotificationTemplateVars(false, testContext, caseData),
-            dispensedNotApprovedEmailTask.getSubject(caseData),
+            task.getSubject(caseData),
             LanguagePreference.ENGLISH
         );
-    }
-
-    private static Map<String, String> getExpectedNotificationTemplateVars(
-        boolean isPetitionerRepresented, TaskContext taskContext, Map<String, Object> caseData) {
-        if (isPetitionerRepresented) {
-            return getSolicitorTemplateVariables(taskContext, caseData);
-        } else {
-            return getCitizenTemplateVariables(caseData);
-        }
     }
 }

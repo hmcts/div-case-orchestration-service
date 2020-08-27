@@ -41,4 +41,11 @@ public class ServiceJourneyEmailTaskHelper {
         caseData.remove(CO_RESP_EMAIL_ADDRESS);
         caseData.remove(RESPONDENT_EMAIL_ADDRESS);
     }
+
+    public static Map<String, String> getExpectedNotificationTemplateVars(
+        boolean isPetitionerRepresented, TaskContext taskContext, Map<String, Object> caseData) {
+        return isPetitionerRepresented
+            ? getSolicitorTemplateVariables(taskContext, caseData)
+            : getCitizenTemplateVariables(caseData);
+    }
 }
