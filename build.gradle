@@ -63,7 +63,6 @@ def versions = [
         reformHealth                 : '0.0.5',
         reformPropertiesVolume       : '0.0.4',
         reformsJavaLogging           : '5.1.6',
-        restAssured                  : '4.1.1',
         sendLetterClient             : '2.2.0',
         serenity                     : '2.1.13',
         serenityCucumber             : '1.9.50',
@@ -231,8 +230,6 @@ dependencyCheck {
     suppressionFile = 'dependency-check-suppressions.xml'
 }
 
-ext["rest-assured.version"] = '4.1.1'
-
 dependencies {
     implementation project(':job-scheduler')
 
@@ -338,7 +335,6 @@ dependencies {
     integrationTestImplementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: versions.jacksonDatatypeJsr
     integrationTestImplementation group: 'com.mashape.unirest', name: 'unirest-java', version: versions.unirest
     integrationTestImplementation group: 'io.github.openfeign', name: 'feign-httpclient', version: versions.feignHttpClient
-    integrationTestImplementation group: 'io.rest-assured', name: 'rest-assured', version: versions.restAssured
     integrationTestImplementation group: 'junit', name: 'junit', version: versions.junit
     integrationTestImplementation group: 'net.serenity-bdd', name: 'serenity-core', version: versions.serenity
     integrationTestImplementation group: 'net.serenity-bdd', name: 'serenity-cucumber', version: versions.serenityCucumber
