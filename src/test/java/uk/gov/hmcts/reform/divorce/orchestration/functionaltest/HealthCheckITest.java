@@ -375,7 +375,7 @@ public class HealthCheckITest extends MockedFunctionalTest {
                 .withBody(serviceUp ? HEALTH_UP_RESPONSE : HEALTH_DOWN_RESPONSE)));
     }
 
-    private void waitForMockChange() throws Exception {
+    private void waitForMockChange() {
         await()
             .atMost(Duration.ofSeconds(15))
             .pollInterval(Duration.ofSeconds(1))
