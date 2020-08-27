@@ -194,4 +194,3 @@ public class DispensedApprovedEmailTaskTest {
             : getCitizenTemplateVariables(caseData);
     }
 }
-
