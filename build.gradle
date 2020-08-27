@@ -63,6 +63,7 @@ def versions = [
         reformHealth                 : '0.0.5',
         reformPropertiesVolume       : '0.0.4',
         reformsJavaLogging           : '5.1.6',
+        reformSpringBootAutoConfigure: '2.0.0',
         restAssured                  : '4.1.1',
         sendLetterClient             : '2.2.0',
         serenity                     : '2.2.12',
