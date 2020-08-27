@@ -15,13 +15,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 
 public class ServiceJourneyEmailTaskHelper {
-    public static ImmutableMap<String, String> citizenTemplateVariables(Map<String, Object> caseData) {
+    public static Map<String, String> citizenTemplateVariables(Map<String, Object> caseData) {
         return ImmutableMap.of(
             NOTIFICATION_PET_NAME, getPetitionerFullName(caseData)
         );
     }
 
-    public static ImmutableMap<String, String> solicitorTemplateVariables(TaskContext taskContext, Map<String, Object> caseData) {
+    public static Map<String, String> solicitorTemplateVariables(TaskContext taskContext, Map<String, Object> caseData) {
         return ImmutableMap.of(
             NOTIFICATION_PET_NAME, getPetitionerFullName(caseData),
             NOTIFICATION_RESP_NAME, getRespondentFullName(caseData),
