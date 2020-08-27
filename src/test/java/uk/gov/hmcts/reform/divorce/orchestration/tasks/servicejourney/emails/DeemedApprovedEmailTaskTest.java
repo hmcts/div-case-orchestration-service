@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails;
 
-import com.google.common.collect.ImmutableMap;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -10,25 +10,34 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest;
 
-import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.CITIZEN_DEEMED_APPROVED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.PET_SOL_DEEMED_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.PETITIONER_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedApprovedEmailTask.citizenSubject;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedApprovedEmailTask.solicitorSubject;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.getExpectedNotificationTemplateVars;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeemedApprovedEmailTaskTest {
@@ -37,39 +46,144 @@ public class DeemedApprovedEmailTaskTest {
     private EmailService emailService;
 
     @InjectMocks
-    private DeemedApprovedEmailTask deemedApprovedEmailTask;
+    private DeemedApprovedEmailTask task;
 
-    @Test
-    public void whenExecuteEmailNotificationTask_thenSendEmail() {
-        Map<String, Object> caseData = buildCaseData();
+    private Map<String, Object> caseData;
+    private DefaultTaskContext testContext;
 
-        deemedApprovedEmailTask.execute(getTaskContext(), caseData);
-
-        verify(emailService).sendEmail(
-            TEST_USER_EMAIL,
-            EmailTemplateNames.CITIZEN_DEEMED_APPROVED.name(),
-            getExpectedNotificationTemplateVars(),
-            deemedApprovedEmailTask.getSubject(caseData),
-            LanguagePreference.ENGLISH
-        );
+    @Before
+    public void setUp() {
+        testContext = new DefaultTaskContext();
+        testContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
     }
 
     @Test
-    public void whenEmptyRecipientEmail_thenDoNotSendEmail() {
-        Map<String, Object> caseData = buildCaseData();
-        caseData.remove(PETITIONER_EMAIL);
+    public void shouldSendEmail_ToCitizen_whenExecuteEmailNotificationTask() throws TaskException {
+        caseData = buildCaseData(false);
+        caseData.remove(PETITIONER_SOLICITOR_EMAIL);
 
-        deemedApprovedEmailTask.execute(getTaskContext(), caseData);
+        executeTask(caseData);
+
+        verifyCitizenEmailSent(caseData);
+    }
+
+    @Test
+    public void shouldSendEmail_ToSolicitor_whenExecuteEmailNotificationTask() throws TaskException {
+        caseData = buildCaseData(true);
+
+        executeTask(caseData);
+
+        verifySolicitorEmailSent(caseData);
+    }
+
+    @Test
+    public void shouldNotSendEmail_whenEmptyRecipientEmail() {
+        caseData = buildCaseData(false);
+
+        removeAllEmailAddresses(caseData);
+
+        executeTask(caseData);
 
         verifyZeroInteractions(emailService);
     }
 
-    public static Map<String, String> getExpectedNotificationTemplateVars() {
-        return ImmutableMap.of(
-            NOTIFICATION_PET_NAME, TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME
+    @Test
+    public void shouldReturnPersonalisationFor_Citizen() {
+        caseData = buildCaseData(false);
+
+        executePersonalisation(false, caseData);
+    }
+
+    @Test
+    public void shouldReturnPersonalisationFor_Solicitor() {
+        caseData = buildCaseData(true);
+
+        executePersonalisation(true, caseData);
+    }
+
+    @Test
+    public void shouldReturnTemplateFor_Solicitor() {
+        caseData = buildCaseData(true);
+
+        EmailTemplateNames returnedTemplate = task.getTemplate(caseData);
+
+        assertEquals(PET_SOL_DEEMED_APPROVED, returnedTemplate);
+    }
+
+    @Test
+    public void shouldReturnTemplateFor_Citizen() {
+        caseData = buildCaseData(false);
+
+        EmailTemplateNames returnedTemplate = task.getTemplate(caseData);
+
+        assertEquals(CITIZEN_DEEMED_APPROVED, returnedTemplate);
+    }
+
+    @Test
+    public void shouldReturnSubjectFor_Solicitor() {
+        caseData = buildCaseData(true);
+
+        String returnedSubject = task.getSubject(caseData);
+
+        assertEquals(returnedSubject, solicitorSubject);
+    }
+
+    @Test
+    public void shouldReturnSubjectFor_Citizen() {
+        caseData = buildCaseData(false);
+        task.getSubject(caseData);
+
+        assertEquals(task.getSubject(caseData), citizenSubject);
+    }
+
+    private Map<String, Object> buildCaseData(boolean isPetitionerRepresented) {
+        caseData = isPetitionerRepresented
+            ? AddresseeDataExtractorTest.buildCaseDataWithPetitionerSolicitor()
+            : AddresseeDataExtractorTest.buildCaseDataWithRespondent();
+
+        caseData.put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
+        caseData.put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
+        caseData.put(RESPONDENT_FIRST_NAME, TEST_RESPONDENT_FIRST_NAME);
+        caseData.put(RESPONDENT_LAST_NAME, TEST_RESPONDENT_LAST_NAME);
+
+        caseData.put(PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
+
+        return caseData;
+    }
+
+    private void executeTask(Map<String, Object> caseData) {
+        Map returnPayload = task.execute(getTaskContext(), caseData);
+        assertEquals(caseData, returnPayload);
+    }
+
+    private void executePersonalisation(boolean isPetitionerRepresented, Map<String, Object> caseData) {
+        Map returnPayload = task.getPersonalisation(getTaskContext(), caseData);
+
+        Map expectedPayload = getExpectedNotificationTemplateVars(isPetitionerRepresented, testContext, caseData);
+
+        assertEquals(returnPayload, expectedPayload);
+    }
+
+    private void verifySolicitorEmailSent(Map<String, Object> caseData) {
+        verify(emailService).sendEmail(
+            TEST_SOLICITOR_EMAIL,
+            PET_SOL_DEEMED_APPROVED.name(),
+            getExpectedNotificationTemplateVars(true, testContext, caseData),
+            task.getSubject(caseData),
+            LanguagePreference.ENGLISH
         );
     }
 
+    private void verifyCitizenEmailSent(Map<String, Object> caseData) {
+        verify(emailService).sendEmail(
+            TEST_PETITIONER_EMAIL,
+            CITIZEN_DEEMED_APPROVED.name(),
+            getExpectedNotificationTemplateVars(false, testContext, caseData),
+            task.getSubject(caseData),
+            LanguagePreference.ENGLISH
+        );
+    }
+    
     public static TaskContext getTaskContext() {
         TaskContext context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
@@ -77,14 +191,8 @@ public class DeemedApprovedEmailTaskTest {
         return context;
     }
 
-    public static Map<String, Object> buildCaseData() {
-        return new HashMap<>(
-            ImmutableMap.of(
-                D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME,
-                D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME,
-                D_8_PETITIONER_EMAIL, TEST_USER_EMAIL,
-                LANGUAGE_PREFERENCE_WELSH, NO_VALUE
-            )
-        );
+    private void removeAllEmailAddresses(Map<String, Object> caseData) {
+        caseData.remove(PETITIONER_EMAIL);
+        caseData.remove(PETITIONER_SOLICITOR_EMAIL);
     }
 }

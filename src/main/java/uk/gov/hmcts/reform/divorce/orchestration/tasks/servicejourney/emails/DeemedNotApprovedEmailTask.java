@@ -18,7 +18,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentation
 @Component
 @Slf4j
 public class DeemedNotApprovedEmailTask extends SendEmailTask {
-
     protected static String solicitorSubject = "%s vs %s: Deemed service application has been refused";
     protected static String citizenSubject = "Your ‘deemed service’ application has been refused";
 

@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.Dee
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedNotApprovedEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedApprovedEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedNotApprovedEmailTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.SolicitorDeemedApprovedEmailTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +34,6 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
     private final DeemedNotApprovedEmailTask deemedNotApprovedEmailTask;
     private final DispensedApprovedEmailTask dispensedApprovedEmailTask;
     private final DispensedNotApprovedEmailTask dispensedNotApprovedEmailTask;
-    private final SolicitorDeemedApprovedEmailTask solicitorDeemedApprovedEmailTask;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authorisation)
         throws WorkflowException {
@@ -101,10 +99,10 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
     private Task<Map<String, Object>> getTaskForDeemedApproved(Map<String, Object> caseData, String caseId) {
         if (isPetitionerRepresented(caseData)) {
             log.info("CaseId: {} deemed approved solicitor email task adding.", caseId);
-            return solicitorDeemedApprovedEmailTask;
+        } else {
+            log.info("CaseId: {} deemed approved citizen email task adding.", caseId);
         }
 
-        log.info("CaseId: {} deemed approved citizen email task adding.", caseId);
         return deemedApprovedEmailTask;
     }
 }

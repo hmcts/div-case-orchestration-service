@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.Dee
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedNotApprovedEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedApprovedEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedNotApprovedEmailTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.SolicitorDeemedApprovedEmailTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,9 +56,6 @@ public class ServiceDecisionMadeWorkflowTest {
     @Mock
     private DispensedNotApprovedEmailTask dispensedNotApprovedEmailTask;
 
-    @Mock
-    private SolicitorDeemedApprovedEmailTask solicitorDeemedApprovedEmailTask;
-
     @Test
     public void whenDeemedAndApplicationIsNotGranted() throws WorkflowException {
         Map<String, Object> caseData = buildCaseData(DEEMED, NO_VALUE);
@@ -103,24 +99,25 @@ public class ServiceDecisionMadeWorkflowTest {
     }
 
     @Test
-    public void whenServiceApplicationIsGrantedAndDeemedShouldSendEmailToPetitioner() throws WorkflowException {
-        Map<String, Object> caseData = petitionerRepresented(buildCaseData(DEEMED, YES_VALUE));
+    public void shouldSendDeemedApprovedEmail_ToPetitioner_whenServiceApplicationIsGrantedAndDeemed()
+        throws WorkflowException {
+        Map<String, Object> caseData = buildCaseData(DEEMED, YES_VALUE);
         CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_DECREE_NISI);
 
-        mockTasksExecution(caseData, solicitorDeemedApprovedEmailTask);
+        mockTasksExecution(caseData, deemedApprovedEmailTask);
 
         Map<String, Object> returnedCaseData = executeWorkflow(caseDetails);
 
-        verifyTaskWasCalled(returnedCaseData, solicitorDeemedApprovedEmailTask);
+        verifyTaskWasCalled(returnedCaseData, deemedApprovedEmailTask);
 
-        verifyTasksWereNeverCalled(dispensedApprovedEmailTask, deemedApprovedEmailTask);
+        verifyTasksWereNeverCalled(dispensedApprovedEmailTask);
         runNoTasksToSendNotApprovedEmails();
     }
 
     @Test
-    public void whenServiceApplicationIsGrantedAndDeemedAndRepresentedShouldSendEmailToSolicitor()
+    public void shouldSendDeemedApprovedEmail_ToSolicitor_whenServiceApplicationIsGrantedAndDeemed()
         throws WorkflowException {
-        Map<String, Object> caseData = buildCaseData(DEEMED, YES_VALUE);
+        Map<String, Object> caseData = petitionerRepresented(buildCaseData(DEEMED, YES_VALUE));
         CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_DECREE_NISI);
 
         mockTasksExecution(caseData, deemedApprovedEmailTask);
@@ -210,7 +207,6 @@ public class ServiceDecisionMadeWorkflowTest {
 
     private void runNoTasksToSendApprovedEmails() {
         verifyTasksWereNeverCalled(
-            solicitorDeemedApprovedEmailTask,
             deemedApprovedEmailTask,
             dispensedApprovedEmailTask
         );
