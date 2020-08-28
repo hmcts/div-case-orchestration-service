@@ -29,21 +29,21 @@ public abstract class SendEmailTask implements Task<Map<String, Object>> {
 
     protected abstract EmailTemplateNames getTemplate(Map<String, Object> caseData);
 
-    protected String getRecipientEmail(Map<String, Object> caseData) {
+    private String getRecipientEmail(Map<String, Object> caseData) {
         return isPetitionerRepresented(caseData)
             ? CaseDataExtractor.getPetitionerSolicitorEmail(caseData)
             : CaseDataExtractor.getPetitionerEmail(caseData);
     }
 
-    protected LanguagePreference getLanguage(Map<String, Object> caseData) {
+    private LanguagePreference getLanguage(Map<String, Object> caseData) {
         return CaseDataUtils.getLanguagePreference(caseData);
     }
 
-    protected boolean canEmailBeSent(Map<String, Object> caseData) {
+    private boolean canEmailBeSent(Map<String, Object> caseData) {
         return isPetitionerRepresented(caseData) ? true : isPetitionerEmailPopulated(caseData);
     }
 
-    protected boolean isPetitionerEmailPopulated(Map<String, Object> caseData) {
+    private boolean isPetitionerEmailPopulated(Map<String, Object> caseData) {
         return !CaseDataExtractor.getPetitionerEmailOrEmpty(caseData).isEmpty();
     }
 

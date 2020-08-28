@@ -37,6 +37,6 @@ public class DeemedApprovedEmailTask extends SendEmailTask {
 
     @Override
     protected EmailTemplateNames getTemplate(Map<String, Object> caseData) {
-        return isPetitionerRepresented(caseData) ? PET_SOL_DEEMED_APPROVED : CITIZEN_DEEMED_APPROVED ;
+        return isPetitionerRepresented(caseData) ? PET_SOL_DEEMED_APPROVED : CITIZEN_DEEMED_APPROVED;
     }
 }
