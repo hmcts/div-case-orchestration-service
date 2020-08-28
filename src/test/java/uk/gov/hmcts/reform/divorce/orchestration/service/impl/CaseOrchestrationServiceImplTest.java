@@ -94,7 +94,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonMap;
@@ -131,6 +130,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.controller.util.CallbackControllerTestUtils.assertCaseOrchestrationServiceExceptionIsSetProperly;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
@@ -696,10 +696,7 @@ public class CaseOrchestrationServiceImplTest {
             classUnderTest.sendPetitionerSubmissionNotificationEmail(ccdCallbackRequest);
             fail("Should have caught exception");
         } catch (CaseOrchestrationServiceException exception) {
-            assertThat(exception.getCause(), instanceOf(WorkflowException.class));
-            Optional<String> caseId = exception.getCaseId();
-            assertThat(caseId.isPresent(), is(true));
-            assertThat(caseId.get(), is(TEST_CASE_ID));
+            assertCaseOrchestrationServiceExceptionIsSetProperly(exception);
         }
     }
 
@@ -1804,10 +1801,7 @@ public class CaseOrchestrationServiceImplTest {
             classUnderTest.setupConfirmServicePaymentEvent(ccdCallbackRequest);
             fail("Should have caught exception");
         } catch (CaseOrchestrationServiceException exception) {
-            assertThat(exception.getCause(), instanceOf(WorkflowException.class));
-            Optional<String> caseId = exception.getCaseId();
-            assertThat(caseId.isPresent(), is(true));
-            assertThat(caseId.get(), is(TEST_CASE_ID));
+            assertCaseOrchestrationServiceExceptionIsSetProperly(exception);
         }
     }
 

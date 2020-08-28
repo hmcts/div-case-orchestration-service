@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print;
+package uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.docmosis;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import uk.gov.hmcts.reform.bsp.common.model.document.Addressee;
 import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.docmosis.DocmosisTemplateVars;
 
 @Data
 @Getter

@@ -17,6 +17,7 @@ import static java.util.stream.Collectors.toList;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_DAY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_MONTH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEPARATION_YEAR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.HELP_WITH_FEES_REF_NUMBER_CCD_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper.BulkScanHelper.transformDateFromComponentsToCcdDate;
@@ -155,7 +156,7 @@ public class D8FormToCaseTransformer extends BulkScanFormTransformer {
         Map<String, String> erToCcdFieldsMap = new HashMap<>();
 
         // Help With Fees
-        erToCcdFieldsMap.put("D8HelpWithFeesReferenceNumber", "D8HelpWithFeesReferenceNumber");
+        erToCcdFieldsMap.put("D8HelpWithFeesReferenceNumber", HELP_WITH_FEES_REF_NUMBER_CCD_KEY);
         erToCcdFieldsMap.put("D8PaymentMethod", "D8PaymentMethod");
 
         // Section 1 - Your application (known as a petition in divorce and judicial separation)

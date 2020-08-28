@@ -23,7 +23,6 @@ public class OrchestrationConstants {
     public static final String AUTH_TOKEN_JSON_KEY = "authToken";
     public static final String GRANT_TYPE = "authorization_code";
     public static final String BASIC = "Basic ";
-    public static final String PIN_PREFIX = "Pin ";
     public static final String CODE = "code";
     public static final String LOCATION_HEADER = "Location";
     public static final String SERVICE_AUTHORIZATION_HEADER = "ServiceAuthorization";
@@ -128,6 +127,7 @@ public class OrchestrationConstants {
     public static final String WELSH_PREVIOUS_STATE = "WelshPreviousState";
     public static final String AMENDED_CASE_ID_CCD_KEY = "AmendedCaseId";
     public static final String CASE_REFERENCE_CCD_KEY = "CaseReference";
+    public static final String HELP_WITH_FEES_REF_NUMBER_CCD_KEY = "D8HelpWithFeesReferenceNumber";
 
     //This is misspelled in the CCD definition file
     public static final String D_8_REASON_FOR_DIVORCE_SEPARATION_DAY = "D8ReasonForDivorceSeperationDay";
@@ -224,7 +224,6 @@ public class OrchestrationConstants {
     public static final String DATE_OF_HEARING = "date of hearing";
     public static final String WELSH_DATE_OF_HEARING = "welsh date of hearing";
     public static final String LIMIT_DATE_TO_CONTACT_COURT = "limit date to contact court";
-    public static final String WELSH_LIMIT_DATE_TO_CONTACT_COURT = "welsh limit date to contact court";
     public static final Period PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT = Period.ofWeeks(2);
 
     // Notification
@@ -313,6 +312,7 @@ public class OrchestrationConstants {
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_FILENAME = "solicitor-personal-service-";
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE = "personalService";
     public static final String FEE_TO_PAY_JSON_KEY = "FeeToPay";
+    public static final String AOS_OVERDUE_COVER_LETTER_DOCUMENT_TYPE = "aosOverdueCoverLetter";
 
     //Bulk print letter types
     public static final String DA_GRANTED_OFFLINE_PACK_RESPONDENT = "da-granted-offline-pack-respondent";

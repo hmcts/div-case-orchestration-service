@@ -21,4 +21,5 @@ public class DispensedServiceRefusalOrderTaskTest extends ServiceRefusalOrderGen
     public void testExecuteShouldGenerateAFile() throws TaskException {
         executeShouldGenerateAFile();
     }
+
 }
