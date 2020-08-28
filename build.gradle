@@ -166,6 +166,8 @@ allprojects {
             dependencySet(group: 'org.hibernate', version: '5.4.18.Final') {
                 entry 'hibernate-core'
             }
+            //CVE-2017-18640
+            dependency group: 'org.yaml',name: 'snakeyaml', version: '1.26'
         }
     }
 }
