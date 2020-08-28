@@ -65,7 +65,7 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
             } else if (isServiceApplicationDispensed(caseData)) {
                 tasks.add(getTaskForDispensedApproved(caseData, caseId));
             } else {
-                log.info("CaseId: {} NOT deemed/dispensed. No email will be sent.", caseId);
+                log.info("CaseId: {} Application granted. NOT deemed/dispensed. No email will be sent.", caseId);
             }
 
             return tasks.toArray(new Task[] {});
@@ -74,11 +74,12 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
         log.info("CaseID: {}, Service application type is {}.", caseId, getServiceApplicationType(caseData));
 
         if (isServiceApplicationDeemed(caseData)) {
+            log.info("CaseID: {} Service application is not granted. No PDFs to generate. Emails might be sent.", caseId);
             tasks.add(getTaskForDeemedNotApproved(caseData, caseId));
         } else if (isServiceApplicationDispensed(caseData)) {
             tasks.add(getTaskForDispensedNotApproved(caseData, caseId));
         } else {
-            log.warn("CaseID: {}, NOT Deemed/Dispensed. Do nothing.", caseId);
+            log.warn("CaseId: {} Application not granted. NOT deemed/dispensed. No email will be sent.", caseId);
         }
 
         return tasks.toArray(new Task[] {});
