@@ -118,7 +118,7 @@ public class IdamUtils {
                 .post(idamCodeUrl());
             retryCount++;
         }
-        while (response.getStatusCode() > 300 && retryCount <= 3);
+        while (response.getStatusCode() > 300 && retryCount <= 6);
 
         if (response.getStatusCode() >= 300) {
             throw new IllegalStateException("Token generation failed with code: " + response.getStatusCode()
