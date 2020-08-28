@@ -68,6 +68,7 @@ def versions = [
         serenity                     : '2.1.13',
         serenityCucumber             : '1.9.50',
         serviceTokenGenerator        : '3.1.1',
+        snakeyaml                    : '1.26',
         sonarPitest                  : '0.5',
         springfoxSwagger             : '2.9.2',
         springSecurityCrypto         : '5.2.4.RELEASE',
@@ -271,6 +272,7 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     implementation group: 'org.springframework.retry', name: 'spring-retry'
+    implementation group: 'org.yaml', name: 'snakeyaml', version: versions.snakeyaml
     implementation group: 'uk.gov.hmcts.reform', name: 'bsp-common-lib', version: versions.bspCommonLib
     implementation group: 'uk.gov.hmcts.reform', name: 'div-common-lib', version: versions.divCommonLib
     implementation group: 'uk.gov.hmcts.reform', name: 'idam-client', version: versions.idamClient
