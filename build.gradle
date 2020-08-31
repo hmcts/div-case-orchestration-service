@@ -162,7 +162,7 @@ allprojects {
                 entry 'tomcat-embed-el'
             }
             //CVE-2019-14900
-            dependencySet(group: 'org.hibernate', version: '5.4.18.Final') {
+            dependencySet(group: 'org.hibernate', version: '5.4.21.Final') {
                 entry 'hibernate-core'
             }
         }
