@@ -192,7 +192,7 @@ public class HealthCheckITest extends MockedFunctionalTest {
         String body = EntityUtils.toString(response.getEntity());
 
         assertThat(response.getStatusLine().getStatusCode(), equalTo(503));
-        assertThat(JsonPath.read(body, "$.status").toString(), equalTo("DOWN"));
+        assertThat(JsonPath.read(body, "$.status").toString(), equalTo("DOWN"));//TODO - refactor this so that this class can be more easily maintained
         assertThat(JsonPath.read(body, "$.details.caseFormatterServiceHealthCheck.status").toString(),
             equalTo("UP"));
         assertThat(JsonPath.read(body, "$.details.caseMaintenanceServiceHealthCheck.status").toString(),
@@ -343,4 +343,5 @@ public class HealthCheckITest extends MockedFunctionalTest {
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
                 .withBody(serviceUp ? HEALTH_UP_RESPONSE : HEALTH_DOWN_RESPONSE)));
     }
+
 }
