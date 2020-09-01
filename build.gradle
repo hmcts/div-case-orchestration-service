@@ -2,7 +2,7 @@ import org.springframework.boot.gradle.tasks.run.BootRun
 
 buildscript {
     ext {
-        springBootVersion = '2.1.14.RELEASE'
+        springBootVersion = '2.1.16.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -24,7 +24,7 @@ plugins {
     id 'org.flywaydb.flyway' version '5.2.4'
     id 'org.owasp.dependencycheck' version '5.3.2.1'
     id 'org.sonarqube' version '3.0'
-    id 'org.springframework.boot' version '2.1.14.RELEASE'
+    id 'org.springframework.boot' version '2.1.16.RELEASE'
 }
 
 def versions = [
@@ -77,7 +77,7 @@ def versions = [
 
 allprojects {
 
-    def springBootVersion = '2.1.14.RELEASE'
+    def springBootVersion = '2.1.16.RELEASE'
 
     apply plugin: 'checkstyle'
     apply plugin: 'com.github.ben-manes.versions'
