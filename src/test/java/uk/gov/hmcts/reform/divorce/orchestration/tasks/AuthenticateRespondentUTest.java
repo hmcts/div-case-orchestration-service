@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class AuthenticateRespondentUTest {
     private static final String AUTH_TOKEN = "some token";
     private static final String BEARER_AUTH_TOKEN = "Bearer some token";
-    private static Boolean PAYLOAD = false;
+    private static final Boolean PAYLOAD = false;
 
     private final TaskContext context = new DefaultTaskContext();
 

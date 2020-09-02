@@ -22,8 +22,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_AMOUNT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_CODE;
@@ -84,7 +85,7 @@ public class SetOrderSummaryWorkflowTest {
 
         assertThat(returnedCaseData, equalTo(expectedCaseData));
         verifyTasksCalledInOrder(testData, getPetitionIssueFeeTask, setOrderSummary);
-        verifyZeroInteractions(getAmendPetitionFeeTask);
+        verifyNoInteractions(getAmendPetitionFeeTask);
     }
 
     @Test
@@ -96,7 +97,7 @@ public class SetOrderSummaryWorkflowTest {
 
         assertThat(returnedCaseData, equalTo(expectedCaseData));
         verifyTasksCalledInOrder(testData, getAmendPetitionFeeTask, setOrderSummary);
-        verifyZeroInteractions(getPetitionIssueFeeTask);
+        verifyNoInteractions(getPetitionIssueFeeTask);
     }
 
     @Test
@@ -107,7 +108,7 @@ public class SetOrderSummaryWorkflowTest {
 
         assertThat(returnedCaseData, equalTo(expectedCaseData));
         verifyTasksCalledInOrder(testData, getPetitionIssueFeeTask, setOrderSummary);
-        verifyZeroInteractions(getAmendPetitionFeeTask);
+        verifyNoInteractions(getAmendPetitionFeeTask);
     }
 
     @Test
@@ -119,7 +120,7 @@ public class SetOrderSummaryWorkflowTest {
 
         assertThat(returnedCaseData, equalTo(expectedCaseData));
         verifyTasksCalledInOrder(testData, getPetitionIssueFeeTask, setOrderSummary);
-        verifyZeroInteractions(getPetitionIssueFeeTask);
+        verifyNoMoreInteractions(getPetitionIssueFeeTask);
     }
 
 }

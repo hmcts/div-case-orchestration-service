@@ -9,7 +9,7 @@ import java.util.Map;
 
 import static io.netty.util.internal.StringUtil.EMPTY_STRING;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
 
 public class ExtractorHelperTest {

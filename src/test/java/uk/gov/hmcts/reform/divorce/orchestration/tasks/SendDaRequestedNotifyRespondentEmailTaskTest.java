@@ -29,7 +29,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_DECREE_ABSOLUTE_GRANTED_DATE;
@@ -112,7 +112,7 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
         testData.put(D_8_INFERRED_PETITIONER_GENDER, TEST_INFERRED_GENDER);
 
         sendDaRequestedNotifyRespondentEmailTask.execute(context, testData);
-        verifyZeroInteractions(emailService);
+        verifyNoInteractions(emailService);
     }
 
     @Test(expected = TaskException.class)

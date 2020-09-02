@@ -9,9 +9,9 @@ import java.time.Clock;
 import java.util.Map;
 
 import static java.util.Collections.singletonMap;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.core.AllOf.allOf;
-import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getObjectMapperInstance;
 
 public class AddDecreeNisiDecisionDateTaskTest {
@@ -20,7 +20,7 @@ public class AddDecreeNisiDecisionDateTaskTest {
 
     private static final String DN_DECISION_DATE_CCD_FIELD = "DNApprovalDate";
 
-    private CcdUtil ccdUtil = new CcdUtil(Clock.systemDefaultZone(), getObjectMapperInstance(), localDateToWelshStringConverter);
+    private final CcdUtil ccdUtil = new CcdUtil(Clock.systemDefaultZone(), getObjectMapperInstance(), localDateToWelshStringConverter);
 
     @Test
     public void shouldAddDecreeNisiDecisionDateToPayload() {

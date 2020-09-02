@@ -24,9 +24,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
@@ -141,7 +141,7 @@ public class CcdCallbackBulkPrintWorkflowTest {
         inOrder.verify(respondentAosPackPrinterTask).execute(context, payload);
         inOrder.verify(modifyDueDate).execute(context, payload);
 
-        verifyZeroInteractions(coRespondentAosPackPrinterTask);
+        verifyNoInteractions(coRespondentAosPackPrinterTask);
     }
 
 }

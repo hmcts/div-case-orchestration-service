@@ -24,7 +24,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -102,7 +102,7 @@ public class SolicitorAmendPetitionForRefusalITest extends MockedFunctionalTest 
         maintenanceServiceServer.stubFor(WireMock.put(CMS_AMEND_PETITION_CONTEXT_PATH)
             .willReturn(aResponse()
                 .withStatus(status.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withBody(body)));
     }
 
@@ -110,7 +110,7 @@ public class SolicitorAmendPetitionForRefusalITest extends MockedFunctionalTest 
         formatterServiceServer.stubFor(WireMock.post(CCD_FORMAT_CONTEXT_PATH)
             .willReturn(aResponse()
                 .withStatus(status.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withBody(body)));
     }
 
@@ -119,7 +119,7 @@ public class SolicitorAmendPetitionForRefusalITest extends MockedFunctionalTest 
             .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
             .willReturn(aResponse()
                 .withStatus(status.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withBody(body)));
     }
 }

@@ -14,13 +14,13 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.DUMMY_CASE_DATA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_REFERENCE_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.VALUE_KEY;
@@ -47,7 +47,7 @@ public class CaseDataUtilsTest {
     private static final String FIELD_NAME = "TestField";
     private static final String LINK_ID = "LinkId";
 
-    private CaseDataUtils caseDataUtils = new CaseDataUtils();
+    private final CaseDataUtils caseDataUtils = new CaseDataUtils();
 
     @Test
     public void givenDataWithCaseLink_thenReturnLinkValue() {

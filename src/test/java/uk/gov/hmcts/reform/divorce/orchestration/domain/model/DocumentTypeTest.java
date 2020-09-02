@@ -5,8 +5,8 @@ import org.junit.Test;
 
 import java.util.Optional;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
 
 public class DocumentTypeTest {
 
@@ -21,4 +21,5 @@ public class DocumentTypeTest {
         Optional<DocumentType> unknown = DocumentType.getEnum("unknown");
         assertFalse("match not found",  unknown.isPresent());
     }
+
 }

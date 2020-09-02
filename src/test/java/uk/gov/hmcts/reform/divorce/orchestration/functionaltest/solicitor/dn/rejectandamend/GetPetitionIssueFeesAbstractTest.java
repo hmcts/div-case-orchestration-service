@@ -18,7 +18,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.put;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_AMOUNT;
@@ -79,7 +79,7 @@ public abstract class GetPetitionIssueFeesAbstractTest extends MockedFunctionalT
         feesAndPaymentsServer.stubFor(WireMock.get(url)
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withBody(convertObjectToJsonString(feeResponse))));
     }
 
@@ -88,7 +88,7 @@ public abstract class GetPetitionIssueFeesAbstractTest extends MockedFunctionalT
             .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
             .willReturn(aResponse()
                 .withStatus(status.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)));
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)));
     }
 
 }

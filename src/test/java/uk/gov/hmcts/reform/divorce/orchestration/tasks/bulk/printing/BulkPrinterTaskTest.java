@@ -18,12 +18,12 @@ import java.util.UUID;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_PRINT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENTS_GENERATED;
@@ -123,7 +123,7 @@ public class BulkPrinterTaskTest {
 
         classUnderTest.execute(context, emptyMap());
 
-        verifyZeroInteractions(bulkPrintService);
+        verifyNoInteractions(bulkPrintService);
         assertThat(context.hasTaskFailed(), is(false));
     }
 
@@ -136,7 +136,7 @@ public class BulkPrinterTaskTest {
 
         classUnderTest.execute(context, emptyMap());
 
-        verifyZeroInteractions(bulkPrintService);
+        verifyNoInteractions(bulkPrintService);
         assertThat(context.hasTaskFailed(), is(false));
     }
 

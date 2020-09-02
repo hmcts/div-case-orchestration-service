@@ -25,7 +25,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotification;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.QueueAosSolicitorSubmitTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForDefendedDivorceEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForUndefendedDivorceEmail;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosSubmissionWorkflow;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -42,8 +41,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INFERRED_MALE_GENDER;
@@ -142,7 +141,7 @@ public class AosSubmissionWorkflowTest {
         Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
 
         verify(defendedDivorceNotificationEmailTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
-        verifyZeroInteractions(undefendedDivorceNotificationEmailTask);
+        verifyNoInteractions(undefendedDivorceNotificationEmailTask);
         assertThat(returnedPayloadFromWorkflow, is(sameInstance(returnedPayloadFromTask)));
         TaskContext taskContextPassedToTask = taskContextArgumentCaptor.getValue();
         String caseIdPassedToTask = taskContextPassedToTask.getTransientObject(CASE_ID_JSON_KEY);
@@ -159,7 +158,7 @@ public class AosSubmissionWorkflowTest {
         Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(callbackRequest, AUTH_TOKEN);
 
         verify(undefendedDivorceNotificationEmailTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
-        verifyZeroInteractions(defendedDivorceNotificationEmailTask);
+        verifyNoInteractions(defendedDivorceNotificationEmailTask);
         assertThat(returnedPayloadFromWorkflow, is(sameInstance(returnedPayloadFromTask)));
         TaskContext taskContextPassedToTask = taskContextArgumentCaptor.getValue();
         String caseIdPassedToTask = taskContextPassedToTask.getTransientObject(CASE_ID_JSON_KEY);
@@ -176,7 +175,7 @@ public class AosSubmissionWorkflowTest {
         Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(callbackRequest, AUTH_TOKEN);
 
         verify(undefendedDivorceNotificationEmailTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
-        verifyZeroInteractions(defendedDivorceNotificationEmailTask);
+        verifyNoInteractions(defendedDivorceNotificationEmailTask);
         assertThat(returnedPayloadFromWorkflow, is(sameInstance(returnedPayloadFromTask)));
         TaskContext taskContextPassedToTask = taskContextArgumentCaptor.getValue();
         String caseIdPassedToTask = taskContextPassedToTask.getTransientObject(CASE_ID_JSON_KEY);
@@ -220,7 +219,7 @@ public class AosSubmissionWorkflowTest {
 
         aosSubmissionWorkflow.run(callbackRequest, AUTH_TOKEN);
 
-        verifyZeroInteractions(queueAosSolicitorSubmitTask);
+        verifyNoInteractions(queueAosSolicitorSubmitTask);
     }
 
     @Test
