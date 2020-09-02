@@ -8,10 +8,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedApprovedEmailTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedNotApprovedEmailTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedApprovedEmailTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedNotApprovedEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedApprovedPetitionerEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedApprovedSolicitorEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedNotApprovedPetitionerEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedNotApprovedSolicitorEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedApprovedPetitionerEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedApprovedSolicitorEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedNotApprovedPetitionerEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedNotApprovedSolicitorEmailTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,16 +49,28 @@ public class ServiceDecisionMadeWorkflowTest {
     private ServiceDecisionMadeWorkflow classUnderTest;
 
     @Mock
-    private DeemedApprovedEmailTask deemedApprovedEmailTask;
+    private DeemedApprovedPetitionerEmailTask deemedApprovedPetitionerEmailTask;
 
     @Mock
-    private DeemedNotApprovedEmailTask deemedNotApprovedEmailTask;
+    private DeemedApprovedSolicitorEmailTask deemedApprovedSolicitorEmailTask;
 
     @Mock
-    private DispensedApprovedEmailTask dispensedApprovedEmailTask;
+    private DeemedNotApprovedPetitionerEmailTask deemedNotApprovedPetitionerEmailTask;
 
     @Mock
-    private DispensedNotApprovedEmailTask dispensedNotApprovedEmailTask;
+    private DeemedNotApprovedSolicitorEmailTask deemedNotApprovedSolicitorEmailTask;
+
+    @Mock
+    private DispensedApprovedPetitionerEmailTask dispensedApprovedPetitionerEmailTask;
+
+    @Mock
+    private DispensedApprovedSolicitorEmailTask dispensedApprovedSolicitorEmailTask;
+
+    @Mock
+    private DispensedNotApprovedPetitionerEmailTask dispensedNotApprovedPetitionerEmailTask;
+
+    @Mock
+    private DispensedNotApprovedSolicitorEmailTask dispensedNotApprovedSolicitorEmailTask;
 
     @Test
     public void whenDeemedAndApplicationIsNotGranted() throws WorkflowException {
@@ -63,18 +79,18 @@ public class ServiceDecisionMadeWorkflowTest {
 
         mockTasksExecution(
             caseData,
-            deemedNotApprovedEmailTask
+            deemedNotApprovedPetitionerEmailTask
         );
 
         Map<String, Object> returnedData = executeWorkflow(caseDetails);
 
         verifyTasksCalledInOrder(
             returnedData,
-            deemedNotApprovedEmailTask
+            deemedNotApprovedPetitionerEmailTask
         );
 
         runNoTasksToSendApprovedEmails();
-        verifyTasksWereNeverCalled(dispensedNotApprovedEmailTask);
+        verifyTasksWereNeverCalled(dispensedNotApprovedPetitionerEmailTask);
     }
 
     @Test
@@ -84,18 +100,18 @@ public class ServiceDecisionMadeWorkflowTest {
 
         mockTasksExecution(
             caseData,
-            dispensedNotApprovedEmailTask
+            dispensedNotApprovedPetitionerEmailTask
         );
 
         Map<String, Object> returnedData = executeWorkflow(caseDetails);
 
         verifyTasksCalledInOrder(
             returnedData,
-            dispensedNotApprovedEmailTask
+            dispensedNotApprovedPetitionerEmailTask
         );
 
         runNoTasksToSendApprovedEmails();
-        verifyTasksWereNeverCalled(deemedNotApprovedEmailTask);
+        verifyTasksWereNeverCalled(deemedNotApprovedPetitionerEmailTask);
     }
 
     @Test
@@ -104,13 +120,13 @@ public class ServiceDecisionMadeWorkflowTest {
         Map<String, Object> caseData = buildCaseData(DEEMED, YES_VALUE);
         CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_DECREE_NISI);
 
-        mockTasksExecution(caseData, deemedApprovedEmailTask);
+        mockTasksExecution(caseData, deemedApprovedPetitionerEmailTask);
 
         Map<String, Object> returnedCaseData = executeWorkflow(caseDetails);
 
-        verifyTaskWasCalled(returnedCaseData, deemedApprovedEmailTask);
+        verifyTaskWasCalled(returnedCaseData, deemedApprovedPetitionerEmailTask);
 
-        verifyTasksWereNeverCalled(dispensedApprovedEmailTask);
+        verifyTasksWereNeverCalled(deemedApprovedSolicitorEmailTask, dispensedApprovedSolicitorEmailTask);
         runNoTasksToSendNotApprovedEmails();
     }
 
@@ -120,13 +136,13 @@ public class ServiceDecisionMadeWorkflowTest {
         Map<String, Object> caseData = petitionerRepresented(buildCaseData(DEEMED, YES_VALUE));
         CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_DECREE_NISI);
 
-        mockTasksExecution(caseData, deemedApprovedEmailTask);
+        mockTasksExecution(caseData, deemedApprovedSolicitorEmailTask);
 
         Map<String, Object> returnedCaseData = executeWorkflow(caseDetails);
 
-        verifyTaskWasCalled(returnedCaseData, deemedApprovedEmailTask);
+        verifyTaskWasCalled(returnedCaseData, deemedApprovedSolicitorEmailTask);
 
-        verifyTasksWereNeverCalled(dispensedApprovedEmailTask);
+        verifyTasksWereNeverCalled(deemedApprovedPetitionerEmailTask, dispensedApprovedSolicitorEmailTask);
         runNoTasksToSendNotApprovedEmails();
     }
 
@@ -136,13 +152,13 @@ public class ServiceDecisionMadeWorkflowTest {
         Map<String, Object> caseData = buildCaseData(DISPENSED, YES_VALUE);
         CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_DECREE_NISI);
 
-        mockTasksExecution(caseData, dispensedApprovedEmailTask);
+        mockTasksExecution(caseData, dispensedApprovedPetitionerEmailTask);
 
         Map<String, Object> returnedCaseData = executeWorkflow(caseDetails);
 
-        verifyTaskWasCalled(returnedCaseData, dispensedApprovedEmailTask);
+        verifyTaskWasCalled(returnedCaseData, dispensedApprovedPetitionerEmailTask);
 
-        verifyTasksWereNeverCalled(deemedApprovedEmailTask);
+        verifyTasksWereNeverCalled(dispensedApprovedSolicitorEmailTask, deemedApprovedSolicitorEmailTask);
         runNoTasksToSendNotApprovedEmails();
     }
 
@@ -152,14 +168,78 @@ public class ServiceDecisionMadeWorkflowTest {
         Map<String, Object> caseData = petitionerRepresented(buildCaseData(DISPENSED, YES_VALUE));
         CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_DECREE_NISI);
 
-        mockTasksExecution(caseData, dispensedApprovedEmailTask);
+        mockTasksExecution(caseData, dispensedApprovedSolicitorEmailTask);
 
         Map<String, Object> returnedCaseData = executeWorkflow(caseDetails);
 
-        verifyTaskWasCalled(returnedCaseData, dispensedApprovedEmailTask);
+        verifyTaskWasCalled(returnedCaseData, dispensedApprovedSolicitorEmailTask);
 
-        verifyTasksWereNeverCalled(deemedApprovedEmailTask);
+        verifyTasksWereNeverCalled(dispensedApprovedPetitionerEmailTask, deemedApprovedSolicitorEmailTask);
         runNoTasksToSendNotApprovedEmails();
+    }
+
+    @Test
+    public void shouldSendDeemedNotApprovedEmail_ToPetitioner_whenApplicationIsNotGrantedAndDeemed()
+        throws WorkflowException {
+        Map<String, Object> caseData = buildCaseData(DEEMED, NO_VALUE);
+        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_DECREE_NISI);
+
+        mockTasksExecution(caseData, deemedNotApprovedPetitionerEmailTask);
+
+        Map<String, Object> returnedCaseData = executeWorkflow(caseDetails);
+
+        verifyTaskWasCalled(returnedCaseData, deemedNotApprovedPetitionerEmailTask);
+
+        verifyTasksWereNeverCalled(dispensedApprovedSolicitorEmailTask, deemedApprovedSolicitorEmailTask);
+        runNoTasksToSendApprovedEmails();
+    }
+
+    @Test
+    public void shouldSendDeemedNotApprovedEmail_ToSolicitor_whenApplicationIsNotGrantedAndDeemed()
+        throws WorkflowException {
+        Map<String, Object> caseData = petitionerRepresented(buildCaseData(DEEMED, NO_VALUE));
+        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_DECREE_NISI);
+
+        mockTasksExecution(caseData, deemedNotApprovedSolicitorEmailTask);
+
+        Map<String, Object> returnedCaseData = executeWorkflow(caseDetails);
+
+        verifyTaskWasCalled(returnedCaseData, deemedNotApprovedSolicitorEmailTask);
+
+        verifyTasksWereNeverCalled(dispensedApprovedPetitionerEmailTask, deemedApprovedSolicitorEmailTask);
+        runNoTasksToSendApprovedEmails();
+    }
+
+    @Test
+    public void shouldSendDispensedNotApprovedEmail_ToPetitioner_whenApplicationIsNotGrantedAndDispensed()
+        throws WorkflowException {
+        Map<String, Object> caseData = buildCaseData(DISPENSED, NO_VALUE);
+        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_DECREE_NISI);
+
+        mockTasksExecution(caseData, dispensedNotApprovedPetitionerEmailTask);
+
+        Map<String, Object> returnedCaseData = executeWorkflow(caseDetails);
+
+        verifyTaskWasCalled(returnedCaseData, dispensedNotApprovedPetitionerEmailTask);
+
+        verifyTasksWereNeverCalled(dispensedNotApprovedSolicitorEmailTask, deemedApprovedSolicitorEmailTask);
+        runNoTasksToSendApprovedEmails();
+    }
+
+    @Test
+    public void shouldSendDispensedNotApprovedEmail_ToSolicitor_whenApplicationIsNotGrantedAndDispensed()
+        throws WorkflowException {
+        Map<String, Object> caseData = petitionerRepresented(buildCaseData(DISPENSED, NO_VALUE));
+        CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_DECREE_NISI);
+
+        mockTasksExecution(caseData, dispensedNotApprovedSolicitorEmailTask);
+
+        Map<String, Object> returnedCaseData = executeWorkflow(caseDetails);
+
+        verifyTaskWasCalled(returnedCaseData, dispensedNotApprovedSolicitorEmailTask);
+
+        verifyTasksWereNeverCalled(dispensedNotApprovedPetitionerEmailTask, deemedApprovedSolicitorEmailTask);
+        runNoTasksToSendApprovedEmails();
     }
 
     @Test
@@ -202,13 +282,20 @@ public class ServiceDecisionMadeWorkflowTest {
     }
 
     private void runNoTasksToSendNotApprovedEmails() {
-        verifyTasksWereNeverCalled(deemedNotApprovedEmailTask, dispensedNotApprovedEmailTask);
+        verifyTasksWereNeverCalled(
+            deemedNotApprovedPetitionerEmailTask,
+            deemedNotApprovedSolicitorEmailTask,
+            dispensedNotApprovedSolicitorEmailTask,
+            dispensedNotApprovedPetitionerEmailTask
+        );
     }
 
     private void runNoTasksToSendApprovedEmails() {
         verifyTasksWereNeverCalled(
-            deemedApprovedEmailTask,
-            dispensedApprovedEmailTask
+            deemedApprovedPetitionerEmailTask,
+            deemedApprovedSolicitorEmailTask,
+            dispensedApprovedPetitionerEmailTask,
+            dispensedApprovedSolicitorEmailTask
         );
     }
 

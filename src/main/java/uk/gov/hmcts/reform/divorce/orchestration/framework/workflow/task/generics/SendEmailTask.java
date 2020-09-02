@@ -23,11 +23,11 @@ public abstract class SendEmailTask implements Task<Map<String, Object>> {
 
     private final EmailService emailService;
 
-    protected abstract String getSubject(Map<String, Object> caseData);
+    protected abstract String getSubject();
 
     protected abstract Map<String, String> getPersonalisation(TaskContext context, Map<String, Object> caseData);
 
-    protected abstract EmailTemplateNames getTemplate(Map<String, Object> caseData);
+    protected abstract EmailTemplateNames getTemplate();
 
     private String getRecipientEmail(Map<String, Object> caseData) {
         return isPetitionerRepresented(caseData)
@@ -39,33 +39,33 @@ public abstract class SendEmailTask implements Task<Map<String, Object>> {
         return CaseDataUtils.getLanguagePreference(caseData);
     }
 
-    private boolean canEmailBeSent(Map<String, Object> caseData) {
+    protected boolean canEmailBeSent(Map<String, Object> caseData) {
         return isPetitionerRepresented(caseData) ? true : isPetitionerEmailPopulated(caseData);
     }
 
-    private boolean isPetitionerEmailPopulated(Map<String, Object> caseData) {
+    protected boolean isPetitionerEmailPopulated(Map<String, Object> caseData) {
         return !CaseDataExtractor.getPetitionerEmailOrEmpty(caseData).isEmpty();
     }
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         final String caseId = getCaseId(context);
-        final String subject = getSubject(caseData);
+        final String subject = getSubject();
 
         if (canEmailBeSent(caseData)) {
             log.info("CaseID: {} email {} is going to be sent.", caseId, subject);
 
             emailService.sendEmail(
                 getRecipientEmail(caseData),
-                getTemplate(caseData).name(),
+                getTemplate().name(),
                 getPersonalisation(context, caseData),
                 subject,
                 getLanguage(caseData)
             );
 
-            log.info("CaseID: {} email {} was sent.", caseId, getTemplate(caseData).name());
+            log.info("CaseID: {} email {} was sent.", caseId, getTemplate().name());
         } else {
-            log.warn("CaseID: {} recipient email is empty! Email {} not sent.", caseId, getTemplate(caseData).name());
+            log.warn("CaseID: {} recipient email is empty! Email {} not sent.", caseId, getTemplate().name());
         }
 
         return caseData;
