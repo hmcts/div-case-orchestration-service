@@ -7,6 +7,12 @@
         <cve>CVE-2020-9484</cve>
     </suppress>
     <suppress>
+        <notes>Just a test</notes>
+        <gav regex="true">.*</gav>
+        <cve>CVE-2020-7019</cve>
+        <cve>CVE-2017-18640</cve>
+    </suppress>
+    <suppress>
         <notes><![CDATA[
             This is a false positive on gradle-pi-test
             which fails because it is prefixed with gradle ]]>
