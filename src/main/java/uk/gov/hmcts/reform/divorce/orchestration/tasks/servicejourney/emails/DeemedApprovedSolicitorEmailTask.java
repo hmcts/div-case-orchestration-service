@@ -9,7 +9,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
 import java.util.Map;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.PET_SOL_DEEMED_APPROVED;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerFullName;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getRespondentFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ServiceJourneyEmailTaskHelper.solicitorTemplateVariables;
 
 @Component
@@ -22,8 +25,8 @@ public class DeemedApprovedSolicitorEmailTask extends SendEmailTask {
     }
 
     @Override
-    protected String getSubject() {
-        return SUBJECT;
+    protected String getSubject(Map<String, Object> caseData) {
+        return format(SUBJECT, getPetitionerFullName(caseData), getRespondentFullName(caseData));
     }
 
     @Override

@@ -23,19 +23,19 @@ public abstract class SendEmailTask implements Task<Map<String, Object>> {
 
     private final EmailService emailService;
 
-    protected abstract String getSubject();
+    protected abstract String getSubject(Map<String, Object> caseData);
 
     protected abstract Map<String, String> getPersonalisation(TaskContext context, Map<String, Object> caseData);
 
     protected abstract EmailTemplateNames getTemplate();
 
-    private String getRecipientEmail(Map<String, Object> caseData) {
+    protected String getRecipientEmail(Map<String, Object> caseData) {
         return isPetitionerRepresented(caseData)
             ? CaseDataExtractor.getPetitionerSolicitorEmail(caseData)
             : CaseDataExtractor.getPetitionerEmail(caseData);
     }
 
-    private LanguagePreference getLanguage(Map<String, Object> caseData) {
+    protected LanguagePreference getLanguage(Map<String, Object> caseData) {
         return CaseDataUtils.getLanguagePreference(caseData);
     }
 
@@ -50,7 +50,7 @@ public abstract class SendEmailTask implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         final String caseId = getCaseId(context);
-        final String subject = getSubject();
+        final String subject = getSubject(caseData);
 
         if (canEmailBeSent(caseData)) {
             log.info("CaseID: {} email {} is going to be sent.", caseId, subject);

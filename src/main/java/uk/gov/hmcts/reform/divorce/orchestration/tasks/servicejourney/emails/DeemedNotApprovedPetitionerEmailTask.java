@@ -22,7 +22,7 @@ public class DeemedNotApprovedPetitionerEmailTask extends SendEmailTask {
     }
 
     @Override
-    protected String getSubject() {
+    protected String getSubject(Map<String, Object> caseData) {
         return SUBJECT;
     }
 

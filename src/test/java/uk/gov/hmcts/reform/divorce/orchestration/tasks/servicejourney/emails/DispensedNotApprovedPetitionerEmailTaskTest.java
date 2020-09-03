@@ -96,7 +96,7 @@ public class DispensedNotApprovedPetitionerEmailTaskTest {
     public void shouldReturnSubjectFor_Citizen() {
         caseData = buildCaseData();
 
-        String returnedSubject = task.getSubject();
+        String returnedSubject = task.getSubject(caseData);
 
         assertEquals(returnedSubject, task.SUBJECT);
     }
@@ -120,11 +120,11 @@ public class DispensedNotApprovedPetitionerEmailTaskTest {
     }
 
     private void executePersonalisation(Map<String, Object> caseData) {
-        Map returnPayload = task.getPersonalisation(getTaskContext(), caseData);
+        Map returnPersonalisation = task.getPersonalisation(getTaskContext(), caseData);
 
-        Map expectedPayload = getExpectedNotificationTemplateVars(false, testContext, caseData);
+        Map expectedPersonalisation = getExpectedNotificationTemplateVars(false, testContext, caseData);
 
-        assertEquals(returnPayload, expectedPayload);
+        assertEquals(returnPersonalisation, expectedPersonalisation);
     }
 
     private void verifyCitizenEmailSent(Map<String, Object> caseData) {
@@ -132,7 +132,7 @@ public class DispensedNotApprovedPetitionerEmailTaskTest {
             TEST_PETITIONER_EMAIL,
             TEST_TEMPLATE.name(),
             getExpectedNotificationTemplateVars(false, testContext, caseData),
-            task.getSubject(),
+            task.getSubject(caseData),
             LanguagePreference.ENGLISH
         );
     }
