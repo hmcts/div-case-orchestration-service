@@ -477,6 +477,7 @@ flyway {
     password = System.getenv('DIV_SCHEDULER_DB_PASSWORD')
     baselineOnMigrate = true
     baselineVersion = '000'
+    schemas='public'
 }
 
 task migratePostgresDatabase(type: org.flywaydb.gradle.task.FlywayMigrateTask) {
