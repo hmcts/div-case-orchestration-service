@@ -9,7 +9,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest;
@@ -34,6 +33,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.getExpectedNotificationTemplateVars;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.getTaskContext;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.removeAllEmailAddresses;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DispensedNotApprovedPetitionerEmailTaskTest {
@@ -134,17 +135,5 @@ public class DispensedNotApprovedPetitionerEmailTaskTest {
             task.getSubject(),
             LanguagePreference.ENGLISH
         );
-    }
-
-    public static TaskContext getTaskContext() {
-        TaskContext context = new DefaultTaskContext();
-        context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
-
-        return context;
-    }
-
-    private void removeAllEmailAddresses(Map<String, Object> caseData) {
-        caseData.remove(PETITIONER_EMAIL);
-        caseData.remove(PETITIONER_SOLICITOR_EMAIL);
     }
 }

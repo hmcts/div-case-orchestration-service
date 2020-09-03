@@ -34,6 +34,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.getExpectedNotificationTemplateVars;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.removeAllEmailAddresses;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DispensedApprovedPetitionerEmailTaskTest {
@@ -141,10 +142,5 @@ public class DispensedApprovedPetitionerEmailTaskTest {
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
 
         return context;
-    }
-
-    private void removeAllEmailAddresses(Map<String, Object> caseData) {
-        caseData.remove(PETITIONER_EMAIL);
-        caseData.remove(PETITIONER_SOLICITOR_EMAIL);
     }
 }

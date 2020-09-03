@@ -27,7 +27,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.SOL_DISPENSED_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
@@ -35,6 +34,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.getSolicitorTemplateVariables;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.getTaskContext;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.removeAllEmailAddresses;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DispensedNotApprovedSolicitorEmailTaskTest {
@@ -135,19 +136,7 @@ public class DispensedNotApprovedSolicitorEmailTaskTest {
         );
     }
 
-    private void removeAllEmailAddresses(Map<String, Object> caseData) {
-        caseData.remove(PETITIONER_EMAIL);
-        caseData.remove(PETITIONER_SOLICITOR_EMAIL);
-    }
-
     private static Map<String, String> getExpectedNotificationTemplateVars(TaskContext taskContext, Map<String, Object> caseData) {
         return getSolicitorTemplateVariables(taskContext, caseData);
-    }
-
-    public static TaskContext getTaskContext() {
-        TaskContext context = new DefaultTaskContext();
-        context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
-
-        return context;
     }
 }
