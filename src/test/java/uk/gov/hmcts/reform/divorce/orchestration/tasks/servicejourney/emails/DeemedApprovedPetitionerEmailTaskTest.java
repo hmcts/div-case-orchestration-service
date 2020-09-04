@@ -56,7 +56,7 @@ public class DeemedApprovedPetitionerEmailTaskTest {
     }
 
     @Test
-    public void shouldSendEmail_ToCitizen_whenExecuteEmailNotificationTask() throws TaskException {
+    public void shouldSendEmailWhenExecuteEmailNotificationTaskIsCalled() throws TaskException {
         caseData = buildCaseData();
         caseData.remove(PETITIONER_SOLICITOR_EMAIL);
 

@@ -20,9 +20,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCase;
 import java.util.Map;
 
 import static java.util.Collections.singletonMap;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
-import static org.junit.Assert.assertThat;
 import static org.junit.rules.ExpectedException.none;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -50,7 +50,7 @@ public class GetCaseWorkflowTest {
     private GetCaseWorkflow classUnderTest;
 
     private Task[] mainTasks;
-    private ImmutablePair<String, Object> testAuthTokenPair = new ImmutablePair<>(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+    private final ImmutablePair<String, Object> testAuthTokenPair = new ImmutablePair<>(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
 
     @Before
     public void setUp() throws Exception {

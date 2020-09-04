@@ -15,9 +15,9 @@ import java.util.Map;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static java.lang.String.format;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 
 @Slf4j
 public class ApplicationWithoutNoticeTest extends CcdSubmissionSupport {

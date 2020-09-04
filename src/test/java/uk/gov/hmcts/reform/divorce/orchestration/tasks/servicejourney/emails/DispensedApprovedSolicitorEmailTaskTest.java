@@ -91,7 +91,7 @@ public class DispensedApprovedSolicitorEmailTaskTest {
         assertEquals(TEST_TEMPLATE, returnedTemplate);
     }
 
-    @Test
+    @Test 
     public void shouldReturnSubjectFor_Solicitor() {
         caseData = buildCaseData();
 

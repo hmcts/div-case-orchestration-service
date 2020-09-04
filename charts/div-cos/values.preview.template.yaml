@@ -8,11 +8,13 @@ java:
     DATAEXTRACTION_STATUS_DA_EMAILTO: da_data_extraction@sharklasers.com
     DATAEXTRACTION_STATUS_AOS_EMAILTO: aos_data_extraction@sharklasers.com
     DATAEXTRACTION_STATUS_DN_EMAILTO: dn_data_extraction@sharklasers.com
-    DIV_SCHEDULER_DB_HOST : "{{ .Release.Name }}-postgresql"
-    DIV_SCHEDULER_DB_NAME : "{{ .Values.postgresql.postgresqlDatabase}}"
-    DIV_SCHEDULER_DB_USER_NAME : "{{ .Values.postgresql.postgresqlUsername}}"
-    DIV_SCHEDULER_DB_PASSWORD  : "{{ .Values.postgresql.postgresqlPassword}}"
-    FLYWAY_URL : "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/{{ .Values.postgresql.postgresqlDatabase}}"
+    DIV_SCHEDULER_DB_HOST: "{{ .Release.Name }}-postgresql"
+    DIV_SCHEDULER_DB_NAME: "{{ .Values.postgresql.postgresqlDatabase}}"
+    DIV_SCHEDULER_DB_USER_NAME: "{{ .Values.postgresql.postgresqlUsername}}"
+    DIV_SCHEDULER_DB_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
+    FLYWAY_URL: "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/{{ .Values.postgresql.postgresqlDatabase}}"
+    #This means it will apply, as opposed to check, DB changes in preview (since a new DB is created for every deployment)
+    FLYWAY_NOOP_STRATEGY: false
 
   keyVaults:
     "div":

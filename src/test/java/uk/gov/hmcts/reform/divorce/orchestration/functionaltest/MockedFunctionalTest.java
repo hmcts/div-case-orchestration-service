@@ -34,7 +34,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.matchingJsonPath;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.ALL_VALUE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
@@ -121,7 +121,7 @@ public abstract class MockedFunctionalTest {
             .withRequestBody(equalToJson(convertObjectToJsonString(generateDocumentRequest)))
             .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
             .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withStatus(HttpStatus.OK.value())
                 .withBody(convertObjectToJsonString(dgsResponse))));
 
@@ -148,7 +148,7 @@ public abstract class MockedFunctionalTest {
             .withRequestBody(equalToJson(convertObjectToJsonString(generateDocumentRequest)))
             .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
             .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withStatus(HttpStatus.OK.value())
                 .withBody(convertObjectToJsonString(dgsResponse))));
 
@@ -168,7 +168,7 @@ public abstract class MockedFunctionalTest {
             .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
             .withRequestBody(matchingJsonPath("$.template", equalTo(templateName)))
             .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withStatus(HttpStatus.OK.value())
                 .withBody(convertObjectToJsonString(dgsResponse))));
 
@@ -211,7 +211,7 @@ public abstract class MockedFunctionalTest {
 
         mappingBuilder = mappingBuilder.willReturn(
             aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withStatus(HttpStatus.OK.value())
                 .withBody(convertObjectToJsonString(searchResult))
         );
@@ -238,7 +238,7 @@ public abstract class MockedFunctionalTest {
             .withRequestBody(equalToJson(convertObjectToJsonString(generateDocumentRequest)))
             .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
             .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withStatus(HttpStatus.OK.value())
                 .withBody(convertObjectToJsonString(dgsResponse))));
 
@@ -258,7 +258,7 @@ public abstract class MockedFunctionalTest {
             .withRequestBody(matchingJsonPath("$.template", equalTo(templateName)))
             .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
             .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withStatus(HttpStatus.OK.value())
                 .withBody(convertObjectToJsonString(dgsResponse))));
 

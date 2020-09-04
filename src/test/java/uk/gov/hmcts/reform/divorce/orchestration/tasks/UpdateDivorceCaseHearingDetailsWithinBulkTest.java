@@ -13,7 +13,7 @@ import static org.junit.Assert.assertEquals;
 
 public class UpdateDivorceCaseHearingDetailsWithinBulkTest {
 
-    private UpdateDivorceCaseHearingDetailsWithinBulk classToTest  = new UpdateDivorceCaseHearingDetailsWithinBulk();
+    private final UpdateDivorceCaseHearingDetailsWithinBulk classToTest  = new UpdateDivorceCaseHearingDetailsWithinBulk();
 
     @Test
     public void givenBulkCase_whenGetEvents_thenReturnBulkScheduleEvent() {
