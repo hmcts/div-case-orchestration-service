@@ -575,6 +575,9 @@ management:
       enabled: false
   endpoint:
     health:
+      probes:
+        #This disables the Kubernetes probes provided by Spring, since we already provide a custom liveness probe (see uk.gov.hmcts.reform.health.Liveness)
+        enabled: false
       show-details: "ALWAYS"
       cache:
         time-to-live: 4000

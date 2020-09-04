@@ -23,6 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOffl
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.docmosis.DocmosisTemplateTestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.RESPONDENT_SOLICITORS_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.RESPONDENT_SOLICITORS_EXPECTED_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.RESPONDENT_SOLICITOR_REF;
@@ -33,7 +34,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractorTest.createHearingDatesList;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.CTSC_CONTACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.LETTER_DATE_EXPECTED;
 
@@ -47,7 +47,7 @@ public class CoERespondentSolicitorLetterGenerationTaskTest extends BasePayloadS
 
     public static TaskContext prepareTaskContext() {
         TaskContext context = new DefaultTaskContext();
-        context.setTransientObject(CASE_ID_JSON_KEY, CASE_ID);
+        context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
 
         return context;
@@ -69,7 +69,7 @@ public class CoERespondentSolicitorLetterGenerationTaskTest extends BasePayloadS
         final CoERespondentSolicitorCoverLetter expectedTemplateVars = CoERespondentSolicitorCoverLetter.coERespondentSolicitorCoverLetterBuilder()
             .petitionerFullName(TEST_PETITIONER_FULL_NAME)
             .respondentFullName(TEST_RESPONDENT_FULL_NAME)
-            .caseReference(CASE_ID)
+            .caseReference(TEST_CASE_ID)
             .letterDate(LETTER_DATE_EXPECTED)
             .ctscContactDetails(CTSC_CONTACT)
             .solicitorReference(RESPONDENT_SOLICITOR_REF)

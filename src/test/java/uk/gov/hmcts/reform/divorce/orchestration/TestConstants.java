@@ -1,8 +1,11 @@
 package uk.gov.hmcts.reform.divorce.orchestration;
 
 import com.google.common.collect.ImmutableMap;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 
 import java.util.Map;
+
+import static java.util.Collections.singletonMap;
 
 public class TestConstants {
     public static final String TEST_BULK_CASE_ID = "test.bulk.case.id";
@@ -100,4 +103,9 @@ public class TestConstants {
     public static final String TEST_CO_RESPONDENT_FIRST_NAME = "Bruce";
     public static final String TEST_CO_RESPONDENT_LAST_NAME = "Wayne";
     public static final String TEST_CO_RESPONDENT_FULL_NAME = TEST_CO_RESPONDENT_FIRST_NAME + " " + TEST_CO_RESPONDENT_LAST_NAME;
+
+    public static final Map<String, Object> TEST_INCOMING_PAYLOAD = singletonMap("incomingKey", "incomingValue");
+    public static final CaseDetails TEST_INCOMING_CASE_DETAILS = CaseDetails.builder().caseData(TEST_INCOMING_PAYLOAD).build();
+    public static final Map<String, Object> TEST_PAYLOAD_TO_RETURN = singletonMap("returnedKey", "returnedValue");
+
 }

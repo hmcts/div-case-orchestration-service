@@ -79,7 +79,7 @@ public class SendRespondentCoENotificationEmailTaskTest {
 
     private DefaultTaskContext testContext;
 
-    private List<String> mandatoryFields = asList(
+    private final List<String> mandatoryFields = asList(
         D_8_CASE_REFERENCE,
         RESP_FIRST_NAME_CCD_FIELD,
         RESP_LAST_NAME_CCD_FIELD,
@@ -87,7 +87,7 @@ public class SendRespondentCoENotificationEmailTaskTest {
         DATETIME_OF_HEARING_CCD_FIELD,
         COURT_NAME_CCD_FIELD);
 
-    private List<String> solMandatoryFields = asList(
+    private final List<String> solMandatoryFields = asList(
         D_8_PETITIONER_FIRST_NAME,
         D_8_PETITIONER_LAST_NAME,
         RESP_FIRST_NAME_CCD_FIELD,

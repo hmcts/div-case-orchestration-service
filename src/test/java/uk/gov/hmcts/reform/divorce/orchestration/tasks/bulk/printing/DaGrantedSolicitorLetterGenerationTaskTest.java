@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import uk.gov.hmcts.reform.bsp.common.model.document.Addressee;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DaGrantedRespondentSolicitorCoverLetter;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.docmosis.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest;
@@ -21,12 +21,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETIT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.docmosis.DocmosisTemplateTestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.RESPONDENT_SOLICITORS_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.RESPONDENT_SOLICITORS_EXPECTED_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.RESPONDENT_SOLICITOR_REF;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.CTSC_CONTACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.LETTER_DATE_EXPECTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.LETTER_DATE_FROM_CCD;
@@ -53,7 +53,7 @@ public class DaGrantedSolicitorLetterGenerationTaskTest extends BasePayloadSpeci
         final DocmosisTemplateVars expectedTemplateVars = DaGrantedRespondentSolicitorCoverLetter.daGrantedRespondentSolicitorCoverLetterBuilder()
             .petitionerFullName(TEST_PETITIONER_FULL_NAME)
             .respondentFullName(TEST_RESPONDENT_FULL_NAME)
-            .caseReference(CASE_ID)
+            .caseReference(TEST_CASE_ID)
             .letterDate(LETTER_DATE_EXPECTED)
             .ctscContactDetails(CTSC_CONTACT)
             .addressee(Addressee.builder().name(RESPONDENT_SOLICITORS_EXPECTED_NAME).formattedAddress(RESPONDENT_SOLICITORS_ADDRESS).build())

@@ -94,16 +94,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.junit.rules.ExpectedException.none;
 import static org.mockito.ArgumentMatchers.any;
@@ -112,8 +111,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.DOCUMENT_TYPE;
@@ -131,6 +130,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.controller.util.CallbackControllerTestUtils.assertCaseOrchestrationServiceExceptionIsSetProperly;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
@@ -619,7 +619,7 @@ public class CaseOrchestrationServiceImplTest {
 
         assertEquals(Collections.EMPTY_MAP, actual);
 
-        verifyZeroInteractions(updateToCCDWorkflow);
+        verifyNoInteractions(updateToCCDWorkflow);
     }
 
     @Test
@@ -631,7 +631,7 @@ public class CaseOrchestrationServiceImplTest {
 
         assertEquals(Collections.EMPTY_MAP, actual);
 
-        verifyZeroInteractions(updateToCCDWorkflow);
+        verifyNoInteractions(updateToCCDWorkflow);
     }
 
 
@@ -696,10 +696,7 @@ public class CaseOrchestrationServiceImplTest {
             classUnderTest.sendPetitionerSubmissionNotificationEmail(ccdCallbackRequest);
             fail("Should have caught exception");
         } catch (CaseOrchestrationServiceException exception) {
-            assertThat(exception.getCause(), instanceOf(WorkflowException.class));
-            Optional<String> caseId = exception.getCaseId();
-            assertThat(caseId.isPresent(), is(true));
-            assertThat(caseId.get(), is(TEST_CASE_ID));
+            assertCaseOrchestrationServiceExceptionIsSetProperly(exception);
         }
     }
 
@@ -1026,7 +1023,7 @@ public class CaseOrchestrationServiceImplTest {
         classUnderTest
             .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
-        verifyZeroInteractions(documentGenerationWorkflow);
+        verifyNoInteractions(documentGenerationWorkflow);
     }
 
     @Test
@@ -1640,7 +1637,7 @@ public class CaseOrchestrationServiceImplTest {
         Map<String, Object> returnedPayload = classUnderTest.ccdCallbackConfirmPersonalService(ccdCallbackRequest, AUTH_TOKEN);
 
         assertThat(returnedPayload, equalTo(requestPayload));
-        verifyZeroInteractions(ccdCallbackBulkPrintWorkflow);
+        verifyNoInteractions(ccdCallbackBulkPrintWorkflow);
     }
 
     @Test
@@ -1804,10 +1801,7 @@ public class CaseOrchestrationServiceImplTest {
             classUnderTest.setupConfirmServicePaymentEvent(ccdCallbackRequest);
             fail("Should have caught exception");
         } catch (CaseOrchestrationServiceException exception) {
-            assertThat(exception.getCause(), instanceOf(WorkflowException.class));
-            Optional<String> caseId = exception.getCaseId();
-            assertThat(caseId.isPresent(), is(true));
-            assertThat(caseId.get(), is(TEST_CASE_ID));
+            assertCaseOrchestrationServiceExceptionIsSetProperly(exception);
         }
     }
 

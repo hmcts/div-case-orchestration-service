@@ -1217,6 +1217,23 @@ public class CallbackController {
                 .build());
     }
 
+    @PostMapping(path = "/prepare-aos-not-received-for-submission")
+    @ApiOperation(value = "Prepare event for submission")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")
+    })
+    public ResponseEntity<CcdCallbackResponse> prepareAosNotReceivedForSubmission(
+        @RequestHeader(AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(aosService.prepareAosNotReceivedEventForSubmission(authorizationToken, ccdCallbackRequest.getCaseDetails()))
+                .build());
+    }
+
     @ExceptionHandler(CaseOrchestrationServiceException.class)
     ResponseEntity<CcdCallbackResponse> handleCaseOrchestrationServiceExceptionForCcdCallback(CaseOrchestrationServiceException exception) {
         log.error(exception.getIdentifiableMessage(), exception);

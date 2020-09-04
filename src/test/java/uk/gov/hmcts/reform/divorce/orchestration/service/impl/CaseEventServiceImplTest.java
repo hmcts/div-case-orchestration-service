@@ -13,8 +13,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.CleanStateFromCaseDat
 import java.util.Map;
 
 import static java.util.Collections.singletonMap;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;

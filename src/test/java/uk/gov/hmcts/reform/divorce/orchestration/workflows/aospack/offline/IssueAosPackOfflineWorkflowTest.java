@@ -45,7 +45,7 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.AOS_OFFLINE_FIVE_YEAR_SEPARATION_DOCUMENT_TYPE;
@@ -140,7 +140,7 @@ public class IssueAosPackOfflineWorkflowTest {
     @Captor
     private ArgumentCaptor<TaskContext> taskContextArgumentCaptor;
 
-    private String testAuthToken = "authToken";
+    private final String testAuthToken = "authToken";
     private CaseDetails caseDetails;
 
     @Before
@@ -434,7 +434,7 @@ public class IssueAosPackOfflineWorkflowTest {
     }
 
     private void verifyModifyDueDateIsNotCalled() {
-        verifyZeroInteractions(modifyDueDate);
+        verifyNoInteractions(modifyDueDate);
     }
 
     private void verifyBulkPrintIsCalledAsExpected(String expectedLetterType, List<String> expectedDocumentTypesToPrint) {

@@ -5,7 +5,8 @@
       "D8caseReference": "LV80D85000",
       "D8PetitionerEmail": "petitioner@divorce.co.uk",
       "D8PetitionerFirstName": "Ted",
-      "D8PetitionerLastName": "Jones"
+      "D8PetitionerLastName": "Jones",
+      "D8DerivedPetitionerCorrespondenceAddr": "10 Jones's Close\nLondon"
     }
   }
 }

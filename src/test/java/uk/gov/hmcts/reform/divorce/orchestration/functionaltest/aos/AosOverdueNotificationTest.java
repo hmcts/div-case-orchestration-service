@@ -2,11 +2,9 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.aos;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -30,7 +28,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -84,7 +82,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.notification.SendN
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.notification.SendNoticeOfProceedingsEmailTask.EVENT_ISSUE_AOS_FROM_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
-@RunWith(SpringRunner.class)
 public class AosOverdueNotificationTest extends MockedFunctionalTest {
     private static final String API_URL = "/petition-updated";
     private static String testEventId;
@@ -176,7 +173,7 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
-        verifyZeroInteractions(mockEmailClient);
+        verifyNoInteractions(mockEmailClient);
     }
 
     @Test

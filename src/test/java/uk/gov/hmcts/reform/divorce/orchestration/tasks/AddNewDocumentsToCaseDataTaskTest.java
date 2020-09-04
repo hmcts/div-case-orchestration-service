@@ -17,10 +17,10 @@ import java.util.Map;
 
 import static java.util.Collections.emptySet;
 import static java.util.UUID.randomUUID;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 
@@ -77,7 +77,7 @@ public class AddNewDocumentsToCaseDataTaskTest {
 
         assertThat(response, is(payload));
 
-        verifyZeroInteractions(ccdUtil);
+        verifyNoInteractions(ccdUtil);
     }
 
     @Test
@@ -90,7 +90,7 @@ public class AddNewDocumentsToCaseDataTaskTest {
 
         assertThat(response, is(payload));
 
-        verifyZeroInteractions(ccdUtil);
+        verifyNoInteractions(ccdUtil);
     }
 
 }

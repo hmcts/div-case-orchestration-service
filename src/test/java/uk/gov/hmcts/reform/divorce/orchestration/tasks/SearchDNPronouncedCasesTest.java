@@ -22,9 +22,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -41,7 +41,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSup
 @RunWith(MockitoJUnitRunner.class)
 public class SearchDNPronouncedCasesTest {
 
-    private static String DN_GRANTED_DATE = String.format("data.%s", DECREE_NISI_GRANTED_DATE_CCD_FIELD);
+    private static final String DN_GRANTED_DATE = String.format("data.%s", DECREE_NISI_GRANTED_DATE_CCD_FIELD);
 
     @Mock
     private CMSElasticSearchSupport mockCmsElasticSearchSupport;
@@ -50,7 +50,7 @@ public class SearchDNPronouncedCasesTest {
     private SearchDNPronouncedCases classUnderTest;
 
     private static final String TWO_MINUTES = "2m";
-    private String timeSinceDNWasPronounced = TWO_MINUTES;
+    private final String timeSinceDNWasPronounced = TWO_MINUTES;
 
     private DefaultTaskContext contextBeingModified;
 

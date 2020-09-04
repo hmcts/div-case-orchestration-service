@@ -18,7 +18,7 @@ import java.util.Map;
 
 import static org.assertj.core.util.Sets.newLinkedHashSet;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;

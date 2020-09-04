@@ -143,7 +143,7 @@ public class CaseListedForHearingCallbackTest extends MockedFunctionalTest {
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
         verify(mockEmailService).sendEmailAndReturnExceptionIfFails(eq(TEST_PETITIONER_EMAIL), anyString(), anyMap(), anyString(), any());
-        verify(mockEmailService).sendEmailAndReturnExceptionIfFails(eq(TEST_RESPONDENT_EMAIL), anyString(), anyMap(), anyString(), any());;
+        verify(mockEmailService).sendEmailAndReturnExceptionIfFails(eq(TEST_RESPONDENT_EMAIL), anyString(), anyMap(), anyString(), any());
     }
 
     @Test
