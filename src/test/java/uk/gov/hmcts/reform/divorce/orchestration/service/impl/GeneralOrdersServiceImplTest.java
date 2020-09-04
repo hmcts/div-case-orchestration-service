@@ -1,26 +1,19 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.GeneralOrderServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalorder.GenerateGeneralOrderDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalorder.GenerateGeneralOrderWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionDateWorkflow;
-
-import java.util.Map;
 
 import static java.util.Collections.EMPTY_MAP;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -55,7 +48,7 @@ public class GeneralOrdersServiceImplTest {
     }
 
     @Test
-    public void generateGeneralOrderDraft() throws GeneralOrderServiceException, WorkflowException  {
+    public void generateGeneralOrderDraft() throws GeneralOrderServiceException, WorkflowException {
         when(generateGeneralOrderDraftWorkflow.run(caseDetails, AUTH_TOKEN)).thenReturn(caseDetails.getCaseData());
 
         CcdCallbackResponse response = generalOrdersService.generateGeneralOrderDraft(caseDetails, AUTH_TOKEN);
