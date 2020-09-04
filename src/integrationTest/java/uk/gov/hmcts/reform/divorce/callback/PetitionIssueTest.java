@@ -17,8 +17,8 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.util.DateConstants.CCD_DATE_FORMATTER;
 
 public class PetitionIssueTest extends IntegrationTest {

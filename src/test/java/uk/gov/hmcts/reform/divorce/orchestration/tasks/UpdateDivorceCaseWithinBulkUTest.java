@@ -17,7 +17,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseCon
 public class UpdateDivorceCaseWithinBulkUTest {
 
 
-    private UpdateDivorceCaseWithinBulk classToTest  = new UpdateDivorceCaseWithinBulk();
+    private final UpdateDivorceCaseWithinBulk classToTest  = new UpdateDivorceCaseWithinBulk();
 
     @Test
     public void givenEmptyMap_whenGetEvents_thenReturnEmptyList() {

@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -95,10 +96,9 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
     }
 
     void stubPinDetailsEndpoint(String authHeader, GeneratePinRequest pinRequest, Pin response) {
-        final String AppJsonUtf8 = APPLICATION_JSON_VALUE + ";charset=UTF-8";
         idamServer.stubFor(post(IDAM_PIN_DETAILS_CONTEXT_PATH)
             .withHeader(AUTHORIZATION, new EqualToPattern(authHeader))
-            .withHeader(CONTENT_TYPE, new EqualToPattern(AppJsonUtf8))
+            .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
             .withRequestBody(equalToJson(convertObjectToJsonString(pinRequest)))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())

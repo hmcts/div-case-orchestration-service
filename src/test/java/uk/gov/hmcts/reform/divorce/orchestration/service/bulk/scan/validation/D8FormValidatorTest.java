@@ -21,8 +21,8 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.bsp.common.model.validation.out.ValidationStatus.SUCCESS;
 import static uk.gov.hmcts.reform.bsp.common.model.validation.out.ValidationStatus.WARNINGS;
 
@@ -35,7 +35,7 @@ public class D8FormValidatorTest {
     private final D8FormValidator classUnderTest = new D8FormValidator();
     private List<OcrDataField> mandatoryFieldsWithValues;
     private List<String> mandatoryFields;
-    private OcrDataField validD8paymentMethod = new OcrDataField("D8PaymentMethod", "Cheque");
+    private final OcrDataField validD8paymentMethod = new OcrDataField("D8PaymentMethod", "Cheque");
 
     @Before
     public void setup() {
@@ -939,7 +939,7 @@ public class D8FormValidatorTest {
         assertThat(validationResult.getWarnings(), is(emptyList()));
     }
 
-    private Function<String, String> mandatoryFieldIsMissing = fieldName -> String.format("Mandatory field \"%s\" is missing", fieldName);
+    private final Function<String, String> mandatoryFieldIsMissing = fieldName -> String.format("Mandatory field \"%s\" is missing", fieldName);
 
     private String mustBeYesOrNo(String fieldName) {
         return String.format("%s must be \"Yes\" or \"No\"", fieldName);
@@ -953,5 +953,5 @@ public class D8FormValidatorTest {
         return String.format("%s is not in a valid format", fieldName);
     }
 
-    private Function<String, OcrDataField> emptyValueOcrDataField = fieldName -> new OcrDataField(fieldName, "");
+    private final Function<String, OcrDataField> emptyValueOcrDataField = fieldName -> new OcrDataField(fieldName, "");
 }

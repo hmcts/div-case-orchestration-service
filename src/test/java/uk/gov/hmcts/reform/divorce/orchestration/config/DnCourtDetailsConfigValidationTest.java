@@ -10,15 +10,15 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.DnCourt;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class DnCourtDetailsConfigValidationTest {
 
     // Maintain list separately so if property is accidentally removed, this test will fail
-    private List<String> knownCourtIds = Arrays.asList(
+    private final List<String> knownCourtIds = Arrays.asList(
         "birmingham",
         "bradford",
         "liverpool",

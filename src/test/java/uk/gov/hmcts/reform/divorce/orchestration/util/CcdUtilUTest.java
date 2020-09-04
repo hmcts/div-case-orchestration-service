@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.util;
 
 import org.hamcrest.core.Is;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
@@ -22,10 +21,10 @@ import java.util.Map;
 import static java.time.ZoneOffset.UTC;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.core.IsCollectionContaining.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -63,7 +62,7 @@ public class CcdUtilUTest {
 
         ccdUtil = new CcdUtil(clock, getObjectMapperInstance(), localDateToWelshStringConverter);
         when(localDateToWelshStringConverter.convert(isA(LocalDate.class)))
-                .thenReturn(EXPECTED_WELSH_DATE_WITH_CUSTOMER_FORMAT);
+            .thenReturn(EXPECTED_WELSH_DATE_WITH_CUSTOMER_FORMAT);
     }
 
     @Test
@@ -183,7 +182,7 @@ public class CcdUtilUTest {
     @Test
     public void shouldConvertDateFromCCDFormat() {
         String formattedDate = CcdUtil.formatFromCCDFormatToHumanReadableFormat("2017-08-15");
-        Assert.assertThat(formattedDate, Is.is("15/08/2017"));
+        assertThat(formattedDate, Is.is("15/08/2017"));
     }
 
     @Test

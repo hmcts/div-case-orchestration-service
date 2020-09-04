@@ -4,7 +4,7 @@ import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class CaseOrchestrationServiceExceptionTest {
 
