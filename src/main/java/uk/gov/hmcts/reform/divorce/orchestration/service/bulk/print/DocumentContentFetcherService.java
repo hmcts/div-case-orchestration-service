@@ -57,7 +57,10 @@ public class DocumentContentFetcherService {
             throw new FetchingDocumentFromDmStoreException(String.format("Unexpected code from DM store: %s ", response.getStatusCode()));
         }
 
-        log.info("Fetch content of document from DM {}, size: {}", document.getFileName(), response.getBody().length);
+        byte[] responseBody = response.getBody();
+        if (responseBody != null) {
+            log.info("Fetch content of document from DM {}, size: {}", document.getFileName(), responseBody.length);
+        }
 
         return response;
     }
