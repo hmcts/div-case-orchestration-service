@@ -74,7 +74,7 @@ public class UpdateDNPronouncedCaseEventListenerTest {
     }
 
     private int casesProcessedCountInContext() {
-        return (int) context.getTransientObject(CASES_ELIGIBLE_FOR_DA_PROCESSED_COUNT);
+        return context.getTransientObject(CASES_ELIGIBLE_FOR_DA_PROCESSED_COUNT);
     }
 
     private void resetCassesProcessedCountInContext() {

@@ -167,7 +167,7 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
     @Captor
     private ArgumentCaptor<List<GeneratedDocumentInfo>> documentsToPrintCaptor;
 
-    private static String COSTS_ORDER_TEMPLATE_ID = "FL-DIV-DEC-ENG-00060.docx";
+    private static final String COSTS_ORDER_TEMPLATE_ID = "FL-DIV-DEC-ENG-00060.docx";
 
     @Test
     public void givenCaseDataWithNoPaysCosts_whenDnPronounced_thenSendGenericNotifications() throws Exception {

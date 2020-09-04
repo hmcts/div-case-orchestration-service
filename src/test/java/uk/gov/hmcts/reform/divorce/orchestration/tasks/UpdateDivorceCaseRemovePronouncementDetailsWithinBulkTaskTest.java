@@ -15,7 +15,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseCon
 
 public class UpdateDivorceCaseRemovePronouncementDetailsWithinBulkTaskTest {
 
-    private UpdateDivorceCaseRemovePronouncementDetailsWithinBulkTask classToTest =
+    private final UpdateDivorceCaseRemovePronouncementDetailsWithinBulkTask classToTest =
             new UpdateDivorceCaseRemovePronouncementDetailsWithinBulkTask();
 
     @Test

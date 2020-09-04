@@ -28,8 +28,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CUSTOMER_FACING_NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE;
@@ -157,7 +157,7 @@ public class SendDaGrantedNotificationEmailTaskTest {
             sendDaGrantedNotificationEmail.execute(context, testData);
             fail("Failed to throw task exception");
         } catch (TaskException e) {
-            verifyZeroInteractions(emailService);
+            verifyNoInteractions(emailService);
             assertThat(e.getMessage(), is(format("Could not evaluate value of mandatory property \"%s\"", "D8PetitionerEmail")));
         }
     }

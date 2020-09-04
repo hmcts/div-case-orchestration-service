@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
@@ -61,7 +61,7 @@ public class DeemedApprovedEmailTaskTest {
 
         deemedApprovedEmailTask.execute(getTaskContext(), caseData);
 
-        verifyZeroInteractions(emailService);
+        verifyNoInteractions(emailService);
     }
 
     public static Map<String, String> getExpectedNotificationTemplateVars() {

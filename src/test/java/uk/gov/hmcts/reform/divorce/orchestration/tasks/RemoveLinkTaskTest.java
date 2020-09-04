@@ -7,13 +7,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 
 public class RemoveLinkTaskTest {
 
-    private RemoveLinkTask classToTest = new RemoveLinkTask();
+    private final RemoveLinkTask classToTest = new RemoveLinkTask();
 
     @Test
     public void testExecuteTaskBulkListingLinkIsRemoved() throws TaskException {

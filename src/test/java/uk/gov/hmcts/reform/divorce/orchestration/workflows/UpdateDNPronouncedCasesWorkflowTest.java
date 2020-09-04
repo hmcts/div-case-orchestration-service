@@ -26,7 +26,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RunWith(MockitoJUnitRunner.class)
 public class UpdateDNPronouncedCasesWorkflowTest {
 
-    private static int EXPECTED_CASES_PROCESSED_COUNT = 10;
+    private static final int EXPECTED_CASES_PROCESSED_COUNT = 10;
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();

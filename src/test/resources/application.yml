@@ -440,7 +440,7 @@ idam:
   client:
     redirect_uri: ${IDAM_API_REDIRECT_URL:http://localhost:8080/authenticated}
     port: 4503
-    secret: ${IDAM_CLIENT_SECRET:dummysecret}
+    secret: ${IDAM_CLIENT_SECRET:DUMMYSECRET123456789}
     id: divorce
     health:
       context-path: /health
@@ -453,7 +453,7 @@ idam:
   s2s-auth:
     url: ${SERVICE_AUTH_PROVIDER_URL:http://localhost:4504}
     microservice: ${SERVICE_AUTH_MICROSERVICE:divorce_frontend}
-    secret: ${SERVICE_AUTH_SECRET:dummysecret}
+    secret: ${SERVICE_AUTH_SECRET:DUMMYSECRET123456789}
     services-allowed-to-update: ${BSP_SERVICES_ALLOWED_TO_UPDATE:bulk_scan_orchestrator}
     services-allowed-to-validate: ${BSP_SERVICES_ALLOWED_TO_VALIDATE:bulk_scan_processor}
   api:

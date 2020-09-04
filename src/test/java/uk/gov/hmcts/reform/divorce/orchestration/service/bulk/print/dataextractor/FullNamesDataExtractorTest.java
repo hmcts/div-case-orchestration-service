@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -35,14 +34,14 @@ public class FullNamesDataExtractorTest {
     public void getPetitionerFullNameReturnsValidStringWhenAllFieldsPopulated() {
         Map<String, Object> caseData = buildCaseDataWithPetitionerNames();
 
-        Assert.assertThat(FullNamesDataExtractor.getPetitionerFullName(caseData), is(TEST_PETITIONER_FULL_NAME));
+        assertThat(FullNamesDataExtractor.getPetitionerFullName(caseData), is(TEST_PETITIONER_FULL_NAME));
     }
 
     @Test
     public void getPetitionerSolicitorFullNameReturnsValidStringWhensPopulated() {
         Map<String, Object> caseData = new HashMap<>(ImmutableMap.of(PETITIONER_SOLICITOR_NAME, "John Smith"));
 
-        Assert.assertThat(FullNamesDataExtractor.getPetitionerSolicitorFullName(caseData), is("John Smith"));
+        assertThat(FullNamesDataExtractor.getPetitionerSolicitorFullName(caseData), is("John Smith"));
     }
 
     @Test
@@ -65,7 +64,7 @@ public class FullNamesDataExtractorTest {
     public void getRespondentSolicitorFullNameReturnsValidStringWhensPopulated() {
         Map<String, Object> caseData = new HashMap<>(ImmutableMap.of(RESPONDENT_SOLICITOR_NAME, "John Smith"));
 
-        Assert.assertThat(FullNamesDataExtractor.getRespondentSolicitorFullName(caseData), is("John Smith"));
+        assertThat(FullNamesDataExtractor.getRespondentSolicitorFullName(caseData), is("John Smith"));
     }
 
     @Test
@@ -88,7 +87,7 @@ public class FullNamesDataExtractorTest {
     public void getCoRespondentSolicitorFullNameReturnsValidStringWhensPopulated() {
         Map<String, Object> caseData = new HashMap<>(ImmutableMap.of(CO_RESPONDENT_SOLICITOR_NAME, "John Smith"));
 
-        Assert.assertThat(FullNamesDataExtractor.getCoRespondentSolicitorFullName(caseData), is("John Smith"));
+        assertThat(FullNamesDataExtractor.getCoRespondentSolicitorFullName(caseData), is("John Smith"));
     }
 
     @Test

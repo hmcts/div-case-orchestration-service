@@ -5,15 +5,15 @@ import org.junit.Test;
 import java.util.Map;
 
 import static java.util.Collections.singletonMap;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.core.AllOf.allOf;
-import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_OUTCOME_FLAG_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 public class AddDNOutcomeFlagTaskTest {
 
-    private AddDnOutcomeFlagFieldTask classToTest = new AddDnOutcomeFlagFieldTask();
+    private final AddDnOutcomeFlagFieldTask classToTest = new AddDnOutcomeFlagFieldTask();
 
     @Test
     public void shouldAddDNOutcomeFlagPayload() {

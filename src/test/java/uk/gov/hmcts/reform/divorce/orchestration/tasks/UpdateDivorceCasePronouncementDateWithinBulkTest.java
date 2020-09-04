@@ -15,7 +15,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseCon
 
 public class UpdateDivorceCasePronouncementDateWithinBulkTest {
 
-    private UpdateDivorceCasePronouncementDateWithinBulk classToTest  = new UpdateDivorceCasePronouncementDateWithinBulk();
+    private final UpdateDivorceCasePronouncementDateWithinBulk classToTest  = new UpdateDivorceCasePronouncementDateWithinBulk();
 
     @Test
     public void givenBulkCase_whenGetEvents_thenReturnBulkPronounceEvent() {
