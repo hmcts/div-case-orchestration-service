@@ -19,6 +19,7 @@ import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.reform.bsp.common.model.validation.BulkScanValidationPatterns.CCD_EMAIL_REGEX;
 import static uk.gov.hmcts.reform.bsp.common.model.validation.BulkScanValidationPatterns.CCD_PHONE_NUMBER_REGEX;
 import static uk.gov.hmcts.reform.bsp.common.service.validation.PostcodeValidator.validatePostcode;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.HELP_WITH_FEES_REF_NUMBER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -230,7 +231,7 @@ public class D8FormValidator extends BulkScanFormValidator {
 
         List<String> validationWarningMessages = new ArrayList<>();
 
-        String hwfReferenceNumber = fieldsMap.getOrDefault("D8HelpWithFeesReferenceNumber", "");
+        String hwfReferenceNumber = fieldsMap.getOrDefault(HELP_WITH_FEES_REF_NUMBER, "");
         String d8PaymentMethod = fieldsMap.getOrDefault("D8PaymentMethod", "");
 
         boolean isMultiplePaymentMethodsProvided =

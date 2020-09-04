@@ -106,7 +106,7 @@ public class FullNamesDataExtractorTest {
         return caseData;
     }
 
-    private static Map<String, Object> buildCaseDataWithPetitionerNames() {
+    static Map<String, Object> buildCaseDataWithPetitionerNames() {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         caseData.put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);

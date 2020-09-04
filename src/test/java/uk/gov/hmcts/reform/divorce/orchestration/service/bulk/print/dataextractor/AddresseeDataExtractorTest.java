@@ -28,16 +28,19 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.CaseDataKeys.PETITIONER_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.CaseDataKeys.RESPONDENT_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.CaseDataKeys.RESPONDENT_SOLICITOR_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.COSTS_CLAIM_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.buildCaseDataWithCoRespondentNames;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.buildCaseDataWithCoRespondentSolicitorNames;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.buildCaseDataWithPetitionerNames;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.buildCaseDataWithRespondentNames;
 
 public class AddresseeDataExtractorTest {
 
+    public static final String PETITIONERS_ADDRESS = "456 Petitioner Str\nPetitionville\nPetitionshire\nPE4 J0N";
     public static final String RESPONDENTS_ADDRESS = "123 Respondent Str\nRespondent\ncounty\nRE5 P0N";
     public static final String RESPONDENT_SOLICITORS_ADDRESS = "321 Resp Solicitor\ntown\ncounty\npostcode";
     public static final String RESPONDENT_SOLICITOR_REF = "SolRef4567";
@@ -57,6 +60,16 @@ public class AddresseeDataExtractorTest {
 
         assertThat(addressee.getFormattedAddress(), is(RESPONDENTS_ADDRESS));
         assertThat(addressee.getName(), is(TestConstants.TEST_RESPONDENT_FULL_NAME));
+    }
+
+    @Test
+    public void getPetitionerShouldReturnValidValues() {
+        Map<String, Object> caseData = buildCaseDataWithPetitioner();
+
+        Addressee addressee = AddresseeDataExtractor.getPetitioner(caseData);
+
+        assertThat(addressee.getFormattedAddress(), is(PETITIONERS_ADDRESS));
+        assertThat(addressee.getName(), is(TestConstants.TEST_PETITIONER_FULL_NAME));
     }
 
     @Test
@@ -84,6 +97,13 @@ public class AddresseeDataExtractorTest {
         Map<String, Object> caseData = buildCaseDataWithRespondentNames();
 
         AddresseeDataExtractor.getRespondent(caseData);
+    }
+
+    @Test(expected = InvalidDataForTaskException.class)
+    public void getPetitionerShouldThrowExceptionWhenAddressIsNotPresent() {
+        Map<String, Object> caseData = buildCaseDataWithPetitionerNames();
+
+        AddresseeDataExtractor.getPetitioner(caseData);
     }
 
     @Test
@@ -126,6 +146,13 @@ public class AddresseeDataExtractorTest {
     public static Map<String, Object> buildCaseDataWithRespondent() {
         Map<String, Object> caseData = buildCaseDataWithRespondentNames();
         caseData.put(RESPONDENT_ADDRESS, RESPONDENTS_ADDRESS);
+
+        return caseData;
+    }
+
+    public static Map<String, Object> buildCaseDataWithPetitioner() {
+        Map<String, Object> caseData = buildCaseDataWithPetitionerNames();
+        caseData.put(PETITIONER_ADDRESS, PETITIONERS_ADDRESS);
 
         return caseData;
     }
