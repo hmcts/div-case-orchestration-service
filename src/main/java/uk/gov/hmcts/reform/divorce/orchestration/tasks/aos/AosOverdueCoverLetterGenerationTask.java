@@ -12,9 +12,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.AOS_OVERDUE_COVER_LETTER_TEMPLATE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.HELP_WITH_FEES_REF_NUMBER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_OVERDUE_COVER_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.HELP_WITH_FEES_REF_NUMBER_CCD_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.getPetitioner;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.formatCaseIdToReferenceNumber;
@@ -34,7 +34,7 @@ public class AosOverdueCoverLetterGenerationTask extends BasePayloadSpecificDocu
             .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
             .caseReference(formatCaseIdToReferenceNumber(context.getTransientObject(CASE_ID_JSON_KEY)))
             .addressee(getPetitioner(caseData))
-            .helpWithFeesNumber(getOptionalPropertyValueAsString(caseData, HELP_WITH_FEES_REF_NUMBER_CCD_KEY, null))
+            .helpWithFeesNumber(getOptionalPropertyValueAsString(caseData, HELP_WITH_FEES_REF_NUMBER, null))
             .build();
     }
 

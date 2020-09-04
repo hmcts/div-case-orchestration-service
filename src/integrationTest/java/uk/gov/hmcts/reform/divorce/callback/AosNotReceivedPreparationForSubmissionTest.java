@@ -18,7 +18,7 @@ public class AosNotReceivedPreparationForSubmissionTest extends IntegrationTest 
     private static final String BASE_CASE_RESPONSE = "fixtures/callback/basic-case.json";
 
     @Test
-    public void givenCase_whenSubmitAOS_thenReturnAOSDataPlusAnswersDocument() throws Exception {
+    public void givenCase_whenSubmitAOSNotReceived_thenReturnAOSOverdueCoverLetter() throws Exception {
         RestAssured
             .given()
             .header(AUTHORIZATION, createCaseWorkerUser().getAuthToken())
