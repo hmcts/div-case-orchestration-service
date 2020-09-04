@@ -39,7 +39,6 @@ public class CcdUtil {
     private final LocalDateToWelshStringConverter localDateToWelshStringConverter;
 
 
-
     public String getCurrentDateCcdFormat() {
         return LocalDate.now(clock).format(DateUtils.Formatters.CCD_DATE);
     }
@@ -124,10 +123,9 @@ public class CcdUtil {
                 .map(GeneratedDocumentInfo::getDocumentType)
                 .collect(Collectors.toSet());
 
-            List<CollectionMember<Document>> documentsGenerated = Optional.ofNullable(existingCaseData.get(D8DOCUMENTS_GENERATED))
-                .map(i -> objectMapper.convertValue(i, new TypeReference<List<CollectionMember<Document>>>() {
-                }))
-                .orElse(new ArrayList<>());
+            List<CollectionMember<Document>> documentsGenerated = getCollectionMembersOrEmptyList(
+                existingCaseData, D8DOCUMENTS_GENERATED
+            );
 
             List<CollectionMember<Document>> resultDocuments = new ArrayList<>();
 
@@ -154,4 +152,24 @@ public class CcdUtil {
         return existingCaseData;
     }
 
+    public Map<String, Object> addNewDocumentToCollection(Map<String, Object> caseData, GeneratedDocumentInfo document, String field) {
+        if (caseData == null || document == null || field == null) {
+            throw new IllegalArgumentException("Invalid input. No nulls allowed.");
+        }
+
+        List<CollectionMember<Document>> allDocuments = getCollectionMembersOrEmptyList(caseData, field);
+        CollectionMember<Document> documentCollectionMemberToAdd = CcdMappers.mapDocumentInfoToCcdDocument(document);
+
+        allDocuments.add(documentCollectionMemberToAdd);
+        caseData.put(field, allDocuments);
+
+        return caseData;
+    }
+
+    public List<CollectionMember<Document>> getCollectionMembersOrEmptyList(Map<String, Object> caseData, String field) {
+        return Optional.ofNullable(caseData.get(field))
+            .map(i -> objectMapper.convertValue(i, new TypeReference<List<CollectionMember<Document>>>() {
+            }))
+            .orElse(new ArrayList<>());
+    }
 }

@@ -24,8 +24,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 public abstract class BasePayloadSpecificDocumentGenerationTask implements Task<Map<String, Object>> {
 
     protected final CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService;
-    private final PdfDocumentGenerationService pdfDocumentGenerationService;
-    private final CcdUtil ccdUtil;
+    protected final PdfDocumentGenerationService pdfDocumentGenerationService;
+    protected final CcdUtil ccdUtil;
 
     public BasePayloadSpecificDocumentGenerationTask(
         CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,

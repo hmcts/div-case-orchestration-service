@@ -11,4 +11,14 @@ public class CcdFields {
     public static final String RECEIVED_SERVICE_APPLICATION_DATE = "ReceivedServiceApplicationDate";
     public static final String SERVICE_REFUSAL_DRAFT = "ServiceRefusalDraft";
     public static final String SERVICE_APPLICATION_REFUSAL_REASON = "ServiceApplicationRefusalReason";
+
+    public static final String GENERAL_ORDERS = "GeneralOrders";
+    public static final String GENERAL_ORDER_DRAFT = "GeneralOrderDraft";
+
+    public static final String JUDGE_TYPE = "JudgeType";
+    public static final String JUDGE_NAME = "JudgeName";
+    public static final String GENERAL_ORDER_DETAILS = "GeneralOrderDetails";
+    public static final String GENERAL_ORDER_DATE = "GeneralOrderDate";
+    public static final String GENERAL_ORDER_RECITALS = "GeneralOrderRecitals";
+    public static final String CO_RESPONDENT_LINKED_TO_CASE = "CoRespLinkedToCase";
 }
