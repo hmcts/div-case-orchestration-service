@@ -37,10 +37,13 @@ public enum AOSPackOfflineConstants {
     DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER_TEMPLATE_ID("FL-DIV-GOR-ENG-00353.docx"),
 
     COE_RESPONDENT_LETTER_DOCUMENT_TYPE("coeRespondentLetter"),
-    COE_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE("coeRespondentSolicitorLetter");
+    COE_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE("coeRespondentSolicitorLetter"),
+
+    AOS_OVERDUE_COVER_LETTER_TEMPLATE_ID("FL-DIV-LET-ENG-00537.odt");
 
     private final String value;
     AOSPackOfflineConstants(String value) {
         this.value = value;
     }
+
 }
