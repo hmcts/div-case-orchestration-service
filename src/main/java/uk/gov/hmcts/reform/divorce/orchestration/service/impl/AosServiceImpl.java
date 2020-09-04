@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorcePar
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosNotReceivedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueEligibilityWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline.AosPackOfflineAnswersWorkflow;
@@ -28,6 +29,7 @@ public class AosServiceImpl implements AosService {
     private final AosPackOfflineAnswersWorkflow aosPackOfflineAnswersWorkflow;
     private final AosOverdueEligibilityWorkflow aosOverdueEligibilityWorkflow;
     private final AosOverdueWorkflow aosOverdueWorkflow;
+    private final AosNotReceivedWorkflow aosNotReceivedWorkflow;
 
     @Override
     public Map<String, Object> issueAosPackOffline(String authToken, CaseDetails caseDetails, DivorceParty divorceParty)
@@ -86,6 +88,19 @@ public class AosServiceImpl implements AosService {
         }
 
         log.info("Moved case [id: {}] to AOSOverdue.", caseId);
+    }
+
+    @Override
+    public Map<String, Object> prepareAosNotReceivedEventForSubmission(String authToken,
+                                                                       CaseDetails caseDetails) throws CaseOrchestrationServiceException {
+
+        String caseId = caseDetails.getCaseId();
+        try {
+            return aosNotReceivedWorkflow.prepareForSubmission(authToken, caseId, caseDetails.getCaseData());
+        } catch (WorkflowException workflowException) {
+            throw new CaseOrchestrationServiceException(workflowException, caseId);
+        }
+
     }
 
 }

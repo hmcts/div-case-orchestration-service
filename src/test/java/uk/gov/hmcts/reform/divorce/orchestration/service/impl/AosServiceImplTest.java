@@ -11,6 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosNotReceivedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueEligibilityWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline.AosPackOfflineAnswersWorkflow;
@@ -19,12 +20,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline.Issue
 import java.util.Map;
 
 import static java.lang.String.format;
-import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.isA;
+import static org.junit.Assert.fail;
 import static org.junit.rules.ExpectedException.none;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -33,6 +33,10 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INCOMING_PAYLOAD;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PAYLOAD_TO_RETURN;
+import static uk.gov.hmcts.reform.divorce.orchestration.controller.util.CallbackControllerTestUtils.assertCaseOrchestrationServiceExceptionIsSetProperly;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
@@ -57,6 +61,9 @@ public class AosServiceImplTest {
     @Mock
     private AosOverdueWorkflow aosOverdueWorkflow;
 
+    @Mock
+    private AosNotReceivedWorkflow aosNotReceivedWorkflow;
+
     @InjectMocks
     private AosServiceImpl classUnderTest;
 
@@ -66,17 +73,16 @@ public class AosServiceImplTest {
     @Before
     public void setUp() {
         testAuthToken = "testAuthToken";
-        caseDetails = CaseDetails.builder().caseData(emptyMap()).build();
+        caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(TEST_INCOMING_PAYLOAD).build();
     }
 
     @Test
     public void testWorkflowIsCalledWithRightParams() throws WorkflowException, CaseOrchestrationServiceException {
-        Map<String, Object> returnValue = singletonMap("returnedKey", "returnedValue");
-        when(issueAosPackOfflineWorkflow.run(any(), any(), any())).thenReturn(returnValue);
+        when(issueAosPackOfflineWorkflow.run(any(), any(), any())).thenReturn(TEST_PAYLOAD_TO_RETURN);
 
         Map<String, Object> result = classUnderTest.issueAosPackOffline(testAuthToken, caseDetails, RESPONDENT);
 
-        assertThat(result, equalTo(returnValue));
+        assertThat(result, equalTo(TEST_PAYLOAD_TO_RETURN));
         verify(issueAosPackOfflineWorkflow).run(eq(testAuthToken), eq(caseDetails), eq(RESPONDENT));
     }
 
@@ -109,19 +115,16 @@ public class AosServiceImplTest {
         expectedException.expect(CaseOrchestrationServiceException.class);
         expectedException.expectCause(isA(WorkflowException.class));
 
-        CaseDetails caseDetails = CaseDetails.builder().caseId("123456789").build();
         classUnderTest.issueAosPackOffline(null, caseDetails, RESPONDENT);
     }
 
     @Test
     public void shouldCallWorkflowAndReturnPayload() throws WorkflowException, CaseOrchestrationServiceException {
-        when(aosPackOfflineAnswersWorkflow.run(any(), any(), any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
+        when(aosPackOfflineAnswersWorkflow.run(any(), any(), any())).thenReturn(TEST_PAYLOAD_TO_RETURN);
 
-        Map<String, Object> incomingPayload = singletonMap("incomingKey", "incomingValue");
-        CaseDetails caseDetails = CaseDetails.builder().caseData(incomingPayload).build();
         Map<String, Object> returnedPayload = classUnderTest.processAosPackOfflineAnswers(AUTH_TOKEN, caseDetails, RESPONDENT);
 
-        assertThat(returnedPayload, hasEntry("returnedKey", "returnedValue"));
+        assertThat(returnedPayload, equalTo(TEST_PAYLOAD_TO_RETURN));
         verify(aosPackOfflineAnswersWorkflow).run(eq(AUTH_TOKEN), eq(caseDetails), eq(RESPONDENT));
     }
 
@@ -131,7 +134,6 @@ public class AosServiceImplTest {
         expectedException.expect(CaseOrchestrationServiceException.class);
         expectedException.expectCause(isA(WorkflowException.class));
 
-        CaseDetails caseDetails = CaseDetails.builder().build();
         classUnderTest.processAosPackOfflineAnswers(AUTH_TOKEN, caseDetails, RESPONDENT);
     }
 
@@ -155,19 +157,41 @@ public class AosServiceImplTest {
 
     @Test
     public void shouldCallAppropriateWorkflow_WhenMakingCasesAosOverdue() throws WorkflowException, CaseOrchestrationServiceException {
-        classUnderTest.makeCaseAosOverdue(AUTH_TOKEN, "123");
+        classUnderTest.makeCaseAosOverdue(AUTH_TOKEN, TEST_CASE_ID);
 
-        verify(aosOverdueWorkflow).run(AUTH_TOKEN, "123");
+        verify(aosOverdueWorkflow).run(AUTH_TOKEN, TEST_CASE_ID);
     }
 
     @Test
     public void shouldThrowAppropriateException_WhenCatchingWorkflowException_AosOverdue()
         throws WorkflowException, CaseOrchestrationServiceException {
-        doThrow(WorkflowException.class).when(aosOverdueWorkflow).run(AUTH_TOKEN, "123");
+        doThrow(WorkflowException.class).when(aosOverdueWorkflow).run(AUTH_TOKEN, TEST_CASE_ID);
         expectedException.expect(CaseOrchestrationServiceException.class);
         expectedException.expectCause(isA(WorkflowException.class));
 
-        classUnderTest.makeCaseAosOverdue(AUTH_TOKEN, "123");
+        classUnderTest.makeCaseAosOverdue(AUTH_TOKEN, TEST_CASE_ID);
+    }
+
+    @Test
+    public void shouldCallWorkflow_WhenPreparingAosNotReceivedEventForSubmission() throws WorkflowException, CaseOrchestrationServiceException {
+        when(aosNotReceivedWorkflow.prepareForSubmission(any(), any(), any())).thenReturn(TEST_PAYLOAD_TO_RETURN);
+
+        Map<String, Object> returnedCaseData = classUnderTest.prepareAosNotReceivedEventForSubmission(AUTH_TOKEN, caseDetails);
+
+        assertThat(returnedCaseData, equalTo(TEST_PAYLOAD_TO_RETURN));
+        verify(aosNotReceivedWorkflow).prepareForSubmission(AUTH_TOKEN, TEST_CASE_ID, TEST_INCOMING_PAYLOAD);
+    }
+
+    @Test
+    public void shouldThrowAppropriateException_WhenCatchingWorkflowException_PreparingAosNotReceivedEventForSubmission() throws WorkflowException {
+        when(aosNotReceivedWorkflow.prepareForSubmission(any(), any(), any())).thenThrow(WorkflowException.class);
+
+        try {
+            classUnderTest.prepareAosNotReceivedEventForSubmission(AUTH_TOKEN, caseDetails);
+            fail("Should have thrown exception");
+        } catch (CaseOrchestrationServiceException exception) {
+            assertCaseOrchestrationServiceExceptionIsSetProperly(exception);
+        }
     }
 
 }

@@ -4,8 +4,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.RequestTemplateVarsWrapper;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.docmosis.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 
@@ -29,13 +29,13 @@ public class PdfDocumentGenerationService {
         return documentGeneratorClient.generatePDF(
             GenerateDocumentRequest.builder()
                 .template(templateId)
-                .values(getPreparedDataFromContext(templateModel))
+                .values(wrapDocmosisTemplateVarsForDgs(templateModel))
                 .build(),
             authorisationToken
         );
     }
 
-    private Map<String, Object> getPreparedDataFromContext(DocmosisTemplateVars model) {
+    public static Map<String, Object> wrapDocmosisTemplateVarsForDgs(DocmosisTemplateVars model) {
         return singletonMap(
             DGS_DATA_KEY,
             new RequestTemplateVarsWrapper(model.getCaseReference(), model)
