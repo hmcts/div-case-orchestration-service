@@ -7,8 +7,4 @@ public class GeneralOrderServiceException extends CaseOrchestrationServiceExcept
     public GeneralOrderServiceException(Exception exception) {
         super(exception);
     }
-
-    public GeneralOrderServiceException(WorkflowException exception, String caseId) {
-        super(exception, caseId);
-    }
 }
