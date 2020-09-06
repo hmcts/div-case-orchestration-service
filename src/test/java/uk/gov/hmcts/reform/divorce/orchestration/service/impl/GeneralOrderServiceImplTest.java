@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GeneralOrdersServiceImplTest {
+public class GeneralOrderServiceImplTest {
 
     @Mock
     private GenerateGeneralOrderWorkflow generateGeneralOrderWorkflow;
@@ -28,7 +28,7 @@ public class GeneralOrdersServiceImplTest {
     private GenerateGeneralOrderDraftWorkflow generateGeneralOrderDraftWorkflow;
 
     @InjectMocks
-    private GeneralOrdersServiceImpl generalOrdersService;
+    private GeneralOrderServiceImpl generalOrdersService;
 
     private final CaseDetails caseDetails = CaseDetails.builder().caseData(EMPTY_MAP).build();
 

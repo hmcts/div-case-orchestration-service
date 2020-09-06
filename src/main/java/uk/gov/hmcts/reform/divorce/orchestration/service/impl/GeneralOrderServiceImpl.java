@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalorder.Generate
 
 @Component
 @RequiredArgsConstructor
-public class GeneralOrdersServiceImpl implements GeneralOrderService {
+public class GeneralOrderServiceImpl implements GeneralOrderService {
 
     private final GenerateGeneralOrderWorkflow generateGeneralOrderWorkflow;
     private final GenerateGeneralOrderDraftWorkflow generateGeneralOrderDraftWorkflow;
