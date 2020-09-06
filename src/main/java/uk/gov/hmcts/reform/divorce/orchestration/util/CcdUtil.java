@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -157,13 +158,15 @@ public class CcdUtil {
             throw new IllegalArgumentException("Invalid input. No nulls allowed.");
         }
 
-        List<CollectionMember<Document>> allDocuments = getCollectionMembersOrEmptyList(caseData, field);
         CollectionMember<Document> documentCollectionMemberToAdd = CcdMappers.mapDocumentInfoToCcdDocument(document);
 
+        List<CollectionMember<Document>> allDocuments = getCollectionMembersOrEmptyList(caseData, field);
         allDocuments.add(documentCollectionMemberToAdd);
-        caseData.put(field, allDocuments);
 
-        return caseData;
+        Map<String, Object> copiedMap = new HashMap<>(caseData);
+        copiedMap.put(field, allDocuments);
+
+        return copiedMap;
     }
 
     public List<CollectionMember<Document>> getCollectionMembersOrEmptyList(Map<String, Object> caseData, String field) {
