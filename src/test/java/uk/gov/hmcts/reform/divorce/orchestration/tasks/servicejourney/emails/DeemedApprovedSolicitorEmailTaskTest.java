@@ -28,7 +28,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLIC
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.PET_SOL_DEEMED_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.PETITIONER_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.getPetitionerSolicitorEmail;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
@@ -80,40 +79,12 @@ public class DeemedApprovedSolicitorEmailTaskTest {
     }
 
     @Test
-    public void shouldReturnPersonalisation() {
-        caseData = buildCaseData();
-
-        executePersonalisation(caseData);
-    }
-
-    @Test
     public void shouldReturnTemplate() {
         caseData = buildCaseData();
 
         EmailTemplateNames returnedTemplate = task.getTemplate();
 
         assertEquals(TEST_TEMPLATE, returnedTemplate);
-    }
-
-    @Test
-    public void shouldReturnRecipientEmail() {
-        caseData = buildCaseData();
-
-        String returnedEmail = task.getRecipientEmail(caseData);
-        String expectedEmail = getPetitionerSolicitorEmail(caseData);
-
-        assertEquals(returnedEmail, expectedEmail);
-    }
-
-    @Test
-    public void shouldReturnSubject() {
-        caseData = buildCaseData();
-
-        String returnedSubject = task.getSubject(caseData);
-        String expected =
-            getPetitionerFullName(caseData) + " vs " + getRespondentFullName(caseData) + ": " + SUBJECT_CONTENT;
-
-        assertEquals(returnedSubject, expected);
     }
 
     private Map<String, Object> buildCaseData() {
@@ -134,20 +105,12 @@ public class DeemedApprovedSolicitorEmailTaskTest {
         assertEquals(caseData, returnPayload);
     }
 
-    private void executePersonalisation(Map<String, Object> caseData) {
-        Map returnPersonalisation = task.getPersonalisation(getTaskContext(), caseData);
-
-        Map expectedPersonalisation = getExpectedNotificationTemplateVars(true, testContext, caseData);
-
-        assertEquals(returnPersonalisation, expectedPersonalisation);
-    }
-
     private void verifySolicitorEmailSent(Map<String, Object> caseData) {
         verify(emailService).sendEmail(
             TEST_SOLICITOR_EMAIL,
             TEST_TEMPLATE.name(),
             getExpectedNotificationTemplateVars(true, testContext, caseData),
-            task.getSubject(caseData),
+            getPetitionerFullName(caseData) + " vs " + getRespondentFullName(caseData) + ": " + SUBJECT_CONTENT,
             LanguagePreference.ENGLISH
         );
     }

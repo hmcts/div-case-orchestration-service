@@ -28,7 +28,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.CITIZEN_DEEMED_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.PETITIONER_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.getPetitionerEmail;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
@@ -78,38 +77,12 @@ public class DeemedNotApprovedPetitionerEmailTaskTest {
     }
 
     @Test
-    public void shouldReturnPersonalisation() {
-        caseData = buildCaseData();
-
-        executePersonalisation(caseData);
-    }
-
-    @Test
     public void shouldReturnTemplate() {
         caseData = buildCaseData();
 
         EmailTemplateNames returnedTemplate = task.getTemplate();
 
         assertEquals(TEST_TEMPLATE, returnedTemplate);
-    }
-
-    @Test
-    public void shouldReturnSubject() {
-        caseData = buildCaseData();
-
-        String returnedSubject = task.getSubject(caseData);
-
-        assertEquals(returnedSubject, task.subject);
-    }
-
-    @Test
-    public void shouldReturnRecipientEmail() {
-        caseData = buildCaseData();
-
-        String returnedEmail = task.getRecipientEmail(caseData);
-        String expectedEmail = getPetitionerEmail(caseData);
-
-        assertEquals(returnedEmail, expectedEmail);
     }
 
     private Map<String, Object> buildCaseData() {
@@ -130,20 +103,12 @@ public class DeemedNotApprovedPetitionerEmailTaskTest {
         assertEquals(caseData, returnPayload);
     }
 
-    private void executePersonalisation(Map<String, Object> caseData) {
-        Map returnPersonalisation = task.getPersonalisation(getTaskContext(), caseData);
-
-        Map expectedPersonalisation = getExpectedNotificationTemplateVars(false, testContext, caseData);
-
-        assertEquals(returnPersonalisation, expectedPersonalisation);
-    }
-
     private void verifyCitizenEmailSent(Map<String, Object> caseData) {
         verify(emailService).sendEmail(
             TEST_PETITIONER_EMAIL,
             TEST_TEMPLATE.name(),
             getExpectedNotificationTemplateVars(false, testContext, caseData),
-            task.getSubject(caseData),
+            task.subject,
             LanguagePreference.ENGLISH
         );
     }
