@@ -96,7 +96,7 @@ public class DeemedApprovedSolicitorEmailTaskTest {
     }
 
     @Test
-    public void shouldReturnRecipientEmail(){
+    public void shouldReturnRecipientEmail() {
         caseData = buildCaseData();
 
         String returnedEmail = task.getRecipientEmail(caseData);
@@ -111,8 +111,7 @@ public class DeemedApprovedSolicitorEmailTaskTest {
 
         String returnedSubject = task.getSubject(caseData);
         String expected =
-            getPetitionerFullName(caseData) + " vs " +  getRespondentFullName(caseData) + ": "+
-                SUBJECT_CONTENT;
+            getPetitionerFullName(caseData) + " vs " + getRespondentFullName(caseData) + ": " + SUBJECT_CONTENT;
 
         assertEquals(returnedSubject, expected);
     }

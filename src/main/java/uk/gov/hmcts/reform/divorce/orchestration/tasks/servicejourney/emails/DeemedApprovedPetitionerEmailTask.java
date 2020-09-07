@@ -28,7 +28,7 @@ public class DeemedApprovedPetitionerEmailTask extends SendEmailTask {
     }
 
     @Override
-    protected String getRecipientEmail(Map<String, Object> caseData){
+    protected String getRecipientEmail(Map<String, Object> caseData) {
         return getPetitionerEmail(caseData);
     }
 

@@ -103,7 +103,7 @@ public class DispensedApprovedPetitionerEmailTaskTest {
     }
 
     @Test
-    public void shouldReturnRecipientEmail(){
+    public void shouldReturnRecipientEmail() {
         caseData = buildCaseData();
 
         String returnedEmail = task.getRecipientEmail(caseData);
