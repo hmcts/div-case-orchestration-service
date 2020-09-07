@@ -19,7 +19,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helpe
 @Component
 @Slf4j
 public class DispensedApprovedSolicitorEmailTask extends SendEmailTask {
-    protected static String SUBJECT = "%s vs %s: Dispense with service application has been approved";
+    protected static String subject = "%s vs %s: Dispense with service application has been approved";
 
     public DispensedApprovedSolicitorEmailTask(EmailService emailService) {
         super(emailService);
@@ -27,7 +27,7 @@ public class DispensedApprovedSolicitorEmailTask extends SendEmailTask {
 
     @Override
     protected String getSubject(Map<String, Object> caseData) {
-        return format(SUBJECT, getPetitionerFullName(caseData), getRespondentFullName(caseData));
+        return format(subject, getPetitionerFullName(caseData), getRespondentFullName(caseData));
     }
 
     @Override

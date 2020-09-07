@@ -16,7 +16,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helpe
 @Component
 @Slf4j
 public class DeemedNotApprovedPetitionerEmailTask extends SendEmailTask {
-    protected static String SUBJECT = "Your ‘deemed service’ application has been refused";
+    protected static String subject = "Your ‘deemed service’ application has been refused";
 
     public DeemedNotApprovedPetitionerEmailTask(EmailService emailService) {
         super(emailService);
@@ -24,7 +24,7 @@ public class DeemedNotApprovedPetitionerEmailTask extends SendEmailTask {
 
     @Override
     protected String getSubject(Map<String, Object> caseData) {
-        return SUBJECT;
+        return subject;
     }
 
     @Override

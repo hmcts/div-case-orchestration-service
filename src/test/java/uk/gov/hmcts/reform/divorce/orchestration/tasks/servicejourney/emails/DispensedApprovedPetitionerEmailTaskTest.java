@@ -99,7 +99,7 @@ public class DispensedApprovedPetitionerEmailTaskTest {
 
         String returnedSubject = task.getSubject(caseData);
 
-        assertEquals(returnedSubject, task.SUBJECT);
+        assertEquals(returnedSubject, task.subject);
     }
 
     @Test
