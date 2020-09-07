@@ -8,11 +8,14 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedApprovedEmailTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedNotApprovedEmailTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedApprovedEmailTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedNotApprovedEmailTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.SolicitorDeemedApprovedEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedApprovedPetitionerEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedApprovedSolicitorEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedNotApprovedPetitionerEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DeemedNotApprovedSolicitorEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedApprovedPetitionerEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedApprovedSolicitorEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedNotApprovedPetitionerEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedNotApprovedSolicitorEmailTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,11 +34,17 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationR
 @RequiredArgsConstructor
 public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final DeemedApprovedEmailTask deemedApprovedEmailTask;
-    private final DeemedNotApprovedEmailTask deemedNotApprovedEmailTask;
-    private final DispensedApprovedEmailTask dispensedApprovedEmailTask;
-    private final DispensedNotApprovedEmailTask dispensedNotApprovedEmailTask;
-    private final SolicitorDeemedApprovedEmailTask solicitorDeemedApprovedEmailTask;
+    private final DeemedApprovedPetitionerEmailTask deemedApprovedPetitionerEmailTask;
+    private final DeemedApprovedSolicitorEmailTask deemedApprovedSolicitorEmailTask;
+
+    private final DispensedApprovedPetitionerEmailTask dispensedApprovedPetitionerEmailTask;
+    private final DispensedApprovedSolicitorEmailTask dispensedApprovedSolicitorEmailTask;
+
+    private final DeemedNotApprovedPetitionerEmailTask deemedNotApprovedPetitionerEmailTask;
+    private final DeemedNotApprovedSolicitorEmailTask deemedNotApprovedSolicitorEmailTask;
+
+    private final DispensedNotApprovedSolicitorEmailTask dispensedNotApprovedSolicitorEmailTask;
+    private final DispensedNotApprovedPetitionerEmailTask dispensedNotApprovedPetitionerEmailTask;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authorisation)
         throws WorkflowException {
@@ -67,7 +76,7 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
             } else if (isServiceApplicationDispensed(caseData)) {
                 tasks.add(getTaskForDispensedApproved(caseData, caseId));
             } else {
-                log.info("CaseId: {} NOT deemed/dispensed. No email will be sent.", caseId);
+                log.info("CaseId: {} Application granted. NOT deemed/dispensed. No email will be sent.", caseId);
             }
 
             return tasks.toArray(new Task[] {});
@@ -76,13 +85,12 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
         log.info("CaseID: {}, Service application type is {}.", caseId, getServiceApplicationType(caseData));
 
         if (isServiceApplicationDeemed(caseData)) {
-            log.info("CaseID: {}, Deemed and not approved. Adding task to send citizen email.", caseId);
-            tasks.add(deemedNotApprovedEmailTask);
+            log.info("CaseID: {} Service application is not granted. No PDFs to generate. Emails might be sent.", caseId);
+            tasks.add(getTaskForDeemedNotApproved(caseData, caseId));
         } else if (isServiceApplicationDispensed(caseData)) {
-            log.info("CaseID: {}, Dispensed and not approved. Adding task to send citizen email.", caseId);
-            tasks.add(dispensedNotApprovedEmailTask);
+            tasks.add(getTaskForDispensedNotApproved(caseData, caseId));
         } else {
-            log.warn("CaseID: {}, NOT Deemed/Dispensed. Do nothing.", caseId);
+            log.warn("CaseId: {} Application not granted. NOT deemed/dispensed. No email will be sent.", caseId);
         }
 
         return tasks.toArray(new Task[] {});
@@ -90,21 +98,41 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
 
     private Task<Map<String, Object>> getTaskForDispensedApproved(Map<String, Object> caseData, String caseId) {
         if (isPetitionerRepresented(caseData)) {
-            log.info("CaseId: {} dispensed approved solicitor email task adding.", caseId);
-        } else {
-            log.info("CaseId: {} dispensed approved citizen email task adding.", caseId);
+            log.info("CaseId: {} dispensed approved solicitor email task adding to send email.", caseId);
+            return dispensedApprovedSolicitorEmailTask;
         }
 
-        return dispensedApprovedEmailTask;
+        log.info("CaseId: {} dispensed approved citizen email task adding to send email.", caseId);
+        return dispensedApprovedPetitionerEmailTask;
+    }
+
+    private Task<Map<String, Object>> getTaskForDispensedNotApproved(Map<String, Object> caseData, String caseId) {
+        if (isPetitionerRepresented(caseData)) {
+            log.info("CaseId: {} deemed not approved solicitor email task adding.", caseId);
+            return dispensedNotApprovedSolicitorEmailTask;
+        }
+
+        log.info("CaseId: {} deemed not approved citizen email task adding.", caseId);
+        return dispensedNotApprovedPetitionerEmailTask;
     }
 
     private Task<Map<String, Object>> getTaskForDeemedApproved(Map<String, Object> caseData, String caseId) {
         if (isPetitionerRepresented(caseData)) {
-            log.info("CaseId: {} deemed approved solicitor email task adding.", caseId);
-            return solicitorDeemedApprovedEmailTask;
+            log.info("CaseId: {} deemed approved solicitor email task adding to send email.", caseId);
+            return deemedApprovedSolicitorEmailTask;
         }
 
-        log.info("CaseId: {} deemed approved citizen email task adding.", caseId);
-        return deemedApprovedEmailTask;
+        log.info("CaseId: {} deemed approved citizen email task adding to send email.", caseId);
+        return deemedApprovedPetitionerEmailTask;
+    }
+
+    private Task<Map<String, Object>> getTaskForDeemedNotApproved(Map<String, Object> caseData, String caseId) {
+        if (isPetitionerRepresented(caseData)) {
+            log.info("CaseId: {} dispensed not approved solicitor email task adding to send email.", caseId);
+            return deemedNotApprovedSolicitorEmailTask;
+        }
+
+        log.info("CaseId: {} dispensed not approved citizen email task adding to send email.", caseId);
+        return deemedNotApprovedPetitionerEmailTask;
     }
 }
