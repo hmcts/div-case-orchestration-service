@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -37,7 +38,6 @@ public class CcdUtil {
     private final Clock clock;
     private final ObjectMapper objectMapper;
     private final LocalDateToWelshStringConverter localDateToWelshStringConverter;
-
 
 
     public String getCurrentDateCcdFormat() {
@@ -124,10 +124,9 @@ public class CcdUtil {
                 .map(GeneratedDocumentInfo::getDocumentType)
                 .collect(Collectors.toSet());
 
-            List<CollectionMember<Document>> documentsGenerated = Optional.ofNullable(existingCaseData.get(D8DOCUMENTS_GENERATED))
-                .map(i -> objectMapper.convertValue(i, new TypeReference<List<CollectionMember<Document>>>() {
-                }))
-                .orElse(new ArrayList<>());
+            List<CollectionMember<Document>> documentsGenerated = getCollectionMembersOrEmptyList(
+                existingCaseData, D8DOCUMENTS_GENERATED
+            );
 
             List<CollectionMember<Document>> resultDocuments = new ArrayList<>();
 
@@ -154,4 +153,26 @@ public class CcdUtil {
         return existingCaseData;
     }
 
+    public Map<String, Object> addNewDocumentToCollection(Map<String, Object> caseData, GeneratedDocumentInfo document, String field) {
+        if (caseData == null || document == null || field == null) {
+            throw new IllegalArgumentException("Invalid input. No nulls allowed.");
+        }
+
+        CollectionMember<Document> documentCollectionMemberToAdd = CcdMappers.mapDocumentInfoToCcdDocument(document);
+
+        List<CollectionMember<Document>> allDocuments = getCollectionMembersOrEmptyList(caseData, field);
+        allDocuments.add(documentCollectionMemberToAdd);
+
+        Map<String, Object> copiedMap = new HashMap<>(caseData);
+        copiedMap.put(field, allDocuments);
+
+        return copiedMap;
+    }
+
+    public List<CollectionMember<Document>> getCollectionMembersOrEmptyList(Map<String, Object> caseData, String field) {
+        return Optional.ofNullable(caseData.get(field))
+            .map(i -> objectMapper.convertValue(i, new TypeReference<List<CollectionMember<Document>>>() {
+            }))
+            .orElse(new ArrayList<>());
+    }
 }

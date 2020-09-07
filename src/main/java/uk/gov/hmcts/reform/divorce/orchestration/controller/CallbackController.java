@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralOrderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
@@ -63,6 +64,7 @@ public class CallbackController {
 
     private final CaseOrchestrationService caseOrchestrationService;
     private final ServiceJourneyService serviceJourneyService;
+    private final GeneralOrderService generalOrderService;
     private final AosService aosService;
 
     @PostMapping(path = "/request-clarification-petitioner")
@@ -1169,6 +1171,36 @@ public class CallbackController {
 
         return ResponseEntity.ok(
             serviceJourneyService.serviceDecisionMade(ccdCallbackRequest.getCaseDetails(), authorizationToken)
+        );
+    }
+
+    @PostMapping(path = "/create-general-order/draft", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback to generate draft general order document")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> generateDraftOfGeneralOrder(
+        @RequestHeader(AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            generalOrderService.generateGeneralOrderDraft(ccdCallbackRequest.getCaseDetails(), authorizationToken)
+        );
+    }
+
+    @PostMapping(path = "/create-general-order/final", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback to generate general order document")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> generateGeneralOrder(
+        @RequestHeader(AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            generalOrderService.generateGeneralOrder(ccdCallbackRequest.getCaseDetails(), authorizationToken)
         );
     }
 
