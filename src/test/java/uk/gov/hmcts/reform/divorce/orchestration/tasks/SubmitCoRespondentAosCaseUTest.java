@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -27,9 +25,8 @@ import static java.time.ZoneOffset.UTC;
 import static java.util.Collections.emptyMap;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.core.AllOf.allOf;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
@@ -69,9 +66,6 @@ public class SubmitCoRespondentAosCaseUTest {
     private final TaskContext taskContext = new DefaultTaskContext();
     private static final LocalDateTime FIXED_DATE_TIME = LocalDateTime.of(2015, 12, 25, 00, 00);
 
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-
     @Mock()
     private CaseMaintenanceClient caseMaintenanceClient;
 
@@ -99,12 +93,10 @@ public class SubmitCoRespondentAosCaseUTest {
 
         when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN)).thenReturn(null);
 
-        expectedException.expect(TaskException.class);
-        expectedException.expectCause(allOf(
-            instanceOf(CaseNotFoundException.class),
-            hasProperty("message", is("No case found for user."))));
-
-        submitCoRespondentAosCase.execute(taskContext, submissionData);
+        TaskException exception = assertThrows(TaskException.class,
+            () -> submitCoRespondentAosCase.execute(taskContext, submissionData));
+        assertThat(exception.getCause(), instanceOf(CaseNotFoundException.class));
+        assertThat(exception.getCause().getMessage(), is("No case found for user."));
 
         verify(caseMaintenanceClient, never()).updateCase(anyString(), anyString(), anyString(), anyMap());
     }
@@ -118,13 +110,11 @@ public class SubmitCoRespondentAosCaseUTest {
 
         when(caseMaintenanceClient.retrieveAosCase(AUTH_TOKEN)).thenReturn(someCaseWithState("foo"));
 
-        expectedException.expect(TaskException.class);
-        expectedException.expectCause(allOf(
-            instanceOf(ValidationException.class),
-            hasProperty("message", is(String.format("Cannot create co-respondent submission event for case [%s] in state [%s].",
-                TEST_CASE_ID, "foo")))));
-
-        submitCoRespondentAosCase.execute(taskContext, submissionData);
+        TaskException exception = assertThrows(TaskException.class,
+            () -> submitCoRespondentAosCase.execute(taskContext, submissionData));
+        assertThat(exception.getCause(), instanceOf(ValidationException.class));
+        assertThat(exception.getCause().getMessage(), is(String.format("Cannot create co-respondent submission event for case [%s] in state [%s].",
+            TEST_CASE_ID, "foo")));
 
         verify(caseMaintenanceClient, never()).updateCase(anyString(), anyString(), anyString(), anyMap());
     }

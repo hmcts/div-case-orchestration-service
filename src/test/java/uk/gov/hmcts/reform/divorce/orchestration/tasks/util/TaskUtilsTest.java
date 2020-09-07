@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.util;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
@@ -12,15 +10,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.rules.ExpectedException.none;
+import static org.junit.Assert.assertThrows;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 public class TaskUtilsTest {
-
-    @Rule
-    public ExpectedException expectedException = none();
 
     @Test
     public void getMandatoryPropertyValueAsString() throws TaskException {
@@ -46,21 +42,23 @@ public class TaskUtilsTest {
 
     @Test
     public void shouldThrowExceptionWhenMandatoryFieldIsMissing() throws TaskException {
-        expectedException.expect(TaskException.class);
-        expectedException.expectMessage("Could not evaluate value of mandatory property \"testKey\"");
+        Map<String, Object> caseData = new HashMap<>();
 
-        TaskUtils.getMandatoryPropertyValueAsString(new HashMap<>(), "testKey");
+        TaskException exception = assertThrows(TaskException.class, () ->
+            TaskUtils.getMandatoryPropertyValueAsString(caseData, "testKey")
+        );
+        assertThat(exception.getMessage(), is("Could not evaluate value of mandatory property \"testKey\""));
     }
 
     @Test
     public void shouldThrowExceptionWhenMandatoryFieldIsNull() throws TaskException {
-        expectedException.expect(TaskException.class);
-        expectedException.expectMessage("Could not evaluate value of mandatory property \"testKey\"");
-
         Map<String, Object> caseDataPayload = new HashMap<>();
         caseDataPayload.put("testKey", null);
 
-        TaskUtils.getMandatoryPropertyValueAsString(caseDataPayload, "testKey");
+        TaskException exception = assertThrows(TaskException.class, () ->
+            TaskUtils.getMandatoryPropertyValueAsString(caseDataPayload, "testKey")
+        );
+        assertThat(exception.getMessage(), is("Could not evaluate value of mandatory property \"testKey\""));
     }
 
     @Test
@@ -75,13 +73,13 @@ public class TaskUtilsTest {
 
     @Test
     public void shouldThrowExceptionWhenMandatoryObjectFieldIsNull() throws TaskException {
-        expectedException.expect(TaskException.class);
-        expectedException.expectMessage("Could not evaluate value of mandatory property \"testKey\"");
-
         Map<String, Object> caseDataPayload = new HashMap<>();
         caseDataPayload.put("testKey", null);
 
-        TaskUtils.getMandatoryPropertyValueAsObject(caseDataPayload, "testKey");
+        TaskException exception = assertThrows(TaskException.class, () ->
+            TaskUtils.getMandatoryPropertyValueAsObject(caseDataPayload, "testKey")
+        );
+        assertThat(exception.getMessage(), is("Could not evaluate value of mandatory property \"testKey\""));
     }
 
     @Test
@@ -96,45 +94,45 @@ public class TaskUtilsTest {
 
     @Test
     public void testExceptionIsThrown_WhenCaseIdIsMissing() throws TaskException {
-        expectedException.expect(TaskException.class);
-        expectedException.expectMessage("Could not evaluate value of mandatory property \"" + CASE_ID_JSON_KEY + "\"");
-
         DefaultTaskContext context = new DefaultTaskContext();
 
-        TaskUtils.getCaseId(context);
+        TaskException exception = assertThrows(TaskException.class, () ->
+            TaskUtils.getCaseId(context)
+        );
+        assertThat(exception.getMessage(), is("Could not evaluate value of mandatory property \"" + CASE_ID_JSON_KEY + "\""));
     }
 
     @Test
     public void testExceptionIsThrown_WhenCaseIdIsEmpty() throws TaskException {
-        expectedException.expect(TaskException.class);
-        expectedException.expectMessage("Could not evaluate value of mandatory property \"" + CASE_ID_JSON_KEY + "\"");
-
         DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, "");
 
-        TaskUtils.getCaseId(context);
+        TaskException exception = assertThrows(TaskException.class, () ->
+            TaskUtils.getCaseId(context)
+        );
+        assertThat(exception.getMessage(), is("Could not evaluate value of mandatory property \"" + CASE_ID_JSON_KEY + "\""));
     }
 
     @Test
     public void testExceptionIsThrown_WhenCaseIdIsNotString() throws TaskException {
-        expectedException.expect(TaskException.class);
-        expectedException.expectMessage("Could not evaluate value of mandatory property \"" + CASE_ID_JSON_KEY + "\"");
-
         DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, 123);
 
-        TaskUtils.getCaseId(context);
+        TaskException exception = assertThrows(TaskException.class, () ->
+            TaskUtils.getCaseId(context)
+        );
+        assertThat(exception.getMessage(), is("Could not evaluate value of mandatory property \"" + CASE_ID_JSON_KEY + "\""));
     }
 
     @Test
     public void shouldThrowTaskExceptionWhenDateIsBadlyFormatted() throws TaskException {
-        expectedException.expect(TaskException.class);
-        expectedException.expectMessage("Could not format date from \"testKey\" field.");
-
         Map<String, Object> caseDataPayload = new HashMap<>();
         caseDataPayload.put("testKey", "20190513");
 
-        TaskUtils.getMandatoryPropertyValueAsLocalDateFromCCD(caseDataPayload, "testKey");
+        TaskException exception = assertThrows(TaskException.class, () ->
+            TaskUtils.getMandatoryPropertyValueAsLocalDateFromCCD(caseDataPayload, "testKey")
+        );
+        assertThat(exception.getMessage(), is("Could not format date from \"testKey\" field."));
     }
 
 }
