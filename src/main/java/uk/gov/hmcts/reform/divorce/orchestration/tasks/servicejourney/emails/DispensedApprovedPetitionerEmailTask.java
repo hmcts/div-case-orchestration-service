@@ -3,38 +3,18 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generics.SendEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generics.PetitionerSolicitorSendEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
-import java.util.Map;
-
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.CITIZEN_DISPENSED_APPROVED;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.getPetitionerEmail;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ServiceJourneyEmailTaskHelper.citizenTemplateVariables;
 
 @Component
 @Slf4j
-public class DispensedApprovedPetitionerEmailTask extends SendEmailTask {
+public class DispensedApprovedPetitionerEmailTask extends PetitionerSolicitorSendEmailTask {
     protected static String subject = "Your ‘dispense with service’ application has been approved";
 
     public DispensedApprovedPetitionerEmailTask(EmailService emailService) {
         super(emailService);
-    }
-
-    @Override
-    protected String getSubject(Map<String, Object> caseData) {
-        return subject;
-    }
-
-    @Override
-    protected String getRecipientEmail(Map<String, Object> caseData) {
-        return getPetitionerEmail(caseData);
-    }
-
-    @Override
-    protected Map<String, String> getPersonalisation(TaskContext taskContext, Map<String, Object> caseData) {
-        return citizenTemplateVariables(caseData);
     }
 
     @Override

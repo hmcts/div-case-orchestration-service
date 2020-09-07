@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generics.SendEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generics.PetitionerSolicitorSendEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
 import java.util.Map;
@@ -18,26 +18,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helpe
 
 @Component
 @Slf4j
-public class DispensedNotApprovedSolicitorEmailTask extends SendEmailTask {
+public class DispensedNotApprovedSolicitorEmailTask extends PetitionerSolicitorSendEmailTask {
     protected static String subject = "%s vs %s: Solicitor dispensed application not approved";
 
     public DispensedNotApprovedSolicitorEmailTask(EmailService emailService) {
         super(emailService);
-    }
-
-    @Override
-    protected String getSubject(Map<String, Object> caseData) {
-        return format(subject, getPetitionerFullName(caseData), getRespondentFullName(caseData));
-    }
-
-    @Override
-    protected String getRecipientEmail(Map<String, Object> caseData) {
-        return getPetitionerSolicitorEmail(caseData);
-    }
-
-    @Override
-    protected Map<String, String> getPersonalisation(TaskContext taskContext, Map<String, Object> caseData) {
-        return solicitorTemplateVariables(taskContext, caseData);
     }
 
     @Override
