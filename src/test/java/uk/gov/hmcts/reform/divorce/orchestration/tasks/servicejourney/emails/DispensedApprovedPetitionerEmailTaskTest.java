@@ -39,13 +39,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyE
 @RunWith(MockitoJUnitRunner.class)
 public class DispensedApprovedPetitionerEmailTaskTest {
 
+    public static final String EXPECTED_SUBJECT = "Your ‘dispense with service’ application has been approved";
     @Mock
     private EmailService emailService;
 
     @InjectMocks
     private DispensedApprovedPetitionerEmailTask task;
 
-    private Map<String, Object> caseData;
     private DefaultTaskContext testContext;
     private static EmailTemplateNames TEST_TEMPLATE = CITIZEN_DISPENSED_APPROVED;
 
@@ -57,7 +57,7 @@ public class DispensedApprovedPetitionerEmailTaskTest {
 
     @Test
     public void shouldSendEmail_ToCitizen_whenExecuteEmailNotificationTask() throws TaskException {
-        caseData = buildCaseData();
+        Map<String, Object> caseData = buildCaseData();
         caseData.remove(PETITIONER_SOLICITOR_EMAIL);
 
         executeTask(caseData);
@@ -67,7 +67,7 @@ public class DispensedApprovedPetitionerEmailTaskTest {
 
     @Test
     public void shouldNotSendEmail_whenEmptyRecipientEmail() {
-        caseData = buildCaseData();
+        Map<String, Object> caseData = buildCaseData();
 
         removeAllEmailAddresses(caseData);
 
@@ -78,7 +78,7 @@ public class DispensedApprovedPetitionerEmailTaskTest {
 
     @Test
     public void shouldReturnTemplate() {
-        caseData = buildCaseData();
+        Map<String, Object> caseData = buildCaseData();
 
         EmailTemplateNames returnedTemplate = task.getTemplate();
 
@@ -86,7 +86,7 @@ public class DispensedApprovedPetitionerEmailTaskTest {
     }
 
     private Map<String, Object> buildCaseData() {
-        caseData = AddresseeDataExtractorTest.buildCaseDataWithRespondent();
+        Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithRespondent();
 
         caseData.put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         caseData.put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
@@ -99,7 +99,7 @@ public class DispensedApprovedPetitionerEmailTaskTest {
     }
 
     private void executeTask(Map<String, Object> caseData) {
-        Map returnPayload = task.execute(getTaskContext(), caseData);
+        Map<String, Object> returnPayload = task.execute(getTaskContext(), caseData);
         assertEquals(caseData, returnPayload);
     }
 
@@ -108,7 +108,7 @@ public class DispensedApprovedPetitionerEmailTaskTest {
             TEST_PETITIONER_EMAIL,
             TEST_TEMPLATE.name(),
             getExpectedNotificationTemplateVars(false, testContext, caseData),
-            task.subject,
+            EXPECTED_SUBJECT,
             LanguagePreference.ENGLISH
         );
     }

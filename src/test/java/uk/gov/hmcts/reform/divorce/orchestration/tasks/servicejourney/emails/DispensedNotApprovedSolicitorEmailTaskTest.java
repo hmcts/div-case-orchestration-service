@@ -17,7 +17,6 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
@@ -36,7 +35,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getRespondentFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.getExpectedNotificationTemplateVars;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.getTaskContext;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.removeAllEmailAddresses;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DispensedNotApprovedSolicitorEmailTaskTest {
@@ -64,17 +62,6 @@ public class DispensedNotApprovedSolicitorEmailTaskTest {
         executeTask(caseData);
 
         verifySolicitorEmailSent(caseData);
-    }
-
-    @Test
-    public void shouldNotSendEmail_whenEmptyRecipientEmail() {
-        caseData = buildCaseData();
-
-        removeAllEmailAddresses(caseData);
-
-        executeTask(caseData);
-
-        verifyZeroInteractions(emailService);
     }
 
     @Test
@@ -109,7 +96,7 @@ public class DispensedNotApprovedSolicitorEmailTaskTest {
             TEST_SOLICITOR_EMAIL,
             TEST_TEMPLATE.name(),
             getExpectedNotificationTemplateVars(true, testContext, caseData),
-            getPetitionerFullName(caseData) + " vs " +  getRespondentFullName(caseData) + ": " + SUBJECT_CONTENT,
+            getPetitionerFullName(caseData) + " vs " + getRespondentFullName(caseData) + ": " + SUBJECT_CONTENT,
             LanguagePreference.ENGLISH
         );
     }

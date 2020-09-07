@@ -6,15 +6,28 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplat
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generics.PetitionerSolicitorSendEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
+import java.util.Map;
+
+import static java.lang.String.format;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.SOL_DISPENSED_APPROVED;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerFullName;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getRespondentFullName;
 
 @Component
 @Slf4j
 public class DispensedApprovedSolicitorEmailTask extends PetitionerSolicitorSendEmailTask {
-    protected static String subject = "%s vs %s: Dispense with service application has been approved";
 
     public DispensedApprovedSolicitorEmailTask(EmailService emailService) {
         super(emailService);
+    }
+
+    @Override
+    protected String getSubject(Map<String, Object> caseData) {
+        return format(
+            "%s vs %s: Dispense with service application has been approved",
+            getPetitionerFullName(caseData),
+            getRespondentFullName(caseData)
+        );
     }
 
     @Override

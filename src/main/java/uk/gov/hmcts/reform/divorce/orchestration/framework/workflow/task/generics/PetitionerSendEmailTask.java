@@ -10,15 +10,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ServiceJourneyEmailTaskHelper.citizenTemplateVariables;
 
 public abstract class PetitionerSendEmailTask extends SendEmailTask {
-    protected static String subject;
-
     public PetitionerSendEmailTask(EmailService emailService) {
         super(emailService);
-    }
-
-    @Override
-    protected String getSubject(Map<String, Object> caseData) {
-        return subject;
     }
 
     @Override

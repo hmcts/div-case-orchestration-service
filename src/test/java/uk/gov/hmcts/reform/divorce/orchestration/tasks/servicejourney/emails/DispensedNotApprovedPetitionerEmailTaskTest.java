@@ -45,9 +45,7 @@ public class DispensedNotApprovedPetitionerEmailTaskTest {
     @InjectMocks
     private DispensedNotApprovedPetitionerEmailTask task;
 
-    private Map<String, Object> caseData;
     private DefaultTaskContext testContext;
-    private static EmailTemplateNames TEST_TEMPLATE = CITIZEN_DISPENSED_NOT_APPROVED;
 
     @Before
     public void setUp() {
@@ -57,7 +55,7 @@ public class DispensedNotApprovedPetitionerEmailTaskTest {
 
     @Test
     public void shouldSendEmail_ToCitizen_whenExecuteEmailNotificationTask() throws TaskException {
-        caseData = buildCaseData();
+        Map<String, Object> caseData = buildCaseData();
         caseData.remove(PETITIONER_SOLICITOR_EMAIL);
 
         executeTask(caseData);
@@ -67,7 +65,7 @@ public class DispensedNotApprovedPetitionerEmailTaskTest {
 
     @Test
     public void shouldNotSendEmail_whenEmptyRecipientEmail() {
-        caseData = buildCaseData();
+        Map<String, Object> caseData = buildCaseData();
 
         removeAllEmailAddresses(caseData);
 
@@ -78,15 +76,13 @@ public class DispensedNotApprovedPetitionerEmailTaskTest {
 
     @Test
     public void shouldReturnTemplate() {
-        caseData = buildCaseData();
-
         EmailTemplateNames returnedTemplate = task.getTemplate();
 
-        assertEquals(TEST_TEMPLATE, returnedTemplate);
+        assertEquals(CITIZEN_DISPENSED_NOT_APPROVED, returnedTemplate);
     }
 
     private Map<String, Object> buildCaseData() {
-        caseData = AddresseeDataExtractorTest.buildCaseDataWithRespondent();
+        Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithRespondent();
 
         caseData.put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         caseData.put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
@@ -99,16 +95,16 @@ public class DispensedNotApprovedPetitionerEmailTaskTest {
     }
 
     private void executeTask(Map<String, Object> caseData) {
-        Map returnPayload = task.execute(getTaskContext(), caseData);
+        Map<String, Object> returnPayload = task.execute(getTaskContext(), caseData);
         assertEquals(caseData, returnPayload);
     }
 
     private void verifyCitizenEmailSent(Map<String, Object> caseData) {
         verify(emailService).sendEmail(
             TEST_PETITIONER_EMAIL,
-            TEST_TEMPLATE.name(),
+            CITIZEN_DISPENSED_NOT_APPROVED.name(),
             getExpectedNotificationTemplateVars(false, testContext, caseData),
-            task.subject,
+            "Your ‘dispense with service’ application has been refused",
             LanguagePreference.ENGLISH
         );
     }

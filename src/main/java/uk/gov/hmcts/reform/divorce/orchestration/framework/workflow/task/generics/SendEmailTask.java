@@ -55,9 +55,10 @@ public abstract class SendEmailTask implements Task<Map<String, Object>> {
 
             log.info("CaseID: {} email {} was sent.", caseId, getTemplate().name());
         } else {
-            log.warn("CaseID: {} recipient email is empty! Email {} not sent.", caseId, getTemplate().name());
+            log.warn("CaseID: {} email {} will not be sent.", caseId, getTemplate().name());
         }
 
         return caseData;
     }
 }
+
