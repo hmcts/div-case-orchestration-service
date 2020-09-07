@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -17,7 +15,6 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
-import static org.junit.rules.ExpectedException.none;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -26,9 +23,6 @@ public class AddCourtsToPayloadTaskTest {
     //"court" is, unfortunately, the name that is already used in the Divorce session format in many places.
     //Changing it now would probably be more trouble than it's worth
     private static final String COURTS_JSON_KEY = "court";
-
-    @Rule
-    public ExpectedException expectedException = none();
 
     @Mock
     private CourtLookupService courtLookupService;
