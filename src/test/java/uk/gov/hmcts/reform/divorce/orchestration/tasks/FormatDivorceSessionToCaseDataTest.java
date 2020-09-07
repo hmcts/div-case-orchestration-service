@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -16,7 +14,6 @@ import java.util.Map;
 
 import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertEquals;
-import static org.junit.rules.ExpectedException.none;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -32,9 +29,6 @@ public class FormatDivorceSessionToCaseDataTest {
 
     @InjectMocks
     private FormatDivorceSessionToCaseData formatDivorceSessionToCaseData;
-
-    @Rule
-    public ExpectedException expectedException = none();
 
     private Map<String, Object> testData;
     private TaskContext context;
