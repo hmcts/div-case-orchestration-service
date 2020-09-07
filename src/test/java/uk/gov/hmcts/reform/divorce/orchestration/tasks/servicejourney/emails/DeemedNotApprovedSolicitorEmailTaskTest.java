@@ -28,6 +28,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLIC
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.SOL_DEEMED_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.PETITIONER_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.getPetitionerSolicitorEmail;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
@@ -104,6 +105,16 @@ public class DeemedNotApprovedSolicitorEmailTaskTest {
                 SUBJECT_CONTENT;
 
         assertEquals(returnedSubject, expected);
+    }
+
+    @Test
+    public void shouldReturnRecipientEmail(){
+        caseData = buildCaseData();
+
+        String returnedEmail = task.getRecipientEmail(caseData);
+        String expectedEmail = getPetitionerSolicitorEmail(caseData);
+
+        assertEquals(returnedEmail, expectedEmail);
     }
 
     private Map<String, Object> buildCaseData() {

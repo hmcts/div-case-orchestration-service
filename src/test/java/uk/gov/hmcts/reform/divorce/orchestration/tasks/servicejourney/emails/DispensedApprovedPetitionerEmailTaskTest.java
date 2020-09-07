@@ -29,6 +29,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.CITIZEN_DISPENSED_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.PETITIONER_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.getPetitionerEmail;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
@@ -99,6 +100,16 @@ public class DispensedApprovedPetitionerEmailTaskTest {
         String returnedSubject = task.getSubject(caseData);
 
         assertEquals(returnedSubject, task.SUBJECT);
+    }
+
+    @Test
+    public void shouldReturnRecipientEmail(){
+        caseData = buildCaseData();
+
+        String returnedEmail = task.getRecipientEmail(caseData);
+        String expectedEmail = getPetitionerEmail(caseData);
+
+        assertEquals(returnedEmail, expectedEmail);
     }
 
     private Map<String, Object> buildCaseData() {

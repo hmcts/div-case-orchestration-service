@@ -29,11 +29,7 @@ public abstract class SendEmailTask implements Task<Map<String, Object>> {
 
     protected abstract EmailTemplateNames getTemplate();
 
-    protected String getRecipientEmail(Map<String, Object> caseData) {
-        return isPetitionerRepresented(caseData)
-            ? CaseDataExtractor.getPetitionerSolicitorEmail(caseData)
-            : CaseDataExtractor.getPetitionerEmail(caseData);
-    }
+    protected abstract String getRecipientEmail(Map<String, Object> caseData);
 
     protected LanguagePreference getLanguage(Map<String, Object> caseData) {
         return CaseDataUtils.getLanguagePreference(caseData);
