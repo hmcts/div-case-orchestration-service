@@ -113,11 +113,12 @@ public abstract class ServiceRefusalOrderDraftTaskTest extends BasePayloadSpecif
         return (List<CollectionMember<Document>>) returnedCaseData.get(D8DOCUMENTS_GENERATED);
     }
 
-    private DocumentLink getDocumentLink() {
+    public static DocumentLink getDocumentLink() {
         DocumentLink documentLink = new DocumentLink();
         documentLink.setDocumentBinaryUrl("binary_url");
         documentLink.setDocumentFilename("file_name");
         documentLink.setDocumentUrl("url");
+
         return documentLink;
     }
 
