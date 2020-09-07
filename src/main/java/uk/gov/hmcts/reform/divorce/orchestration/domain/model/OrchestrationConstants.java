@@ -255,6 +255,9 @@ public class OrchestrationConstants {
     public static final String NOTIFICATION_RESP_NAME = "respondent name";
     public static final String NOTIFICATION_SOLICITOR_NAME = "solicitor name";
     public static final String NOTIFICATION_WELSH_FORM_SUBMISSION_DATE_LIMIT_KEY = "welsh form submission date limit";
+    public static final String NOTIFICATION_GENERAL_EMAIL_DETAILS = "GeneralEmailDetails";
+    public static final String NOTIFICATION_CO_RESPONDENT_FULL_NAME = "CoRespondentFullName";
+    public static final String NOTIFICATION_OTHER_FULL_NAME = "GeneralEmailOtherRecipientName";
 
     // CCD Respondent Fields
     public static final String RECEIVED_AOS_FROM_RESP = "ReceivedAOSfromResp";
