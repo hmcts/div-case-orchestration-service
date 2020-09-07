@@ -25,8 +25,6 @@ import static java.time.ZoneOffset.UTC;
 import static java.util.Collections.emptyMap;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.core.AllOf.allOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.anyMap;
