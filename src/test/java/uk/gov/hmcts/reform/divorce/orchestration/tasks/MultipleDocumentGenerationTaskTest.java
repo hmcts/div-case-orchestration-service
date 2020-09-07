@@ -2,9 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentGenerationRequest;
@@ -31,6 +29,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -48,9 +47,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 
 public class MultipleDocumentGenerationTaskTest {
-
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
 
     private static final String DOCUMENT_GENERATION_REQUESTS_KEY = "documentGenerationRequests";
 
@@ -173,20 +169,23 @@ public class MultipleDocumentGenerationTaskTest {
 
     @Test
     public void shouldThrowTaskExceptionIfDocumentListIsNotPassed() throws TaskException {
-        expectedException.expect(TaskException.class);
-        expectedException.expectMessage("Could not find a list of document generation requests");
+        DefaultTaskContext context = new DefaultTaskContext();
+        HashMap<String, Object> caseData = new HashMap<>();
 
-        classUnderTest.execute(new DefaultTaskContext(), new HashMap<>());
+        TaskException exception = assertThrows(TaskException.class,
+            () -> classUnderTest.execute(context, caseData));
+        assertThat(exception.getMessage(), is("Could not find a list of document generation requests"));
     }
 
     @Test
     public void shouldThrowTaskExceptionIfDocumentListIsEmpty() throws TaskException {
-        expectedException.expect(TaskException.class);
-        expectedException.expectMessage("Could not find a list of document generation requests");
-
         DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(DOCUMENT_GENERATION_REQUESTS_KEY, new ArrayList<>());
-        classUnderTest.execute(context, new HashMap<>());
+        HashMap<String, Object> caseData = new HashMap<>();
+
+        TaskException exception = assertThrows(TaskException.class,
+            () -> classUnderTest.execute(context, caseData));
+        assertThat(exception.getMessage(), is("Could not find a list of document generation requests"));
     }
 
     protected static GenerateDocumentRequest matchesDocumentInputParameters(String documentTemplateId, CaseDetails caseDetails) {
