@@ -43,7 +43,7 @@ public class DataExtractionEmailClientTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("See description of this class to find out how to run this test")
     public void sendEmailWithAttachment() throws MessagingException {
         dataExtractionEmailClient.sendEmailWithAttachment("test@divorce.gov.uk", "myFileName.csv", file);
         //Now go to MailHog and check that your e-mail has been sent as expected
