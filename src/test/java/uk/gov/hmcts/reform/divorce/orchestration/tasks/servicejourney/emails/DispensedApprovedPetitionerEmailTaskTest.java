@@ -77,14 +77,14 @@ public class DispensedApprovedPetitionerEmailTaskTest {
     }
 
     @Test
-    public void shouldReturnPersonalisationFor_Citizen() {
+    public void shouldReturnPersonalisation() {
         caseData = buildCaseData();
 
         executePersonalisation(caseData);
     }
 
     @Test
-    public void shouldReturnTemplateFor_Citizen() {
+    public void shouldReturnTemplate() {
         caseData = buildCaseData();
 
         EmailTemplateNames returnedTemplate = task.getTemplate();
@@ -93,7 +93,7 @@ public class DispensedApprovedPetitionerEmailTaskTest {
     }
 
     @Test
-    public void shouldReturnSubjectFor_Citizen() {
+    public void shouldReturnSubject() {
         caseData = buildCaseData();
 
         String returnedSubject = task.getSubject(caseData);

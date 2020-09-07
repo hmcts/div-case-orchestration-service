@@ -32,6 +32,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerFullName;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getRespondentFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.getExpectedNotificationTemplateVars;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.getTaskContext;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.removeAllEmailAddresses;
@@ -47,6 +49,7 @@ public class DispensedNotApprovedSolicitorEmailTaskTest {
     private Map<String, Object> caseData;
     private DefaultTaskContext testContext;
     private static EmailTemplateNames TEST_TEMPLATE = SOL_DISPENSED_NOT_APPROVED;
+    private static String SUBJECT_CONTENT = "Solicitor dispensed application not approved";
 
     @Before
     public void setUp() {
@@ -75,14 +78,14 @@ public class DispensedNotApprovedSolicitorEmailTaskTest {
     }
 
     @Test
-    public void shouldReturnPersonalisationFor_Solicitor() {
+    public void shouldReturnPersonalisation() {
         caseData = buildCaseData();
 
         executePersonalisation(caseData);
     }
 
     @Test
-    public void shouldReturnTemplateFor_Solicitor() {
+    public void shouldReturnTemplate() {
         caseData = buildCaseData();
 
         EmailTemplateNames returnedTemplate = task.getTemplate();
@@ -91,12 +94,15 @@ public class DispensedNotApprovedSolicitorEmailTaskTest {
     }
 
     @Test
-    public void shouldReturnSubjectFor_Solicitor() {
+    public void shouldReturnSubject() {
         caseData = buildCaseData();
 
         String returnedSubject = task.getSubject(caseData);
+        String expected =
+            getPetitionerFullName(caseData) + " vs " +  getRespondentFullName(caseData) + ": "+
+                SUBJECT_CONTENT;
 
-        assertEquals(returnedSubject, task.SUBJECT);
+        assertEquals(returnedSubject, expected);
     }
 
     private Map<String, Object> buildCaseData() {
