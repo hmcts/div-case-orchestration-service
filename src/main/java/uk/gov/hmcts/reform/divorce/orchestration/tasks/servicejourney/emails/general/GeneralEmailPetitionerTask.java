@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.general;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generics.PetitionerSendEmailTask;
@@ -10,9 +12,11 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getNotRepresentedSubject;
 
-public class GeneralEmailPetitioner extends PetitionerSendEmailTask {
+@Component
+@Slf4j
+public class GeneralEmailPetitionerTask extends PetitionerSendEmailTask {
 
-    public GeneralEmailPetitioner(EmailService emailService) {
+    public GeneralEmailPetitionerTask(EmailService emailService) {
         super(emailService);
     }
 
@@ -22,8 +26,8 @@ public class GeneralEmailPetitioner extends PetitionerSendEmailTask {
     }
 
     @Override
-    protected String getSubject(Map<String, Object> caseData) {
-        return getNotRepresentedSubject();
+    protected String getSubject(TaskContext context, Map<String, Object> caseData) {
+        return getNotRepresentedSubject(context);
     }
 
     @Override

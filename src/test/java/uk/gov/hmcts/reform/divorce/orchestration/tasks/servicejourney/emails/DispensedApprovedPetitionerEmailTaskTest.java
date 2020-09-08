@@ -78,8 +78,6 @@ public class DispensedApprovedPetitionerEmailTaskTest {
 
     @Test
     public void shouldReturnTemplate() {
-        Map<String, Object> caseData = buildCaseData();
-
         EmailTemplateNames returnedTemplate = task.getTemplate();
 
         assertEquals(TEST_TEMPLATE, returnedTemplate);

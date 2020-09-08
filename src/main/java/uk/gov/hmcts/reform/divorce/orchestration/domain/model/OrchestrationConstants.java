@@ -128,6 +128,7 @@ public class OrchestrationConstants {
     public static final String WELSH_PREVIOUS_STATE = "WelshPreviousState";
     public static final String AMENDED_CASE_ID_CCD_KEY = "AmendedCaseId";
     public static final String CASE_REFERENCE_CCD_KEY = "CaseReference";
+    public static final String GENERAL_EMAIL_DETAILS = "GeneralEmailDetails";
 
     //This is misspelled in the CCD definition file
     public static final String D_8_REASON_FOR_DIVORCE_SEPARATION_DAY = "D8ReasonForDivorceSeperationDay";
@@ -183,7 +184,7 @@ public class OrchestrationConstants {
     public static final String CO_RESP_LINKED_TO_CASE_DATE = "CoRespLinkedToCaseDate";
     public static final String CO_RESPONDENT_LETTER_HOLDER_ID = "CoRespLetterHolderId";
     public static final String CO_RESP_EMAIL_ADDRESS = "CoRespEmailAddress";
-    public static final String CO_RESP_SOL_EMAIL_ADDRESS = "CoRespSolEmailAddress";
+    public static final String CO_RESPONDENT_SOLICITOR_EMAIL_ADDRESS = "CoRespondentSolicitorEmail";
     public static final String CO_RESPONDENT_DEFENDS_DIVORCE = "CoRespDefendsDivorce";
     public static final String RECEIVED_AOS_FROM_CO_RESP = "ReceivedAosFromCoResp";
     public static final String RECEIVED_AOS_FROM_CO_RESP_DATE = "ReceivedAosFromCoRespDate";

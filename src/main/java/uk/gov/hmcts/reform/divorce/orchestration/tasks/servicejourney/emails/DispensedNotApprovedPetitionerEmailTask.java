@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generics.PetitionerSendEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
@@ -19,7 +20,7 @@ public class DispensedNotApprovedPetitionerEmailTask extends PetitionerSendEmail
     }
 
     @Override
-    protected String getSubject(Map<String, Object> caseData) {
+    protected String getSubject(TaskContext context, Map<String, Object> caseData) {
         return "Your ‘dispense with service’ application has been refused";
     }
 

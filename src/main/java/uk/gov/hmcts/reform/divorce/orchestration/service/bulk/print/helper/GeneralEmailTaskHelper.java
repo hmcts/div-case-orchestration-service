@@ -8,6 +8,7 @@ import java.util.Map;
 import static java.lang.String.format;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.GENERAL_EMAIL_DETAILS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CO_RESPONDENT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_GENERAL_EMAIL_DETAILS;
@@ -53,7 +54,7 @@ public class GeneralEmailTaskHelper {
         return ImmutableMap.of(
             NOTIFICATION_CCD_REFERENCE_KEY, getCaseId(taskContext),
             NOTIFICATION_PET_NAME, getPetitionerFullName(caseData),
-            NOTIFICATION_GENERAL_EMAIL_DETAILS, getMandatoryPropertyValueAsString(caseData, "DUMMY")
+            NOTIFICATION_GENERAL_EMAIL_DETAILS, getMandatoryPropertyValueAsString(caseData, GENERAL_EMAIL_DETAILS)
         );
     }
 
@@ -63,7 +64,7 @@ public class GeneralEmailTaskHelper {
             NOTIFICATION_PET_NAME, getPetitionerFullName(caseData),
             NOTIFICATION_RESP_NAME, getRespondentFullName(caseData),
             NOTIFICATION_SOLICITOR_NAME, getPetitionerSolicitorFullName(caseData),
-            NOTIFICATION_GENERAL_EMAIL_DETAILS, getMandatoryPropertyValueAsString(caseData, "DUMMY")
+            NOTIFICATION_GENERAL_EMAIL_DETAILS, getMandatoryPropertyValueAsString(caseData, GENERAL_EMAIL_DETAILS)
         );
     }
 
@@ -71,7 +72,7 @@ public class GeneralEmailTaskHelper {
         return ImmutableMap.of(
             NOTIFICATION_CCD_REFERENCE_KEY, getCaseId(taskContext),
             NOTIFICATION_RESP_NAME, getRespondentFullName(caseData),
-            NOTIFICATION_GENERAL_EMAIL_DETAILS, getMandatoryPropertyValueAsString(caseData, "DUMMY")
+            NOTIFICATION_GENERAL_EMAIL_DETAILS, getMandatoryPropertyValueAsString(caseData, GENERAL_EMAIL_DETAILS)
         );
     }
 
@@ -81,7 +82,7 @@ public class GeneralEmailTaskHelper {
             NOTIFICATION_PET_NAME, getPetitionerFullName(caseData),
             NOTIFICATION_RESP_NAME, getRespondentFullName(caseData),
             D8_RESPONDENT_SOLICITOR_NAME, getRespondentSolicitorFullName(caseData),
-            NOTIFICATION_GENERAL_EMAIL_DETAILS, getMandatoryPropertyValueAsString(caseData, "DUMMY")
+            NOTIFICATION_GENERAL_EMAIL_DETAILS, getMandatoryPropertyValueAsString(caseData, GENERAL_EMAIL_DETAILS)
         );
     }
 
@@ -89,7 +90,7 @@ public class GeneralEmailTaskHelper {
         return ImmutableMap.of(
             NOTIFICATION_CCD_REFERENCE_KEY, getCaseId(taskContext),
             NOTIFICATION_CO_RESPONDENT_NAME, getCoRespondentFullName(caseData),
-            NOTIFICATION_GENERAL_EMAIL_DETAILS, getMandatoryPropertyValueAsString(caseData, "DUMMY")
+            NOTIFICATION_GENERAL_EMAIL_DETAILS, getMandatoryPropertyValueAsString(caseData, GENERAL_EMAIL_DETAILS)
         );
     }
 
@@ -99,7 +100,7 @@ public class GeneralEmailTaskHelper {
             NOTIFICATION_PET_NAME, getPetitionerFullName(caseData),
             NOTIFICATION_RESP_NAME, getRespondentFullName(caseData),
             CO_RESPONDENT_SOLICITOR_NAME, getCoRespondentSolicitorFullName(caseData),
-            NOTIFICATION_GENERAL_EMAIL_DETAILS, getMandatoryPropertyValueAsString(caseData, "DUMMY")
+            NOTIFICATION_GENERAL_EMAIL_DETAILS, getMandatoryPropertyValueAsString(caseData, GENERAL_EMAIL_DETAILS)
         );
     }
 
@@ -109,23 +110,23 @@ public class GeneralEmailTaskHelper {
             NOTIFICATION_PET_NAME, getPetitionerFullName(caseData),
             NOTIFICATION_RESP_NAME, getRespondentFullName(caseData),
             NOTIFICATION_OTHER_NAME, getOtherPartyFullName(caseData),
-            NOTIFICATION_GENERAL_EMAIL_DETAILS, getMandatoryPropertyValueAsString(caseData, "DUMMY")
+            NOTIFICATION_GENERAL_EMAIL_DETAILS, getMandatoryPropertyValueAsString(caseData, GENERAL_EMAIL_DETAILS)
         );
 
         // TODO: getOtherPartyFullName(caseData) doesnt pull in real data. Need to Update CCD Definitions with something like "OtherPartyName"
     }
 
-    public static String getRepresentedSubject(Map<String, Object> caseData) {
+    public static String getRepresentedSubject(TaskContext context, Map<String, Object> caseData) {
         return format(
             "%s vs %s: Divorce case number %s",
             getPetitionerFullName(caseData),
             getRespondentFullName(caseData),
-            NOTIFICATION_CCD_REFERENCE_KEY
+            getCaseId(context)
         );
     }
 
-    public static String getNotRepresentedSubject() {
-        return "Divorce case number " + NOTIFICATION_CCD_REFERENCE_KEY;
+    public static String getNotRepresentedSubject(TaskContext context) {
+        return "Divorce case number " + getCaseId(context);
     }
 
     public enum Party {

@@ -66,8 +66,6 @@ public class DispensedNotApprovedSolicitorEmailTaskTest {
 
     @Test
     public void shouldReturnTemplate() {
-        caseData = buildCaseData();
-
         EmailTemplateNames returnedTemplate = task.getTemplate();
 
         assertEquals(TEST_TEMPLATE, returnedTemplate);

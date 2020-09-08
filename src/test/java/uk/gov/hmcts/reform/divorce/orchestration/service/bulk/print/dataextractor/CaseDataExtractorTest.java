@@ -16,13 +16,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETIT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESP_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.CASE_REFERENCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.CO_RESPONDENT_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.CO_RESPONDENT_SOLICITOR_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.CO_RESPONDENT_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.CO_RESPONDENT_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.OTHER_PARTY_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.PETITIONER_SOLICITOR_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.RESPONDENT_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.RESPONDENT_SOLICITOR_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.RESPONDENT_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.RESPONDENT_SOLICITOR_EMAIL;
 
 public class CaseDataExtractorTest {
 
@@ -84,25 +84,25 @@ public class CaseDataExtractorTest {
 
     @Test
     public void getRespondentEmailShouldReturnValidValue() {
-        Map<String, Object> caseData = buildCaseDataWithField(RESPONDENT_EMAIL_ADDRESS, TEST_RESPONDENT_EMAIL);
+        Map<String, Object> caseData = buildCaseDataWithField(RESPONDENT_EMAIL, TEST_RESPONDENT_EMAIL);
         assertThat(CaseDataExtractor.getRespondentEmail(caseData), is(TEST_RESPONDENT_EMAIL));
     }
 
     @Test
     public void getRespondentSolicitorEmailShouldReturnValidValue() {
-        Map<String, Object> caseData = buildCaseDataWithField(RESPONDENT_SOLICITOR_EMAIL_ADDRESS, TEST_RESP_SOLICITOR_EMAIL);
+        Map<String, Object> caseData = buildCaseDataWithField(RESPONDENT_SOLICITOR_EMAIL, TEST_RESP_SOLICITOR_EMAIL);
         assertThat(CaseDataExtractor.getRespondentSolicitorEmail(caseData), is(TEST_RESP_SOLICITOR_EMAIL));
     }
 
     @Test
     public void getCoRespondentEmailShouldReturnValidValue() {
-        Map<String, Object> caseData = buildCaseDataWithField(CO_RESPONDENT_EMAIL_ADDRESS, TEST_RESPONDENT_EMAIL);
+        Map<String, Object> caseData = buildCaseDataWithField(CO_RESPONDENT_EMAIL, TEST_RESPONDENT_EMAIL);
         assertThat(CaseDataExtractor.getCoRespondentEmail(caseData), is(TEST_RESPONDENT_EMAIL));
     }
 
     @Test
     public void getCoRespondentSolicitorEmailShouldReturnValidValue() {
-        Map<String, Object> caseData = buildCaseDataWithField(CO_RESPONDENT_SOLICITOR_EMAIL_ADDRESS, TEST_RESP_SOLICITOR_EMAIL);
+        Map<String, Object> caseData = buildCaseDataWithField(CO_RESPONDENT_SOLICITOR_EMAIL, TEST_RESP_SOLICITOR_EMAIL);
         assertThat(CaseDataExtractor.getCoRespondentSolicitorEmail(caseData), is(TEST_RESP_SOLICITOR_EMAIL));
     }
 

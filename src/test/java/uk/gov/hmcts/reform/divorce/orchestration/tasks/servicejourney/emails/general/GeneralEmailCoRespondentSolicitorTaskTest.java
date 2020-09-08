@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.general;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -9,43 +9,47 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper;
 
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CO_RESPONDENT_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_GENERAL_EMAIL_DETAILS;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.CITIZEN_DEEMED_APPROVED;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.PETITIONER_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_SOLICITOR_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.GENERAL_EMAIL_DETAILS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.GENERAL_EMAIL_CO_RESPONDENT_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.getExpectedNotificationTemplateVars;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.getTaskContext;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.removeAllEmailAddresses;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getExpectedNotificationTemplateVars;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getRepresentedSubject;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DeemedApprovedPetitionerEmailTaskTest {
+public class GeneralEmailCoRespondentSolicitorTaskTest {
 
     @Mock
     private EmailService emailService;
 
     @InjectMocks
-    private DeemedApprovedPetitionerEmailTask task;
+    private GeneralEmailCoRespondentSolicitorTask task;
 
     private DefaultTaskContext testContext;
+    private static EmailTemplateNames expectedTemplate = GENERAL_EMAIL_CO_RESPONDENT_SOLICITOR;
 
     @Before
     public void setUp() {
@@ -56,40 +60,30 @@ public class DeemedApprovedPetitionerEmailTaskTest {
     @Test
     public void shouldSendEmailWhenExecuteEmailNotificationTaskIsCalled() throws TaskException {
         Map<String, Object> caseData = buildCaseData();
-        caseData.remove(PETITIONER_SOLICITOR_EMAIL);
 
         executeTask(caseData);
 
-        verifyCitizenEmailSent(caseData);
-    }
-
-    @Test
-    public void shouldNotSendEmail_whenEmptyRecipientEmail() {
-        Map<String, Object> caseData = buildCaseData();
-
-        removeAllEmailAddresses(caseData);
-
-        executeTask(caseData);
-
-        verifyNoInteractions(emailService);
+        verifyEmailSent(testContext, caseData);
     }
 
     @Test
     public void shouldReturnTemplate() {
         EmailTemplateNames returnedTemplate = task.getTemplate();
 
-        assertEquals(CITIZEN_DEEMED_APPROVED, returnedTemplate);
+        assertEquals(returnedTemplate, expectedTemplate);
     }
 
     private Map<String, Object> buildCaseData() {
-        Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithRespondent();
-
+        Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithCoRespondentSolicitor();
         caseData.put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         caseData.put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
         caseData.put(RESPONDENT_FIRST_NAME, TEST_RESPONDENT_FIRST_NAME);
         caseData.put(RESPONDENT_LAST_NAME, TEST_RESPONDENT_LAST_NAME);
 
-        caseData.put(PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
+        caseData.put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, YES_VALUE);
+        caseData.put(CO_RESPONDENT_SOLICITOR_EMAIL_ADDRESS, TEST_CO_RESPONDENT_SOLICITOR_EMAIL);
+        caseData.put(GENERAL_EMAIL_DETAILS, TEST_GENERAL_EMAIL_DETAILS);
+
 
         return caseData;
     }
@@ -99,13 +93,20 @@ public class DeemedApprovedPetitionerEmailTaskTest {
         assertEquals(caseData, returnPayload);
     }
 
-    private void verifyCitizenEmailSent(Map<String, Object> caseData) {
+    private void verifyEmailSent(TaskContext context, Map<String, Object> caseData) {
         verify(emailService).sendEmail(
-            TEST_PETITIONER_EMAIL,
-            CITIZEN_DEEMED_APPROVED.name(),
-            getExpectedNotificationTemplateVars(false, testContext, caseData),
-            "Your ‘deemed service’ application has been approved",
+            TEST_CO_RESPONDENT_SOLICITOR_EMAIL,
+            expectedTemplate.name(),
+            getExpectedNotificationTemplateVars(GeneralEmailTaskHelper.Party.CO_RESPONDENT_SOLICITOR, testContext, caseData),
+            getRepresentedSubject(context, caseData),
             LanguagePreference.ENGLISH
         );
+    }
+
+    private static TaskContext getTaskContext() {
+        TaskContext context = new DefaultTaskContext();
+        context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
+
+        return context;
     }
 }
