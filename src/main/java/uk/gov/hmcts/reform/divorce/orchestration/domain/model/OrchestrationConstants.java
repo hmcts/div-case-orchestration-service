@@ -57,6 +57,7 @@ public class OrchestrationConstants {
     public static final String D_8_CO_RESPONDENT_NAMED_OLD = "D8ReasonForDivorceAdulteryIsNamed";
     public static final String CO_RESPONDENT_SOLICITOR_NAME = "CoRespondentSolicitorName";
     public static final String CO_RESPONDENT_SOLICITOR_ADDRESS = "DerivedCoRespondentSolicitorAddr";
+    public static final String OTHER_PARTY_NAME = "OtherPartyName";
     public static final String CCD_CASE_DATA_FIELD = "case_data";
     public static final String CCD_CASE_ID = "id";
     public static final String NOT_RECEIVED_AOS_EVENT_ID = "aosNotReceived";
@@ -182,6 +183,7 @@ public class OrchestrationConstants {
     public static final String CO_RESP_LINKED_TO_CASE_DATE = "CoRespLinkedToCaseDate";
     public static final String CO_RESPONDENT_LETTER_HOLDER_ID = "CoRespLetterHolderId";
     public static final String CO_RESP_EMAIL_ADDRESS = "CoRespEmailAddress";
+    public static final String CO_RESP_SOL_EMAIL_ADDRESS = "CoRespSolEmailAddress";
     public static final String CO_RESPONDENT_DEFENDS_DIVORCE = "CoRespDefendsDivorce";
     public static final String RECEIVED_AOS_FROM_CO_RESP = "ReceivedAosFromCoResp";
     public static final String RECEIVED_AOS_FROM_CO_RESP_DATE = "ReceivedAosFromCoRespDate";
