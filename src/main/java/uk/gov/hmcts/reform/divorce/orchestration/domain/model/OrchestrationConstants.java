@@ -270,6 +270,7 @@ public class OrchestrationConstants {
     public static final String RESPONDENT_LETTER_HOLDER_ID = "AosLetterHolderId";
     public static final String SEND_VIA_EMAIL_OR_POST = "SendViaEmailOrPost";
     public static final String SEND_VIA_POST = "Post";
+    public static final String OTHER_PARTY_EMAIL = "OtherPartyEmail";
 
     // Court Data Keys
     public static final String CARE_OF_PREFIX = "c/o";

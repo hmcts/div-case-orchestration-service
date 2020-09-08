@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.Gener
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.getRespondentEmail;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.getOtherPartyEmail;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getRepresentedSubject;
 
 public class GeneralEmailOtherParty extends SendEmailTask {
@@ -34,6 +34,6 @@ public class GeneralEmailOtherParty extends SendEmailTask {
 
     @Override
     protected String getRecipientEmail(Map<String, Object> caseData) {
-        return getRespondentEmail(caseData);
+        return getOtherPartyEmail(caseData);
     }
 }

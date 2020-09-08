@@ -21,7 +21,7 @@ public class CaseDataExtractor {
         public static final String RESPONDENT_SOLICITOR_EMAIL_ADDRESS = OrchestrationConstants.RESPONDENT_SOLICITOR_EMAIL_ADDRESS;
         public static final String CO_RESPONDENT_EMAIL_ADDRESS = OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
         public static final String CO_RESPONDENT_SOLICITOR_EMAIL_ADDRESS = OrchestrationConstants.CO_RESP_SOL_EMAIL_ADDRESS;
-        public static final String OTHER_EMAIL_ADDRESS = OrchestrationConstants.CO_RESP_SOL_EMAIL_ADDRESS;
+        public static final String OTHER_PARTY_EMAIL = OrchestrationConstants.OTHER_PARTY_EMAIL;
     }
 
     public static String getCaseReference(Map<String, Object> caseData) {
@@ -57,7 +57,7 @@ public class CaseDataExtractor {
     }
 
     public static String getOtherPartyEmail(Map<String, Object> caseData) {
-        return getMandatoryStringValue(caseData, CaseDataKeys.CO_RESPONDENT_SOLICITOR_EMAIL_ADDRESS);
+        return getMandatoryStringValue(caseData, CaseDataKeys.OTHER_PARTY_EMAIL);
     }
 
     // TODO: CO_RESP_SOL_EMAIL_ADDRESS doesnt exist. Needs to be created in CCD Definitions
