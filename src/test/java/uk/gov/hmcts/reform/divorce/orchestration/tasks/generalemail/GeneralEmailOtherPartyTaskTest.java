@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.general;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.generalemail;
 
 import org.junit.Before;
 import org.junit.Test;

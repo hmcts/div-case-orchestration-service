@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.general;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.generalemail;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -10,14 +10,14 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.Gener
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.getRespondentSolicitorEmail;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.getOtherPartyEmail;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getRepresentedSubject;
 
 @Component
 @Slf4j
-public class GeneralEmailRespondentSolicitorTask extends SendEmailTask {
+public class GeneralEmailOtherPartyTask extends SendEmailTask {
 
-    public GeneralEmailRespondentSolicitorTask(EmailService emailService) {
+    public GeneralEmailOtherPartyTask(EmailService emailService) {
         super(emailService);
     }
 
@@ -28,16 +28,16 @@ public class GeneralEmailRespondentSolicitorTask extends SendEmailTask {
 
     @Override
     protected Map<String, String> getPersonalisation(TaskContext context, Map<String, Object> caseData) {
-        return GeneralEmailTaskHelper.getExpectedNotificationTemplateVars(GeneralEmailTaskHelper.Party.RESPONDENT_SOLICITOR, context, caseData);
+        return GeneralEmailTaskHelper.getExpectedNotificationTemplateVars(GeneralEmailTaskHelper.Party.OTHER, context, caseData);
     }
 
     @Override
     protected EmailTemplateNames getTemplate() {
-        return EmailTemplateNames.GENERAL_EMAIL_RESPONDENT_SOLICITOR;
+        return EmailTemplateNames.GENERAL_EMAIL_OTHER_PARTY;
     }
 
     @Override
     protected String getRecipientEmail(Map<String, Object> caseData) {
-        return getRespondentSolicitorEmail(caseData);
+        return getOtherPartyEmail(caseData);
     }
 }

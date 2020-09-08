@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.general;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.generalemail;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -21,29 +21,29 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_GENERAL_EMAIL_DETAILS;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.GENERAL_EMAIL_DETAILS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.GENERAL_EMAIL_PETITIONER_SOLICITOR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.GENERAL_EMAIL_PETITIONER;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getExpectedNotificationTemplateVars;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getRepresentedSubject;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getNotRepresentedSubject;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GeneralEmailPetitionerSolicitorTaskTest {
+public class GeneralEmailPetitionerTaskTest {
 
     @Mock
     private EmailService emailService;
 
     @InjectMocks
-    private GeneralEmailPetitionerSolicitorTask task;
+    private GeneralEmailPetitionerTask task;
 
     private DefaultTaskContext testContext;
-    private static EmailTemplateNames expectedTemplate = GENERAL_EMAIL_PETITIONER_SOLICITOR;
+    private static EmailTemplateNames expectedTemplate = GENERAL_EMAIL_PETITIONER;
 
     @Before
     public void setUp() {
@@ -72,7 +72,7 @@ public class GeneralEmailPetitionerSolicitorTaskTest {
         caseData.put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         caseData.put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
 
-        caseData.put(PETITIONER_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL);
+        caseData.put(PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
         caseData.put(GENERAL_EMAIL_DETAILS, TEST_GENERAL_EMAIL_DETAILS);
 
 
@@ -86,10 +86,10 @@ public class GeneralEmailPetitionerSolicitorTaskTest {
 
     private void verifyEmailSent(TaskContext context, Map<String, Object> caseData) {
         verify(emailService).sendEmail(
-            TEST_SOLICITOR_EMAIL,
+            TEST_PETITIONER_EMAIL,
             expectedTemplate.name(),
-            getExpectedNotificationTemplateVars(GeneralEmailTaskHelper.Party.PETITIONER_SOLICITOR, testContext, caseData),
-            getRepresentedSubject(context, caseData),
+            getExpectedNotificationTemplateVars(GeneralEmailTaskHelper.Party.PETITIONER, testContext, caseData),
+            getNotRepresentedSubject(context),
             LanguagePreference.ENGLISH
         );
     }

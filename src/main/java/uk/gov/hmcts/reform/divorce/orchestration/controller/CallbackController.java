@@ -1234,6 +1234,19 @@ public class CallbackController {
                 .build());
     }
 
+    @PostMapping(path = "/create-general-email")
+    @ApiOperation(value = "Prepare event to send general email")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Create general email notification callback processed.")})
+    public ResponseEntity<CcdCallbackResponse> createGeneralEmail(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException, CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(caseOrchestrationService.createGeneralEmail(ccdCallbackRequest))
+                .build());
+    }
+
     @ExceptionHandler(CaseOrchestrationServiceException.class)
     ResponseEntity<CcdCallbackResponse> handleCaseOrchestrationServiceExceptionForCcdCallback(CaseOrchestrationServiceException exception) {
         log.error(exception.getIdentifiableMessage(), exception);

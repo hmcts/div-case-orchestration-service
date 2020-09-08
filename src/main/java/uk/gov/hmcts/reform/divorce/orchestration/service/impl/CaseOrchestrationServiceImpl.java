@@ -36,6 +36,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.DecreeNisiAboutToBeGr
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DecreeNisiDecisionStateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DocumentGenerationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.GeneralEmailWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GenerateCoRespondentAnswersWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWithIdWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
@@ -186,6 +187,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final CreateNewAmendedCaseAndSubmitToCCDWorkflow createNewAmendedCaseAndSubmitToCCDWorkflow;
     private final DocumentTemplateService documentTemplateService;
     private final SetupConfirmServicePaymentWorkflow setupConfirmServicePaymentWorkflow;
+    private final GeneralEmailWorkflow generalEmailWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -888,6 +890,15 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     public Map<String, Object> setupConfirmServicePaymentEvent(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
         try {
             return setupConfirmServicePaymentWorkflow.run(ccdCallbackRequest);
+        } catch (WorkflowException exception) {
+            throw new CaseOrchestrationServiceException(exception, ccdCallbackRequest.getCaseDetails().getCaseId());
+        }
+    }
+
+    @Override
+    public Map<String, Object> createGeneralEmail(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+        try {
+            return generalEmailWorkflow.run(ccdCallbackRequest);
         } catch (WorkflowException exception) {
             throw new CaseOrchestrationServiceException(exception, ccdCallbackRequest.getCaseDetails().getCaseId());
         }

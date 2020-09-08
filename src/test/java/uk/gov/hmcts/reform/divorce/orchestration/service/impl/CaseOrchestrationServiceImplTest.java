@@ -39,6 +39,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DecreeNisiAboutToBeGrantedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DocumentGenerationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.GeneralEmailWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GenerateCoRespondentAnswersWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWithIdWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
@@ -344,6 +345,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private WelshSetPreviousStateWorkflow welshSetPreviousStateWorkflow;
+
+    @Mock
+    GeneralEmailWorkflow generalEmailWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -1803,6 +1807,17 @@ public class CaseOrchestrationServiceImplTest {
         } catch (CaseOrchestrationServiceException exception) {
             assertCaseOrchestrationServiceExceptionIsSetProperly(exception);
         }
+    }
+
+    @Test
+    public void shouldCallGeneralEmailWorkflow_whenGeneralEmailIsCreated() throws WorkflowException, CaseOrchestrationServiceException {
+        when(generalEmailWorkflow.run(ccdCallbackRequest))
+            .thenReturn(requestPayload);
+
+        Map<String, Object> actual = classUnderTest.createGeneralEmail(ccdCallbackRequest);
+
+        assertEquals(requestPayload, actual);
+        verify(generalEmailWorkflow).run(ccdCallbackRequest);
     }
 
     @After
