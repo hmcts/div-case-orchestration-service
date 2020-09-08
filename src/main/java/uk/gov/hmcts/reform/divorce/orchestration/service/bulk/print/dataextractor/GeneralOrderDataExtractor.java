@@ -1,0 +1,44 @@
+package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
+
+import java.util.Map;
+
+import static com.google.common.base.Strings.nullToEmpty;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
+import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
+
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class GeneralOrderDataExtractor {
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class CaseDataKeys {
+        public static final String GENERAL_ORDER_DATE = CcdFields.GENERAL_ORDER_DATE;
+        public static final String JUDGE_TYPE = CcdFields.JUDGE_TYPE;
+        public static final String JUDGE_NAME = CcdFields.JUDGE_NAME;
+        public static final String GENERAL_ORDER_DETAILS = CcdFields.GENERAL_ORDER_DETAILS;
+        public static final String GENERAL_ORDER_RECITALS = CcdFields.GENERAL_ORDER_RECITALS;
+    }
+
+    public static String getJudgeName(Map<String, Object> caseData) {
+        return getMandatoryStringValue(caseData, CaseDataKeys.JUDGE_NAME);
+    }
+
+    public static String getJudgeType(Map<String, Object> caseData) {
+        return getMandatoryStringValue(caseData, CaseDataKeys.JUDGE_TYPE);
+    }
+
+    public static String getGeneralOrderRecitals(Map<String, Object> caseData) {
+        return nullToEmpty((String) (caseData.get(CaseDataKeys.GENERAL_ORDER_RECITALS))).trim();
+    }
+
+    public static String getGeneralOrderDetails(Map<String, Object> caseData) {
+        return getMandatoryStringValue(caseData, CaseDataKeys.GENERAL_ORDER_DETAILS);
+    }
+
+    public static String getGeneralOrderDate(Map<String, Object> caseData) {
+        return formatDateWithCustomerFacingFormat(getMandatoryStringValue(caseData, CaseDataKeys.GENERAL_ORDER_DATE));
+    }
+}
