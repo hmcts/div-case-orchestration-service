@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.callback;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.tuple.Pair;
 import org.assertj.core.api.Assertions;
-import org.junit.Ignore;
 import org.junit.Test;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
@@ -41,10 +40,9 @@ public class RemoveCaseFromListingTest extends CcdSubmissionSupport {
     private static final String BULK_HEARING_DATE_TIME_KEY = "hearingDate";
     private static final String REMOVE_FROM_BULK_LISTED_EVENT = "removeFromListed";
 
-    private static final int  MAX_WAITING_TIME_IN_SECONDS = 90;
-    private static final int  POOL_INTERVAL_IN_MILLIS = 1000;
+    private static final int MAX_WAITING_TIME_IN_SECONDS = 90;
+    private static final int POOL_INTERVAL_IN_MILLIS = 1000;
 
-    @Ignore
     @Test
     public void whenScheduleBulkCaseForRemoval_thenIndividualCasesShouldBeUpdated() throws Exception {
 
@@ -82,7 +80,7 @@ public class RemoveCaseFromListingTest extends CcdSubmissionSupport {
         assertThat(
             jsonResponse,
             hasJsonPath("$.case_data.CaseList.length()", is(1)
-        ));
+            ));
 
         validateCaseWithAwaitingTime(createCaseWorkerUser(), caseId2);
     }
@@ -96,8 +94,8 @@ public class RemoveCaseFromListingTest extends CcdSubmissionSupport {
         updateCase(bulkCaseId, LISTED_EVENT, true);
     }
 
-    private CollectionMember<Map<String,Object>> getCaseInfo(String caseReference) {
-        CollectionMember<Map<String,Object>> caseLink = new CollectionMember<>();
+    private CollectionMember<Map<String, Object>> getCaseInfo(String caseReference) {
+        CollectionMember<Map<String, Object>> caseLink = new CollectionMember<>();
         caseLink.setValue(ImmutableMap.of(CASE_REFERENCE_FIELD, new CaseLink(caseReference)));
         return caseLink;
     }
@@ -106,7 +104,7 @@ public class RemoveCaseFromListingTest extends CcdSubmissionSupport {
         await().pollInterval(POOL_INTERVAL_IN_MILLIS, MILLISECONDS)
             .atMost(MAX_WAITING_TIME_IN_SECONDS, SECONDS)
             .untilAsserted(() -> Assertions.assertThat(
-                    retrieveCaseForCaseworker(user, caseId).getData().get(COURT_NAME_CCD_FIELD)).isNotNull());
+                retrieveCaseForCaseworker(user, caseId).getData().get(COURT_NAME_CCD_FIELD)).isNotNull());
     }
 
     private void validateCaseWithAwaitingTime(UserDetails user, String caseId) {

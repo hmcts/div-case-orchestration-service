@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.divorce.callback;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Ignore;
 import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseLink;
@@ -28,11 +27,10 @@ public class ScheduleBulkCaseForListingTest extends CcdSubmissionSupport {
     private static final String COURT_NAME_FIELD_KEY = "CourtName";
     private static final String BULK_LISTED_STATE = "Listed";
 
-    private static final int  MAX_WAITING_TIME_IN_SECONDS = 90;
-    private static final int  POOL_INTERVAL_IN_MILLIS = 1000;
+    private static final int MAX_WAITING_TIME_IN_SECONDS = 90;
+    private static final int POOL_INTERVAL_IN_MILLIS = 1000;
 
     @Test
-    @Ignore
     public void whenScheduleBulkCaseForListing_thenIndividualCasesShouldBeUpdated() throws Exception {
         final UserDetails user1 = createCitizenUser();
         final UserDetails user2 = createCitizenUser();
@@ -63,13 +61,13 @@ public class ScheduleBulkCaseForListingTest extends CcdSubmissionSupport {
 
     private void validateCaseWithAwaitingTime(UserDetails user, String caseId) {
         await().pollInterval(POOL_INTERVAL_IN_MILLIS, MILLISECONDS)
-                .atMost(MAX_WAITING_TIME_IN_SECONDS, SECONDS)
-                .untilAsserted(() -> assertThat(retrieveCaseForCaseworker(user, caseId).getData().get(COURT_NAME_FIELD_KEY)).isNotNull());
+            .atMost(MAX_WAITING_TIME_IN_SECONDS, SECONDS)
+            .untilAsserted(() -> assertThat(retrieveCaseForCaseworker(user, caseId).getData().get(COURT_NAME_FIELD_KEY)).isNotNull());
     }
 
     private void validateBulkCaseWithAwaitingTime(UserDetails user, String caseId) {
         await().pollInterval(POOL_INTERVAL_IN_MILLIS, MILLISECONDS)
-                .atMost(MAX_WAITING_TIME_IN_SECONDS, SECONDS)
-                .untilAsserted(() -> assertThat(retrieveCaseForCaseworker(user, caseId).getState()).isEqualTo(BULK_LISTED_STATE));
+            .atMost(MAX_WAITING_TIME_IN_SECONDS, SECONDS)
+            .untilAsserted(() -> assertThat(retrieveCaseForCaseworker(user, caseId).getState()).isEqualTo(BULK_LISTED_STATE));
     }
 }
