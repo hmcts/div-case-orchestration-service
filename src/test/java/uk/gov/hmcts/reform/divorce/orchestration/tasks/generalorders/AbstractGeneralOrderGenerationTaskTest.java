@@ -11,7 +11,6 @@ import java.util.Map;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_FAMILY_MAN_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CO_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CO_RESPONDENT_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CO_RESPONDENT_LAST_NAME;
@@ -29,7 +28,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.G
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.JUDGE_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.JUDGE_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.docmosis.DocmosisTemplateTestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.CO_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.CO_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
@@ -62,7 +61,7 @@ public abstract class AbstractGeneralOrderGenerationTaskTest extends BasePayload
             .ctscContactDetails(CTSC_CONTACT)
             .petitionerFullName(TEST_PETITIONER_FULL_NAME)
             .respondentFullName(TEST_RESPONDENT_FULL_NAME)
-            .caseReference(TEST_CASE_FAMILY_MAN_ID)
+            .caseReference(TEST_CASE_ID)
             .generalOrderDetails(TEST_GENERAL_ORDER_DETAILS)
             .generalOrderDate(TEST_GENERAL_ORDER_DATE_FORMATTED)
             .generalOrderRecitals(TEST_GENERAL_ORDER_RECITALS)
@@ -96,8 +95,6 @@ public abstract class AbstractGeneralOrderGenerationTaskTest extends BasePayload
 
     private Map<String, Object> buildCaseData() {
         Map<String, Object> caseData = new HashMap<>();
-
-        caseData.put(CASE_REFERENCE, TEST_CASE_FAMILY_MAN_ID);
 
         caseData.put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         caseData.put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
