@@ -198,4 +198,14 @@ public class AddresseeDataExtractorTest {
         caseData.put(LANGUAGE_PREFERENCE_WELSH, NO_VALUE);
         return caseData;
     }
+
+    public static Map<String, Object> buildCaseDataWithOtherParty() {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(PETITIONER_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
+        caseData.put(PETITIONER_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL);
+        caseData.put(LANGUAGE_PREFERENCE_WELSH, NO_VALUE);
+        return caseData;
+
+        // TODO: Actually create and return proper "Other" data
+    }
 }

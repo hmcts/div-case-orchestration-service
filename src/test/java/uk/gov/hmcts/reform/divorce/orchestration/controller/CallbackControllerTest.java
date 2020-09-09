@@ -1487,4 +1487,14 @@ public class CallbackControllerTest {
         verify(aosService).prepareAosNotReceivedEventForSubmission(AUTH_TOKEN, TEST_INCOMING_CASE_DETAILS);
     }
 
+    @Test
+    public void shouldCallRightServiceMethod_forTriggeringGeneralEmail() throws CaseOrchestrationServiceException, WorkflowException {
+        when(caseOrchestrationService.createGeneralEmail(any())).thenReturn(TEST_PAYLOAD_TO_RETURN);
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(TEST_INCOMING_CASE_DETAILS).build();
+        ResponseEntity<CcdCallbackResponse> ccdCallbackResponse = classUnderTest.createGeneralEmail(ccdCallbackRequest);
+
+        assertThat(ccdCallbackResponse.getBody().getData(), equalTo(TEST_PAYLOAD_TO_RETURN));
+        verify(caseOrchestrationService).createGeneralEmail(ccdCallbackRequest);
+    }
 }
