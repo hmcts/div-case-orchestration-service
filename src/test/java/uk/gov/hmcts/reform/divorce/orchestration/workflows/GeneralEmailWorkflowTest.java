@@ -84,7 +84,6 @@ public class GeneralEmailWorkflowTest {
     @Test
     public void shouldTriggerGeneralEmail_ToPetitionerSolicitor() throws WorkflowException {
         caseData = buildCaseData(PETITIONER_SOLICITOR);
-        explicitlySetDigitalValuesToNo();
 
         CaseDetails caseDetails = setupCaseDetails(caseData);
         CcdCallbackRequest ccdCallbackRequest = setupCallbackRequest(caseDetails);
@@ -95,7 +94,6 @@ public class GeneralEmailWorkflowTest {
     @Test
     public void shouldTriggerGeneralEmail_ToRespondentSolicitor() throws WorkflowException {
         caseData = buildCaseData(RESPONDENT_SOLICITOR);
-        explicitlySetDigitalValuesToNo();
 
         CaseDetails caseDetails = setupCaseDetails(caseData);
         CcdCallbackRequest ccdCallbackRequest = setupCallbackRequest(caseDetails);
@@ -106,7 +104,6 @@ public class GeneralEmailWorkflowTest {
     @Test
     public void shouldTriggerGeneralEmail_ToCoRespondentSolicitor() throws WorkflowException {
         caseData = buildCaseData(CO_RESPONDENT_SOLICITOR);
-        explicitlySetDigitalValuesToNo();
 
         CaseDetails caseDetails = setupCaseDetails(caseData);
         CcdCallbackRequest ccdCallbackRequest = setupCallbackRequest(caseDetails);
@@ -141,7 +138,6 @@ public class GeneralEmailWorkflowTest {
     @Test
     public void shouldTriggerGeneralEmail_ToPetitioner() throws WorkflowException {
         caseData = buildCaseData(PETITIONER);
-        explicitlySetDigitalValuesToNo();
 
         caseData.put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
 
@@ -154,7 +150,6 @@ public class GeneralEmailWorkflowTest {
     @Test
     public void shouldTriggerGeneralEmail_ToOtherParty() throws WorkflowException {
         caseData = buildCaseData(OTHER);
-        explicitlySetDigitalValuesToNo();
 
         caseData.put(OTHER_PARTY_EMAIL, TEST_OTHER_PARTY_EMAIL);
 
@@ -193,12 +188,10 @@ public class GeneralEmailWorkflowTest {
         caseData.put(RESPONDENT_FIRST_NAME, TEST_RESPONDENT_FIRST_NAME);
         caseData.put(RESPONDENT_LAST_NAME, TEST_RESPONDENT_LAST_NAME);
 
-        return caseData;
-    }
-
-    private void explicitlySetDigitalValuesToNo() {
         caseData.put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE);
         caseData.put(RESP_IS_USING_DIGITAL_CHANNEL, NO_VALUE);
+
+        return caseData;
     }
 
     private Map<String, Object> executeWorkflow(CcdCallbackRequest ccdCallbackRequest)
