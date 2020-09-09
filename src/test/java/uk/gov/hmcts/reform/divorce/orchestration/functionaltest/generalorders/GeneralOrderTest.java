@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.GeneralOrder;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.IdamTestSupport;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralOrderDataExtractor;
@@ -52,7 +51,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.J
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.CASE_REFERENCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.getCaseReference;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.CO_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.CO_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
@@ -135,12 +133,14 @@ public class GeneralOrderTest extends IdamTestSupport {
     protected void stubDgsRequest(Map<String, Object> caseData, String templateId, String documentType) {
         Map<String, Object> caseDataBeforeGeneratingPdf = new HashMap<>(caseData);
 
+        GeneralOrder generalOrder = buildPopulatedTemplateModel(caseDataBeforeGeneratingPdf);
+
         stubDocumentGeneratorServiceBaseOnContextPath(
             templateId,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
                 ImmutableMap.of(
-                    "id", getCaseReference(caseDataBeforeGeneratingPdf),
-                    "case_data", buildPopulatedTemplateModel(caseDataBeforeGeneratingPdf)
+                    "id", generalOrder.getCaseReference(),
+                    "case_data", generalOrder
                 )
             ),
             documentType
@@ -149,7 +149,7 @@ public class GeneralOrderTest extends IdamTestSupport {
 
     protected GeneralOrder buildPopulatedTemplateModel(Map<String, Object> caseData) {
         return GeneralOrder.generalOrderBuilder()
-            .caseReference(CaseDataExtractor.getCaseReference(caseData))
+            .caseReference(TEST_CASE_ID)
             .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
             .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
             .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
