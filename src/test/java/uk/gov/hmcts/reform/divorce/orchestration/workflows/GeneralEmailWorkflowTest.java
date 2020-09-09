@@ -96,7 +96,7 @@ public class GeneralEmailWorkflowTest {
 
     private Map<String, Object> executeWorkflow(CcdCallbackRequest ccdCallbackRequest)
         throws WorkflowException {
-        Map<String, Object> returnedData = classUnderTest.run(ccdCallbackRequest);
+        Map<String, Object> returnedData = classUnderTest.run(ccdCallbackRequest.getCaseDetails());
         assertThat(returnedData, is(notNullValue()));
 
         return returnedData;

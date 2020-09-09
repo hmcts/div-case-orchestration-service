@@ -896,11 +896,11 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> createGeneralEmail(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+    public Map<String, Object> createGeneralEmail(CaseDetails caseDetails) throws CaseOrchestrationServiceException {
         try {
-            return generalEmailWorkflow.run(ccdCallbackRequest);
+            return generalEmailWorkflow.run(caseDetails);
         } catch (WorkflowException exception) {
-            throw new CaseOrchestrationServiceException(exception, ccdCallbackRequest.getCaseDetails().getCaseId());
+            throw new CaseOrchestrationServiceException(exception, caseDetails.getCaseId());
         }
     }
 

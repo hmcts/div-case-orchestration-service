@@ -1495,6 +1495,6 @@ public class CallbackControllerTest {
         ResponseEntity<CcdCallbackResponse> ccdCallbackResponse = classUnderTest.createGeneralEmail(ccdCallbackRequest);
 
         assertThat(ccdCallbackResponse.getBody().getData(), equalTo(TEST_PAYLOAD_TO_RETURN));
-        verify(caseOrchestrationService).createGeneralEmail(ccdCallbackRequest);
+        verify(caseOrchestrationService).createGeneralEmail(CaseDetails.builder().build());
     }
 }

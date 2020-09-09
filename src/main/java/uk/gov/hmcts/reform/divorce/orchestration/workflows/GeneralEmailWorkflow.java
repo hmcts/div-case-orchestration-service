@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -44,10 +43,9 @@ public class GeneralEmailWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private static String taskLog = "CaseId: {} Executing task to send general email to ";
 
-    public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
-        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
-        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+    public Map<String, Object> run(CaseDetails caseDetails) throws WorkflowException {
+        String caseId = caseDetails.getCaseId();
+        Map<String, Object> caseData = caseDetails.getCaseData();
 
         log.info("CaseID: {} ServiceDecisionMade workflow is going to be executed.", caseId);
 

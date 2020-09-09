@@ -31,10 +31,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
+import javax.ws.rs.core.MediaType;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.core.MediaType;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -1239,11 +1239,11 @@ public class CallbackController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Create general email notification callback processed.")})
     public ResponseEntity<CcdCallbackResponse> createGeneralEmail(
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException, CaseOrchestrationServiceException {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
-                .data(caseOrchestrationService.createGeneralEmail(ccdCallbackRequest))
+                .data(caseOrchestrationService.createGeneralEmail(ccdCallbackRequest.getCaseDetails()))
                 .build());
     }
 
