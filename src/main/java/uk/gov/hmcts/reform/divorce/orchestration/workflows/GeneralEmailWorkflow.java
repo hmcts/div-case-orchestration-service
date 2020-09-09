@@ -22,7 +22,12 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentDigital;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentRepresented;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isOtherPartyDigital;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerRepresented;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentDigital;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
 
 @Component
 @Slf4j
@@ -37,7 +42,7 @@ public class GeneralEmailWorkflow extends DefaultWorkflow<Map<String, Object>> {
     private final GeneralEmailRespondentSolicitorTask generalEmailRespondentSolicitorTask;
     private final GeneralEmailRespondentTask generalEmailRespondentTask;
 
-    private static String taskLog = "CaseId: {} Executing task to send general email to ";
+    private static String taskLog = "CaseId: {} Executing task to send general email to {}";
 
     public Map<String, Object> run(CaseDetails caseDetails) throws WorkflowException {
         String caseId = caseDetails.getCaseId();
@@ -58,11 +63,16 @@ public class GeneralEmailWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
-        if (isPetitionerRepresented(caseData)) {
-            tasks.add(getGeneralEmailPetitionerSolicitorTask(caseId));
+        if (isOtherPartyDigital(caseData)) {
+            tasks.add(getGeneralEmailOtherPartyTask(caseId));
+        } else {
+            if (isPetitionerRepresented(caseData)) {
+                tasks.add(getGeneralEmailPetitionerSolicitorTask(caseId));
+            } else {
+                tasks.add(getGeneralEmailPetitionerTask(caseId));
+            }
         }
 
-        /*
         if (isRespondentRepresented(caseData)) {
             tasks.add(getGeneralEmailRespondentSolicitorTask(caseId));
         }
@@ -79,46 +89,41 @@ public class GeneralEmailWorkflow extends DefaultWorkflow<Map<String, Object>> {
             tasks.add(getGeneralEmailCoRespondentTask(caseId));
         }
 
-        tasks.add(getGeneralEmailPetitionerTask(caseId));
-
-        tasks.add(getGeneralEmailOtherPartyTask(caseId));
-        */
-
         return tasks.toArray(new Task[]{});
     }
 
     private Task<Map<String, Object>> getGeneralEmailCoRespondentTask(String caseId) {
-        log.info(taskLog + GeneralEmailTaskHelper.Party.CO_RESPONDENT, caseId);
+        log.info(taskLog, caseId, GeneralEmailTaskHelper.Party.CO_RESPONDENT);
         return generalEmailCoRespondentTask;
     }
 
     private Task<Map<String, Object>> getGeneralEmailCoRespondentSolicitorTask(String caseId) {
-        log.info(taskLog + GeneralEmailTaskHelper.Party.CO_RESPONDENT_SOLICITOR, caseId);
+        log.info(taskLog, caseId, GeneralEmailTaskHelper.Party.CO_RESPONDENT_SOLICITOR);
         return generalEmailCoRespondentSolicitorTask;
     }
 
     private Task<Map<String, Object>> getGeneralEmailOtherPartyTask(String caseId) {
-        log.info(taskLog + GeneralEmailTaskHelper.Party.OTHER + "Party", caseId);
+        log.info(taskLog, caseId, GeneralEmailTaskHelper.Party.OTHER);
         return generalEmailOtherPartyTask;
     }
 
     private Task<Map<String, Object>> getGeneralEmailPetitionerSolicitorTask(String caseId) {
-        log.info(taskLog + GeneralEmailTaskHelper.Party.PETITIONER_SOLICITOR, caseId);
+        log.info(taskLog, caseId, GeneralEmailTaskHelper.Party.PETITIONER_SOLICITOR);
         return generalEmailPetitionerSolicitorTask;
     }
 
     private Task<Map<String, Object>> getGeneralEmailPetitionerTask(String caseId) {
-        log.info(taskLog + GeneralEmailTaskHelper.Party.PETITIONER, caseId);
+        log.info(taskLog, caseId, GeneralEmailTaskHelper.Party.PETITIONER);
         return generalEmailPetitionerTask;
     }
 
     private Task<Map<String, Object>> getGeneralEmailRespondentTask(String caseId) {
-        log.info(taskLog + GeneralEmailTaskHelper.Party.RESPONDENT, caseId);
+        log.info(taskLog, caseId, GeneralEmailTaskHelper.Party.RESPONDENT);
         return generalEmailRespondentTask;
     }
 
     private Task<Map<String, Object>> getGeneralEmailRespondentSolicitorTask(String caseId) {
-        log.info(taskLog + GeneralEmailTaskHelper.Party.RESPONDENT_SOLICITOR, caseId);
+        log.info(taskLog, caseId, GeneralEmailTaskHelper.Party.RESPONDENT_SOLICITOR);
         return generalEmailRespondentSolicitorTask;
     }
 }
