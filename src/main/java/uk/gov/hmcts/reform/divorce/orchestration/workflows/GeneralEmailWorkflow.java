@@ -22,11 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentDigital;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentRepresented;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerRepresented;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentDigital;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
 
 @Component
 @Slf4j
@@ -66,6 +62,7 @@ public class GeneralEmailWorkflow extends DefaultWorkflow<Map<String, Object>> {
             tasks.add(getGeneralEmailPetitionerSolicitorTask(caseId));
         }
 
+        /*
         if (isRespondentRepresented(caseData)) {
             tasks.add(getGeneralEmailRespondentSolicitorTask(caseId));
         }
@@ -85,8 +82,9 @@ public class GeneralEmailWorkflow extends DefaultWorkflow<Map<String, Object>> {
         tasks.add(getGeneralEmailPetitionerTask(caseId));
 
         tasks.add(getGeneralEmailOtherPartyTask(caseId));
+        */
 
-        return tasks.toArray(new Task[] {});
+        return tasks.toArray(new Task[]{});
     }
 
     private Task<Map<String, Object>> getGeneralEmailCoRespondentTask(String caseId) {

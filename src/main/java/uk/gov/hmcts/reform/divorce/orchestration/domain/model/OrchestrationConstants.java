@@ -57,7 +57,6 @@ public class OrchestrationConstants {
     public static final String D_8_CO_RESPONDENT_NAMED_OLD = "D8ReasonForDivorceAdulteryIsNamed";
     public static final String CO_RESPONDENT_SOLICITOR_NAME = "CoRespondentSolicitorName";
     public static final String CO_RESPONDENT_SOLICITOR_ADDRESS = "DerivedCoRespondentSolicitorAddr";
-    public static final String OTHER_PARTY_NAME = "OtherPartyName";
     public static final String CCD_CASE_DATA_FIELD = "case_data";
     public static final String CCD_CASE_ID = "id";
     public static final String NOT_RECEIVED_AOS_EVENT_ID = "aosNotReceived";
@@ -271,7 +270,6 @@ public class OrchestrationConstants {
     public static final String RESPONDENT_LETTER_HOLDER_ID = "AosLetterHolderId";
     public static final String SEND_VIA_EMAIL_OR_POST = "SendViaEmailOrPost";
     public static final String SEND_VIA_POST = "Post";
-    public static final String OTHER_PARTY_EMAIL = "OtherPartyEmail";
 
     // Court Data Keys
     public static final String CARE_OF_PREFIX = "c/o";
@@ -362,6 +360,10 @@ public class OrchestrationConstants {
     public static final String PETITIONER_SOLICITOR_PHONE = "PetitionerSolicitorPhone";
     public static final String PETITIONER_SOLICITOR_DERIVED_ADDRESS = "DerivedPetitionerSolicitorAddr";
     public static final String PETITIONER_SOLICITOR_AGREES_EMAIL_CONTACT = "SolicitorAgreeToReceiveEmails";
+
+    // Other Party
+    public static final String GENERAL_EMAIL_OTHER_RECIPIENT_NAME = "GeneralEmailOtherRecipientName";
+    public static final String GENERAL_EMAIL_OTHER_RECIPIENT_EMAIL = "GeneralEmailOtherRecipientEmail";
 
     // Payment
     public static final String PAYMENT = "payment";

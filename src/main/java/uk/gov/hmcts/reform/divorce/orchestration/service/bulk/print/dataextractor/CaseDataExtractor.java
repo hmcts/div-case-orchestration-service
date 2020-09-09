@@ -21,7 +21,7 @@ public class CaseDataExtractor {
         public static final String RESPONDENT_SOLICITOR_EMAIL = OrchestrationConstants.RESPONDENT_SOLICITOR_EMAIL_ADDRESS;
         public static final String CO_RESPONDENT_EMAIL = OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
         public static final String CO_RESPONDENT_SOLICITOR_EMAIL = OrchestrationConstants.CO_RESPONDENT_SOLICITOR_EMAIL_ADDRESS;
-        public static final String OTHER_PARTY_EMAIL = OrchestrationConstants.OTHER_PARTY_EMAIL;
+        public static final String OTHER_PARTY_EMAIL = OrchestrationConstants.GENERAL_EMAIL_OTHER_RECIPIENT_EMAIL;
     }
 
     public static String getCaseReference(Map<String, Object> caseData) {

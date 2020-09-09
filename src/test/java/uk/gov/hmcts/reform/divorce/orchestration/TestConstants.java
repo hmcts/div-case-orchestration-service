@@ -47,7 +47,6 @@ public class TestConstants {
     public static final String TEST_SOLICITOR_EMAIL = "testSolicitor@email.com";
     public static final String TEST_RESP_SOLICITOR_NAME = "Respondent Solicitor name";
     public static final String TEST_RESP_SOLICITOR_EMAIL = "testRespondentSolicitor@email.com";
-    public static final String TEST_OTHER_PARTY_EMAIL = "OtherPartyEmail@address.com";
     public static final String TEST_SERVICE_TOKEN = "testServiceToken";
     public static final String TEST_FIRST_NAME = "First";
     public static final String TEST_LAST_NAME = "Last";
@@ -96,6 +95,8 @@ public class TestConstants {
     public static final String TEST_CO_RESPONDENT_SOLICITOR_ADDRESS = "789 CoRespondent Solicitor Str\nCoRespondent\nCounty\nRE5 P0N";
     public static final String TEST_CO_RESPONDENT_SOLICITOR_EMAIL = "corespondentsolicitor@email.com";
     public static final String TEST_CO_RESPONDENT_EMAIL = "corespondent@email.com";
+    public static final String TEST_OTHER_PARTY_EMAIL = "OtherPartyEmail@address.com";
+    public static final String TEST_OTHER_PARTY_NAME = "Otto Martie";
 
     public static final String TEST_PETITIONER_FIRST_NAME = "Clark";
     public static final String TEST_PETITIONER_LAST_NAME = "Kent";
