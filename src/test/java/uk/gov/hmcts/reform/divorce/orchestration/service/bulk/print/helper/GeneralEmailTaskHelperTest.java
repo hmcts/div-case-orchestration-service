@@ -16,3 +16,4 @@ public class GeneralEmailTaskHelperTest {
     public void getNotRepresentedSubject() {
     }
 }
+

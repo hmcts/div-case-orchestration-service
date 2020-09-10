@@ -38,7 +38,7 @@ public class GeneralEmailServiceTest {
 
     @Test
     public void shouldCallGeneralEmailWorkflow_whenGeneralEmailIsCreated() throws WorkflowException, CaseOrchestrationServiceException {
-        when(generalEmailWorkflow.run(CaseDetails.builder().build()))
+        when(generalEmailWorkflow.run(any()))
             .thenReturn(requestPayload);
 
         Map<String, Object> actual = classUnderTest.createGeneralEmail(CaseDetails.builder().build());
