@@ -17,6 +17,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_COSTS_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.OTHER_PARTY_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.OTHER_PARTY_NAME;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PartyRepresentationChecker {
@@ -56,8 +57,9 @@ public class PartyRepresentationChecker {
 
     public static boolean isOtherPartyDigital(Map<String, Object> caseData) {
         String otherPartyEmail = (String) caseData.get(OTHER_PARTY_EMAIL);
+        String otherPartyName = (String) caseData.get(OTHER_PARTY_NAME);
 
-        return !Strings.isNullOrEmpty(otherPartyEmail);
+        return (!Strings.isNullOrEmpty(otherPartyEmail) && !Strings.isNullOrEmpty(otherPartyName));
     }
 
     private static boolean isRepresented(Map<String, Object> caseData, String field) {
