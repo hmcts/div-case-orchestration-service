@@ -25,16 +25,11 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class GeneralEmailServiceTest {
 
-    @Rule
-    public ExpectedException expectedException = none();
-
     @Mock
     GeneralEmailWorkflow generalEmailWorkflow;
 
     @InjectMocks
     private GeneralEmailImpl classUnderTest;
-
-    @Mock
 
     private Map<String, Object> requestPayload;
 
@@ -64,5 +59,4 @@ public class GeneralEmailServiceTest {
     public void tearDown() {
         requestPayload = null;
     }
-
 }

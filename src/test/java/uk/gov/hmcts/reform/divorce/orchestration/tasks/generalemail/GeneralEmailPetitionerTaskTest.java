@@ -68,12 +68,6 @@ public class GeneralEmailPetitionerTaskTest {
         assertEquals(returnedTemplate, GENERAL_EMAIL_PETITIONER);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void notNullThrowsException() {
-        notNull(null);
-    }
-
-
     private Map<String, Object> buildCaseData() {
         Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithRespondent();
         caseData.put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);

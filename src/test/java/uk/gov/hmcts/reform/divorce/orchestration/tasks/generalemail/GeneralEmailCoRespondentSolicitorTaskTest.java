@@ -74,12 +74,6 @@ public class GeneralEmailCoRespondentSolicitorTaskTest {
         assertEquals(returnedTemplate, GENERAL_EMAIL_CO_RESPONDENT_SOLICITOR);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void notNullThrowsException() {
-        notNull(null);
-    }
-
-
     private Map<String, Object> buildCaseData() {
         Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithCoRespondentSolicitor();
         caseData.put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);

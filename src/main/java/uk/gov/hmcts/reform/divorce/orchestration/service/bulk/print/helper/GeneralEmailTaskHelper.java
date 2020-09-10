@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper;
 import com.google.common.collect.ImmutableMap;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -50,11 +51,19 @@ public class GeneralEmailTaskHelper {
         }
     }
 
+    private static Map<String, String> getDefaultTemplateVars(TaskContext context, Map<String, Object> caseData) {
+        return new HashMap<>(ImmutableMap.of(
+            NOTIFICATION_CCD_REFERENCE_KEY, getCaseId(context),
+            NOTIFICATION_GENERAL_EMAIL_DETAILS, getMandatoryPropertyValueAsString(caseData, GENERAL_EMAIL_DETAILS)
+        )
+        );
+    }
+
     private static Map<String, String> getPetitionerTemplateVariables(TaskContext taskContext, Map<String, Object> caseData) {
         return ImmutableMap.of(
             NOTIFICATION_CCD_REFERENCE_KEY, getCaseId(taskContext),
-            NOTIFICATION_PET_NAME, getPetitionerFullName(caseData),
-            NOTIFICATION_GENERAL_EMAIL_DETAILS, getMandatoryPropertyValueAsString(caseData, GENERAL_EMAIL_DETAILS)
+            NOTIFICATION_GENERAL_EMAIL_DETAILS, getMandatoryPropertyValueAsString(caseData, GENERAL_EMAIL_DETAILS),
+            NOTIFICATION_PET_NAME, getPetitionerFullName(caseData)
         );
     }
 
