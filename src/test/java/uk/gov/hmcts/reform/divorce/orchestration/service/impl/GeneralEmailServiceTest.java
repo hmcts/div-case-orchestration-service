@@ -54,6 +54,12 @@ public class GeneralEmailServiceTest {
         verify(generalEmailWorkflow).run(CaseDetails.builder().build());
     }
 
+    @Test
+    public void shouldCatchWorkflowException_whenGeneralEmailIsCreated() throws WorkflowException {
+        when(generalEmailWorkflow.run(CaseDetails.builder().build()))
+            .thenThrow(WorkflowException.class);
+    }
+
     @After
     public void tearDown() {
         requestPayload = null;
