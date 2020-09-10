@@ -127,7 +127,6 @@ public class OrchestrationConstants {
     public static final String WELSH_PREVIOUS_STATE = "WelshPreviousState";
     public static final String AMENDED_CASE_ID_CCD_KEY = "AmendedCaseId";
     public static final String CASE_REFERENCE_CCD_KEY = "CaseReference";
-    public static final String GENERAL_EMAIL_DETAILS = "GeneralEmailDetails";
 
     //This is misspelled in the CCD definition file
     public static final String D_8_REASON_FOR_DIVORCE_SEPARATION_DAY = "D8ReasonForDivorceSeperationDay";
@@ -360,10 +359,6 @@ public class OrchestrationConstants {
     public static final String PETITIONER_SOLICITOR_PHONE = "PetitionerSolicitorPhone";
     public static final String PETITIONER_SOLICITOR_DERIVED_ADDRESS = "DerivedPetitionerSolicitorAddr";
     public static final String PETITIONER_SOLICITOR_AGREES_EMAIL_CONTACT = "SolicitorAgreeToReceiveEmails";
-
-    // Other Party
-    public static final String GENERAL_EMAIL_OTHER_RECIPIENT_NAME = "GeneralEmailOtherRecipientName";
-    public static final String GENERAL_EMAIL_OTHER_RECIPIENT_EMAIL = "GeneralEmailOtherRecipientEmail";
 
     // Payment
     public static final String PAYMENT = "payment";

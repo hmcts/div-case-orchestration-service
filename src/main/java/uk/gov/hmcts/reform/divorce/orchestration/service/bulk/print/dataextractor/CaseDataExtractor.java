@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextract
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 
 import java.util.Map;
@@ -20,7 +21,7 @@ public class CaseDataExtractor {
         public static final String RESPONDENT_EMAIL = OrchestrationConstants.D8_RESPONDENT_SOLICITOR_EMAIL;
         public static final String RESPONDENT_SOLICITOR_EMAIL = OrchestrationConstants.RESPONDENT_SOLICITOR_EMAIL_ADDRESS;
         public static final String CO_RESPONDENT_EMAIL = OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
-        public static final String CO_RESPONDENT_SOLICITOR_EMAIL = OrchestrationConstants.CO_RESPONDENT_SOLICITOR_EMAIL_ADDRESS;
+        public static final String CO_RESPONDENT_SOLICITOR_EMAIL = CcdFields.CO_RESPONDENT_SOLICITOR_EMAIL_ADDRESS;
         public static final String OTHER_PARTY_EMAIL = OrchestrationConstants.GENERAL_EMAIL_OTHER_RECIPIENT_EMAIL;
     }
 

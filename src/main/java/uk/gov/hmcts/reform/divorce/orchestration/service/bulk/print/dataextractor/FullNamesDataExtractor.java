@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextract
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 
 import java.util.Map;
@@ -23,7 +24,7 @@ public class FullNamesDataExtractor {
         public static final String CO_RESPONDENT_FIRST_NAME = OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_FNAME;
         public static final String CO_RESPONDENT_LAST_NAME = OrchestrationConstants.D8_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_LNAME;
         public static final String CO_RESPONDENT_SOLICITOR_NAME = OrchestrationConstants.CO_RESPONDENT_SOLICITOR_NAME;
-        public static final String OTHER_PARTY_NAME = OrchestrationConstants.GENERAL_EMAIL_OTHER_RECIPIENT_NAME;
+        public static final String OTHER_PARTY_NAME = CcdFields.GENERAL_EMAIL_OTHER_RECIPIENT_NAME;
     }
 
     public static String getPetitionerFullName(Map<String, Object> caseData) {
