@@ -11,7 +11,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 
 /**
- * Implement List<String> getFieldsToRemove() in your class that extends this one
+ * Implement <pre>List<String> getFieldsToRemove()</pre> in your class that extends this one
  * and add it to your workflow to remove these fields from caseData.
  * Mind if you update case data in "submitted" callback it will not be persisted in CCD.
  */
