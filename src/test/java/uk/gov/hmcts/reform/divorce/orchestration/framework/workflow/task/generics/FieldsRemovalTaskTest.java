@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -19,16 +20,8 @@ public class FieldsRemovalTaskTest {
     public void executeShouldRemoveProvidedListOfFields() {
         Map<String, Object> caseData = buildCaseData();
 
-        FieldsRemovalTask task = new FieldsRemovalTask() {
-            @Override
-            protected List<String> getFieldsToRemove() {
-                return new ArrayList<>(caseData.keySet());
-            }
-        };
+        Map<String, Object> returnedCaseData = testExecute(caseData, new ArrayList<>(caseData.keySet()), 0);
 
-        Map<String, Object> returnedCaseData = task.execute(prepareTaskContext(), caseData);
-
-        assertThat(returnedCaseData.size(), is(0));
         assertThat(returnedCaseData.size(), is(not(caseData)));
     }
 
@@ -36,17 +29,33 @@ public class FieldsRemovalTaskTest {
     public void executeShouldExecuteButWithoutRemovingFieldsWhenTheyDontExist() {
         Map<String, Object> caseData = buildCaseData();
 
+        Map<String, Object> returnedCaseData = testExecute(caseData, asList("x", "y", "z"), caseData.size());
+
+        assertThat(returnedCaseData, is(caseData));
+    }
+
+    @Test
+    public void executeShouldExecuteWithEmptyListOfFieldsToRemove() {
+        Map<String, Object> caseData = buildCaseData();
+
+        Map<String, Object> returnedCaseData = testExecute(caseData, emptyList(), caseData.size());
+
+        assertThat(returnedCaseData, is(caseData));
+    }
+
+    private Map<String, Object> testExecute(Map<String, Object> caseData, List<String> fields, int expectedSize) {
         FieldsRemovalTask task = new FieldsRemovalTask() {
             @Override
             protected List<String> getFieldsToRemove() {
-                return asList("x", "y", "z");
+                return fields;
             }
         };
 
         Map<String, Object> returnedCaseData = task.execute(prepareTaskContext(), caseData);
 
-        assertThat(returnedCaseData.size(), is(3));
-        assertThat(returnedCaseData, is(caseData));
+        assertThat(returnedCaseData.size(), is(expectedSize));
+
+        return returnedCaseData;
     }
 
     private Map<String, Object> buildCaseData() {
