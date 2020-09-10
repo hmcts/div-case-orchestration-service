@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalorder.Generate
 import static java.util.Collections.EMPTY_MAP;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -40,7 +40,7 @@ public class GeneralOrderServiceImplTest {
         CaseDetails response = generalOrdersService.generateGeneralOrder(caseDetails, AUTH_TOKEN);
 
         verify(generateGeneralOrderWorkflow).run(caseDetails, AUTH_TOKEN);
-        assertNotNull(response.getCaseData());
+        assertThat(response.getCaseData(), is(notNullValue()));
     }
 
     @Test
@@ -62,7 +62,7 @@ public class GeneralOrderServiceImplTest {
 
         CaseDetails response = generalOrdersService.generateGeneralOrderDraft(caseDetails, AUTH_TOKEN);
 
-        assertNotNull(response.getCaseData());
+        assertThat(response.getCaseData(), is(notNullValue()));
     }
 
     @Test
