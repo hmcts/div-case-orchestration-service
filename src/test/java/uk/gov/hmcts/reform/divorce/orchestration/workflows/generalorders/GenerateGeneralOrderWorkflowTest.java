@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows.generalorders;
 
-import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -14,13 +13,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalorder.Generate
 
 import java.util.Map;
 
-import static java.util.Collections.EMPTY_MAP;
+import static java.util.Collections.emptyMap;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GenerateGeneralOrderWorkflowTest extends TestCase {
+public class GenerateGeneralOrderWorkflowTest {
 
     @Mock
     private GeneralOrderGenerationTask generalOrderGenerationTask;
@@ -33,7 +32,7 @@ public class GenerateGeneralOrderWorkflowTest extends TestCase {
 
     @Test
     public void shouldCallBothTasks() throws WorkflowException {
-        Map<String, Object> caseData = EMPTY_MAP;
+        Map<String, Object> caseData = emptyMap();
         mockTasksExecution(caseData, generalOrderGenerationTask, generalOrderDraftRemovalTask);
 
         generateGeneralOrderWorkflow.run(CaseDetails.builder().caseData(caseData).build(), AUTH_TOKEN);
