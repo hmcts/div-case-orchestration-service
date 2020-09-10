@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.GeneralOrderDraftRemovalTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.GeneralOrderDraftFieldsRemovalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.GeneralOrderGenerationTask;
 
 import java.util.Map;
@@ -23,7 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class GenerateGeneralOrderWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final GeneralOrderGenerationTask generalOrderGenerationTask;
-    private final GeneralOrderDraftRemovalTask generalOrderDraftRemovalTask;
+    private final GeneralOrderDraftFieldsRemovalTask generalOrderDraftRemovalTask;
 
     public Map<String, Object> run(CaseDetails caseDetails, String auth) throws WorkflowException {
         String caseId = caseDetails.getCaseId();

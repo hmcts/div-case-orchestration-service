@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.GeneralOrderDraftRemovalTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.GeneralOrderDraftFieldsRemovalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.GeneralOrderGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalorder.GenerateGeneralOrderWorkflow;
 
@@ -26,7 +26,7 @@ public class GenerateGeneralOrderWorkflowTest extends TestCase {
     private GeneralOrderGenerationTask generalOrderGenerationTask;
 
     @Mock
-    private GeneralOrderDraftRemovalTask generalOrderDraftRemovalTask;
+    private GeneralOrderDraftFieldsRemovalTask generalOrderDraftRemovalTask;
 
     @InjectMocks
     private GenerateGeneralOrderWorkflow generateGeneralOrderWorkflow;

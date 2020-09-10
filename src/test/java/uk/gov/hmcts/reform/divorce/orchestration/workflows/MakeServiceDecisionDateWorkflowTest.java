@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServ
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.MakeServiceDecisionDateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.OrderToDispenseGenerationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceRefusalDraftRemovalTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceRefusalDraftFieldsRemovalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionDateWorkflow;
 
 import java.util.HashMap;
@@ -48,7 +48,7 @@ public class MakeServiceDecisionDateWorkflowTest extends TestCase {
     private DispensedServiceRefusalOrderTask dispensedServiceRefusalOrderTask;
 
     @Mock
-    private ServiceRefusalDraftRemovalTask serviceRefusalDraftRemovalTask;
+    private ServiceRefusalDraftFieldsRemovalTask serviceRefusalDraftRemovalTask;
 
     @InjectMocks
     private MakeServiceDecisionDateWorkflow makeServiceDecisionDateWorkflow;
