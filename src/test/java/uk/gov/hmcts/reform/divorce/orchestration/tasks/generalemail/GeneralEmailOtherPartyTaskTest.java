@@ -33,6 +33,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getExpectedNotificationTemplateVars;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getRepresentedSubject;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.StringHelper.notNull;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.helpers.GeneralEmailHelper.getTaskContext;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GeneralEmailOtherPartyTaskTest {
@@ -44,7 +45,6 @@ public class GeneralEmailOtherPartyTaskTest {
     private GeneralEmailOtherPartyTask task;
 
     private DefaultTaskContext testContext;
-    private static EmailTemplateNames expectedTemplate = GENERAL_EMAIL_OTHER_PARTY;
 
     @Before
     public void setUp() {
@@ -65,7 +65,7 @@ public class GeneralEmailOtherPartyTaskTest {
     public void shouldReturnTemplate() {
         EmailTemplateNames returnedTemplate = task.getTemplate();
 
-        assertEquals(returnedTemplate, expectedTemplate);
+        assertEquals(returnedTemplate, GENERAL_EMAIL_OTHER_PARTY);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -82,7 +82,6 @@ public class GeneralEmailOtherPartyTaskTest {
         caseData.put(OTHER_PARTY_EMAIL, TEST_OTHER_PARTY_EMAIL);
         caseData.put(GENERAL_EMAIL_DETAILS, TEST_GENERAL_EMAIL_DETAILS);
 
-
         return caseData;
     }
 
@@ -94,17 +93,10 @@ public class GeneralEmailOtherPartyTaskTest {
     private void verifyEmailSent(TaskContext context, Map<String, Object> caseData) {
         verify(emailService).sendEmail(
             TEST_OTHER_PARTY_EMAIL,
-            expectedTemplate.name(),
+            GENERAL_EMAIL_OTHER_PARTY.name(),
             getExpectedNotificationTemplateVars(GeneralEmailTaskHelper.Party.OTHER, testContext, caseData),
             getRepresentedSubject(context, caseData),
             LanguagePreference.ENGLISH
         );
-    }
-
-    private static TaskContext getTaskContext() {
-        TaskContext context = new DefaultTaskContext();
-        context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
-
-        return context;
     }
 }

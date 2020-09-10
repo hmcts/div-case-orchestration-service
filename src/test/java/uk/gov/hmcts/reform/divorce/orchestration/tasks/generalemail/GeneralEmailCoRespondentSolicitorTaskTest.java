@@ -39,6 +39,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getExpectedNotificationTemplateVars;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getRepresentedSubject;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.StringHelper.notNull;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.helpers.GeneralEmailHelper.getTaskContext;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GeneralEmailCoRespondentSolicitorTaskTest {
@@ -50,7 +51,6 @@ public class GeneralEmailCoRespondentSolicitorTaskTest {
     private GeneralEmailCoRespondentSolicitorTask task;
 
     private DefaultTaskContext testContext;
-    private static EmailTemplateNames expectedTemplate = GENERAL_EMAIL_CO_RESPONDENT_SOLICITOR;
 
     @Before
     public void setUp() {
@@ -71,7 +71,7 @@ public class GeneralEmailCoRespondentSolicitorTaskTest {
     public void shouldReturnTemplate() {
         EmailTemplateNames returnedTemplate = task.getTemplate();
 
-        assertEquals(returnedTemplate, expectedTemplate);
+        assertEquals(returnedTemplate, GENERAL_EMAIL_CO_RESPONDENT_SOLICITOR);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -91,7 +91,6 @@ public class GeneralEmailCoRespondentSolicitorTaskTest {
         caseData.put(CO_RESPONDENT_SOLICITOR_EMAIL_ADDRESS, TEST_CO_RESPONDENT_SOLICITOR_EMAIL);
         caseData.put(GENERAL_EMAIL_DETAILS, TEST_GENERAL_EMAIL_DETAILS);
 
-
         return caseData;
     }
 
@@ -103,17 +102,10 @@ public class GeneralEmailCoRespondentSolicitorTaskTest {
     private void verifyEmailSent(TaskContext context, Map<String, Object> caseData) {
         verify(emailService).sendEmail(
             TEST_CO_RESPONDENT_SOLICITOR_EMAIL,
-            expectedTemplate.name(),
+            GENERAL_EMAIL_CO_RESPONDENT_SOLICITOR.name(),
             getExpectedNotificationTemplateVars(GeneralEmailTaskHelper.Party.CO_RESPONDENT_SOLICITOR, testContext, caseData),
             getRepresentedSubject(context, caseData),
             LanguagePreference.ENGLISH
         );
-    }
-
-    private static TaskContext getTaskContext() {
-        TaskContext context = new DefaultTaskContext();
-        context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
-
-        return context;
     }
 }

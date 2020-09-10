@@ -33,6 +33,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getExpectedNotificationTemplateVars;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getNotRepresentedSubject;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.StringHelper.notNull;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.helpers.GeneralEmailHelper.getTaskContext;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GeneralEmailRespondentTaskTest {
@@ -44,7 +45,6 @@ public class GeneralEmailRespondentTaskTest {
     private GeneralEmailRespondentTask task;
 
     private DefaultTaskContext testContext;
-    private static EmailTemplateNames expectedTemplate = GENERAL_EMAIL_RESPONDENT;
 
     @Before
     public void setUp() {
@@ -65,7 +65,7 @@ public class GeneralEmailRespondentTaskTest {
     public void shouldReturnTemplate() {
         EmailTemplateNames returnedTemplate = task.getTemplate();
 
-        assertEquals(returnedTemplate, expectedTemplate);
+        assertEquals(returnedTemplate, GENERAL_EMAIL_RESPONDENT);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -94,17 +94,10 @@ public class GeneralEmailRespondentTaskTest {
     private void verifyEmailSent(TaskContext context, Map<String, Object> caseData) {
         verify(emailService).sendEmail(
             TEST_RESPONDENT_EMAIL,
-            expectedTemplate.name(),
+            GENERAL_EMAIL_RESPONDENT.name(),
             getExpectedNotificationTemplateVars(GeneralEmailTaskHelper.Party.RESPONDENT, testContext, caseData),
             getNotRepresentedSubject(context),
             LanguagePreference.ENGLISH
         );
-    }
-
-    private static TaskContext getTaskContext() {
-        TaskContext context = new DefaultTaskContext();
-        context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
-
-        return context;
     }
 }

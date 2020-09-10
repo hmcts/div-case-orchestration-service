@@ -78,7 +78,6 @@ public class GeneralEmailWorkflowTest {
 
     private Map<String, Object> caseData;
 
-
     @Test
     public void shouldTriggerGeneralEmail_ToPetitionerSolicitor() throws WorkflowException {
         caseData = buildCaseData(PETITIONER_SOLICITOR);

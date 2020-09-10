@@ -48,7 +48,7 @@ public class GeneralEmailWorkflow extends DefaultWorkflow<Map<String, Object>> {
         String caseId = caseDetails.getCaseId();
         Map<String, Object> caseData = caseDetails.getCaseData();
 
-        log.info("CaseID: {} ServiceDecisionMade workflow is going to be executed.", caseId);
+        log.info("CaseID: {} GeneralEmailWorkflow workflow is going to be executed.", caseId);
 
         return this.execute(
             getTasks(caseDetails),

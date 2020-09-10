@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.generalemail;
 
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,6 +39,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getExpectedNotificationTemplateVars;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getNotRepresentedSubject;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.StringHelper.notNull;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.helpers.GeneralEmailHelper.getTaskContext;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GeneralEmailCoRespondentTaskTest {
@@ -51,7 +51,6 @@ public class GeneralEmailCoRespondentTaskTest {
     private GeneralEmailCoRespondentTask task;
 
     private DefaultTaskContext testContext;
-    private static EmailTemplateNames expectedTemplate = GENERAL_EMAIL_CO_RESPONDENT;
 
     @Before
     public void setUp() {
@@ -72,14 +71,13 @@ public class GeneralEmailCoRespondentTaskTest {
     public void shouldReturnTemplate() {
         EmailTemplateNames returnedTemplate = task.getTemplate();
 
-        assertEquals(returnedTemplate, expectedTemplate);
+        assertEquals(returnedTemplate, GENERAL_EMAIL_CO_RESPONDENT);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void notNullThrowsException() {
         notNull(null);
     }
-
 
     private Map<String, Object> buildCaseData() {
         Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithCoRespondent();
@@ -104,17 +102,10 @@ public class GeneralEmailCoRespondentTaskTest {
     private void verifyEmailSent(TaskContext context, Map<String, Object> caseData) {
         verify(emailService).sendEmail(
             TEST_CO_RESPONDENT_EMAIL,
-            expectedTemplate.name(),
+            GENERAL_EMAIL_CO_RESPONDENT.name(),
             getExpectedNotificationTemplateVars(GeneralEmailTaskHelper.Party.CO_RESPONDENT, testContext, caseData),
             getNotRepresentedSubject(context),
             LanguagePreference.ENGLISH
         );
-    }
-
-    private static TaskContext getTaskContext() {
-        TaskContext context = new DefaultTaskContext();
-        context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
-
-        return context;
     }
 }

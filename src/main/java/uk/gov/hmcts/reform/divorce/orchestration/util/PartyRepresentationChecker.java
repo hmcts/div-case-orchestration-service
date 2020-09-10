@@ -50,8 +50,10 @@ public class PartyRepresentationChecker {
 
     public static boolean isCoRespondentLiableForCosts(Map<String, Object> caseData) {
         String whoPaysCosts = String.valueOf(caseData.get(WHO_PAYS_COSTS_CCD_FIELD));
+        src/main/java/uk/gov/hmcts/reform/divorce/orchestration/workflows/GeneralEmailWorkflow.java
+        src/main/java/uk/gov/hmcts/reform/divorce/orchestration/workflows/GeneralEmailWorkflow.java
 
-        return WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT.equalsIgnoreCase(whoPaysCosts)
+        src/main/java/uk/gov/hmcts/reform/divorce/orchestration/workflows/GeneralEmailWorkflow.javareturn WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT.equalsIgnoreCase(whoPaysCosts)
             || WHO_PAYS_CCD_CODE_FOR_BOTH.equalsIgnoreCase(whoPaysCosts);
     }
 
