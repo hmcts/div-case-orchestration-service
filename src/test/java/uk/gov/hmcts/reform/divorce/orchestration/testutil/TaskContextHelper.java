@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.testutil;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -15,7 +16,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.te
 public class TaskContextHelper {
 
     public static TaskContext context() {
-        TaskContext context = contextWithCaseDetails();
+        TaskContext context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
 
         return context;
