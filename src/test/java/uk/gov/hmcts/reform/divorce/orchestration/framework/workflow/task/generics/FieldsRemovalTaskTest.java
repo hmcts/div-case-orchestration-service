@@ -12,7 +12,7 @@ import static java.util.Collections.emptyList;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.prepareTaskContext;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithToken;
 
 public class FieldsRemovalTaskTest {
 
@@ -51,7 +51,7 @@ public class FieldsRemovalTaskTest {
             }
         };
 
-        Map<String, Object> returnedCaseData = task.execute(prepareTaskContext(), caseData);
+        Map<String, Object> returnedCaseData = task.execute(contextWithToken(), caseData);
 
         assertThat(returnedCaseData.size(), is(expectedSize));
 
