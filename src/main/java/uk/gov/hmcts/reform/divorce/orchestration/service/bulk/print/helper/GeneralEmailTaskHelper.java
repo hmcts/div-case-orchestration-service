@@ -112,8 +112,6 @@ public class GeneralEmailTaskHelper {
             NOTIFICATION_OTHER_NAME, getOtherPartyFullName(caseData),
             NOTIFICATION_GENERAL_EMAIL_DETAILS, getMandatoryPropertyValueAsString(caseData, GENERAL_EMAIL_DETAILS)
         );
-
-        // TODO: getOtherPartyFullName(caseData) doesnt pull in real data. Need to Update CCD Definitions with something like "OtherPartyName"
     }
 
     public static String getRepresentedSubject(TaskContext context, Map<String, Object> caseData) {
@@ -138,5 +136,4 @@ public class GeneralEmailTaskHelper {
         CO_RESPONDENT_SOLICITOR,
         OTHER
     }
-
 }

@@ -39,6 +39,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getExpectedNotificationTemplateVars;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getNotRepresentedSubject;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.StringHelper.notNull;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GeneralEmailCoRespondentTaskTest {
@@ -73,6 +74,12 @@ public class GeneralEmailCoRespondentTaskTest {
 
         assertEquals(returnedTemplate, expectedTemplate);
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void notNullThrowsException() {
+        notNull(null);
+    }
+
 
     private Map<String, Object> buildCaseData() {
         Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithCoRespondent();
