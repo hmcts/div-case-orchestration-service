@@ -13,7 +13,7 @@ public class DispensedServiceRefusalOrderTask extends ServiceRefusalOrderGenerat
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FileMetadata {
         public static final String TEMPLATE_ID = "FL-DIV-GNO-ENG-00535.docx";
-        public static final String DOCUMENT_TYPE = "DispenseWithServiceRefused";
+        public static final String DOCUMENT_TYPE = "dispenseWithServiceRefused";
     }
 
     public DispensedServiceRefusalOrderTask(
