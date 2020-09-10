@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServ
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.MakeServiceDecisionDateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.OrderToDispenseGenerationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceRefusalDraftFieldsRemovalTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceRefusalDraftRemovalTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,7 @@ public class MakeServiceDecisionDateWorkflow extends DefaultWorkflow<Map<String,
     private final DeemedServiceOrderGenerationTask deemedServiceOrderGenerationTask;
     private final DeemedServiceRefusalOrderTask deemedServiceRefusalOrderTask;
     private final DispensedServiceRefusalOrderTask dispensedServiceRefusalOrderTask;
-    private final ServiceRefusalDraftFieldsRemovalTask serviceRefusalDraftRemovalTask;
+    private final ServiceRefusalDraftRemovalTask serviceRefusalDraftRemovalTask;
 
     public Map<String, Object> run(CaseDetails caseDetails, String auth) throws WorkflowException {
 

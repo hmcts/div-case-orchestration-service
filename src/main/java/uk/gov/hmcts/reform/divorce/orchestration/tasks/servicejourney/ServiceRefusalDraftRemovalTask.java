@@ -11,7 +11,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.S
 
 @Component
 @Slf4j
-public class ServiceRefusalDraftFieldsRemovalTask extends FieldsRemovalTask {
+public class ServiceRefusalDraftRemovalTask extends FieldsRemovalTask {
 
     @Override
     protected List<String> getFieldsToRemove() {

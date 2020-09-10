@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.Ser
 public class ServiceRefusalDraftRemovalTest {
 
     @InjectMocks
-    private ServiceRefusalDraftFieldsRemovalTask classUnderTest;
+    private ServiceRefusalDraftRemovalTask classUnderTest;
 
     @Test
     public void shouldRemoveServiceRefusalDraftKeyFromCaseData() {
@@ -37,6 +37,7 @@ public class ServiceRefusalDraftRemovalTest {
 
     @Test
     public void getFieldToRemoveIsValid() {
-        assertThat(classUnderTest.getFieldsToRemove(), is(CcdFields.SERVICE_REFUSAL_DRAFT));
+        assertThat(classUnderTest.getFieldsToRemove().size(), is(1));
+        assertThat(classUnderTest.getFieldsToRemove().get(0), is(CcdFields.SERVICE_REFUSAL_DRAFT));
     }
 }
