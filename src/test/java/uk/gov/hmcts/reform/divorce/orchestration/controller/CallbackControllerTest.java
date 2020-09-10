@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralEmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 
@@ -83,6 +84,9 @@ public class CallbackControllerTest {
 
     @Mock
     private ServiceJourneyService serviceJourneyService;
+
+    @Mock
+    private GeneralEmailService generalEmailService;
 
     @InjectMocks
     private CallbackController classUnderTest;
@@ -1489,12 +1493,12 @@ public class CallbackControllerTest {
 
     @Test
     public void shouldCallRightServiceMethod_forTriggeringGeneralEmail() throws CaseOrchestrationServiceException {
-        when(caseOrchestrationService.createGeneralEmail(any())).thenReturn(TEST_PAYLOAD_TO_RETURN);
+        when(generalEmailService.createGeneralEmail(any())).thenReturn(TEST_PAYLOAD_TO_RETURN);
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(TEST_INCOMING_CASE_DETAILS).build();
         ResponseEntity<CcdCallbackResponse> ccdCallbackResponse = classUnderTest.createGeneralEmail(ccdCallbackRequest);
 
         assertThat(ccdCallbackResponse.getBody().getData(), equalTo(TEST_PAYLOAD_TO_RETURN));
-        verify(caseOrchestrationService).createGeneralEmail(TEST_INCOMING_CASE_DETAILS);
+        verify(generalEmailService).createGeneralEmail(TEST_INCOMING_CASE_DETAILS);
     }
 }

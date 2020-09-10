@@ -187,7 +187,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final CreateNewAmendedCaseAndSubmitToCCDWorkflow createNewAmendedCaseAndSubmitToCCDWorkflow;
     private final DocumentTemplateService documentTemplateService;
     private final SetupConfirmServicePaymentWorkflow setupConfirmServicePaymentWorkflow;
-    private final GeneralEmailWorkflow generalEmailWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -892,15 +891,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
             return setupConfirmServicePaymentWorkflow.run(ccdCallbackRequest);
         } catch (WorkflowException exception) {
             throw new CaseOrchestrationServiceException(exception, ccdCallbackRequest.getCaseDetails().getCaseId());
-        }
-    }
-
-    @Override
-    public Map<String, Object> createGeneralEmail(CaseDetails caseDetails) throws CaseOrchestrationServiceException {
-        try {
-            return generalEmailWorkflow.run(caseDetails);
-        } catch (WorkflowException exception) {
-            throw new CaseOrchestrationServiceException(exception, caseDetails.getCaseId());
         }
     }
 

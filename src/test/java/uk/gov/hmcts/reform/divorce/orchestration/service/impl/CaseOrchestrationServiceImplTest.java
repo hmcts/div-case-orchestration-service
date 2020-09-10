@@ -1809,17 +1809,6 @@ public class CaseOrchestrationServiceImplTest {
         }
     }
 
-    @Test
-    public void shouldCallGeneralEmailWorkflow_whenGeneralEmailIsCreated() throws WorkflowException, CaseOrchestrationServiceException {
-        when(generalEmailWorkflow.run(CaseDetails.builder().build()))
-            .thenReturn(requestPayload);
-
-        Map<String, Object> actual = classUnderTest.createGeneralEmail(CaseDetails.builder().build());
-
-        assertEquals(requestPayload, actual);
-        verify(generalEmailWorkflow).run(CaseDetails.builder().build());
-    }
-
     @After
     public void tearDown() {
         ccdCallbackRequest = null;
