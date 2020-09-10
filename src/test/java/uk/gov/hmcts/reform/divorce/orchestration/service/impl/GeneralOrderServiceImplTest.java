@@ -12,10 +12,14 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalorder.Generate
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalorder.GenerateGeneralOrderWorkflow;
 
 import static java.util.Collections.EMPTY_MAP;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GeneralOrderServiceImplTest {
@@ -29,7 +33,7 @@ public class GeneralOrderServiceImplTest {
     @InjectMocks
     private GeneralOrderServiceImpl generalOrdersService;
 
-    private final CaseDetails caseDetails = CaseDetails.builder().caseData(EMPTY_MAP).build();
+    private final CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(EMPTY_MAP).build();
 
     @Test
     public void generateGeneralOrderShouldCallWorkflow() throws GeneralOrderServiceException, WorkflowException {
@@ -39,11 +43,17 @@ public class GeneralOrderServiceImplTest {
         assertNotNull(response.getCaseData());
     }
 
-    @Test(expected = GeneralOrderServiceException.class)
-    public void generateGeneralOrderShouldThrowException() throws GeneralOrderServiceException, WorkflowException {
+    @Test
+    public void generateGeneralOrderShouldThrowExceptionWithCaseId() throws WorkflowException {
         when(generateGeneralOrderWorkflow.run(caseDetails, AUTH_TOKEN)).thenThrow(WorkflowException.class);
 
-        generalOrdersService.generateGeneralOrder(caseDetails, AUTH_TOKEN);
+        try {
+            generalOrdersService.generateGeneralOrder(caseDetails, AUTH_TOKEN);
+            fail();
+        } catch (GeneralOrderServiceException exception) {
+            assertThat(exception.getCaseId().isPresent(), is(true));
+            assertThat(exception.getCaseId().get(), is(caseDetails.getCaseId()));
+        }
     }
 
     @Test
@@ -55,10 +65,16 @@ public class GeneralOrderServiceImplTest {
         assertNotNull(response.getCaseData());
     }
 
-    @Test(expected = GeneralOrderServiceException.class)
-    public void generateGeneralOrderDraftShouldThrowException() throws GeneralOrderServiceException, WorkflowException {
+    @Test
+    public void generateGeneralOrderDraftShouldThrowExceptionWithCaseId() throws WorkflowException {
         when(generateGeneralOrderDraftWorkflow.run(caseDetails, AUTH_TOKEN)).thenThrow(WorkflowException.class);
 
-        generalOrdersService.generateGeneralOrderDraft(caseDetails, AUTH_TOKEN);
+        try {
+            generalOrdersService.generateGeneralOrderDraft(caseDetails, AUTH_TOKEN);
+            fail();
+        } catch (GeneralOrderServiceException exception) {
+            assertThat(exception.getCaseId().isPresent(), is(true));
+            assertThat(exception.getCaseId().get(), is(caseDetails.getCaseId()));
+        }
     }
 }

@@ -24,7 +24,7 @@ public class GeneralOrderServiceImpl implements GeneralOrderService {
                 .caseData(generateGeneralOrderWorkflow.run(caseDetails, authorisation))
                 .build();
         } catch (WorkflowException workflowException) {
-            throw new GeneralOrderServiceException(workflowException);
+            throw new GeneralOrderServiceException(workflowException, caseDetails.getCaseId());
         }
     }
 
@@ -36,7 +36,7 @@ public class GeneralOrderServiceImpl implements GeneralOrderService {
                 .caseData(generateGeneralOrderDraftWorkflow.run(caseDetails, authorisation))
                 .build();
         } catch (WorkflowException workflowException) {
-            throw new GeneralOrderServiceException(workflowException);
+            throw new GeneralOrderServiceException(workflowException, caseDetails.getCaseId());
         }
     }
 }
