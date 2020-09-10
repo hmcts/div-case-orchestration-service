@@ -2,9 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -18,7 +16,7 @@ import java.util.Map;
 
 import static java.util.Collections.singletonMap;
 import static org.junit.Assert.assertEquals;
-import static org.junit.rules.ExpectedException.none;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -51,8 +49,7 @@ public class GeneralEmailServiceTest {
 
     @Test
     public void shouldCatchWorkflowException_whenGeneralEmailIsCreated() throws WorkflowException {
-        when(generalEmailWorkflow.run(CaseDetails.builder().build()))
-            .thenThrow(WorkflowException.class);
+        when(generalEmailWorkflow.run(any())).thenThrow(WorkflowException.class);
     }
 
     @After

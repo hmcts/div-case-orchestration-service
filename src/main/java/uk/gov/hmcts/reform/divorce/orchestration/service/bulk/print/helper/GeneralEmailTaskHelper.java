@@ -8,8 +8,6 @@ import java.util.Map;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_EMAIL_DETAILS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_SOLICITOR_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CO_RESPONDENT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_GENERAL_EMAIL_DETAILS;
@@ -51,76 +49,69 @@ public class GeneralEmailTaskHelper {
         }
     }
 
-    private static Map<String, String> getDefaultTemplateVars(TaskContext context, Map<String, Object> caseData) {
+    private static Map<String, String> getDefaultTemplateVars(TaskContext taskContext, Map<String, Object> caseData) {
         return new HashMap<>(ImmutableMap.of(
-            NOTIFICATION_CCD_REFERENCE_KEY, getCaseId(context),
+            NOTIFICATION_CCD_REFERENCE_KEY, getCaseId(taskContext),
             NOTIFICATION_GENERAL_EMAIL_DETAILS, getMandatoryPropertyValueAsString(caseData, GENERAL_EMAIL_DETAILS)
         )
         );
     }
 
     private static Map<String, String> getPetitionerTemplateVariables(TaskContext taskContext, Map<String, Object> caseData) {
-        return ImmutableMap.of(
-            NOTIFICATION_CCD_REFERENCE_KEY, getCaseId(taskContext),
-            NOTIFICATION_GENERAL_EMAIL_DETAILS, getMandatoryPropertyValueAsString(caseData, GENERAL_EMAIL_DETAILS),
-            NOTIFICATION_PET_NAME, getPetitionerFullName(caseData)
-        );
+        Map<String, String> templateVars = getDefaultTemplateVars(taskContext, caseData);
+        templateVars.put(NOTIFICATION_PET_NAME, getPetitionerFullName(caseData));
+
+        return templateVars;
     }
 
-    private static Map<String, String> getPetitionerSolicitorTemplateVariables(TaskContext taskContext, Map<String, Object> caseData) {
-        return ImmutableMap.of(
-            NOTIFICATION_CCD_REFERENCE_KEY, getCaseId(taskContext),
-            NOTIFICATION_PET_NAME, getPetitionerFullName(caseData),
-            NOTIFICATION_RESP_NAME, getRespondentFullName(caseData),
-            NOTIFICATION_SOLICITOR_NAME, getPetitionerSolicitorFullName(caseData),
-            NOTIFICATION_GENERAL_EMAIL_DETAILS, getMandatoryPropertyValueAsString(caseData, GENERAL_EMAIL_DETAILS)
-        );
+    private static Map<String, String> getPetitionerSolicitorTemplateVariables(TaskContext context, Map<String, Object> caseData) {
+        Map<String, String> templateVars = getDefaultTemplateVars(context, caseData);
+        templateVars.put(NOTIFICATION_PET_NAME, getPetitionerFullName(caseData));
+        templateVars.put(NOTIFICATION_RESP_NAME, getRespondentFullName(caseData));
+        templateVars.put(NOTIFICATION_SOLICITOR_NAME, getPetitionerSolicitorFullName(caseData));
+
+        return templateVars;
     }
 
     private static Map<String, String> getRespondentTemplateVariables(TaskContext taskContext, Map<String, Object> caseData) {
-        return ImmutableMap.of(
-            NOTIFICATION_CCD_REFERENCE_KEY, getCaseId(taskContext),
-            NOTIFICATION_RESP_NAME, getRespondentFullName(caseData),
-            NOTIFICATION_GENERAL_EMAIL_DETAILS, getMandatoryPropertyValueAsString(caseData, GENERAL_EMAIL_DETAILS)
-        );
+        Map<String, String> templateVars = getDefaultTemplateVars(taskContext, caseData);
+        templateVars.put(NOTIFICATION_RESP_NAME, getRespondentFullName(caseData));
+
+        return templateVars;
     }
 
     private static Map<String, String> getRespondentSolicitorTemplateVariables(TaskContext taskContext, Map<String, Object> caseData) {
-        return ImmutableMap.of(
-            NOTIFICATION_CCD_REFERENCE_KEY, getCaseId(taskContext),
-            NOTIFICATION_PET_NAME, getPetitionerFullName(caseData),
-            NOTIFICATION_RESP_NAME, getRespondentFullName(caseData),
-            D8_RESPONDENT_SOLICITOR_NAME, getRespondentSolicitorFullName(caseData),
-            NOTIFICATION_GENERAL_EMAIL_DETAILS, getMandatoryPropertyValueAsString(caseData, GENERAL_EMAIL_DETAILS)
-        );
+        Map<String, String> templateVars = getDefaultTemplateVars(taskContext, caseData);
+        templateVars.put(NOTIFICATION_PET_NAME, getPetitionerFullName(caseData));
+        templateVars.put(NOTIFICATION_RESP_NAME, getRespondentFullName(caseData));
+        templateVars.put(NOTIFICATION_SOLICITOR_NAME, getRespondentSolicitorFullName(caseData));
+
+        return templateVars;
     }
 
     private static Map<String, String> getCoRespondentTemplateVariables(TaskContext taskContext, Map<String, Object> caseData) {
-        return ImmutableMap.of(
-            NOTIFICATION_CCD_REFERENCE_KEY, getCaseId(taskContext),
-            NOTIFICATION_CO_RESPONDENT_NAME, getCoRespondentFullName(caseData),
-            NOTIFICATION_GENERAL_EMAIL_DETAILS, getMandatoryPropertyValueAsString(caseData, GENERAL_EMAIL_DETAILS)
-        );
+        Map<String, String> templateVars = getDefaultTemplateVars(taskContext, caseData);
+        templateVars.put(NOTIFICATION_CO_RESPONDENT_NAME, getCoRespondentFullName(caseData));
+
+        return templateVars;
     }
 
     private static Map<String, String> getCoRespondentSolicitorTemplateVariables(TaskContext taskContext, Map<String, Object> caseData) {
-        return ImmutableMap.of(
-            NOTIFICATION_CCD_REFERENCE_KEY, getCaseId(taskContext),
-            NOTIFICATION_PET_NAME, getPetitionerFullName(caseData),
-            NOTIFICATION_RESP_NAME, getRespondentFullName(caseData),
-            CO_RESPONDENT_SOLICITOR_NAME, getCoRespondentSolicitorFullName(caseData),
-            NOTIFICATION_GENERAL_EMAIL_DETAILS, getMandatoryPropertyValueAsString(caseData, GENERAL_EMAIL_DETAILS)
-        );
+        Map<String, String> templateVars = getDefaultTemplateVars(taskContext, caseData);
+        templateVars.put(NOTIFICATION_PET_NAME, getPetitionerFullName(caseData));
+        templateVars.put(NOTIFICATION_RESP_NAME, getRespondentFullName(caseData));
+        templateVars.put(NOTIFICATION_SOLICITOR_NAME, getCoRespondentSolicitorFullName(caseData));
+
+        return templateVars;
     }
 
     private static Map<String, String> getOtherPartyTemplateVariables(TaskContext taskContext, Map<String, Object> caseData) {
-        return ImmutableMap.of(
-            NOTIFICATION_CCD_REFERENCE_KEY, getCaseId(taskContext),
-            NOTIFICATION_PET_NAME, getPetitionerFullName(caseData),
-            NOTIFICATION_RESP_NAME, getRespondentFullName(caseData),
-            NOTIFICATION_OTHER_NAME, getOtherPartyFullName(caseData),
-            NOTIFICATION_GENERAL_EMAIL_DETAILS, getMandatoryPropertyValueAsString(caseData, GENERAL_EMAIL_DETAILS)
-        );
+        Map<String, String> templateVars = getDefaultTemplateVars(taskContext, caseData);
+        templateVars.put(NOTIFICATION_PET_NAME, getPetitionerFullName(caseData));
+        templateVars.put(NOTIFICATION_RESP_NAME, getRespondentFullName(caseData));
+        templateVars.put(NOTIFICATION_OTHER_NAME, getOtherPartyFullName(caseData));
+
+        return templateVars;
     }
 
     public static String getRepresentedSubject(TaskContext context, Map<String, Object> caseData) {
