@@ -6,7 +6,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.GeneralOrderServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalorder.GenerateGeneralOrderDraftWorkflow;
@@ -34,10 +33,10 @@ public class GeneralOrderServiceImplTest {
 
     @Test
     public void generateGeneralOrderShouldCallWorkflow() throws GeneralOrderServiceException, WorkflowException {
-        CcdCallbackResponse response = generalOrdersService.generateGeneralOrder(caseDetails, AUTH_TOKEN);
+        CaseDetails response = generalOrdersService.generateGeneralOrder(caseDetails, AUTH_TOKEN);
 
         verify(generateGeneralOrderWorkflow).run(caseDetails, AUTH_TOKEN);
-        assertNotNull(response.getData());
+        assertNotNull(response.getCaseData());
     }
 
     @Test(expected = GeneralOrderServiceException.class)
@@ -51,9 +50,9 @@ public class GeneralOrderServiceImplTest {
     public void generateGeneralOrderDraft() throws GeneralOrderServiceException, WorkflowException {
         when(generateGeneralOrderDraftWorkflow.run(caseDetails, AUTH_TOKEN)).thenReturn(caseDetails.getCaseData());
 
-        CcdCallbackResponse response = generalOrdersService.generateGeneralOrderDraft(caseDetails, AUTH_TOKEN);
+        CaseDetails response = generalOrdersService.generateGeneralOrderDraft(caseDetails, AUTH_TOKEN);
 
-        assertNotNull(response.getData());
+        assertNotNull(response.getCaseData());
     }
 
     @Test(expected = GeneralOrderServiceException.class)

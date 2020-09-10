@@ -1185,7 +1185,11 @@ public class CallbackController {
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
         return ResponseEntity.ok(
-            generalOrderService.generateGeneralOrderDraft(ccdCallbackRequest.getCaseDetails(), authorizationToken)
+            CcdCallbackResponse.builder()
+                .data(generalOrderService
+                    .generateGeneralOrderDraft(ccdCallbackRequest.getCaseDetails(), authorizationToken)
+                    .getCaseData()
+                ).build()
         );
     }
 
@@ -1200,7 +1204,11 @@ public class CallbackController {
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
         return ResponseEntity.ok(
-            generalOrderService.generateGeneralOrder(ccdCallbackRequest.getCaseDetails(), authorizationToken)
+            CcdCallbackResponse.builder()
+                .data(generalOrderService
+                    .generateGeneralOrder(ccdCallbackRequest.getCaseDetails(), authorizationToken)
+                    .getCaseData()
+                ).build()
         );
     }
 
