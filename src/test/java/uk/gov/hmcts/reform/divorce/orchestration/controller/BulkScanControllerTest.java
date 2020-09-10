@@ -8,10 +8,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.bsp.common.error.UnsupportedFormTypeException;
+import uk.gov.hmcts.reform.bsp.common.model.shared.CaseDetails;
 import uk.gov.hmcts.reform.bsp.common.model.shared.in.ExceptionRecord;
 import uk.gov.hmcts.reform.bsp.common.model.shared.in.OcrDataField;
 import uk.gov.hmcts.reform.bsp.common.model.transformation.output.CaseCreationDetails;
 import uk.gov.hmcts.reform.bsp.common.model.transformation.output.SuccessfulTransformationResponse;
+import uk.gov.hmcts.reform.bsp.common.model.update.in.BulkScanCaseUpdateRequest;
+import uk.gov.hmcts.reform.bsp.common.model.update.output.SuccessfulUpdateResponse;
 import uk.gov.hmcts.reform.bsp.common.model.validation.in.OcrDataValidationRequest;
 import uk.gov.hmcts.reform.bsp.common.model.validation.out.OcrValidationResponse;
 import uk.gov.hmcts.reform.bsp.common.model.validation.out.OcrValidationResult;
@@ -19,8 +22,10 @@ import uk.gov.hmcts.reform.bsp.common.service.AuthService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.impl.BulkScanService;
 
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -114,6 +119,48 @@ public class BulkScanControllerTest {
         when(bulkScanService.transformBulkScanForm(exceptionRecord)).thenThrow(UnsupportedFormTypeException.class);
 
         ResponseEntity response = bulkScanController.transformExceptionRecordIntoCase(TEST_SERVICE_TOKEN, exceptionRecord);
+
+        assertThat(response.getStatusCode(), is(UNPROCESSABLE_ENTITY));
+        verify(authService).assertIsServiceAllowedToUpdate(TEST_SERVICE_TOKEN);
+    }
+
+    @Test
+    public void shouldReturnUpdatedCase() {
+        ExceptionRecord exceptionRecord = ExceptionRecord.builder().formType(TEST_FORM_TYPE).build();
+        CaseDetails existingCaseDetails = CaseDetails.builder().caseData(emptyMap()).build();
+        CaseDetails updatedCaseDetails = CaseDetails.builder().caseData(singletonMap("testKey", "testValue")).build();
+
+        when(bulkScanService.transformExceptionRecordAndUpdateExistingCase(exceptionRecord, existingCaseDetails))
+            .thenReturn(updatedCaseDetails);
+
+        ResponseEntity<SuccessfulUpdateResponse> response =
+            bulkScanController.updateCase(
+                TEST_SERVICE_TOKEN, new BulkScanCaseUpdateRequest(exceptionRecord, existingCaseDetails)
+            );
+
+        assertThat(response.getStatusCode(), is(OK));
+
+        SuccessfulUpdateResponse updateResponse = response.getBody();
+        CaseDetails returnedCaseDetails = updateResponse.getCaseDetails();
+
+        assertThat(updateResponse.getWarnings(), is(emptyList()));
+        assertThat(returnedCaseDetails.getCaseTypeId(), is("DIVORCE"));
+        assertThat(returnedCaseDetails.getCaseData(), hasEntry("testKey", "testValue"));
+
+        verify(authService).assertIsServiceAllowedToUpdate(TEST_SERVICE_TOKEN);
+    }
+
+    @Test
+    public void shouldReturnErrorForUnsupportedFormType_ForUpdate() {
+        ExceptionRecord exceptionRecord = ExceptionRecord.builder().formType(TEST_FORM_TYPE).build();
+        CaseDetails existingCaseDetails = CaseDetails.builder().caseData(emptyMap()).build();
+
+        when(bulkScanService.transformExceptionRecordAndUpdateExistingCase(exceptionRecord, existingCaseDetails))
+            .thenThrow(UnsupportedFormTypeException.class);
+
+        ResponseEntity response = bulkScanController.updateCase(
+            TEST_SERVICE_TOKEN, new BulkScanCaseUpdateRequest(exceptionRecord, existingCaseDetails)
+        );
 
         assertThat(response.getStatusCode(), is(UNPROCESSABLE_ENTITY));
         verify(authService).assertIsServiceAllowedToUpdate(TEST_SERVICE_TOKEN);
