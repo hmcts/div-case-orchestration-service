@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.impl.JudgeTypesLookupService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.util.mapper.CcdMappers;
 
@@ -22,8 +23,9 @@ public class GeneralOrderDraftGenerationTask extends GeneralOrderGenerationTask 
     public GeneralOrderDraftGenerationTask(
         CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
         PdfDocumentGenerationService pdfDocumentGenerationService,
-        CcdUtil ccdUtil) {
-        super(ctscContactDetailsDataProviderService, pdfDocumentGenerationService, ccdUtil);
+        CcdUtil ccdUtil,
+        JudgeTypesLookupService judgeTypesLookupService) {
+        super(ctscContactDetailsDataProviderService, pdfDocumentGenerationService, ccdUtil, judgeTypesLookupService);
     }
 
     @Override
