@@ -10,9 +10,11 @@ import static java.lang.String.format;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_EMAIL_DETAILS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CO_RESPONDENT_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CO_RESPONDENT_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_GENERAL_EMAIL_DETAILS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_OTHER_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESPONDENT_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getCoRespondentFullName;
@@ -84,7 +86,7 @@ public class GeneralEmailTaskHelper {
         Map<String, String> templateVars = getDefaultTemplateVars(taskContext, caseData);
         templateVars.put(NOTIFICATION_PET_NAME, getPetitionerFullName(caseData));
         templateVars.put(NOTIFICATION_RESP_NAME, getRespondentFullName(caseData));
-        templateVars.put(NOTIFICATION_SOLICITOR_NAME, getRespondentSolicitorFullName(caseData));
+        templateVars.put(NOTIFICATION_RESPONDENT_SOLICITOR_NAME, getRespondentSolicitorFullName(caseData));
 
         return templateVars;
     }
@@ -100,7 +102,7 @@ public class GeneralEmailTaskHelper {
         Map<String, String> templateVars = getDefaultTemplateVars(taskContext, caseData);
         templateVars.put(NOTIFICATION_PET_NAME, getPetitionerFullName(caseData));
         templateVars.put(NOTIFICATION_RESP_NAME, getRespondentFullName(caseData));
-        templateVars.put(NOTIFICATION_SOLICITOR_NAME, getCoRespondentSolicitorFullName(caseData));
+        templateVars.put(NOTIFICATION_CO_RESPONDENT_SOLICITOR_NAME, getCoRespondentSolicitorFullName(caseData));
 
         return templateVars;
     }
