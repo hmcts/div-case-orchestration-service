@@ -30,7 +30,6 @@ java:
         SPRING_MAIL_TEST_CONNECTION: false
         SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: true
         SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: mta.reform.hmcts.net
-        SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_ENABLED: true
     keyVaults:
         "div":
             resourceGroup: div
