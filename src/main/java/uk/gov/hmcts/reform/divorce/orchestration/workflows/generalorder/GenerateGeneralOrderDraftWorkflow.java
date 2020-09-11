@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.GeneralOrde
 
 import java.util.Map;
 
-import static java.util.Arrays.asList;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
@@ -29,7 +28,7 @@ public class GenerateGeneralOrderDraftWorkflow extends DefaultWorkflow<Map<Strin
         log.info("CaseID: {} Generate General Order Draft Workflow is going to be executed.", caseId);
 
         return this.execute(
-            asList(generalOrderDraftGenerationTask).toArray(new Task[0]),
+            new Task[] {generalOrderDraftGenerationTask},
             caseDetails.getCaseData(),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseId),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, auth)
