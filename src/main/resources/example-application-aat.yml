@@ -402,6 +402,14 @@ dncourt:
       email: "divorcecase@justice.gov.uk"
       phone: "0300 303 0642"
 
+judge:
+  types:
+    recorder: "Recorder"
+    herhonourjudge: "Her Honour Judge"
+    hishonourjudge: "His Honour Judge"
+    deputydistrictjudge: "Deputy District Judge"
+    districtjudge: "District Judge"
+
 idam:
   client:
     redirect_uri: ${IDAM_API_REDIRECT_URL:https://div-pfe-aat.service.core-compute-aat.internal/authenticated}
