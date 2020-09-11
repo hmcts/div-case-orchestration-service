@@ -1,7 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -15,10 +13,14 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.GeneralEmailWorkflow;
 import java.util.Map;
 
 import static java.util.Collections.singletonMap;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GeneralEmailServiceTest {
@@ -29,15 +31,9 @@ public class GeneralEmailServiceTest {
     @InjectMocks
     private GeneralEmailImpl classUnderTest;
 
-    private Map<String, Object> requestPayload;
-
-    @Before
-    public void setUp() {
-        requestPayload = singletonMap("requestPayloadKey", "requestPayloadValue");
-    }
-
     @Test
     public void shouldCallGeneralEmailWorkflow_whenGeneralEmailIsCreated() throws WorkflowException, CaseOrchestrationServiceException {
+        Map<String, Object> requestPayload = singletonMap("requestPayloadKey", "requestPayloadValue");
         when(generalEmailWorkflow.run(any()))
             .thenReturn(requestPayload);
 
@@ -50,10 +46,13 @@ public class GeneralEmailServiceTest {
     @Test
     public void shouldCatchWorkflowException_whenGeneralEmailIsCreated() throws WorkflowException {
         when(generalEmailWorkflow.run(any())).thenThrow(WorkflowException.class);
-    }
 
-    @After
-    public void tearDown() {
-        requestPayload = null;
+        try {
+            classUnderTest.createGeneralEmail(CaseDetails.builder().caseId(TEST_CASE_ID).build());
+            fail();
+        } catch (CaseOrchestrationServiceException exception) {
+            assertThat(exception.getCaseId().isPresent(), is(true));
+            assertThat(exception.getCaseId().get(), is(TEST_CASE_ID));
+        }
     }
 }
