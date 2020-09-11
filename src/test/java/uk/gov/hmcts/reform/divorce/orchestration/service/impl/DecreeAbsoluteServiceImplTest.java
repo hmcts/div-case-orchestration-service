@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -18,7 +16,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateDNPronouncedCas
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -44,9 +45,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.impl.DecreeAbsol
 @RunWith(MockitoJUnitRunner.class)
 public class DecreeAbsoluteServiceImplTest {
 
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-
     @InjectMocks
     private DecreeAbsoluteServiceImpl classUnderTest;
 
@@ -71,11 +69,13 @@ public class DecreeAbsoluteServiceImplTest {
 
     @Test
     public void runUpdateDNPronouncedCasesWorkflow_throwsWorkflowException_workflowExceptionThrown() throws WorkflowException {
-        expectedException.expect(WorkflowException.class);
-        expectedException.expectMessage("a WorkflowException message");
         when(updateDNPronouncedCasesWorkflow.run(AUTH_TOKEN)).thenThrow(new WorkflowException(" a WorkflowException message"));
 
-        classUnderTest.enableCaseEligibleForDecreeAbsolute(AUTH_TOKEN);
+        WorkflowException workflowException = assertThrows(
+            WorkflowException.class,
+            () -> classUnderTest.enableCaseEligibleForDecreeAbsolute(AUTH_TOKEN)
+        );
+        assertThat(workflowException.getMessage(), is("a WorkflowException message"));
     }
 
     @Test
@@ -90,11 +90,13 @@ public class DecreeAbsoluteServiceImplTest {
 
     @Test
     public void runUpdateDAOverdueWorkflow_throwsWorkflowException_workflowExceptionThrown() throws WorkflowException {
-        expectedException.expect(WorkflowException.class);
-        expectedException.expectMessage("a WorkflowException message");
         when(updateDAOverdueWorkflow.run(AUTH_TOKEN)).thenThrow(new WorkflowException(" a WorkflowException message"));
 
-        classUnderTest.processCaseOverdueForDecreeAbsolute(AUTH_TOKEN);
+        WorkflowException workflowException = assertThrows(
+            WorkflowException.class,
+            () -> classUnderTest.processCaseOverdueForDecreeAbsolute(AUTH_TOKEN)
+        );
+        assertThat(workflowException.getMessage(), is("a WorkflowException message"));
     }
 
     @Test
@@ -109,14 +111,16 @@ public class DecreeAbsoluteServiceImplTest {
 
     @Test
     public void shouldThrowWorkflowException_forNotifyRespondentOfDARequested() throws WorkflowException {
-        expectedException.expect(WorkflowException.class);
-        expectedException.expectMessage("a WorkflowException message");
-
         CcdCallbackRequest ccdCallbackRequest = notifyRespondentOfDaCallbackRequest();
 
-        when(notifyRespondentOfDARequestedWorkflow.run(ccdCallbackRequest)).thenThrow(new WorkflowException(" a WorkflowException message"));
+        when(notifyRespondentOfDARequestedWorkflow.run(ccdCallbackRequest))
+            .thenThrow(new WorkflowException(" a WorkflowException message"));
 
-        classUnderTest.notifyRespondentOfDARequested(ccdCallbackRequest, AUTH_TOKEN);
+        WorkflowException workflowException = assertThrows(
+            WorkflowException.class,
+            () -> classUnderTest.notifyRespondentOfDARequested(ccdCallbackRequest, AUTH_TOKEN)
+        );
+        assertThat(workflowException.getMessage(), is("a WorkflowException message"));
     }
 
     @Test
@@ -125,19 +129,21 @@ public class DecreeAbsoluteServiceImplTest {
     }
 
     @Test
-    public void validateDaRequest_shouldThrowException_whenApplyForDaFlagIsNo() throws WorkflowException {
-        expectedException.expect(WorkflowException.class);
-        expectedException.expectMessage(VALIDATION_ERROR_MSG);
-
-        classUnderTest.validateDaRequest(buildApplyForDaMinimalInput(NO_VALUE));
+    public void validateDaRequest_shouldThrowException_whenApplyForDaFlagIsNo() {
+        WorkflowException workflowException = assertThrows(
+            WorkflowException.class,
+            () -> classUnderTest.validateDaRequest(buildApplyForDaMinimalInput(NO_VALUE))
+        );
+        assertThat(workflowException.getMessage(), is(VALIDATION_ERROR_MSG));
     }
 
     @Test
-    public void validateDaRequest_shouldThrowException_whenApplyForDaFlagIsNull() throws WorkflowException {
-        expectedException.expect(WorkflowException.class);
-        expectedException.expectMessage(VALIDATION_ERROR_MSG);
-
-        classUnderTest.validateDaRequest(buildApplyForDaMinimalInput(null));
+    public void validateDaRequest_shouldThrowException_whenApplyForDaFlagIsNull() {
+        WorkflowException workflowException = assertThrows(
+            WorkflowException.class,
+            () -> classUnderTest.validateDaRequest(buildApplyForDaMinimalInput(null))
+        );
+        assertThat(workflowException.getMessage(), is(VALIDATION_ERROR_MSG));
     }
 
     private CcdCallbackRequest notifyRespondentOfDaCallbackRequest() {
