@@ -20,8 +20,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.prepareTaskContext;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.MultiBulkPrinterTask.ContextFields.MULTI_BULK_PRINT_CONFIGS;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithToken;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MultiBulkPrinterTaskTest {
@@ -42,14 +42,14 @@ public class MultiBulkPrinterTaskTest {
     @Test
     public void executeShouldNotCallBulkPrintingWhenNoMultiBulkPrintingConfig() throws TaskException {
 
-        multiBulkPrinterTask.execute(prepareTaskContext(), new HashMap<>());
+        multiBulkPrinterTask.execute(contextWithToken(), new HashMap<>());
 
         verify(bulkPrinterTask, never()).printSpecifiedDocument(any(), any(), any(), any());
     }
 
     @Test
     public void executeShouldCallBulkPrintingOnceWhenNoMultiBulkPrintingConfigHasOneElement() throws TaskException {
-        TaskContext taskContext = prepareTaskContext();
+        TaskContext taskContext = contextWithToken();
         taskContext.setTransientObject(
             MULTI_BULK_PRINT_CONFIGS,
             asList(new BulkPrintConfig(bulkLetterTypes.get(0), documents.get(0)))
@@ -69,7 +69,7 @@ public class MultiBulkPrinterTaskTest {
 
     @Test
     public void executeShouldCallBulkPrintingManyTimes() throws TaskException {
-        TaskContext taskContext = prepareTaskContext();
+        TaskContext taskContext = contextWithToken();
         taskContext.setTransientObject(
             MULTI_BULK_PRINT_CONFIGS,
             asList(
@@ -94,7 +94,7 @@ public class MultiBulkPrinterTaskTest {
 
     @Test
     public void executeShouldNotCallBulkPrintingWhenMisconfigured() throws TaskException {
-        TaskContext taskContext = prepareTaskContext();
+        TaskContext taskContext = contextWithToken();
         taskContext.setTransientObject(
             MULTI_BULK_PRINT_CONFIGS,
             asList(

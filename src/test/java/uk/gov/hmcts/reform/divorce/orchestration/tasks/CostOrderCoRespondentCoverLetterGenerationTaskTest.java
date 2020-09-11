@@ -34,7 +34,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.CTSC_CONTACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.LETTER_DATE_EXPECTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.prepareTaskContext;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithToken;
 
 public class CostOrderCoRespondentCoverLetterGenerationTaskTest extends BasePayloadSpecificDocumentGenerationTaskTest {
 
@@ -48,7 +48,7 @@ public class CostOrderCoRespondentCoverLetterGenerationTaskTest extends BasePayl
 
     @Test
     public void executeShouldPopulateFieldInContextWhenCoRespondentIsNotRepresented() throws TaskException {
-        TaskContext context = prepareTaskContext();
+        TaskContext context = contextWithToken();
 
         Map<String, Object> caseData = buildCaseDataWhenCoRespondentNotRepresented();
         Map<String, Object> returnedCaseData = costOrderCoRespondentCoverLetterGenerationTask.execute(context, caseData);
