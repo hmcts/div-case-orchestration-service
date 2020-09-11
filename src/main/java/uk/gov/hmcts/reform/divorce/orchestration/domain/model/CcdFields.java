@@ -28,4 +28,7 @@ public class CcdFields {
 
     public static final String GENERAL_EMAIL_OTHER_RECIPIENT_NAME = "GeneralEmailOtherRecipientName";
     public static final String GENERAL_EMAIL_OTHER_RECIPIENT_EMAIL = "GeneralEmailOtherRecipientEmail";
+
+    public static final String PETITIONER_FIRST_NAME = "D8PetitionerFirstName";
+    public static final String PETITIONER_LAST_NAME = "D8PetitionerLastName";
 }

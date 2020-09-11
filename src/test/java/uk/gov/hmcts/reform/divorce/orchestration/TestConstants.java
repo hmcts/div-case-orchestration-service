@@ -62,6 +62,7 @@ public class TestConstants {
     public static final String TEST_INFERRED_MALE_GENDER = "male";
     public static final String TEST_RESPONDENT_EMAIL = "testRespondent@email.com";
     public static final String TEST_RESPONDENT_SOLICITOR_EMAIL = "testRespondentSolicitor@example.com";
+    public static final String TEST_RESPONDENT_SOLICITOR_NAME = "Saul Goodman";
     public static final String TEST_REASON_ADULTERY = "adultery";
     public static final String TEST_REASON_2_YEAR_SEP = "separation-2-years";
     public static final String TEST_REASON_UNREASONABLE_BEHAVIOUR = "unreasonable-behaviour";

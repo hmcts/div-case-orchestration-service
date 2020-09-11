@@ -2,12 +2,12 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper;
 
 import com.google.common.collect.ImmutableMap;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralEmailCaseDataExtractor;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_EMAIL_DETAILS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CO_RESPONDENT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CO_RESPONDENT_SOLICITOR_NAME;
@@ -25,7 +25,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getRespondentFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getRespondentSolicitorFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 
 public class GeneralEmailTaskHelper {
 
@@ -44,17 +43,15 @@ public class GeneralEmailTaskHelper {
                 return getCoRespondentTemplateVariables(taskContext, caseData);
             case CO_RESPONDENT_SOLICITOR:
                 return getCoRespondentSolicitorTemplateVariables(taskContext, caseData);
-            case OTHER:
-                return getOtherPartyTemplateVariables(taskContext, caseData);
             default:
-                throw new IllegalArgumentException("Notification template variable party was not set.");
+                return getOtherPartyTemplateVariables(taskContext, caseData);
         }
     }
 
     private static Map<String, String> getDefaultTemplateVars(TaskContext taskContext, Map<String, Object> caseData) {
         return new HashMap<>(ImmutableMap.of(
             NOTIFICATION_CCD_REFERENCE_KEY, getCaseId(taskContext),
-            NOTIFICATION_GENERAL_EMAIL_DETAILS, getMandatoryPropertyValueAsString(caseData, GENERAL_EMAIL_DETAILS)
+            NOTIFICATION_GENERAL_EMAIL_DETAILS, GeneralEmailCaseDataExtractor.getGeneralEmailDetails(caseData)
         )
         );
     }
