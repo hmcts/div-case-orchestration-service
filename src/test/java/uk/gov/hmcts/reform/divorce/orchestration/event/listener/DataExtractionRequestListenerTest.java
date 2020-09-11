@@ -15,10 +15,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
 import java.time.LocalDate;
 
-import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.fail;
+import static org.hamcrest.core.StringStartsWith.startsWith;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -72,14 +71,11 @@ public class DataExtractionRequestListenerTest {
     public void shouldRethrowExceptionIfServiceThrowsException() throws CaseOrchestrationServiceException {
         doThrow(CaseOrchestrationServiceException.class).when(mockService).extractCasesToFamilyMan(any(), any(), any());
 
-        try {
-            classUnderTest.onApplicationEvent(
+        RuntimeException runtimeException = assertThrows(
+            RuntimeException.class,
+            () -> classUnderTest.onApplicationEvent(
                 new DataExtractionRequest(this, TEST_IMPLEMENTED_STATUS, LocalDate.now())
-            );
-            fail();
-        } catch (RuntimeException exception) {
-            assertThat(exception.getMessage(), startsWith("Error extracting data to Family man for status DA and date"));
-            assertThat(exception.getCause(), instanceOf(CaseOrchestrationServiceException.class));
-        }
+            ));
+        assertThat(runtimeException.getMessage(), startsWith("Error extracting data to Family man for status DA and date"));
     }
 }

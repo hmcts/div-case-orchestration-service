@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.event.listener;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -13,8 +11,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
-import static org.hamcrest.CoreMatchers.isA;
-import static org.junit.rules.ExpectedException.none;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -23,9 +22,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 
 @RunWith(MockitoJUnitRunner.class)
 public class AosOverdueRequestListenerTest {
-
-    @Rule
-    public ExpectedException expectedException = none();
 
     @Mock
     private AosService aosService;
@@ -51,11 +47,11 @@ public class AosOverdueRequestListenerTest {
     @Test
     public void shouldThrowRuntimeException_WhenServiceThrowsException() throws CaseOrchestrationServiceException {
         doThrow(CaseOrchestrationServiceException.class).when(aosService).makeCaseAosOverdue(AUTH_TOKEN, TEST_CASE_ID);
-        expectedException.expect(RuntimeException.class);
-        expectedException.expectCause(isA(CaseOrchestrationServiceException.class));
-        expectedException.expectMessage("Error trying to move case " + TEST_CASE_ID + " to AOS Overdue state");
 
-        classUnderTest.onApplicationEvent(new AosOverdueRequest(this, TEST_CASE_ID));
+        RuntimeException runtimeException = assertThrows(
+            RuntimeException.class,
+            () -> classUnderTest.onApplicationEvent(new AosOverdueRequest(this, TEST_CASE_ID))
+        );
+        assertThat(runtimeException.getMessage(), is("Error trying to move case " + TEST_CASE_ID + " to AOS Overdue state"));
     }
-
 }
