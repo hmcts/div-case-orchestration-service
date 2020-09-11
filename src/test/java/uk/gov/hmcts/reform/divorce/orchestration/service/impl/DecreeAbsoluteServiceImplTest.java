@@ -69,7 +69,7 @@ public class DecreeAbsoluteServiceImplTest {
 
     @Test
     public void runUpdateDNPronouncedCasesWorkflow_throwsWorkflowException_workflowExceptionThrown() throws WorkflowException {
-        when(updateDNPronouncedCasesWorkflow.run(AUTH_TOKEN)).thenThrow(new WorkflowException(" a WorkflowException message"));
+        when(updateDNPronouncedCasesWorkflow.run(AUTH_TOKEN)).thenThrow(new WorkflowException("a WorkflowException message"));
 
         WorkflowException workflowException = assertThrows(
             WorkflowException.class,
@@ -90,7 +90,7 @@ public class DecreeAbsoluteServiceImplTest {
 
     @Test
     public void runUpdateDAOverdueWorkflow_throwsWorkflowException_workflowExceptionThrown() throws WorkflowException {
-        when(updateDAOverdueWorkflow.run(AUTH_TOKEN)).thenThrow(new WorkflowException(" a WorkflowException message"));
+        when(updateDAOverdueWorkflow.run(AUTH_TOKEN)).thenThrow(new WorkflowException("a WorkflowException message"));
 
         WorkflowException workflowException = assertThrows(
             WorkflowException.class,
@@ -114,7 +114,7 @@ public class DecreeAbsoluteServiceImplTest {
         CcdCallbackRequest ccdCallbackRequest = notifyRespondentOfDaCallbackRequest();
 
         when(notifyRespondentOfDARequestedWorkflow.run(ccdCallbackRequest))
-            .thenThrow(new WorkflowException(" a WorkflowException message"));
+            .thenThrow(new WorkflowException("a WorkflowException message"));
 
         WorkflowException workflowException = assertThrows(
             WorkflowException.class,

@@ -30,6 +30,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
@@ -109,16 +110,25 @@ public class AosServiceImplTest {
     }
 
     @Test
-    public void shouldThrowServiceException() throws WorkflowException, CaseOrchestrationServiceException {
+    public void shouldThrowMappedCaseOrchestrationServiceException() throws WorkflowException {
         when(issueAosPackOfflineWorkflow.run(any(), any(), any())).thenThrow(WorkflowException.class);
-
-        classUnderTest.issueAosPackOffline(null, caseDetails, RESPONDENT);
 
         CaseOrchestrationServiceException exception = assertThrows(
             CaseOrchestrationServiceException.class,
-            () -> classUnderTest.issueAosPackOffline(testAuthToken, caseDetails, CO_RESPONDENT)
+            () -> classUnderTest.issueAosPackOffline(AUTH_TOKEN, caseDetails, RESPONDENT)
         );
+
         assertThat(exception.getCause(), is(instanceOf(WorkflowException.class)));
+    }
+
+    @Test
+    public void shouldIssueAosPackOfflineThrowCaseOrchestrationServiceException() {
+        assertThrows(
+            CaseOrchestrationServiceException.class,
+            () -> classUnderTest.issueAosPackOffline(AUTH_TOKEN, caseDetails, CO_RESPONDENT)
+        );
+
+        verifyNoInteractions(issueAosPackOfflineWorkflow);
     }
 
     @Test
