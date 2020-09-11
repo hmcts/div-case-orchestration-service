@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -21,11 +19,12 @@ import java.util.Map;
 
 import static java.lang.String.format;
 import static java.util.Collections.singletonMap;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.isA;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
-import static org.junit.rules.ExpectedException.none;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
@@ -45,9 +44,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.Div
 
 @RunWith(MockitoJUnitRunner.class)
 public class AosServiceImplTest {
-
-    @Rule
-    public ExpectedException expectedException = none();
 
     @Mock
     private IssueAosPackOfflineWorkflow issueAosPackOfflineWorkflow;
@@ -100,22 +96,29 @@ public class AosServiceImplTest {
 
     @Test
     public void shouldNotCallWorkflowForCoRespondentIfReasonIsNotAdultery() throws CaseOrchestrationServiceException {
-        expectedException.expect(CaseOrchestrationServiceException.class);
-        expectedException.expectMessage(format("Co-respondent AOS pack (offline) cannot be issued for reason \"%s\"",
-            SEPARATION_TWO_YEARS.getValue()));
-
         caseDetails.setCaseData(singletonMap(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS.getValue()));
 
-        classUnderTest.issueAosPackOffline(testAuthToken, caseDetails, CO_RESPONDENT);
+        CaseOrchestrationServiceException exception = assertThrows(
+            CaseOrchestrationServiceException.class,
+            () -> classUnderTest.issueAosPackOffline(testAuthToken, caseDetails, CO_RESPONDENT)
+        );
+        assertThat(
+            exception.getMessage(),
+            is(format("Co-respondent AOS pack (offline) cannot be issued for reason \"%s\"", SEPARATION_TWO_YEARS.getValue()))
+        );
     }
 
     @Test
     public void shouldThrowServiceException() throws WorkflowException, CaseOrchestrationServiceException {
         when(issueAosPackOfflineWorkflow.run(any(), any(), any())).thenThrow(WorkflowException.class);
-        expectedException.expect(CaseOrchestrationServiceException.class);
-        expectedException.expectCause(isA(WorkflowException.class));
 
         classUnderTest.issueAosPackOffline(null, caseDetails, RESPONDENT);
+
+        CaseOrchestrationServiceException exception = assertThrows(
+            CaseOrchestrationServiceException.class,
+            () -> classUnderTest.issueAosPackOffline(testAuthToken, caseDetails, CO_RESPONDENT)
+        );
+        assertThat(exception.getCause(), is(instanceOf(WorkflowException.class)));
     }
 
     @Test
@@ -129,12 +132,14 @@ public class AosServiceImplTest {
     }
 
     @Test
-    public void shouldThrowServiceException_WhenWorkflowExceptionIsThrown() throws WorkflowException, CaseOrchestrationServiceException {
+    public void shouldThrowServiceException_WhenWorkflowExceptionIsThrown() throws WorkflowException {
         when(aosPackOfflineAnswersWorkflow.run(any(), any(CaseDetails.class), notNull())).thenThrow(WorkflowException.class);
-        expectedException.expect(CaseOrchestrationServiceException.class);
-        expectedException.expectCause(isA(WorkflowException.class));
 
-        classUnderTest.processAosPackOfflineAnswers(AUTH_TOKEN, caseDetails, RESPONDENT);
+        CaseOrchestrationServiceException exception = assertThrows(
+            CaseOrchestrationServiceException.class,
+            () -> classUnderTest.processAosPackOfflineAnswers(AUTH_TOKEN, caseDetails, RESPONDENT)
+        );
+        assertThat(exception.getCause(), is(instanceOf(WorkflowException.class)));
     }
 
     @Test
@@ -145,12 +150,14 @@ public class AosServiceImplTest {
     }
 
     @Test
-    public void shouldThrowAppropriateException_WhenCatchingWorkflowException() throws WorkflowException, CaseOrchestrationServiceException {
+    public void shouldThrowAppropriateException_WhenCatchingWorkflowException() throws WorkflowException {
         doThrow(WorkflowException.class).when(aosOverdueEligibilityWorkflow).run(AUTH_TOKEN);
-        expectedException.expect(CaseOrchestrationServiceException.class);
-        expectedException.expectCause(isA(WorkflowException.class));
 
-        classUnderTest.markCasesToBeMovedToAosOverdue(AUTH_TOKEN);
+        CaseOrchestrationServiceException exception = assertThrows(
+            CaseOrchestrationServiceException.class,
+            () -> classUnderTest.markCasesToBeMovedToAosOverdue(AUTH_TOKEN)
+        );
+        assertThat(exception.getCause(), is(instanceOf(WorkflowException.class)));
 
         verify(aosOverdueEligibilityWorkflow).run(AUTH_TOKEN);
     }
@@ -163,13 +170,14 @@ public class AosServiceImplTest {
     }
 
     @Test
-    public void shouldThrowAppropriateException_WhenCatchingWorkflowException_AosOverdue()
-        throws WorkflowException, CaseOrchestrationServiceException {
+    public void shouldThrowAppropriateException_WhenCatchingWorkflowException_AosOverdue() throws WorkflowException {
         doThrow(WorkflowException.class).when(aosOverdueWorkflow).run(AUTH_TOKEN, TEST_CASE_ID);
-        expectedException.expect(CaseOrchestrationServiceException.class);
-        expectedException.expectCause(isA(WorkflowException.class));
 
-        classUnderTest.makeCaseAosOverdue(AUTH_TOKEN, TEST_CASE_ID);
+        CaseOrchestrationServiceException exception = assertThrows(
+            CaseOrchestrationServiceException.class,
+            () -> classUnderTest.makeCaseAosOverdue(AUTH_TOKEN, TEST_CASE_ID)
+        );
+        assertThat(exception.getCause(), is(instanceOf(WorkflowException.class)));
     }
 
     @Test
@@ -193,5 +201,4 @@ public class AosServiceImplTest {
             assertCaseOrchestrationServiceExceptionIsSetProperly(exception);
         }
     }
-
 }
