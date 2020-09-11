@@ -79,8 +79,6 @@ public class PaymentItemTest {
 
     @Test
     public void shouldThrowException_AsExponent() {
-        paymentItem.setCalculatedAmount(INVALID_DIGIT_EXPONENT);
-
         NumberFormatException numberFormatException = assertThrows(
             NumberFormatException.class,
             () -> paymentItem.setCalculatedAmount(INVALID_DIGIT_EXPONENT)

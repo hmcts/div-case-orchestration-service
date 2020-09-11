@@ -9,6 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.bsp.common.error.UnsupportedFormTypeException;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_OFFLINE_2_YR_SEP;
@@ -65,6 +66,6 @@ public class BulkScanFormTransformerFactoryTest {
             () -> bulkScanFormTransformerFactory.getTransformer("unsupportedFormType")
         );
 
-        assertThat(unsupportedFormTypeException.getMessage(), is("Form type \"unsupportedFormType\" is not supported."));
+        assertThat(unsupportedFormTypeException.getMessage(), startsWith("\"unsupportedFormType\" form type is not supported"));
     }
 }

@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
 import java.util.Collections;
 
+import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -57,7 +58,7 @@ public class GetCaseWithIdUTest {
             () -> classUnderTest.execute(context, null)
         );
 
-        assertThat(taskException.getMessage(), is(exceptionMessage));
+        assertThat(taskException.getMessage(), is(endsWith(exceptionMessage)));
         assertThat(taskException.getCause(), is(instanceOf(CaseNotFoundException.class)));
 
         verify(caseMaintenanceClient).retrievePetitionById(CASEWORKER_AUTH_TOKEN, TEST_CASE_ID);

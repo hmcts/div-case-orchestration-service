@@ -17,6 +17,7 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
@@ -44,7 +45,7 @@ public class GetCaseWithIdMapFlowTest {
     private GetCaseWithIdMapFlow classUnderTest;
 
     @Test
-    public void givenNoCaseExists_whenGetCase_thenReturnThrowException() throws TaskException {
+    public void givenNoCaseExists_whenGetCase_thenThrowTaskException() throws TaskException {
         final DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
@@ -60,7 +61,7 @@ public class GetCaseWithIdMapFlowTest {
         );
 
         assertThat(taskException.getCause(), is(instanceOf(CaseNotFoundException.class)));
-        assertThat(taskException.getMessage(), is(exceptionMessage));
+        assertThat(taskException.getMessage(), endsWith(exceptionMessage));
 
         verify(caseMaintenanceClient).retrievePetitionById(CASEWORKER_AUTH_TOKEN, TEST_CASE_ID);
     }

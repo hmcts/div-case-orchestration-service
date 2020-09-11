@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 
-import static java.lang.String.format;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_OFFLINE_2_YR_SEP;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_OFFLINE_5_YR_SEP;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_OFFLINE_ADULTERY;
@@ -51,7 +50,7 @@ public class BulkScanFormTransformerFactory {
 
     public BulkScanFormTransformer getTransformer(String formType) {
         if (!bulkScanFormTransformerMap.containsKey(formType)) {
-            throw new UnsupportedFormTypeException(format("Form type \"%s\" is not supported.", formType));
+            throw new UnsupportedFormTypeException(formType);
         }
 
         return bulkScanFormTransformerMap.get(formType);

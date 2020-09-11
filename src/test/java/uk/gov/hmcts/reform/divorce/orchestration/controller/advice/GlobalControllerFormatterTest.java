@@ -63,7 +63,7 @@ public class GlobalControllerFormatterTest {
         );
 
         assertThat(
-            illegalArgumentException.getCause(),
+            illegalArgumentException.getMessage(),
             is("Could not find divorce party with the given description: invalid-value")
         );
     }

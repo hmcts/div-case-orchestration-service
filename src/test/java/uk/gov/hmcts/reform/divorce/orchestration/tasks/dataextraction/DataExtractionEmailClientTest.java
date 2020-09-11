@@ -2,7 +2,9 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextraction;
 
 import org.junit.Before;
 import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,9 +14,8 @@ import java.io.File;
 import java.nio.file.Files;
 import javax.mail.MessagingException;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertThrows;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.junit.rules.ExpectedException.none;
 
 /**
  * This test can be run to test (locally) that our e-mail is sent according to our expectations.
@@ -26,6 +27,9 @@ import static org.junit.Assert.assertThrows;
 public class DataExtractionEmailClientTest {
 
     private File file;
+
+    @Rule
+    public ExpectedException expectedException = none();
 
     @Autowired
     private DataExtractionEmailClient dataExtractionEmailClient;
@@ -47,13 +51,9 @@ public class DataExtractionEmailClientTest {
 
     @Test
     public void shouldThrowExceptionWhenEmailIsEmpty() throws MessagingException {
+        expectedException.expect(instanceOf(Exception.class));
+
         dataExtractionEmailClient.sendEmailWithAttachment("", "myFileName.csv", file);
-
-        Exception exception = assertThrows(
-            Exception.class,
-            () -> dataExtractionEmailClient.sendEmailWithAttachment("", "myFileName.csv", file)
-        );
-
-        assertThat(exception.getMessage(), is("DateFieldName must be a valid date"));
     }
+
 }

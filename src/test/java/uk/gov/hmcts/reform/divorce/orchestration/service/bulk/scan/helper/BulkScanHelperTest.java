@@ -43,8 +43,6 @@ public class BulkScanHelperTest {
 
     @Test
     public void shouldFailDateTransformationWithWrongLeapYearDate() {
-        BulkScanHelper.transformFormDateIntoLocalDate("DateFieldName", "29/02/2019");
-
         FormFieldValidationException formFieldValidationException = assertThrows(
             FormFieldValidationException.class,
             () -> BulkScanHelper.transformFormDateIntoLocalDate("DateFieldName", "29/02/2019")
