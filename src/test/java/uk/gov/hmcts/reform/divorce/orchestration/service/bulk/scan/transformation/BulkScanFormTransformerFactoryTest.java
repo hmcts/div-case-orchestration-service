@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.transformation;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -12,7 +10,7 @@ import uk.gov.hmcts.reform.bsp.common.error.UnsupportedFormTypeException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.rules.ExpectedException.none;
+import static org.junit.Assert.assertThrows;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_OFFLINE_2_YR_SEP;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_OFFLINE_5_YR_SEP;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkScanForms.AOS_OFFLINE_ADULTERY;
@@ -22,9 +20,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.BulkSc
 
 @RunWith(MockitoJUnitRunner.class)
 public class BulkScanFormTransformerFactoryTest {
-
-    @Rule
-    public ExpectedException expectedException = none();
 
     @Mock
     private D8FormToCaseTransformer d8FormToCaseTransformer;
@@ -65,9 +60,11 @@ public class BulkScanFormTransformerFactoryTest {
 
     @Test
     public void shouldThrowExceptionForUnsupportedFormType() {
-        expectedException.expect(UnsupportedFormTypeException.class);
-        expectedException.expectMessage("Form type \"unsupportedFormType\" is not supported.");
+        UnsupportedFormTypeException unsupportedFormTypeException = assertThrows(
+            UnsupportedFormTypeException.class,
+            () -> bulkScanFormTransformerFactory.getTransformer("unsupportedFormType")
+        );
 
-        bulkScanFormTransformerFactory.getTransformer("unsupportedFormType");
+        assertThat(unsupportedFormTypeException.getMessage(), is("Form type \"unsupportedFormType\" is not supported."));
     }
 }

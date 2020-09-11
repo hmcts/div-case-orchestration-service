@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -12,7 +10,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
 
 import static junit.framework.TestCase.assertNull;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_AMOUNT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_CODE;
@@ -31,9 +31,6 @@ public class PaymentItemTest {
 
     @InjectMocks
     private OrderSummary orderSummary;
-
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
 
     @Before
     public void setup() {
@@ -72,21 +69,28 @@ public class PaymentItemTest {
 
     @Test
     public void shouldThrowException_WhenValueIsNotANumber() {
-        thrown.expect(NumberFormatException.class);
-        thrown.expectMessage(is("For input string: \"" + INVALID_STRING_WORD + "\""));
-        paymentItem.setCalculatedAmount(INVALID_STRING_WORD);
+        NumberFormatException numberFormatException = assertThrows(
+            NumberFormatException.class,
+            () -> paymentItem.setCalculatedAmount(INVALID_STRING_WORD)
+        );
+
+        assertThat(numberFormatException.getMessage(), is("For input string: \"" + INVALID_STRING_WORD + "\""));
     }
 
     @Test
     public void shouldThrowException_AsExponent() {
-        thrown.expect(NumberFormatException.class);
-        thrown.expectMessage(is("For input string: \"" + INVALID_DIGIT_EXPONENT + "\""));
         paymentItem.setCalculatedAmount(INVALID_DIGIT_EXPONENT);
+
+        NumberFormatException numberFormatException = assertThrows(
+            NumberFormatException.class,
+            () -> paymentItem.setCalculatedAmount(INVALID_DIGIT_EXPONENT)
+        );
+
+        assertThat(numberFormatException.getMessage(), is("For input string: \"" + INVALID_DIGIT_EXPONENT + "\""));
     }
 
     private String convertPoundsToPennies(String amount) {
         double amountInPennies = Double.parseDouble(amount);
         return String.valueOf(amountInPennies / 100);
     }
-
 }

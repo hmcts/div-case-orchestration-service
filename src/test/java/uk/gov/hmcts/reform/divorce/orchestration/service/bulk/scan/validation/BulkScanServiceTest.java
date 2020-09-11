@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.validation;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -25,16 +23,13 @@ import static java.util.Collections.singletonMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
-import static org.junit.rules.ExpectedException.none;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BulkScanServiceTest {
-
-    @Rule
-    public ExpectedException expectedException = none();
 
     @Mock
     private BulkScanFormTransformerFactory bulkScanFormTransformerFactory;
@@ -66,11 +61,13 @@ public class BulkScanServiceTest {
 
     @Test
     public void shouldRethrowUnsupportedFormTypeExceptionFromFactory() {
-        expectedException.expect(UnsupportedFormTypeException.class);
         List<OcrDataField> ocrDataFields = singletonList(new OcrDataField("myName", "myValue"));
         when(factory.getValidator("unsupportedFormType")).thenThrow(UnsupportedFormTypeException.class);
 
-        bulkScanService.validateBulkScanForm("unsupportedFormType", ocrDataFields);
+        assertThrows(
+            UnsupportedFormTypeException.class,
+            () -> bulkScanService.validateBulkScanForm("unsupportedFormType", ocrDataFields)
+        );
     }
 
     @Test
@@ -95,22 +92,24 @@ public class BulkScanServiceTest {
 
     @Test
     public void shouldRethrowUnsupportedFormTypeExceptionFromFormTransformerFactory() {
-        expectedException.expect(UnsupportedFormTypeException.class);
-
         ExceptionRecord exceptionRecord = ExceptionRecord.builder().formType("unsupportedFormType").build();
         when(factory.getValidator("unsupportedFormType")).thenThrow(UnsupportedFormTypeException.class);
 
-        bulkScanService.transformBulkScanForm(exceptionRecord);
+        assertThrows(
+            UnsupportedFormTypeException.class,
+            () -> bulkScanService.transformBulkScanForm(exceptionRecord)
+        );
     }
 
     @Test
     public void shouldThrowUnsupportedFormTypeExceptionFromFormTransformerFactory() {
-        expectedException.expect(UnsupportedFormTypeException.class);
-
         ExceptionRecord exceptionRecord = ExceptionRecord.builder().formType("unsupportedFormType").build();
         when(factory.getValidator("unsupportedFormType")).thenThrow(UnsupportedFormTypeException.class);
 
-        bulkScanService.transformExceptionRecordAndUpdateExistingCase(exceptionRecord, CaseDetails.builder().build());
+        assertThrows(
+            UnsupportedFormTypeException.class,
+            () -> bulkScanService.transformExceptionRecordAndUpdateExistingCase(exceptionRecord, CaseDetails.builder().build())
+        );
     }
 
     @Test

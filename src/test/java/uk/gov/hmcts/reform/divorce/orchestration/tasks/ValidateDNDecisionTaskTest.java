@@ -3,9 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
@@ -16,7 +14,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThrows;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
@@ -51,22 +51,18 @@ public class ValidateDNDecisionTaskTest {
 
     private ValidateDNDecisionTask classToTest;
 
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-
     @Parameterized.Parameters(name = "{index}: claimCost: {0}, claimCostDN:{1}, dnGranted:{2}, claimCostGranted:{3}, exception:{4}")
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
             {null, null, null, null, NO_ERROR},
             {CLAIM_COST_YES, null, DN_GRANTED_YES, CLAIM_COST_GRANTED_YES, NO_ERROR},
-            { ANY, ANY, DN_GRANTED_NO, CLAIM_COST_DN_EMPTY, NO_ERROR},
-            { CLAIM_COST_YES, CLAIM_COST_DN_YES, DN_GRANTED_YES, CLAIM_COST_DN_EMPTY, COST_DECISION_EXPECTED},
-            { CLAIM_COST_YES, CLAIM_COST_DN_YES, DN_GRANTED_YES, CLAIM_COST_GRANTED_YES, NO_ERROR},
-            { CLAIM_COST_NO, CLAIM_COST_DN_YES, DN_GRANTED_YES, CLAIM_COST_GRANTED_YES, COST_DECISION_NOT_ALLOWED},
-            { CLAIM_COST_YES, CLAIM_COST_DN_END, DN_GRANTED_YES, CLAIM_COST_GRANTED_YES, COST_DECISION_NOT_ALLOWED}
+            {ANY, ANY, DN_GRANTED_NO, CLAIM_COST_DN_EMPTY, NO_ERROR},
+            {CLAIM_COST_YES, CLAIM_COST_DN_YES, DN_GRANTED_YES, CLAIM_COST_DN_EMPTY, COST_DECISION_EXPECTED},
+            {CLAIM_COST_YES, CLAIM_COST_DN_YES, DN_GRANTED_YES, CLAIM_COST_GRANTED_YES, NO_ERROR},
+            {CLAIM_COST_NO, CLAIM_COST_DN_YES, DN_GRANTED_YES, CLAIM_COST_GRANTED_YES, COST_DECISION_NOT_ALLOWED},
+            {CLAIM_COST_YES, CLAIM_COST_DN_END, DN_GRANTED_YES, CLAIM_COST_GRANTED_YES, COST_DECISION_NOT_ALLOWED}
         });
     }
-
 
     @Before
     public void setup() {
@@ -82,10 +78,14 @@ public class ValidateDNDecisionTaskTest {
         payload.put(DECREE_NISI_GRANTED_CCD_FIELD, dnGranted);
 
         if (StringUtils.isNotBlank(exceptionMessage)) {
-            expectedException.expect(TaskException.class);
-            expectedException.expectMessage(is(exceptionMessage));
-        }
+            TaskException exception = assertThrows(
+                TaskException.class,
+                () -> classToTest.execute(new DefaultTaskContext(), payload)
+            );
 
-        classToTest.execute(new DefaultTaskContext(), payload);
+            assertThat(exception.getMessage(), is(exceptionMessage));
+        } else {
+            classToTest.execute(new DefaultTaskContext(), payload);
+        }
     }
 }

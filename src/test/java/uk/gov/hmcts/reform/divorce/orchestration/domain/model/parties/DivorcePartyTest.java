@@ -1,17 +1,13 @@
 package uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.rules.ExpectedException.none;
+import static org.junit.Assert.assertThrows;
 
 public class DivorcePartyTest {
-
-    @Rule
-    public ExpectedException expectedException = none();
 
     @Test
     public void shouldGetRightEnumByString() throws DivorcePartyNotFoundException {
@@ -21,10 +17,14 @@ public class DivorcePartyTest {
 
     @Test
     public void shouldThrowExceptionWhenDescriptionIsInvalid() throws DivorcePartyNotFoundException {
-        expectedException.expect(DivorcePartyNotFoundException.class);
-        expectedException.expectMessage("Could not find divorce party with the given description: " + "invalid description");
+        DivorcePartyNotFoundException divorcePartyNotFoundException = assertThrows(
+            DivorcePartyNotFoundException.class,
+            () -> DivorceParty.getDivorcePartyByDescription("invalid description")
+        );
 
-        DivorceParty.getDivorcePartyByDescription("invalid description");
+        assertThat(
+            divorcePartyNotFoundException.getMessage(),
+            is("Could not find divorce party with the given description: invalid description")
+        );
     }
-
 }

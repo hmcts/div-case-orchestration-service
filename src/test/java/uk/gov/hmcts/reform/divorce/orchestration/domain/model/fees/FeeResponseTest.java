@@ -1,16 +1,10 @@
 package uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.rules.ExpectedException.none;
 
 public class FeeResponseTest {
-
-    @Rule
-    public ExpectedException expectedException = none();
 
     @Test
     public void givenWholeNumberWithTwoDecimalDouble_whenGetFormattedFeeAmount_thenReturnFeeInExpectedFormat() {

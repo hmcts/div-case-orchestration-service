@@ -2,9 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -23,7 +21,8 @@ import static java.util.Collections.singletonMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
-import static org.junit.rules.ExpectedException.none;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -33,9 +32,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @RunWith(MockitoJUnitRunner.class)
 public class GetCaseWorkflowTest {
-
-    @Rule
-    public ExpectedException expectedException = none();
 
     @Mock
     private GetCase getCase;
@@ -53,7 +49,7 @@ public class GetCaseWorkflowTest {
     private final ImmutablePair<String, Object> testAuthTokenPair = new ImmutablePair<>(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mainTasks = new Task[] {
             getCase,
             caseDataToDivorceFormatter
@@ -74,14 +70,15 @@ public class GetCaseWorkflowTest {
 
     @Test
     public void shouldThrowWorkflowException_whenAddCourtTaskThrowsTaskException() throws WorkflowException, TaskException {
-        expectedException.expect(WorkflowException.class);
-        expectedException.expectCause(instanceOf(TaskException.class));
-
         Map<String, Object> fetchedCaseData = singletonMap("fetchedKey", "fetchedValue");
         when(classUnderTest.execute(mainTasks, null, testAuthTokenPair)).thenReturn(CaseDataResponse.builder().data(fetchedCaseData).build());
         when(addCourtsToPayloadTask.execute(any(), eq(fetchedCaseData))).thenThrow(TaskException.class);
 
-        classUnderTest.run(AUTH_TOKEN);
-    }
+        WorkflowException exception = assertThrows(
+            WorkflowException.class,
+            () -> classUnderTest.run(AUTH_TOKEN)
+        );
 
+        assertThat(exception.getCause(), is(instanceOf(TaskException.class)));
+    }
 }

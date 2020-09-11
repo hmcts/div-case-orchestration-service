@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import uk.gov.hmcts.reform.bsp.common.error.FormFieldValidationException;
 
 import java.time.LocalDate;
@@ -17,7 +15,7 @@ import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.rules.ExpectedException.none;
+import static org.junit.Assert.assertThrows;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper.BulkScanHelper.transformDateFromComponentsToCcdDate;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.scan.helper.BulkScanHelper.validateDateComponents;
 
@@ -34,9 +32,6 @@ public class BulkScanHelperTest {
         String.format("One or more of %s, %s, %s contain invalid characters that can't be converted into a date",
             dayKey, monthKey, yearKey);
 
-    @Rule
-    public ExpectedException expectedException = none();
-
     @Test
     public void shouldTransformDateWithRightLeapYearDate() {
         LocalDate date = BulkScanHelper.transformFormDateIntoLocalDate("DateFieldName", "29/02/2020");
@@ -48,10 +43,14 @@ public class BulkScanHelperTest {
 
     @Test
     public void shouldFailDateTransformationWithWrongLeapYearDate() {
-        expectedException.expect(FormFieldValidationException.class);
-        expectedException.expectMessage("DateFieldName must be a valid date");
-
         BulkScanHelper.transformFormDateIntoLocalDate("DateFieldName", "29/02/2019");
+
+        FormFieldValidationException formFieldValidationException = assertThrows(
+            FormFieldValidationException.class,
+            () -> BulkScanHelper.transformFormDateIntoLocalDate("DateFieldName", "29/02/2019")
+        );
+
+        assertThat(formFieldValidationException.getMessage(), is("DateFieldName must be a valid date"));
     }
 
     @Test

@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextraction;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -11,16 +9,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.rules.ExpectedException.none;
+import static org.junit.Assert.assertThrows;
 import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest.Status.AOS;
 import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest.Status.DA;
 import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest.Status.DN;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CSVExtractorFactoryTest {
-
-    @Rule
-    public ExpectedException expectedException = none();
 
     @Mock
     private DecreeAbsoluteDataExtractor decreeAbsoluteDataExtractor;
@@ -40,10 +35,12 @@ public class CSVExtractorFactoryTest {
 
     @Test
     public void shouldThrowExceptionWhenTryingToRetrieveUnimplementedCSVExtractor() {
-        expectedException.expect(UnsupportedOperationException.class);
-        expectedException.expectMessage("CSVExtractor for DN not implemented.");
+        UnsupportedOperationException exception = assertThrows(
+            UnsupportedOperationException.class,
+            () -> csvExtractorFactory.getCSVExtractorForStatus(DN)
+        );
 
-        csvExtractorFactory.getCSVExtractorForStatus(DN);
+        assertThat(exception.getMessage(), is("CSVExtractor for DN not implemented."));
     }
 
     @Test
