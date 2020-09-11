@@ -26,7 +26,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.CTSC_CONTACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.LETTER_DATE_EXPECTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.prepareTaskContext;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithToken;
 
 public class DnGrantedRespondentCoverLetterGenerationTaskTest extends BasePayloadSpecificDocumentGenerationTaskTest {
 
@@ -40,7 +40,7 @@ public class DnGrantedRespondentCoverLetterGenerationTaskTest extends BasePayloa
 
     @Test
     public void executeShouldPopulateFieldInContextWhenRespondentIsNotRepresented() throws TaskException {
-        TaskContext context = prepareTaskContext();
+        TaskContext context = contextWithToken();
         Map<String, Object> caseData = buildCaseDataWhenRespondentNotRepresented();
 
         Map<String, Object> returnedCaseData = dnGrantedRespondentCoverLetterGenerationTask.execute(context, caseData);

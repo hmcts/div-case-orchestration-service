@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.CTSC_CONTACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.LETTER_DATE_EXPECTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.LETTER_DATE_FROM_CCD;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.prepareTaskContext;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithToken;
 
 public class DaGrantedCitizenLetterGenerationTaskTest extends BasePayloadSpecificDocumentGenerationTaskTest {
 
@@ -42,7 +42,7 @@ public class DaGrantedCitizenLetterGenerationTaskTest extends BasePayloadSpecifi
 
     @Test
     public void executeShouldPopulateFieldInContext() throws TaskException {
-        TaskContext context = prepareTaskContext();
+        TaskContext context = contextWithToken();
 
         Map<String, Object> caseData = buildCaseDataRespondentNotRepresented();
         Map<String, Object> returnedCaseData = daGrantedLetterGenerationTask.execute(context, caseData);

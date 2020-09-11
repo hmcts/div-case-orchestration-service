@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CoEResp
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Gender;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.DnCourt;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -21,14 +20,11 @@ import java.util.Map;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.COE_RESPONDENT_LETTER_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.docmosis.DocmosisTemplateTestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.RESPONDENTS_ADDRESS;
@@ -43,6 +39,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.CTSC_CONTACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.LETTER_DATE_EXPECTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithToken;
 
 public class CoERespondentCoverLetterGenerationTaskTest extends BasePayloadSpecificDocumentGenerationTaskTest {
 
@@ -59,14 +56,6 @@ public class CoERespondentCoverLetterGenerationTaskTest extends BasePayloadSpeci
     @InjectMocks
     private CoERespondentCoverLetterGenerationTask coERespondentCoverLetterGenerationTask;
 
-    public static TaskContext prepareTaskContext() {
-        TaskContext context = new DefaultTaskContext();
-        context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
-        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-
-        return context;
-    }
-
     @Before
     public void setup() throws CourtDetailsNotFound {
         when(ctscContactDetailsDataProviderService.getCtscContactDetails()).thenReturn(CTSC_CONTACT);
@@ -81,12 +70,12 @@ public class CoERespondentCoverLetterGenerationTaskTest extends BasePayloadSpeci
 
         when(courtLookupService.getDnCourtByKey(eq(invalidCourt))).thenThrow(new CourtDetailsNotFound(invalidCourt));
 
-        coERespondentCoverLetterGenerationTask.execute(prepareTaskContext(), caseData);
+        coERespondentCoverLetterGenerationTask.execute(contextWithToken(), caseData);
     }
 
     @Test
     public void executeShouldPopulateFieldInContextWhenRespondentIsNotRepresented() throws TaskException {
-        TaskContext context = prepareTaskContext();
+        TaskContext context = contextWithToken();
 
         Map<String, Object> caseData = buildCaseDataRespondent();
         Map<String, Object> returnedCaseData = coERespondentCoverLetterGenerationTask.execute(context, caseData);
