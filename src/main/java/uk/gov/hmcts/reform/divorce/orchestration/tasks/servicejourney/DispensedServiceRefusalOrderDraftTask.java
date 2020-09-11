@@ -46,7 +46,7 @@ public class DispensedServiceRefusalOrderDraftTask extends ServiceRefusalOrderDr
 
     @Override
     public String getDocumentType() {
-        return DispensedServiceRefusalOrderTask.FileMetadata.DOCUMENT_TYPE;
+        return FileMetadata.DOCUMENT_TYPE;
     }
 
     @Override
