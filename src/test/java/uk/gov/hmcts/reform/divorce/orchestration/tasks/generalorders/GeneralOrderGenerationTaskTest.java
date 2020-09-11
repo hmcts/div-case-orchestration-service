@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.docmosis.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
+import uk.gov.hmcts.reform.divorce.orchestration.exception.JudgeTypeNotFoundException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.Collections;
@@ -33,7 +34,7 @@ public class GeneralOrderGenerationTaskTest extends AbstractGeneralOrderGenerati
     private ArgumentCaptor<GeneratedDocumentInfo> newDocumentCaptor;
 
     @Before
-    public void setup() {
+    public void setup() throws JudgeTypeNotFoundException {
         super.setup();
         when(ccdUtil.addNewDocumentToCollection(any(), any(), eq(GENERAL_ORDERS))).thenReturn(modifiedCaseData);
     }

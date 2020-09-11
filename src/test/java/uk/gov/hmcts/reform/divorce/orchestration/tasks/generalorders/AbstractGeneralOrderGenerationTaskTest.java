@@ -1,9 +1,12 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders;
 
 import org.junit.Before;
+import org.mockito.Mock;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.GeneralOrder;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.docmosis.DocmosisTemplateVars;
+import uk.gov.hmcts.reform.divorce.orchestration.exception.JudgeTypeNotFoundException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.impl.JudgeTypesLookupService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BasePayloadSpecificDocumentGenerationTaskTest;
 
 import java.util.HashMap;
@@ -41,15 +44,20 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelp
 public abstract class AbstractGeneralOrderGenerationTaskTest extends BasePayloadSpecificDocumentGenerationTaskTest {
 
     public static final String TEST_JUDGE_NAME = "Test Harrison-Test";
-    public static final String TEST_JUDGE_TYPE = "judge type";
+    public static final String TEST_JUDGE_TYPE_CODE = "herhonourjudge";
+    public static final String TEST_JUDGE_TYPE = "Her Honour Judge";
     public static final String TEST_GENERAL_ORDER_RECITALS = "general order recitals";
     public static final String TEST_GENERAL_ORDER_DATE_FORMATTED = "20 May 2010";
     public static final String TEST_GENERAL_ORDER_DATE = "2010-05-20";
     public static final String TEST_GENERAL_ORDER_DETAILS = "general order details";
 
+    @Mock
+    private JudgeTypesLookupService judgeTypesLookupService;
+
     @Before
-    public void setup() {
+    public void setup() throws JudgeTypeNotFoundException {
         when(ctscContactDetailsDataProviderService.getCtscContactDetails()).thenReturn(CTSC_CONTACT);
+        when(judgeTypesLookupService.getJudgeTypeByCode(TEST_JUDGE_TYPE_CODE)).thenReturn(TEST_JUDGE_TYPE);
     }
 
     public abstract GeneralOrderGenerationTask getTask();
@@ -104,7 +112,7 @@ public abstract class AbstractGeneralOrderGenerationTaskTest extends BasePayload
         caseData.put(CO_RESPONDENT_LAST_NAME, TEST_CO_RESPONDENT_LAST_NAME);
 
         caseData.put(CO_RESPONDENT_LINKED_TO_CASE, YES_VALUE);
-        caseData.put(JUDGE_TYPE, TEST_JUDGE_TYPE);
+        caseData.put(JUDGE_TYPE, TEST_JUDGE_TYPE_CODE);
         caseData.put(JUDGE_NAME, TEST_JUDGE_NAME);
         caseData.put(GENERAL_ORDER_DETAILS, TEST_GENERAL_ORDER_DETAILS);
         caseData.put(GENERAL_ORDER_DATE, TEST_GENERAL_ORDER_DATE);
