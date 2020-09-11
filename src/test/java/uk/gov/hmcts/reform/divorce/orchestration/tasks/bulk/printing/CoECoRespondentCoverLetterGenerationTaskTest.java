@@ -38,7 +38,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.CTSC_CONTACT;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.prepareTaskContext;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithToken;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
 
 public class CoECoRespondentCoverLetterGenerationTaskTest extends BasePayloadSpecificDocumentGenerationTaskTest {
@@ -60,7 +60,7 @@ public class CoECoRespondentCoverLetterGenerationTaskTest extends BasePayloadSpe
 
     @Test
     public void executeShouldPopulateFieldInContext() throws TaskException {
-        TaskContext context = prepareTaskContext();
+        TaskContext context = contextWithToken();
 
         Map<String, Object> caseData = buildCaseDataCoRespondentNotRepresented();
         Map<String, Object> returnedCaseData = coECoRespondentCoverLetterGenerationTask.execute(context, caseData);
@@ -94,7 +94,7 @@ public class CoECoRespondentCoverLetterGenerationTaskTest extends BasePayloadSpe
 
     @Test
     public void executeShouldPopulateFieldInContextWhenRespondentIsRepresented() throws TaskException {
-        TaskContext context = prepareTaskContext();
+        TaskContext context = contextWithToken();
 
         Map<String, Object> caseData = buildCaseDataCoRespondentRepresented();
         Map<String, Object> returnedCaseData = coECoRespondentCoverLetterGenerationTask.execute(context, caseData);
@@ -124,7 +124,7 @@ public class CoECoRespondentCoverLetterGenerationTaskTest extends BasePayloadSpe
     @Test(expected = InvalidDataForTaskException.class)
     public void executeShouldThrowCourtDetailsNotFound() throws TaskException, CourtDetailsNotFound {
         final String invalidCourtLocation = "you will not find this court";
-        TaskContext context = prepareTaskContext();
+        TaskContext context = contextWithToken();
         when(courtLookupService.getDnCourtByKey(invalidCourtLocation)).thenThrow(CourtDetailsNotFound.class);
 
         Map<String, Object> caseData = buildCaseDataCoRespondentNotRepresented();

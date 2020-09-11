@@ -14,7 +14,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.prepareTaskContext;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithToken;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ReceivedServiceAddedDateTaskTest extends TestCase {
@@ -26,7 +26,7 @@ public class ReceivedServiceAddedDateTaskTest extends TestCase {
     public void executeShouldAddPopulatedField() throws TaskException {
         Map<String, Object> caseData = new HashMap<>();
         Map<String, Object> returnedCaseData = receivedServiceAddedDateTask
-            .execute(prepareTaskContext(), caseData);
+            .execute(contextWithToken(), caseData);
 
         assertThat(returnedCaseData.isEmpty(), is(false));
         assertSame(returnedCaseData, caseData);

@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralOrderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 
@@ -83,6 +84,9 @@ public class CallbackControllerTest {
 
     @Mock
     private ServiceJourneyService serviceJourneyService;
+
+    @Mock
+    private GeneralOrderService generalOrderService;
 
     @InjectMocks
     private CallbackController classUnderTest;
@@ -1442,6 +1446,36 @@ public class CallbackControllerTest {
             .build();
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.serviceDecisionMade(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+    }
+
+    @Test
+    public void testGenerateGeneralOrder() throws CaseOrchestrationServiceException {
+        when(generalOrderService.generateGeneralOrder(any(), anyString()))
+            .thenReturn(CaseDetails.builder().build());
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder().build())
+            .build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateGeneralOrder(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+    }
+
+    @Test
+    public void testGenerateDraftOfGeneralOrder() throws CaseOrchestrationServiceException {
+        when(generalOrderService.generateGeneralOrderDraft(any(), anyString()))
+            .thenReturn(CaseDetails.builder().build());
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder().build())
+            .build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateDraftOfGeneralOrder(AUTH_TOKEN, ccdCallbackRequest);
 
         assertThat(response.getStatusCode(), equalTo(OK));
         assertThat(response.getBody().getErrors(), is(nullValue()));
