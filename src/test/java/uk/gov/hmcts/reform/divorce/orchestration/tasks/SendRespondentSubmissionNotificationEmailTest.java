@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -31,7 +29,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.rules.ExpectedException.none;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -68,10 +66,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class SendRespondentSubmissionNotificationEmailTest {
 
     private static final String FORM_SUBMISSION_DUE_DATE = "20 September 2018";
-    private static final String FORM_WESLH_SUBMISSION_DUE_DATE = "20 Medi 2018";
-
-    @Rule
-    public ExpectedException expectedException = none();
+    private static final String FORM_WELSH_SUBMISSION_DUE_DATE = "20 Medi 2018";
 
     @Mock
     private TaskCommons taskCommons;
@@ -96,7 +91,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
     @Before
     public void setUp() throws TaskException {
         when(ccdUtil.getFormattedDueDate(any(), any())).thenReturn(FORM_SUBMISSION_DUE_DATE);
-        when(ccdUtil.getWelshFormattedDate(isA(Map.class), anyString())).thenReturn(FORM_WESLH_SUBMISSION_DUE_DATE);
+        when(ccdUtil.getWelshFormattedDate(isA(Map.class), anyString())).thenReturn(FORM_WELSH_SUBMISSION_DUE_DATE);
         testCourt = new Court();
         testCourt.setDivorceCentreName("West Midlands Regional Divorce Centre");
         testCourt.setPoBox("PO Box 3650");
@@ -116,9 +111,9 @@ public class SendRespondentSubmissionNotificationEmailTest {
         String caseId = incomingPayload.getCaseDetails().getCaseId();
         DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, caseId);
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_GENDER),eq(LanguagePreference.ENGLISH)))
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_GENDER), eq(LanguagePreference.ENGLISH)))
             .thenReturn(TEST_RELATIONSHIP);
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_GENDER),eq(LanguagePreference.WELSH)))
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_GENDER), eq(LanguagePreference.WELSH)))
             .thenReturn(TEST_WELSH_FEMALE_GENDER_IN_RELATION);
         Map<String, Object> returnedPayload = defendedDivorceNotificationEmailTask.execute(context, caseData);
 
@@ -138,7 +133,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
             hasEntry(NOTIFICATION_RDC_NAME_KEY, testCourt.getIdentifiableCentreName()),
             hasEntry(NOTIFICATION_COURT_ADDRESS_KEY, testCourt.getFormattedAddress()),
             hasEntry(NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY, FORM_SUBMISSION_DUE_DATE),
-            hasEntry(NOTIFICATION_WELSH_FORM_SUBMISSION_DATE_LIMIT_KEY, FORM_WESLH_SUBMISSION_DUE_DATE),
+            hasEntry(NOTIFICATION_WELSH_FORM_SUBMISSION_DATE_LIMIT_KEY, FORM_WELSH_SUBMISSION_DUE_DATE),
             hasEntry(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TEST_WELSH_FEMALE_GENDER_IN_RELATION)
         ));
         assertThat(templateParameters.size(), equalTo(10));
@@ -148,9 +143,6 @@ public class SendRespondentSubmissionNotificationEmailTest {
     @Test
     public void testExceptionIsThrown_WhenCaseIdIsMissing_ForDefendedDivorce()
         throws IOException, TaskException {
-        expectedException.expect(TaskException.class);
-        expectedException.expectMessage("Could not evaluate value of mandatory property \"D8caseReference\"");
-
         CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
             "/jsonExamples/payloads/defendedDivorceAOSMissingCaseId.json", CcdCallbackRequest.class);
         Map<String, Object> caseData = incomingPayload.getCaseDetails().getCaseData();
@@ -159,17 +151,20 @@ public class SendRespondentSubmissionNotificationEmailTest {
         DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(D_8_CASE_REFERENCE, caseId);
 
-        defendedDivorceNotificationEmailTask.execute(context, caseData);
+        TaskException exception = assertThrows(
+            TaskException.class,
+            () -> defendedDivorceNotificationEmailTask.execute(context, caseData)
+        );
+
+        assertThat(
+            exception.getMessage(),
+            is("Could not evaluate value of mandatory property \"D8caseReference\"")
+        );
     }
 
     @Test
     public void testExceptionIsThrown_WhenMandatoryFieldIsMissing_ForDefendedDivorce()
         throws IOException, TaskException {
-        expectedException.expect(TaskException.class);
-        expectedException.expectMessage(
-            "Could not evaluate value of mandatory property \"D8InferredPetitionerGender\""
-        );
-
         CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
             "/jsonExamples/payloads/defendedDivorceAOSMissingFields.json", CcdCallbackRequest.class);
         Map<String, Object> caseData = incomingPayload.getCaseDetails().getCaseData();
@@ -177,7 +172,14 @@ public class SendRespondentSubmissionNotificationEmailTest {
         DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, caseId);
 
-        defendedDivorceNotificationEmailTask.execute(context, caseData);
+        TaskException exception = assertThrows(
+            TaskException.class,
+            () -> defendedDivorceNotificationEmailTask.execute(context, caseData)
+        );
+        assertThat(
+            exception.getMessage(),
+            is("Could not evaluate value of mandatory property \"D8InferredPetitionerGender\"")
+        );
     }
 
     @Test
@@ -189,9 +191,9 @@ public class SendRespondentSubmissionNotificationEmailTest {
         String caseId = incomingPayload.getCaseDetails().getCaseId();
         DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, caseId);
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.ENGLISH)))
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.ENGLISH)))
             .thenReturn(TEST_RELATIONSHIP_HUSBAND);
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.WELSH)))
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.WELSH)))
             .thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
 
         Map<String, Object> returnedPayload = undefendedDivorceNotificationEmailTask.execute(context, caseData);
@@ -219,9 +221,6 @@ public class SendRespondentSubmissionNotificationEmailTest {
     @Test
     public void testExceptionIsThrown_WhenMandatoryFieldIsMissing_ForUndefendedDivorce()
         throws IOException, TaskException {
-        expectedException.expect(TaskException.class);
-        expectedException.expectMessage("Could not evaluate value of mandatory property \"D8DivorceUnit\"");
-
         CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
             "/jsonExamples/payloads/undefendedDivorceAOSMissingFields.json", CcdCallbackRequest.class);
         Map<String, Object> caseData = incomingPayload.getCaseDetails().getCaseData();
@@ -229,7 +228,14 @@ public class SendRespondentSubmissionNotificationEmailTest {
         DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, caseId);
 
-        undefendedDivorceNotificationEmailTask.execute(context, caseData);
+        TaskException exception = assertThrows(
+            TaskException.class,
+            () -> undefendedDivorceNotificationEmailTask.execute(context, caseData)
+        );
+        assertThat(
+            exception.getMessage(),
+            is("Could not evaluate value of mandatory property \"D8DivorceUnit\"")
+        );
     }
 
     private void checkThatPropertiesAreCheckedBeforeBeingRetrieved(Map<String, Object> mockCaseData) {
@@ -251,5 +257,4 @@ public class SendRespondentSubmissionNotificationEmailTest {
             amountOfPropertiesChecked,
             equalTo(amountOfPropertiesRetrieved));
     }
-
 }
