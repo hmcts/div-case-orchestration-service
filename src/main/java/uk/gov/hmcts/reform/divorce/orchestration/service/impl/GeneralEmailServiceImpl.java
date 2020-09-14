@@ -12,7 +12,7 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
-public class GeneralEmailImpl implements GeneralEmailService {
+public class GeneralEmailServiceImpl implements GeneralEmailService {
 
     private final GeneralEmailWorkflow generalEmailWorkflow;
 

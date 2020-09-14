@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.generalemail;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -8,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
@@ -19,7 +17,6 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CO_RESPONDENT_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_GENERAL_EMAIL_DETAILS;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
@@ -28,7 +25,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.CO_RESPONDENT_SOLICITOR_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_EMAIL_DETAILS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.GENERAL_EMAIL_CO_RESPONDENT_SOLICITOR;
@@ -39,6 +35,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getExpectedNotificationTemplateVars;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getRepresentedSubject;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.helpers.GeneralEmailHelper.getTaskContext;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.context;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GeneralEmailCoRespondentSolicitorTaskTest {
@@ -49,28 +46,20 @@ public class GeneralEmailCoRespondentSolicitorTaskTest {
     @InjectMocks
     private GeneralEmailCoRespondentSolicitorTask task;
 
-    private DefaultTaskContext testContext;
-
-    @Before
-    public void setUp() {
-        testContext = new DefaultTaskContext();
-        testContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
-    }
-
     @Test
     public void shouldSendEmailWhenExecuteEmailNotificationTaskIsCalled() throws TaskException {
         Map<String, Object> caseData = buildCaseData();
 
         executeTask(caseData);
 
-        verifyEmailSent(testContext, caseData);
+        verifyEmailSent(context(), caseData);
     }
 
     @Test
     public void shouldReturnTemplate() {
         EmailTemplateNames returnedTemplate = task.getTemplate();
 
-        assertEquals(returnedTemplate, GENERAL_EMAIL_CO_RESPONDENT_SOLICITOR);
+        assertEquals(GENERAL_EMAIL_CO_RESPONDENT_SOLICITOR, returnedTemplate);
     }
 
     private Map<String, Object> buildCaseData() {
@@ -96,7 +85,7 @@ public class GeneralEmailCoRespondentSolicitorTaskTest {
         verify(emailService).sendEmail(
             TEST_CO_RESPONDENT_SOLICITOR_EMAIL,
             GENERAL_EMAIL_CO_RESPONDENT_SOLICITOR.name(),
-            getExpectedNotificationTemplateVars(GeneralEmailTaskHelper.Party.CO_RESPONDENT_SOLICITOR, testContext, caseData),
+            getExpectedNotificationTemplateVars(GeneralEmailTaskHelper.Party.CO_RESPONDENT_SOLICITOR, context, caseData),
             getRepresentedSubject(context, caseData),
             LanguagePreference.ENGLISH
         );

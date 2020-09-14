@@ -28,6 +28,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 
 public class GeneralEmailTaskHelper {
 
+    public enum Party {
+        PETITIONER,
+        PETITIONER_SOLICITOR,
+        RESPONDENT,
+        RESPONDENT_SOLICITOR,
+        CO_RESPONDENT,
+        CO_RESPONDENT_SOLICITOR,
+        OTHER
+    }
+
     public static Map<String, String> getExpectedNotificationTemplateVars(
         Party party, TaskContext taskContext, Map<String, Object> caseData) {
         switch (party) {
@@ -124,15 +134,5 @@ public class GeneralEmailTaskHelper {
 
     public static String getNotRepresentedSubject(TaskContext context) {
         return "Divorce case number " + getCaseId(context);
-    }
-
-    public enum Party {
-        PETITIONER,
-        PETITIONER_SOLICITOR,
-        RESPONDENT,
-        RESPONDENT_SOLICITOR,
-        CO_RESPONDENT,
-        CO_RESPONDENT_SOLICITOR,
-        OTHER
     }
 }

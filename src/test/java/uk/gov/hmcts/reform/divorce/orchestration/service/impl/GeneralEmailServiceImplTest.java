@@ -23,13 +23,13 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GeneralEmailServiceTest {
+public class GeneralEmailServiceImplTest {
 
     @Mock
     GeneralEmailWorkflow generalEmailWorkflow;
 
     @InjectMocks
-    private GeneralEmailImpl classUnderTest;
+    private GeneralEmailServiceImpl classUnderTest;
 
     @Test
     public void shouldCallGeneralEmailWorkflow_whenGeneralEmailIsCreated() throws WorkflowException, CaseOrchestrationServiceException {

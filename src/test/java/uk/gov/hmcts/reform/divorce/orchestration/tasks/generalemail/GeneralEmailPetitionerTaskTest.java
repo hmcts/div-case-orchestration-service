@@ -33,6 +33,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getExpectedNotificationTemplateVars;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getNotRepresentedSubject;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.helpers.GeneralEmailHelper.getTaskContext;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.context;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GeneralEmailPetitionerTaskTest {
@@ -57,14 +58,14 @@ public class GeneralEmailPetitionerTaskTest {
 
         executeTask(caseData);
 
-        verifyEmailSent(testContext, caseData);
+        verifyEmailSent(context(), caseData);
     }
 
     @Test
     public void shouldReturnTemplate() {
         EmailTemplateNames returnedTemplate = task.getTemplate();
 
-        assertEquals(returnedTemplate, GENERAL_EMAIL_PETITIONER);
+        assertEquals(GENERAL_EMAIL_PETITIONER, returnedTemplate);
     }
 
     private Map<String, Object> buildCaseData() {
@@ -88,7 +89,7 @@ public class GeneralEmailPetitionerTaskTest {
         verify(emailService).sendEmail(
             TEST_PETITIONER_EMAIL,
             GENERAL_EMAIL_PETITIONER.name(),
-            getExpectedNotificationTemplateVars(GeneralEmailTaskHelper.Party.PETITIONER, testContext, caseData),
+            getExpectedNotificationTemplateVars(GeneralEmailTaskHelper.Party.PETITIONER, context, caseData),
             getNotRepresentedSubject(context),
             LanguagePreference.ENGLISH
         );
