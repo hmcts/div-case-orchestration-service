@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextraction;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -19,7 +17,10 @@ import java.time.LocalDate;
 import java.time.Month;
 import javax.mail.MessagingException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -33,9 +34,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction
 public class ExtractedDataPublisherTest {
 
     private final DataExtractionRequest.Status testStatus = DataExtractionRequest.Status.DA;
-
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
 
     @Mock
     private DataExtractionEmailClient emailClient;
@@ -76,12 +74,16 @@ public class ExtractedDataPublisherTest {
 
     @Test
     public void shouldThrowTaskException_WhenEmailFails() throws TaskException, MessagingException {
-        expectedException.expect(TaskException.class);
-        expectedException.expectCause(instanceOf(MessagingException.class));
+        doThrow(MessagingException.class).when(emailClient)
+            .sendEmailWithAttachment(eq("csv-email@divorce.gov.uk"), any(), any());
 
-        doThrow(MessagingException.class).when(emailClient).sendEmailWithAttachment(eq("csv-email@divorce.gov.uk"), any(), any());
-
-        classUnderTest.execute(taskContext, null);
+        TaskException exception = assertThrows(
+            TaskException.class,
+            () -> classUnderTest.execute(taskContext, null)
+        );
+        assertThat(
+            exception.getCause(),
+            is(instanceOf(MessagingException.class))
+        );
     }
-
 }

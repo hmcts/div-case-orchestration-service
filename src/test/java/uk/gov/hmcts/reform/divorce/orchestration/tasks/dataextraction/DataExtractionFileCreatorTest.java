@@ -2,9 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextraction;
 
 import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -26,7 +24,6 @@ import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.rules.ExpectedException.none;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -44,9 +41,6 @@ public class DataExtractionFileCreatorTest {
     private static final String TEST_RELEVANT_STATE = "TEST_RELEVANT_STATE";
 
     private final LocalDate testLastModifiedDate = LocalDate.parse("2019-04-12");
-
-    @Rule
-    public ExpectedException expectedException = none();
 
     @Mock
     private CMSElasticSearchSupport cmsElasticSearchSupport;
