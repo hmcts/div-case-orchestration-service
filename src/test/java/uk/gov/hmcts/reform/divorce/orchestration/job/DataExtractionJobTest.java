@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.job;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -12,14 +10,14 @@ import org.quartz.JobExecutionException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.DataExtractionService;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DataExtractionJobTest {
-
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
 
     @Mock
     private DataExtractionService dataExtractionService;
@@ -37,12 +35,14 @@ public class DataExtractionJobTest {
     }
 
     @Test
-    public void execute_requestData_throwsJobExecutionException() throws JobExecutionException, CaseOrchestrationServiceException {
-        expectedException.expect(JobExecutionException.class);
-        expectedException.expectMessage("ExtractDataToRobotics service failed");
+    public void execute_requestData_throwsJobExecutionException() throws CaseOrchestrationServiceException {
         doThrow(CaseOrchestrationServiceException.class).when(dataExtractionService).requestDataExtractionForPreviousDay();
-        classUnderTest.execute(jobExecutionContext);
+
+        JobExecutionException jobExecutionException = assertThrows(
+            JobExecutionException.class,
+            () -> classUnderTest.execute(jobExecutionContext)
+        );
+
+        assertThat(jobExecutionException.getMessage(), is("ExtractDataToRobotics service failed"));
     }
-
-
 }
