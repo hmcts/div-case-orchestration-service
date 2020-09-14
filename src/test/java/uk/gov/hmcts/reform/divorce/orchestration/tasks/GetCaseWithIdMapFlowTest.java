@@ -14,7 +14,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
 import java.util.Collections;
+import java.util.Map;
 
+import static java.util.Collections.emptyMap;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.endsWith;
@@ -54,10 +56,11 @@ public class GetCaseWithIdMapFlowTest {
         Mockito.when(caseMaintenanceClient.retrievePetitionById(CASEWORKER_AUTH_TOKEN, TEST_CASE_ID))
             .thenReturn(null);
         final String exceptionMessage = String.format("No case found with ID [%s]", TEST_CASE_ID);
+        Map<String, Object> payload = emptyMap();
 
         TaskException taskException = assertThrows(
             TaskException.class,
-            () -> classUnderTest.execute(context, Collections.emptyMap())
+            () -> classUnderTest.execute(context, payload)
         );
 
         assertThat(taskException.getCause(), is(instanceOf(CaseNotFoundException.class)));
@@ -82,7 +85,7 @@ public class GetCaseWithIdMapFlowTest {
             .thenReturn(cmsResponse);
         Mockito.when(authUtil.getCaseworkerToken()).thenReturn(CASEWORKER_AUTH_TOKEN);
 
-        classUnderTest.execute(context, Collections.emptyMap());
+        classUnderTest.execute(context, emptyMap());
 
         assertEquals(cmsResponse, context.getTransientObject(CASE_DETAILS_JSON_KEY));
 

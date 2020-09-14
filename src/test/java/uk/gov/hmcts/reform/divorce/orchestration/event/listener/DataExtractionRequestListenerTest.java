@@ -70,12 +70,14 @@ public class DataExtractionRequestListenerTest {
     @Test
     public void shouldRethrowExceptionIfServiceThrowsException() throws CaseOrchestrationServiceException {
         doThrow(CaseOrchestrationServiceException.class).when(mockService).extractCasesToFamilyMan(any(), any(), any());
+        DataExtractionRequest dataExtractionRequest = new DataExtractionRequest(
+            this, TEST_IMPLEMENTED_STATUS, LocalDate.now()
+        );
 
         RuntimeException runtimeException = assertThrows(
             RuntimeException.class,
-            () -> classUnderTest.onApplicationEvent(
-                new DataExtractionRequest(this, TEST_IMPLEMENTED_STATUS, LocalDate.now())
-            ));
+            () -> classUnderTest.onApplicationEvent(dataExtractionRequest)
+        );
         assertThat(runtimeException.getMessage(), startsWith("Error extracting data to Family man for status DA and date"));
     }
 }

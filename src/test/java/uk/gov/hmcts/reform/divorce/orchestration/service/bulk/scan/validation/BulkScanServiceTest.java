@@ -104,11 +104,12 @@ public class BulkScanServiceTest {
     @Test
     public void shouldThrowUnsupportedFormTypeExceptionFromFormTransformerFactory() {
         ExceptionRecord exceptionRecord = ExceptionRecord.builder().formType("unsupportedFormType").build();
+        CaseDetails caseDetails = CaseDetails.builder().build();
         when(factory.getValidator("unsupportedFormType")).thenThrow(UnsupportedFormTypeException.class);
 
         assertThrows(
             UnsupportedFormTypeException.class,
-            () -> bulkScanService.transformExceptionRecordAndUpdateExistingCase(exceptionRecord, CaseDetails.builder().build())
+            () -> bulkScanService.transformExceptionRecordAndUpdateExistingCase(exceptionRecord, caseDetails)
         );
     }
 

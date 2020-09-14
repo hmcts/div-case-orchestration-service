@@ -39,17 +39,21 @@ public class CalculateDecreeAbsoluteDatesTest {
 
     @Test
     public void testExceptionIsThrownWhenDateDoesNotExist() throws TaskException {
+        Map<String, Object> payload = emptyMap();
+
         assertThrows(
             TaskException.class,
-            () -> calculateDecreeAbsoluteDates.execute(null, emptyMap())
+            () -> calculateDecreeAbsoluteDates.execute(null, payload)
         );
     }
 
     @Test
     public void testTaskExceptionIsThrownWhenDateBadlyFormatted() throws TaskException {
+        Map<String, Object> payload = singletonMap(DECREE_NISI_GRANTED_DATE_CCD_FIELD, "20190711");
+
         assertThrows(
             TaskException.class,
-            () -> calculateDecreeAbsoluteDates.execute(null, singletonMap(DECREE_NISI_GRANTED_DATE_CCD_FIELD, "20190711"))
+            () -> calculateDecreeAbsoluteDates.execute(null, payload)
         );
     }
 }

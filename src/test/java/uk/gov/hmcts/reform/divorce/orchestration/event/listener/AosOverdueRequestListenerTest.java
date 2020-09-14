@@ -47,10 +47,11 @@ public class AosOverdueRequestListenerTest {
     @Test
     public void shouldThrowRuntimeException_WhenServiceThrowsException() throws CaseOrchestrationServiceException {
         doThrow(CaseOrchestrationServiceException.class).when(aosService).makeCaseAosOverdue(AUTH_TOKEN, TEST_CASE_ID);
+        AosOverdueRequest aosOverdueRequest = new AosOverdueRequest(this, TEST_CASE_ID);
 
         RuntimeException runtimeException = assertThrows(
             RuntimeException.class,
-            () -> classUnderTest.onApplicationEvent(new AosOverdueRequest(this, TEST_CASE_ID))
+            () -> classUnderTest.onApplicationEvent(aosOverdueRequest)
         );
         assertThat(runtimeException.getMessage(), is("Error trying to move case " + TEST_CASE_ID + " to AOS Overdue state"));
     }

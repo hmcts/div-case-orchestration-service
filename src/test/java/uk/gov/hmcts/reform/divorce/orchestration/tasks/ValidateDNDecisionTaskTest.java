@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.Arrays;
@@ -24,6 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.context;
 
 @RunWith(Parameterized.class)
 @RequiredArgsConstructor
@@ -76,16 +77,17 @@ public class ValidateDNDecisionTaskTest {
         payload.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, claimCostValue);
         payload.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, claimCostGranted);
         payload.put(DECREE_NISI_GRANTED_CCD_FIELD, dnGranted);
+        TaskContext context = context();
 
         if (StringUtils.isNotBlank(exceptionMessage)) {
             TaskException exception = assertThrows(
                 TaskException.class,
-                () -> classToTest.execute(new DefaultTaskContext(), payload)
+                () -> classToTest.execute(context, payload)
             );
 
             assertThat(exception.getMessage(), is(exceptionMessage));
         } else {
-            classToTest.execute(new DefaultTaskContext(), payload);
+            classToTest.execute(context, payload);
         }
     }
 }
