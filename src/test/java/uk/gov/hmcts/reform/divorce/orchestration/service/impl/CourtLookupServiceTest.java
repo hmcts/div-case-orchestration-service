@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,7 +14,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.rules.ExpectedException.none;
+import static org.junit.Assert.assertThrows;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CARE_OF_PREFIX;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMAIL_LABEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINE_SEPARATOR;
@@ -29,9 +27,6 @@ public class CourtLookupServiceTest {
 
     @Autowired
     private CourtLookupService courtLookupService;
-
-    @Rule
-    public ExpectedException expectedException = none();
 
     @Test
     public void testCourtAddressWithPOBoxIsFormattedCorrectly() throws CourtDetailsNotFound {
@@ -75,11 +70,11 @@ public class CourtLookupServiceTest {
     }
 
     @Test
-    public void testExceptionInThrownWhenCourtIsNotFound() throws CourtDetailsNotFound {
-        expectedException.expect(CourtDetailsNotFound.class);
-        expectedException.expectMessage("Could not find court by using key \"unknownCourt\"");
-
-        courtLookupService.getCourtByKey("unknownCourt");
+    public void testExceptionInThrownWhenCourtIsNotFound() {
+        CourtDetailsNotFound courtDetailsNotFound = assertThrows(
+            CourtDetailsNotFound.class, () -> courtLookupService.getCourtByKey("unknownCourt")
+        );
+        assertThat(courtDetailsNotFound.getMessage(), is("Could not find court by using key \"unknownCourt\""));
     }
 
     @Test
@@ -99,17 +94,16 @@ public class CourtLookupServiceTest {
     }
 
     @Test
-    public void testExceptionInThrownWhenDnCourtIsNotFound() throws CourtDetailsNotFound {
-        expectedException.expect(CourtDetailsNotFound.class);
-        expectedException.expectMessage("Could not find court by using key \"unknownCourt\"");
-
-        courtLookupService.getDnCourtByKey("unknownCourt");
+    public void testExceptionInThrownWhenDnCourtIsNotFound() {
+        CourtDetailsNotFound courtDetailsNotFound = assertThrows(
+            CourtDetailsNotFound.class, () -> courtLookupService.getDnCourtByKey("unknownCourt")
+        );
+        assertThat(courtDetailsNotFound.getMessage(), is("Could not find court by using key \"unknownCourt\""));
     }
 
     @Test
     public void shouldReturnAllCourts() {
-        Map allCourts = courtLookupService.getAllCourts();
+        Map<String, Court> allCourts = courtLookupService.getAllCourts();
         assertThat(allCourts.size(), is(5));
     }
-
 }

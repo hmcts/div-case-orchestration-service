@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.util;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -18,19 +16,17 @@ import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
-import static org.junit.rules.ExpectedException.none;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TaskCommonsTest {
-
-    @Rule
-    public ExpectedException expectedException = none();
-
     @Mock
     private EmailService emailService;
 
@@ -42,54 +38,62 @@ public class TaskCommonsTest {
 
     @Test
     public void testTaskExceptionIsThrown_WhenEmailCannotBeSent() throws TaskException, NotificationClientException {
-        expectedException.expect(TaskException.class);
-        expectedException.expectMessage("Failed to send e-mail");
         HashMap<String, String> templateParameters = new HashMap<>();
         doThrow(NotificationClientException.class)
-                .when(emailService)
-                .sendEmailAndReturnExceptionIfFails("test@hmcts.net",
-                    RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION.name(),
-                    templateParameters,
-                    "test description",
-                    LanguagePreference.ENGLISH);
+            .when(emailService)
+            .sendEmailAndReturnExceptionIfFails("test@hmcts.net",
+                RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION.name(),
+                templateParameters,
+                "test description",
+                LanguagePreference.ENGLISH);
 
-        taskCommons.sendEmail(RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION,
+        TaskException taskException = assertThrows(
+            TaskException.class,
+            () -> taskCommons.sendEmail(
+                RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION,
                 "test description",
                 "test@hmcts.net",
                 templateParameters,
-                LanguagePreference.ENGLISH);
+                LanguagePreference.ENGLISH
+            )
+        );
+
+        assertThat(taskException.getMessage(), is("Failed to send e-mail"));
     }
 
     @Test
     public void testTaskExceptionIsThrown_WhenCourtLookupServiceFails() throws CourtDetailsNotFound, TaskException {
-        expectedException.expect(TaskException.class);
-        expectedException.expectCause(instanceOf(CourtDetailsNotFound.class));
-
         doThrow(CourtDetailsNotFound.class)
-                .when(courtLookupService)
-                .getCourtByKey("testKey");
+            .when(courtLookupService)
+            .getCourtByKey("testKey");
 
-        taskCommons.getCourt("testKey");
+        TaskException taskException = assertThrows(
+            TaskException.class,
+            () -> taskCommons.getCourt("testKey")
+        );
+
+        assertThat(taskException.getCause(), is(instanceOf(CourtDetailsNotFound.class)));
     }
 
     @Test
     public void testDnCourtIsReturned_WhenDnCourtLookupSucceeds() throws CourtDetailsNotFound {
         DnCourt expectedCourt = new DnCourt();
         doReturn(expectedCourt)
-                .when(courtLookupService)
-                .getDnCourtByKey("testKey");
+            .when(courtLookupService)
+            .getDnCourtByKey("testKey");
 
         assertEquals(expectedCourt, taskCommons.getDnCourt("testKey"));
     }
 
     @Test
     public void testCourtDetailsNotFoundIsThrown_WhenDnCourtLookupServiceFails() throws CourtDetailsNotFound {
-        expectedException.expect(CourtDetailsNotFound.class);
-
         doThrow(CourtDetailsNotFound.class)
-                .when(courtLookupService)
-                .getDnCourtByKey("testKey");
+            .when(courtLookupService)
+            .getDnCourtByKey("testKey");
 
-        taskCommons.getDnCourt("testKey");
+        assertThrows(
+            CourtDetailsNotFound.class,
+            () -> taskCommons.getDnCourt("testKey")
+        );
     }
 }

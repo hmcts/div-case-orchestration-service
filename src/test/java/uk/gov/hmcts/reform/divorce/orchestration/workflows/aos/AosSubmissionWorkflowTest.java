@@ -2,9 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.workflows.aos;
 
 import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -34,7 +32,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.sameInstance;
-import static org.junit.rules.ExpectedException.none;
+import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -86,22 +85,19 @@ public class AosSubmissionWorkflowTest {
 
     private static final String UNFORMATTED_CASE_ID = "0123456789012345";
     private static final String RESP_ACKNOWLEDGES_SERVICE_DEFENDING_DIVORCE_JSON =
-            "/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json";
+        "/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json";
     private static final String RESP_ACKNOWLEDGES_SERVICE__NOT_DEFENDING_DIVORCE_JSON =
-            "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json";
+        "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json";
     private static final String RESP_ACKNOWLEDGES_SERVICE__NOT_DEFENDING__NOT_ADMITTING_DIVORCE_JSON =
-            "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingNotAdmittingDivorce.json";
+        "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingNotAdmittingDivorce.json";
     private static final String UNCLEAR_ACKNOWLEDGEMENT_OF_SERVICE_JSON =
-            "/jsonExamples/payloads/unclearAcknowledgementOfService.json";
+        "/jsonExamples/payloads/unclearAcknowledgementOfService.json";
     private static final String AOS_SOLICITOR_NOMINATED_JSON =
-            "/jsonExamples/payloads/aosSolicitorNominated.json";
+        "/jsonExamples/payloads/aosSolicitorNominated.json";
     private static final String AOS_SOLICITOR_NOMINATED_WITHOUT_FIELDS_SET_JSON =
-            "/jsonExamples/payloads/aosSolicitorNominatedWithoutFieldSet.json";
+        "/jsonExamples/payloads/aosSolicitorNominatedWithoutFieldSet.json";
 
     private Map<String, Object> returnedPayloadFromTask;
-
-    @Rule
-    public ExpectedException expectedException = none();
 
     @Mock
     private SendRespondentSubmissionNotificationForDefendedDivorceEmail defendedDivorceNotificationEmailTask;
@@ -135,7 +131,7 @@ public class AosSubmissionWorkflowTest {
     @Test
     public void testDefendedTaskIsCalledWhenWorkflowIsRun() throws WorkflowException, IOException, TaskException {
         CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
-                RESP_ACKNOWLEDGES_SERVICE_DEFENDING_DIVORCE_JSON, CcdCallbackRequest.class);
+            RESP_ACKNOWLEDGES_SERVICE_DEFENDING_DIVORCE_JSON, CcdCallbackRequest.class);
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
 
         Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
@@ -150,9 +146,9 @@ public class AosSubmissionWorkflowTest {
 
     @Test
     public void testUndefendedTaskIsCalled_WhenRespondentChoosesToNotDefendDivorce() throws IOException,
-            WorkflowException, TaskException {
+        WorkflowException, TaskException {
         CcdCallbackRequest callbackRequest = getJsonFromResourceFile(
-                RESP_ACKNOWLEDGES_SERVICE__NOT_DEFENDING_DIVORCE_JSON, CcdCallbackRequest.class);
+            RESP_ACKNOWLEDGES_SERVICE__NOT_DEFENDING_DIVORCE_JSON, CcdCallbackRequest.class);
         Map<String, Object> caseData = callbackRequest.getCaseDetails().getCaseData();
 
         Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(callbackRequest, AUTH_TOKEN);
@@ -167,9 +163,9 @@ public class AosSubmissionWorkflowTest {
 
     @Test
     public void testUndefendedTaskIsCalled_WhenRespondentChoosesToNotDefendDivorceButNotAdmitWhatIsSaid()
-            throws IOException, WorkflowException, TaskException {
+        throws IOException, WorkflowException, TaskException {
         CcdCallbackRequest callbackRequest = getJsonFromResourceFile(
-                RESP_ACKNOWLEDGES_SERVICE__NOT_DEFENDING__NOT_ADMITTING_DIVORCE_JSON, CcdCallbackRequest.class);
+            RESP_ACKNOWLEDGES_SERVICE__NOT_DEFENDING__NOT_ADMITTING_DIVORCE_JSON, CcdCallbackRequest.class);
         Map<String, Object> caseData = callbackRequest.getCaseDetails().getCaseData();
 
         Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(callbackRequest, AUTH_TOKEN);
@@ -183,27 +179,27 @@ public class AosSubmissionWorkflowTest {
     }
 
     @Test
-    public void testExceptionIsThrown_IfNotPossibleToAssert_WhetherDivorceWillBeDefended() throws IOException,
-            WorkflowException {
-        expectedException.expect(WorkflowException.class);
-        expectedException.expectMessage(String.format("%s field doesn't contain a valid value",
-            RESP_WILL_DEFEND_DIVORCE));
-
+    public void testExceptionIsThrown_IfNotPossibleToAssert_WhetherDivorceWillBeDefended() throws IOException {
         CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
-                UNCLEAR_ACKNOWLEDGEMENT_OF_SERVICE_JSON, CcdCallbackRequest.class);
-        Map<String, Object> incomingCaseDate = ccdCallbackRequest.getCaseDetails().getCaseData();
+            UNCLEAR_ACKNOWLEDGEMENT_OF_SERVICE_JSON, CcdCallbackRequest.class);
 
-        Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
+        WorkflowException workflowException = assertThrows(
+            WorkflowException.class,
+            () -> aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN)
+        );
 
-        assertThat(returnedPayloadFromWorkflow.size(), is(incomingCaseDate.size() + 1));
+        assertThat(
+            workflowException.getMessage(),
+            startsWith(String.format("%s field doesn't contain a valid value", RESP_WILL_DEFEND_DIVORCE))
+        );
     }
 
     @Test
     public void testSolicitorTaskIsCalledWhenWorkflowIsRun_whenSolicitorIsRepresenting()
-            throws WorkflowException, IOException, TaskException {
+        throws WorkflowException, IOException, TaskException {
 
         CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
-                AOS_SOLICITOR_NOMINATED_JSON, CcdCallbackRequest.class);
+            AOS_SOLICITOR_NOMINATED_JSON, CcdCallbackRequest.class);
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
 
         aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
@@ -213,9 +209,9 @@ public class AosSubmissionWorkflowTest {
 
     @Test
     public void testSolicitorTaskIsNotCalledWhenSolicitorIsNotRepresenting() throws IOException,
-            WorkflowException {
+        WorkflowException {
         CcdCallbackRequest callbackRequest = getJsonFromResourceFile(
-                RESP_ACKNOWLEDGES_SERVICE__NOT_DEFENDING_DIVORCE_JSON, CcdCallbackRequest.class);
+            RESP_ACKNOWLEDGES_SERVICE__NOT_DEFENDING_DIVORCE_JSON, CcdCallbackRequest.class);
 
         aosSubmissionWorkflow.run(callbackRequest, AUTH_TOKEN);
 
@@ -224,9 +220,9 @@ public class AosSubmissionWorkflowTest {
 
     @Test
     public void testSolicitorTaskIsCalled_whenSolicitorIsRepresentingIsEmpty_andRespSolValuesExist()
-            throws WorkflowException, IOException, TaskException {
+        throws WorkflowException, IOException, TaskException {
         CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
-                AOS_SOLICITOR_NOMINATED_WITHOUT_FIELDS_SET_JSON, CcdCallbackRequest.class);
+            AOS_SOLICITOR_NOMINATED_WITHOUT_FIELDS_SET_JSON, CcdCallbackRequest.class);
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
 
         aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
@@ -236,9 +232,9 @@ public class AosSubmissionWorkflowTest {
 
     @Test
     public void givenCaseNotDefended_whenRunWorkflow_thenEmailNotificationTaskCalled() throws WorkflowException {
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.ENGLISH)))
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.ENGLISH)))
             .thenReturn(TEST_RELATIONSHIP_HUSBAND);
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.WELSH)))
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.WELSH)))
             .thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(D_8_PETITIONER_FIRST_NAME, TestConstants.TEST_USER_FIRST_NAME);
@@ -286,9 +282,9 @@ public class AosSubmissionWorkflowTest {
 
     @Test
     public void givenCaseNoPetEmail_whenRunWorkflow_thenEmailNotificationTaskNotCalled() throws WorkflowException {
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.ENGLISH)))
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.ENGLISH)))
             .thenReturn(TEST_RELATIONSHIP_HUSBAND);
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.WELSH)))
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.WELSH)))
             .thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(D_8_PETITIONER_FIRST_NAME, TestConstants.TEST_USER_FIRST_NAME);
@@ -309,13 +305,13 @@ public class AosSubmissionWorkflowTest {
 
     @Test
     public void givenAdulteryCoRespNotRepliedRespUndefended_whenSendEmail_thenSendRespUndefendedCoRespNoReplyTemplate() throws Exception {
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.ENGLISH)))
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.ENGLISH)))
             .thenReturn(TEST_RELATIONSHIP_HUSBAND);
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.WELSH)))
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.WELSH)))
             .thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(D_8_PETITIONER_FIRST_NAME, TestConstants.TEST_USER_FIRST_NAME);
-        caseData.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME) ;
+        caseData.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME);
         caseData.put(D_8_PETITIONER_EMAIL, TestConstants.TEST_USER_EMAIL);
         caseData.put(D_8_CASE_REFERENCE, TestConstants.TEST_CASE_FAMILY_MAN_ID);
         caseData.put(D_8_INFERRED_RESPONDENT_GENDER, "male");
@@ -345,13 +341,13 @@ public class AosSubmissionWorkflowTest {
 
     @Test
     public void givenAdulteryCoRespNotRepliedRespNoAdmitUndefended_whenSendEmail_thenSendRespNoAdmitUndefendedCoRespNoReplyTemplate() throws Exception {
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.ENGLISH)))
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.ENGLISH)))
             .thenReturn(TEST_RELATIONSHIP_HUSBAND);
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.WELSH)))
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.WELSH)))
             .thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(D_8_PETITIONER_FIRST_NAME, TestConstants.TEST_USER_FIRST_NAME);
-        caseData.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME) ;
+        caseData.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME);
         caseData.put(D_8_PETITIONER_EMAIL, TestConstants.TEST_USER_EMAIL);
         caseData.put(D_8_CASE_REFERENCE, TestConstants.TEST_CASE_FAMILY_MAN_ID);
         caseData.put(D_8_INFERRED_RESPONDENT_GENDER, "male");
@@ -383,13 +379,13 @@ public class AosSubmissionWorkflowTest {
 
     @Test
     public void givenAdulteryRespNoAdmitUndefendedCoRespReplied_whenSendEmail_thenSendRespNoAdmitUndefendedTemplate() throws Exception {
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.ENGLISH)))
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.ENGLISH)))
             .thenReturn(TEST_RELATIONSHIP_HUSBAND);
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.WELSH)))
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.WELSH)))
             .thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(D_8_PETITIONER_FIRST_NAME, TestConstants.TEST_USER_FIRST_NAME);
-        caseData.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME) ;
+        caseData.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME);
         caseData.put(D_8_PETITIONER_EMAIL, TestConstants.TEST_USER_EMAIL);
         caseData.put(D_8_CASE_REFERENCE, TestConstants.TEST_CASE_FAMILY_MAN_ID);
         caseData.put(D_8_INFERRED_RESPONDENT_GENDER, "male");
@@ -418,13 +414,13 @@ public class AosSubmissionWorkflowTest {
 
     @Test
     public void givenSep2YrRespNoConsentUndefended_whenSendEmail_thenSendRespNoConsentUndefendedTemplate() throws Exception {
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.ENGLISH)))
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.ENGLISH)))
             .thenReturn(TEST_RELATIONSHIP_HUSBAND);
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.WELSH)))
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.WELSH)))
             .thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(D_8_PETITIONER_FIRST_NAME, TestConstants.TEST_USER_FIRST_NAME);
-        caseData.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME) ;
+        caseData.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME);
         caseData.put(D_8_PETITIONER_EMAIL, TestConstants.TEST_USER_EMAIL);
         caseData.put(D_8_CASE_REFERENCE, TestConstants.TEST_CASE_FAMILY_MAN_ID);
         caseData.put(D_8_INFERRED_RESPONDENT_GENDER, "male");
@@ -453,13 +449,13 @@ public class AosSubmissionWorkflowTest {
 
     @Test
     public void givenAdulteryCoRespRepliedRespUndefended_whenSendEmail_thenSendRespUndefendedTemplate() throws Exception {
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.ENGLISH)))
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.ENGLISH)))
             .thenReturn(TEST_RELATIONSHIP_HUSBAND);
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.WELSH)))
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.WELSH)))
             .thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(D_8_PETITIONER_FIRST_NAME, TestConstants.TEST_USER_FIRST_NAME);
-        caseData.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME) ;
+        caseData.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME);
         caseData.put(D_8_PETITIONER_EMAIL, TestConstants.TEST_USER_EMAIL);
         caseData.put(D_8_CASE_REFERENCE, TestConstants.TEST_CASE_FAMILY_MAN_ID);
         caseData.put(D_8_INFERRED_RESPONDENT_GENDER, "male");
@@ -490,7 +486,7 @@ public class AosSubmissionWorkflowTest {
     public void givenCaseSolicitor_whenRunWorkflow_thenSolEmailNotificationTaskCalled() throws WorkflowException {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(D_8_PETITIONER_FIRST_NAME, TestConstants.TEST_PETITIONER_FIRST_NAME);
-        caseData.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_PETITIONER_LAST_NAME) ;
+        caseData.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_PETITIONER_LAST_NAME);
         caseData.put(PETITIONER_SOLICITOR_EMAIL, TestConstants.TEST_USER_EMAIL);
         caseData.put(D_8_CASE_REFERENCE, TestConstants.TEST_CASE_FAMILY_MAN_ID);
         caseData.put(RESP_FIRST_NAME_CCD_FIELD, TestConstants.TEST_USER_FIRST_NAME);

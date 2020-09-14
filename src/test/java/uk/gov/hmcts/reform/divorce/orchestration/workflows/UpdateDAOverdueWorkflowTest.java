@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -13,7 +11,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SearchCasesDAOverdueTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateDAOverdueCase;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
@@ -28,9 +29,6 @@ public class UpdateDAOverdueWorkflowTest {
 
     private static final int EXPECTED_CASES_PROCESSED_COUNT = 10;
 
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-
     @Mock
     private SearchCasesDAOverdueTask searchCasesDAOverdueTask;
 
@@ -42,12 +40,14 @@ public class UpdateDAOverdueWorkflowTest {
 
     @Test
     public void execute_taskExceptionThrownInAnyTask_workflowExceptionThrown() throws TaskException, WorkflowException {
-
-        expectedException.expect(WorkflowException.class);
-        expectedException.expectMessage("a WorkflowException message");
-
         when(searchCasesDAOverdueTask.execute(any(), any())).thenThrow(new TaskException("a WorkflowException message"));
-        classUnderTest.run(AUTH_TOKEN);
+
+        WorkflowException exception = assertThrows(
+            WorkflowException.class,
+            () -> classUnderTest.run(AUTH_TOKEN)
+        );
+
+        assertThat(exception.getMessage(), is("a WorkflowException message"));
 
         verify(searchCasesDAOverdueTask, times(1)).execute(any(), any());
         verify(updateDAOverdueCase, times(0)).execute(any(), any());
