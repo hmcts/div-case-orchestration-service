@@ -2,9 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextraction;
 
 import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -23,9 +21,8 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.core.Is.is;
-import static org.junit.rules.ExpectedException.none;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.D8_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT;
@@ -43,9 +40,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @RunWith(MockitoJUnitRunner.class)
 public class DecreeNisiDataExtractorTest {
-
-    @Rule
-    public ExpectedException expectedException = none();
 
     @Mock
     private TaskCommons taskCommons;
@@ -93,9 +87,9 @@ public class DecreeNisiDataExtractorTest {
         Optional<String> secondTransformedCaseData = classUnderTest.mapCaseData(secondCaseDetails);
 
         assertThat(firstTransformedCaseData.get(), is("LV17D80101,15/12/2020,10/12/2020,15:30,"
-                + "Courts & Tribunals Service Centre,Yes,Respondent,Yes,No,Order,Judge name"));
+            + "Courts & Tribunals Service Centre,Yes,Respondent,Yes,No,Order,Judge name"));
         assertThat(secondTransformedCaseData.get(), is("Test2,15/12/2020,10/12/2020,15:30,"
-                + "Courts & Tribunals Service Centre,Yes,Respondent,Yes,No,Order,Judge name"));
+            + "Courts & Tribunals Service Centre,Yes,Respondent,Yes,No,Order,Judge name"));
     }
 
     @Test
@@ -107,7 +101,7 @@ public class DecreeNisiDataExtractorTest {
         Optional<String> transformedCaseData = classUnderTest.mapCaseData(caseDetails);
 
         assertThat(transformedCaseData.get(), is("LV17D80101,15/12/2020,10/12/2020,15:30,"
-                + "Courts & Tribunals Service Centre,Yes,,Yes,No,Order,Judge name"));
+            + "Courts & Tribunals Service Centre,Yes,,Yes,No,Order,Judge name"));
     }
 
     @Test
@@ -123,15 +117,17 @@ public class DecreeNisiDataExtractorTest {
 
     @Test
     public void shouldRethrowExceptionWithCaseId() throws TaskException {
-        expectedException.expectMessage("CSV extraction failed for case id testCaseId");
-        expectedException.expectCause(instanceOf(Throwable.class));
         Map<String, Object> caseData = getTestCaseData();
         caseData.put(DATETIME_OF_HEARING_CCD_FIELD, asList("not", "expected", "data"));
 
         CaseDetails caseDetails = CaseDetails.builder().caseId("testCaseId").caseData(caseData).build();
-        Optional<String> transformedCaseData = classUnderTest.mapCaseData(caseDetails);
 
-        assertThat(transformedCaseData, is(Optional.empty()));
+        Throwable throwable = assertThrows(
+            Throwable.class,
+            () -> classUnderTest.mapCaseData(caseDetails)
+        );
+
+        assertThat(throwable.getMessage(), is("CSV extraction failed for case id testCaseId"));
     }
 
     @Test
@@ -143,7 +139,7 @@ public class DecreeNisiDataExtractorTest {
         Optional<String> transformedCaseData = classUnderTest.mapCaseData(caseDetails);
 
         assertThat(transformedCaseData.get(), is("LV17D80101,15/12/2020,10/12/2020,15:30,"
-                + "Courts & Tribunals Service Centre,Yes,Respondent,No,No,Order,Judge name"));
+            + "Courts & Tribunals Service Centre,Yes,Respondent,No,No,Order,Judge name"));
 
     }
 
@@ -156,7 +152,7 @@ public class DecreeNisiDataExtractorTest {
         Optional<String> transformedCaseData = classUnderTest.mapCaseData(caseDetails);
 
         assertThat(transformedCaseData.get(), is("LV17D80101,15/12/2020,10/12/2020,15:30,invalid-court-name,"
-                + "Yes,Respondent,Yes,No,Order,Judge name"));
+            + "Yes,Respondent,Yes,No,Order,Judge name"));
     }
 
     private Map<String, Object> getTestCaseData() {

@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.job;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -14,16 +12,15 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.DecreeAbsoluteService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MakeCasesEligibleForDAJobTest {
-
-    private static final String TEST_AUTH_TOKEN = "testAuthToken";
-
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
 
     @Mock
     private DecreeAbsoluteService decreeAbsoluteServiceMock;
@@ -39,23 +36,25 @@ public class MakeCasesEligibleForDAJobTest {
 
     @Before
     public void setUp() {
-        when(authUtil.getCaseworkerToken()).thenReturn(TEST_AUTH_TOKEN);
+        when(authUtil.getCaseworkerToken()).thenReturn(AUTH_TOKEN);
     }
 
     @Test
     public void execute_updateToAwaitingDA_updateExecuted() throws JobExecutionException, WorkflowException {
         classToTest.execute(jobExecutionContextMock);
 
-        verify(decreeAbsoluteServiceMock).enableCaseEligibleForDecreeAbsolute(TEST_AUTH_TOKEN);
+        verify(decreeAbsoluteServiceMock).enableCaseEligibleForDecreeAbsolute(AUTH_TOKEN);
     }
 
     @Test
-    public void execute_updateToAwaitingDA_JobExceptionThrown() throws JobExecutionException, WorkflowException {
-        expectedException.expect(JobExecutionException.class);
-        expectedException.expectMessage("Enable cases eligible for DA service failed");
-        when(decreeAbsoluteServiceMock.enableCaseEligibleForDecreeAbsolute(TEST_AUTH_TOKEN)).thenThrow(WorkflowException.class);
+    public void execute_updateToAwaitingDA_JobExceptionThrown() throws WorkflowException {
+        when(decreeAbsoluteServiceMock.enableCaseEligibleForDecreeAbsolute(AUTH_TOKEN)).thenThrow(WorkflowException.class);
 
-        classToTest.execute(jobExecutionContextMock);
+        JobExecutionException jobExecutionException = assertThrows(
+            JobExecutionException.class,
+            () -> classToTest.execute(jobExecutionContextMock)
+        );
+
+        assertThat(jobExecutionException.getMessage(), is("Enable cases eligible for DA service failed"));
     }
-
 }

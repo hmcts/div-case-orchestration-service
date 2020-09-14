@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.event.listener;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -17,26 +15,24 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
 import java.time.LocalDate;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.rules.ExpectedException.none;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.StringStartsWith.startsWith;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest.Status.AOS;
 import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest.Status.DA;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DataExtractionRequestListenerTest {
 
-    private static final String TEST_AUTH_TOKEN = "testAuthToken";
     private static final Status TEST_IMPLEMENTED_STATUS = DA;
     private static final Status TEST_UNIMPLEMENTED_STATUS = AOS;
-
-    @Rule
-    public ExpectedException expectedException = none();
 
     @Mock
     private DataExtractionService mockService;
@@ -52,7 +48,7 @@ public class DataExtractionRequestListenerTest {
 
     @Before
     public void setUp() {
-        when(authUtil.getCaseworkerToken()).thenReturn(TEST_AUTH_TOKEN);
+        when(authUtil.getCaseworkerToken()).thenReturn(AUTH_TOKEN);
         when(csvExtractorFactory.hasCSVExtractorForStatus(TEST_IMPLEMENTED_STATUS)).thenReturn(true);
         when(csvExtractorFactory.hasCSVExtractorForStatus(TEST_UNIMPLEMENTED_STATUS)).thenReturn(false);
     }
@@ -61,7 +57,7 @@ public class DataExtractionRequestListenerTest {
     public void shouldCallServiceInterface_WhenStatusHasCSVExtractor() throws CaseOrchestrationServiceException {
         classUnderTest.onApplicationEvent(new DataExtractionRequest(this, TEST_IMPLEMENTED_STATUS, LocalDate.now()));
 
-        verify(mockService).extractCasesToFamilyMan(eq(TEST_IMPLEMENTED_STATUS), eq(LocalDate.now()), eq(TEST_AUTH_TOKEN));
+        verify(mockService).extractCasesToFamilyMan(eq(TEST_IMPLEMENTED_STATUS), eq(LocalDate.now()), eq(AUTH_TOKEN));
     }
 
     @Test
@@ -74,12 +70,14 @@ public class DataExtractionRequestListenerTest {
     @Test
     public void shouldRethrowExceptionIfServiceThrowsException() throws CaseOrchestrationServiceException {
         doThrow(CaseOrchestrationServiceException.class).when(mockService).extractCasesToFamilyMan(any(), any(), any());
+        DataExtractionRequest dataExtractionRequest = new DataExtractionRequest(
+            this, TEST_IMPLEMENTED_STATUS, LocalDate.now()
+        );
 
-        expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage("Error extracting data to Family man");
-        expectedException.expectCause(instanceOf(CaseOrchestrationServiceException.class));
-
-        classUnderTest.onApplicationEvent(new DataExtractionRequest(this, TEST_IMPLEMENTED_STATUS, LocalDate.now()));
+        RuntimeException runtimeException = assertThrows(
+            RuntimeException.class,
+            () -> classUnderTest.onApplicationEvent(dataExtractionRequest)
+        );
+        assertThat(runtimeException.getMessage(), startsWith("Error extracting data to Family man for status DA and date"));
     }
-
 }

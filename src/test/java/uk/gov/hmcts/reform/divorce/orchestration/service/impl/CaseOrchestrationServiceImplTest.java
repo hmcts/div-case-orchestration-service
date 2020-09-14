@@ -3,9 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 import com.google.common.collect.ImmutableMap;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -103,8 +101,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
-import static org.junit.rules.ExpectedException.none;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -155,9 +153,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Cour
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseOrchestrationServiceImplTest {
-
-    @Rule
-    public ExpectedException expectedException = none();
 
     @Mock
     private IssueEventWorkflow issueEventWorkflow;
@@ -953,14 +948,15 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void shouldThrowException_ForProcessingCaseLinkedBackEvent_WhenWorkflowExceptionIsCaught()
-        throws WorkflowException, CaseOrchestrationServiceException {
+        throws WorkflowException {
         when(caseLinkedForHearingWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()), eq(AUTH_TOKEN)))
             .thenThrow(new WorkflowException("This operation threw an exception."));
 
-        expectedException.expect(CaseOrchestrationServiceException.class);
-        expectedException.expectMessage(is("This operation threw an exception."));
-
-        classUnderTest.processCaseLinkedForHearingEvent(ccdCallbackRequest, AUTH_TOKEN);
+        CaseOrchestrationServiceException exception = assertThrows(
+            CaseOrchestrationServiceException.class,
+            () -> classUnderTest.processCaseLinkedForHearingEvent(ccdCallbackRequest, AUTH_TOKEN)
+        );
+        assertThat(exception.getMessage(), is("This operation threw an exception."));
     }
 
     @Test
@@ -1196,14 +1192,15 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void shouldThrowException_ForProcessingAosSolicitorNominated_WhenWorkflowExceptionIsCaught()
-        throws WorkflowException, CaseOrchestrationServiceException {
+        throws WorkflowException {
         when(respondentSolicitorNominatedWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN))
             .thenThrow(new WorkflowException("This operation threw an exception."));
 
-        expectedException.expect(CaseOrchestrationServiceException.class);
-        expectedException.expectMessage(is("This operation threw an exception."));
-
-        classUnderTest.processAosSolicitorNominated(ccdCallbackRequest, AUTH_TOKEN);
+        CaseOrchestrationServiceException exception = assertThrows(
+            CaseOrchestrationServiceException.class,
+            () -> classUnderTest.processAosSolicitorNominated(ccdCallbackRequest, AUTH_TOKEN)
+        );
+        assertThat(exception.getMessage(), is("This operation threw an exception."));
     }
 
     @Test
@@ -1320,15 +1317,15 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void shouldThrowException_ForProcessingAosSolicitorLinkCase_WhenWorkflowExceptionIsCaught()
-        throws WorkflowException, CaseOrchestrationServiceException {
-        String token = "token";
-        when(respondentSolicitorLinkCaseWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()), eq(token)))
+        throws WorkflowException {
+        when(respondentSolicitorLinkCaseWorkflow.run(eq(ccdCallbackRequest.getCaseDetails()), eq(AUTH_TOKEN)))
             .thenThrow(new WorkflowException("This operation threw an exception."));
 
-        expectedException.expect(CaseOrchestrationServiceException.class);
-        expectedException.expectMessage(is("This operation threw an exception."));
-
-        classUnderTest.processAosSolicitorLinkCase(ccdCallbackRequest, token);
+        CaseOrchestrationServiceException exception = assertThrows(
+            CaseOrchestrationServiceException.class,
+            () -> classUnderTest.processAosSolicitorLinkCase(ccdCallbackRequest, AUTH_TOKEN)
+        );
+        assertThat(exception.getMessage(), is("This operation threw an exception."));
     }
 
     @Test
@@ -1343,15 +1340,16 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void shouldThrowServiceException_ForDecreeNisiIsAboutToBeGranted_WhenWorkflowExceptionIsCaught()
-        throws WorkflowException, CaseOrchestrationServiceException {
+        throws WorkflowException {
         when(decreeNisiAboutToBeGrantedWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN))
             .thenThrow(new WorkflowException("This operation threw an exception."));
 
-        expectedException.expect(CaseOrchestrationServiceException.class);
-        expectedException.expectMessage(is("This operation threw an exception."));
-        expectedException.expectCause(is(instanceOf(WorkflowException.class)));
-
-        classUnderTest.processCaseBeforeDecreeNisiIsGranted(ccdCallbackRequest, AUTH_TOKEN);
+        CaseOrchestrationServiceException exception = assertThrows(
+            CaseOrchestrationServiceException.class,
+            () -> classUnderTest.processCaseBeforeDecreeNisiIsGranted(ccdCallbackRequest, AUTH_TOKEN)
+        );
+        assertThat(exception.getMessage(), is("This operation threw an exception."));
+        assertThat(exception.getCause(), is(instanceOf(WorkflowException.class)));
     }
 
     @Test
@@ -1368,14 +1366,11 @@ public class CaseOrchestrationServiceImplTest {
             CaseDetails.builder().caseData(caseData).build())
             .build();
 
-
         when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
             .thenReturn(DECREE_NISI_TEMPLATE_ID);
 
-
         when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.COSTS_ORDER_TEMPLATE_ID))
             .thenReturn(COSTS_ORDER_TEMPLATE_ID);
-
 
         when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN,
             DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME))
@@ -1429,13 +1424,15 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void testThatWhenWorkflowThrowsException_ForMakeCaseEligibleForDA_ErrorMessagesAreReturned()
-        throws WorkflowException, CaseOrchestrationServiceException {
+        throws WorkflowException {
+        when(makeCaseEligibleForDecreeAbsoluteWorkFlow.run(AUTH_TOKEN, TEST_CASE_ID))
+            .thenThrow(new WorkflowException("Something failed"));
 
-        when(makeCaseEligibleForDecreeAbsoluteWorkFlow.run("testToken", "testCaseId")).thenThrow(new WorkflowException("Something failed"));
-        expectedException.expect(CaseOrchestrationServiceException.class);
-        expectedException.expectMessage("Something failed");
-
-        classUnderTest.makeCaseEligibleForDA("testToken", "testCaseId");
+        CaseOrchestrationServiceException exception = assertThrows(
+            CaseOrchestrationServiceException.class,
+            () -> classUnderTest.makeCaseEligibleForDA(AUTH_TOKEN, TEST_CASE_ID)
+        );
+        assertThat(exception.getMessage(), is("Something failed"));
     }
 
     @Test
@@ -1451,14 +1448,15 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void shouldThrowNewException_IfExceptionIsThrown_WhenProcessingCaseToBeMadeEligibleForDAForPetitioner()
-        throws CaseOrchestrationServiceException, WorkflowException {
-
+        throws WorkflowException {
         WorkflowException testFailureCause = new WorkflowException("Not good...");
         when(applicantDecreeAbsoluteEligibilityWorkflow.run(any(), any())).thenThrow(testFailureCause);
-        expectedException.expect(CaseOrchestrationServiceException.class);
-        expectedException.expectCause(equalTo(testFailureCause));
 
-        classUnderTest.processApplicantDecreeAbsoluteEligibility(ccdCallbackRequest);
+        CaseOrchestrationServiceException exception = assertThrows(
+            CaseOrchestrationServiceException.class,
+            () -> classUnderTest.processApplicantDecreeAbsoluteEligibility(ccdCallbackRequest)
+        );
+        assertThat(exception.getCause(), is(equalTo(testFailureCause)));
     }
 
     @Test
@@ -1811,5 +1809,4 @@ public class CaseOrchestrationServiceImplTest {
         requestPayload = null;
         expectedPayload = null;
     }
-
 }
