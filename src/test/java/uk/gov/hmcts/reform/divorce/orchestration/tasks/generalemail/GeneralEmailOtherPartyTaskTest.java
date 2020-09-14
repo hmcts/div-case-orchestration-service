@@ -15,6 +15,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.Gener
 
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_GENERAL_EMAIL_DETAILS;
@@ -69,7 +71,7 @@ public class GeneralEmailOtherPartyTaskTest {
 
     private void executeTask(Map<String, Object> caseData) {
         Map<String, Object> returnPayload = task.execute(getTaskContext(), caseData);
-        assertEquals(caseData, returnPayload);
+        assertThat(caseData, is(returnPayload));
     }
 
     private void verifyEmailSent(TaskContext context, Map<String, Object> caseData) {

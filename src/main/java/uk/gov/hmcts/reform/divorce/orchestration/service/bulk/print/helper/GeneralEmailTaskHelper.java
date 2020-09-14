@@ -123,12 +123,12 @@ public class GeneralEmailTaskHelper {
         return templateVars;
     }
 
-    public static String getRepresentedSubject(TaskContext context, Map<String, Object> caseData) {
+    public static String getRepresentedSubject(TaskContext taskContext, Map<String, Object> caseData) {
         return format(
             "%s vs %s: Divorce case number %s",
             getPetitionerFullName(caseData),
             getRespondentFullName(caseData),
-            getCaseId(context)
+            getCaseId(taskContext)
         );
     }
 
