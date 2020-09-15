@@ -16,11 +16,12 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FULL_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.docmosis.DocmosisTemplateTestConstants.FORMATTED_TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.PETITIONERS_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.CTSC_CONTACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithToken;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.formatCaseIdToReferenceNumber;
 
 public class AosOverdueCoverLetterGenerationTaskTest extends BasePayloadSpecificDocumentGenerationTaskTest {
 
@@ -45,7 +46,7 @@ public class AosOverdueCoverLetterGenerationTaskTest extends BasePayloadSpecific
 
         verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
         final AosOverdueCoverLetter expectedDocmosisTemplateVars = AosOverdueCoverLetter.aosOverdueCoverLetterBuilder()
-            .caseReference(FORMATTED_TEST_CASE_ID)
+            .caseReference(formatCaseIdToReferenceNumber(TEST_CASE_ID))
             .addressee(Addressee.builder().name(TEST_PETITIONER_FULL_NAME).formattedAddress(PETITIONERS_ADDRESS).build())
             .ctscContactDetails(CTSC_CONTACT)
             .helpWithFeesNumber(TEST_HELP_WITH_FEES_NUMBER)
@@ -67,7 +68,7 @@ public class AosOverdueCoverLetterGenerationTaskTest extends BasePayloadSpecific
 
         verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
         final AosOverdueCoverLetter expectedDocmosisTemplateVars = AosOverdueCoverLetter.aosOverdueCoverLetterBuilder()
-            .caseReference(FORMATTED_TEST_CASE_ID)
+            .caseReference(formatCaseIdToReferenceNumber(TEST_CASE_ID))
             .addressee(Addressee.builder().name(TEST_PETITIONER_FULL_NAME).formattedAddress(PETITIONERS_ADDRESS).build())
             .ctscContactDetails(CTSC_CONTACT)
             .build();
