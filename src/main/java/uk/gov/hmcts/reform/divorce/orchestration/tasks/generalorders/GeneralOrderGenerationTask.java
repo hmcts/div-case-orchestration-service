@@ -35,7 +35,7 @@ public class GeneralOrderGenerationTask extends BasePayloadSpecificDocumentGener
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FileMetadata {
         public static final String TEMPLATE_ID = "FL-DIV-GOR-ENG-00572.docx";
-        public static final String DOCUMENT_TYPE = "GeneralOrder";
+        public static final String DOCUMENT_TYPE = "generalOrder";
     }
 
     private final JudgeTypesLookupService judgeTypesLookupService;

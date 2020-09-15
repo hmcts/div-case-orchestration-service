@@ -13,7 +13,7 @@ public class DeemedServiceRefusalOrderTask extends ServiceRefusalOrderGeneration
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FileMetadata {
         public static final String TEMPLATE_ID = "FL-DIV-GNO-ENG-00533.docx";
-        public static final String DOCUMENT_TYPE = "DeemedServiceRefused";
+        public static final String DOCUMENT_TYPE = "deemedServiceRefused";
     }
 
     public DeemedServiceRefusalOrderTask(

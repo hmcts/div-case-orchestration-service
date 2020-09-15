@@ -306,6 +306,7 @@ public class GeneralEmailTest extends IdamTestSupport {
             caseData.put(CO_RESPONDENT_SOLICITOR_NAME, TEST_CO_RESPONDENT_SOLICITOR_NAME);
             caseData.put(CO_RESPONDENT_SOLICITOR_EMAIL, TEST_CO_RESPONDENT_SOLICITOR_EMAIL);
             getPetitionerData(false);
+            getRespondentData(false);
         }
 
         return caseData;
