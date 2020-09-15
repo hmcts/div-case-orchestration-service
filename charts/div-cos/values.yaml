@@ -15,7 +15,6 @@ java:
         SERVICE_AUTH_MICROSERVICE : "divorce_frontend"
         MANAGEMENT_ENDPOINT_HEALTH_CACHE_TIMETOLIVE: "30000"
         SCHEDULER_RE_CREATE: true
-        SCHEDULER_ENABLED: true
         FEATURE_DN_REFUSAL: "true"
         FEATURE_RESP_SOLICITOR_DETAILS: true
         DIV_SCHEDULER_DB_HOST : "div-cos-{{ .Values.global.environment }}.postgres.database.azure.com"
