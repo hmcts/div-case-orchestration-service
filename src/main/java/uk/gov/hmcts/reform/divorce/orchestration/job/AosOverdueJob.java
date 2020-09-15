@@ -1,20 +1,22 @@
 package uk.gov.hmcts.reform.divorce.orchestration.job;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
-@RequiredArgsConstructor
 @Slf4j
 public class AosOverdueJob implements Job {
 
-    private final AosService aosService;
-    private final AuthUtil authUtil;
+    @Autowired
+    private AosService aosService;
+
+    @Autowired
+    private AuthUtil authUtil;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
