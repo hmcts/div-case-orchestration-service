@@ -1,20 +1,16 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.generalemail;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DocumentLink;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.IdamTestSupport;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper;
 
 import java.util.HashMap;
@@ -55,19 +51,25 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.G
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_EMAIL_PARTIES;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_GENERAL_EMAIL_SELECTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.OTHER_GENERAL_EMAIL_SELECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_GENERAL_EMAIL_SELECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_GENERAL_EMAIL_SELECTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.CaseDataKeys.CO_RESPONDENT_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.CaseDataKeys.OTHER_PARTY_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.CaseDataKeys.RESPONDENT_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.CaseDataKeys.RESPONDENT_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.CO_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.CO_RESPONDENT_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.CO_RESPONDENT_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.OTHER_PARTY_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.Party.CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.Party.CO_RESPONDENT_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.Party.OTHER;
@@ -94,17 +96,8 @@ public class GeneralEmailTest extends IdamTestSupport {
     @Autowired
     private MockMvc webClient;
 
-    @Autowired
-    private CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService;
-
     @MockBean
     private EmailClient emailClient;
-
-    @Before
-    public void setup() {
-        CtscContactDetails ctscContactDetails = ctscContactDetailsDataProviderService.getCtscContactDetails();
-        documentGeneratorServiceServer.resetAll();
-    }
 
     @Test
     public void shouldSendGeneralEmailWhen_toPetitioner() throws Exception {
@@ -140,7 +133,7 @@ public class GeneralEmailTest extends IdamTestSupport {
 
         verify(emailClient).sendEmail(
             eq(GENERAL_EMAIL_PETITIONER_SOLICITOR),
-            eq(TEST_PETITIONER_EMAIL),
+            eq(TEST_SOLICITOR_EMAIL),
             eq(getExpectedNotificationTemplateVars(PETITIONER_SOLICITOR, context(), caseData)),
             any()
         );
@@ -274,8 +267,9 @@ public class GeneralEmailTest extends IdamTestSupport {
         caseData.put(GENERAL_EMAIL_DETAILS, TEST_GENERAL_EMAIL_DETAILS);
 
         if (isRepresented) {
-            caseData.put(FullNamesDataExtractor.CaseDataKeys.PETITIONER_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
+            caseData.put(PETITIONER_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
             caseData.put(PETITIONER_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL);
+            getRespondentData(false);
         }
 
         return caseData;
@@ -290,8 +284,10 @@ public class GeneralEmailTest extends IdamTestSupport {
         caseData.put(GENERAL_EMAIL_DETAILS, TEST_GENERAL_EMAIL_DETAILS);
 
         if (isRepresented) {
-            caseData.put(FullNamesDataExtractor.CaseDataKeys.RESPONDENT_SOLICITOR_NAME, TEST_RESPONDENT_SOLICITOR_NAME);
+            caseData.put(RESP_SOL_REPRESENTED, YES_VALUE);
+            caseData.put(RESPONDENT_SOLICITOR_NAME, TEST_RESPONDENT_SOLICITOR_NAME);
             caseData.put(RESPONDENT_SOLICITOR_EMAIL, TEST_RESPONDENT_SOLICITOR_EMAIL);
+            getPetitionerData(false);
         }
 
         return caseData;
@@ -302,12 +298,14 @@ public class GeneralEmailTest extends IdamTestSupport {
         caseData.put(GENERAL_EMAIL_PARTIES, CO_RESPONDENT_GENERAL_EMAIL_SELECTION);
         caseData.put(CO_RESPONDENT_FIRST_NAME, TEST_CO_RESPONDENT_FIRST_NAME);
         caseData.put(CO_RESPONDENT_LAST_NAME, TEST_CO_RESPONDENT_LAST_NAME);
-        caseData.put(CO_RESPONDENT_EMAIL_ADDRESS, TEST_CO_RESPONDENT_LAST_NAME);
+        caseData.put(CO_RESPONDENT_EMAIL_ADDRESS, TEST_CO_RESPONDENT_EMAIL);
         caseData.put(GENERAL_EMAIL_DETAILS, TEST_GENERAL_EMAIL_DETAILS);
 
         if (isRepresented) {
-            caseData.put(FullNamesDataExtractor.CaseDataKeys.CO_RESPONDENT_SOLICITOR_NAME, TEST_CO_RESPONDENT_SOLICITOR_NAME);
+            caseData.put(CO_RESPONDENT_REPRESENTED, YES_VALUE);
+            caseData.put(CO_RESPONDENT_SOLICITOR_NAME, TEST_CO_RESPONDENT_SOLICITOR_NAME);
             caseData.put(CO_RESPONDENT_SOLICITOR_EMAIL, TEST_CO_RESPONDENT_SOLICITOR_EMAIL);
+            getPetitionerData(false);
         }
 
         return caseData;
@@ -319,6 +317,8 @@ public class GeneralEmailTest extends IdamTestSupport {
         caseData.put(OTHER_PARTY_NAME, TEST_OTHER_PARTY_NAME);
         caseData.put(OTHER_PARTY_EMAIL, TEST_OTHER_PARTY_EMAIL);
         caseData.put(GENERAL_EMAIL_DETAILS, TEST_GENERAL_EMAIL_DETAILS);
+        getPetitionerData(false);
+        getRespondentData(false);
 
         return caseData;
     }
