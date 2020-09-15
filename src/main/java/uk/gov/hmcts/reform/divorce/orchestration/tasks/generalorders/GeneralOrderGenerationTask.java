@@ -7,11 +7,14 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.GeneralOrder;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.docmosis.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
+import uk.gov.hmcts.reform.divorce.orchestration.exception.JudgeTypeNotFoundException;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralOrderDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.service.impl.JudgeTypesLookupService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BasePayloadSpecificDocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker;
@@ -32,14 +35,18 @@ public class GeneralOrderGenerationTask extends BasePayloadSpecificDocumentGener
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FileMetadata {
         public static final String TEMPLATE_ID = "FL-DIV-GOR-ENG-00572.docx";
-        public static final String DOCUMENT_TYPE = "GeneralOrder";
+        public static final String DOCUMENT_TYPE = "generalOrder";
     }
+
+    private final JudgeTypesLookupService judgeTypesLookupService;
 
     public GeneralOrderGenerationTask(
         CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
         PdfDocumentGenerationService pdfDocumentGenerationService,
-        CcdUtil ccdUtil) {
+        CcdUtil ccdUtil,
+        JudgeTypesLookupService judgeTypesLookupService) {
         super(ctscContactDetailsDataProviderService, pdfDocumentGenerationService, ccdUtil);
+        this.judgeTypesLookupService = judgeTypesLookupService;
     }
 
     @Override
@@ -68,7 +75,7 @@ public class GeneralOrderGenerationTask extends BasePayloadSpecificDocumentGener
             .hasCoRespondent(PartyRepresentationChecker.isCoRespondentLinkedToCase(caseData))
             .coRespondentFullName(FullNamesDataExtractor.getCoRespondentFullName(caseData))
             .judgeName(GeneralOrderDataExtractor.getJudgeName(caseData))
-            .judgeType(GeneralOrderDataExtractor.getJudgeType(caseData))
+            .judgeType(getJudgeType(caseData))
             .generalOrderRecitals(GeneralOrderDataExtractor.getGeneralOrderRecitals(caseData))
             .generalOrderDetails(GeneralOrderDataExtractor.getGeneralOrderDetails(caseData))
             .generalOrderDate(GeneralOrderDataExtractor.getGeneralOrderDate(caseData))
@@ -91,5 +98,13 @@ public class GeneralOrderGenerationTask extends BasePayloadSpecificDocumentGener
 
     private String getFormattedNow() {
         return DateUtils.formatDateFromLocalDate(LocalDate.now());
+    }
+
+    private String getJudgeType(Map<String, Object> caseData) {
+        try {
+            return judgeTypesLookupService.getJudgeTypeByCode(GeneralOrderDataExtractor.getJudgeType(caseData));
+        } catch (JudgeTypeNotFoundException e) {
+            throw new InvalidDataForTaskException(e);
+        }
     }
 }

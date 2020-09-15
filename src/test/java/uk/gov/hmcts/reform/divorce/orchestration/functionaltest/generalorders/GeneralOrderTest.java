@@ -9,10 +9,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.GeneralOrder;
+import uk.gov.hmcts.reform.divorce.orchestration.exception.JudgeTypeNotFoundException;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.IdamTestSupport;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralOrderDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.service.impl.JudgeTypesLookupService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.GeneralOrderGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker;
 import uk.gov.hmcts.reform.divorce.utils.DateUtils;
@@ -28,6 +30,7 @@ import static java.util.Collections.singletonMap;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.fail;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -61,7 +64,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.Abst
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.AbstractGeneralOrderGenerationTaskTest.TEST_GENERAL_ORDER_DETAILS;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.AbstractGeneralOrderGenerationTaskTest.TEST_GENERAL_ORDER_RECITALS;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.AbstractGeneralOrderGenerationTaskTest.TEST_JUDGE_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.AbstractGeneralOrderGenerationTaskTest.TEST_JUDGE_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.AbstractGeneralOrderGenerationTaskTest.TEST_JUDGE_TYPE_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class GeneralOrderTest extends IdamTestSupport {
@@ -73,6 +76,9 @@ public class GeneralOrderTest extends IdamTestSupport {
 
     @Autowired
     private CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService;
+
+    @Autowired
+    private JudgeTypesLookupService judgeTypesLookupService;
 
     @Before
     public void setup() {
@@ -119,7 +125,7 @@ public class GeneralOrderTest extends IdamTestSupport {
         caseData.put(CO_RESPONDENT_LAST_NAME, TEST_CO_RESPONDENT_LAST_NAME);
 
         caseData.put(CO_RESPONDENT_LINKED_TO_CASE, YES_VALUE);
-        caseData.put(JUDGE_TYPE, TEST_JUDGE_TYPE);
+        caseData.put(JUDGE_TYPE, TEST_JUDGE_TYPE_CODE);
         caseData.put(JUDGE_NAME, TEST_JUDGE_NAME);
         caseData.put(GENERAL_ORDER_DETAILS, TEST_GENERAL_ORDER_DETAILS);
         caseData.put(GENERAL_ORDER_DATE, TEST_GENERAL_ORDER_DATE);
@@ -156,11 +162,21 @@ public class GeneralOrderTest extends IdamTestSupport {
             .hasCoRespondent(PartyRepresentationChecker.isCoRespondentLinkedToCase(caseData))
             .coRespondentFullName(FullNamesDataExtractor.getCoRespondentFullName(caseData))
             .judgeName(GeneralOrderDataExtractor.getJudgeName(caseData))
-            .judgeType(GeneralOrderDataExtractor.getJudgeType(caseData))
+            .judgeType(getJudgeTypeByCode(caseData))
             .generalOrderRecitals(GeneralOrderDataExtractor.getGeneralOrderRecitals(caseData))
             .generalOrderDetails(GeneralOrderDataExtractor.getGeneralOrderDetails(caseData))
             .generalOrderDate(GeneralOrderDataExtractor.getGeneralOrderDate(caseData))
             .build();
+    }
+
+    private String getJudgeTypeByCode(Map<String, Object> caseData) {
+        try {
+            return judgeTypesLookupService.getJudgeTypeByCode(GeneralOrderDataExtractor.getJudgeType(caseData));
+        } catch (JudgeTypeNotFoundException e) {
+            fail(e.getMessage());
+        }
+
+        return null;
     }
 
     protected CcdCallbackRequest buildRequest(Map<String, Object> caseData) {

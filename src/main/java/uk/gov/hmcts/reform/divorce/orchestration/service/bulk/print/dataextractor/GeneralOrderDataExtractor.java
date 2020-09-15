@@ -6,8 +6,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 
 import java.util.Map;
 
-import static com.google.common.base.Strings.nullToEmpty;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -31,7 +31,7 @@ public class GeneralOrderDataExtractor {
     }
 
     public static String getGeneralOrderRecitals(Map<String, Object> caseData) {
-        return nullToEmpty((String) (caseData.get(CaseDataKeys.GENERAL_ORDER_RECITALS))).trim();
+        return getOptionalPropertyValueAsString(caseData, CaseDataKeys.GENERAL_ORDER_RECITALS, "").trim();
     }
 
     public static String getGeneralOrderDetails(Map<String, Object> caseData) {
