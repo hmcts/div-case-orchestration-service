@@ -57,13 +57,6 @@ public class EmailDataExtractorTest {
     }
 
     @Test
-    public void getPetitionerEmailOrEmptyShouldReturnEmptyWhenNull() {
-        Map<String, Object> caseData = buildCaseDataWithField(PETITIONER_EMAIL, null);
-
-        assertThat(getPetitionerEmailOrEmpty(caseData), is(""));
-    }
-
-    @Test
     public void getPetitionerEmailOrEmptyShouldReturnEmptyWhenEmpty() {
         Map<String, Object> caseData = buildCaseDataWithField(PETITIONER_EMAIL, "");
 
