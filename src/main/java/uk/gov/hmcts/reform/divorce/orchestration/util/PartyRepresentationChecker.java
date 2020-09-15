@@ -70,7 +70,7 @@ public class PartyRepresentationChecker {
             return party;
         }
 
-        return "Invalid data, no party accounted for.";
+        return null;
     }
 
     private static boolean isRepresented(Map<String, Object> caseData, String field) {

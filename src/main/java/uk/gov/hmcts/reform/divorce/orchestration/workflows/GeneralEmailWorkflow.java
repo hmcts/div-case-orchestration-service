@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalemail.GeneralEmailCoRespondentSolicitorTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalemail.GeneralEmailCoRespondentTask;
@@ -21,11 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ListElements.CO_RESPONDENT_GENERAL_EMAIL_SELECTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ListElements.OTHER_GENERAL_EMAIL_SELECTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ListElements.PETITIONER_GENERAL_EMAIL_SELECTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ListElements.RESPONDENT_GENERAL_EMAIL_SELECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_GENERAL_EMAIL_SELECTION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.OTHER_GENERAL_EMAIL_SELECTION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_GENERAL_EMAIL_SELECTION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_GENERAL_EMAIL_SELECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.getGeneralEmailParties;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentDigital;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentRepresented;
@@ -93,8 +94,8 @@ public class GeneralEmailWorkflow extends DefaultWorkflow<Map<String, Object>> {
                 tasks.add(getGeneralEmailOtherPartyTask(caseId));
             }
         } else {
-            log.info("CaseID: {} GeneralEmailWorkflow workflow has received invalid general email parties data.", caseId);
-            throw new IllegalArgumentException("CaseData could not be build with invalid Party declaration.");
+            log.error("CaseID: {} GeneralEmailWorkflow workflow has received invalid general email parties data.", caseId);
+            throw new TaskException("CaseData could not be build with invalid Party declaration.");
         }
 
         return tasks.toArray(new Task[]{});
