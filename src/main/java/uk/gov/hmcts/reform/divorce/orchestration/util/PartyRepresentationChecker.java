@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.CO_RESPONDENT_LINKED_TO_CASE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_EMAIL_PARTIES;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
@@ -60,6 +61,16 @@ public class PartyRepresentationChecker {
         String otherPartyName = (String) caseData.get(OTHER_PARTY_NAME);
 
         return (!Strings.isNullOrEmpty(otherPartyEmail) && !Strings.isNullOrEmpty(otherPartyName));
+    }
+
+    public static String getGeneralEmailParties(Map<String, Object> caseData) {
+        String party = (String) caseData.get(GENERAL_EMAIL_PARTIES);
+
+        if (!Strings.isNullOrEmpty(party)) {
+            return party;
+        }
+
+        return "Invalid data, no party accounted for.";
     }
 
     private static boolean isRepresented(Map<String, Object> caseData, String field) {

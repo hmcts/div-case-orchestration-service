@@ -65,7 +65,6 @@ public class GeneralEmailRespondentTaskTest {
         caseData.put(RESPONDENT_EMAIL, TEST_RESPONDENT_EMAIL);
         caseData.put(GENERAL_EMAIL_DETAILS, TEST_GENERAL_EMAIL_DETAILS);
 
-
         return caseData;
     }
 

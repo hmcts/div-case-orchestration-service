@@ -16,7 +16,7 @@ import static java.util.Collections.singletonMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -47,12 +47,10 @@ public class GeneralEmailServiceImplTest {
     public void shouldCatchWorkflowException_whenGeneralEmailIsCreated() throws WorkflowException {
         when(generalEmailWorkflow.run(any())).thenThrow(WorkflowException.class);
 
-        try {
-            classUnderTest.createGeneralEmail(CaseDetails.builder().caseId(TEST_CASE_ID).build());
-            fail();
-        } catch (CaseOrchestrationServiceException exception) {
-            assertThat(exception.getCaseId().isPresent(), is(true));
-            assertThat(exception.getCaseId().get(), is(TEST_CASE_ID));
-        }
+        CaseOrchestrationServiceException exception = assertThrows(CaseOrchestrationServiceException.class,
+            () -> classUnderTest.createGeneralEmail(CaseDetails.builder().caseId(TEST_CASE_ID).build())
+        );
+
+        assertThat(exception.getCaseId().orElse("Case id should be populated"), is(TEST_CASE_ID));
     }
 }
