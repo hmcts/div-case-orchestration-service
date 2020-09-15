@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DocumentLink;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.IdamTestSupport;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper;
 
@@ -104,12 +103,7 @@ public class GeneralEmailTest extends IdamTestSupport {
         Map<String, Object> caseData = buildInputCaseData(PETITIONER);
         CcdCallbackRequest ccdCallbackRequest = buildRequest(caseData);
 
-        webClient.perform(post(API_URL)
-            .contentType(MediaType.APPLICATION_JSON)
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(ccdCallbackRequest)))
-            .andExpect(status().isOk())
-            .andExpect(content().string(allOf(isJson(), hasNoJsonPath("$.errors"))));
+        setupWebClient(ccdCallbackRequest);
 
         verify(emailClient).sendEmail(
             eq(GENERAL_EMAIL_PETITIONER),
@@ -124,12 +118,7 @@ public class GeneralEmailTest extends IdamTestSupport {
         Map<String, Object> caseData = buildInputCaseData(PETITIONER_SOLICITOR);
         CcdCallbackRequest ccdCallbackRequest = buildRequest(caseData);
 
-        webClient.perform(post(API_URL)
-            .contentType(MediaType.APPLICATION_JSON)
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(ccdCallbackRequest)))
-            .andExpect(status().isOk())
-            .andExpect(content().string(allOf(isJson(), hasNoJsonPath("$.errors"))));
+        setupWebClient(ccdCallbackRequest);
 
         verify(emailClient).sendEmail(
             eq(GENERAL_EMAIL_PETITIONER_SOLICITOR),
@@ -144,12 +133,7 @@ public class GeneralEmailTest extends IdamTestSupport {
         Map<String, Object> caseData = buildInputCaseData(RESPONDENT);
         CcdCallbackRequest ccdCallbackRequest = buildRequest(caseData);
 
-        webClient.perform(post(API_URL)
-            .contentType(MediaType.APPLICATION_JSON)
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(ccdCallbackRequest)))
-            .andExpect(status().isOk())
-            .andExpect(content().string(allOf(isJson(), hasNoJsonPath("$.errors"))));
+        setupWebClient(ccdCallbackRequest);
 
         verify(emailClient).sendEmail(
             eq(GENERAL_EMAIL_RESPONDENT),
@@ -164,12 +148,7 @@ public class GeneralEmailTest extends IdamTestSupport {
         Map<String, Object> caseData = buildInputCaseData(RESPONDENT_SOLICITOR);
         CcdCallbackRequest ccdCallbackRequest = buildRequest(caseData);
 
-        webClient.perform(post(API_URL)
-            .contentType(MediaType.APPLICATION_JSON)
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(ccdCallbackRequest)))
-            .andExpect(status().isOk())
-            .andExpect(content().string(allOf(isJson(), hasNoJsonPath("$.errors"))));
+        setupWebClient(ccdCallbackRequest);
 
         verify(emailClient).sendEmail(
             eq(GENERAL_EMAIL_RESPONDENT_SOLICITOR),
@@ -184,12 +163,7 @@ public class GeneralEmailTest extends IdamTestSupport {
         Map<String, Object> caseData = buildInputCaseData(CO_RESPONDENT);
         CcdCallbackRequest ccdCallbackRequest = buildRequest(caseData);
 
-        webClient.perform(post(API_URL)
-            .contentType(MediaType.APPLICATION_JSON)
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(ccdCallbackRequest)))
-            .andExpect(status().isOk())
-            .andExpect(content().string(allOf(isJson(), hasNoJsonPath("$.errors"))));
+        setupWebClient(ccdCallbackRequest);
 
         verify(emailClient).sendEmail(
             eq(GENERAL_EMAIL_CO_RESPONDENT),
@@ -204,12 +178,7 @@ public class GeneralEmailTest extends IdamTestSupport {
         Map<String, Object> caseData = buildInputCaseData(CO_RESPONDENT_SOLICITOR);
         CcdCallbackRequest ccdCallbackRequest = buildRequest(caseData);
 
-        webClient.perform(post(API_URL)
-            .contentType(MediaType.APPLICATION_JSON)
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(ccdCallbackRequest)))
-            .andExpect(status().isOk())
-            .andExpect(content().string(allOf(isJson(), hasNoJsonPath("$.errors"))));
+        setupWebClient(ccdCallbackRequest);
 
         verify(emailClient).sendEmail(
             eq(GENERAL_EMAIL_CO_RESPONDENT_SOLICITOR),
@@ -224,12 +193,7 @@ public class GeneralEmailTest extends IdamTestSupport {
         Map<String, Object> caseData = buildInputCaseData(OTHER);
         CcdCallbackRequest ccdCallbackRequest = buildRequest(caseData);
 
-        webClient.perform(post(API_URL)
-            .contentType(MediaType.APPLICATION_JSON)
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(ccdCallbackRequest)))
-            .andExpect(status().isOk())
-            .andExpect(content().string(allOf(isJson(), hasNoJsonPath("$.errors"))));
+        setupWebClient(ccdCallbackRequest);
 
         verify(emailClient).sendEmail(
             eq(GENERAL_EMAIL_OTHER_PARTY),
@@ -237,6 +201,15 @@ public class GeneralEmailTest extends IdamTestSupport {
             eq(getExpectedNotificationTemplateVars(OTHER, context(), caseData)),
             any()
         );
+    }
+
+    private void setupWebClient(CcdCallbackRequest ccdCallbackRequest) throws Exception {
+        webClient.perform(post(API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(ccdCallbackRequest)))
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(isJson(), hasNoJsonPath("$.errors"))));
     }
 
     public static Map<String, Object> buildInputCaseData(GeneralEmailTaskHelper.Party party) {
@@ -334,14 +307,5 @@ public class GeneralEmailTest extends IdamTestSupport {
                 .caseId(TEST_CASE_ID)
                 .build()
         );
-    }
-
-    public static DocumentLink generateDocumentLink(String templateFile) {
-        DocumentLink documentLink = new DocumentLink();
-        documentLink.setDocumentUrl("test.url");
-        documentLink.setDocumentFilename(templateFile);
-        documentLink.setDocumentBinaryUrl("binary_url");
-
-        return documentLink;
     }
 }
