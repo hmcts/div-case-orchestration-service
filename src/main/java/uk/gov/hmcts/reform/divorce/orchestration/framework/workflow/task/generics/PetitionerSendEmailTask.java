@@ -2,11 +2,11 @@ package uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generi
 
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.getPetitionerEmail;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.getPetitionerEmail;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ServiceJourneyEmailTaskHelper.citizenTemplateVariables;
 
 public abstract class PetitionerSendEmailTask extends SendEmailTask {
@@ -30,6 +30,6 @@ public abstract class PetitionerSendEmailTask extends SendEmailTask {
     }
 
     private boolean isPetitionerEmailPopulated(Map<String, Object> caseData) {
-        return !CaseDataExtractor.getPetitionerEmailOrEmpty(caseData).isEmpty();
+        return !EmailDataExtractor.getPetitionerEmailOrEmpty(caseData).isEmpty();
     }
 }
