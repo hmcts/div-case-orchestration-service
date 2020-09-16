@@ -13,7 +13,6 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceRefusalOrderDraftTaskTest.getDocumentLink;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithToken;
@@ -33,7 +32,7 @@ public class GeneralOrderFieldsRemovalTaskTest {
         Map<String, Object> returnedPayload = classUnderTest.execute(contextWithToken(), caseData);
 
         assertThat(returnedPayload, hasKey("incomingKey"));
-        assertThat(returnedPayload.size(), is(1   ));
+        assertThat(returnedPayload.size(), is(1));
         assertThat(returnedPayload, not(hasKey(classUnderTest.getFieldsToRemove())));
     }
 
