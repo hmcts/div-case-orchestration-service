@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.courtallocation;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -14,12 +12,13 @@ import static java.math.BigDecimal.ZERO;
 import static java.math.RoundingMode.DOWN;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
-import static org.junit.rules.ExpectedException.none;
+import static org.junit.Assert.assertThrows;
 
 public class GenericCourtWeightedDistributorTest {
 
@@ -28,9 +27,6 @@ public class GenericCourtWeightedDistributorTest {
 
     private Map<String, BigDecimal> desiredWorkloadPerCourt;
     private Map<String, BigDecimal> divorceRatioPerFact;
-
-    @Rule
-    public ExpectedException expectedException = none();
 
     @Before
     public void setUp() {
@@ -116,10 +112,13 @@ public class GenericCourtWeightedDistributorTest {
 
     @Test
     public void shouldThrowExceptionIfDesiredCourtAllocationIsLessThanFull() {
-        expectedException.expect(CourtAllocatorException.class);
-        expectedException.expectMessage("Desired workloads per court need to amount to 100%.");
+        Map<String, BigDecimal> desiredWorkloadPerCourt = singletonMap("court1", new BigDecimal("0.5"));
+        Map<String, BigDecimal> divorceRatioPerFact = emptyMap();
+        Map<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact = emptyMap();
 
-        new GenericCourtWeightedDistributor(singletonMap("court1", new BigDecimal("0.5")), emptyMap(), emptyMap());
+        CourtAllocatorException exception = assertThrows(CourtAllocatorException.class,
+            () -> new GenericCourtWeightedDistributor(desiredWorkloadPerCourt, divorceRatioPerFact, specificCourtsAllocationPerFact));
+        assertThat(exception.getMessage(), is("Desired workloads per court need to amount to 100%."));
     }
 
 }

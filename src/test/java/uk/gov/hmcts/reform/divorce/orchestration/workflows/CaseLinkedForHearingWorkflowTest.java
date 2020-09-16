@@ -34,8 +34,8 @@ import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
@@ -102,7 +102,7 @@ public class CaseLinkedForHearingWorkflowTest {
     @Captor
     private ArgumentCaptor<TaskContext> contextCaptor;
 
-    private Map<String, Object> payload = new HashMap<>(ImmutableMap.of("testKey", "testValue"));
+    private final Map<String, Object> payload = new HashMap<>(ImmutableMap.of("testKey", "testValue"));
 
     @Before
     public void setUp() throws TaskException {

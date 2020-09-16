@@ -1,8 +1,11 @@
 package uk.gov.hmcts.reform.divorce.orchestration;
 
 import com.google.common.collect.ImmutableMap;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 
 import java.util.Map;
+
+import static java.util.Collections.singletonMap;
 
 public class TestConstants {
     public static final String TEST_BULK_CASE_ID = "test.bulk.case.id";
@@ -59,6 +62,7 @@ public class TestConstants {
     public static final String TEST_INFERRED_MALE_GENDER = "male";
     public static final String TEST_RESPONDENT_EMAIL = "testRespondent@email.com";
     public static final String TEST_RESPONDENT_SOLICITOR_EMAIL = "testRespondentSolicitor@example.com";
+    public static final String TEST_RESPONDENT_SOLICITOR_NAME = "Saul Goodman";
     public static final String TEST_REASON_ADULTERY = "adultery";
     public static final String TEST_REASON_2_YEAR_SEP = "separation-2-years";
     public static final String TEST_REASON_UNREASONABLE_BEHAVIOUR = "unreasonable-behaviour";
@@ -90,6 +94,10 @@ public class TestConstants {
     public static final String TEST_D8_CASE_REFERENCE = "LV17D80102";
     public static final String TEST_CO_RESPONDENT_SOLICITOR_NAME = "CoResp Solicitor";
     public static final String TEST_CO_RESPONDENT_SOLICITOR_ADDRESS = "789 CoRespondent Solicitor Str\nCoRespondent\nCounty\nRE5 P0N";
+    public static final String TEST_CO_RESPONDENT_SOLICITOR_EMAIL = "corespondentsolicitor@email.com";
+    public static final String TEST_CO_RESPONDENT_EMAIL = "corespondent@email.com";
+    public static final String TEST_OTHER_PARTY_EMAIL = "OtherPartyEmail@address.com";
+    public static final String TEST_OTHER_PARTY_NAME = "Otto Martie";
 
     public static final String TEST_PETITIONER_FIRST_NAME = "Clark";
     public static final String TEST_PETITIONER_LAST_NAME = "Kent";
@@ -100,5 +108,12 @@ public class TestConstants {
     public static final String TEST_CO_RESPONDENT_FIRST_NAME = "Bruce";
     public static final String TEST_CO_RESPONDENT_LAST_NAME = "Wayne";
     public static final String TEST_CO_RESPONDENT_FULL_NAME = TEST_CO_RESPONDENT_FIRST_NAME + " " + TEST_CO_RESPONDENT_LAST_NAME;
+
+
+    public static final String TEST_GENERAL_EMAIL_DETAILS = "Leverage agile frameworks to provide a robust synopsis for high level overviews.";
+
+    public static final Map<String, Object> TEST_INCOMING_PAYLOAD = singletonMap("incomingKey", "incomingValue");
+    public static final CaseDetails TEST_INCOMING_CASE_DETAILS = CaseDetails.builder().caseData(TEST_INCOMING_PAYLOAD).build();
+    public static final Map<String, Object> TEST_PAYLOAD_TO_RETURN = singletonMap("returnedKey", "returnedValue");
 
 }

@@ -2,7 +2,7 @@ import org.springframework.boot.gradle.tasks.run.BootRun
 
 buildscript {
     ext {
-        springBootVersion = '2.1.14.RELEASE'
+        springBootVersion = '2.3.3.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -21,26 +21,26 @@ plugins {
     id 'info.solidsoft.pitest' version '1.5.1'
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id 'jacoco'
-    id 'org.flywaydb.flyway' version '5.2.4'
+    id 'org.flywaydb.flyway' version '6.5.5'
     id 'org.owasp.dependencycheck' version '5.3.2.1'
     id 'org.sonarqube' version '3.0'
-    id 'org.springframework.boot' version '2.1.14.RELEASE'
+    id 'org.springframework.boot' version '2.3.3.RELEASE'
 }
 
 def versions = [
         awaitility                   : '4.0.2',
         bcpkixJdk15on                : '1.64',
-        bspCommonLib                 : '0.0.43',
-        ccdStoreClient               : '4.6.4',
+        bspCommonLib                 : '0.0.46',
+        ccdStoreClient               : '4.7.3',
         commonsBeanUtils             : '1.9.4',
         commonsIo                    : '2.6',
         commonsLang3                 : '3.9',
         commonsMath3                 : '3.6.1',
-        divCommonLib                 : '1.1.23',
+        divCommonLib                 : '1.1.26',
         dumbster                     : '1.7.1',
-        elasticsearch                : '7.7.0',
+        elasticsearch                : '7.9.0',
         feignHttpClient              : '10.3.0',
-        flyway                       : '5.2.4',
+        flyway                       : '6.5.5',
         gradlePitest                 : '1.4.6',
         guava                        : '28.2-jre',
         hibernateTypes               : '2.4.4',
@@ -57,7 +57,6 @@ def versions = [
         pitest                       : '1.4.10',
         postgresql                   : '42.2.13',
         puppyCrawl                   : '8.29',
-        quartz                       : '2.3.2',
         reformHealth                 : '0.0.5',
         reformPropertiesVolume       : '0.0.4',
         reformsJavaLogging           : '5.1.1',
@@ -77,7 +76,7 @@ def versions = [
 
 allprojects {
 
-    def springBootVersion = '2.1.14.RELEASE'
+    def springBootVersion = '2.3.3.RELEASE'
 
     apply plugin: 'checkstyle'
     apply plugin: 'com.github.ben-manes.versions'
@@ -144,7 +143,7 @@ allprojects {
             }
 
             // solves CVE-2014-3488, CVE-2015-2156, CVE-2019-16869
-            dependencySet(group: 'io.netty', version: '4.1.49.Final') {
+            dependencySet(group: 'io.netty', version: '4.1.52.Final') {
                 entry 'netty-buffer'
                 entry 'netty-codec'
                 entry 'netty-codec-http'
@@ -311,10 +310,6 @@ dependencies {
         force = true
     }
 
-    implementation(group: 'org.quartz-scheduler', name: 'quartz', version: versions.quartz) {
-        force = true
-    }
-
     runtimeOnly('org.springframework.boot:spring-boot-devtools')
 
     testImplementation group: 'org.awaitility', name: 'awaitility', version: versions.awaitility
@@ -477,6 +472,7 @@ flyway {
     password = System.getenv('DIV_SCHEDULER_DB_PASSWORD')
     baselineOnMigrate = true
     baselineVersion = '000'
+    schemas = 'public'
 }
 
 task migratePostgresDatabase(type: org.flywaydb.gradle.task.FlywayMigrateTask) {

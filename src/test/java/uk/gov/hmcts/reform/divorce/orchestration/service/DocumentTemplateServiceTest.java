@@ -1,9 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service;
 
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +14,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference
 import java.util.Map;
 
 import static java.util.Collections.singletonMap;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
@@ -26,24 +27,22 @@ public class DocumentTemplateServiceTest {
     @Autowired
     private DocumentTemplateService service;
 
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
-
     @Test
-    public void verifIllegalArgument() {
-        expectedException.expect(IllegalArgumentException.class);
-        expectedException.expectMessage(org.hamcrest.CoreMatchers.equalTo("No template found for languagePreference "
-                + "english and template name divorceMiniPetition"));
-
+    public void verifyIllegalArgument() {
         DocumentTemplates documentTemplates = Mockito.mock(DocumentTemplates.class);
         DocumentTemplateService service = new DocumentTemplateService(documentTemplates);
 
         Map<LanguagePreference, Map<String, String>> templates = singletonMap(LanguagePreference.ENGLISH,
-                singletonMap("decreeNisiTemplateId", "FL-DIV-GNO-ENG-00021.docx"));
+            singletonMap("decreeNisiTemplateId", "FL-DIV-GNO-ENG-00021.docx"));
 
         when(documentTemplates.getTemplates()).thenReturn(templates);
 
-        service.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DIVORCE_MINI_PETITION);
+        IllegalArgumentException illegalArgumentException = assertThrows(
+            IllegalArgumentException.class,
+            () -> service.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DIVORCE_MINI_PETITION)
+        );
+        assertThat(illegalArgumentException.getMessage(), is("No template found for languagePreference "
+            + "english and template name divorceMiniPetition"));
     }
 
     @Test
@@ -100,11 +99,11 @@ public class DocumentTemplateServiceTest {
         assertEquals("FL-DIV-APP-ENG-00081.docx", templateId);
 
         templateId = service.getTemplateId(LanguagePreference.ENGLISH,
-                DocumentType.AOS_OFFLINE_UNREASONABLE_BEHAVIOUR_AND_DESERTION_TEMPLATE_ID);
+            DocumentType.AOS_OFFLINE_UNREASONABLE_BEHAVIOUR_AND_DESERTION_TEMPLATE_ID);
         assertEquals("FL-DIV-APP-ENG-00082.docx", templateId);
 
         templateId = service.getTemplateId(LanguagePreference.ENGLISH,
-                DocumentType.AOS_OFFLINE_ADULTERY_RESPONDENT_TEMPLATE_ID);
+            DocumentType.AOS_OFFLINE_ADULTERY_RESPONDENT_TEMPLATE_ID);
         assertEquals("FL-DIV-APP-ENG-00083.docx", templateId);
 
         templateId = service.getTemplateId(LanguagePreference.ENGLISH, DocumentType.AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID);
@@ -171,7 +170,7 @@ public class DocumentTemplateServiceTest {
         assertEquals("FL-DIV-APP-WEL-00247.docx", templateId);
 
         templateId = service.getTemplateId(LanguagePreference.WELSH,
-                DocumentType.AOS_OFFLINE_UNREASONABLE_BEHAVIOUR_AND_DESERTION_TEMPLATE_ID);
+            DocumentType.AOS_OFFLINE_UNREASONABLE_BEHAVIOUR_AND_DESERTION_TEMPLATE_ID);
         assertEquals("FL-DIV-APP-WEL-00248.docx", templateId);
 
         templateId = service.getTemplateId(LanguagePreference.WELSH, DocumentType.AOS_OFFLINE_ADULTERY_RESPONDENT_TEMPLATE_ID);

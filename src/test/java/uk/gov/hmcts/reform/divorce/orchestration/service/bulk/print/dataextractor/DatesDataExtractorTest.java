@@ -14,8 +14,9 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.EMPTY_MAP;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATE_OF_HEARING_CCD_FIELD;
@@ -23,6 +24,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.COSTS_CLAIM_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor.CaseDataKeys.DA_GRANTED_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor.CaseDataKeys.RECEIVED_SERVICE_APPLICATION_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor.CaseDataKeys.SERVICE_APPLICATION_DECISION_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor.getDeadlineToContactCourtBy;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor.getHearingDate;
 
@@ -38,6 +41,33 @@ public class DatesDataExtractorTest {
     public void getDaGrantedDateReturnsValidValueWhenItExists() {
         Map<String, Object> caseData = buildCaseDataWithField(DA_GRANTED_DATE, VALID_DATE_FROM_CCD);
         assertThat(DatesDataExtractor.getDaGrantedDate(caseData), is(EXPECTED_DATE));
+    }
+
+    @Test(expected = InvalidDataForTaskException.class)
+    public void getDaGrantedDateThrowsInvalidDataForTaskExceptionWhenNoFieldFound() {
+        assertThat(DatesDataExtractor.getDaGrantedDate(EMPTY_MAP), is(EXPECTED_DATE));
+    }
+
+    @Test
+    public void getReceivedServiceApplicationDateReturnsValidValueWhenItExists() {
+        Map<String, Object> caseData = buildCaseDataWithField(RECEIVED_SERVICE_APPLICATION_DATE, VALID_DATE_FROM_CCD);
+        assertThat(DatesDataExtractor.getReceivedServiceApplicationDate(caseData), is(EXPECTED_DATE));
+    }
+
+    @Test(expected = InvalidDataForTaskException.class)
+    public void getReceivedServiceApplicationDateThrowsInvalidDataForTaskExceptionWhenNoFieldFound() {
+        assertThat(DatesDataExtractor.getDaGrantedDate(EMPTY_MAP), is(EXPECTED_DATE));
+    }
+
+    @Test
+    public void getServiceApplicationDecisionDateReturnsValidValueWhenItExists() {
+        Map<String, Object> caseData = buildCaseDataWithField(SERVICE_APPLICATION_DECISION_DATE, VALID_DATE_FROM_CCD);
+        assertThat(DatesDataExtractor.getServiceApplicationDecisionDate(caseData), is(EXPECTED_DATE));
+    }
+
+    @Test(expected = InvalidDataForTaskException.class)
+    public void getServiceApplicationDecisionDateThrowsInvalidDataForTaskExceptionWhenNoFieldFound() {
+        assertThat(DatesDataExtractor.getReceivedServiceApplicationDate(EMPTY_MAP), is(EXPECTED_DATE));
     }
 
     @Test

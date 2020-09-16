@@ -1,14 +1,16 @@
 package uk.gov.hmcts.reform.divorce.orchestration.util;
 
 import org.junit.Test;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.EMPTY_MAP;
 import static java.util.Collections.emptyMap;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
@@ -21,6 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentDigital;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentLiableForCosts;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentLinkedToCase;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentRepresented;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerRepresented;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentDigital;
@@ -53,6 +56,25 @@ public class PartyRepresentationCheckerTest {
         assertThat(isRespondentRepresented(createCaseData("another-field-1", YES_VALUE)), is(false));
         assertThat(isRespondentRepresented(createCaseData("another-field-2", NO_VALUE)), is(false));
         assertThat(isRespondentRepresented(EMPTY_MAP), is(false));
+    }
+
+    @Test
+    public void isCoRespondentLinkedToCaseReturnsTrue() {
+        assertThat(
+            isCoRespondentLinkedToCase(createCaseData(CcdFields.CO_RESPONDENT_LINKED_TO_CASE, YES_VALUE)),
+            is(true)
+        );
+    }
+
+    @Test
+    public void isCoRespondentLinkedToCaseReturnsFalse() {
+        asList(
+            createCaseData(CcdFields.CO_RESPONDENT_LINKED_TO_CASE, NO_VALUE),
+            createCaseData(CcdFields.CO_RESPONDENT_LINKED_TO_CASE, ""),
+            createCaseData(CcdFields.CO_RESPONDENT_LINKED_TO_CASE, "asfqwrqefaf"),
+            createCaseData("otherField", NO_VALUE),
+            EMPTY_MAP
+        ).forEach(caseData -> assertThat(isCoRespondentLinkedToCase(caseData), is(false)));
     }
 
     @Test

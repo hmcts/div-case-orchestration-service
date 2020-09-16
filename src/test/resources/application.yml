@@ -159,6 +159,13 @@ uk:
             DECREE_NISI_REFUSAL_ORDER_REJECTION_SOLICITOR: de12c7ed-9d5d-4def-a060-2de30594a3bf
             DECREE_NISI_CLARIFICATION_SUBMISSION: 1b59454a-af9a-4444-87a3-67f3f238db35
             DN_SUBMISSION: edf3bce9-f63a-4be0-93a9-d0c80dff7983
+            GENERAL_EMAIL_PETITIONER: 9413e5c5-9ac2-4c58-8138-2c6b05008347
+            GENERAL_EMAIL_PETITIONER_SOLICITOR: b2c099c0-3d21-4e96-a98a-e3847d4bb348
+            GENERAL_EMAIL_RESPONDENT: fcee0c33-ed23-47c2-acbf-ade1fa533615
+            GENERAL_EMAIL_RESPONDENT_SOLICITOR: e95c6829-d067-4ad4-9d7a-e5cede2a553c
+            GENERAL_EMAIL_CO_RESPONDENT: c570c8df-5638-4adc-8a02-7467aaa4fa4b
+            GENERAL_EMAIL_CO_RESPONDENT_SOLICITOR: d887389a-e3d7-4a0d-bca6-113606762373
+            GENERAL_EMAIL_OTHER_PARTY: 165acb51-407e-449d-90be-9018ebc20028
             GENERIC_UPDATE: 6ee6ec29-5e88-4516-99cb-2edc30256575
             GENERIC_UPDATE_RESPONDENT: dc47109d-95f0-4a55-a11f-de41a5201cbc
             PETITIONER_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION: 9937c8bc-dc7a-4210-a25b-20aceb82d48d
@@ -188,6 +195,14 @@ uk:
             SOL_PERSONAL_SERVICE: 1e2f2ac5-ce4c-4fce-aca0-47a876eda089
             SOL_DN_DECISION_MADE: fd6d9667-527f-4c22-b1f1-d095c412ab2c
             SOL_DA_GRANTED_NOTIFICATION: fc8f7343-8f07-42b7-a3c5-52543a21015d
+            SOL_DISPENSED_APPROVED: 2cb5e2c4-8090-4f7e-b0ae-574491cd8680
+            SOL_DISPENSED_NOT_APPROVED: d4de177b-b5b9-409c-95bc-cc8f85afd136
+            SOL_DEEMED_NOT_APPROVED: 919e3780-0776-4219-a30c-72e9d6999414
+            PET_SOL_DEEMED_APPROVED: b762cdc0-fa4d-4699-b60d-1532e912cc3e
+            CITIZEN_DEEMED_APPROVED: 00f27db6-2678-4ccd-8cdd-44971b330ca4
+            CITIZEN_DEEMED_NOT_APPROVED: 5140a51a-fcda-42e4-adf4-0b469a1b927a
+            CITIZEN_DISPENSED_APPROVED: cf03cea1-a155-4f20-a3a6-3ad8fad7742f
+            CITIZEN_DISPENSED_NOT_APPROVED: e40d8623-e801-4de1-834a-7de101c9d857
           welsh:
             AOS_RECEIVED_NO_ADMIT_ADULTERY: e0791556-a202-45e5-9b55-7d1bb61415db
             AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED: bf8945dc-f6e5-48fa-adb6-5f277441584c
@@ -208,6 +223,13 @@ uk:
             DECREE_NISI_REFUSAL_ORDER_REJECTION_SOLICITOR: de12c7ed-9d5d-4def-a060-2de30594a3bf
             DECREE_NISI_CLARIFICATION_SUBMISSION: 389eb625-cd15-4e29-ad06-562cbb219794
             DN_SUBMISSION: de62ccee-3c9c-4010-bf11-729b50df47ad
+            GENERAL_EMAIL_PETITIONER: 9413e5c5-9ac2-4c58-8138-2c6b05008347
+            GENERAL_EMAIL_PETITIONER_SOLICITOR: b2c099c0-3d21-4e96-a98a-e3847d4bb348
+            GENERAL_EMAIL_RESPONDENT: fcee0c33-ed23-47c2-acbf-ade1fa533615
+            GENERAL_EMAIL_RESPONDENT_SOLICITOR: e95c6829-d067-4ad4-9d7a-e5cede2a553c
+            GENERAL_EMAIL_CO_RESPONDENT: c570c8df-5638-4adc-8a02-7467aaa4fa4b
+            GENERAL_EMAIL_CO_RESPONDENT_SOLICITOR: d887389a-e3d7-4a0d-bca6-113606762373
+            GENERAL_EMAIL_OTHER_PARTY: 165acb51-407e-449d-90be-9018ebc20028
             GENERIC_UPDATE: 419afe70-2f8f-456b-bafb-3781c22164bb
             GENERIC_UPDATE_RESPONDENT: 4b5ba28b-a5e0-49c1-afb4-b1f16c09434d
             PETITIONER_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION: a578ce01-0a03-4127-b529-8c5f8ea37ad4
@@ -237,6 +259,14 @@ uk:
             SOL_PERSONAL_SERVICE: 1e2f2ac5-ce4c-4fce-aca0-47a876eda089
             SOL_DN_DECISION_MADE: fd6d9667-527f-4c22-b1f1-d095c412ab2c
             SOL_DA_GRANTED_NOTIFICATION: fc8f7343-8f07-42b7-a3c5-52543a21015d
+            SOL_DISPENSED_APPROVED: 2cb5e2c4-8090-4f7e-b0ae-574491cd8680
+            SOL_DISPENSED_NOT_APPROVED: d4de177b-b5b9-409c-95bc-cc8f85afd136
+            SOL_DEEMED_NOT_APPROVED: 919e3780-0776-4219-a30c-72e9d6999414
+            PET_SOL_DEEMED_APPROVED: b762cdc0-fa4d-4699-b60d-1532e912cc3e
+            CITIZEN_DEEMED_APPROVED: 00f27db6-2678-4ccd-8cdd-44971b330ca4
+            CITIZEN_DEEMED_NOT_APPROVED: 5140a51a-fcda-42e4-adf4-0b469a1b927a
+            CITIZEN_DISPENSED_APPROVED: cf03cea1-a155-4f20-a3a6-3ad8fad7742f
+            CITIZEN_DISPENSED_NOT_APPROVED: e40d8623-e801-4de1-834a-7de101c9d857
 
 court-distribution-config:
   distribution:
@@ -420,11 +450,19 @@ dncourt:
       email: "divorcecase@justice.gov.uk"
       phone: "0300 303 0642"
 
+judge:
+  types:
+    recorder: "Recorder"
+    herhonourjudge: "Her Honour Judge"
+    hishonourjudge: "His Honour Judge"
+    deputydistrictjudge: "Deputy District Judge"
+    districtjudge: "District Judge"
+
 idam:
   client:
     redirect_uri: ${IDAM_API_REDIRECT_URL:http://localhost:8080/authenticated}
     port: 4503
-    secret: ${IDAM_CLIENT_SECRET:dummysecret}
+    secret: ${IDAM_CLIENT_SECRET:DUMMYSECRET123456789}
     id: divorce
     health:
       context-path: /health
@@ -437,7 +475,7 @@ idam:
   s2s-auth:
     url: ${SERVICE_AUTH_PROVIDER_URL:http://localhost:4504}
     microservice: ${SERVICE_AUTH_MICROSERVICE:divorce_frontend}
-    secret: ${SERVICE_AUTH_SECRET:dummysecret}
+    secret: ${SERVICE_AUTH_SECRET:DUMMYSECRET123456789}
     services-allowed-to-update: ${BSP_SERVICES_ALLOWED_TO_UPDATE:bulk_scan_orchestrator}
     services-allowed-to-validate: ${BSP_SERVICES_ALLOWED_TO_VALIDATE:bulk_scan_processor}
   api:

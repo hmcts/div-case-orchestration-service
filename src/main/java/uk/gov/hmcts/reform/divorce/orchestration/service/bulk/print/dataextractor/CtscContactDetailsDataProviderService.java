@@ -11,7 +11,7 @@ public class CtscContactDetailsDataProviderService {
     private String serviceCentre;
 
     @Value("${court.locations.serviceCentre.divorceCentreName}")
-    private String careOf;
+    private String centreName;
 
     @Value("${court.locations.serviceCentre.poBox}")
     private String poBox;
@@ -34,7 +34,8 @@ public class CtscContactDetailsDataProviderService {
     public CtscContactDetails getCtscContactDetails() {
         return CtscContactDetails.builder()
             .serviceCentre(serviceCentre)
-            .careOf("c/o " + careOf)
+            .centreName(centreName)
+            .careOf("c/o " + centreName)
             .poBox(poBox)
             .town(town)
             .postcode(postcode)

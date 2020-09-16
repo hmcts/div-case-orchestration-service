@@ -26,7 +26,7 @@ import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -50,7 +50,7 @@ public class MakeCasesDAOverdueITest extends MockedFunctionalTest {
     private static final String TEST_CASE_REFERENCE_TWO = "1519-8183-5982-2008";
     private static final String DN_GRANTED_DATE = "2019-03-31";
     private static final String DN_GRANTED_DATA_REFERENCE = "data.DecreeNisiGrantedDate";
-    private List<CaseDetails> cases = new ArrayList<>();
+    private final List<CaseDetails> cases = new ArrayList<>();
     private QueryBuilder[] queryBuilders;
 
     @Autowired
@@ -140,7 +140,7 @@ public class MakeCasesDAOverdueITest extends MockedFunctionalTest {
     private void stubCaseMaintenanceUpdateEndpoint(Map<String, Object> response) {
         maintenanceServiceServer.stubFor(WireMock.post(CASE_MAINTENANCE_CLIENT_UPDATE_URL)
             .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withStatus(HttpStatus.OK.value())
                 .withBody(convertObjectToJsonString(response))));
     }
@@ -148,7 +148,7 @@ public class MakeCasesDAOverdueITest extends MockedFunctionalTest {
     private void stubCaseMaintenanceSearchEndpointToReturnHttp500() {
         maintenanceServiceServer.stubFor(WireMock.post(CASE_MAINTENANCE_CLIENT_SEARCH_URL)
             .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withStatus(HttpStatus.INTERNAL_SERVER_ERROR.value())));
     }
 

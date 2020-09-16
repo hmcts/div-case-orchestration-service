@@ -17,4 +17,6 @@ public interface AosService {
 
     void makeCaseAosOverdue(String authToken, String caseId) throws CaseOrchestrationServiceException;
 
+    Map<String, Object> prepareAosNotReceivedEventForSubmission(String authToken, CaseDetails caseDetails) throws CaseOrchestrationServiceException;
+
 }

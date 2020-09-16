@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -13,7 +11,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SearchDNPronouncedCases;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateDNPronouncedCase;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
@@ -26,10 +27,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RunWith(MockitoJUnitRunner.class)
 public class UpdateDNPronouncedCasesWorkflowTest {
 
-    private static int EXPECTED_CASES_PROCESSED_COUNT = 10;
-
-    @Rule
-    public ExpectedException expectedException = ExpectedException.none();
+    private static final int EXPECTED_CASES_PROCESSED_COUNT = 10;
 
     @Mock
     private SearchDNPronouncedCases searchDNPronouncedCases;
@@ -42,12 +40,14 @@ public class UpdateDNPronouncedCasesWorkflowTest {
 
     @Test
     public void execute_taskExceptionThrownInAnyTask_workflowExceptionThrown() throws TaskException, WorkflowException {
-
-        expectedException.expect(WorkflowException.class);
-        expectedException.expectMessage("a WorfklowException message");
-
         when(searchDNPronouncedCases.execute(any(), any())).thenThrow(new TaskException("a WorfklowException message"));
-        classUnderTest.run(AUTH_TOKEN);
+
+        WorkflowException workflowException = assertThrows(
+            WorkflowException.class,
+            () -> classUnderTest.run(AUTH_TOKEN)
+        );
+
+        assertThat(workflowException.getMessage(), is("a WorfklowException message"));
 
         verify(searchDNPronouncedCases, times(1)).execute(any(), any());
         verify(updateDNPronouncedCase, times(0)).execute(any(), any());

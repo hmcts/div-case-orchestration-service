@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.util;
 
+import org.apache.commons.lang3.tuple.Triple;
 import org.hamcrest.core.Is;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
@@ -21,14 +21,17 @@ import java.util.Map;
 
 import static java.time.ZoneOffset.UTC;
 import static java.util.Arrays.asList;
+import static java.util.Collections.EMPTY_MAP;
 import static java.util.Collections.singletonList;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.core.IsCollectionContaining.hasItems;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -63,7 +66,7 @@ public class CcdUtilUTest {
 
         ccdUtil = new CcdUtil(clock, getObjectMapperInstance(), localDateToWelshStringConverter);
         when(localDateToWelshStringConverter.convert(isA(LocalDate.class)))
-                .thenReturn(EXPECTED_WELSH_DATE_WITH_CUSTOMER_FORMAT);
+            .thenReturn(EXPECTED_WELSH_DATE_WITH_CUSTOMER_FORMAT);
     }
 
     @Test
@@ -183,7 +186,7 @@ public class CcdUtilUTest {
     @Test
     public void shouldConvertDateFromCCDFormat() {
         String formattedDate = CcdUtil.formatFromCCDFormatToHumanReadableFormat("2017-08-15");
-        Assert.assertThat(formattedDate, Is.is("15/08/2017"));
+        assertThat(formattedDate, Is.is("15/08/2017"));
     }
 
     @Test
@@ -277,4 +280,49 @@ public class CcdUtilUTest {
         assertEquals(input, actual);
     }
 
+    @Test
+    public void givenCcdFormatDate_whenMapCCDDateToDivorceDate_thenReturnDateInPaymentFormat() {
+        assertEquals(ccdUtil.mapCCDDateToDivorceDate(CURRENT_DATE), PAYMENT_DATE);
+    }
+
+    @Test
+    public void givenOneOfArgsIsNull_whenAddNewDocumentToCollection_thenThrowException() {
+        asList(
+            Triple.of(null, GeneratedDocumentInfo.builder().build(), "field"),
+            Triple.of(EMPTY_MAP, null, "field"),
+            Triple.of(EMPTY_MAP, GeneratedDocumentInfo.builder().build(), null)
+        ).forEach(data -> {
+            try {
+                ccdUtil.addNewDocumentToCollection(
+                    (Map) data.getLeft(),
+                    (GeneratedDocumentInfo) data.getMiddle(),
+                    (String) data.getRight()
+                );
+                fail();
+            } catch (IllegalArgumentException exception) {
+                itWasExpectedToThrowException();
+            }
+        });
+    }
+
+    @Test
+    public void givenGeneratedDocumentInfo_whenAddNewDocumentToCollection_thenReturnImmutableUpdatedCaseData() {
+        final Map<String, Object> input = new HashMap<>();
+        final String field = "field";
+        final GeneratedDocumentInfo document = GeneratedDocumentInfo.builder()
+            .documentType("type").fileName("it's me!").build();
+
+        Map<String, Object> actual = ccdUtil.addNewDocumentToCollection(input, document, field);
+
+        assertNotEquals("addNewDocumentToCollection should be immutable", input, actual);
+        List<CollectionMember<Document>> documents = (List) actual.get(field);
+        Document actualDoc = documents.get(0).getValue();
+        assertFalse(documents.isEmpty());
+        assertEquals(actualDoc.getDocumentFileName(), document.getFileName());
+        assertEquals(actualDoc.getDocumentType(), document.getDocumentType());
+    }
+
+    private void itWasExpectedToThrowException() {
+        assertTrue(true);
+    }
 }

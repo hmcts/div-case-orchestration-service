@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
+package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.servicejourney;
 
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
@@ -7,7 +7,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.MakeServiceDecisionDateTask;
+import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.IdamTestSupport;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ReceivedServiceAddedDateTask;
 import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
 import java.time.LocalDate;
@@ -22,9 +23,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
-public class MakeServiceDecisionDateTest extends IdamTestSupport {
+public class ReceivedServiceAddedDateTest extends IdamTestSupport {
 
-    private static final String API_URL = "/make-service-decision";
+    private static final String API_URL = "/received-service-added-date";
 
     @Autowired
     private MockMvc webClient;
@@ -38,8 +39,7 @@ public class MakeServiceDecisionDateTest extends IdamTestSupport {
         );
 
         Map<String, Object> expectedCaseData = ImmutableMap.of(
-            MakeServiceDecisionDateTask.SERVICE_APPLICATION_DECISION_DATE,
-            DateUtils.formatDateFromLocalDate(LocalDate.now())
+            ReceivedServiceAddedDateTask.RECEIVED_SERVICE_ADDED_DATE, DateUtils.formatDateFromLocalDate(LocalDate.now())
         );
 
         webClient.perform(post(API_URL)

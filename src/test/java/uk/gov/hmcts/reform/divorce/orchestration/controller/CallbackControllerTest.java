@@ -24,7 +24,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralEmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralOrderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,25 +41,30 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.DUMMY_CASE_DATA;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INCOMING_CASE_DETAILS;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PAYLOAD_TO_RETURN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DN_APPLICATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_OUTCOME_FLAG_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
@@ -77,6 +85,12 @@ public class CallbackControllerTest {
 
     @Mock
     private ServiceJourneyService serviceJourneyService;
+
+    @Mock
+    private GeneralOrderService generalOrderService;
+
+    @Mock
+    private GeneralEmailService generalEmailService;
 
     @InjectMocks
     private CallbackController classUnderTest;
@@ -118,15 +132,15 @@ public class CallbackControllerTest {
 
     @Test
     public void testServiceMethodIsCalled_WhenHandleDnSubmittedCallback() throws WorkflowException {
-        when(caseOrchestrationService.handleDnSubmitted(any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
+        when(caseOrchestrationService.handleDnSubmitted(any())).thenReturn(TEST_PAYLOAD_TO_RETURN);
 
         CcdCallbackRequest callbackRequest = CcdCallbackRequest.builder()
-            .caseDetails(CaseDetails.builder().caseData(singletonMap("incomingKey", "incomingValue")).build())
+            .caseDetails(TEST_INCOMING_CASE_DETAILS)
             .build();
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.handleDnSubmitted(callbackRequest);
 
         assertThat(response.getStatusCode(), is(OK));
-        assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
+        assertThat(response.getBody().getData(), equalTo(TEST_PAYLOAD_TO_RETURN));
         verify(caseOrchestrationService).handleDnSubmitted(callbackRequest);
     }
 
@@ -261,10 +275,10 @@ public class CallbackControllerTest {
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.petitionSubmitted(ccdCallbackRequest);
 
-        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
-
-        assertEquals(OK, response.getStatusCode());
-        assertEquals(expectedResponse, response.getBody());
+        CcdCallbackResponse ccdCallbackResponse = response.getBody();
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(ccdCallbackResponse.getData(), is(caseData));
+        assertThat(ccdCallbackResponse.getErrors(), is(nullValue()));
     }
 
     @Test
@@ -759,16 +773,16 @@ public class CallbackControllerTest {
 
     @Test
     public void testServiceMethodIsCalled_WhenHandleDaGrantedCallback() throws WorkflowException {
-        when(caseOrchestrationService.handleDaGranted(any(), anyString())).thenReturn(singletonMap("returnedKey", "returnedValue"));
+        when(caseOrchestrationService.handleDaGranted(any(), anyString())).thenReturn(TEST_PAYLOAD_TO_RETURN);
 
         CcdCallbackRequest callbackRequest = CcdCallbackRequest.builder()
-            .caseDetails(CaseDetails.builder().caseData(singletonMap("incomingKey", "incomingValue")).build())
+            .caseDetails(TEST_INCOMING_CASE_DETAILS)
             .build();
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.handleDaGranted(AUTH_TOKEN, callbackRequest);
 
         assertThat(response.getStatusCode(), is(OK));
-        assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
+        assertThat(response.getBody().getData(), equalTo(TEST_PAYLOAD_TO_RETURN));
         assertThat(response.getBody().getErrors(), is(not(hasSize(greaterThan(0)))));
         verify(caseOrchestrationService).handleDaGranted(callbackRequest, AUTH_TOKEN);
     }
@@ -778,7 +792,7 @@ public class CallbackControllerTest {
         when(caseOrchestrationService.handleDaGranted(any(), anyString())).thenThrow(new WorkflowException("This is an error."));
 
         CcdCallbackRequest callbackRequest = CcdCallbackRequest.builder()
-            .caseDetails(CaseDetails.builder().caseData(singletonMap("incomingKey", "incomingValue")).build())
+            .caseDetails(TEST_INCOMING_CASE_DETAILS)
             .build();
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.handleDaGranted(AUTH_TOKEN, callbackRequest);
@@ -1030,29 +1044,29 @@ public class CallbackControllerTest {
 
     @Test
     public void testServiceMethodIsCalled_WhenFlagCaseAsEligibleForDecreeAbsoluteForPetitioner() throws CaseOrchestrationServiceException {
-        when(caseOrchestrationService.processApplicantDecreeAbsoluteEligibility(any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
+        when(caseOrchestrationService.processApplicantDecreeAbsoluteEligibility(any())).thenReturn(TEST_PAYLOAD_TO_RETURN);
 
         CcdCallbackRequest callbackRequest = CcdCallbackRequest.builder()
-            .caseDetails(CaseDetails.builder().caseData(singletonMap("incomingKey", "incomingValue")).build())
+            .caseDetails(TEST_INCOMING_CASE_DETAILS)
             .build();
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.processApplicantDecreeAbsoluteEligibility(callbackRequest);
 
         assertThat(response.getStatusCode(), is(OK));
-        assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
+        assertThat(response.getBody().getData(), equalTo(TEST_PAYLOAD_TO_RETURN));
         verify(caseOrchestrationService).processApplicantDecreeAbsoluteEligibility(callbackRequest);
     }
 
     @Test
     public void testServiceMethodIsCalled_WhenNotifyPetitionerCanFinaliseDivorce() throws WorkflowException {
-        when(caseOrchestrationService.handleMakeCaseEligibleForDaSubmitted(any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
+        when(caseOrchestrationService.handleMakeCaseEligibleForDaSubmitted(any())).thenReturn(TEST_PAYLOAD_TO_RETURN);
 
         CcdCallbackRequest callbackRequest = CcdCallbackRequest.builder()
-            .caseDetails(CaseDetails.builder().caseData(singletonMap("incomingKey", "incomingValue")).build())
+            .caseDetails(TEST_INCOMING_CASE_DETAILS)
             .build();
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.handleMakeCaseEligibleForDaSubmitted(callbackRequest);
 
         assertThat(response.getStatusCode(), is(OK));
-        assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
+        assertThat(response.getBody().getData(), equalTo(TEST_PAYLOAD_TO_RETURN));
         verify(caseOrchestrationService).handleMakeCaseEligibleForDaSubmitted(callbackRequest);
     }
 
@@ -1104,12 +1118,11 @@ public class CallbackControllerTest {
                 .builder()
                 .caseId(TEST_CASE_ID)
                 .build()).build();
-        Map<String, Object> expectedResponse = singletonMap("returnedKey", "returnedValue");
-        when(caseOrchestrationService.removeBulkLink(request)).thenReturn(expectedResponse);
+        when(caseOrchestrationService.removeBulkLink(request)).thenReturn(TEST_PAYLOAD_TO_RETURN);
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.removeBulkLinkFromCase(request);
         assertThat(response.getStatusCode(), is(OK));
-        assertThat(response.getBody(), is(CcdCallbackResponse.builder().data(expectedResponse).build()));
+        assertThat(response.getBody(), is(CcdCallbackResponse.builder().data(TEST_PAYLOAD_TO_RETURN).build()));
     }
 
     @Test
@@ -1131,7 +1144,7 @@ public class CallbackControllerTest {
 
     @Test
     public void testIssueAosOffline_ForRespondent_callsRightService() throws CaseOrchestrationServiceException {
-        when(aosService.issueAosPackOffline(any(), any(), any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
+        when(aosService.issueAosPackOffline(any(), any(), any())).thenReturn(TEST_PAYLOAD_TO_RETURN);
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
@@ -1139,13 +1152,13 @@ public class CallbackControllerTest {
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.issueAosPackOffline(AUTH_TOKEN, ccdCallbackRequest, RESPONDENT);
 
         assertThat(response.getStatusCode(), equalTo(OK));
-        assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
+        assertThat(response.getBody().getData(), equalTo(TEST_PAYLOAD_TO_RETURN));
         verify(aosService).issueAosPackOffline(eq(AUTH_TOKEN), eq(caseDetails), eq(RESPONDENT));
     }
 
     @Test
     public void testIssueAosOffline_ForCoRespondent_callsRightService() throws CaseOrchestrationServiceException {
-        when(aosService.issueAosPackOffline(any(), any(), any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
+        when(aosService.issueAosPackOffline(any(), any(), any())).thenReturn(TEST_PAYLOAD_TO_RETURN);
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
@@ -1153,7 +1166,7 @@ public class CallbackControllerTest {
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.issueAosPackOffline(AUTH_TOKEN, ccdCallbackRequest, CO_RESPONDENT);
 
         assertThat(response.getStatusCode(), equalTo(OK));
-        assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
+        assertThat(response.getBody().getData(), equalTo(TEST_PAYLOAD_TO_RETURN));
         verify(aosService).issueAosPackOffline(eq(AUTH_TOKEN), eq(caseDetails), eq(CO_RESPONDENT));
     }
 
@@ -1173,16 +1186,14 @@ public class CallbackControllerTest {
 
     @Test
     public void testProcessAosOfflineAnswers_callsRightService() throws CaseOrchestrationServiceException {
-        when(aosService.processAosPackOfflineAnswers(any(), any(), any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
-
-        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(singletonMap("incomingKey", "incomingValue")).build();
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+        when(aosService.processAosPackOfflineAnswers(any(), any(), any())).thenReturn(TEST_PAYLOAD_TO_RETURN);
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(TEST_INCOMING_CASE_DETAILS).build();
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.processAosPackOfflineAnswers(AUTH_TOKEN, ccdCallbackRequest, RESPONDENT);
 
         assertThat(response.getStatusCode(), equalTo(OK));
-        assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
-        verify(aosService).processAosPackOfflineAnswers(eq(AUTH_TOKEN), eq(caseDetails), eq(RESPONDENT));
+        assertThat(response.getBody().getData(), equalTo(TEST_PAYLOAD_TO_RETURN));
+        verify(aosService).processAosPackOfflineAnswers(eq(AUTH_TOKEN), eq(TEST_INCOMING_CASE_DETAILS), eq(RESPONDENT));
     }
 
     @Test
@@ -1203,13 +1214,12 @@ public class CallbackControllerTest {
     public void testRemoveFromCallbackListed_ForCoRespondent_callsRightService() throws WorkflowException, JsonProcessingException {
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
-        Map<String, Object> expectedResponse = singletonMap("returnedKey", "returnedValue");
-        when(caseOrchestrationService.removeBulkListed(ccdCallbackRequest)).thenReturn(expectedResponse);
+        when(caseOrchestrationService.removeBulkListed(ccdCallbackRequest)).thenReturn(TEST_PAYLOAD_TO_RETURN);
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.removeBulkLinkFromCaseListed(ccdCallbackRequest);
 
         assertThat(response.getStatusCode(), equalTo(OK));
-        assertThat(response.getBody().getData(), hasEntry("returnedKey", "returnedValue"));
+        assertThat(response.getBody().getData(), equalTo(TEST_PAYLOAD_TO_RETURN));
     }
 
     @Test
@@ -1412,19 +1422,117 @@ public class CallbackControllerTest {
     }
 
     @Test
-    public void testMakeServiceDecisionStateChange() throws WorkflowException {
-        when(serviceJourneyService.makeServiceDecision(any()))
+    public void testMakeServiceDecisionStateChange() throws ServiceJourneyServiceException {
+        when(serviceJourneyService.makeServiceDecision(any(), anyString()))
             .thenReturn(CcdCallbackResponse.builder().build());
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
-                .state(AWAITING_DN_APPLICATION)
+                .state(AWAITING_DECREE_NISI)
                 .build())
             .build();
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.makeServiceDecision(ccdCallbackRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.makeServiceDecision(AUTH_TOKEN, ccdCallbackRequest);
 
         assertThat(response.getStatusCode(), equalTo(OK));
         assertThat(response.getBody().getErrors(), is(nullValue()));
+    }
+
+    @Test
+    public void testServiceDecisionMade() throws CaseOrchestrationServiceException {
+        when(serviceJourneyService.serviceDecisionMade(any(), anyString()))
+            .thenReturn(CcdCallbackResponse.builder().build());
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .state(AWAITING_SERVICE_CONSIDERATION)
+                .build())
+            .build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.serviceDecisionMade(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+    }
+
+    @Test
+    public void testGenerateGeneralOrder() throws CaseOrchestrationServiceException {
+        when(generalOrderService.generateGeneralOrder(any(), anyString()))
+            .thenReturn(CaseDetails.builder().build());
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder().build())
+            .build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateGeneralOrder(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+    }
+
+    @Test
+    public void testGenerateDraftOfGeneralOrder() throws CaseOrchestrationServiceException {
+        when(generalOrderService.generateGeneralOrderDraft(any(), anyString()))
+            .thenReturn(CaseDetails.builder().build());
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder().build())
+            .build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateDraftOfGeneralOrder(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+    }
+
+    @Test
+    public void shouldReturnErrorMessageInResponse_whenCaseOrchestrationServiceExceptionIsThrown() {
+        CaseOrchestrationServiceException serviceException = spy(new CaseOrchestrationServiceException("This is a test error message"));
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.handleCaseOrchestrationServiceExceptionForCcdCallback(serviceException);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        CcdCallbackResponse ccdCallbackResponse = response.getBody();
+        assertThat(ccdCallbackResponse, is(notNullValue()));
+        assertThat(ccdCallbackResponse.getData(), is(nullValue()));
+        assertThat(ccdCallbackResponse.getErrors(), hasSize(1));
+        assertThat(ccdCallbackResponse.getErrors(), hasItem("This is a test error message"));
+        verify(serviceException).getIdentifiableMessage();
+    }
+
+    @Test
+    public void shouldReturnOK_SetupServicePaymentEventIsCalled() throws CaseOrchestrationServiceException {
+        final Map<String, Object> caseData = Collections.emptyMap();
+        final CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        when(caseOrchestrationService.setupConfirmServicePaymentEvent(ccdCallbackRequest)).thenReturn(caseData);
+
+        final ResponseEntity<CcdCallbackResponse> response = classUnderTest.setupConfirmServicePaymentEvent(ccdCallbackRequest);
+        final CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody(), is(expectedResponse));
+    }
+
+    @Test
+    public void shouldCallRightServiceMethod_ForPreparingAosNotReceivedForSubmission() throws CaseOrchestrationServiceException {
+        when(aosService.prepareAosNotReceivedEventForSubmission(any(), any())).thenReturn(TEST_PAYLOAD_TO_RETURN);
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(TEST_INCOMING_CASE_DETAILS).build();
+        ResponseEntity<CcdCallbackResponse> ccdCallbackResponse = classUnderTest.prepareAosNotReceivedForSubmission(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertThat(ccdCallbackResponse.getBody().getData(), equalTo(TEST_PAYLOAD_TO_RETURN));
+        verify(aosService).prepareAosNotReceivedEventForSubmission(AUTH_TOKEN, TEST_INCOMING_CASE_DETAILS);
+    }
+
+    @Test
+    public void shouldCallRightServiceMethod_forTriggeringGeneralEmail() throws CaseOrchestrationServiceException {
+        when(generalEmailService.createGeneralEmail(any())).thenReturn(TEST_PAYLOAD_TO_RETURN);
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(TEST_INCOMING_CASE_DETAILS).build();
+        ResponseEntity<CcdCallbackResponse> ccdCallbackResponse = classUnderTest.createGeneralEmail(ccdCallbackRequest);
+
+        assertThat(ccdCallbackResponse.getBody().getData(), equalTo(TEST_PAYLOAD_TO_RETURN));
+        verify(generalEmailService).createGeneralEmail(TEST_INCOMING_CASE_DETAILS);
     }
 }

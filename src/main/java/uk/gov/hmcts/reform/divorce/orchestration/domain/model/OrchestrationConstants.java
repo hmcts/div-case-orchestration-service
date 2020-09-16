@@ -23,7 +23,6 @@ public class OrchestrationConstants {
     public static final String AUTH_TOKEN_JSON_KEY = "authToken";
     public static final String GRANT_TYPE = "authorization_code";
     public static final String BASIC = "Basic ";
-    public static final String PIN_PREFIX = "Pin ";
     public static final String CODE = "code";
     public static final String LOCATION_HEADER = "Location";
     public static final String SERVICE_AUTHORIZATION_HEADER = "ServiceAuthorization";
@@ -146,7 +145,6 @@ public class OrchestrationConstants {
     public static final String DN_REFUSED_ADMIN_ERROR_OPTION = "adminError";
     public static final String DN_APPLICATION_SUBMITTED_DATE = "DNApplicationSubmittedDate";
     public static final String DN_REFUSAL_DRAFT = "DNRefusalDraft";
-    public static final String SERVICE_APPLICATION_GRANTED = "serviceApplicationGranted";
 
     // CCD Events
     public static final String DN_RECEIVED = "dnReceived";
@@ -225,7 +223,6 @@ public class OrchestrationConstants {
     public static final String DATE_OF_HEARING = "date of hearing";
     public static final String WELSH_DATE_OF_HEARING = "welsh date of hearing";
     public static final String LIMIT_DATE_TO_CONTACT_COURT = "limit date to contact court";
-    public static final String WELSH_LIMIT_DATE_TO_CONTACT_COURT = "welsh limit date to contact court";
     public static final Period PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT = Period.ofWeeks(2);
 
     // Notification
@@ -256,8 +253,13 @@ public class OrchestrationConstants {
         = "welsh limit date to download certificate";
     public static final String NOTIFICATION_PET_NAME = "petitioner name";
     public static final String NOTIFICATION_RESP_NAME = "respondent name";
+    public static final String NOTIFICATION_CO_RESPONDENT_NAME = "co-respondent name";
+    public static final String NOTIFICATION_OTHER_NAME = "general other recipient name";
     public static final String NOTIFICATION_SOLICITOR_NAME = "solicitor name";
+    public static final String NOTIFICATION_RESPONDENT_SOLICITOR_NAME = "respondent solicitor name";
+    public static final String NOTIFICATION_CO_RESPONDENT_SOLICITOR_NAME = "co-respondent solicitor name";
     public static final String NOTIFICATION_WELSH_FORM_SUBMISSION_DATE_LIMIT_KEY = "welsh form submission date limit";
+    public static final String NOTIFICATION_GENERAL_EMAIL_DETAILS = "general email details";
 
     // CCD Respondent Fields
     public static final String RECEIVED_AOS_FROM_RESP = "ReceivedAOSfromResp";
@@ -314,6 +316,7 @@ public class OrchestrationConstants {
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_FILENAME = "solicitor-personal-service-";
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE = "personalService";
     public static final String FEE_TO_PAY_JSON_KEY = "FeeToPay";
+    public static final String AOS_OVERDUE_COVER_LETTER_DOCUMENT_TYPE = "aosOverdueCoverLetter";
 
     //Bulk print letter types
     public static final String DA_GRANTED_OFFLINE_PACK_RESPONDENT = "da-granted-offline-pack-respondent";
@@ -413,4 +416,5 @@ public class OrchestrationConstants {
 
     // Bulk Scan
     public static final String CASE_TYPE_ID = "DIVORCE";
+
 }

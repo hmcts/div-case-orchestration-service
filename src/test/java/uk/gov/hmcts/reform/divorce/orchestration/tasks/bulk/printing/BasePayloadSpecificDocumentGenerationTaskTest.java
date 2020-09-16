@@ -7,11 +7,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.docmosis.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
@@ -20,11 +19,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -48,12 +47,12 @@ public class BasePayloadSpecificDocumentGenerationTaskTest {
     private PdfDocumentGenerationService pdfDocumentGenerationService;
 
     @Mock
-    private CcdUtil ccdUtil;
+    protected CcdUtil ccdUtil;
 
     @Captor
     private ArgumentCaptor<List<GeneratedDocumentInfo>> newDocumentsCaptor;
 
-    private GeneratedDocumentInfo newGeneratedDocument;
+    protected GeneratedDocumentInfo newGeneratedDocument;
     private DocmosisTemplateVars testDocmosisTemplateVars;
     private Map<String, Object> modifiedCaseData;
     private DefaultTaskContext taskContext;
@@ -72,7 +71,7 @@ public class BasePayloadSpecificDocumentGenerationTaskTest {
     }
 
     @Test
-    public void makeSureAbstractClassExecutesDesiredBehaviour() throws TaskException {
+    public void makeSureAbstractClassExecutesDesiredBehaviour() {
         BasePayloadSpecificDocumentGenerationTask testDocGenerationTask =
             new BasePayloadSpecificDocumentGenerationTask(ctscContactDetailsDataProviderService, pdfDocumentGenerationService, ccdUtil) {
                 @Override
@@ -86,7 +85,7 @@ public class BasePayloadSpecificDocumentGenerationTaskTest {
                 }
 
                 @Override
-                protected String getTemplateId() {
+                public String getTemplateId() {
                     return TEST_TEMPLATE_ID;
                 }
             };
@@ -118,7 +117,7 @@ public class BasePayloadSpecificDocumentGenerationTaskTest {
         assertThat(generatedDocumentInfo.getFileName(), is(newGeneratedDocument.getFileName()));
     }
 
-    private void verifyPdfDocumentGenerationCallIsCorrect(String expectedTemplateId, DocmosisTemplateVars expectedDocmosisTemplateVars) {
+    protected void verifyPdfDocumentGenerationCallIsCorrect(String expectedTemplateId, DocmosisTemplateVars expectedDocmosisTemplateVars) {
         final ArgumentCaptor<DocmosisTemplateVars> docmosisTemplateVarsCaptor = ArgumentCaptor.forClass(DocmosisTemplateVars.class);
         verify(pdfDocumentGenerationService).generatePdf(docmosisTemplateVarsCaptor.capture(), eq(expectedTemplateId), eq(AUTH_TOKEN));
         final DocmosisTemplateVars docmosisTemplateVars = docmosisTemplateVarsCaptor.getValue();

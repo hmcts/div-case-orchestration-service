@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -14,8 +12,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.dataextraction.Family
 
 import java.time.LocalDate;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.rules.ExpectedException.none;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -26,9 +26,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtract
 public class DataExtractionServiceImplTest {
 
     private static final String TEST_AUTH_TOKEN = "testAuthToken";
-
-    @Rule
-    public ExpectedException expectedException = none();
 
     @Mock
     private DataExtractionWorkflow dataExtractionWorkflow;
@@ -46,12 +43,14 @@ public class DataExtractionServiceImplTest {
     }
 
     @Test
-    public void shouldThrowNewExceptionWhenDataExtractionWorkflowFails() throws WorkflowException, CaseOrchestrationServiceException {
+    public void shouldThrowNewExceptionWhenDataExtractionWorkflowFails() throws WorkflowException {
         doThrow(WorkflowException.class).when(dataExtractionWorkflow).run();
-        expectedException.expect(CaseOrchestrationServiceException.class);
-        expectedException.expectCause(instanceOf(WorkflowException.class));
 
-        classUnderTest.requestDataExtractionForPreviousDay();
+        CaseOrchestrationServiceException exception = assertThrows(
+            CaseOrchestrationServiceException.class,
+            () -> classUnderTest.requestDataExtractionForPreviousDay()
+        );
+        assertThat(exception.getCause(), is(instanceOf(WorkflowException.class)));
     }
 
     @Test
@@ -62,12 +61,13 @@ public class DataExtractionServiceImplTest {
     }
 
     @Test
-    public void shouldThrowNewExceptionWhenWorkflowFails() throws WorkflowException, CaseOrchestrationServiceException {
+    public void shouldThrowNewExceptionWhenWorkflowFails() throws WorkflowException {
         doThrow(WorkflowException.class).when(mockWorkflow).run(any(), any(), any());
-        expectedException.expect(CaseOrchestrationServiceException.class);
-        expectedException.expectCause(instanceOf(WorkflowException.class));
 
-        classUnderTest.extractCasesToFamilyMan(DA, LocalDate.now(), TEST_AUTH_TOKEN);
+        CaseOrchestrationServiceException exception = assertThrows(
+            CaseOrchestrationServiceException.class,
+            () -> classUnderTest.extractCasesToFamilyMan(DA, LocalDate.now(), TEST_AUTH_TOKEN)
+        );
+        assertThat(exception.getCause(), is(instanceOf(WorkflowException.class)));
     }
-
 }

@@ -4,9 +4,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CoERespondentSolicitorCoverLetter;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.DocmosisTemplateVars;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.docmosis.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor;
@@ -38,19 +37,19 @@ public class CoERespondentSolicitorLetterGenerationTask extends BasePayloadSpeci
     }
 
     @Override
-    protected DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) throws TaskException {
+    protected DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) {
         return CoERespondentSolicitorCoverLetter.coERespondentSolicitorCoverLetterBuilder()
-                .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
-                .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
-                .caseReference(getCaseId(context))
-                .letterDate(DatesDataExtractor.getLetterDate())
-                .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
-                .hearingDate(DatesDataExtractor.getHearingDate(caseData))
-                .costClaimGranted(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData))
-                .deadlineToContactCourtBy(DatesDataExtractor.getDeadlineToContactCourtBy(caseData))
-                .addressee(AddresseeDataExtractor.getRespondentSolicitor(caseData))
-                .solicitorReference(SolicitorDataExtractor.getSolicitorReference(caseData))
-                .build();
+            .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
+            .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
+            .caseReference(getCaseId(context))
+            .letterDate(DatesDataExtractor.getLetterDate())
+            .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
+            .hearingDate(DatesDataExtractor.getHearingDate(caseData))
+            .costClaimGranted(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData))
+            .deadlineToContactCourtBy(DatesDataExtractor.getDeadlineToContactCourtBy(caseData))
+            .addressee(AddresseeDataExtractor.getRespondentSolicitor(caseData))
+            .solicitorReference(SolicitorDataExtractor.getSolicitorReference(caseData))
+            .build();
     }
 
     @Override

@@ -8,7 +8,6 @@ public class CcdStates {
     public static final String SERVICE_APPLICATION_NOT_APPROVED = "ServiceApplicationNotApproved";
     public static final String AWAITING_PAYMENT = "AwaitingPayment";
     public static final String AWAITING_HWF_DECISION = "AwaitingHWFDecision";
-    public static final String AWAITING_DN_APPLICATION = "AwaitingDNApplication";
     public static final String BO_WELSH_RESPONSE_AWAITING_REVIEW = "WelshResponseAwaitingReview";
     public static final String AOS_AWAITING = "AosAwaiting";
     public static final String AOS_AWAITING_SOLICITOR = "AosAwaitingSol";
@@ -20,6 +19,7 @@ public class CcdStates {
     public static final String AWAITING_LEGAL_ADVISOR_REFERRAL = "AwaitingLegalAdvisorReferral";
     public static final String AWAITING_PRONOUNCEMENT = "AwaitingPronouncement";
     public static final String AWAITING_CLARIFICATION = "AwaitingClarification";
+    public static final String AWAITING_SERVICE_CONSIDERATION = "AwaitingServiceConsideration";
     public static final String AWAITING_REISSUE = "AwaitingReissue";
     public static final String DEFENDED = "DefendedDivorce";
     public static final String DN_PRONOUNCED = "DNPronounced";

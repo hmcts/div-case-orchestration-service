@@ -26,7 +26,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.D8_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
@@ -160,7 +160,7 @@ public class SendPetitionerUpdateNotificationsEmailTaskTest {
 
         sendPetitionerUpdateNotificationsEmailTask.execute(context, testData);
 
-        verifyZeroInteractions(emailService);
+        verifyNoInteractions(emailService);
     }
 
     @Test
@@ -210,7 +210,7 @@ public class SendPetitionerUpdateNotificationsEmailTaskTest {
             sendPetitionerUpdateNotificationsEmailTask.execute(context, testData);
             fail("Failed to catch task exception");
         } catch (TaskException e) {
-            verifyZeroInteractions(emailService);
+            verifyNoInteractions(emailService);
             assertThat(e.getMessage(), is(format("Could not evaluate value of mandatory property \"%s\"", "D8RespondentFirstName")));
         }
     }
@@ -328,7 +328,7 @@ public class SendPetitionerUpdateNotificationsEmailTaskTest {
             sendPetitionerUpdateNotificationsEmailTask.execute(context, testData);
             fail("Failed to catch task exception");
         } catch (TaskException e) {
-            verifyZeroInteractions(emailService);
+            verifyNoInteractions(emailService);
             assertThat(e.getMessage(), is(format("Could not evaluate value of mandatory property \"%s\"", "D8DivorceWho")));
         }
     }

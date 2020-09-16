@@ -19,6 +19,7 @@ import java.util.Map;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CO_RESPONDENT_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
@@ -36,9 +37,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.CTSC_CONTACT;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.prepareTaskContext;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithToken;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
 
 public class CoECoRespondentCoverLetterGenerationTaskTest extends BasePayloadSpecificDocumentGenerationTaskTest {
@@ -60,7 +60,7 @@ public class CoECoRespondentCoverLetterGenerationTaskTest extends BasePayloadSpe
 
     @Test
     public void executeShouldPopulateFieldInContext() throws TaskException {
-        TaskContext context = prepareTaskContext();
+        TaskContext context = contextWithToken();
 
         Map<String, Object> caseData = buildCaseDataCoRespondentNotRepresented();
         Map<String, Object> returnedCaseData = coECoRespondentCoverLetterGenerationTask.execute(context, caseData);
@@ -68,7 +68,7 @@ public class CoECoRespondentCoverLetterGenerationTaskTest extends BasePayloadSpe
         CoECoverLetter expectedDocmosisTemplateVars = CoECoverLetter.coECoverLetterBuilder()
             .petitionerFullName(TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME)
             .respondentFullName(TEST_RESPONDENT_FIRST_NAME + " " + TEST_RESPONDENT_LAST_NAME)
-            .caseReference(CASE_ID)
+            .caseReference(TEST_CASE_ID)
             .letterDate(formatDateWithCustomerFacingFormat(LocalDate.now()))
             .ctscContactDetails(CTSC_CONTACT)
             .courtName(COURT_NAME)
@@ -94,7 +94,7 @@ public class CoECoRespondentCoverLetterGenerationTaskTest extends BasePayloadSpe
 
     @Test
     public void executeShouldPopulateFieldInContextWhenRespondentIsRepresented() throws TaskException {
-        TaskContext context = prepareTaskContext();
+        TaskContext context = contextWithToken();
 
         Map<String, Object> caseData = buildCaseDataCoRespondentRepresented();
         Map<String, Object> returnedCaseData = coECoRespondentCoverLetterGenerationTask.execute(context, caseData);
@@ -102,7 +102,7 @@ public class CoECoRespondentCoverLetterGenerationTaskTest extends BasePayloadSpe
         CoECoverLetter expectedDocmosisTemplateVars = CoECoverLetter.coECoverLetterBuilder()
             .petitionerFullName(TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME)
             .respondentFullName(TEST_RESPONDENT_FIRST_NAME + " " + TEST_RESPONDENT_LAST_NAME)
-            .caseReference(CASE_ID)
+            .caseReference(TEST_CASE_ID)
             .letterDate(formatDateWithCustomerFacingFormat(LocalDate.now()))
             .ctscContactDetails(CTSC_CONTACT)
             .courtName(COURT_NAME)
@@ -124,7 +124,7 @@ public class CoECoRespondentCoverLetterGenerationTaskTest extends BasePayloadSpe
     @Test(expected = InvalidDataForTaskException.class)
     public void executeShouldThrowCourtDetailsNotFound() throws TaskException, CourtDetailsNotFound {
         final String invalidCourtLocation = "you will not find this court";
-        TaskContext context = prepareTaskContext();
+        TaskContext context = contextWithToken();
         when(courtLookupService.getDnCourtByKey(invalidCourtLocation)).thenThrow(CourtDetailsNotFound.class);
 
         Map<String, Object> caseData = buildCaseDataCoRespondentNotRepresented();

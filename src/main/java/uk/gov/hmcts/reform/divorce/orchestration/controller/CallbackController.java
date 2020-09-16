@@ -6,9 +6,10 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,7 +26,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralEmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralOrderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.Collections;
@@ -50,23 +54,20 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_VALIDATION_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
 
-
 @RestController
 @Slf4j
+@RequiredArgsConstructor
 public class CallbackController {
 
     private static final String GENERIC_ERROR_MESSAGE = "An error happened when processing this request.";
     private static final String FAILED_TO_PROCESS_SOL_DN_ERROR = "Failed to process Solicitor DN review petition for case ID: %s";
     private static final String FAILED_TO_EXECUTE_SERVICE_ERROR = "Failed to execute service for case ID:  %s";
 
-    @Autowired
-    private CaseOrchestrationService caseOrchestrationService;
-
-    @Autowired
-    private ServiceJourneyService serviceJourneyService;
-
-    @Autowired
-    private AosService aosService;
+    private final CaseOrchestrationService caseOrchestrationService;
+    private final ServiceJourneyService serviceJourneyService;
+    private final GeneralOrderService generalOrderService;
+    private final AosService aosService;
+    private final GeneralEmailService generalEmailService;
 
     @PostMapping(path = "/request-clarification-petitioner")
     @ApiOperation(value = "Trigger notification email to request clarification from Petitioner")
@@ -255,13 +256,13 @@ public class CallbackController {
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> petitionSubmitted(
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
-        caseOrchestrationService.sendPetitionerSubmissionNotificationEmail(ccdCallbackRequest);
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(caseOrchestrationService.sendPetitionerSubmissionNotificationEmail(ccdCallbackRequest))
+                .build());
 
-        return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .data(ccdCallbackRequest.getCaseDetails().getCaseData())
-            .build());
     }
 
     @PostMapping(path = "/petition-updated", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
@@ -1119,7 +1120,7 @@ public class CallbackController {
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> receivedServiceAddedDate(
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws ServiceJourneyServiceException {
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
                 .data(serviceJourneyService.receivedServiceAddedDate(ccdCallbackRequest))
@@ -1134,9 +1135,137 @@ public class CallbackController {
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> makeServiceDecision(
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        @RequestHeader(AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws ServiceJourneyServiceException {
 
-        return ResponseEntity.ok(serviceJourneyService.makeServiceDecision(ccdCallbackRequest.getCaseDetails()));
+        return ResponseEntity.ok(
+            serviceJourneyService
+                .makeServiceDecision(ccdCallbackRequest.getCaseDetails(), authorizationToken)
+        );
+    }
+
+    @PostMapping(path = "/service-decision-made/draft", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback to set document for service after decision")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> draftDocumentsForServiceDecision(
+        @RequestHeader(AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            serviceJourneyService
+                .serviceDecisionRefusal(ccdCallbackRequest.getCaseDetails(), authorizationToken)
+        );
+    }
+
+    @PostMapping(path = "/service-decision-made/final", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback to set document for service after decision")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> serviceDecisionMade(
+        @RequestHeader(AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            serviceJourneyService.serviceDecisionMade(ccdCallbackRequest.getCaseDetails(), authorizationToken)
+        );
+    }
+
+    @PostMapping(path = "/create-general-order/draft", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback to generate draft general order document")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> generateDraftOfGeneralOrder(
+        @RequestHeader(AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(generalOrderService
+                    .generateGeneralOrderDraft(ccdCallbackRequest.getCaseDetails(), authorizationToken)
+                    .getCaseData()
+                ).build()
+        );
+    }
+
+    @PostMapping(path = "/create-general-order/final", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback to generate general order document")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> generateGeneralOrder(
+        @RequestHeader(AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(generalOrderService
+                    .generateGeneralOrder(ccdCallbackRequest.getCaseDetails(), authorizationToken)
+                    .getCaseData()
+                ).build()
+        );
+    }
+
+    @PostMapping(path = "/set-up-confirm-service-payment")
+    @ApiOperation(value = "Return service payment fee.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Service payment callback")})
+    public ResponseEntity<CcdCallbackResponse> setupConfirmServicePaymentEvent(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(caseOrchestrationService.setupConfirmServicePaymentEvent(ccdCallbackRequest))
+                .build());
+    }
+
+    @PostMapping(path = "/prepare-aos-not-received-for-submission")
+    @ApiOperation(value = "Prepare event for submission")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")
+    })
+    public ResponseEntity<CcdCallbackResponse> prepareAosNotReceivedForSubmission(
+        @RequestHeader(AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(aosService.prepareAosNotReceivedEventForSubmission(authorizationToken, ccdCallbackRequest.getCaseDetails()))
+                .build());
+    }
+
+    @PostMapping(path = "/create-general-email")
+    @ApiOperation(value = "Prepare event to send general email")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Create general email notification callback processed.")})
+    public ResponseEntity<CcdCallbackResponse> createGeneralEmail(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(generalEmailService.createGeneralEmail(ccdCallbackRequest.getCaseDetails()))
+                .build());
+    }
+
+    @ExceptionHandler(CaseOrchestrationServiceException.class)
+    ResponseEntity<CcdCallbackResponse> handleCaseOrchestrationServiceExceptionForCcdCallback(CaseOrchestrationServiceException exception) {
+        log.error(exception.getIdentifiableMessage(), exception);
+
+        CcdCallbackResponse ccdCallbackResponse = CcdCallbackResponse.builder()
+            .errors(singletonList(exception.getMessage()))
+            .build();
+
+        return ResponseEntity.ok(ccdCallbackResponse);
     }
 
     private List<String> getErrors(Map<String, Object> response) {
