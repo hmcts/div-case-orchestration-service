@@ -21,7 +21,7 @@ public abstract class SendEmailTask implements Task<Map<String, Object>> {
 
     private final EmailService emailService;
 
-    protected abstract String getSubject(Map<String, Object> caseData);
+    protected abstract String getSubject(TaskContext context, Map<String, Object> caseData);
 
     protected abstract Map<String, String> getPersonalisation(TaskContext context, Map<String, Object> caseData);
 
@@ -40,7 +40,7 @@ public abstract class SendEmailTask implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         final String caseId = getCaseId(context);
-        final String subject = getSubject(caseData);
+        final String subject = getSubject(context, caseData);
 
         if (canEmailBeSent(caseData)) {
             log.info("CaseID: {} email {} is going to be sent.", caseId, subject);

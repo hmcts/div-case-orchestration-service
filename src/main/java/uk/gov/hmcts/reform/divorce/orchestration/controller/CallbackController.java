@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralEmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralOrderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
@@ -66,6 +67,7 @@ public class CallbackController {
     private final ServiceJourneyService serviceJourneyService;
     private final GeneralOrderService generalOrderService;
     private final AosService aosService;
+    private final GeneralEmailService generalEmailService;
 
     @PostMapping(path = "/request-clarification-petitioner")
     @ApiOperation(value = "Trigger notification email to request clarification from Petitioner")
@@ -1239,6 +1241,19 @@ public class CallbackController {
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
                 .data(aosService.prepareAosNotReceivedEventForSubmission(authorizationToken, ccdCallbackRequest.getCaseDetails()))
+                .build());
+    }
+
+    @PostMapping(path = "/create-general-email")
+    @ApiOperation(value = "Prepare event to send general email")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Create general email notification callback processed.")})
+    public ResponseEntity<CcdCallbackResponse> createGeneralEmail(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(generalEmailService.createGeneralEmail(ccdCallbackRequest.getCaseDetails()))
                 .build());
     }
 
