@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.CO_RESPONDENT_LINKED_TO_CASE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_EMAIL_PARTIES;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
@@ -16,6 +17,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_COSTS_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.CaseDataKeys.OTHER_PARTY_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.OTHER_PARTY_NAME;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PartyRepresentationChecker {
@@ -51,6 +54,23 @@ public class PartyRepresentationChecker {
 
         return WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT.equalsIgnoreCase(whoPaysCosts)
             || WHO_PAYS_CCD_CODE_FOR_BOTH.equalsIgnoreCase(whoPaysCosts);
+    }
+
+    public static boolean isOtherPartyDigital(Map<String, Object> caseData) {
+        String otherPartyEmail = (String) caseData.get(OTHER_PARTY_EMAIL);
+        String otherPartyName = (String) caseData.get(OTHER_PARTY_NAME);
+
+        return (!Strings.isNullOrEmpty(otherPartyEmail) && !Strings.isNullOrEmpty(otherPartyName));
+    }
+
+    public static String getGeneralEmailParties(Map<String, Object> caseData) {
+        String party = (String) caseData.get(GENERAL_EMAIL_PARTIES);
+
+        if (!Strings.isNullOrEmpty(party)) {
+            return party;
+        }
+
+        return null;
     }
 
     private static boolean isRepresented(Map<String, Object> caseData, String field) {

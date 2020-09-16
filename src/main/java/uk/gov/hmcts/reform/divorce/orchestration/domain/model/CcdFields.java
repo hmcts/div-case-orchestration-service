@@ -22,5 +22,16 @@ public class CcdFields {
     public static final String GENERAL_ORDER_DETAILS = "GeneralOrderDetails";
     public static final String GENERAL_ORDER_DATE = "GeneralOrderDate";
     public static final String GENERAL_ORDER_RECITALS = "GeneralOrderRecitals";
+    public static final String GENERAL_EMAIL_DETAILS = "GeneralEmailDetails";
     public static final String CO_RESPONDENT_LINKED_TO_CASE = "CoRespLinkedToCase";
+    public static final String CO_RESPONDENT_SOLICITOR_EMAIL_ADDRESS = "CoRespondentSolicitorEmail";
+    public static final String CO_RESPONDENT_EMAIL_ADDRESS = "CoRespEmailAddress";
+
+    public static final String GENERAL_EMAIL_OTHER_RECIPIENT_NAME = "GeneralEmailOtherRecipientName";
+    public static final String GENERAL_EMAIL_OTHER_RECIPIENT_EMAIL = "GeneralEmailOtherRecipientEmail";
+
+    public static final String PETITIONER_FIRST_NAME = OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
+    public static final String PETITIONER_LAST_NAME = OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
+    public static final String PETITIONER_EMAIL = OrchestrationConstants.D_8_PETITIONER_EMAIL;
+    public static final String GENERAL_EMAIL_PARTIES = "GeneralEmailParties";
 }
