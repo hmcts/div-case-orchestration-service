@@ -12,23 +12,14 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration
 import uk.gov.hmcts.reform.divorce.orchestration.exception.JudgeTypeNotFoundException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
-import java.util.Collections;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_ORDERS;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GeneralOrderGenerationTaskTest extends AbstractGeneralOrderGenerationTaskTest {
-
-//    private final Map<String, Object> modifiedCaseData = Collections.singletonMap("modifiedKey", "modifiedValue");
 
     @InjectMocks
     private GeneralOrderGenerationTask generalOrderGenerationTask;
@@ -39,7 +30,6 @@ public class GeneralOrderGenerationTaskTest extends AbstractGeneralOrderGenerati
     @Before
     public void setup() throws JudgeTypeNotFoundException {
         super.setup();
-//        when(ccdUtil.addNewDocumentToCollection(any(), any(), eq(GENERAL_ORDERS))).thenReturn(modifiedCaseData);
     }
 
     @Test
