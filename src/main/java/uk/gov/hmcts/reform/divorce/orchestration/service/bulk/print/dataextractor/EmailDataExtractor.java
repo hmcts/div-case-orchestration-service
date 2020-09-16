@@ -15,7 +15,7 @@ public class EmailDataExtractor {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class CaseDataKeys {
-        public static final String PETITIONER_EMAIL = OrchestrationConstants.D_8_PETITIONER_EMAIL;
+        public static final String PETITIONER_EMAIL = CcdFields.PETITIONER_EMAIL;
         public static final String PETITIONER_SOLICITOR_EMAIL = OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
         public static final String RESPONDENT_EMAIL = OrchestrationConstants.D8_RESPONDENT_SOLICITOR_EMAIL;
         public static final String RESPONDENT_SOLICITOR_EMAIL = OrchestrationConstants.RESPONDENT_SOLICITOR_EMAIL_ADDRESS;
