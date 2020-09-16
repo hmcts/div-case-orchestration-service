@@ -8,6 +8,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.GeneralOrderParty;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.GeneralOrder;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.JudgeTypeNotFoundException;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.IdamTestSupport;
@@ -26,8 +27,11 @@ import java.util.Map;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
@@ -48,6 +52,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.C
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_ORDER_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_ORDER_DETAILS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_ORDER_DRAFT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_ORDER_PARTIES;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_ORDER_RECITALS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.JUDGE_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.JUDGE_TYPE;
@@ -104,10 +109,30 @@ public class GeneralOrderTest extends IdamTestSupport {
                 isJson(),
                 hasNoJsonPath("$.data.GeneralOrderDraft"),
                 hasJsonPath("$.data.GeneralOrders", hasSize(1)),
-                hasJsonPath("$.data.GeneralOrders[0].value.DocumentType", is(documentType)),
-                hasJsonPath("$.data.GeneralOrders[0].value.DocumentLink.document_filename",
+                hasJsonPath("$.data.GeneralOrders[0].value.Document.DocumentType", is(documentType)),
+                hasJsonPath("$.data.GeneralOrders[0].value.Document.DocumentLink.document_filename",
                     is(fileName)),
+                hasJsonPath("$.data.GeneralOrders[0].value.GeneralOrderParties[0]",
+                    is(GeneralOrderParty.PETITIONER.getValue())),
                 hasNoJsonPath("$.errors"),
+                hasNoJsonPath("$.warnings")
+            )));
+    }
+
+    @Test
+    public void shouldHandleGeneralOrderServiceException() throws Exception {
+        CcdCallbackRequest input = buildRequest(emptyMap());
+
+        webClient.perform(post(API_URL)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(input))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(
+                isJson(),
+                hasJsonPath("$.errors", hasSize(1)),
+                hasJsonPath("$.errors[0]", containsString("Could not evaluate value of mandatory property \"JudgeName\"")),
                 hasNoJsonPath("$.warnings")
             )));
     }
@@ -130,6 +155,7 @@ public class GeneralOrderTest extends IdamTestSupport {
         caseData.put(GENERAL_ORDER_DETAILS, TEST_GENERAL_ORDER_DETAILS);
         caseData.put(GENERAL_ORDER_DATE, TEST_GENERAL_ORDER_DATE);
         caseData.put(GENERAL_ORDER_RECITALS, TEST_GENERAL_ORDER_RECITALS);
+        caseData.put(GENERAL_ORDER_PARTIES, asList(GeneralOrderParty.PETITIONER.getValue()));
 
         caseData.put(GENERAL_ORDER_DRAFT, new HashMap<>());
 

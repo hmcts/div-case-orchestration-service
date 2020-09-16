@@ -22,6 +22,8 @@ public class CcdFields {
     public static final String GENERAL_ORDER_DETAILS = "GeneralOrderDetails";
     public static final String GENERAL_ORDER_DATE = "GeneralOrderDate";
     public static final String GENERAL_ORDER_RECITALS = "GeneralOrderRecitals";
+    public static final String GENERAL_ORDER_PARTIES = "GeneralOrderParties";
+
     public static final String GENERAL_EMAIL_DETAILS = "GeneralEmailDetails";
     public static final String CO_RESPONDENT_LINKED_TO_CASE = "CoRespLinkedToCase";
     public static final String CO_RESPONDENT_SOLICITOR_EMAIL_ADDRESS = "CoRespondentSolicitorEmail";

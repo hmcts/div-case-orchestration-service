@@ -3,12 +3,14 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextract
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.GeneralOrderParty;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
 
 import java.util.Map;
 
 import static io.netty.util.internal.StringUtil.EMPTY_STRING;
-import static java.util.Collections.EMPTY_MAP;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
@@ -25,7 +27,7 @@ public class GeneralOrderDataExtractorTest {
 
     @Test(expected = InvalidDataForTaskException.class)
     public void getJudgeNameShouldThrowException() {
-        GeneralOrderDataExtractor.getJudgeName(EMPTY_MAP);
+        GeneralOrderDataExtractor.getJudgeName(emptyMap());
     }
 
     @Test
@@ -36,7 +38,7 @@ public class GeneralOrderDataExtractorTest {
 
     @Test(expected = InvalidDataForTaskException.class)
     public void getJudgeTypeShouldThrowException() {
-        GeneralOrderDataExtractor.getJudgeType(EMPTY_MAP);
+        GeneralOrderDataExtractor.getJudgeType(emptyMap());
     }
 
     @Test
@@ -47,7 +49,7 @@ public class GeneralOrderDataExtractorTest {
 
     @Test(expected = InvalidDataForTaskException.class)
     public void getGeneralOrderDateShouldThrowException() {
-        GeneralOrderDataExtractor.getGeneralOrderDate(EMPTY_MAP);
+        GeneralOrderDataExtractor.getGeneralOrderDate(emptyMap());
     }
 
     @Test
@@ -58,7 +60,7 @@ public class GeneralOrderDataExtractorTest {
 
     @Test(expected = InvalidDataForTaskException.class)
     public void getGeneralOrderDetailsShouldThrowException() {
-        GeneralOrderDataExtractor.getGeneralOrderDetails(EMPTY_MAP);
+        GeneralOrderDataExtractor.getGeneralOrderDetails(emptyMap());
     }
 
     @Test
@@ -69,6 +71,24 @@ public class GeneralOrderDataExtractorTest {
 
     @Test
     public void getGeneralOrderRecitalsShouldReturnEmptyString() {
-        assertThat(GeneralOrderDataExtractor.getGeneralOrderRecitals(EMPTY_MAP), is(EMPTY_STRING));
+        assertThat(GeneralOrderDataExtractor.getGeneralOrderRecitals(emptyMap()), is(EMPTY_STRING));
+    }
+
+    @Test(expected = InvalidDataForTaskException.class)
+    public void getGeneralOrderPartiesShouldThrowInvalidDataForTaskExceptionWhenEmptyMap() {
+        GeneralOrderDataExtractor.getGeneralOrderParties(emptyMap());
+    }
+
+    @Test
+    public void getGeneralOrderPartiesShouldReturnListWhenFieldFound() {
+        Map<String, Object> caseData = ImmutableMap.of(
+            CcdFields.GENERAL_ORDER_PARTIES, asList(GeneralOrderParty.PETITIONER.getValue())
+        );
+
+        assertThat(GeneralOrderDataExtractor.getGeneralOrderParties(caseData).size(), is(1));
+        assertThat(
+            GeneralOrderDataExtractor.getGeneralOrderParties(caseData).get(0),
+            is(GeneralOrderParty.PETITIONER)
+        );
     }
 }

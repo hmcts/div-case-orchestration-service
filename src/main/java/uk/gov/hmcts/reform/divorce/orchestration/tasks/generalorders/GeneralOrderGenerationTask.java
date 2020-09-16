@@ -1,9 +1,12 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceGeneralOrder;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.GeneralOrder;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.docmosis.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
@@ -18,9 +21,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.impl.JudgeTypesLookupSe
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BasePayloadSpecificDocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker;
+import uk.gov.hmcts.reform.divorce.orchestration.util.mapper.CcdMappers;
 import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -54,7 +59,23 @@ public class GeneralOrderGenerationTask extends BasePayloadSpecificDocumentGener
         TaskContext context, Map<String, Object> caseData, GeneratedDocumentInfo generatedDocumentInfo
     ) {
         log.info("CaseID: {} Adding general order to {} collection.", getCaseId(context), GENERAL_ORDERS);
-        return ccdUtil.addNewDocumentToCollection(caseData, generatedDocumentInfo, GENERAL_ORDERS);
+
+        DivorceGeneralOrder divorceGeneralOrder = DivorceGeneralOrder.builder()
+            .generalOrderParties(GeneralOrderDataExtractor.getGeneralOrderParties(caseData))
+            .document(CcdMappers.mapDocumentInfoToCcdDocument(generatedDocumentInfo).getValue())
+            .build();
+
+        List<CollectionMember<DivorceGeneralOrder>> allGeneralOrders = ccdUtil.getCollectionMembersOrEmptyList(
+            caseData, GENERAL_ORDERS, new TypeReference<List<CollectionMember<DivorceGeneralOrder>>>() {
+            });
+        CollectionMember<DivorceGeneralOrder> collectionMember = new CollectionMember<>();
+        collectionMember.setValue(divorceGeneralOrder);
+
+        allGeneralOrders.add(collectionMember);
+
+        caseData.put(GENERAL_ORDERS, allGeneralOrders);
+
+        return caseData;
     }
 
     @Override
