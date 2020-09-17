@@ -32,8 +32,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_OVERDUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_REISSUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_START_FROM_OVERDUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_START_FROM_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
@@ -239,6 +241,31 @@ public class UpdateRespondentDetailsUTest {
 
         verify(idamClient).getUserDetails(BEARER_AUTH_TOKEN);
         verify(caseMaintenanceClient).updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(LINK_RESPONDENT_GENERIC_EVENT_ID), eq(expectedDataToUpdate));
+    }
+
+    @Test
+    public void givenCaseOnServiceApplicationNotApprovedState_whenUpdateRespondentDetails_thenRespondentDetailsIsUpdated() throws TaskException {
+        final UserDetails payload = UserDetails.builder().build();
+
+        final UserDetails respondentDetails = createTestUserDetails();
+
+        final CaseDetails caseDetails = createTestCaseDetails(SERVICE_APPLICATION_NOT_APPROVED);
+
+        final Map<String, Object> dataToUpdate = createDataToUpdate();
+
+        final TaskContext taskContext = new DefaultTaskContext();
+        taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
+        taskContext.setTransientObject(IS_RESPONDENT, true);
+        taskContext.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
+
+        when(idamClient.getUserDetails(BEARER_AUTH_TOKEN))
+            .thenReturn(respondentDetails);
+
+        UserDetails result = classUnderTest.execute(taskContext, payload);
+        Assert.assertEquals(payload, result);
+
+        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED, dataToUpdate);
     }
 
 
