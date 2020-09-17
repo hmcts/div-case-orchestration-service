@@ -176,9 +176,12 @@ public class CcdUtil {
             .orElse(new ArrayList<>());
     }
 
-    public List getCollectionMembersOrEmptyList(Map<String, Object> caseData, String field, TypeReference typeReference) {
-        return (List) Optional.ofNullable(caseData.get(field))
-            .map(i -> objectMapper.convertValue(i, typeReference))
+    public <T> List<CollectionMember<T>> getListOfCollectionMembers(
+        Map<String, Object> caseData, String field
+    ) {
+        return Optional.ofNullable(caseData.get(field))
+            .map(i -> objectMapper.convertValue(i, new TypeReference<List<CollectionMember<T>>>() {
+            }))
             .orElse(new ArrayList<>());
     }
 }

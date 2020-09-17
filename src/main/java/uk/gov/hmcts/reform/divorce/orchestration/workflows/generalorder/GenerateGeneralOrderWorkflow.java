@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class GenerateGeneralOrderWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final GeneralOrderGenerationTask generalOrderGenerationTask;
-    private final GeneralOrderFieldsRemovalTask generalOrderDraftRemovalTask;
+    private final GeneralOrderFieldsRemovalTask generalOrderFieldsRemovalTask;
 
     public Map<String, Object> run(CaseDetails caseDetails, String auth) throws WorkflowException {
         String caseId = caseDetails.getCaseId();
@@ -30,7 +30,7 @@ public class GenerateGeneralOrderWorkflow extends DefaultWorkflow<Map<String, Ob
         log.info("CaseID: {} Generate General Order Workflow is going to be executed.", caseId);
 
         return this.execute(
-            new Task[] {generalOrderGenerationTask, generalOrderDraftRemovalTask},
+            new Task[] {generalOrderGenerationTask, generalOrderFieldsRemovalTask},
             caseDetails.getCaseData(),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseId),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, auth)

@@ -28,11 +28,15 @@ public class GeneralOrderFieldsRemovalTaskTest {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put("incomingKey", "incomingValue");
         caseData.put(classUnderTest.getFieldsToRemove().get(0), getDocumentLink());
+        caseData.put(classUnderTest.getFieldsToRemove().get(1), "a");
+        caseData.put(classUnderTest.getFieldsToRemove().get(2), "b");
+        caseData.put(classUnderTest.getFieldsToRemove().get(3), "c");
+        caseData.put(classUnderTest.getFieldsToRemove().get(4), "d");
 
         Map<String, Object> returnedPayload = classUnderTest.execute(contextWithToken(), caseData);
 
-        assertThat(returnedPayload, hasKey("incomingKey"));
         assertThat(returnedPayload.size(), is(1));
+        assertThat(returnedPayload, hasKey("incomingKey"));
         assertThat(returnedPayload, not(hasKey(classUnderTest.getFieldsToRemove())));
     }
 

@@ -1,12 +1,12 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceGeneralOrder;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.GeneralOrderParty;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.GeneralOrder;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.docmosis.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.mapper.CcdMappers;
 import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -60,22 +61,11 @@ public class GeneralOrderGenerationTask extends BasePayloadSpecificDocumentGener
     ) {
         log.info("CaseID: {} Adding general order to {} collection.", getCaseId(context), GENERAL_ORDERS);
 
-        DivorceGeneralOrder divorceGeneralOrder = DivorceGeneralOrder.builder()
-            .generalOrderParties(GeneralOrderDataExtractor.getGeneralOrderParties(caseData))
-            .document(CcdMappers.mapDocumentInfoToCcdDocument(generatedDocumentInfo).getValue())
-            .build();
+        CollectionMember<DivorceGeneralOrder> collectionMember = getDivorceGeneralOrderCollectionMember(
+            GeneralOrderDataExtractor.getGeneralOrderParties(caseData), generatedDocumentInfo
+        );
 
-        List<CollectionMember<DivorceGeneralOrder>> allGeneralOrders = ccdUtil.getCollectionMembersOrEmptyList(
-            caseData, GENERAL_ORDERS, new TypeReference<List<CollectionMember<DivorceGeneralOrder>>>() {
-            });
-        CollectionMember<DivorceGeneralOrder> collectionMember = new CollectionMember<>();
-        collectionMember.setValue(divorceGeneralOrder);
-
-        allGeneralOrders.add(collectionMember);
-
-        caseData.put(GENERAL_ORDERS, allGeneralOrders);
-
-        return caseData;
+        return addNewElementToCollection(caseData, collectionMember);
     }
 
     @Override
@@ -127,5 +117,34 @@ public class GeneralOrderGenerationTask extends BasePayloadSpecificDocumentGener
         } catch (JudgeTypeNotFoundException e) {
             throw new InvalidDataForTaskException(e);
         }
+    }
+
+    private Map<String, Object> addNewElementToCollection(
+        Map<String, Object> caseData, CollectionMember<DivorceGeneralOrder> collectionMember
+    ) {
+        Map<String, Object> copiedCaseData = new HashMap<>(caseData);
+
+        List<CollectionMember<DivorceGeneralOrder>> allGeneralOrders = ccdUtil.getListOfCollectionMembers(
+            copiedCaseData, GENERAL_ORDERS
+        );
+
+        allGeneralOrders.add(collectionMember);
+        copiedCaseData.put(GENERAL_ORDERS, allGeneralOrders);
+
+        return copiedCaseData;
+    }
+
+    private CollectionMember<DivorceGeneralOrder> getDivorceGeneralOrderCollectionMember(
+        List<GeneralOrderParty> caseData, GeneratedDocumentInfo generatedDocumentInfo
+    ) {
+        DivorceGeneralOrder divorceGeneralOrder = DivorceGeneralOrder.builder()
+            .generalOrderParties(caseData)
+            .document(CcdMappers.mapDocumentInfoToCcdDocument(generatedDocumentInfo).getValue())
+            .build();
+
+        CollectionMember<DivorceGeneralOrder> collectionMember = new CollectionMember<>();
+        collectionMember.setValue(divorceGeneralOrder);
+
+        return collectionMember;
     }
 }

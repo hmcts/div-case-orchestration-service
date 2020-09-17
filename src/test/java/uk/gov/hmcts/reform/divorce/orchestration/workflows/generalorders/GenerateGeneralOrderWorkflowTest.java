@@ -25,7 +25,7 @@ public class GenerateGeneralOrderWorkflowTest {
     private GeneralOrderGenerationTask generalOrderGenerationTask;
 
     @Mock
-    private GeneralOrderFieldsRemovalTask generalOrderDraftRemovalTask;
+    private GeneralOrderFieldsRemovalTask generalOrderFieldsRemovalTask;
 
     @InjectMocks
     private GenerateGeneralOrderWorkflow generateGeneralOrderWorkflow;
@@ -33,10 +33,10 @@ public class GenerateGeneralOrderWorkflowTest {
     @Test
     public void shouldCallBothTasks() throws WorkflowException {
         Map<String, Object> caseData = emptyMap();
-        mockTasksExecution(caseData, generalOrderGenerationTask, generalOrderDraftRemovalTask);
+        mockTasksExecution(caseData, generalOrderGenerationTask, generalOrderFieldsRemovalTask);
 
         generateGeneralOrderWorkflow.run(CaseDetails.builder().caseData(caseData).build(), AUTH_TOKEN);
 
-        verifyTasksCalledInOrder(caseData, generalOrderGenerationTask, generalOrderDraftRemovalTask);
+        verifyTasksCalledInOrder(caseData, generalOrderGenerationTask, generalOrderFieldsRemovalTask);
     }
 }
