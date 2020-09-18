@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -12,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.event.domain.AosOverdueRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.AsyncTask;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseOrchestrationValues;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,31 +27,21 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSup
 @Slf4j
 public class MarkAosCasesAsOverdueTask extends AsyncTask<Void> {
 
-    private static final String DEFAULT_AOS_OVERDUE_GRACE_PERIOD = "29";
-
-    @Value("${AOS_OVERDUE_GRACE_PERIOD}")
-    private String gracePeriod;
-
     @Autowired
     private CMSElasticSearchSupport cmsElasticSearchSupport;
+
+    @Autowired
+    private CaseOrchestrationValues caseOrchestrationValues;
 
     private QueryBuilder[] queryBuilders;
 
     @PostConstruct
     public void init() {
-        String limitDate = buildDateForTodayMinusGivenPeriod(getGracePeriod() + ELASTIC_SEARCH_DAYS_REPRESENTATION);
+        String limitDate = buildDateForTodayMinusGivenPeriod(caseOrchestrationValues.getAosOverdueGracePeriod() + ELASTIC_SEARCH_DAYS_REPRESENTATION);
         queryBuilders = new QueryBuilder[] {
             QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AOS_AWAITING),
             QueryBuilders.rangeQuery("data.dueDate").lt(limitDate)
         };
-    }
-
-    private String getGracePeriod() {
-        if (gracePeriod != null) {
-            return gracePeriod;
-        } else {
-            return DEFAULT_AOS_OVERDUE_GRACE_PERIOD;
-        }
     }
 
     @Override
