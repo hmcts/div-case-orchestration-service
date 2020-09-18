@@ -58,7 +58,8 @@ public class AosOverdueTest extends MockedFunctionalTest {
     @Test
     public void shouldMoveEligibleCasesToAosOverdue() throws Exception {
         QueryBuilder stateQuery = QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AOS_AWAITING);
-        QueryBuilder dateFilter = QueryBuilders.rangeQuery("data." + CCD_DUE_DATE).lt(buildDateForTodayMinusGivenPeriod(TEST_CONFIGURED_AOS_OVERDUE_GRACE_PERIOD));
+        QueryBuilder dateFilter = QueryBuilders.rangeQuery("data." + CCD_DUE_DATE)
+            .lt(buildDateForTodayMinusGivenPeriod(TEST_CONFIGURED_AOS_OVERDUE_GRACE_PERIOD));
         stubCaseMaintenanceSearchEndpoint(asList(
             CaseDetails.builder().caseId("123").build(),
             CaseDetails.builder().caseId("456").build()
