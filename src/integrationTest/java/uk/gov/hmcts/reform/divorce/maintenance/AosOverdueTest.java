@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.model.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.cos.RetrieveCaseSupport;
 import uk.gov.hmcts.reform.divorce.util.ElasticSearchTestHelper;
 
+import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
@@ -61,7 +62,7 @@ public class AosOverdueTest extends RetrieveCaseSupport {
         await().atMost(60, SECONDS).untilAsserted(() -> {
             CaseDetails caseDetails = retrieveCase(citizenUser, caseId);
             String state = caseDetails.getState();
-            assertThat(state, is(AOS_OVERDUE));
+            assertThat(format("Case %s should be in \"%s\" state", caseId, AOS_OVERDUE), state, is(AOS_OVERDUE));
         });
     }
 
