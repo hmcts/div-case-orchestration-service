@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -19,13 +20,17 @@ import javax.annotation.PostConstruct;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport.ELASTIC_SEARCH_DAYS_REPRESENTATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport.buildDateForTodayMinusGivenPeriod;
 
 @Component
 @Slf4j
 public class MarkAosCasesAsOverdueTask extends AsyncTask<Void> {
 
-    private static final String AOS_TIME_LIMIT = "30d";
+    private static final String DEFAULT_AOS_OVERDUE_GRACE_PERIOD = "29";
+
+    @Value("${AOS_OVERDUE_GRACE_PERIOD}")
+    private String gracePeriod;
 
     @Autowired
     private CMSElasticSearchSupport cmsElasticSearchSupport;
@@ -34,11 +39,19 @@ public class MarkAosCasesAsOverdueTask extends AsyncTask<Void> {
 
     @PostConstruct
     public void init() {
-        String limitDate = buildDateForTodayMinusGivenPeriod(AOS_TIME_LIMIT);
+        String limitDate = buildDateForTodayMinusGivenPeriod(getGracePeriod() + ELASTIC_SEARCH_DAYS_REPRESENTATION);
         queryBuilders = new QueryBuilder[] {
             QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AOS_AWAITING),
-            QueryBuilders.rangeQuery("data.dueDate").lte(limitDate)
+            QueryBuilders.rangeQuery("data.dueDate").lt(limitDate)
         };
+    }
+
+    private String getGracePeriod() {
+        if (gracePeriod != null) {
+            return gracePeriod;
+        } else {
+            return DEFAULT_AOS_OVERDUE_GRACE_PERIOD;
+        }
     }
 
     @Override
@@ -48,7 +61,7 @@ public class MarkAosCasesAsOverdueTask extends AsyncTask<Void> {
             .map(caseId -> new AosOverdueRequest(this, caseId))
             .collect(Collectors.toList());
 
-        log.info("Found {} cases eligible to be moved to AOS Overdue.");
+        log.info("Found {} cases eligible to be moved to AOS Overdue.", events.size());
 
         return events;
     }

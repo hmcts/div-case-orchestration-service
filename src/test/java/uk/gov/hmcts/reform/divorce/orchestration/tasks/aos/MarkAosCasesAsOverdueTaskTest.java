@@ -34,12 +34,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport.buildDateForTodayMinusGivenPeriod;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MarkAosCasesAsOverdueTaskTest {
 
-    private static final String AOS_TIME_LIMIT = "30d";
+    private static final String DEFAULT_GRACE_PERIOD = "29";
 
     @Mock
     private CMSElasticSearchSupport cmsElasticSearchSupport;
@@ -64,7 +63,7 @@ public class MarkAosCasesAsOverdueTaskTest {
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
 
         QueryBuilder stateQuery = QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AOS_AWAITING);
-        QueryBuilder dateFilter = QueryBuilders.rangeQuery("data.dueDate").lte(buildDateForTodayMinusGivenPeriod(AOS_TIME_LIMIT));
+        QueryBuilder dateFilter = QueryBuilders.rangeQuery("data.dueDate").lt("now/d-" + DEFAULT_GRACE_PERIOD + "d");
         queryBuilders = new QueryBuilder[] {stateQuery, dateFilter};
     }
 

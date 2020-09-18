@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
@@ -31,9 +32,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOT_RECEIVED_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport.buildDateForTodayMinusGivenPeriod;
 
+@TestPropertySource(properties = {
+    "AOS_OVERDUE_GRACE_PERIOD=0"
+})
 public class AosOverdueTest extends MockedFunctionalTest {
 
-    private static final String TIME_LIMIT_FOR_AOS = "30d";
+    private static final String TEST_CONFIGURED_AOS_OVERDUE_GRACE_PERIOD = "0d";
 
     @MockBean
     private AuthUtil authUtil;
@@ -54,7 +58,7 @@ public class AosOverdueTest extends MockedFunctionalTest {
     @Test
     public void shouldMoveEligibleCasesToAosOverdue() throws Exception {
         QueryBuilder stateQuery = QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AOS_AWAITING);
-        QueryBuilder dateFilter = QueryBuilders.rangeQuery("data." + CCD_DUE_DATE).lte(buildDateForTodayMinusGivenPeriod(TIME_LIMIT_FOR_AOS));
+        QueryBuilder dateFilter = QueryBuilders.rangeQuery("data." + CCD_DUE_DATE).lt(buildDateForTodayMinusGivenPeriod(TEST_CONFIGURED_AOS_OVERDUE_GRACE_PERIOD));
         stubCaseMaintenanceSearchEndpoint(asList(
             CaseDetails.builder().caseId("123").build(),
             CaseDetails.builder().caseId("456").build()
