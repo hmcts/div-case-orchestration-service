@@ -15,6 +15,9 @@ java:
     FLYWAY_URL: "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/{{ .Values.postgresql.postgresqlDatabase}}"
     #This means it will apply, as opposed to check, DB changes in preview (since a new DB is created for every deployment)
     FLYWAY_NOOP_STRATEGY: false
+    #Grace period zero. Job running every minute.
+    AOS_OVERDUE_GRACE_PERIOD: 0
+    SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_CRON: "0 * * ? * * *"
 
   keyVaults:
     "div":
