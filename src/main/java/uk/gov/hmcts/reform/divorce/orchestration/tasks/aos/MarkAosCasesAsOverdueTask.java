@@ -37,7 +37,9 @@ public class MarkAosCasesAsOverdueTask extends AsyncTask<Void> {
 
     @PostConstruct
     public void init() {
-        String limitDate = buildDateForTodayMinusGivenPeriod(caseOrchestrationValues.getAosOverdueGracePeriod() + ELASTIC_SEARCH_DAYS_REPRESENTATION);
+        String aosOverdueGracePeriod = caseOrchestrationValues.getAosOverdueGracePeriod();
+        log.info("Initialising {} with {} days of grace period.", MarkAosCasesAsOverdueTask.class.getSimpleName(), aosOverdueGracePeriod);
+        String limitDate = buildDateForTodayMinusGivenPeriod(aosOverdueGracePeriod + ELASTIC_SEARCH_DAYS_REPRESENTATION);
         queryBuilders = new QueryBuilder[] {
             QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AOS_AWAITING),
             QueryBuilders.rangeQuery("data.dueDate").lt(limitDate)
