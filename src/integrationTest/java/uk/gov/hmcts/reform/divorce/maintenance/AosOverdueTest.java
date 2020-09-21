@@ -58,7 +58,7 @@ public class AosOverdueTest extends RetrieveCaseSupport {
             .then()
             .statusCode(HttpStatus.SC_OK);
 
-        await().atMost(60, SECONDS).untilAsserted(() -> {
+        await().atMost(120, SECONDS).untilAsserted(() -> {
             CaseDetails caseDetails = retrieveCase(citizenUser, caseId);
             String state = caseDetails.getState();
             assertThat(state, is(AOS_OVERDUE));
