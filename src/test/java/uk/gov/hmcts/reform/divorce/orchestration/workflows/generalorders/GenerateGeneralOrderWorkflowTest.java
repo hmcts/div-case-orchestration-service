@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.GeneralOrderDraftFieldsRemovalTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.GeneralOrderFieldsRemovalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.GeneralOrderGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalorder.GenerateGeneralOrderWorkflow;
 
@@ -25,7 +25,7 @@ public class GenerateGeneralOrderWorkflowTest {
     private GeneralOrderGenerationTask generalOrderGenerationTask;
 
     @Mock
-    private GeneralOrderDraftFieldsRemovalTask generalOrderDraftRemovalTask;
+    private GeneralOrderFieldsRemovalTask generalOrderFieldsRemovalTask;
 
     @InjectMocks
     private GenerateGeneralOrderWorkflow generateGeneralOrderWorkflow;
@@ -33,10 +33,10 @@ public class GenerateGeneralOrderWorkflowTest {
     @Test
     public void shouldCallBothTasks() throws WorkflowException {
         Map<String, Object> caseData = emptyMap();
-        mockTasksExecution(caseData, generalOrderGenerationTask, generalOrderDraftRemovalTask);
+        mockTasksExecution(caseData, generalOrderGenerationTask, generalOrderFieldsRemovalTask);
 
         generateGeneralOrderWorkflow.run(CaseDetails.builder().caseData(caseData).build(), AUTH_TOKEN);
 
-        verifyTasksCalledInOrder(caseData, generalOrderGenerationTask, generalOrderDraftRemovalTask);
+        verifyTasksCalledInOrder(caseData, generalOrderGenerationTask, generalOrderFieldsRemovalTask);
     }
 }

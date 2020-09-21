@@ -11,10 +11,18 @@ import static java.util.Arrays.asList;
 
 @Component
 @Slf4j
-public class GeneralOrderDraftFieldsRemovalTask extends FieldsRemovalTask {
+public class GeneralOrderFieldsRemovalTask extends FieldsRemovalTask {
 
     @Override
     protected List<String> getFieldsToRemove() {
-        return asList(CcdFields.GENERAL_ORDER_DRAFT);
+        return asList(
+            CcdFields.GENERAL_ORDER_DRAFT,
+            CcdFields.GENERAL_ORDER_RECITALS,
+            CcdFields.GENERAL_ORDER_PARTIES,
+            CcdFields.GENERAL_ORDER_DATE,
+            CcdFields.GENERAL_ORDER_DETAILS,
+            CcdFields.JUDGE_NAME,
+            CcdFields.JUDGE_TYPE
+        );
     }
 }
