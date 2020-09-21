@@ -3,9 +3,13 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextract
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.GeneralOrderParty;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryListOfStrings;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
@@ -20,6 +24,7 @@ public class GeneralOrderDataExtractor {
         public static final String JUDGE_NAME = CcdFields.JUDGE_NAME;
         public static final String GENERAL_ORDER_DETAILS = CcdFields.GENERAL_ORDER_DETAILS;
         public static final String GENERAL_ORDER_RECITALS = CcdFields.GENERAL_ORDER_RECITALS;
+        public static final String GENERAL_ORDER_PARTIES = CcdFields.GENERAL_ORDER_PARTIES;
     }
 
     public static String getJudgeName(Map<String, Object> caseData) {
@@ -40,5 +45,11 @@ public class GeneralOrderDataExtractor {
 
     public static String getGeneralOrderDate(Map<String, Object> caseData) {
         return formatDateWithCustomerFacingFormat(getMandatoryStringValue(caseData, CaseDataKeys.GENERAL_ORDER_DATE));
+    }
+
+    public static List<GeneralOrderParty> getGeneralOrderParties(Map<String, Object> caseData) {
+        return getMandatoryListOfStrings(caseData, CaseDataKeys.GENERAL_ORDER_PARTIES).stream()
+            .map(GeneralOrderParty::from)
+            .collect(Collectors.toList());
     }
 }
