@@ -8,6 +8,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceGeneralOrder;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.GeneralOrderParty;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.GeneralOrder;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.JudgeTypeNotFoundException;
@@ -48,6 +51,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETIT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.CO_RESPONDENT_LINKED_TO_CASE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_ORDERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_ORDER_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_ORDER_DETAILS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_ORDER_DRAFT;
@@ -89,7 +93,7 @@ public class GeneralOrderTest extends IdamTestSupport {
     }
 
     @Test
-    public void shouldGenerateOrderToDispenseAndAddItToResponse() throws Exception {
+    public void shouldGenerateOrderTheFirstGeneralOrderAndCreateCollection() throws Exception {
         Map<String, Object> caseData = buildInputCaseData();
         CcdCallbackRequest input = buildRequest(caseData);
         String documentType = GeneralOrderGenerationTask.FileMetadata.DOCUMENT_TYPE;
@@ -118,6 +122,35 @@ public class GeneralOrderTest extends IdamTestSupport {
     }
 
     @Test
+    public void shouldGenerateOrderAnotherGeneralOrderAndAddItToExistingCollection() throws Exception {
+        Map<String, Object> caseData = addGeneralOrderCollection(buildInputCaseData());
+        CcdCallbackRequest input = buildRequest(caseData);
+        String documentType = GeneralOrderGenerationTask.FileMetadata.DOCUMENT_TYPE;
+        String fileName = documentType + DateUtils.formatDateFromLocalDate(LocalDate.now()) + ".pdf";
+
+        stubDgsRequest(caseData, GeneralOrderGenerationTask.FileMetadata.TEMPLATE_ID, documentType);
+
+        webClient.perform(post(API_URL)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(input))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(
+                isJson(),
+                hasNoJsonPath("$.data.GeneralOrderDraft"),
+                hasJsonPath("$.data.GeneralOrders", hasSize(2)),
+                hasJsonPath("$.data.GeneralOrders[1].value.Document.DocumentType", is(documentType)),
+                hasJsonPath("$.data.GeneralOrders[1].value.Document.DocumentLink.document_filename",
+                    is(fileName)),
+                hasJsonPath("$.data.GeneralOrders[1].value.GeneralOrderParties[0]",
+                    is(GeneralOrderParty.PETITIONER.getValue())),
+                hasNoJsonPath("$.errors"),
+                hasNoJsonPath("$.warnings")
+            )));
+    }
+
+    @Test
     public void shouldHandleGeneralOrderServiceException() throws Exception {
         CcdCallbackRequest input = buildRequest(emptyMap());
 
@@ -133,6 +166,20 @@ public class GeneralOrderTest extends IdamTestSupport {
                 hasJsonPath("$.errors[0]", containsString("Could not evaluate value of mandatory property \"JudgeName\"")),
                 hasNoJsonPath("$.warnings")
             )));
+    }
+
+    private Map<String, Object> addGeneralOrderCollection(Map<String, Object> caseData) {
+        CollectionMember<DivorceGeneralOrder> member = new CollectionMember<>();
+        member.setValue(
+            DivorceGeneralOrder.builder()
+                .document(new Document())
+                .generalOrderParties(asList(GeneralOrderParty.PETITIONER, GeneralOrderParty.RESPONDENT))
+                .build()
+        );
+
+        caseData.put(GENERAL_ORDERS, asList(member));
+
+        return caseData;
     }
 
     protected Map<String, Object> buildInputCaseData() {

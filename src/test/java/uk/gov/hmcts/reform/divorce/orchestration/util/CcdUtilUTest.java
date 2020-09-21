@@ -362,4 +362,27 @@ public class CcdUtilUTest {
 
         assertThat(result, is(empty()));
     }
+
+    @Test
+    public void givenFieldWithAnEmptyArray_whenGetListOfCollectionMembers_shouldReturnEmptyArray() {
+        final String field = "list";
+        final List<CollectionMember<DivorceGeneralOrder>> myList = emptyList();
+        Map<String, Object> caseData = ImmutableMap.of(field, myList);
+
+        List<CollectionMember<DivorceGeneralOrder>> result = ccdUtil.getListOfCollectionMembers(caseData, field);
+
+        assertThat(result, is(empty()));
+    }
+
+    @Test
+    public void givenFieldWithPopulatedArray_whenGetListOfCollectionMembers_shouldReturnPopulatedArray() {
+        final String field = "list";
+        final List<CollectionMember<DivorceGeneralOrder>> myList = asList(new CollectionMember<>());
+        Map<String, Object> caseData = ImmutableMap.of(field, myList);
+
+        List<CollectionMember<DivorceGeneralOrder>> result = ccdUtil.getListOfCollectionMembers(caseData, field);
+
+        assertThat(result.size(), is(1));
+        assertThat(result, is(myList));
+    }
 }
