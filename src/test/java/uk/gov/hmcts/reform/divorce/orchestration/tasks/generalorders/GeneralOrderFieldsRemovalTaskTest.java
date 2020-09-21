@@ -32,6 +32,8 @@ public class GeneralOrderFieldsRemovalTaskTest {
         caseData.put(classUnderTest.getFieldsToRemove().get(2), "b");
         caseData.put(classUnderTest.getFieldsToRemove().get(3), "c");
         caseData.put(classUnderTest.getFieldsToRemove().get(4), "d");
+        caseData.put(classUnderTest.getFieldsToRemove().get(5), "e");
+        caseData.put(classUnderTest.getFieldsToRemove().get(6), "f");
 
         Map<String, Object> returnedPayload = classUnderTest.execute(contextWithToken(), caseData);
 
@@ -48,5 +50,7 @@ public class GeneralOrderFieldsRemovalTaskTest {
         assertThat(classUnderTest.getFieldsToRemove().get(2), is(CcdFields.GENERAL_ORDER_PARTIES));
         assertThat(classUnderTest.getFieldsToRemove().get(3), is(CcdFields.GENERAL_ORDER_DATE));
         assertThat(classUnderTest.getFieldsToRemove().get(4), is(CcdFields.GENERAL_ORDER_DETAILS));
+        assertThat(classUnderTest.getFieldsToRemove().get(5), is(CcdFields.JUDGE_NAME));
+        assertThat(classUnderTest.getFieldsToRemove().get(6), is(CcdFields.JUDGE_TYPE));
     }
 }

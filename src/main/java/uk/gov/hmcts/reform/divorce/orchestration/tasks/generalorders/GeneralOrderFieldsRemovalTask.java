@@ -20,7 +20,9 @@ public class GeneralOrderFieldsRemovalTask extends FieldsRemovalTask {
             CcdFields.GENERAL_ORDER_RECITALS,
             CcdFields.GENERAL_ORDER_PARTIES,
             CcdFields.GENERAL_ORDER_DATE,
-            CcdFields.GENERAL_ORDER_DETAILS
+            CcdFields.GENERAL_ORDER_DETAILS,
+            CcdFields.JUDGE_NAME,
+            CcdFields.JUDGE_TYPE
         );
     }
 }

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.generalorders;
 
 import com.google.common.collect.ImmutableMap;
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -109,15 +110,13 @@ public class GeneralOrderTest extends IdamTestSupport {
             .andExpect(status().isOk())
             .andExpect(content().string(allOf(
                 isJson(),
-                hasNoJsonPath("$.data.GeneralOrderDraft"),
+                getAllJsonKeysThatShouldNotExistWhenSuccess(),
                 hasJsonPath("$.data.GeneralOrders", hasSize(1)),
                 hasJsonPath("$.data.GeneralOrders[0].value.Document.DocumentType", is(documentType)),
                 hasJsonPath("$.data.GeneralOrders[0].value.Document.DocumentLink.document_filename",
                     is(fileName)),
                 hasJsonPath("$.data.GeneralOrders[0].value.GeneralOrderParties[0]",
-                    is(GeneralOrderParty.PETITIONER.getValue())),
-                hasNoJsonPath("$.errors"),
-                hasNoJsonPath("$.warnings")
+                    is(GeneralOrderParty.PETITIONER.getValue()))
             )));
     }
 
@@ -138,15 +137,13 @@ public class GeneralOrderTest extends IdamTestSupport {
             .andExpect(status().isOk())
             .andExpect(content().string(allOf(
                 isJson(),
-                hasNoJsonPath("$.data.GeneralOrderDraft"),
+                getAllJsonKeysThatShouldNotExistWhenSuccess(),
                 hasJsonPath("$.data.GeneralOrders", hasSize(2)),
                 hasJsonPath("$.data.GeneralOrders[1].value.Document.DocumentType", is(documentType)),
                 hasJsonPath("$.data.GeneralOrders[1].value.Document.DocumentLink.document_filename",
                     is(fileName)),
                 hasJsonPath("$.data.GeneralOrders[1].value.GeneralOrderParties[0]",
-                    is(GeneralOrderParty.PETITIONER.getValue())),
-                hasNoJsonPath("$.errors"),
-                hasNoJsonPath("$.warnings")
+                    is(GeneralOrderParty.PETITIONER.getValue()))
             )));
     }
 
@@ -253,6 +250,19 @@ public class GeneralOrderTest extends IdamTestSupport {
             AUTH_TOKEN,
             "createGeneralOrder",
             CaseDetails.builder().caseData(caseData).caseId(TEST_CASE_ID).build()
+        );
+    }
+
+    private Matcher<String> getAllJsonKeysThatShouldNotExistWhenSuccess() {
+        return allOf(
+            hasNoJsonPath("$.data.GeneralOrderRecitals"),
+            hasNoJsonPath("$.data.GeneralOrderParties"),
+            hasNoJsonPath("$.data.GeneralOrderDate"),
+            hasNoJsonPath("$.data.GeneralOrderDetails"),
+            hasNoJsonPath("$.data.JudgeType"),
+            hasNoJsonPath("$.data.JudgeName"),
+            hasNoJsonPath("$.errors"),
+            hasNoJsonPath("$.warnings")
         );
     }
 }
