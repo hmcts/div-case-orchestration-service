@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceGeneralOrder;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -172,6 +173,15 @@ public class CcdUtil {
     public List<CollectionMember<Document>> getCollectionMembersOrEmptyList(Map<String, Object> caseData, String field) {
         return Optional.ofNullable(caseData.get(field))
             .map(i -> objectMapper.convertValue(i, new TypeReference<List<CollectionMember<Document>>>() {
+            }))
+            .orElse(new ArrayList<>());
+    }
+
+    public List<CollectionMember<DivorceGeneralOrder>> getListOfCollectionMembers(
+        Map<String, Object> caseData, String field
+    ) {
+        return Optional.ofNullable(caseData.get(field))
+            .map(i -> objectMapper.convertValue(i, new TypeReference<List<CollectionMember<DivorceGeneralOrder>>>() {
             }))
             .orElse(new ArrayList<>());
     }

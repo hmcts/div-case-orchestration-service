@@ -26,7 +26,7 @@ public class GeneralOrderDraftTest extends GeneralOrderTest {
     private static final String API_URL = "/create-general-order/draft";
 
     @Test
-    public void shouldGenerateOrderToDispenseAndAddItToResponse() throws Exception {
+    public void shouldGenerateOrderTheFirstGeneralOrderAndAddItToCollection() throws Exception {
         Map<String, Object> caseData = buildInputCaseData();
         CcdCallbackRequest input = buildRequest(caseData);
         String documentType = GeneralOrderGenerationTask.FileMetadata.DOCUMENT_TYPE;

@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.GeneralOrderDraftFieldsRemovalTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.GeneralOrderFieldsRemovalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.GeneralOrderGenerationTask;
 
 import java.util.Map;
@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class GenerateGeneralOrderWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final GeneralOrderGenerationTask generalOrderGenerationTask;
-    private final GeneralOrderDraftFieldsRemovalTask generalOrderDraftRemovalTask;
+    private final GeneralOrderFieldsRemovalTask generalOrderFieldsRemovalTask;
 
     public Map<String, Object> run(CaseDetails caseDetails, String auth) throws WorkflowException {
         String caseId = caseDetails.getCaseId();
@@ -30,7 +30,7 @@ public class GenerateGeneralOrderWorkflow extends DefaultWorkflow<Map<String, Ob
         log.info("CaseID: {} Generate General Order Workflow is going to be executed.", caseId);
 
         return this.execute(
-            new Task[] {generalOrderGenerationTask, generalOrderDraftRemovalTask},
+            new Task[] {generalOrderGenerationTask, generalOrderFieldsRemovalTask},
             caseDetails.getCaseData(),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseId),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, auth)
