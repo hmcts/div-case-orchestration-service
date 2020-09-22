@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.util.ElasticSearchTestHelper;
 import static java.lang.String.format;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
+import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
@@ -59,7 +60,7 @@ public class AosOverdueTest extends RetrieveCaseSupport {
             .then()
             .statusCode(HttpStatus.SC_OK);
 
-        await().atMost(60, SECONDS).untilAsserted(() -> {
+        await().pollInterval(fibonacci(SECONDS)).atMost(60, SECONDS).untilAsserted(() -> {
             CaseDetails caseDetails = retrieveCase(citizenUser, caseId);
             String state = caseDetails.getState();
             assertThat(format("Case %s should be in \"%s\" state", caseId, AOS_OVERDUE), state, is(AOS_OVERDUE));
