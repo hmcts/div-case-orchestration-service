@@ -18,19 +18,26 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.Ser
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithToken;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GeneralOrderDraftRemovalTest {
+public class GeneralOrderFieldsRemovalTaskTest {
 
     @InjectMocks
-    private GeneralOrderDraftFieldsRemovalTask classUnderTest;
+    private GeneralOrderFieldsRemovalTask classUnderTest;
 
     @Test
     public void shouldRemoveGeneralOrderDraftKeyFromCaseData() {
-        Map<String, Object> caseData = new HashMap();
+        Map<String, Object> caseData = new HashMap<>();
         caseData.put("incomingKey", "incomingValue");
         caseData.put(classUnderTest.getFieldsToRemove().get(0), getDocumentLink());
+        caseData.put(classUnderTest.getFieldsToRemove().get(1), "a");
+        caseData.put(classUnderTest.getFieldsToRemove().get(2), "b");
+        caseData.put(classUnderTest.getFieldsToRemove().get(3), "c");
+        caseData.put(classUnderTest.getFieldsToRemove().get(4), "d");
+        caseData.put(classUnderTest.getFieldsToRemove().get(5), "e");
+        caseData.put(classUnderTest.getFieldsToRemove().get(6), "f");
 
         Map<String, Object> returnedPayload = classUnderTest.execute(contextWithToken(), caseData);
 
+        assertThat(returnedPayload.size(), is(1));
         assertThat(returnedPayload, hasKey("incomingKey"));
         assertThat(returnedPayload, not(hasKey(classUnderTest.getFieldsToRemove())));
     }
@@ -39,5 +46,11 @@ public class GeneralOrderDraftRemovalTest {
     public void getFieldToRemoveIsValid() {
         assertThat(classUnderTest.getFieldsToRemove(), is(not(empty())));
         assertThat(classUnderTest.getFieldsToRemove().get(0), is(CcdFields.GENERAL_ORDER_DRAFT));
+        assertThat(classUnderTest.getFieldsToRemove().get(1), is(CcdFields.GENERAL_ORDER_RECITALS));
+        assertThat(classUnderTest.getFieldsToRemove().get(2), is(CcdFields.GENERAL_ORDER_PARTIES));
+        assertThat(classUnderTest.getFieldsToRemove().get(3), is(CcdFields.GENERAL_ORDER_DATE));
+        assertThat(classUnderTest.getFieldsToRemove().get(4), is(CcdFields.GENERAL_ORDER_DETAILS));
+        assertThat(classUnderTest.getFieldsToRemove().get(5), is(CcdFields.JUDGE_NAME));
+        assertThat(classUnderTest.getFieldsToRemove().get(6), is(CcdFields.JUDGE_TYPE));
     }
 }
