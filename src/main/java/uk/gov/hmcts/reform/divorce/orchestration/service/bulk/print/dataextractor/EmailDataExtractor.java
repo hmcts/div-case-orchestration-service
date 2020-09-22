@@ -17,7 +17,7 @@ public class EmailDataExtractor {
     public static class CaseDataKeys {
         public static final String PETITIONER_EMAIL = CcdFields.PETITIONER_EMAIL;
         public static final String PETITIONER_SOLICITOR_EMAIL = OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
-        public static final String RESPONDENT_EMAIL = OrchestrationConstants.D8_RESPONDENT_SOLICITOR_EMAIL;
+        public static final String RESPONDENT_EMAIL = OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
         public static final String RESPONDENT_SOLICITOR_EMAIL = OrchestrationConstants.RESPONDENT_SOLICITOR_EMAIL_ADDRESS;
         public static final String CO_RESPONDENT_EMAIL = OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
         public static final String CO_RESPONDENT_SOLICITOR_EMAIL = CcdFields.CO_RESPONDENT_SOLICITOR_EMAIL_ADDRESS;
