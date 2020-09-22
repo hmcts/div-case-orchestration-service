@@ -71,6 +71,8 @@ scheduler:
             # silence the 'wall-of-text' - unnecessary exception throw about blob types
             non_contextual_creation: true
 
+aos-overdue:
+  grace-period: ${AOS_OVERDUE_GRACE_PERIOD:29}
 
 jackson:
   deserialization:
