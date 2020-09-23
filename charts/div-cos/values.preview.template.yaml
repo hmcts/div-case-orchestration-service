@@ -14,9 +14,8 @@ java:
     DIV_SCHEDULER_DB_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
     FLYWAY_URL: "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/{{ .Values.postgresql.postgresqlDatabase}}"
     #Scheduler parameters
-    SCHEDULER_ENABLED: true
-    SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_ENABLED: true
-    #PLEASE DO NOT APPROVE PR WHILE THIS IS IN IT
+    SCHEDULER_ENABLED: false
+    SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_ENABLED: false
     SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_CRON: "0 * * ? * * *"#Runs every minute (if enabled)
 
   keyVaults:
