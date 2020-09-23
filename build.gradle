@@ -71,7 +71,8 @@ def versions = [
         springSecurityCrypto         : '5.2.4.RELEASE',
         springSecurityRsa            : '1.0.8.RELEASE',
         tomcat                       : '9.0.37',
-        unirest                      : '1.4.9'
+        unirest                      : '1.4.9',
+        embeddedPostgres             : '1.5.5'
 ]
 
 allprojects {
@@ -318,6 +319,7 @@ dependencies {
         exclude(module: 'commons-logging')
         exclude(module: 'android-json')
     }
+    testImplementation group: 'io.zonky.test', name: 'embedded-database-spring-test', version: versions.embeddedPostgres
 
     //integration test
     integrationTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok

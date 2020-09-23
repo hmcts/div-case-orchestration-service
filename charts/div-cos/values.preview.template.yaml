@@ -13,8 +13,10 @@ java:
     DIV_SCHEDULER_DB_USER_NAME: "{{ .Values.postgresql.postgresqlUsername}}"
     DIV_SCHEDULER_DB_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
     FLYWAY_URL: "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/{{ .Values.postgresql.postgresqlDatabase}}"
-    #This means it will apply, as opposed to check, DB changes in preview (since a new DB is created for every deployment)
-    FLYWAY_NOOP_STRATEGY: false
+    #Scheduler parameters
+    SCHEDULER_ENABLED: false
+    SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_ENABLED: false
+    SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_CRON: "0 * * ? * * *"#Runs every minute (if enabled)
 
   keyVaults:
     "div":

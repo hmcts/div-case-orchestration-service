@@ -38,6 +38,26 @@ spring:
     test-connection: false
   main:
     allow-bean-definition-overriding: true
+  quartz:
+    job-store-type: jdbc
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceId: AUTO
+          jobStore:
+            isClustered: true
+            class: org.quartz.impl.jdbcjobstore.JobStoreTX
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+            dataSource: 'scheduler'
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 8
+    scheduler-name: 'Divorce Job Scheduler'
+    auto-startup: ${scheduler.enabled}
+  flyway:
+    enabled: ${scheduler.enabled}
+    schemas: 'public'
 
 feign:
   client:
@@ -47,18 +67,6 @@ feign:
         readTimeout: 60000
         requestInterceptors:
           - uk.gov.hmcts.reform.divorce.orchestration.config.FeignRequestInterceptor
-quartzProperties:
-  org.quartz:
-    scheduler:
-      instanceId: AUTO
-    jobStore:
-      isClustered: true
-      class: org.quartz.impl.jdbcjobstore.JobStoreTX
-      driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
-      dataSource:  divDataSource
-    threadPool:
-      class: org.quartz.simpl.SimpleThreadPool
-      threadCount: 8
 
 scheduler:
   re-create: ${SCHEDULER_RE_CREATE:true}
@@ -620,4 +628,3 @@ logging:
     uk.gov.hmcts.reform.divorce.orchestration: DEBUG
   pattern:
     console: "%d{yyyy-MMM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{15} - %msg%n"
-
