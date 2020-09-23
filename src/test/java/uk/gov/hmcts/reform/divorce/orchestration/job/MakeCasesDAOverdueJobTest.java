@@ -22,6 +22,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 @RunWith(MockitoJUnitRunner.class)
 public class MakeCasesDAOverdueJobTest {
 
+    /*
+        NOTE TO DEVELOPER -
+        when we finally activate this, please write a Quartz test for it.
+        You can find examples in subclasses of QuartzTest.
+     */
+
     @Mock
     private DecreeAbsoluteService decreeAbsoluteServiceMock;
 

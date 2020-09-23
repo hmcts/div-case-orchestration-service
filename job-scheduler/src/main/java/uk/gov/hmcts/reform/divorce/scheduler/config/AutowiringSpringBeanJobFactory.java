@@ -21,4 +21,5 @@ public class AutowiringSpringBeanJobFactory extends SpringBeanJobFactory impleme
         beanFactory.autowireBean(job);
         return job;
     }
+
 }
