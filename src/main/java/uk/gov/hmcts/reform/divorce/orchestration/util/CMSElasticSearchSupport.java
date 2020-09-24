@@ -18,6 +18,8 @@ import java.util.stream.Stream;
 @Component
 public class CMSElasticSearchSupport {
 
+    public static final String ELASTIC_SEARCH_DAYS_REPRESENTATION = "d";
+
     private final CaseMaintenanceClient caseMaintenanceClient;
 
     @Autowired

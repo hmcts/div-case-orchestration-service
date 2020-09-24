@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -30,7 +29,7 @@ public class CreateBulkCaseJobTest {
     public void whenExecuteJob_thenGenerateBulkCaseIsExecuted() throws JobExecutionException, WorkflowException {
 
         classToTest.execute(jobExecutionContextMock);
-        verify(orchestrationServiceMock, times(1)).generateBulkCaseForListing();
+        verify(orchestrationServiceMock).generateBulkCaseForListing();
     }
 
     @Test(expected = JobExecutionException.class)
@@ -39,4 +38,5 @@ public class CreateBulkCaseJobTest {
 
         classToTest.execute(jobExecutionContextMock);
     }
+
 }

@@ -256,8 +256,6 @@ public class OrchestrationConstants {
     public static final String NOTIFICATION_CO_RESPONDENT_NAME = "co-respondent name";
     public static final String NOTIFICATION_OTHER_NAME = "general other recipient name";
     public static final String NOTIFICATION_SOLICITOR_NAME = "solicitor name";
-    public static final String NOTIFICATION_RESPONDENT_SOLICITOR_NAME = "respondent solicitor name";
-    public static final String NOTIFICATION_CO_RESPONDENT_SOLICITOR_NAME = "co-respondent solicitor name";
     public static final String NOTIFICATION_WELSH_FORM_SUBMISSION_DATE_LIMIT_KEY = "welsh form submission date limit";
     public static final String NOTIFICATION_GENERAL_EMAIL_DETAILS = "general email details";
 

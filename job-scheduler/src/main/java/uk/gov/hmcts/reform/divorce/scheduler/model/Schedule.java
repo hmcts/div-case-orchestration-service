@@ -25,4 +25,5 @@ public class Schedule {
     private String cron;
 
     private boolean enabled;
+
 }

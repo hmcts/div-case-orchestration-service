@@ -23,12 +23,13 @@ spring:
     name: div-cos
   resources:
     static-locations:
-  flyway:
-    enabled: false
   mail:
     properties:
       mail:
         smtp:
+          connectiontimeout: 10000
+          timeout: 10000
+          writetimeout: 10000
           starttls:
             enable: true
     host: localhost
@@ -37,40 +38,70 @@ spring:
     test-connection: false
   main:
     allow-bean-definition-overriding: true
+  quartz:
+    job-store-type: jdbc
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceId: AUTO
+          jobStore:
+            isClustered: true
+            class: org.quartz.impl.jdbcjobstore.JobStoreTX
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+            dataSource: 'scheduler'
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 8
+    scheduler-name: 'Divorce Job Scheduler'
+    auto-startup: ${scheduler.enabled}
+  flyway:
+    enabled: ${scheduler.enabled}
+    schemas: 'public'
 
-quartzProperties:
-  org.quartz:
-    scheduler:
-      instanceId: AUTO
-    jobStore:
-      isClustered: false
-      class: org.quartz.impl.jdbcjobstore.JobStoreTX
-      driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
-      dataSource: cmcDataSource
-    threadPool:
-      class: org.quartz.simpl.SimpleThreadPool
-      threadCount: 8
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 10000
+        readTimeout: 60000
+        requestInterceptors:
+          - uk.gov.hmcts.reform.divorce.orchestration.config.FeignRequestInterceptor
 
 scheduler:
   re-create: true
   enabled: false
-  schedule:
-    name: 'test schedulder'
-    description: ' test scheduler'
-    jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.DueDateJob.class'
-    cron: '0 0/1 * 1/1 * ? *'
-  jpa:
-    hibernate:
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-    properties:
-      hibernate:
-        enable_lazy_load_no_trans: true
-        jdbc:
-          lob:
-            # silence the 'wall-of-text' - unnecessary exception throw about blob types
-            non_contextual_creation: true
+  schedules:
+    - name: 'CreateBulkCase'
+      enabled: ${SCHEDULER_SCHEDULES_CREATE_BULK_CASES_ENABLED:false}
+      cronGroup: "NIGHTLY_CRON"
+      description: 'Cron job to add awaiting pronouncement cases within a bulkcase'
+      jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.CreateBulkCaseJob'
+      cron: ${SCHEDULER_SCHEDULES_CREATE_BULK_CASES_CRON:0 0 4 ? * * *} #Time to confirm with devops, right now 4:00AM
+    - name: 'UpdateDNPronouncedCase'
+      enabled: ${SCHEDULER_MAKE_CASES_ELIGIBLE_DA_ENABLED:false}
+      cronGroup: "NIGHTLY_CRON"
+      description: 'Cron job to make cases eligible for Decree Absolute'
+      jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.MakeCasesEligibleForDAJob'
+      cron: ${SCHEDULER_MAKE_CASES_ELIGIBLE_DA_CRON:0 0 */3 ? * * *} #Every 3 hours
+    - name: 'DataExtractionToRobotics'
+      enabled: ${SCHEDULER_SEND_UPDATED_CASES_TO_ROBOTICS_ENABLED:false}
+      cronGroup: "NIGHTLY_CRON"
+      description: 'Cron job to extract and publish cases updated on the previous day'
+      jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.DataExtractionJob'
+      cron: ${SCHEDULER_SEND_UPDATED_CASES_TO_ROBOTICS_CRON:0 0 2 ? * * *} #Every day at 2:00
+    - name: 'AosOverdueJob'
+      enabled: ${SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_ENABLED:false}
+      cronGroup: "NIGHTLY_CRON"
+      description: 'Cron job to move eligible cases to AOS Overdue state'
+      jobClass: 'uk.gov.hmcts.reform.divorce.orchestration.job.AosOverdueJob'
+      cron: ${SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_CRON:0 0 3 ? * * *} #Every day at 3:00
 
+aos-overdue:
+  grace-period: ${AOS_OVERDUE_GRACE_PERIOD:29}
+
+server:
+  port: ${CASE_ORCHESTRATION_SERVICE_URL:4012}
 
 jackson:
   deserialization:
@@ -78,18 +109,11 @@ jackson:
   serialization:
     FAIL_ON_EMPTY_BEANS: false
 
-server:
-  port: ${CASE_ORCHESTRATION_SERVICE_URL:4012}
-
 case:
   formatter:
     service:
       api:
         baseurl: ${CASE_FORMATTER_SERVICE_API_BASEURL:http://localhost:4011}
-  validation:
-    service:
-      api:
-        baseurl: ${CASE_VALIDATION_SERVICE_API_BASEURL:http://localhost:4008}
   maintenance:
     service:
       api:
@@ -260,8 +284,7 @@ uk:
             SOL_DN_DECISION_MADE: fd6d9667-527f-4c22-b1f1-d095c412ab2c
             SOL_DA_GRANTED_NOTIFICATION: fc8f7343-8f07-42b7-a3c5-52543a21015d
             SOL_DISPENSED_APPROVED: 2cb5e2c4-8090-4f7e-b0ae-574491cd8680
-            SOL_DISPENSED_NOT_APPROVED: d4de177b-b5b9-409c-95bc-cc8f85afd136
-            SOL_DEEMED_NOT_APPROVED: 919e3780-0776-4219-a30c-72e9d6999414
+            SOL_DISPENSED_REJECTED: d4de177b-b5b9-409c-95bc-cc8f85afd136
             PET_SOL_DEEMED_APPROVED: b762cdc0-fa4d-4699-b60d-1532e912cc3e
             CITIZEN_DEEMED_APPROVED: 00f27db6-2678-4ccd-8cdd-44971b330ca4
             CITIZEN_DEEMED_NOT_APPROVED: 5140a51a-fcda-42e4-adf4-0b469a1b927a
@@ -294,60 +317,6 @@ court-distribution-config:
     desertion: 0.01
 
 court:
-  details: "{
-      \"eastMidlands\":{
-        \"divorceCentre\":\"East Midlands Regional Divorce Centre\",
-        \"courtCity\":\"Nottingham\",
-        \"poBox\":\"PO Box 10447\",
-        \"postCode\":\"NG2 9QN\",
-        \"openingHours\":\"Telephone Enquiries from: 8.30am to 5pm\",
-        \"email\":\"eastmidlandsdivorce@hmcts.gsi.gov.uk\",
-        \"phoneNumber\":\"0300 303 0642\",
-        \"siteId\":\"AA01\"
-      },
-      \"westMidlands\":{
-        \"divorceCentre\":\"West Midlands Regional Divorce Centre\",
-        \"courtCity\":\"Stoke-on-Trent\",
-        \"poBox\":\"PO Box 3650\",
-        \"postCode\":\"ST4 9NH\",
-        \"openingHours\":\"Telephone Enquiries from: 8.30am to 5pm\",
-        \"email\":\"westmidlandsdivorce@hmcts.gsi.gov.uk\",
-        \"phoneNumber\":\"0300 303 0642\",
-        \"siteId\":\"AA02\"
-      },
-      \"southWest\":{
-        \"divorceCentre\":\"South West Regional Divorce Centre\",
-        \"courtCity\":\"Southampton\",
-        \"poBox\":\"PO Box 1792\",
-        \"postCode\":\"SO15 9GG\",
-        \"openingHours\":\"Telephone Enquiries from: 8.30am to 5pm\",
-        \"email\":\"sw-region-divorce@hmcts.gsi.gov.uk\",
-        \"phoneNumber\":\"0300 303 0642\",
-        \"siteId\":\"AA03\"
-      },
-      \"northWest\":{
-        \"divorceCentre\":\"North West Regional Divorce Centre\",
-        \"divorceCentreAddressName\":\"Liverpool Civil & Family Court\",
-        \"courtCity\":\"Liverpool\",
-        \"street\":\"35 Vernon Street\",
-        \"postCode\":\"L2 2BX\",
-        \"openingHours\":\"Telephone Enquiries from: 8.30am to 5pm\",
-        \"email\":\"family@liverpool.countycourt.gsi.gov.uk\",
-        \"phoneNumber\":\"0300 303 0642\",
-        \"siteId\":\"AA04\"
-      },
-      \"serviceCentre\": {
-        \"serviceCentreName\": \"Courts and Tribunals Service Centre\",
-        \"divorceCentre\": \"HMCTS Digital Divorce\",
-        \"courtCity\": \"Harlow\",
-        \"poBox\": \"PO Box 12706\",
-        \"postCode\": \"CM20 9QT\",
-        \"openingHours\": \"Telephone Enquiries from: 8.30am to 5pm\",
-        \"email\": \"divorcecase@justice.gov.uk\",
-        \"phoneNumber\": \"0300 303 0642\",
-        \"siteId\": \"AA07\"
-      }
-    }"
   locations:
     eastMidlands:
       divorceCentreName: 'East Midlands Regional Divorce Centre'

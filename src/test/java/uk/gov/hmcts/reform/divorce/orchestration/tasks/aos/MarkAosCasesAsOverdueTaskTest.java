@@ -17,6 +17,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.event.domain.AosOverdueRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseOrchestrationValues;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -34,18 +35,20 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport.buildDateForTodayMinusGivenPeriod;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MarkAosCasesAsOverdueTaskTest {
 
-    private static final String AOS_TIME_LIMIT = "30d";
+    private static final String TEST_GRACE_PERIOD = "12";
 
     @Mock
     private CMSElasticSearchSupport cmsElasticSearchSupport;
 
     @Mock
     private ApplicationEventPublisher applicationEventPublisher;
+
+    @Mock
+    private CaseOrchestrationValues caseOrchestrationValues;
 
     @InjectMocks
     private MarkAosCasesAsOverdueTask classUnderTest;
@@ -58,13 +61,15 @@ public class MarkAosCasesAsOverdueTaskTest {
 
     @Before
     public void setUp() {
+        when(caseOrchestrationValues.getAosOverdueGracePeriod()).thenReturn(TEST_GRACE_PERIOD);
+
         classUnderTest.init();
 
         context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
 
         QueryBuilder stateQuery = QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AOS_AWAITING);
-        QueryBuilder dateFilter = QueryBuilders.rangeQuery("data.dueDate").lte(buildDateForTodayMinusGivenPeriod(AOS_TIME_LIMIT));
+        QueryBuilder dateFilter = QueryBuilders.rangeQuery("data.dueDate").lt("now/d-" + TEST_GRACE_PERIOD + "d");
         queryBuilders = new QueryBuilder[] {stateQuery, dateFilter};
     }
 
