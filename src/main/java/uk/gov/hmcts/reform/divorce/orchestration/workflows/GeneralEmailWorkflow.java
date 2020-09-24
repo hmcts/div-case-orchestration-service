@@ -27,6 +27,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ListElement
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ListElements.PETITIONER_GENERAL_EMAIL_SELECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ListElements.RESPONDENT_GENERAL_EMAIL_SELECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.getCoRespondentEmail;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.getCoRespondentSolicitorEmail;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.getOtherPartyEmail;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.getPetitionerEmail;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.getPetitionerSolicitorEmail;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.getRespondentEmail;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.getRespondentSolicitorEmail;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.getGeneralEmailParties;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentDigital;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentRepresented;
@@ -99,38 +106,38 @@ public class GeneralEmailWorkflow extends DefaultWorkflow<Map<String, Object>> {
         return tasks.toArray(new Task[]{});
     }
 
-    private Task<Map<String, Object>> getGeneralEmailCoRespondentTask(String caseId) {
-        log.info("CaseId: {} Executing task to send general email to {}", caseId, GeneralEmailTaskHelper.Party.CO_RESPONDENT);
-        return generalEmailCoRespondentTask;
-    }
-
-    private Task<Map<String, Object>> getGeneralEmailCoRespondentSolicitorTask(String caseId) {
-        log.info("CaseId: {} Executing task to send general email to {}", caseId, GeneralEmailTaskHelper.Party.CO_RESPONDENT_SOLICITOR);
-        return generalEmailCoRespondentSolicitorTask;
-    }
-
-    private Task<Map<String, Object>> getGeneralEmailOtherPartyTask(String caseId) {
-        log.info("CaseId: {} Executing task to send general email to {}", caseId, GeneralEmailTaskHelper.Party.OTHER);
-        return generalEmailOtherPartyTask;
-    }
-
-    private Task<Map<String, Object>> getGeneralEmailPetitionerSolicitorTask(String caseId) {
-        log.info("CaseId: {} Executing task to send general email to {}", caseId, GeneralEmailTaskHelper.Party.PETITIONER_SOLICITOR);
-        return generalEmailPetitionerSolicitorTask;
-    }
-
-    private Task<Map<String, Object>> getGeneralEmailPetitionerTask(String caseId) {
-        log.info("CaseId: {} Executing task to send general email to {}", caseId, GeneralEmailTaskHelper.Party.PETITIONER);
+    private Task<Map<String, Object>> getGeneralEmailPetitionerTask(String caseId, Map<String, Object> caseData) {
+        log.info("CaseId: {} Executing task to send general email to the Petitioner at {} ", caseId, getPetitionerEmail(caseData));
         return generalEmailPetitionerTask;
     }
 
-    private Task<Map<String, Object>> getGeneralEmailRespondentTask(String caseId) {
-        log.info("CaseId: {} Executing task to send general email to {}", caseId, GeneralEmailTaskHelper.Party.RESPONDENT);
+    private Task<Map<String, Object>> getGeneralEmailPetitionerSolicitorTask(String caseId, Map<String, Object> caseData) {
+        log.info("CaseId: {} Executing task to send general email to the Petitioner solicitor at {}", caseId, getPetitionerSolicitorEmail(caseData));
+        return generalEmailPetitionerSolicitorTask;
+    }
+
+    private Task<Map<String, Object>> getGeneralEmailRespondentTask(String caseId, Map<String, Object> caseData) {
+        log.info("CaseId: {} Executing task to send general email to the Respondent at {}", caseId, getRespondentEmail(caseData));
         return generalEmailRespondentTask;
     }
 
-    private Task<Map<String, Object>> getGeneralEmailRespondentSolicitorTask(String caseId) {
-        log.info("CaseId: {} Executing task to send general email to {}", caseId, GeneralEmailTaskHelper.Party.RESPONDENT_SOLICITOR);
+    private Task<Map<String, Object>> getGeneralEmailRespondentSolicitorTask(String caseId, Map<String, Object> caseData) {
+        log.info("CaseId: {} Executing task to send general email to Respondent solicitor at {}", caseId, getRespondentSolicitorEmail(caseData));
         return generalEmailRespondentSolicitorTask;
+    }
+
+    private Task<Map<String, Object>> getGeneralEmailCoRespondentTask(String caseId, Map<String, Object> caseData) {
+        log.info("CaseId: {} Executing task to send general email to the Co-Respondent at {}", caseId, getCoRespondentEmail(caseData));
+        return generalEmailCoRespondentTask;
+    }
+
+    private Task<Map<String, Object>> getGeneralEmailCoRespondentSolicitorTask(String caseId, Map<String, Object> caseData) {
+        log.info("CaseId: {} Executing task to send general email to the Co-Respondent solicitor at {}", caseId, getCoRespondentSolicitorEmail(caseData));
+        return generalEmailCoRespondentSolicitorTask;
+    }
+
+    private Task<Map<String, Object>> getGeneralEmailOtherPartyTask(String caseId, Map<String, Object> caseData) {
+        log.info("CaseId: {} Executing task to send general email to an Other party at {}", caseId, getOtherPartyEmail(caseData));
+        return generalEmailOtherPartyTask;
     }
 }
