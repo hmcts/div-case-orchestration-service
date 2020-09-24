@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalemail.GeneralEmailCoRespondentSolicitorTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalemail.GeneralEmailCoRespondentTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalemail.GeneralEmailOtherPartyTask;
@@ -27,13 +26,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ListElement
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ListElements.PETITIONER_GENERAL_EMAIL_SELECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ListElements.RESPONDENT_GENERAL_EMAIL_SELECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.getCoRespondentEmail;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.getCoRespondentSolicitorEmail;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.getOtherPartyEmail;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.getPetitionerEmail;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.getPetitionerSolicitorEmail;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.getRespondentEmail;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.getRespondentSolicitorEmail;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.getGeneralEmailParties;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentDigital;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentRepresented;
@@ -106,38 +98,38 @@ public class GeneralEmailWorkflow extends DefaultWorkflow<Map<String, Object>> {
         return tasks.toArray(new Task[]{});
     }
 
-    private Task<Map<String, Object>> getGeneralEmailPetitionerTask(String caseId, Map<String, Object> caseData) {
-        log.info("CaseId: {} Executing task to send general email to the Petitioner at {} ", caseId, getPetitionerEmail(caseData));
+    private Task<Map<String, Object>> getGeneralEmailPetitionerTask(String caseId) {
+        log.info("CaseId: {} Executing task to send general email to the Petitioner.", caseId);
         return generalEmailPetitionerTask;
     }
 
-    private Task<Map<String, Object>> getGeneralEmailPetitionerSolicitorTask(String caseId, Map<String, Object> caseData) {
-        log.info("CaseId: {} Executing task to send general email to the Petitioner solicitor at {}", caseId, getPetitionerSolicitorEmail(caseData));
+    private Task<Map<String, Object>> getGeneralEmailPetitionerSolicitorTask(String caseId) {
+        log.info("CaseId: {} Executing task to send general email to the Petitioner solicitor.", caseId);
         return generalEmailPetitionerSolicitorTask;
     }
 
-    private Task<Map<String, Object>> getGeneralEmailRespondentTask(String caseId, Map<String, Object> caseData) {
-        log.info("CaseId: {} Executing task to send general email to the Respondent at {}", caseId, getRespondentEmail(caseData));
+    private Task<Map<String, Object>> getGeneralEmailRespondentTask(String caseId) {
+        log.info("CaseId: {} Executing task to send general email to the Respondent.", caseId);
         return generalEmailRespondentTask;
     }
 
-    private Task<Map<String, Object>> getGeneralEmailRespondentSolicitorTask(String caseId, Map<String, Object> caseData) {
-        log.info("CaseId: {} Executing task to send general email to Respondent solicitor at {}", caseId, getRespondentSolicitorEmail(caseData));
+    private Task<Map<String, Object>> getGeneralEmailRespondentSolicitorTask(String caseId) {
+        log.info("CaseId: {} Executing task to send general email to Respondent solicitor", caseId);
         return generalEmailRespondentSolicitorTask;
     }
 
-    private Task<Map<String, Object>> getGeneralEmailCoRespondentTask(String caseId, Map<String, Object> caseData) {
-        log.info("CaseId: {} Executing task to send general email to the Co-Respondent at {}", caseId, getCoRespondentEmail(caseData));
+    private Task<Map<String, Object>> getGeneralEmailCoRespondentTask(String caseId) {
+        log.info("CaseId: {} Executing task to send general email to the Co-Respondent.", caseId);
         return generalEmailCoRespondentTask;
     }
 
-    private Task<Map<String, Object>> getGeneralEmailCoRespondentSolicitorTask(String caseId, Map<String, Object> caseData) {
-        log.info("CaseId: {} Executing task to send general email to the Co-Respondent solicitor at {}", caseId, getCoRespondentSolicitorEmail(caseData));
+    private Task<Map<String, Object>> getGeneralEmailCoRespondentSolicitorTask(String caseId) {
+        log.info("CaseId: {} Executing task to send general email to the Co-Respondent solicitor.", caseId);
         return generalEmailCoRespondentSolicitorTask;
     }
 
-    private Task<Map<String, Object>> getGeneralEmailOtherPartyTask(String caseId, Map<String, Object> caseData) {
-        log.info("CaseId: {} Executing task to send general email to an Other party at {}", caseId, getOtherPartyEmail(caseData));
+    private Task<Map<String, Object>> getGeneralEmailOtherPartyTask(String caseId) {
+        log.info("CaseId: {} Executing task to send general email to an Other Party.", caseId);
         return generalEmailOtherPartyTask;
     }
 }
