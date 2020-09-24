@@ -29,11 +29,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.P
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CO_RESPONDENT_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CO_RESPONDENT_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_GENERAL_EMAIL_DETAILS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_OTHER_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESPONDENT_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.CO_RESPONDENT_FIRST_NAME;
@@ -100,7 +98,7 @@ public class GeneralEmailTaskHelperTest {
 
         assertThat(templateVars.get(NOTIFICATION_PET_NAME), is(TEST_PETITIONER_FULL_NAME));
         assertThat(templateVars.get(NOTIFICATION_RESP_NAME), is(TEST_RESPONDENT_FULL_NAME));
-        assertThat(templateVars.get(NOTIFICATION_RESPONDENT_SOLICITOR_NAME), is(TEST_RESPONDENT_SOLICITOR_NAME));
+        assertThat(templateVars.get(NOTIFICATION_SOLICITOR_NAME), is(TEST_RESPONDENT_SOLICITOR_NAME));
     }
 
     @Test
@@ -125,7 +123,7 @@ public class GeneralEmailTaskHelperTest {
 
         assertThat(templateVars.get(NOTIFICATION_PET_NAME), is(TEST_PETITIONER_FULL_NAME));
         assertThat(templateVars.get(NOTIFICATION_RESP_NAME), is(TEST_RESPONDENT_FULL_NAME));
-        assertThat(templateVars.get(NOTIFICATION_CO_RESPONDENT_SOLICITOR_NAME), is(TEST_CO_RESPONDENT_SOLICITOR_NAME));
+        assertThat(templateVars.get(NOTIFICATION_SOLICITOR_NAME), is(TEST_CO_RESPONDENT_SOLICITOR_NAME));
     }
 
     @Test
