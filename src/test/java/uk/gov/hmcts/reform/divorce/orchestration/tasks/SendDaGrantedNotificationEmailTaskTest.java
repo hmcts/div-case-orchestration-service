@@ -252,7 +252,6 @@ public class SendDaGrantedNotificationEmailTaskTest {
                             eq(TEST_SOLICITOR_EMAIL),
                             eq(EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name()),
                             eq(expectedPetSolicitorTemplateVars),
-                            eq(SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC),
                             eq(LanguagePreference.ENGLISH));
 
             verify(emailService)
@@ -299,7 +298,6 @@ public class SendDaGrantedNotificationEmailTaskTest {
                             eq(TEST_RESP_SOLICITOR_EMAIL),
                             eq(EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name()),
                             eq(expectedRespSolicitorTemplateVars),
-                            eq(SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC),
                             eq(LanguagePreference.ENGLISH));
         } catch (NotificationClientException e) {
             fail("Failed to throw task exception");
@@ -337,7 +335,6 @@ public class SendDaGrantedNotificationEmailTaskTest {
                             eq(TEST_RESP_SOLICITOR_EMAIL),
                             eq(EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name()),
                             eq(expectedRespSolicitorTemplateVars),
-                            eq(SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC),
                             eq(LanguagePreference.ENGLISH));
         } catch (NotificationClientException e) {
             fail("Failed to throw task exception");
@@ -368,7 +365,6 @@ public class SendDaGrantedNotificationEmailTaskTest {
                         eq(TEST_SOLICITOR_EMAIL),
                         eq(EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name()),
                         eq(expectedPetSolicitorTemplateVars),
-                        eq(SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC),
                         eq(LanguagePreference.ENGLISH));
 
         verify(emailService)
@@ -376,7 +372,6 @@ public class SendDaGrantedNotificationEmailTaskTest {
                         eq(TEST_RESP_SOLICITOR_EMAIL),
                         eq(EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name()),
                         eq(expectedRespSolicitorTemplateVars),
-                        eq(SOL_DA_GRANTED_NOTIFICATION_EMAIL_DESC),
                         eq(LanguagePreference.ENGLISH));
     }
 }

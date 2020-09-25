@@ -88,9 +88,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_STATEMENT_OF_TRUTH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.STATEMENT_OF_TRUTH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmailTask.AMEND_DESC;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmailTask.AMEND_SOL_DESC;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmailTask.SUBMITTED_DESC;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.formatCaseIdToReferenceNumber;
 
@@ -185,7 +182,6 @@ public class ProcessPbaPaymentITest extends MockedFunctionalTest {
                     NOTIFICATION_CCD_REFERENCE_KEY, formatCaseIdToReferenceNumber(TEST_CASE_ID)
                 )
             ),
-            eq(SUBMITTED_DESC),
             eq(LanguagePreference.ENGLISH)
         );
     }
@@ -211,7 +207,6 @@ public class ProcessPbaPaymentITest extends MockedFunctionalTest {
                     NOTIFICATION_CCD_REFERENCE_KEY, formatCaseIdToReferenceNumber(TEST_CASE_ID)
                 )
             ),
-            eq(AMEND_DESC),
             eq(LanguagePreference.ENGLISH)
         );
     }
@@ -238,7 +233,6 @@ public class ProcessPbaPaymentITest extends MockedFunctionalTest {
                     NOTIFICATION_CCD_REFERENCE_KEY, TEST_CASE_ID
                 )
             ),
-            eq(AMEND_SOL_DESC),
             eq(LanguagePreference.ENGLISH)
         );
     }

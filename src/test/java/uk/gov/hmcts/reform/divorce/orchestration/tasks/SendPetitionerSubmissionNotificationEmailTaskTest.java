@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -153,7 +152,6 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
             eq(TEST_USER_EMAIL),
             eq(EmailTemplateNames.APPLIC_SUBMISSION.name()),
             eq(expectedTemplateVars),
-            any(),
             eq(LanguagePreference.ENGLISH));
     }
 
@@ -174,7 +172,6 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
             eq(TEST_USER_EMAIL),
             eq(EmailTemplateNames.APPLIC_SUBMISSION.name()),
             eq(expectedTemplateVars),
-            any(),
             eq(LanguagePreference.WELSH));
     }
 
@@ -193,7 +190,6 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
             eq(TEST_USER_EMAIL),
             eq(EmailTemplateNames.APPLIC_SUBMISSION.name()),
             eq(expectedTemplateVars),
-            any(),
             eq(LanguagePreference.ENGLISH));
     }
 
@@ -214,7 +210,6 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
             eq(TEST_USER_EMAIL),
             eq(EmailTemplateNames.APPLIC_SUBMISSION_AMEND.name()),
             eq(expectedTemplateVars),
-            any(),
             eq(LanguagePreference.ENGLISH));
     }
 
@@ -231,7 +226,6 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
             eq(TEST_SOLICITOR_EMAIL),
             eq(EmailTemplateNames.APPLIC_SUBMISSION_AMEND_SOLICITOR.name()),
             eq(expectedTemplateVars),
-            any(),
             eq(LanguagePreference.ENGLISH));
     }
 

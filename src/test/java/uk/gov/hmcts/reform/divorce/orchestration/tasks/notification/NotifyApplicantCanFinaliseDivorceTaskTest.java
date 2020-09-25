@@ -83,7 +83,7 @@ public class NotifyApplicantCanFinaliseDivorceTaskTest {
         testData.put(LANGUAGE_PREFERENCE_WELSH, "Yes");
 
         expectedTemplateVars.put(NOTIFICATION_CASE_NUMBER_KEY, D8_CASE_ID);
-        expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_PETITIONER_FIRST_NAME );
+        expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_PETITIONER_FIRST_NAME);
         expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_PETITIONER_LAST_NAME);
 
         //when
@@ -91,11 +91,10 @@ public class NotifyApplicantCanFinaliseDivorceTaskTest {
 
         //then
         verify(emailService).sendEmail(
-                eq(TEST_USER_EMAIL),
-                eq(EmailTemplateNames.APPLICANT_DA_ELIGIBLE.name()),
-                eq(expectedTemplateVars),
-                eq(EMAIL_DESC),
-                eq(LanguagePreference.WELSH)
+            eq(TEST_USER_EMAIL),
+            eq(EmailTemplateNames.APPLICANT_DA_ELIGIBLE.name()),
+            eq(expectedTemplateVars),
+            eq(LanguagePreference.WELSH)
         );
     }
 
@@ -120,11 +119,10 @@ public class NotifyApplicantCanFinaliseDivorceTaskTest {
 
         //then
         verify(emailService).sendEmail(
-                eq(TEST_USER_EMAIL),
-                eq(EmailTemplateNames.SOL_APPLICANT_DA_ELIGIBLE.name()),
-                eq(expectedTemplateVars),
-                eq(SOL_EMAIL_DESC),
-                eq(LanguagePreference.ENGLISH)
+            eq(TEST_USER_EMAIL),
+            eq(EmailTemplateNames.SOL_APPLICANT_DA_ELIGIBLE.name()),
+            eq(expectedTemplateVars),
+            eq(LanguagePreference.ENGLISH)
         );
     }
 

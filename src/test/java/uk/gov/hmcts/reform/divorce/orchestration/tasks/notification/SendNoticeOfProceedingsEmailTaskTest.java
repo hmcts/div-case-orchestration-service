@@ -22,7 +22,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.hamcrest.core.AllOf.allOf;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -106,7 +105,6 @@ public class SendNoticeOfProceedingsEmailTaskTest {
                     )
                 )
             ),
-            anyString(),
             eq(LanguagePreference.ENGLISH)
         );
     }
@@ -130,7 +128,6 @@ public class SendNoticeOfProceedingsEmailTaskTest {
                     )
                 )
             ),
-            anyString(),
             eq(LanguagePreference.ENGLISH)
         );
     }

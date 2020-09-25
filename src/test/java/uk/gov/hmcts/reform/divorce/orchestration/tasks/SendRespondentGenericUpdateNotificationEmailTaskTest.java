@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -39,7 +38,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @RunWith(SpringRunner.class)
 public class SendRespondentGenericUpdateNotificationEmailTaskTest {
-    @Mock EmailService emailService;
+    @Mock
+    EmailService emailService;
 
     @InjectMocks
     SendRespondentGenericUpdateNotificationEmailTask sendRespondentGenericUpdateNotificationEmailTask;
@@ -83,11 +83,10 @@ public class SendRespondentGenericUpdateNotificationEmailTaskTest {
         assertEquals(testData, returnPayload);
 
         verify(emailService)
-                .sendEmail(
-                        eq(TEST_USER_EMAIL),
-                        eq(EmailTemplateNames.GENERIC_UPDATE_RESPONDENT.name()),
-                        eq(expectedTemplateVars),
-                        any(),
-                        eq(LanguagePreference.WELSH));
+            .sendEmail(
+                eq(TEST_USER_EMAIL),
+                eq(EmailTemplateNames.GENERIC_UPDATE_RESPONDENT.name()),
+                eq(expectedTemplateVars),
+                eq(LanguagePreference.WELSH));
     }
 }

@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -50,7 +49,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RunWith(SpringRunner.class)
 public class SendPetitionerGenericUpdateNotificationEmailTaskTest {
 
-    @Mock EmailService emailService;
+    @Mock
+    EmailService emailService;
 
     @InjectMocks
     SendPetitionerGenericUpdateNotificationEmailTask sendPetitionerGenericUpdateNotificationEmailTask;
@@ -95,12 +95,11 @@ public class SendPetitionerGenericUpdateNotificationEmailTaskTest {
         assertEquals(testData, returnPayload);
 
         verify(emailService)
-                .sendEmail(
-                        eq(TEST_USER_EMAIL),
-                        eq(EmailTemplateNames.GENERIC_UPDATE.name()),
-                        eq(expectedTemplateVars),
-                        any(),
-                        eq((LanguagePreference.ENGLISH)));
+            .sendEmail(
+                eq(TEST_USER_EMAIL),
+                eq(EmailTemplateNames.GENERIC_UPDATE.name()),
+                eq(expectedTemplateVars),
+                eq((LanguagePreference.ENGLISH)));
     }
 
     @Test
@@ -127,7 +126,6 @@ public class SendPetitionerGenericUpdateNotificationEmailTaskTest {
                 eq(TEST_USER_EMAIL),
                 eq(EmailTemplateNames.SOL_GENERAL_CASE_UPDATE.name()),
                 eq(expectedTemplateVars),
-                any(),
                 eq(LanguagePreference.ENGLISH));
     }
 }

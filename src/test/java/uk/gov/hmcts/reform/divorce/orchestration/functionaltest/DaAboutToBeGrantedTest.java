@@ -95,7 +95,7 @@ public class DaAboutToBeGrantedTest extends MockedFunctionalTest {
         stubDocumentGeneratorServiceBaseOnContextPath(DECREE_ABSOLUTE_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, ObjectMapperTestUtil.convertObject(ccdCallbackRequest.getCaseDetails(), Map.class)),
             DECREE_ABSOLUTE_DOCUMENT_TYPE);
-        when(mockEmailService.sendEmail(anyString(), anyString(), anyMap(), anyString(), any())).thenReturn(null);
+        when(mockEmailService.sendEmail(anyString(), anyString(), anyMap(), any())).thenReturn(null);
 
         String inputJson = convertObjectToJsonString(ccdCallbackRequest);
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(CASE_DATA).build();

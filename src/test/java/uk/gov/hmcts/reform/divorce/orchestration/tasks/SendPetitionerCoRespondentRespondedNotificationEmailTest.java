@@ -52,9 +52,6 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
     private static final String welshGenericPetDataJsonFilePath = "/jsonExamples/payloads/welshGenericPetitionerData.json";
     private static final String genericPetSolicitorDataJsonFilePath = "/jsonExamples/payloads/genericPetitionerSolicitorData.json";
     private static final String welshGenericPetSolicitorDataJsonFilePath = "/jsonExamples/payloads/welshGenericPetitionerSolicitorData.json";
-    private static final String coRespRespondedWhenAosUndefended = "co-respondent responded when aos is undefended";
-    private static final String coRespRespondedButRespHasNot = "co-respondent responded but respondent has not";
-    private static final String coRespRespondedSolicitorEmail = "co-respondent responded - notification to solicitor";
 
     @Mock
     private EmailService emailService;
@@ -78,11 +75,12 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
 
 
         String petSolEmail = (String) caseData.get(PETITIONER_SOLICITOR_EMAIL);
-        when(emailService.sendEmail(petSolEmail,
+        when(emailService.sendEmail(
+            petSolEmail,
             EmailTemplateNames.SOL_APPLICANT_CORESP_RESPONDED.name(),
             expectedTemplateVars,
-            coRespRespondedSolicitorEmail,
-            LanguagePreference.ENGLISH)).thenReturn(null);
+            LanguagePreference.ENGLISH)
+        ).thenReturn(null);
 
         DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
@@ -90,11 +88,11 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
         Map<String, Object> returnedPayload = sendPetitionerCoRespondentRespondedNotificationEmail.execute(context, caseData);
 
         assertThat(caseData, is(sameInstance(returnedPayload)));
-        verify(emailService).sendEmail(petSolEmail,
-                EmailTemplateNames.SOL_APPLICANT_CORESP_RESPONDED.name(),
-                expectedTemplateVars,
-                coRespRespondedSolicitorEmail,
-                LanguagePreference.ENGLISH);
+        verify(emailService).sendEmail(
+            petSolEmail,
+            EmailTemplateNames.SOL_APPLICANT_CORESP_RESPONDED.name(),
+            expectedTemplateVars,
+            LanguagePreference.ENGLISH);
     }
 
     @Test
@@ -119,18 +117,19 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
         Map<String, Object> returnedPayload = sendPetitionerCoRespondentRespondedNotificationEmail.execute(context, caseData);
 
         assertThat(caseData, is(sameInstance(returnedPayload)));
-        verify(emailService).sendEmail(petSolEmail,
+        verify(emailService).sendEmail(
+            petSolEmail,
             EmailTemplateNames.SOL_APPLICANT_CORESP_RESPONDED.name(),
             expectedTemplateVars,
-            coRespRespondedSolicitorEmail,
-            LanguagePreference.WELSH);
+            LanguagePreference.WELSH
+        );
     }
 
     @Test
     public void testRightEmailIsSent_WhenCoRespondentSubmitsAndRespondentHasNot()
         throws IOException, TaskException {
         CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
-                genericPetDataJsonFilePath, CcdCallbackRequest.class);
+            genericPetDataJsonFilePath, CcdCallbackRequest.class);
         Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
 
         Map<String, String> expectedTemplateVars = new HashMap<>();
@@ -139,11 +138,11 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
         expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, (String) caseData.get(D_8_PETITIONER_LAST_NAME));
 
         String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
-        when(emailService.sendEmail(petitionerEmail,
-                EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_NOT_SUBMITTED.name(),
-                expectedTemplateVars,
-                coRespRespondedButRespHasNot,
-                LanguagePreference.ENGLISH)
+        when(emailService.sendEmail(
+            petitionerEmail,
+            EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_NOT_SUBMITTED.name(),
+            expectedTemplateVars,
+            LanguagePreference.ENGLISH)
         ).thenReturn(null);
 
         DefaultTaskContext context = new DefaultTaskContext();
@@ -151,18 +150,19 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
         Map<String, Object> returnedPayload = sendPetitionerCoRespondentRespondedNotificationEmail.execute(context, caseData);
 
         assertThat(caseData, is(sameInstance(returnedPayload)));
-        verify(emailService).sendEmail(petitionerEmail,
+        verify(emailService).sendEmail(
+            petitionerEmail,
             EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_NOT_SUBMITTED.name(),
             expectedTemplateVars,
-            coRespRespondedButRespHasNot,
-            LanguagePreference.ENGLISH);
+            LanguagePreference.ENGLISH
+        );
     }
 
     @Test
     public void testRightEmailIsSent_WhenCoRespondentSubmitsAndRespondentHasNotDefended()
         throws IOException, TaskException {
         CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
-                genericPetDataJsonFilePath, CcdCallbackRequest.class);
+            genericPetDataJsonFilePath, CcdCallbackRequest.class);
         Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
         caseData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
 
@@ -172,11 +172,11 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
         expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, (String) caseData.get(D_8_PETITIONER_LAST_NAME));
 
         String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
-        when(emailService.sendEmail(petitionerEmail,
-                EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND.name(),
-                expectedTemplateVars,
-                coRespRespondedWhenAosUndefended,
-                LanguagePreference.ENGLISH)
+        when(emailService.sendEmail(
+            petitionerEmail,
+            EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND.name(),
+            expectedTemplateVars,
+            LanguagePreference.ENGLISH)
         ).thenReturn(null);
 
         DefaultTaskContext context = new DefaultTaskContext();
@@ -184,11 +184,12 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
         Map<String, Object> returnedPayload = sendPetitionerCoRespondentRespondedNotificationEmail.execute(context, caseData);
 
         assertThat(caseData, is(sameInstance(returnedPayload)));
-        verify(emailService).sendEmail(petitionerEmail,
+        verify(emailService).sendEmail(
+            petitionerEmail,
             EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND.name(),
             expectedTemplateVars,
-            coRespRespondedWhenAosUndefended,
-            LanguagePreference.ENGLISH);
+            LanguagePreference.ENGLISH
+        );
     }
 
     @SuppressWarnings("unchecked")
@@ -212,18 +213,19 @@ public class SendPetitionerCoRespondentRespondedNotificationEmailTest {
         Map<String, Object> returnedPayload = sendPetitionerCoRespondentRespondedNotificationEmail.execute(context, caseData);
 
         assertThat(caseData, is(sameInstance(returnedPayload)));
-        verify(emailService).sendEmail(petitionerEmail,
+        verify(emailService).sendEmail(
+            petitionerEmail,
             EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND.name(),
             expectedTemplateVars,
-            coRespRespondedWhenAosUndefended,
-            LanguagePreference.WELSH);
+            LanguagePreference.WELSH
+        );
     }
 
     @Test
     public void testRightEmailIsSent_WhenCoRespondentSubmitsAndRespondentHasIsDefending()
         throws IOException, TaskException {
         CcdCallbackRequest incomingPayload = getJsonFromResourceFile(
-                genericPetDataJsonFilePath, CcdCallbackRequest.class);
+            genericPetDataJsonFilePath, CcdCallbackRequest.class);
         Map<String, Object> caseData = spy(incomingPayload.getCaseDetails().getCaseData());
         caseData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
         caseData.put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);

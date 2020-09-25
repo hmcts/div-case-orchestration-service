@@ -24,7 +24,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.mockito.ArgumentMatchers.anyMap;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -120,7 +119,6 @@ public class NotifyForRefusalOrderTaskTest {
                     hasEntry(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, PETITIONER_LAST_NAME)
                 )
             )),
-            anyString(),
             eq(LanguagePreference.ENGLISH)
         );
     }
@@ -147,7 +145,6 @@ public class NotifyForRefusalOrderTaskTest {
                     hasEntry(NOTIFICATION_SOLICITOR_NAME, TEST_SOLICITOR_NAME)
                 )
             )),
-            anyString(),
             eq(LanguagePreference.ENGLISH)
         );
     }
@@ -156,9 +153,9 @@ public class NotifyForRefusalOrderTaskTest {
     public void notificationServiceIsCalledWithExpectedParametersWhenRefusalDecisionIsRejection() throws TaskException {
         incomingPayload.put(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE);
         incomingPayload.put(REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION);
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.ENGLISH)))
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.ENGLISH)))
             .thenReturn(TEST_RELATIONSHIP_HUSBAND);
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.WELSH)))
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.WELSH)))
             .thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
 
         executeTask();
@@ -176,7 +173,6 @@ public class NotifyForRefusalOrderTaskTest {
                     hasEntry(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TEST_WELSH_MALE_GENDER_IN_RELATION)
                 )
             )),
-            anyString(),
             eq(LanguagePreference.ENGLISH)
         );
     }
@@ -205,7 +201,6 @@ public class NotifyForRefusalOrderTaskTest {
                     hasEntry(NOTIFICATION_FEES_KEY, FEE_AMOUNT_AS_STRING)
                 )
             )),
-            anyString(),
             eq(LanguagePreference.ENGLISH)
         );
     }
@@ -249,7 +244,6 @@ public class NotifyForRefusalOrderTaskTest {
             eq(email),
             eq(templateId.name()),
             anyMap(),
-            anyString(),
             eq(LanguagePreference.ENGLISH)
         );
     }

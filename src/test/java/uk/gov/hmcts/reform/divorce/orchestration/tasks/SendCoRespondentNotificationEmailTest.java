@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -84,8 +83,8 @@ public class SendCoRespondentNotificationEmailTest {
             eq(TEST_USER_EMAIL),
             eq(EmailTemplateNames.GENERIC_UPDATE_RESPONDENT.name()),
             eq(expectedTemplateVars),
-            any(),
-            eq(LanguagePreference.ENGLISH));
+            eq(LanguagePreference.ENGLISH)
+        );
     }
 
     @Test

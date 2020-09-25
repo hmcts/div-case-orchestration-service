@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -99,7 +98,6 @@ public class SendPetitionerClarificationRequestEmailTest {
                         eq(TEST_USER_EMAIL),
                         eq(EmailTemplateNames.PETITIONER_CLARIFICATION_REQUEST_EMAIL_NOTIFICATION.name()),
                         eq(expectedTemplateVars),
-                        any(),
                         eq(LanguagePreference.WELSH));
     }
 
@@ -126,7 +124,6 @@ public class SendPetitionerClarificationRequestEmailTest {
                 eq(TEST_USER_EMAIL),
                 eq(EmailTemplateNames.SOL_APPLICANT_MORE_INFO_REQUESTED.name()),
                 eq(expectedTemplateVars),
-                any(),
                 eq(LanguagePreference.ENGLISH));
     }
 }

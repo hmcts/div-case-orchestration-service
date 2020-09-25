@@ -24,7 +24,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.hamcrest.core.AllOf.allOf;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -88,7 +87,6 @@ public class SendPetitionerAmendEmailTaskTest {
                     )
                 )
             ),
-            anyString(),
             eq(LanguagePreference.ENGLISH)
         );
     }
@@ -111,7 +109,6 @@ public class SendPetitionerAmendEmailTaskTest {
                     )
                 )
             ),
-            anyString(),
             eq(LanguagePreference.ENGLISH)
         );
     }
@@ -132,7 +129,6 @@ public class SendPetitionerAmendEmailTaskTest {
                     )
                 )
             ),
-            anyString(),
             eq(LanguagePreference.ENGLISH)
         );
     }
@@ -154,7 +150,6 @@ public class SendPetitionerAmendEmailTaskTest {
                     )
                 )
             ),
-            anyString(),
             eq(LanguagePreference.ENGLISH)
         );
     }
@@ -176,7 +171,6 @@ public class SendPetitionerAmendEmailTaskTest {
                     )
                 )
             ),
-            anyString(),
             eq(LanguagePreference.ENGLISH)
         );
     }

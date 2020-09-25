@@ -16,6 +16,7 @@ import java.util.Map;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
@@ -41,8 +42,7 @@ public class EmailNotificationTest {
 
         target.execute(context, payload);
 
-        verify(emailService).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.SAVE_DRAFT.name(), null,
-            "draft saved confirmation", LanguagePreference.ENGLISH);
+        verify(emailService).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.SAVE_DRAFT, LanguagePreference.ENGLISH);
     }
 
     @Test
@@ -55,8 +55,7 @@ public class EmailNotificationTest {
 
         target.execute(context, payload);
 
-        verify(emailService).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.SAVE_DRAFT.name(), null,
-            "draft saved confirmation",  LanguagePreference.ENGLISH);
+        verify(emailService).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.SAVE_DRAFT, LanguagePreference.ENGLISH);
     }
 
     @Test
@@ -69,8 +68,7 @@ public class EmailNotificationTest {
 
         target.execute(context, payload);
 
-        verify(emailService, never()).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.SAVE_DRAFT.name(), null,
-            "draft saved confirmation",  LanguagePreference.ENGLISH);
+        verify(emailService, never()).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.SAVE_DRAFT, LanguagePreference.ENGLISH);
     }
 
     @Test
@@ -83,8 +81,7 @@ public class EmailNotificationTest {
 
         target.execute(context, payload);
 
-        verify(emailService, never()).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.SAVE_DRAFT.name(), null,
-            "draft saved confirmation", LanguagePreference.ENGLISH);
+        verify(emailService, never()).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.SAVE_DRAFT, LanguagePreference.ENGLISH);
     }
 
     @Test
@@ -96,7 +93,6 @@ public class EmailNotificationTest {
 
         target.execute(context, payload);
 
-        verify(emailService, never()).sendEmail(TEST_USER_EMAIL, EmailTemplateNames.SAVE_DRAFT.name(), null,
-            "draft saved confirmation",  LanguagePreference.ENGLISH);
+        verifyNoInteractions(emailService);
     }
 }
