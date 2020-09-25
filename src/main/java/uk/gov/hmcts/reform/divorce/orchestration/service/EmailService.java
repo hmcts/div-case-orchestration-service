@@ -38,12 +38,12 @@ public class EmailService {
         return sendEmailAndReturnErrorsInResponse(emailToSend);
     }
 
+    @Deprecated
     public Map<String, Object> sendEmail(String destinationAddress,
                                          String templateName,
                                          Map<String, String> templateVars,
                                          String emailDescription,
                                          LanguagePreference languagePreference) {
-        log.warn("Please don't use this method for sending emails.");
         return sendEmail(destinationAddress, templateName, templateVars, languagePreference);
     }
 
