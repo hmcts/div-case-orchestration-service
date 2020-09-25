@@ -44,7 +44,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -180,7 +179,7 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
         webClient.perform(post(API_URL)
             .contentType(MediaType.APPLICATION_JSON)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(ccdCallbackRequest))).andDo(print())
+            .content(convertObjectToJsonString(ccdCallbackRequest)))
             .andExpect(status().isOk())
             .andExpect(commonExpectationsForServiceRefusalOrder(documentType, expectedDocumentFilename));
     }
