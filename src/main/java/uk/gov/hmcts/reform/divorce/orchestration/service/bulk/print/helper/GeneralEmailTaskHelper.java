@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextracto
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.lang.String.format;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CO_RESPONDENT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_GENERAL_EMAIL_DETAILS;
@@ -122,18 +121,5 @@ public class GeneralEmailTaskHelper {
         templateVars.put(NOTIFICATION_OTHER_NAME, getOtherPartyFullName(caseData));
 
         return templateVars;
-    }
-
-    public static String getRepresentedSubject(TaskContext taskContext, Map<String, Object> caseData) {
-        return format(
-            "%s vs %s: Divorce case number %s",
-            getPetitionerFullName(caseData),
-            getRespondentFullName(caseData),
-            getCaseId(taskContext)
-        );
-    }
-
-    public static String getNotRepresentedSubject(TaskContext context) {
-        return "Divorce case number " + getCaseId(context);
     }
 }

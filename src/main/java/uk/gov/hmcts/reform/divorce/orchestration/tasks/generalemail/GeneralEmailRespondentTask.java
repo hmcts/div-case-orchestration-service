@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.Gener
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.getRespondentEmail;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getNotRepresentedSubject;
 
 @Component
 @Slf4j
@@ -19,11 +18,6 @@ public class GeneralEmailRespondentTask extends SendEmailTask {
 
     public GeneralEmailRespondentTask(EmailService emailService) {
         super(emailService);
-    }
-
-    @Override
-    protected String getSubject(TaskContext context, Map<String, Object> caseData) {
-        return getNotRepresentedSubject(context);
     }
 
     @Override

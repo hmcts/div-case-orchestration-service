@@ -10,8 +10,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.Gener
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getRepresentedSubject;
-
 @Component
 @Slf4j
 public class GeneralEmailPetitionerSolicitorTask extends PetitionerSolicitorSendEmailTask {
@@ -23,11 +21,6 @@ public class GeneralEmailPetitionerSolicitorTask extends PetitionerSolicitorSend
     @Override
     protected Map<String, String> getPersonalisation(TaskContext taskContext, Map<String, Object> caseData) {
         return GeneralEmailTaskHelper.getExpectedNotificationTemplateVars(GeneralEmailTaskHelper.Party.PETITIONER_SOLICITOR, taskContext, caseData);
-    }
-
-    @Override
-    protected String getSubject(TaskContext context, Map<String, Object> caseData) {
-        return getRepresentedSubject(context, caseData);
     }
 
     @Override

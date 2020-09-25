@@ -21,8 +21,6 @@ public abstract class SendEmailTask implements Task<Map<String, Object>> {
 
     private final EmailService emailService;
 
-    protected abstract String getSubject(TaskContext context, Map<String, Object> caseData);
-
     protected abstract Map<String, String> getPersonalisation(TaskContext context, Map<String, Object> caseData);
 
     protected abstract EmailTemplateNames getTemplate();
@@ -40,24 +38,23 @@ public abstract class SendEmailTask implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         final String caseId = getCaseId(context);
-        final String subject = getSubject(context, caseData);
+        final String templateName = getTemplate().name();
 
         if (canEmailBeSent(caseData)) {
-            log.info("CaseID: {} email {} is going to be sent.", caseId, subject);
+            log.info("CaseID: {} email {} is going to be sent.", caseId, templateName);
 
             emailService.sendEmail(
                 getRecipientEmail(caseData),
-                getTemplate().name(),
+                templateName,
                 getPersonalisation(context, caseData),
                 getLanguage(caseData)
             );
 
-            log.info("CaseID: {} email {} was sent.", caseId, getTemplate().name());
+            log.info("CaseID: {} email {} was sent.", caseId, templateName);
         } else {
-            log.warn("CaseID: {} email {} will not be sent.", caseId, getTemplate().name());
+            log.warn("CaseID: {} email {} will not be sent.", caseId, templateName);
         }
 
         return caseData;
     }
 }
-

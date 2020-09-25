@@ -28,7 +28,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.Email
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getExpectedNotificationTemplateVars;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getRepresentedSubject;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.helpers.GeneralEmailHelper.getTaskContext;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.context;
 
@@ -78,7 +77,6 @@ public class GeneralEmailRespondentSolicitorTaskTest {
             TEST_RESPONDENT_SOLICITOR_EMAIL,
             GENERAL_EMAIL_RESPONDENT_SOLICITOR.name(),
             getExpectedNotificationTemplateVars(GeneralEmailTaskHelper.Party.RESPONDENT_SOLICITOR, context, caseData),
-            getRepresentedSubject(context, caseData),
             LanguagePreference.ENGLISH
         );
     }
