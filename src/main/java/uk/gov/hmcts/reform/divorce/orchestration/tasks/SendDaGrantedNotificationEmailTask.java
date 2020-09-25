@@ -54,7 +54,6 @@ import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomer
 public class SendDaGrantedNotificationEmailTask implements Task<Map<String, Object>> {
 
     private static final String EMAIL_DESC = "Decree Absolute Notification - Decree Absolute Granted";
-    private static final String SOL_EMAIL_DESC = "Decree Absolute Notification To Solicitor - Decree Absolute Granted";
 
     private final EmailService emailService;
     private final LocalDateToWelshStringConverter localDateToWelshStringConverter;
@@ -112,21 +111,21 @@ public class SendDaGrantedNotificationEmailTask implements Task<Map<String, Obje
         LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
 
         emailService.sendEmail(
-                solicitorEmail,
-                EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name(),
-                templateVars,
-                SOL_EMAIL_DESC,
-                languagePreference);
+            solicitorEmail,
+            EmailTemplateNames.SOL_DA_GRANTED_NOTIFICATION.name(),
+            templateVars,
+            languagePreference
+        );
     }
 
     private void sendEmailToPetitioner(Map<String, Object> caseData) throws TaskException {
         try {
             sendEmail(
-                    getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME),
-                    getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME),
-                    getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL),
-                    caseData,
-                    getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE)
+                getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME),
+                getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME),
+                getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL),
+                caseData,
+                getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE)
             );
         } catch (NotificationClientException e) {
             log.error("Error sending DA Granted notification email to petitioner", e);
@@ -137,11 +136,11 @@ public class SendDaGrantedNotificationEmailTask implements Task<Map<String, Obje
     private void sendEmailToRespondent(Map<String, Object> caseData) throws TaskException {
         try {
             sendEmail(
-                    getMandatoryPropertyValueAsString(caseData, RESP_FIRST_NAME_CCD_FIELD),
-                    getMandatoryPropertyValueAsString(caseData, RESP_LAST_NAME_CCD_FIELD),
-                    getMandatoryPropertyValueAsString(caseData, RESPONDENT_EMAIL_ADDRESS),
-                    caseData,
-                    getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE)
+                getMandatoryPropertyValueAsString(caseData, RESP_FIRST_NAME_CCD_FIELD),
+                getMandatoryPropertyValueAsString(caseData, RESP_LAST_NAME_CCD_FIELD),
+                getMandatoryPropertyValueAsString(caseData, RESPONDENT_EMAIL_ADDRESS),
+                caseData,
+                getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE)
             );
         } catch (NotificationClientException e) {
             log.error("Error sending DA Granted notification email to respondent", e);
@@ -150,7 +149,7 @@ public class SendDaGrantedNotificationEmailTask implements Task<Map<String, Obje
     }
 
     private void sendEmail(String firstName, String lastName, String emailAddress,
-                           Map<String, Object> caseData, String ccdReference) throws NotificationClientException  {
+                           Map<String, Object> caseData, String ccdReference) throws NotificationClientException {
 
         String daGrantedDataCcdField = (String) caseData.get(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD);
         LocalDate daGrantedDate = LocalDateTime.parse(daGrantedDataCcdField).toLocalDate();
@@ -159,7 +158,6 @@ public class SendDaGrantedNotificationEmailTask implements Task<Map<String, Obje
         String welshDaLimitDownloadDate = localDateToWelshStringConverter.convert(daLmitDownloadDate);
 
         LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
-
 
         if (StringUtils.isNotBlank(emailAddress)) {
             Map<String, String> templateVars = new HashMap<>();
@@ -170,14 +168,14 @@ public class SendDaGrantedNotificationEmailTask implements Task<Map<String, Obje
             templateVars.put(NOTIFICATION_CASE_NUMBER_KEY, ccdReference);
             templateVars.put(NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE, daLimitDownloadDateStr);
             templateVars.put(NOTIFICATION_WELSH_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE,
-                    welshDaLimitDownloadDate);
+                welshDaLimitDownloadDate);
 
             emailService.sendEmailAndReturnExceptionIfFails(
-                    emailAddress,
-                    EmailTemplateNames.DA_GRANTED_NOTIFICATION.name(),
-                    templateVars,
-                    EMAIL_DESC,
-                    languagePreference);
+                emailAddress,
+                EmailTemplateNames.DA_GRANTED_NOTIFICATION.name(),
+                templateVars,
+                EMAIL_DESC,
+                languagePreference);
         }
     }
 

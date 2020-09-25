@@ -34,7 +34,8 @@ public class EmailServiceTest {
     @Test
     public void sendEmailForSubmissionConfirmationShouldCallTheEmailClientToSendAnEmail()
         throws NotificationClientException {
-        emailService.sendEmail(EMAIL_ADDRESS,
+        emailService.sendEmail(
+            EMAIL_ADDRESS,
             EmailTemplateNames.APPLIC_SUBMISSION.name(),
             null,
             "submission notification",

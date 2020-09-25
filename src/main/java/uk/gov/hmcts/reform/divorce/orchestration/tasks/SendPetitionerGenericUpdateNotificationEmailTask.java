@@ -35,9 +35,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @Component
 public class SendPetitionerGenericUpdateNotificationEmailTask implements Task<Map<String, Object>> {
 
-    private static final String EMAIL_DESC = "Generic Update Notification - Petitioner";
-    private static final String SOL_EMAIL_DESC = "Generic Update Notification - Solicitor";
-
     private final EmailService emailService;
 
     @Autowired
@@ -68,8 +65,12 @@ public class SendPetitionerGenericUpdateNotificationEmailTask implements Task<Ma
             templateVars.put(NOTIFICATION_RESP_NAME, respFirstName + " " + respLastName);
             templateVars.put(NOTIFICATION_SOLICITOR_NAME, solicitorName);
 
-            emailService.sendEmail(petSolicitorEmail, EmailTemplateNames.SOL_GENERAL_CASE_UPDATE.name(), templateVars,
-                SOL_EMAIL_DESC, languagePreference);
+            emailService.sendEmail(
+                petSolicitorEmail,
+                EmailTemplateNames.SOL_GENERAL_CASE_UPDATE.name(),
+                templateVars,
+                languagePreference
+            );
         } else if (StringUtils.isNotBlank(petitionerEmail)) {
 
             templateVars.put(NOTIFICATION_EMAIL, petitionerEmail);
@@ -77,7 +78,7 @@ public class SendPetitionerGenericUpdateNotificationEmailTask implements Task<Ma
             templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, petitionerLastName);
             templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE));
 
-            emailService.sendEmail(petitionerEmail, EmailTemplateNames.GENERIC_UPDATE.name(), templateVars, EMAIL_DESC, languagePreference);
+            emailService.sendEmail(petitionerEmail, EmailTemplateNames.GENERIC_UPDATE.name(), templateVars, languagePreference);
         }
 
         return caseData;

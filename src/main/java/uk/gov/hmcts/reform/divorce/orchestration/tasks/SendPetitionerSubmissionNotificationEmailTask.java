@@ -134,7 +134,6 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
             petitionerEmail,
             EmailTemplateNames.APPLIC_SUBMISSION_AMEND.name(),
             getPersonalisation(context, caseData),
-            AMEND_DESC,
             languagePreference
         );
 
@@ -155,7 +154,6 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
             solicitorEmail,
             EmailTemplateNames.APPLIC_SUBMISSION_AMEND_SOLICITOR.name(),
             getSolicitorPersonalisation(context, caseData),
-            AMEND_SOL_DESC,
             languagePreference
         );
 
@@ -176,7 +174,6 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
             petitionerEmail,
             EmailTemplateNames.APPLIC_SUBMISSION.name(),
             getPersonalisation(context, caseData),
-            SUBMITTED_DESC,
             languagePreference
         );
 

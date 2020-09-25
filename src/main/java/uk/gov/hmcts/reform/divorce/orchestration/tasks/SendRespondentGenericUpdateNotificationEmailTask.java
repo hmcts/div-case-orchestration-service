@@ -27,8 +27,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @Component
 public class SendRespondentGenericUpdateNotificationEmailTask implements Task<Map<String, Object>> {
 
-    private static final String RESP_GENERIC_EMAIL_DESC = "Generic Update Notification - Respondent";
-
     private final EmailService emailService;
 
     @Autowired
@@ -55,8 +53,12 @@ public class SendRespondentGenericUpdateNotificationEmailTask implements Task<Ma
 
 
             LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
-            emailService.sendEmail(respEmail, EmailTemplateNames.GENERIC_UPDATE_RESPONDENT.name(), templateVars,
-                RESP_GENERIC_EMAIL_DESC, languagePreference);
+            emailService.sendEmail(
+                respEmail,
+                EmailTemplateNames.GENERIC_UPDATE_RESPONDENT.name(),
+                templateVars,
+                languagePreference
+            );
         }
 
         return caseData;

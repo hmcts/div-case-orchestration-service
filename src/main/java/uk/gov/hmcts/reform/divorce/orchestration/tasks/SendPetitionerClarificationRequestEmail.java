@@ -45,11 +45,6 @@ public class SendPetitionerClarificationRequestEmail implements Task<Map<String,
         this.emailService = emailService;
     }
 
-    private static final String PETITIONER_CLARIFICATION_REQUEST_EMAIL_DESC =
-        "clarification requested by LA from petitioner email notification";
-    private static final String SOL_APPLICANT_MORE_INFO_REQUESTED_EMAIL_DESC =
-        "clarification requested by LA from petitioner solicitor email notification";
-
     @Override
     public Map<String, Object> execute(final TaskContext context, final Map<String, Object> caseData) throws TaskException {
 
@@ -75,11 +70,12 @@ public class SendPetitionerClarificationRequestEmail implements Task<Map<String,
             templateVars.put(NOTIFICATION_RESP_NAME, respFirstName + " " + respLastName);
             templateVars.put(NOTIFICATION_SOLICITOR_NAME, solicitorName);
 
-            emailService.sendEmail(petSolicitorEmail,
+            emailService.sendEmail(
+                petSolicitorEmail,
                 EmailTemplateNames.SOL_APPLICANT_MORE_INFO_REQUESTED.name(),
                 templateVars,
-                SOL_APPLICANT_MORE_INFO_REQUESTED_EMAIL_DESC,
-                languagePreference);
+                languagePreference
+            );
 
         } else if (StringUtils.isNotBlank(petitionerEmail)) {
             String ccdReference = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
@@ -87,11 +83,12 @@ public class SendPetitionerClarificationRequestEmail implements Task<Map<String,
             templateVars.put(NOTIFICATION_CASE_NUMBER_KEY, ccdReference);
             templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, petitionerFirstName);
             templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, petitionerLastName);
-            emailService.sendEmail(petitionerEmail,
+            emailService.sendEmail(
+                petitionerEmail,
                 EmailTemplateNames.PETITIONER_CLARIFICATION_REQUEST_EMAIL_NOTIFICATION.name(),
                 templateVars,
-                PETITIONER_CLARIFICATION_REQUEST_EMAIL_DESC,
-                languagePreference);
+                languagePreference
+            );
         } else {
             log.warn("petitioner email address found to be empty for case {}", caseData.get(D_8_CASE_REFERENCE));
         }

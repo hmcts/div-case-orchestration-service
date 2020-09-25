@@ -54,7 +54,6 @@ public class SendPetitionerAmendEmailTask implements Task<Map<String, Object>> {
             petitionerEmail,
             EmailTemplateNames.PETITIONER_AMEND_APPLICATION.name(),
             getPersonalisation(context, payload),
-            EMAIL_DESCRIPTION,
             languagePreference
         );
 

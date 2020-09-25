@@ -35,9 +35,9 @@ public class EmailNotification  implements Task<Map<String, Object>> {
         LanguagePreference languagePreference = DraftDataUtils.getLanguagePreference(draft);
 
         if (sendEmail && StringUtils.isNotBlank(emailAddress)) {
-            return emailService.sendEmail(emailAddress, EmailTemplateNames.SAVE_DRAFT.name(), null,
-                "draft saved confirmation" ,languagePreference);
+            return emailService.sendEmail(emailAddress, EmailTemplateNames.SAVE_DRAFT, languagePreference);
         }
+
         return new LinkedHashMap<>();
     }
 

@@ -49,6 +49,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH_FEMALE_GENDER_IN_RELATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.EVENT_ISSUE_AOS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.EVENT_ISSUE_AOS_FROM_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCED_WHO;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
@@ -78,8 +80,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.Email
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.PETITIONER_RESP_NOT_RESPONDED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.SOL_APPLICANT_RESP_NOT_RESPONDED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.SOL_PETITIONER_NOTICE_OF_PROCEEDINGS;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.notification.SendNoticeOfProceedingsEmailTask.EVENT_ISSUE_AOS;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.notification.SendNoticeOfProceedingsEmailTask.EVENT_ISSUE_AOS_FROM_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class AosOverdueNotificationTest extends MockedFunctionalTest {

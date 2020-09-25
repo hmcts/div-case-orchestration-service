@@ -5,6 +5,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -47,7 +48,7 @@ public class SendPetitionerEmailNotificationWorkflowTest {
     public void executeSendNoticeOfProceedingsEmailTaskWhenIssueAosEvent() throws Exception {
         when(featureToggleService.isFeatureEnabled(Features.SOLICITOR_DN_REJECT_AND_AMEND)).thenReturn(true);
         runTestForEventExpectTaskToBeCalled(
-            SendNoticeOfProceedingsEmailTask.EVENT_ISSUE_AOS,
+            CcdEvents.EVENT_ISSUE_AOS,
             sendNoticeOfProceedingsEmailTask
         );
         verifyTasksWereNeverCalled(sendPetitionerUpdateNotificationsEmailTask);
@@ -57,7 +58,7 @@ public class SendPetitionerEmailNotificationWorkflowTest {
     public void executeSendNoticeOfProceedingsEmailTaskWhenIssueAosFromReissueEvent() throws Exception {
         when(featureToggleService.isFeatureEnabled(Features.SOLICITOR_DN_REJECT_AND_AMEND)).thenReturn(true);
         runTestForEventExpectTaskToBeCalled(
-            SendNoticeOfProceedingsEmailTask.EVENT_ISSUE_AOS_FROM_REISSUE,
+            CcdEvents.EVENT_ISSUE_AOS_FROM_REISSUE,
             sendNoticeOfProceedingsEmailTask
         );
         verifyTasksWereNeverCalled(sendPetitionerUpdateNotificationsEmailTask);
@@ -74,7 +75,7 @@ public class SendPetitionerEmailNotificationWorkflowTest {
     public void executeSendNoticeOfProceedingsEmailTaskWhenFeatureToggleOff() throws Exception {
         when(featureToggleService.isFeatureEnabled(Features.SOLICITOR_DN_REJECT_AND_AMEND)).thenReturn(false);
         runTestForEventExpectTaskToBeCalled(
-            SendNoticeOfProceedingsEmailTask.EVENT_ISSUE_AOS_FROM_REISSUE,
+            CcdEvents.EVENT_ISSUE_AOS_FROM_REISSUE,
             sendPetitionerUpdateNotificationsEmailTask
         );
         verifyTasksWereNeverCalled(sendNoticeOfProceedingsEmailTask);

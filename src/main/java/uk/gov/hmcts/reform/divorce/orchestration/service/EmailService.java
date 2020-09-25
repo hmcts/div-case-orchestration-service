@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.config.EmailTemplatesConfig;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailToSend;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -38,6 +39,18 @@ public class EmailService {
         return sendEmailAndReturnErrorsInResponse(emailToSend);
     }
 
+    public Map<String, Object> sendEmail(String sendTo, EmailTemplateNames template, LanguagePreference lang) {
+        return sendEmail(sendTo, template.name(), null, lang);
+    }
+
+    /**
+     * Please use
+     * sendEmail(String, EmailTemplateNames, LanguagePreference)
+     * or
+     * sendEmail(String, String, Map, LanguagePreference)
+     *
+     * <p>This method should not be used anymore. We don't need String emailDescription.
+     */
     @Deprecated
     public Map<String, Object> sendEmail(String destinationAddress,
                                          String templateName,
@@ -47,13 +60,22 @@ public class EmailService {
         return sendEmail(destinationAddress, templateName, templateVars, languagePreference);
     }
 
-
-    public void sendEmailAndReturnExceptionIfFails(String destinationAddress,
-                                                   String templateName,
-                                                   Map<String, String> templateVars,
-                                                   String emailDescription,
-                                                   LanguagePreference languagePreference) throws NotificationClientException {
-
+    /**
+     * Please use
+     * sendEmail(String, String, LanguagePreference)
+     * or
+     * sendEmail(String, String, Map, LanguagePreference)
+     *
+     * <p>This method should not be used anymore. We don't need String emailDescription.
+     */
+    @Deprecated
+    public void sendEmailAndReturnExceptionIfFails(
+        String destinationAddress,
+        String templateName,
+        Map<String, String> templateVars,
+        String emailDescription,
+        LanguagePreference languagePreference
+    ) throws NotificationClientException {
         EmailToSend emailToSend = generateEmail(destinationAddress, templateName, templateVars, languagePreference);
         sendEmailUsingClient(emailToSend);
     }
@@ -76,7 +98,7 @@ public class EmailService {
         try {
             sendEmailUsingClient(emailToSend);
         } catch (NotificationClientException e) {
-            log.warn(
+            log.error(
                 "Failed to send email. Reference ID: {}. Reason: {}",
                 emailToSend.getReferenceId(), e.getMessage(), e
             );

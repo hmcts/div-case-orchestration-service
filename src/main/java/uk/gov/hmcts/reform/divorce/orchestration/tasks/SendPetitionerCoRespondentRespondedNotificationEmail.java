@@ -71,11 +71,12 @@ public class SendPetitionerCoRespondentRespondedNotificationEmail implements Tas
             templateVars.put(NOTIFICATION_RESP_NAME, respFirstName + " " + respLastName);
             templateVars.put(NOTIFICATION_SOLICITOR_NAME, solicitorName);
 
-            emailService.sendEmail(petSolicitorEmail,
+            emailService.sendEmail(
+                petSolicitorEmail,
                 EmailTemplateNames.SOL_APPLICANT_CORESP_RESPONDED.name(),
                 templateVars,
-                "co-respondent responded - notification to solicitor",
-                languagePreference);
+                languagePreference
+            );
 
         } else if (StringUtils.isNotBlank(petitionerEmail)) {
 
@@ -85,18 +86,20 @@ public class SendPetitionerCoRespondentRespondedNotificationEmail implements Tas
 
             if (isRespondentRespondedCase(caseData)) {
                 if (!isRespondentDefendedCase(caseData)) {
-                    emailService.sendEmail(petitionerEmail,
+                    emailService.sendEmail(
+                        petitionerEmail,
                         EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_SUBMITTED_NO_DEFEND.name(),
                         templateVars,
-                        "co-respondent responded when aos is undefended",
-                        languagePreference);
+                        languagePreference
+                    );
                 }
             } else {
-                emailService.sendEmail(petitionerEmail,
+                emailService.sendEmail(
+                    petitionerEmail,
                     EmailTemplateNames.APPLICANT_CO_RESPONDENT_RESPONDS_AOS_NOT_SUBMITTED.name(),
                     templateVars,
-                    "co-respondent responded but respondent has not",
-                    languagePreference);
+                    languagePreference
+                );
             }
         }
 

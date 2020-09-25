@@ -52,11 +52,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentation
 @Component
 public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
 
-    private static final String EMAIL_DESCRIPTION = "Decree Nisi Refusal Order - ";
-    private static final String SOL_PERSONAL_SERVICE_EMAIL = "DN decision made email";
-
-    private EmailService emailService;
-    private TemplateConfigService templateConfigService;
+    private final EmailService emailService;
+    private final TemplateConfigService templateConfigService;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
@@ -137,8 +134,7 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
             context,
             payload,
             EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION,
-            getPersonalisationForPetitioner(payload),
-            "Clarification"
+            getPersonalisationForPetitioner(payload)
         );
     }
 
@@ -147,8 +143,7 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
             context,
             payload,
             EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_REJECTION,
-            getDnRejectPersonalisationForPetitioner(context, payload),
-            "Rejection"
+            getDnRejectPersonalisationForPetitioner(context, payload)
         );
     }
 
@@ -156,8 +151,7 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
         TaskContext context,
         Map<String, Object> payload,
         EmailTemplateNames templateId,
-        Map<String, String> personalisation,
-        String description) throws TaskException {
+        Map<String, String> personalisation) throws TaskException {
 
         String caseId = getCaseId(context);
         String petitionerEmail = getOptionalPropertyValueAsString(payload, D_8_PETITIONER_EMAIL, null);
@@ -167,7 +161,7 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
             return payload;
         }
         LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(payload);
-        emailService.sendEmail(petitionerEmail, templateId.name(), personalisation, EMAIL_DESCRIPTION + description, languagePreference);
+        emailService.sendEmail(petitionerEmail, templateId.name(), personalisation, languagePreference);
 
         log.info("CaseId {}: Email to petitioner sent.", caseId);
 
@@ -182,7 +176,6 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
             solicitorEmail,
             EmailTemplateNames.DECREE_NISI_REFUSAL_ORDER_REJECTION_SOLICITOR.name(),
             getPersonalisationForSolicitor(context, payload),
-            EMAIL_DESCRIPTION + "Rejection",
             languagePreference
         );
 
@@ -198,7 +191,6 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
             solicitorEmail,
             EmailTemplateNames.SOL_DN_DECISION_MADE.name(),
             getPersonalisationForSolicitor(context, payload),
-            SOL_PERSONAL_SERVICE_EMAIL,
             languagePreference
         );
 

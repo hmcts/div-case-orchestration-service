@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -36,11 +37,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentation
 @RequiredArgsConstructor
 public class SendNoticeOfProceedingsEmailTask implements Task<Map<String, Object>> {
 
-    public static final String EVENT_ISSUE_AOS_FROM_REISSUE = "issueAosFromReissue";
-    public static final String EVENT_ISSUE_AOS = "issueAos";
-
-    private static final String EMAIL_DESCRIPTION = "Notice of Proceedings";
-
     private final EmailService emailService;
 
     @Override
@@ -64,7 +60,6 @@ public class SendNoticeOfProceedingsEmailTask implements Task<Map<String, Object
             solicitorEmail,
             EmailTemplateNames.SOL_PETITIONER_NOTICE_OF_PROCEEDINGS.name(),
             getPersonalisationForSolicitor(context, payload),
-            EMAIL_DESCRIPTION + "- Solicitor",
             languagePreference
         );
 
@@ -79,7 +74,6 @@ public class SendNoticeOfProceedingsEmailTask implements Task<Map<String, Object
             petitionerEmail,
             EmailTemplateNames.PETITIONER_NOTICE_OF_PROCEEDINGS.name(),
             getPersonalisationForPetitioner(payload),
-            EMAIL_DESCRIPTION,
             languagePreference
         );
 
@@ -107,7 +101,7 @@ public class SendNoticeOfProceedingsEmailTask implements Task<Map<String, Object
     }
 
     public static boolean isEventSupported(String eventId) {
-        return Stream.of(EVENT_ISSUE_AOS, EVENT_ISSUE_AOS_FROM_REISSUE)
+        return Stream.of(CcdEvents.EVENT_ISSUE_AOS, CcdEvents.EVENT_ISSUE_AOS_FROM_REISSUE)
             .anyMatch(supportEvent -> supportEvent.equalsIgnoreCase(eventId));
     }
 }

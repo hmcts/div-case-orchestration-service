@@ -39,9 +39,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @Component
 public class NotifyApplicantCanFinaliseDivorceTask implements Task<Map<String, Object>> {
 
-    private static final String EMAIL_DESC = "Email to inform applicant they can finalise divorce";
-    private static final String SOL_EMAIL_DESC = "Email to inform solicitor the applicant can finalise divorce";
-
     @Autowired
     EmailService emailService;
 
@@ -72,7 +69,6 @@ public class NotifyApplicantCanFinaliseDivorceTask implements Task<Map<String, O
                     solicitorEmail,
                     EmailTemplateNames.SOL_APPLICANT_DA_ELIGIBLE.name(),
                     templateVars,
-                    SOL_EMAIL_DESC,
                     languagePreference
             );
 
@@ -89,7 +85,6 @@ public class NotifyApplicantCanFinaliseDivorceTask implements Task<Map<String, O
                     petitionerEmail,
                     APPLICANT_DA_ELIGIBLE.name(),
                     templateVars,
-                    EMAIL_DESC,
                     languagePreference
             );
         }
