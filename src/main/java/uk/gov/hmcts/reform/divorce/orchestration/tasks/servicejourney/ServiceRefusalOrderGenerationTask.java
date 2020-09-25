@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceApplicationRefusalOrder;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.docmosis.DocmosisTemplateVars;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
@@ -37,5 +38,12 @@ public abstract class ServiceRefusalOrderGenerationTask extends BasePayloadSpeci
             .serviceApplicationRefusalReason(getServiceApplicationRefusalReason(caseData))
             .documentIssuedOn(DatesDataExtractor.getLetterDate())
             .build();
+    }
+
+    @Override
+    protected GeneratedDocumentInfo populateMetadataForGeneratedDocument(GeneratedDocumentInfo documentInfo) {
+        documentInfo.setDocumentType(getDocumentType());
+        documentInfo.setFileName(getFilenameWithCurrentDate());
+        return documentInfo;
     }
 }
