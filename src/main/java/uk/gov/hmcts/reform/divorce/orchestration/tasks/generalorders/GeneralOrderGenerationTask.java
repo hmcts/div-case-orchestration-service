@@ -23,12 +23,16 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker;
 import uk.gov.hmcts.reform.divorce.orchestration.util.mapper.CcdMappers;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_ORDERS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_FMT;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
+import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateFromLocalDate;
 
 @Component
 @Slf4j
@@ -65,13 +69,6 @@ public class GeneralOrderGenerationTask extends BasePayloadSpecificDocumentGener
     }
 
     @Override
-    protected GeneratedDocumentInfo populateMetadataForGeneratedDocument(GeneratedDocumentInfo documentInfo) {
-        documentInfo.setDocumentType(getDocumentType());
-        documentInfo.setFileName(getFilenameWithCurrentDate());
-        return documentInfo;
-    }
-
-    @Override
     protected DocmosisTemplateVars prepareDataForPdf(TaskContext context, Map<String, Object> caseData) {
         return GeneralOrder.generalOrderBuilder()
             .caseReference(getCaseId(context))
@@ -96,6 +93,11 @@ public class GeneralOrderGenerationTask extends BasePayloadSpecificDocumentGener
     @Override
     public String getDocumentType() {
         return FileMetadata.DOCUMENT_TYPE;
+    }
+
+    @Override
+    protected String getFileName() {
+        return format(DOCUMENT_FILENAME_FMT, getDocumentType(), formatDateFromLocalDate(LocalDate.now()));
     }
 
     private String getJudgeType(Map<String, Object> caseData) {

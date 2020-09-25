@@ -10,15 +10,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentG
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
-import java.time.LocalDate;
 import java.util.Map;
 
-import static java.lang.String.format;
 import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_FMT;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
-import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateFromLocalDate;
 
 /*
  * It should be used as a base class to prepare data models with set of data needed to generate PDFs.
@@ -73,14 +69,13 @@ public abstract class BasePayloadSpecificDocumentGenerationTask implements Task<
         );
     }
 
-    protected String getFilenameWithCurrentDate() {
-        return format(DOCUMENT_FILENAME_FMT, getDocumentType(), formatDateFromLocalDate(LocalDate.now()));
+    protected String getFileName() {
+        return getDocumentType();
     }
 
     protected GeneratedDocumentInfo populateMetadataForGeneratedDocument(GeneratedDocumentInfo documentInfo) {
         documentInfo.setDocumentType(getDocumentType());
-        documentInfo.setFileName(getDocumentType());
-
+        documentInfo.setFileName(getFileName());
         return documentInfo;
     }
 
