@@ -45,23 +45,6 @@ public class EmailService {
 
     /**
      * Please use
-     * sendEmail(String, EmailTemplateNames, LanguagePreference)
-     * or
-     * sendEmail(String, String, Map, LanguagePreference)
-     *
-     * <p>This method should not be used anymore. We don't need String emailDescription.
-     */
-    @Deprecated
-    public Map<String, Object> sendEmail(String destinationAddress,
-                                         String templateName,
-                                         Map<String, String> templateVars,
-                                         String emailDescription,
-                                         LanguagePreference languagePreference) {
-        return sendEmail(destinationAddress, templateName, templateVars, languagePreference);
-    }
-
-    /**
-     * Please use
      * sendEmail(String, String, LanguagePreference)
      * or
      * sendEmail(String, String, Map, LanguagePreference)
