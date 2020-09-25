@@ -26,8 +26,8 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.EVENT_ISSUE_AOS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.EVENT_ISSUE_AOS_FROM_REISSUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS_FROM_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
@@ -89,7 +89,7 @@ public class SendNoticeOfProceedingsEmailTaskTest {
     public void shouldSendNotificationEmailToSolicitor_whenPetitionerIsRepresented() throws TaskException {
         incomingPayload.put(D_8_PETITIONER_EMAIL, null);
         incomingPayload.put(PETITIONER_SOLICITOR_EMAIL, SOLICITOR_EMAIL);
-        taskContext.setTransientObject(CASE_EVENT_ID_JSON_KEY, EVENT_ISSUE_AOS);
+        taskContext.setTransientObject(CASE_EVENT_ID_JSON_KEY, ISSUE_AOS);
 
         executeTask();
 
@@ -113,7 +113,7 @@ public class SendNoticeOfProceedingsEmailTaskTest {
     public void shouldSendNotificationEmailToPetitioner_whenPetitionerIsNotRepresented() throws TaskException {
         incomingPayload.put(D_8_PETITIONER_EMAIL, PETITIONER_EMAIL);
         incomingPayload.put(PETITIONER_SOLICITOR_EMAIL, null);
-        taskContext.setTransientObject(CASE_EVENT_ID_JSON_KEY, EVENT_ISSUE_AOS);
+        taskContext.setTransientObject(CASE_EVENT_ID_JSON_KEY, ISSUE_AOS);
 
         executeTask();
 
@@ -134,8 +134,8 @@ public class SendNoticeOfProceedingsEmailTaskTest {
 
     @Test
     public void isEventSupportedShouldReturnTrue() {
-        assertThat(SendNoticeOfProceedingsEmailTask.isEventSupported(EVENT_ISSUE_AOS_FROM_REISSUE), is(true));
-        assertThat(SendNoticeOfProceedingsEmailTask.isEventSupported(EVENT_ISSUE_AOS), is(true));
+        assertThat(SendNoticeOfProceedingsEmailTask.isEventSupported(ISSUE_AOS_FROM_REISSUE), is(true));
+        assertThat(SendNoticeOfProceedingsEmailTask.isEventSupported(ISSUE_AOS), is(true));
     }
 
     @Test

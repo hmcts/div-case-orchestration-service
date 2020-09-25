@@ -101,7 +101,7 @@ public class SendNoticeOfProceedingsEmailTask implements Task<Map<String, Object
     }
 
     public static boolean isEventSupported(String eventId) {
-        return Stream.of(CcdEvents.EVENT_ISSUE_AOS, CcdEvents.EVENT_ISSUE_AOS_FROM_REISSUE)
+        return Stream.of(CcdEvents.ISSUE_AOS, CcdEvents.ISSUE_AOS_FROM_REISSUE)
             .anyMatch(supportEvent -> supportEvent.equalsIgnoreCase(eventId));
     }
 }

@@ -48,7 +48,7 @@ public class SendPetitionerEmailNotificationWorkflowTest {
     public void executeSendNoticeOfProceedingsEmailTaskWhenIssueAosEvent() throws Exception {
         when(featureToggleService.isFeatureEnabled(Features.SOLICITOR_DN_REJECT_AND_AMEND)).thenReturn(true);
         runTestForEventExpectTaskToBeCalled(
-            CcdEvents.EVENT_ISSUE_AOS,
+            CcdEvents.ISSUE_AOS,
             sendNoticeOfProceedingsEmailTask
         );
         verifyTasksWereNeverCalled(sendPetitionerUpdateNotificationsEmailTask);
@@ -58,7 +58,7 @@ public class SendPetitionerEmailNotificationWorkflowTest {
     public void executeSendNoticeOfProceedingsEmailTaskWhenIssueAosFromReissueEvent() throws Exception {
         when(featureToggleService.isFeatureEnabled(Features.SOLICITOR_DN_REJECT_AND_AMEND)).thenReturn(true);
         runTestForEventExpectTaskToBeCalled(
-            CcdEvents.EVENT_ISSUE_AOS_FROM_REISSUE,
+            CcdEvents.ISSUE_AOS_FROM_REISSUE,
             sendNoticeOfProceedingsEmailTask
         );
         verifyTasksWereNeverCalled(sendPetitionerUpdateNotificationsEmailTask);
@@ -75,7 +75,7 @@ public class SendPetitionerEmailNotificationWorkflowTest {
     public void executeSendNoticeOfProceedingsEmailTaskWhenFeatureToggleOff() throws Exception {
         when(featureToggleService.isFeatureEnabled(Features.SOLICITOR_DN_REJECT_AND_AMEND)).thenReturn(false);
         runTestForEventExpectTaskToBeCalled(
-            CcdEvents.EVENT_ISSUE_AOS_FROM_REISSUE,
+            CcdEvents.ISSUE_AOS_FROM_REISSUE,
             sendPetitionerUpdateNotificationsEmailTask
         );
         verifyTasksWereNeverCalled(sendNoticeOfProceedingsEmailTask);

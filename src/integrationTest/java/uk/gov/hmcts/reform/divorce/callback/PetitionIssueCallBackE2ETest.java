@@ -22,6 +22,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE;
@@ -47,7 +48,6 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
 
     private static final String PAYMENT_MADE_JSON = "payment-made.json";
     private static final String ISSUE_EVENT_ID = "issueFromSubmitted";
-    private static final String ISSUE_AOS_EVENT_ID = "issueAos";
     private static final String REJECTED_EVENT_ID = "rejected";
     private static final String ISSUE_FROM_REJECTED_EVENT_ID = "issueFromRejected";
 
@@ -98,7 +98,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
         log.info("case {}", caseDetails.getId().toString());
 
         // put case in aos awaiting
-        CaseDetails updatedCaseDetails = fireEvent(caseDetails.getId().toString(), ISSUE_AOS_EVENT_ID);
+        CaseDetails updatedCaseDetails = fireEvent(caseDetails.getId().toString(), ISSUE_AOS);
 
         // link the respondent
         final UserDetails respondentUser = createCitizenUser();
