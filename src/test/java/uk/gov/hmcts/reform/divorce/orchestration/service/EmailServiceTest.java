@@ -48,19 +48,22 @@ public class EmailServiceTest {
     }
 
     @Test
-    public void sendWeslhEmailForSubmissionConfirmationShouldCallTheEmailClientToSendAnEmail()
+    public void sendWelshEmailForSubmissionConfirmationShouldCallTheEmailClientToSendAnEmail()
         throws NotificationClientException {
-        emailService.sendEmail(EMAIL_ADDRESS,
+        emailService.sendEmail(
+            EMAIL_ADDRESS,
             EmailTemplateNames.APPLIC_SUBMISSION.name(),
             null,
             "submission notification",
-             LanguagePreference.WELSH);
+            LanguagePreference.WELSH
+        );
 
         verify(mockClient).sendEmail(
             eq(emailTemplatesConfig.getTemplates().get(LanguagePreference.WELSH).get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
             eq(EMAIL_ADDRESS),
             eq(emailTemplatesConfig.getTemplateVars().get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
-            anyString());
+            anyString()
+        );
     }
 
     @Test
@@ -86,7 +89,7 @@ public class EmailServiceTest {
             EmailTemplateNames.SAVE_DRAFT.name(),
             null,
             "save draft",
-             LanguagePreference.WELSH);
+            LanguagePreference.WELSH);
 
         verify(mockClient).sendEmail(
             eq(emailTemplatesConfig.getTemplates().get(LanguagePreference.WELSH).get(EmailTemplateNames.SAVE_DRAFT.name())),
@@ -103,28 +106,27 @@ public class EmailServiceTest {
 
         //no exception thrown
         emailService.sendEmail(EMAIL_ADDRESS,
-                EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
-                null,
-                "resp does not consent to 2 year separation update notification",
-                 LanguagePreference.WELSH);
+            EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
+            null,
+            "resp does not consent to 2 year separation update notification",
+            LanguagePreference.WELSH);
     }
 
     @Test
     public void sendEmailAndReturnExceptionShouldCallTheEmailClientToSendAnEmail()
-            throws NotificationClientException {
+        throws NotificationClientException {
         emailService.sendEmailAndReturnExceptionIfFails(EMAIL_ADDRESS,
-                EmailTemplateNames.APPLIC_SUBMISSION.name(),
-                null,
-                "submission notification",
-                 LanguagePreference.ENGLISH);
+            EmailTemplateNames.APPLIC_SUBMISSION.name(),
+            null,
+            "submission notification",
+            LanguagePreference.ENGLISH);
 
         verify(mockClient).sendEmail(
             eq(emailTemplatesConfig.getTemplates().get(LanguagePreference.ENGLISH).get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
-                eq(EMAIL_ADDRESS),
-                eq(emailTemplatesConfig.getTemplateVars().get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
-                anyString());
+            eq(EMAIL_ADDRESS),
+            eq(emailTemplatesConfig.getTemplateVars().get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
+            anyString());
     }
-
 
     @Test
     public void sendWelshEmailAndReturnExceptionShouldCallTheEmailClientToSendAnEmail()
@@ -133,7 +135,7 @@ public class EmailServiceTest {
             EmailTemplateNames.APPLIC_SUBMISSION.name(),
             null,
             "submission notification",
-             LanguagePreference.WELSH);
+            LanguagePreference.WELSH);
 
         verify(mockClient).sendEmail(
             eq(emailTemplatesConfig.getTemplates().get(LanguagePreference.WELSH).get(EmailTemplateNames.APPLIC_SUBMISSION.name())),
@@ -144,14 +146,16 @@ public class EmailServiceTest {
 
     @Test(expected = NotificationClientException.class)
     public void sendEmailShouldAndReturnExceptionPropagateNotificationClientException()
-            throws NotificationClientException {
+        throws NotificationClientException {
         doThrow(new NotificationClientException(new Exception("Exception inception")))
-                .when(mockClient).sendEmail(anyString(), anyString(), eq(null), anyString());
+            .when(mockClient).sendEmail(anyString(), anyString(), eq(null), anyString());
 
-        emailService.sendEmailAndReturnExceptionIfFails(EMAIL_ADDRESS,
-                EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
-                null,
-                "resp does not consent to 2 year separation update notification",
-                LanguagePreference.ENGLISH);
+        emailService.sendEmailAndReturnExceptionIfFails(
+            EMAIL_ADDRESS,
+            EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
+            null,
+            "resp does not consent to 2 year separation update notification",
+            LanguagePreference.ENGLISH
+        );
     }
 }

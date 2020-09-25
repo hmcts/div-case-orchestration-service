@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.StringUtils.isEmpty;
@@ -104,6 +105,14 @@ public class EmailService {
 
     private void logEmailDetails(EmailToSend emailToSend) {
         List<String> emailVarsSanitised = new ArrayList<>();
+
+        if (Optional.ofNullable(emailToSend.getTemplateFields()).isEmpty()) {
+            log.error(
+                "No template vars provided for template {}, email ref.: {}",
+                emailToSend.getTemplateId(), emailToSend.getReferenceId()
+            );
+            return;
+        }
 
         emailToSend.getTemplateFields().forEach((key, value) -> {
             if (isEmpty(value)) {
