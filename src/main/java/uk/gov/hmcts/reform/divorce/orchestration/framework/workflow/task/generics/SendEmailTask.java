@@ -49,7 +49,6 @@ public abstract class SendEmailTask implements Task<Map<String, Object>> {
                 getRecipientEmail(caseData),
                 getTemplate().name(),
                 getPersonalisation(context, caseData),
-                subject,
                 getLanguage(caseData)
             );
 
