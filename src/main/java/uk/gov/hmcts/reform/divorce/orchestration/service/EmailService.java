@@ -127,7 +127,7 @@ public class EmailService {
                 );
             }
 
-            emailVarsSanitised.add(format("%s: string %s", key, value == null ? "NULL" : value.length()));
+            emailVarsSanitised.add(format("%s: %s", key, value == null ? "NULL" : "length " + value.length()));
         });
 
         log.info(

@@ -12,6 +12,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.service.notify.NotificationClientException;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
@@ -108,6 +111,28 @@ public class EmailServiceTest {
             EMAIL_ADDRESS,
             EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS,
             LanguagePreference.WELSH
+        );
+    }
+
+    @Test
+    public void sendEmailShouldLogWhenThereIsAnEmptyFieldInTemplateVarsAndAttemptToSendAnyway()
+        throws NotificationClientException {
+        Map<String, String> vars = new HashMap<>();
+        vars.put("a", null);
+        vars.put("b", "");
+
+        emailService.sendEmail(
+            EMAIL_ADDRESS,
+            EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
+            vars,
+            LanguagePreference.ENGLISH
+        );
+
+        verify(mockClient).sendEmail(
+            anyString(),
+            eq(EMAIL_ADDRESS),
+            eq(vars),
+            anyString()
         );
     }
 
