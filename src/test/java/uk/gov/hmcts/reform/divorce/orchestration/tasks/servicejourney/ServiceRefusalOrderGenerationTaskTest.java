@@ -1,16 +1,26 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney;
 
 import org.junit.Before;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceApplicationRefusalOrder;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.docmosis.DocmosisTemplateVars;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BasePayloadSpecificDocumentGenerationTaskTest;
+import uk.gov.hmcts.reform.divorce.orchestration.util.mapper.CcdMappers;
 import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
@@ -20,6 +30,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RECEIVED_SERVICE_APPLICATION_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_REFUSAL_REASON;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
@@ -36,14 +47,87 @@ public abstract class ServiceRefusalOrderGenerationTaskTest extends BasePayloadS
     @Before
     public void setup() {
         when(ctscContactDetailsDataProviderService.getCtscContactDetails()).thenReturn(CTSC_CONTACT);
+        when(ccdUtil.addNewDocumentToCollection(anyMap(), any(GeneratedDocumentInfo.class), eq(SERVICE_APPLICATION_DOCUMENTS)))
+            .thenCallRealMethod();
     }
 
     public abstract ServiceRefusalOrderGenerationTask getTask();
 
-    public void executeShouldGenerateAFile() throws TaskException {
+    public Map<String, Object> executeShouldGenerateAFile() throws TaskException {
         Map<String, Object> caseData = buildCaseData();
 
-        ServiceApplicationRefusalOrder serviceApplicationRefusalOrder = ServiceApplicationRefusalOrder.serviceApplicationRefusalOrderBuilder()
+        Map<String, Object> returnedCaseData = getTask().execute(contextWithToken(), caseData);
+
+        runVerifications(
+            returnedCaseData,
+            getTask().getDocumentType(),
+            getTask().getTemplateId(),
+            buildServiceApplicationRefusalOrder()
+        );
+
+        return returnedCaseData;
+    }
+
+    // TODO findout when this didnt work, try to test for multiple doc in unit test level
+    public Map<String, Object> executeShouldGenerateAndAddToCollection() throws TaskException {
+        Map<String, Object> caseData = buildCaseDataWithExistingDocument();
+
+        Map<String, Object> returnedCaseData = getTask().execute(contextWithToken(), caseData);
+
+        runCommonVerificationsForMultipleDocuments(
+            caseData,
+            returnedCaseData,
+            getTask().getDocumentType(),
+            getTask().getTemplateId(),
+            buildServiceApplicationRefusalOrder()
+        );
+
+        return returnedCaseData;
+    }
+
+
+    protected void runVerifications(
+        Map<String, Object> returnedCaseData,
+        String expectedDocumentType,
+        String expectedTemplateId,
+        DocmosisTemplateVars expectedDocmosisTemplateVars) {
+        verifyDocumentAddedToCaseData(returnedCaseData, expectedDocumentType);
+        verifyPdfDocumentGenerationCallIsCorrect(expectedTemplateId, expectedDocmosisTemplateVars);
+    }
+
+    private void runCommonVerificationsForMultipleDocuments(Map<String, Object> expectedIncomingCaseData,
+                                                            Map<String, Object> returnedCaseData,
+                                                            String expectedDocumentType,
+                                                            String expectedTemplateId,
+                                                            DocmosisTemplateVars expectedDocmosisTemplateVars) {
+        verifyNewDocumentWasAddedToExistingCollection(returnedCaseData, expectedDocumentType);
+        verifyPdfDocumentGenerationCallIsCorrect(expectedTemplateId, expectedDocmosisTemplateVars);
+    }
+
+    private void verifyDocumentAddedToCaseData(Map<String, Object> returnedCaseData, String expectedDocumentType) {
+        String expectedServiceRefusalFileName = getFormattedFileName(expectedDocumentType);
+
+        List<CollectionMember<Document>> serviceApplicationCollection = (List) returnedCaseData.get(SERVICE_APPLICATION_DOCUMENTS);
+        assertThat(serviceApplicationCollection.size(), is(1));
+
+        Document newDocument = serviceApplicationCollection.get(0).getValue();
+        assertThat(newDocument.getDocumentType(), is(expectedDocumentType));
+        assertThat(newDocument.getDocumentFileName(), is(expectedServiceRefusalFileName));
+    }
+
+    private void verifyNewDocumentWasAddedToExistingCollection(Map<String, Object> returnedCaseData, String expectedDocumentType) {
+        String expectedServiceRefusalFileName = getFormattedFileName(expectedDocumentType);
+
+        List<CollectionMember<Document>> serviceApplicationCollection = (List) returnedCaseData.get(SERVICE_APPLICATION_DOCUMENTS);
+        assertThat(serviceApplicationCollection.size(), is(2));
+
+        Document newDocument = serviceApplicationCollection.get(1).getValue();
+        assertThat(newDocument.getDocumentType(), is(expectedDocumentType));
+        assertThat(newDocument.getDocumentFileName(), is(expectedServiceRefusalFileName));
+    }
+
+    private DocmosisTemplateVars buildServiceApplicationRefusalOrder() {
+        return ServiceApplicationRefusalOrder.serviceApplicationRefusalOrderBuilder()
             .ctscContactDetails(CTSC_CONTACT)
             .petitionerFullName(TEST_PETITIONER_FULL_NAME)
             .respondentFullName(TEST_RESPONDENT_FULL_NAME)
@@ -52,18 +136,6 @@ public abstract class ServiceRefusalOrderGenerationTaskTest extends BasePayloadS
             .receivedServiceApplicationDate(DateUtils.formatDateWithCustomerFacingFormat(TEST_RECEIVED_DATE))
             .documentIssuedOn(DateUtils.formatDateWithCustomerFacingFormat(LocalDate.now()))
             .build();
-
-        Map<String, Object> returnedCaseData = getTask().execute(contextWithToken(), caseData);
-
-        runCommonVerifications(
-            caseData,
-            returnedCaseData,
-            getTask().getDocumentType(),
-            getTask().getTemplateId(),
-            serviceApplicationRefusalOrder
-        );
-
-        assertNotNull(returnedCaseData);
     }
 
     private Map<String, Object> buildCaseData() {
@@ -78,5 +150,24 @@ public abstract class ServiceRefusalOrderGenerationTaskTest extends BasePayloadS
         caseData.put(SERVICE_APPLICATION_REFUSAL_REASON, TEST_SERVICE_APPLICATION_REFUSAL_REASON);
 
         return caseData;
+    }
+
+    private Map<String, Object> buildCaseDataWithExistingDocument() {
+        Map<String, Object> caseData = buildCaseData();
+        caseData.put(SERVICE_APPLICATION_DOCUMENTS, buildDocument(caseData));
+        return caseData;
+    }
+
+    private List<CollectionMember<Document>> buildDocument(Map<String, Object> caseData) {
+        GeneratedDocumentInfo documentInfo = GeneratedDocumentInfo.builder()
+            .fileName(getTask().getDocumentType() + "2010-05-10")
+            .documentType(getTask().getDocumentType())
+            .build();
+        CollectionMember<Document> documentCollectionMemberToAdd = CcdMappers.mapDocumentInfoToCcdDocument(documentInfo);
+
+        List<CollectionMember<Document>> allDocuments = ccdUtil.getCollectionMembersOrEmptyList(caseData, SERVICE_APPLICATION_DOCUMENTS);
+        allDocuments.add(documentCollectionMemberToAdd);
+
+        return allDocuments;
     }
 }
