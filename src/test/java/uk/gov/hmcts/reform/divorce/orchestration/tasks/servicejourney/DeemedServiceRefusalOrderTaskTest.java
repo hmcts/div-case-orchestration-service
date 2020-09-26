@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -27,13 +26,4 @@ public class DeemedServiceRefusalOrderTaskTest extends ServiceRefusalOrderGenera
         Map<String, Object> returnedCaseData = executeShouldGenerateAFile();
         assertNotNull(returnedCaseData);
     }
-
-    @Test
-    @Ignore
-    public void testExecuteShouldGenerateAndAddFileToCollection() throws TaskException {
-        Map<String, Object> returnedCaseData = executeShouldGenerateAndAddToCollection();
-        assertNotNull(returnedCaseData);
-    }
-
-    // TODO add negative scenario when document is not generated, error thrown
 }

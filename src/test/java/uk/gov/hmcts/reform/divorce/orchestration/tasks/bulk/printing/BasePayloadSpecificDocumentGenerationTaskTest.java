@@ -15,12 +15,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentG
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -34,9 +32,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_FMT;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskTestHelper.createRandomGeneratedDocument;
-import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateFromLocalDate;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BasePayloadSpecificDocumentGenerationTaskTest {
@@ -126,10 +122,5 @@ public class BasePayloadSpecificDocumentGenerationTaskTest {
         verify(pdfDocumentGenerationService).generatePdf(docmosisTemplateVarsCaptor.capture(), eq(expectedTemplateId), eq(AUTH_TOKEN));
         final DocmosisTemplateVars docmosisTemplateVars = docmosisTemplateVarsCaptor.getValue();
         assertEquals(expectedDocmosisTemplateVars, docmosisTemplateVars);
-    }
-
-    // TODO refine to common location ?
-    protected String getFormattedFileName(String expectedDocumentType) {
-        return format(DOCUMENT_FILENAME_FMT, expectedDocumentType, formatDateFromLocalDate(LocalDate.now()));
     }
 }

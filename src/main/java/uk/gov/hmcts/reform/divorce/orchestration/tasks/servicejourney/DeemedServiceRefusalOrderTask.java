@@ -7,6 +7,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentG
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
+import java.time.LocalDate;
+
+import static java.lang.String.format;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_FMT;
+import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateFromLocalDate;
+
 @Component
 public class DeemedServiceRefusalOrderTask extends ServiceRefusalOrderGenerationTask {
 
@@ -31,5 +37,10 @@ public class DeemedServiceRefusalOrderTask extends ServiceRefusalOrderGeneration
     @Override
     public String getDocumentType() {
         return FileMetadata.DOCUMENT_TYPE;
+    }
+
+    @Override
+    protected String getFileName() {
+        return format(DOCUMENT_FILENAME_FMT, getDocumentType(), formatDateFromLocalDate(LocalDate.now()));
     }
 }

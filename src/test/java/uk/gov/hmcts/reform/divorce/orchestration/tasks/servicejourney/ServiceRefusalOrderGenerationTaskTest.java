@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BasePayloadSpecificDocumentGenerationTaskTest;
-import uk.gov.hmcts.reform.divorce.orchestration.util.mapper.CcdMappers;
 import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
 import java.time.LocalDate;
@@ -37,7 +36,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.CTSC_CONTACT;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceApplicationTestUtil.getDocumentCollection;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithToken;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskTestHelper.formatWithCurrentDate;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelperTest.TEST_SERVICE_APPLICATION_REFUSAL_REASON;
 
 public abstract class ServiceRefusalOrderGenerationTaskTest extends BasePayloadSpecificDocumentGenerationTaskTest {
@@ -68,62 +69,24 @@ public abstract class ServiceRefusalOrderGenerationTaskTest extends BasePayloadS
         return returnedCaseData;
     }
 
-    // TODO findout when this didnt work, try to test for multiple doc in unit test level
-    public Map<String, Object> executeShouldGenerateAndAddToCollection() throws TaskException {
-        Map<String, Object> caseData = buildCaseDataWithExistingDocument();
-
-        Map<String, Object> returnedCaseData = getTask().execute(contextWithToken(), caseData);
-
-        runCommonVerificationsForMultipleDocuments(
-            caseData,
-            returnedCaseData,
-            getTask().getDocumentType(),
-            getTask().getTemplateId(),
-            buildServiceApplicationRefusalOrder()
-        );
-
-        return returnedCaseData;
-    }
-
-
-    protected void runVerifications(
-        Map<String, Object> returnedCaseData,
-        String expectedDocumentType,
-        String expectedTemplateId,
-        DocmosisTemplateVars expectedDocmosisTemplateVars) {
+    private void runVerifications(Map<String, Object> returnedCaseData, String expectedDocumentType, String expectedTemplateId,
+                                    DocmosisTemplateVars expectedDocmosisTemplateVars) {
         verifyDocumentAddedToCaseData(returnedCaseData, expectedDocumentType);
         verifyPdfDocumentGenerationCallIsCorrect(expectedTemplateId, expectedDocmosisTemplateVars);
     }
 
-    private void runCommonVerificationsForMultipleDocuments(Map<String, Object> expectedIncomingCaseData,
-                                                            Map<String, Object> returnedCaseData,
-                                                            String expectedDocumentType,
-                                                            String expectedTemplateId,
-                                                            DocmosisTemplateVars expectedDocmosisTemplateVars) {
-        verifyNewDocumentWasAddedToExistingCollection(returnedCaseData, expectedDocumentType);
-        verifyPdfDocumentGenerationCallIsCorrect(expectedTemplateId, expectedDocmosisTemplateVars);
-    }
-
     private void verifyDocumentAddedToCaseData(Map<String, Object> returnedCaseData, String expectedDocumentType) {
-        String expectedServiceRefusalFileName = getFormattedFileName(expectedDocumentType);
-
-        List<CollectionMember<Document>> serviceApplicationCollection = (List) returnedCaseData.get(SERVICE_APPLICATION_DOCUMENTS);
+        String expectedServiceFileName = getFileName();
+        List<CollectionMember<Document>> serviceApplicationCollection = getDocumentCollection(returnedCaseData, SERVICE_APPLICATION_DOCUMENTS);
         assertThat(serviceApplicationCollection.size(), is(1));
 
         Document newDocument = serviceApplicationCollection.get(0).getValue();
         assertThat(newDocument.getDocumentType(), is(expectedDocumentType));
-        assertThat(newDocument.getDocumentFileName(), is(expectedServiceRefusalFileName));
+        assertThat(newDocument.getDocumentFileName(), is(expectedServiceFileName));
     }
 
-    private void verifyNewDocumentWasAddedToExistingCollection(Map<String, Object> returnedCaseData, String expectedDocumentType) {
-        String expectedServiceRefusalFileName = getFormattedFileName(expectedDocumentType);
-
-        List<CollectionMember<Document>> serviceApplicationCollection = (List) returnedCaseData.get(SERVICE_APPLICATION_DOCUMENTS);
-        assertThat(serviceApplicationCollection.size(), is(2));
-
-        Document newDocument = serviceApplicationCollection.get(1).getValue();
-        assertThat(newDocument.getDocumentType(), is(expectedDocumentType));
-        assertThat(newDocument.getDocumentFileName(), is(expectedServiceRefusalFileName));
+    private String getFileName() {
+        return formatWithCurrentDate(getTask().getDocumentType());
     }
 
     private DocmosisTemplateVars buildServiceApplicationRefusalOrder() {
@@ -152,22 +115,4 @@ public abstract class ServiceRefusalOrderGenerationTaskTest extends BasePayloadS
         return caseData;
     }
 
-    private Map<String, Object> buildCaseDataWithExistingDocument() {
-        Map<String, Object> caseData = buildCaseData();
-        caseData.put(SERVICE_APPLICATION_DOCUMENTS, buildDocument(caseData));
-        return caseData;
-    }
-
-    private List<CollectionMember<Document>> buildDocument(Map<String, Object> caseData) {
-        GeneratedDocumentInfo documentInfo = GeneratedDocumentInfo.builder()
-            .fileName(getTask().getDocumentType() + "2010-05-10")
-            .documentType(getTask().getDocumentType())
-            .build();
-        CollectionMember<Document> documentCollectionMemberToAdd = CcdMappers.mapDocumentInfoToCcdDocument(documentInfo);
-
-        List<CollectionMember<Document>> allDocuments = ccdUtil.getCollectionMembersOrEmptyList(caseData, SERVICE_APPLICATION_DOCUMENTS);
-        allDocuments.add(documentCollectionMemberToAdd);
-
-        return allDocuments;
-    }
 }
