@@ -167,7 +167,7 @@ allprojects {
                 entry 'hibernate-core'
             }
             //CVE-2017-18640
-            dependency group: 'org.yaml',name: 'snakeyaml', version: '1.26'
+            dependency group: 'org.yaml',name: 'snakeyaml', version: '1.27'
         }
     }
 }
