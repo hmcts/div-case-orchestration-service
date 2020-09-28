@@ -13,11 +13,15 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextracto
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BasePayloadSpecificDocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
+import java.time.LocalDate;
 import java.util.Map;
 
+import static java.lang.String.format;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_DOCUMENTS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_FMT;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.getServiceApplicationRefusalReason;
+import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateFromLocalDate;
 
 @Component
 @Slf4j
@@ -47,5 +51,10 @@ public abstract class ServiceRefusalOrderGenerationTask extends BasePayloadSpeci
     protected Map<String, Object> addToCaseData(TaskContext context, Map<String, Object> caseData, GeneratedDocumentInfo documentInfo) {
         log.info("CaseID: {} Adding document ({}) to serviceApplicationDocuments list", getCaseId(context), getDocumentType());
         return ccdUtil.addNewDocumentToCollection(caseData, documentInfo, SERVICE_APPLICATION_DOCUMENTS);
+    }
+
+    @Override
+    protected String getFileName() {
+        return format(DOCUMENT_FILENAME_FMT, getDocumentType(), formatDateFromLocalDate(LocalDate.now()));
     }
 }
