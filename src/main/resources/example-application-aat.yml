@@ -132,6 +132,12 @@ payment:
     api:
       baseurl: ${PAYMENT_API_BASEURL:http://payment-api-aat.service.core-compute-aat.internal}
 
+pba:
+  validation:
+    service:
+      api:
+        baseurl: ${PRD_API_BASEURL:http://rd-professional-api-aat.service.core-compute-aat.internal}
+
 feature-toggle:
   toggle:
     bulk-print: true
