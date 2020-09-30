@@ -98,9 +98,9 @@ public class GeneralOrderTest extends IdamTestSupport {
         Map<String, Object> caseData = buildInputCaseData();
         CcdCallbackRequest input = buildRequest(caseData);
         String documentType = GeneralOrderGenerationTask.FileMetadata.DOCUMENT_TYPE;
-        String fileName = documentType + DateUtils.formatDateFromLocalDate(LocalDate.now()) + ".pdf";
+        String fileName = formatDocumentFileName(documentType);
 
-        stubDgsRequest(caseData, GeneralOrderGenerationTask.FileMetadata.TEMPLATE_ID, documentType);
+        stubDocumentGeneratorServiceRequest(caseData, GeneralOrderGenerationTask.FileMetadata.TEMPLATE_ID, documentType);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -125,9 +125,9 @@ public class GeneralOrderTest extends IdamTestSupport {
         Map<String, Object> caseData = addGeneralOrderCollection(buildInputCaseData());
         CcdCallbackRequest input = buildRequest(caseData);
         String documentType = GeneralOrderGenerationTask.FileMetadata.DOCUMENT_TYPE;
-        String fileName = documentType + DateUtils.formatDateFromLocalDate(LocalDate.now()) + ".pdf";
+        String fileName = formatDocumentFileName(documentType);
 
-        stubDgsRequest(caseData, GeneralOrderGenerationTask.FileMetadata.TEMPLATE_ID, documentType);
+        stubDocumentGeneratorServiceRequest(caseData, GeneralOrderGenerationTask.FileMetadata.TEMPLATE_ID, documentType);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -202,7 +202,7 @@ public class GeneralOrderTest extends IdamTestSupport {
         return caseData;
     }
 
-    protected void stubDgsRequest(Map<String, Object> caseData, String templateId, String documentType) {
+    protected void stubDocumentGeneratorServiceRequest(Map<String, Object> caseData, String templateId, String documentType) {
         Map<String, Object> caseDataBeforeGeneratingPdf = new HashMap<>(caseData);
 
         GeneralOrder generalOrder = buildPopulatedTemplateModel(caseDataBeforeGeneratingPdf);
@@ -251,6 +251,10 @@ public class GeneralOrderTest extends IdamTestSupport {
             "createGeneralOrder",
             CaseDetails.builder().caseData(caseData).caseId(TEST_CASE_ID).build()
         );
+    }
+
+    protected String formatDocumentFileName(String documentType) {
+        return documentType + DateUtils.formatDateFromLocalDate(LocalDate.now()) + ".pdf";
     }
 
     private Matcher<String> getAllJsonKeysThatShouldNotExistWhenSuccess() {
