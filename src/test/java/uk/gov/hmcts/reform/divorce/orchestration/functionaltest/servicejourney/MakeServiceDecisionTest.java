@@ -34,6 +34,7 @@ import java.util.Map;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
+import static java.lang.String.format;
 import static java.time.LocalDate.now;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
@@ -60,6 +61,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.S
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_FMT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.servicejourney.ServiceDecisionMadeTest.buildRefusalRequest;
 import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.servicejourney.ServiceDecisionMadeTest.buildServiceRefusalOrderCaseData;
@@ -150,6 +152,7 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
     public void shouldPopulateDocumentsWithDeemedRefusalOrderAndRemoveDraftWhenSubmitted() throws Exception {
         String templateId = DeemedServiceRefusalOrderTask.FileMetadata.TEMPLATE_ID;
         String documentType = DeemedServiceRefusalOrderTask.FileMetadata.DOCUMENT_TYPE;
+        String expectedDocumentFilename = formatWithCurrentDate(documentType);
 
         CcdCallbackRequest ccdCallbackRequest = buildServiceRefusalOrderFixture(
             templateId, ApplicationServiceTypes.DEEMED, documentType
@@ -160,13 +163,14 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
             .header(AUTHORIZATION, AUTH_TOKEN)
             .content(convertObjectToJsonString(ccdCallbackRequest)))
             .andExpect(status().isOk())
-            .andExpect(commonExpectationsForServiceRefusalOrder(documentType));
+            .andExpect(commonExpectationsForServiceRefusalOrder(documentType, expectedDocumentFilename));
     }
 
     @Test
     public void shouldPopulateDocumentsWithDispensedRefusalOrderAndRemoveDraftWhenSubmitted() throws Exception {
         String templateId = DispensedServiceRefusalOrderTask.FileMetadata.TEMPLATE_ID;
         String documentType = DispensedServiceRefusalOrderTask.FileMetadata.DOCUMENT_TYPE;
+        String expectedDocumentFilename = formatWithCurrentDate(documentType);
 
         CcdCallbackRequest ccdCallbackRequest = buildServiceRefusalOrderFixture(
             templateId, ApplicationServiceTypes.DISPENSED, documentType
@@ -177,16 +181,18 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
             .header(AUTHORIZATION, AUTH_TOKEN)
             .content(convertObjectToJsonString(ccdCallbackRequest)))
             .andExpect(status().isOk())
-            .andExpect(commonExpectationsForServiceRefusalOrder(documentType));
+            .andExpect(commonExpectationsForServiceRefusalOrder(documentType, expectedDocumentFilename));
     }
 
-    private ResultMatcher commonExpectationsForServiceRefusalOrder(String documentType) {
+    private ResultMatcher commonExpectationsForServiceRefusalOrder(String documentType, String documentFileName) {
         return content().string(allOf(
             isJson(),
             hasNoJsonPath("$.data.ServiceRefusalDraft"),
             hasJsonPath("$.data.D8DocumentsGenerated", hasSize(1)),
             hasJsonPath("$.data.D8DocumentsGenerated[0].value.DocumentType",
                 is(documentType)),
+            hasJsonPath("$.data.D8DocumentsGenerated[0].value.DocumentFileName",
+                is(documentFileName)),
             hasNoJsonPath("$.errors")
         ));
     }
@@ -309,6 +315,10 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
             .serviceApplicationRefusalReason(getServiceApplicationRefusalReason(caseData))
             .documentIssuedOn(DateUtils.formatDateWithCustomerFacingFormat(LocalDate.now()))
             .build();
+    }
+
+    private String formatWithCurrentDate(String documentType) {
+        return format(DOCUMENT_FILENAME_FMT, documentType, formatDateFromLocalDate(LocalDate.now()));
     }
 }
 
