@@ -353,12 +353,26 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     @Override
     public CaseDataResponse retrieveAosCase(String authorizationToken) throws WorkflowException {
-        return retrieveAosCaseWorkflow.run(authorizationToken);
+        Map<String, Object> caseData = retrieveAosCaseWorkflow.run(authorizationToken);
+
+        return CaseDataResponse.builder()
+            .caseId(retrieveAosCaseWorkflow.getCaseId())
+            .state(retrieveAosCaseWorkflow.getCaseState())
+            .court(retrieveAosCaseWorkflow.getCourt())
+            .data(caseData)
+            .build();
     }
 
     @Override
     public CaseDataResponse getCase(String authorizationToken) throws WorkflowException {
-        return getCaseWorkflow.run(authorizationToken);
+        Map<String, Object> caseData = getCaseWorkflow.run(authorizationToken);
+
+        return CaseDataResponse.builder()
+            .caseId(getCaseWorkflow.getCaseId())
+            .state(getCaseWorkflow.getCaseState())
+            .court(getCaseWorkflow.getCourt())
+            .data(caseData)
+            .build();
     }
 
     @Override
