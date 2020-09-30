@@ -4,9 +4,7 @@ import org.junit.Test;
 import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.GeneralOrderGenerationTask;
-import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
-import java.time.LocalDate;
 import java.util.Map;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
@@ -30,9 +28,9 @@ public class GeneralOrderDraftTest extends GeneralOrderTest {
         Map<String, Object> caseData = buildInputCaseData();
         CcdCallbackRequest input = buildRequest(caseData);
         String documentType = GeneralOrderGenerationTask.FileMetadata.DOCUMENT_TYPE;
-        String fileName = documentType + DateUtils.formatDateFromLocalDate(LocalDate.now()) + ".pdf";
+        String fileName = formatDocumentFileName(documentType);
 
-        stubDgsRequest(caseData, GeneralOrderGenerationTask.FileMetadata.TEMPLATE_ID, documentType);
+        stubDocumentGeneratorServiceRequest(caseData, GeneralOrderGenerationTask.FileMetadata.TEMPLATE_ID, documentType);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)

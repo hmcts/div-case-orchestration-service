@@ -98,7 +98,7 @@ scheduler:
       cron: ${SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_CRON:0 0 3 ? * * *} #Every day at 3:00
 
 aos-overdue:
-  grace-period: ${AOS_OVERDUE_GRACE_PERIOD:29}
+  grace-period: ${AOS_OVERDUE_GRACE_PERIOD:0}
 
 server:
   port: ${CASE_ORCHESTRATION_SERVICE_URL:4012}
