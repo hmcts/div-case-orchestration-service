@@ -1,9 +1,10 @@
 package uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants;
 
-public class TaskContextConstants {
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
-    private TaskContextConstants() {
-    }
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class TaskContextConstants {
 
     public static final String CCD_CASE_DATA = "ccdCaseData";
     public static final String DN_COURT_DETAILS = "dnCourtDetails";
