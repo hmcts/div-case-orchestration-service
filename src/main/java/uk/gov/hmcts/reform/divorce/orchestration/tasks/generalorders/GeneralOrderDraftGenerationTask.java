@@ -39,7 +39,7 @@ public class GeneralOrderDraftGenerationTask extends GeneralOrderGenerationTask 
     }
 
     private DocumentLink toDocumentLink(GeneratedDocumentInfo documentInfo) {
-        documentInfo.setFileName(nameWithCurrentDate());
+        documentInfo.setFileName(getFileName());
 
         return CcdMappers.mapDocumentInfoToCcdDocument(documentInfo)
             .getValue()

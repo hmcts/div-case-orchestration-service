@@ -69,10 +69,13 @@ public abstract class BasePayloadSpecificDocumentGenerationTask implements Task<
         );
     }
 
+    protected String getFileName() {
+        return getDocumentType();
+    }
+
     protected GeneratedDocumentInfo populateMetadataForGeneratedDocument(GeneratedDocumentInfo documentInfo) {
         documentInfo.setDocumentType(getDocumentType());
-        documentInfo.setFileName(getDocumentType());
-
+        documentInfo.setFileName(getFileName());
         return documentInfo;
     }
 
