@@ -12,12 +12,6 @@ public class OrchestrationConstants {
     public static final String SPACE_SEPARATOR = " ";
     public static final String EMPTY_STRING = "";
 
-    // Task context properties
-    public static final String CCD_CASE_DATA = "ccdCaseData";
-    public static final String DN_COURT_DETAILS = "dnCourtDetails";
-    public static final String BULK_LINK_CASE_ID = "bulkLinkCaseId";
-    public static final String DIVORCE_PARTY = "divorceParty";
-
     // Authentication
     public static final String ACCESS_CODE = "access_code";
     public static final String AUTH_TOKEN_JSON_KEY = "authToken";
@@ -414,5 +408,4 @@ public class OrchestrationConstants {
 
     // Bulk Scan
     public static final String CASE_TYPE_ID = "DIVORCE";
-
 }
