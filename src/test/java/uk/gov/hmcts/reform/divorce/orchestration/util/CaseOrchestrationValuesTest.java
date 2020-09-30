@@ -18,7 +18,7 @@ public class CaseOrchestrationValuesTest {
 
     @Test
     public void shouldLoadDefaultValues() {
-        assertThat(caseOrchestrationValues.getAosOverdueGracePeriod(), is("29"));
+        assertThat(caseOrchestrationValues.getAosOverdueGracePeriod(), is("0"));
     }
 
 }
