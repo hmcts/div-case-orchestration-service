@@ -4,20 +4,21 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseFormatterClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INCOMING_PAYLOAD;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PAYLOAD_TO_RETURN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.CCD_CASE_DATA;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseDataToDivorceFormatterUTest {
@@ -28,24 +29,18 @@ public class CaseDataToDivorceFormatterUTest {
     @InjectMocks
     private CaseDataToDivorceFormatter classUnderTest;
 
-    @SuppressWarnings("unchecked")
     @Test
     public void whenFormatData_thenReturnExpectedData() {
-        final Map<String, Object> caseData = mock(Map.class);
-        final Map<String, Object> expectedResults = mock(Map.class);
-
         final DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        context.setTransientObject(CCD_CASE_DATA, caseData);
+        context.setTransientObject(CCD_CASE_DATA, TEST_INCOMING_PAYLOAD);
 
-        final CaseDataResponse caseDataResponseInput = CaseDataResponse.builder().build();
+        final Map<String, Object> expectedResults = TEST_PAYLOAD_TO_RETURN;
+        when(caseFormatterClient.transformToDivorceFormat(AUTH_TOKEN, TEST_INCOMING_PAYLOAD)).thenReturn(expectedResults);
 
-        Mockito.when(caseFormatterClient.transformToDivorceFormat(AUTH_TOKEN, caseData)).thenReturn(expectedResults);
+        Map<String, Object> returnedCaseData = classUnderTest.execute(context, null);
 
-        CaseDataResponse actual = classUnderTest.execute(context, caseDataResponseInput);
-
-        assertEquals(expectedResults, actual.getData());
-
-        verify(caseFormatterClient).transformToDivorceFormat(AUTH_TOKEN, caseData);
+        assertThat(returnedCaseData, is(expectedResults));
+        verify(caseFormatterClient).transformToDivorceFormat(AUTH_TOKEN, TEST_INCOMING_PAYLOAD);
     }
 }

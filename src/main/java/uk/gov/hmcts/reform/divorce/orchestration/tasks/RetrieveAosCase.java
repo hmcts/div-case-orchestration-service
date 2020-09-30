@@ -3,19 +3,24 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
+import java.util.Map;
+
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.CASE_ID_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.CASE_STATE_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.CCD_CASE_DATA;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.COURT_KEY;
 
 @Component
-public class RetrieveAosCase implements Task<CaseDataResponse> {
+public class RetrieveAosCase implements Task<Map<String, Object>> {
+
     private final CaseMaintenanceClient caseMaintenanceClient;
 
     @Autowired
@@ -24,7 +29,7 @@ public class RetrieveAosCase implements Task<CaseDataResponse> {
     }
 
     @Override
-    public CaseDataResponse execute(TaskContext context, CaseDataResponse payload) throws TaskException {
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
         CaseDetails caseDetails = caseMaintenanceClient.retrieveAosCase(
             context.getTransientObject(AUTH_TOKEN_JSON_KEY)
         );
@@ -33,12 +38,13 @@ public class RetrieveAosCase implements Task<CaseDataResponse> {
             throw new TaskException(new CaseNotFoundException("No case found"));
         }
 
-        context.setTransientObject(CCD_CASE_DATA, caseDetails.getCaseData());
+        Map<String, Object> caseData = caseDetails.getCaseData();
+        context.setTransientObject(CCD_CASE_DATA, caseData);
+        context.setTransientObject(CASE_ID_KEY, caseDetails.getCaseId());
+        context.setTransientObject(CASE_STATE_KEY, caseDetails.getState());
+        context.setTransientObject(COURT_KEY, String.valueOf(caseData.get(D_8_DIVORCE_UNIT)));
 
-        return CaseDataResponse.builder()
-            .caseId(caseDetails.getCaseId())
-            .state(caseDetails.getState())
-            .court(String.valueOf(caseDetails.getCaseData().get(D_8_DIVORCE_UNIT)))
-            .build();
+        return caseData;
     }
+
 }
