@@ -23,6 +23,7 @@ import java.util.Map;
 import javax.ws.rs.core.MediaType;
 
 import static java.util.Collections.singletonList;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PBA_NUMBERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_HEADER;
 
 @Slf4j
@@ -70,6 +71,26 @@ public class SolicitorCallbackController {
 
         return ResponseEntity.ok(CcdCallbackResponse.builder()
             .data(solicitorService.sendSolicitorPersonalServiceEmail(ccdCallbackRequest))
+            .build());
+    }
+
+    @PostMapping(path = "/retrieve-pba-numbers")
+    @ApiOperation(value = "Callback to retrieve PBA numbers for a given solicitor")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed")})
+    public ResponseEntity<CcdCallbackResponse> retrievePbaNumbers(
+        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        Map<String, Object> response = solicitorService.retrievePbaNumbers(ccdCallbackRequest, authorizationToken);
+
+        if (null == response.get(PBA_NUMBERS)) {
+            return ResponseEntity.ok(CcdCallbackResponse.builder()
+            .errors(ImmutableList.of("No PBA number found for this account, please contact your organisation."))
+            .build());
+        }
+        return ResponseEntity.ok(CcdCallbackResponse.builder()
+            .data(response)
             .build());
     }
 }
