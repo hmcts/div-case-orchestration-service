@@ -2,7 +2,7 @@ import org.springframework.boot.gradle.tasks.run.BootRun
 
 buildscript {
     ext {
-        springBootVersion = '2.3.3.RELEASE'
+        springBootVersion = '2.3.4.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -77,7 +77,7 @@ def versions = [
 
 allprojects {
 
-    def springBootVersion = '2.3.3.RELEASE'
+    def springBootVersion = '2.3.4.RELEASE'
 
     apply plugin: 'checkstyle'
     apply plugin: 'com.github.ben-manes.versions'
