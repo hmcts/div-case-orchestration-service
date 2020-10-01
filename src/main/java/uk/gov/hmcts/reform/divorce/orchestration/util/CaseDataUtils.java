@@ -6,9 +6,7 @@ import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.*;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
@@ -23,6 +21,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_REFERENCE_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.VALUE_KEY;
@@ -209,7 +208,7 @@ public class CaseDataUtils {
                     });
                     return !docTypesList.contains(document.getValue().getDocumentType());
                 })
-                .collect(Collectors.toList());
+                .collect(toList());
 
             if (filteredDocumentsList.isEmpty()) {
                 newCaseData.remove(D8DOCUMENTS_GENERATED);
@@ -224,6 +223,21 @@ public class CaseDataUtils {
 
     public static Map<String, Object> getElementFromCollection(Map<String, ?> collectionEntry) {
         return getFieldAsStringObjectMap(collectionEntry, VALUE_KEY);
+    }
+
+    public static DynamicList asDynamicList(List<String> list) {
+        List<ListItem> formattedListItems = list.stream()
+            .map(CaseDataUtils::toListItem)
+            .collect(toList());
+
+        return DynamicList.builder().listItems(formattedListItems).build();
+    }
+
+    public static ListItem toListItem(String item) {
+        return ListItem.builder()
+            .code(item)
+            .label(item)
+            .build();
     }
 
 }
