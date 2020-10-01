@@ -131,6 +131,12 @@ payment:
     api:
       baseurl: ${PAYMENT_API_BASEURL:http://localhost:9190}
 
+pba:
+  validation:
+    service:
+      api:
+        baseurl: ${PRD_API_BASEURL:http://localhost:8090}
+
 feature-toggle:
   toggle:
     bulk-print: true
