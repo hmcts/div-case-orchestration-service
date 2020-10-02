@@ -14,6 +14,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.validation.Org
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.validation.PBAOrganisationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper;
+import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -28,15 +31,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESP_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PBA_NUMBERS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_PAY_BY_ACCOUNT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.asDynamicList;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DynamicList.asDynamicList;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GetPbaNumbersTaskTest {
@@ -53,6 +54,9 @@ public class GetPbaNumbersTaskTest {
     @Mock
     private IdamClient idamClient;
 
+    @Mock
+    private AuthUtil authUtil;
+
     @InjectMocks
     private GetPbaNumbersTask getPbaNumbersTask;
 
@@ -64,9 +68,7 @@ public class GetPbaNumbersTaskTest {
 
     @Before
     public void setup() {
-        context = new DefaultTaskContext();
-        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
+        context = TaskContextHelper.contextWithToken();
 
         caseData = new HashMap<>();
         caseData.put(SOLICITOR_HOW_TO_PAY_JSON_KEY, FEE_PAY_BY_ACCOUNT);
@@ -74,8 +76,10 @@ public class GetPbaNumbersTaskTest {
         successfulResponse = buildPbaResponse(expectedPbaNumbers);
         emptyResponse = buildPbaResponse(Collections.emptyList());
 
+
         when(serviceAuthGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-        when(idamClient.getUserDetails(AUTH_TOKEN))
+        when(authUtil.getBearToken(AUTH_TOKEN)).thenReturn(BEARER_AUTH_TOKEN);
+        when(idamClient.getUserDetails(BEARER_AUTH_TOKEN))
             .thenReturn(UserDetails.builder().email(TEST_RESP_SOLICITOR_EMAIL).build());
     }
 
@@ -85,6 +89,18 @@ public class GetPbaNumbersTaskTest {
 
         assertEquals(caseData, getPbaNumbersTask.execute(context, caseData));
 
+        verifyNoInteractions(authUtil);
+        verifyNoInteractions(idamClient);
+        verifyNoInteractions(serviceAuthGenerator);
+        verifyNoInteractions(pbaValidationClient);
+    }
+
+    @Test(expected = TaskException.class)
+    public void givenMissingData_whenExecuteIsCalled_thenThrowTaskException() {
+
+        assertEquals(caseData, getPbaNumbersTask.execute(new DefaultTaskContext(), caseData));
+
+        verifyNoInteractions(authUtil);
         verifyNoInteractions(idamClient);
         verifyNoInteractions(serviceAuthGenerator);
         verifyNoInteractions(pbaValidationClient);
@@ -100,7 +116,8 @@ public class GetPbaNumbersTaskTest {
 
         assertEquals(expectedCaseData, getPbaNumbersTask.execute(context, caseData));
 
-        verify(idamClient, times(1)).getUserDetails(AUTH_TOKEN);
+        verify(authUtil, times(1)).getBearToken(AUTH_TOKEN);
+        verify(idamClient, times(1)).getUserDetails(BEARER_AUTH_TOKEN);
         verify(serviceAuthGenerator, times(1)).generate();
         verifyRetrievePbaNumbersCalledOnce();
     }
@@ -115,7 +132,8 @@ public class GetPbaNumbersTaskTest {
 
         assertEquals(expectedCaseData, getPbaNumbersTask.execute(context, caseData));
 
-        verify(idamClient, times(1)).getUserDetails(AUTH_TOKEN);
+        verify(authUtil, times(1)).getBearToken(AUTH_TOKEN);
+        verify(idamClient, times(1)).getUserDetails(BEARER_AUTH_TOKEN);
         verify(serviceAuthGenerator, times(1)).generate();
         verifyRetrievePbaNumbersCalledOnce();
     }
@@ -129,7 +147,8 @@ public class GetPbaNumbersTaskTest {
 
         assertEquals(expectedCaseData, getPbaNumbersTask.execute(context, caseData));
 
-        verify(idamClient, times(1)).getUserDetails(AUTH_TOKEN);
+        verify(authUtil, times(1)).getBearToken(AUTH_TOKEN);
+        verify(idamClient, times(1)).getUserDetails(BEARER_AUTH_TOKEN);
         verify(serviceAuthGenerator, times(1)).generate();
         verifyRetrievePbaNumbersCalledOnce();
     }

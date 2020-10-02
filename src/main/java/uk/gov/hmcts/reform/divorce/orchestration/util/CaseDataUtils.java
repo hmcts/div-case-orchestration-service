@@ -228,19 +228,4 @@ public class CaseDataUtils {
         return getFieldAsStringObjectMap(collectionEntry, VALUE_KEY);
     }
 
-    public static DynamicList asDynamicList(List<String> list) {
-        List<ListItem> formattedListItems = list.stream()
-            .map(CaseDataUtils::toListItem)
-            .collect(Collectors.toList());
-
-        return DynamicList.builder().listItems(formattedListItems).build();
-    }
-
-    public static ListItem toListItem(String item) {
-        return ListItem.builder()
-            .code(item)
-            .label(item)
-            .build();
-    }
-
 }

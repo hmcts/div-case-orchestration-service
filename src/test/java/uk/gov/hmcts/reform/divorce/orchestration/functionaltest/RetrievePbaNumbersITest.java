@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -16,6 +17,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.validation.OrganisationEntityResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.validation.PBAOrganisationResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
+import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,6 +26,8 @@ import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -40,17 +44,20 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.P
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_PAY_BY_ACCOUNT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_AUTHORIZATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DynamicList.asDynamicList;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.asDynamicList;
 
 public class RetrievePbaNumbersITest extends MockedFunctionalTest {
 
     private static final String API_URL = "/retrieve-pba-numbers";
-    private static final String RETRIEVE_PBA_NUMBERS_CONTEXT_PATH = "/refdata/external/v1/organisations/pbas?email=" + TEST_RESP_SOLICITOR_EMAIL;
+    private static final String RETRIEVE_PBA_NUMBERS_CONTEXT_PATH = "/refdata/external/v1/organisations/pbas?email=testRespondentSolicitor%40email.com";
     private static final String IDAM_USER_DETAILS_CONTEXT_PATH = "/details";
 
     @Autowired
     private MockMvc webClient;
+
+    @MockBean
+    protected AuthUtil authUtil;
 
     private Map<String, Object> caseData;
     private CaseDetails caseDetails;
@@ -60,6 +67,8 @@ public class RetrievePbaNumbersITest extends MockedFunctionalTest {
     public void setup() {
         caseData = new HashMap<>();
         caseData.put(SOLICITOR_HOW_TO_PAY_JSON_KEY, FEE_PAY_BY_ACCOUNT);
+
+        when(authUtil.getBearToken(AUTH_TOKEN)).thenReturn(BEARER_AUTH_TOKEN);
     }
 
     @Test
@@ -74,7 +83,7 @@ public class RetrievePbaNumbersITest extends MockedFunctionalTest {
     }
 
     @Test
-    public void givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_PetitionerAmendedCase() throws Exception {
+    public void givenCaseData_whenRetrievePbaNumbers_andNoPbaNumbersFound_thenReturn_CasewithNoPbaNumbers() throws Exception {
         List<String> pbaNumbersOfSolicitor = Collections.emptyList();
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
@@ -111,7 +120,7 @@ public class RetrievePbaNumbersITest extends MockedFunctionalTest {
 
 
     private void stubRetrievePbaNumbersEndpoint(HttpStatus status, PBAOrganisationResponse response) {
-        pbaValidationServer.stubFor(WireMock.post(RETRIEVE_PBA_NUMBERS_CONTEXT_PATH)
+        pbaValidationServer.stubFor(WireMock.get(urlEqualTo(RETRIEVE_PBA_NUMBERS_CONTEXT_PATH))
             .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
             .withHeader(SERVICE_AUTHORIZATION_HEADER, new EqualToPattern("Bearer " + TEST_SERVICE_AUTH_TOKEN))
             .willReturn(aResponse()

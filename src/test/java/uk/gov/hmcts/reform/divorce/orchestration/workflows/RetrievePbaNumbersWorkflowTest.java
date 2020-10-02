@@ -3,29 +3,26 @@ package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetPbaNumbersTask;
+import uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper;
 
 import java.util.Collections;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RetrievePbaNumbersWorkflowTest {
@@ -58,21 +55,15 @@ public class RetrievePbaNumbersWorkflowTest {
                 )
                 .build();
 
-        context = new DefaultTaskContext();
-        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
+        context = TaskContextHelper.contextWithToken();
     }
 
     @Test
     public void runShouldExecuteTasksAndReturnPayload() throws Exception {
-        when(getPbaNumbersTask.execute(context, testData)).thenReturn(testData);
+        mockTasksExecution(testData, getPbaNumbersTask);
 
         assertEquals(testData, retrievePbaNumbersWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN));
 
-        InOrder inOrder = inOrder(
-            getPbaNumbersTask
-        );
-
-        inOrder.verify(getPbaNumbersTask).execute(context, testData);
+        verifyTasksCalledInOrder(testData, getPbaNumbersTask);
     }
 }

@@ -33,7 +33,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PBA_NUMBERS;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.asDynamicList;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DynamicList.asDynamicList;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SolicitorCallbackControllerTest {
