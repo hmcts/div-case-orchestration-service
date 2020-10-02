@@ -30,6 +30,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
@@ -54,11 +55,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RECEIVED_SERVICE_APPLICATION_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_DECISION_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.servicejourney.ServiceDecisionMadeTest.buildRefusalRequest;
@@ -73,12 +74,15 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocumentAsMap;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskTestHelper.formatWithCurrentDate;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.getServiceApplicationRefusalReason;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateFromLocalDate;
 
 public class MakeServiceDecisionTest extends IdamTestSupport {
 
     private static final String API_URL = "/make-service-decision";
+    private static final String anotherServiceDocumentType = "otherDocument";
+
     private CtscContactDetails ctscContactDetails;
 
     @Autowired
@@ -112,6 +116,7 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
     public void shouldGenerateOrderToDispenseAndAddItToResponse() throws Exception {
         Map<String, Object> caseData = buildInputCaseData(ApplicationServiceTypes.DISPENSED);
         CcdCallbackRequest input = buildRequest(caseData);
+
         CcdCallbackResponse expectedResponse = buildExpectedResponse(
             caseData,
             OrderToDispenseGenerationTask.FileMetadata.TEMPLATE_ID,
@@ -131,6 +136,7 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
     public void shouldGenerateDeemedServiceOrderAndAddItToResponse() throws Exception {
         Map<String, Object> caseData = buildInputCaseData(ApplicationServiceTypes.DEEMED);
         CcdCallbackRequest input = buildRequest(caseData);
+
         CcdCallbackResponse expectedResponse = buildExpectedResponse(
             caseData,
             DeemedServiceOrderGenerationTask.FileMetadata.TEMPLATE_ID,
@@ -150,6 +156,7 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
     public void shouldPopulateDocumentsWithDeemedRefusalOrderAndRemoveDraftWhenSubmitted() throws Exception {
         String templateId = DeemedServiceRefusalOrderTask.FileMetadata.TEMPLATE_ID;
         String documentType = DeemedServiceRefusalOrderTask.FileMetadata.DOCUMENT_TYPE;
+        String expectedDocumentFilename = formatWithCurrentDate(documentType);
 
         CcdCallbackRequest ccdCallbackRequest = buildServiceRefusalOrderFixture(
             templateId, ApplicationServiceTypes.DEEMED, documentType
@@ -160,13 +167,32 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
             .header(AUTHORIZATION, AUTH_TOKEN)
             .content(convertObjectToJsonString(ccdCallbackRequest)))
             .andExpect(status().isOk())
-            .andExpect(commonExpectationsForServiceRefusalOrder(documentType));
+            .andExpect(commonExpectationsForRefusalOrderDocuments(documentType, expectedDocumentFilename));
+    }
+
+    @Test
+    public void shouldPopulateExistingCollectionWithDeemedRefusalOrderAndRemoveDraftWhenSubmitted() throws Exception {
+        String templateId = DeemedServiceRefusalOrderTask.FileMetadata.TEMPLATE_ID;
+        String documentType = DeemedServiceRefusalOrderTask.FileMetadata.DOCUMENT_TYPE;
+        String expectedDocumentFilename = formatWithCurrentDate(documentType);
+
+        CcdCallbackRequest ccdCallbackRequest = buildMultipleServiceRefusalOrderFixture(
+            templateId, ApplicationServiceTypes.DEEMED, documentType
+        );
+
+        webClient.perform(post(API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(ccdCallbackRequest)))
+            .andExpect(status().isOk())
+            .andExpect(commonExpectationsForMultipleRefusalOrder(documentType, expectedDocumentFilename));
     }
 
     @Test
     public void shouldPopulateDocumentsWithDispensedRefusalOrderAndRemoveDraftWhenSubmitted() throws Exception {
         String templateId = DispensedServiceRefusalOrderTask.FileMetadata.TEMPLATE_ID;
         String documentType = DispensedServiceRefusalOrderTask.FileMetadata.DOCUMENT_TYPE;
+        String expectedDocumentFilename = formatWithCurrentDate(documentType);
 
         CcdCallbackRequest ccdCallbackRequest = buildServiceRefusalOrderFixture(
             templateId, ApplicationServiceTypes.DISPENSED, documentType
@@ -177,16 +203,49 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
             .header(AUTHORIZATION, AUTH_TOKEN)
             .content(convertObjectToJsonString(ccdCallbackRequest)))
             .andExpect(status().isOk())
-            .andExpect(commonExpectationsForServiceRefusalOrder(documentType));
+            .andExpect(commonExpectationsForRefusalOrderDocuments(documentType, expectedDocumentFilename));
     }
 
-    private ResultMatcher commonExpectationsForServiceRefusalOrder(String documentType) {
+    @Test
+    public void shouldPopulateExistingCollectionWithDispensedRefusalOrderAndRemoveDraftWhenSubmitted() throws Exception {
+        String templateId = DispensedServiceRefusalOrderTask.FileMetadata.TEMPLATE_ID;
+        String documentType = DispensedServiceRefusalOrderTask.FileMetadata.DOCUMENT_TYPE;
+        String expectedDocumentFilename = formatWithCurrentDate(documentType);
+
+        CcdCallbackRequest ccdCallbackRequest = buildMultipleServiceRefusalOrderFixture(
+            templateId, ApplicationServiceTypes.DISPENSED, documentType
+        );
+
+        webClient.perform(post(API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(ccdCallbackRequest)))
+            .andExpect(status().isOk())
+            .andExpect(commonExpectationsForMultipleRefusalOrder(documentType, expectedDocumentFilename));
+    }
+
+    private ResultMatcher commonExpectationsForRefusalOrderDocuments(String documentType, String documentFileName) {
         return content().string(allOf(
             isJson(),
             hasNoJsonPath("$.data.ServiceRefusalDraft"),
-            hasJsonPath("$.data.D8DocumentsGenerated", hasSize(1)),
-            hasJsonPath("$.data.D8DocumentsGenerated[0].value.DocumentType",
+            hasJsonPath("$.data.ServiceApplicationDocuments", hasSize(1)),
+            hasJsonPath("$.data.ServiceApplicationDocuments[0].value.DocumentType",
                 is(documentType)),
+            hasJsonPath("$.data.ServiceApplicationDocuments[0].value.DocumentFileName",
+                is(documentFileName)),
+            hasNoJsonPath("$.errors")
+        ));
+    }
+
+    private ResultMatcher commonExpectationsForMultipleRefusalOrder(String documentType, String documentFileName) {
+        return content().string(allOf(
+            isJson(),
+            hasNoJsonPath("$.data.ServiceRefusalDraft"),
+            hasJsonPath("$.data.ServiceApplicationDocuments", hasSize(2)),
+            hasJsonPath("$.data.ServiceApplicationDocuments[1].value.DocumentType",
+                is(documentType)),
+            hasJsonPath("$.data.ServiceApplicationDocuments[1].value.DocumentFileName",
+                is(documentFileName)),
             hasNoJsonPath("$.errors")
         ));
     }
@@ -227,7 +286,7 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
         Map<String, Object> expectedCaseData = new HashMap<>(caseDataBeforeGeneratingPdf);
 
         expectedCaseData.put(
-            D8DOCUMENTS_GENERATED,
+            SERVICE_APPLICATION_DOCUMENTS,
             buildCollectionWithOneDocument(generatedDocumentId, documentType)
         );
 
@@ -275,6 +334,19 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
 
     private CcdCallbackRequest buildRequest() {
         return buildRequest(new HashMap<>());
+    }
+
+    private CcdCallbackRequest buildMultipleServiceRefusalOrderFixture(String templateId, String serviceType, String documentType) {
+        CcdCallbackRequest ccdCallbackRequest = buildServiceRefusalOrderFixture(templateId, serviceType, documentType);
+
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+
+        caseData.put(
+            SERVICE_APPLICATION_DOCUMENTS,
+            buildCollectionWithOneDocument(UUID.randomUUID().toString(), anotherServiceDocumentType)
+        );
+
+        return ccdCallbackRequest;
     }
 
     private CcdCallbackRequest buildServiceRefusalOrderFixture(
