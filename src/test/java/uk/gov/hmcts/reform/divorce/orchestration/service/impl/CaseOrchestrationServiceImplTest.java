@@ -118,8 +118,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.DUMMY_CASE
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.FILE_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_DECREE_ABSOLUTE_GRANTED_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PAYLOAD_TO_RETURN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
@@ -403,23 +405,33 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void whenRetrieveAosCase_thenProceedAsExpected() throws WorkflowException {
-        final CaseDataResponse caseDataResponse = CaseDataResponse.builder().build();
+        when(retrieveAosCaseWorkflow.run(AUTH_TOKEN)).thenReturn(TEST_PAYLOAD_TO_RETURN);
+        when(retrieveAosCaseWorkflow.getCaseId()).thenReturn(TEST_CASE_ID);
+        when(retrieveAosCaseWorkflow.getCaseState()).thenReturn(TEST_STATE);
+        when(retrieveAosCaseWorkflow.getCourt()).thenReturn(TEST_COURT);
 
-        when(retrieveAosCaseWorkflow.run(AUTH_TOKEN)).thenReturn(caseDataResponse);
+        CaseDataResponse actualResponse = classUnderTest.retrieveAosCase(AUTH_TOKEN);
 
-        assertEquals(caseDataResponse, classUnderTest.retrieveAosCase(AUTH_TOKEN));
-
+        assertThat(actualResponse.getData(), is(TEST_PAYLOAD_TO_RETURN));
+        assertThat(actualResponse.getCaseId(), is(TEST_CASE_ID));
+        assertThat(actualResponse.getState(), is(TEST_STATE));
+        assertThat(actualResponse.getCourt(), is(TEST_COURT));
         verify(retrieveAosCaseWorkflow).run(AUTH_TOKEN);
     }
 
     @Test
     public void whenGetCase_thenProceedAsExpected() throws WorkflowException {
-        final CaseDataResponse caseDataResponse = CaseDataResponse.builder().build();
+        when(getCaseWorkflow.run(AUTH_TOKEN)).thenReturn(TEST_PAYLOAD_TO_RETURN);
+        when(getCaseWorkflow.getCaseId()).thenReturn(TEST_CASE_ID);
+        when(getCaseWorkflow.getCaseState()).thenReturn(TEST_STATE);
+        when(getCaseWorkflow.getCourt()).thenReturn(TEST_COURT);
 
-        when(getCaseWorkflow.run(AUTH_TOKEN)).thenReturn(caseDataResponse);
+        CaseDataResponse actualResponse = classUnderTest.getCase(AUTH_TOKEN);
 
-        assertEquals(caseDataResponse, classUnderTest.getCase(AUTH_TOKEN));
-
+        assertThat(actualResponse.getData(), is(TEST_PAYLOAD_TO_RETURN));
+        assertThat(actualResponse.getCaseId(), is(TEST_CASE_ID));
+        assertThat(actualResponse.getState(), is(TEST_STATE));
+        assertThat(actualResponse.getCourt(), is(TEST_COURT));
         verify(getCaseWorkflow).run(AUTH_TOKEN);
     }
 
