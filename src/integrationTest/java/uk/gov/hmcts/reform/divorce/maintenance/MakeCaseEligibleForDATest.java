@@ -85,7 +85,7 @@ public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
     }
 
     private void ensureCaseIsSearchable(final String caseId, final String authToken) {
-        await().pollInterval(fibonacci(SECONDS)).atMost(60, SECONDS).untilAsserted(() -> {
+        await().pollInterval(fibonacci(SECONDS)).atMost(120, SECONDS).untilAsserted(() -> {
             List<CaseDetails> foundCases = searchCasesWithElasticSearch(caseId, authToken);
             assertThat("The number of cases found by ElasticSearch was not expected",
                 foundCases.size(), is(1));

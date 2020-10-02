@@ -23,11 +23,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETIT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RECEIVED_SERVICE_APPLICATION_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_REFUSAL_REASON;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_REFUSAL_DRAFT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
@@ -36,6 +36,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.CTSC_CONTACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceRefusalOrderGenerationTaskTest.TEST_RECEIVED_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceApplicationTestUtil.getDocumentCollection;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithToken;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelperTest.TEST_SERVICE_APPLICATION_REFUSAL_REASON;
 
@@ -84,7 +85,7 @@ public abstract class ServiceRefusalOrderDraftTaskTest extends BasePayloadSpecif
         payload.put(SERVICE_APPLICATION_TYPE, serviceType);
         payload.put(SERVICE_REFUSAL_DRAFT, documentLink);
 
-        payload.put(D8DOCUMENTS_GENERATED, documentCollection);
+        payload.put(SERVICE_APPLICATION_DOCUMENTS, documentCollection);
 
         return payload;
     }
@@ -96,7 +97,7 @@ public abstract class ServiceRefusalOrderDraftTaskTest extends BasePayloadSpecif
     private void runCommonDraftDocumentAssertions(Map<String, Object> returnedCaseData, String caseId) {
         assertThat(returnedCaseData, notNullValue());
         assertThat(returnedCaseData, hasKey(SERVICE_REFUSAL_DRAFT));
-        assertThat(getDocumentCollection(returnedCaseData), hasSize(0));
+        assertThat(getDocumentCollection(returnedCaseData, SERVICE_APPLICATION_DOCUMENTS), hasSize(0));
 
         DocumentLink documentLink = (DocumentLink) returnedCaseData.get(SERVICE_REFUSAL_DRAFT);
         assertThat(documentLink.getDocumentFilename(), containsString(".pdf"));
@@ -105,9 +106,6 @@ public abstract class ServiceRefusalOrderDraftTaskTest extends BasePayloadSpecif
         assertThat(documentLink.getDocumentUrl(), notNullValue());
     }
 
-    private List<CollectionMember<Document>> getDocumentCollection(Map<String, Object> returnedCaseData) {
-        return (List<CollectionMember<Document>>) returnedCaseData.get(D8DOCUMENTS_GENERATED);
-    }
 
     public static DocumentLink getDocumentLink() {
         DocumentLink documentLink = new DocumentLink();

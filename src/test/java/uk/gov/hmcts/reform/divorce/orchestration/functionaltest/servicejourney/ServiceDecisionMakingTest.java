@@ -119,7 +119,7 @@ public class ServiceDecisionMakingTest extends IdamTestSupport {
     private ResultMatcher commonExpectationsForServiceRefusalDraft() {
         return content().string(allOf(
             isJson(),
-            hasJsonPath("$.data.D8DocumentsGenerated", hasSize(0)),
+            hasJsonPath("$.data.ServiceApplicationDocuments", hasSize(0)),
             hasJsonPath("$.data.ServiceRefusalDraft"),
             hasJsonPath("$.data.ServiceRefusalDraft.document_url", notNullValue()),
             hasJsonPath("$.data.ServiceRefusalDraft.document_filename", notNullValue()),
