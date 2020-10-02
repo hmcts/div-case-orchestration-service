@@ -10,6 +10,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -22,6 +23,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentItem;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentClientMessage;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
 import java.util.Collections;
@@ -30,13 +32,20 @@ import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static java.util.Collections.EMPTY_MAP;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -94,7 +103,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubm
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.formatCaseIdToReferenceNumber;
 
-public class ProcessPbaPaymentITest extends MockedFunctionalTest {
+public class ProcessPbaPaymentTest extends MockedFunctionalTest {
 
     private static final String API_URL = "/process-pba-payment";
     private static final String PAYMENTS_CREDIT_ACCOUNT_CONTEXT_PATH = "/credit-account-payments";
@@ -243,34 +252,6 @@ public class ProcessPbaPaymentITest extends MockedFunctionalTest {
         );
     }
 
-    private void makePaymentAndReturn() throws Exception {
-        caseDetails = CaseDetails.builder()
-            .caseData(caseData)
-            .caseId(TEST_CASE_ID)
-            .state(TEST_STATE)
-            .build();
-
-        ccdCallbackRequest = CcdCallbackRequest.builder()
-            .caseDetails(caseDetails)
-            .build();
-
-        final CcdCallbackResponse expected = CcdCallbackResponse.builder()
-            .data(caseData)
-            .build();
-
-        stubCreditAccountPayment(HttpStatus.OK, new CreditAccountPaymentResponse());
-        stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
-        stubFormatterServerEndpoint(caseData);
-
-        webClient.perform(post(API_URL)
-            .content(convertObjectToJsonString(ccdCallbackRequest))
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().json(convertObjectToJsonString(expected)));
-    }
-
     @Test
     public void givenInvalidCaseData_whenProcessPbaPayment_thenReturnErrors() throws Exception {
         caseData.put(STATEMENT_OF_TRUTH, NO_VALUE);
@@ -299,6 +280,129 @@ public class ProcessPbaPaymentITest extends MockedFunctionalTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expected)));
+    }
+
+    @Test
+    public void givenCaseData_whenProcessPbaPayment_403_thenReturnErrorMessage() throws Exception { //TODO variation for other error code
+
+        callPaymentClientWithStatusAndVerify(
+            HttpStatus.FORBIDDEN,
+            PaymentClientMessage.FORBIDDEN_CA_E0004,
+            buildValidCaseData());
+    }
+
+    @Test
+    public void givenCaseData_whenProcessPbaPayment_404_thenReturnErrorMessage() throws Exception {
+
+        callPaymentClientWithStatusAndVerify(
+            HttpStatus.NOT_FOUND,
+            PaymentClientMessage.NOT_FOUND,
+            buildValidCaseData());
+    }
+
+    @Test
+    public void givenCaseData_whenProcessPbaPayment_422_thenReturnErrorMessage() throws Exception {
+
+        callPaymentClientWithStatusAndVerify(
+            HttpStatus.UNPROCESSABLE_ENTITY,
+            PaymentClientMessage.UNPROCESSABLE_ENTITY,
+            buildValidCaseData());
+    }
+
+    @Test
+    public void givenCaseData_whenProcessPbaPayment_504_thenReturnErrorMessage() throws Exception {
+        Map<String, Object> caseData = buildValidCaseData();
+
+        callPaymentClientWithStatusAndVerify(
+            HttpStatus.GATEWAY_TIMEOUT,
+            PaymentClientMessage.GATEWAY_TIMEOUT,
+            caseData);
+    }
+
+    @Test
+    public void givenCaseData_whenProcessPbaPayment_AnyOtherStatus_thenReturnErrorMessage() throws Exception {
+        Map<String, Object> caseData = buildValidCaseData();
+
+        callPaymentClientWithStatusAndVerify(
+            HttpStatus.BAD_REQUEST,
+            PaymentClientMessage.DEFAULT,
+            caseData);
+    }
+
+    private Map<String, Object> buildValidCaseData() {
+        caseData.put(STATEMENT_OF_TRUTH, YES_VALUE);
+        caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, YES_VALUE);
+        return caseData;
+    }
+
+    private CcdCallbackRequest buildCcdCallbackRequest() {
+        return CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .caseData(caseData)
+                .caseId(TEST_CASE_ID)
+                .state(TEST_STATE)
+                .build())
+            .build();
+    }
+
+    private void makePaymentAndReturn() throws Exception {
+        caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .build();
+
+        ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .build();
+
+        final CcdCallbackResponse expected = CcdCallbackResponse.builder()
+            .state(CcdStates.SUBMITTED)
+            .data(caseData)
+            .build();
+
+        stubCreditAccountPayment(HttpStatus.OK, new CreditAccountPaymentResponse());
+        stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
+        stubFormatterServerEndpoint(caseData);
+
+        webClient.perform(post(API_URL)
+            .content(convertObjectToJsonString(ccdCallbackRequest))
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(expected)));
+    }
+
+    private void callPaymentClientWithStatusAndVerify(HttpStatus httpStatus, String expectedErrorMessage, Map<String, Object> caseData)
+        throws Exception {
+        ccdCallbackRequest = buildCcdCallbackRequest();
+        setupStubs(httpStatus, caseData);
+        performRequestAndVerifyExpectations(expectedErrorMessage);
+    }
+
+    private void performRequestAndVerifyExpectations(String expectedErrorMessage) throws Exception {
+        webClient.perform(post(API_URL)
+            .content(convertObjectToJsonString(ccdCallbackRequest))
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(
+                allOf(
+                    isJson(),
+                    hasJsonPath("$.data", nullValue()),
+                    hasJsonPath("$.errors", hasSize(1)),
+                    hasJsonPath("$.errors[0]", is(expectedErrorMessage)),
+                    hasJsonPath("$.state", nullValue())
+                ))
+            );
+    }
+
+    private void setupStubs(HttpStatus httpStatus, Map<String, Object> caseData) {
+        stubCreditAccountPayment(httpStatus, new CreditAccountPaymentResponse()); // TODO change to error response object
+        stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
+        stubFormatterServerEndpoint(caseData);
     }
 
     private void stubCreditAccountPayment(HttpStatus status, CreditAccountPaymentResponse response) {

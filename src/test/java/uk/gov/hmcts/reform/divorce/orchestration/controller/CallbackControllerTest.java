@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
@@ -198,10 +199,20 @@ public class CallbackControllerTest {
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.processPbaPayment(AUTH_TOKEN, ccdCallbackRequest);
 
-        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+        //TODO verify state change is right way
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
+            .state(CcdStates.SUBMITTED)
+            .data(caseData)
+            .build();
 
+        String newState = null; // TODO refactor
+        Optional<CcdCallbackResponse> responseBody = Optional.ofNullable(response.getBody());
+        if (responseBody.isPresent()) {
+            newState = responseBody.get().getState();
+        }
         assertEquals(OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
+        assertEquals(expectedResponse.getState(), newState);
     }
 
     @Test
@@ -211,7 +222,7 @@ public class CallbackControllerTest {
             .caseData(caseData)
             .build();
         final Map<String, Object> invalidResponse = Collections.singletonMap(
-            OrchestrationConstants.SOLICITOR_VALIDATION_ERROR_KEY,
+            OrchestrationConstants.SOLICITOR_PBA_PAYMENT_ERROR_KEY,
             singletonList(OrchestrationConstants.ERROR_STATUS)
         );
 

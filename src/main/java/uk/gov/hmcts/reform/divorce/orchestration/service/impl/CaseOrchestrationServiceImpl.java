@@ -518,17 +518,15 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> solicitorSubmission(CcdCallbackRequest ccdCallbackRequest,
                                                    String authToken) throws WorkflowException {
+
         Map<String, Object> payLoad = solicitorSubmissionWorkflow.run(ccdCallbackRequest, authToken);
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
 
         if (solicitorSubmissionWorkflow.errors().isEmpty()) {
-            log.info("Callback pay by account for solicitor with CASE ID: {} successfully completed",
-                ccdCallbackRequest.getCaseDetails().getCaseId());
+            log.info("Callback pay by account for solicitor with Case ID: {} successfully completed", caseId);
             return payLoad;
         } else {
-            log.error("Callback pay by account for solicitor with CASE ID: {} failed. ",
-                ccdCallbackRequest
-                    .getCaseDetails()
-                    .getCaseId());
+            log.error("Callback pay by account for solicitor with Case ID: {} failed. ", caseId);
             return solicitorSubmissionWorkflow.errors();
         }
     }

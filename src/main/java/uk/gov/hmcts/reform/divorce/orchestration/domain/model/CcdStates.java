@@ -30,4 +30,5 @@ public class CcdStates {
     public static final String DA_REQUESTED = "DARequested";
     public static final String DA_OVERDUE = "DAOverdue";
     public static final String DIVORCE_GRANTED = "DivorceGranted";
+    public static final String SUBMITTED = "Submitted";
 }
