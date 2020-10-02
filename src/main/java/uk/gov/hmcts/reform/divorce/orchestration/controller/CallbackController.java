@@ -32,10 +32,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
-import javax.ws.rs.core.MediaType;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import javax.ws.rs.core.MediaType;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -1268,11 +1268,11 @@ public class CallbackController {
             CcdCallbackResponse.builder()
                 .errors(
                     asList(
-                        "AccountXIZ SOLICITORS have insufficient funds available. Please use " +
-                            "a different account or payment method.",
-                        "For support Payment Account support call 01633 652125 (Option 3) " +
-                            "or email MiddleOffice.DDServices@librata.com."))
-                .build());
+                        "AccountXIZ SOLICITORS have insufficient funds available. Please use "
+                            + "a different account or payment method.",
+                        "For support Payment Account support call 01633 652125 (Option 3) "
+                            + "or email MiddleOffice.DDServices@librata.com.")
+                ).build());
     }
 
     @PostMapping(path = "/errors-and-warnings")
@@ -1286,10 +1286,10 @@ public class CallbackController {
             CcdCallbackResponse.builder()
                 .errors(
                     asList(
-                        "AccountXIZ SOLICITORS have insufficient funds available. Please use " +
-                            "a different account or payment method.",
-                        "For support Payment Account support call 01633 652125 (Option 3) " +
-                            "or email MiddleOffice.DDServices@librata.com.")
+                        "AccountXIZ SOLICITORS have insufficient funds available. Please use "
+                            + "a different account or payment method.",
+                        "For support Payment Account support call 01633 652125 (Option 3) "
+                            + "or email MiddleOffice.DDServices@librata.com.")
                 ).warnings(asList("warning 1", "warning 2 email@example.com"))
                 .build());
     }
@@ -1305,10 +1305,10 @@ public class CallbackController {
             CcdCallbackResponse.builder()
                 .errors(
                     asList(
-                        "AccountXIZ SOLICITORS have insufficient funds available. Please use " +
-                            "a different account or payment method.",
-                        "For support Payment Account support call 01633 652125 (Option 3) " +
-                            "or email MiddleOffice.DDServices@librata.com.")
+                        "AccountXIZ SOLICITORS have insufficient funds available. Please use "
+                            + "a different account or payment method.",
+                        "For support Payment Account support call 01633 652125 (Option 3) "
+                            + "or email MiddleOffice.DDServices@librata.com.")
                 ).warnings(asList("warning 1", "warning 2 email@example.com"))
                 .build());
     }
