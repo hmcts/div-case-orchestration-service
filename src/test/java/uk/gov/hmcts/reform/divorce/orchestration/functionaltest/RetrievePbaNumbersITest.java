@@ -50,8 +50,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class RetrievePbaNumbersITest extends MockedFunctionalTest {
 
     private static final String API_URL = "/retrieve-pba-numbers";
-    private static final String RETRIEVE_PBA_NUMBERS_CONTEXT_PATH = "/refdata/external/v1/organisations/pbas?email=testRespondentSolicitor%40email.com";
-    private static final String IDAM_USER_DETAILS_CONTEXT_PATH = "/details";
+    private static final String RETRIEVE_PBA_NUMBERS_URL = "/refdata/external/v1/organisations/pbas?email=testRespondentSolicitor%40email.com";
+    private static final String IDAM_USER_DETAILS_URL = "/details";
 
     @Autowired
     private MockMvc webClient;
@@ -120,7 +120,7 @@ public class RetrievePbaNumbersITest extends MockedFunctionalTest {
 
 
     private void stubRetrievePbaNumbersEndpoint(HttpStatus status, PBAOrganisationResponse response) {
-        pbaValidationServer.stubFor(WireMock.get(urlEqualTo(RETRIEVE_PBA_NUMBERS_CONTEXT_PATH))
+        pbaValidationServer.stubFor(WireMock.get(urlEqualTo(RETRIEVE_PBA_NUMBERS_URL))
             .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
             .withHeader(SERVICE_AUTHORIZATION_HEADER, new EqualToPattern("Bearer " + TEST_SERVICE_AUTH_TOKEN))
             .willReturn(aResponse()
@@ -130,7 +130,7 @@ public class RetrievePbaNumbersITest extends MockedFunctionalTest {
     }
 
     private void stubIdamUserDetailsEndpoint(HttpStatus status, String authHeader, String message) {
-        idamServer.stubFor(get(IDAM_USER_DETAILS_CONTEXT_PATH)
+        idamServer.stubFor(get(IDAM_USER_DETAILS_URL)
             .withHeader(AUTHORIZATION, new EqualToPattern(authHeader))
             .willReturn(aResponse()
                 .withStatus(status.value())
