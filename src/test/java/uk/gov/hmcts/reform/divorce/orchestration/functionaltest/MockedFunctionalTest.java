@@ -85,6 +85,9 @@ public abstract class MockedFunctionalTest {
     @ClassRule
     public static WireMockClassRule documentStore = new WireMockClassRule(buildWireMockConfig(4020));
 
+    @ClassRule
+    public static WireMockClassRule pbaValidationServer = new WireMockClassRule(buildWireMockConfig(8090));
+
     private static WireMockConfiguration buildWireMockConfig(int port) {
         return WireMockSpring
             .options()
