@@ -32,10 +32,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
+import javax.ws.rs.core.MediaType;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import javax.ws.rs.core.MediaType;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
@@ -1254,6 +1254,62 @@ public class CallbackController {
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
                 .data(generalEmailService.createGeneralEmail(ccdCallbackRequest.getCaseDetails()))
+                .build());
+    }
+
+    @PostMapping(path = "/many-errors")
+    @ApiOperation(value = "Prepare event to send general email")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Create general email notification callback processed.")})
+    public ResponseEntity<CcdCallbackResponse> errors(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .errors(
+                    asList(
+                        "AccountXIZ SOLICITORS have insufficient funds available. Please use " +
+                            "a different account or payment method.",
+                        "For support Payment Account support call 01633 652125 (Option 3) " +
+                            "or email MiddleOffice.DDServices@librata.com."))
+                .build());
+    }
+
+    @PostMapping(path = "/errors-and-warnings")
+    @ApiOperation(value = "Prepare event to send general email")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Create general email notification callback processed.")})
+    public ResponseEntity<CcdCallbackResponse> errorsAndWarn(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .errors(
+                    asList(
+                        "AccountXIZ SOLICITORS have insufficient funds available. Please use " +
+                            "a different account or payment method.",
+                        "For support Payment Account support call 01633 652125 (Option 3) " +
+                            "or email MiddleOffice.DDServices@librata.com.")
+                ).warnings(asList("warning 1", "warning 2 email@example.com"))
+                .build());
+    }
+
+    @PostMapping(path = "/errors-and-warnings-400")
+    @ApiOperation(value = "Prepare event to send general email")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Create general email notification callback processed.")})
+    public ResponseEntity<CcdCallbackResponse> errorsAndWarn400(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.status(400).body(
+            CcdCallbackResponse.builder()
+                .errors(
+                    asList(
+                        "AccountXIZ SOLICITORS have insufficient funds available. Please use " +
+                            "a different account or payment method.",
+                        "For support Payment Account support call 01633 652125 (Option 3) " +
+                            "or email MiddleOffice.DDServices@librata.com.")
+                ).warnings(asList("warning 1", "warning 2 email@example.com"))
                 .build());
     }
 

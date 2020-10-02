@@ -1535,4 +1535,28 @@ public class CallbackControllerTest {
         assertThat(ccdCallbackResponse.getBody().getData(), equalTo(TEST_PAYLOAD_TO_RETURN));
         verify(generalEmailService).createGeneralEmail(TEST_INCOMING_CASE_DETAILS);
     }
+
+    @Test
+    public void shouldErrors() throws CaseOrchestrationServiceException {
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(TEST_INCOMING_CASE_DETAILS).build();
+        ResponseEntity<CcdCallbackResponse> ccdCallbackResponse = classUnderTest.errorsAndWarn(ccdCallbackRequest);
+
+        assertThat(ccdCallbackResponse.getStatusCode(), is(HttpStatus.OK));
+    }
+
+    @Test
+    public void shouldErrorsAndWarns() throws CaseOrchestrationServiceException {
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(TEST_INCOMING_CASE_DETAILS).build();
+        ResponseEntity<CcdCallbackResponse> ccdCallbackResponse = classUnderTest.errors(ccdCallbackRequest);
+
+        assertThat(ccdCallbackResponse.getStatusCode(), is(HttpStatus.OK));
+    }
+
+    @Test
+    public void shouldErrorsAndWarns400() throws CaseOrchestrationServiceException {
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(TEST_INCOMING_CASE_DETAILS).build();
+        ResponseEntity<CcdCallbackResponse> ccdCallbackResponse = classUnderTest.errorsAndWarn400(ccdCallbackRequest);
+
+        assertThat(ccdCallbackResponse.getStatusCode(), is(HttpStatus.BAD_REQUEST));
+    }
 }
