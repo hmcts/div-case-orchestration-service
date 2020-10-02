@@ -61,7 +61,7 @@ public class GeneralOrderGenerationTask extends BasePayloadSpecificDocumentGener
     ) {
         log.info("CaseID: {} Adding general order to {} collection.", getCaseId(context), GENERAL_ORDERS);
 
-        CollectionMember<DivorceGeneralOrder> collectionMember = getDivorceGeneralOrderCollectionMember(
+        CollectionMember<DivorceGeneralOrder> collectionMember = buildDivorceGeneralOrderCollectionMember(
             GeneralOrderDataExtractor.getGeneralOrderParties(caseData), generatedDocumentInfo
         );
 
@@ -123,11 +123,11 @@ public class GeneralOrderGenerationTask extends BasePayloadSpecificDocumentGener
         return copiedCaseData;
     }
 
-    private CollectionMember<DivorceGeneralOrder> getDivorceGeneralOrderCollectionMember(
-        List<GeneralOrderParty> caseData, GeneratedDocumentInfo generatedDocumentInfo
+    private CollectionMember<DivorceGeneralOrder> buildDivorceGeneralOrderCollectionMember(
+        List<GeneralOrderParty> allowedGeneralOrderParties, GeneratedDocumentInfo generatedDocumentInfo
     ) {
         DivorceGeneralOrder divorceGeneralOrder = DivorceGeneralOrder.builder()
-            .generalOrderParties(caseData)
+            .generalOrderParties(allowedGeneralOrderParties)
             .document(CcdMappers.mapDocumentInfoToCcdDocument(generatedDocumentInfo).getValue())
             .build();
 
