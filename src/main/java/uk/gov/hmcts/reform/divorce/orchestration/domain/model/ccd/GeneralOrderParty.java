@@ -3,9 +3,10 @@ package uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum GeneralOrderParty {
+
     PETITIONER("petitioner"),
     RESPONDENT("respondent"),
-    CO_RESPONDENT("corespondent");
+    CO_RESPONDENT("co-respondent");
 
     private final String value;
 
