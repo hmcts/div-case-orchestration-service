@@ -63,14 +63,17 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.DUMMY_CASE
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INCOMING_CASE_DETAILS;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PAYLOAD_TO_RETURN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_OUTCOME_FLAG_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_PAY_BY_ACCOUNT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
@@ -187,32 +190,57 @@ public class CallbackControllerTest {
 
     @Test
     public void whenProcessPbaPayment_thenReturnCcdResponse() throws Exception {
-        final Map<String, Object> caseData = Collections.emptyMap();
-        final CaseDetails caseDetails = CaseDetails.builder()
+        Map<String, Object> caseData = ImmutableMap.of(SOLICITOR_HOW_TO_PAY_JSON_KEY, FEE_PAY_BY_ACCOUNT);
+        CaseDetails caseDetails = CaseDetails.builder()
             .caseData(caseData)
             .build();
 
-        final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(caseDetails).build();
+
+        when(caseOrchestrationService.solicitorSubmission(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(caseData);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.processPbaPayment(AUTH_TOKEN, ccdCallbackRequest);
+
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
+            .state(CcdStates.SUBMITTED)
+            .data(caseData)
+            .build();
+
+        CcdCallbackResponse actualCallbackResponse = Optional.ofNullable(response.getBody())
+            .orElseGet(() -> CcdCallbackResponse.builder().build());
+
+        assertEquals(OK, response.getStatusCode());
+        assertEquals(expectedResponse, response.getBody());
+        assertEquals(expectedResponse.getState(), actualCallbackResponse.getState());
+    }
+
+    @Test
+    public void whenProcessPbaPayment_AndPaymentTypeNotPBA_thenReturnCcdResponseSameState() throws Exception {
+        Map<String, Object> caseData = ImmutableMap.of(SOLICITOR_HOW_TO_PAY_JSON_KEY, "feesHelpWith");
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .state(TEST_STATE)
+            .build();
+
+        CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
         ccdCallbackRequest.setCaseDetails(caseDetails);
 
         when(caseOrchestrationService.solicitorSubmission(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(caseData);
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.processPbaPayment(AUTH_TOKEN, ccdCallbackRequest);
 
-        //TODO verify state change is right way
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
-            .state(CcdStates.SUBMITTED)
+            .state(TEST_STATE)
             .data(caseData)
             .build();
 
-        String newState = null; // TODO refactor
-        Optional<CcdCallbackResponse> responseBody = Optional.ofNullable(response.getBody());
-        if (responseBody.isPresent()) {
-            newState = responseBody.get().getState();
-        }
+        CcdCallbackResponse actualCallbackResponse = Optional.ofNullable(response.getBody())
+            .orElseGet(() -> CcdCallbackResponse.builder().build());
+
         assertEquals(OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
-        assertEquals(expectedResponse.getState(), newState);
+        assertEquals(expectedResponse.getState(), actualCallbackResponse.getState());
     }
 
     @Test

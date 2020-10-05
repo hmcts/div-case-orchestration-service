@@ -7,8 +7,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import java.util.Map;
 
 import static java.util.Collections.singletonList;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_STATEMENT_OF_TRUTH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_PBA_PAYMENT_ERROR_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_STATEMENT_OF_TRUTH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.STATEMENT_OF_TRUTH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContextHelper.failTask;
@@ -24,7 +24,7 @@ public class ValidateSolicitorCaseDataTask implements Task<Map<String, Object>> 
 
         if (!petitionStatementOfTruth || !solStatementOfTruth) {
             failTask(context,
-                    SOLICITOR_PBA_PAYMENT_ERROR_KEY,
+                SOLICITOR_PBA_PAYMENT_ERROR_KEY,
                 singletonList("Statement of truth for solicitor and petitioner needs to be accepted"));
         }
 

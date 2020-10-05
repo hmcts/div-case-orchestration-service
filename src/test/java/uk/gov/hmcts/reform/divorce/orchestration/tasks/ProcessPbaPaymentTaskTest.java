@@ -34,6 +34,9 @@ import java.util.Optional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -189,8 +192,10 @@ public class ProcessPbaPaymentTaskTest {
     public void givenNotPayByAccount_whenExecuteIsCalled_thenReturnData() {
         caseData.replace(SOLICITOR_HOW_TO_PAY_JSON_KEY, "NotByAccount");
 
-        // Will fail if it attempts to call paymentClient
         assertThat(caseData, is(processPbaPaymentTask.execute(context, caseData)));
+
+        verify(paymentClient, never()).creditAccountPayment(anyString(), anyString(), any(CreditAccountPaymentRequest.class));
+        verify(serviceAuthGenerator, never()).generate();
     }
 
     @Test(expected = TaskException.class)

@@ -253,6 +253,38 @@ public class ProcessPbaPaymentTest extends MockedFunctionalTest {
     }
 
     @Test
+    public void givenCaseData_whenOtherPaymentMethod_thenReturnStateUnchanged() throws Exception {
+        caseData.put(STATEMENT_OF_TRUTH, YES_VALUE);
+        caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, YES_VALUE);
+        caseData.put(SOLICITOR_HOW_TO_PAY_JSON_KEY, "NotByAccount");
+
+        caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .build();
+
+        ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .build();
+
+        final CcdCallbackResponse expected = CcdCallbackResponse.builder()
+            .state(TEST_STATE)
+            .data(caseData)
+            .build();
+
+        stubFormatterServerEndpoint(caseData);
+
+        webClient.perform(post(API_URL)
+            .content(convertObjectToJsonString(ccdCallbackRequest))
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(expected)));
+    }
+
+    @Test
     public void givenInvalidCaseData_whenProcessPbaPayment_thenReturnErrors() throws Exception {
         caseData.put(STATEMENT_OF_TRUTH, NO_VALUE);
         caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, NO_VALUE);
