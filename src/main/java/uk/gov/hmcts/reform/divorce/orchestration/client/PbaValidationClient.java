@@ -12,11 +12,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.validation.PBA
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_AUTHORIZATION_HEADER;
 
 @FeignClient(name = "pba-validation-client", url = "${pba.validation.service.api.baseurl}")
-public interface PBAValidationClient {
+public interface PbaValidationClient {
 
     @ApiOperation("Validates Solicitor Pay By Account (PBA) number for payment")
     @GetMapping(value = "/refdata/external/v1/organisations/pbas")
-    ResponseEntity<PBAOrganisationResponse> retrievePBANumbers(
+    ResponseEntity<PBAOrganisationResponse> retrievePbaNumbers(
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION_HEADER) String serviceAuthorisation,
         @RequestParam(name = "email") String email);
