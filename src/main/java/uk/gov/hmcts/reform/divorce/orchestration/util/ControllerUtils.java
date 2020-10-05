@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -12,6 +14,7 @@ import java.util.Map;
 
 @Slf4j
 @Component
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ControllerUtils {
 
     public static ResponseEntity<CcdCallbackResponse> responseWithData(Map<String, Object> data) {
