@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.divorce.model.response.ValidationResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -54,6 +53,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ANSWERS_LINK;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_PBA_PAYMENT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.getPbaSubmittedState;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.getResponseErrors;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.isResponseErrors;
 
 @RestController
 @Slf4j
@@ -172,15 +174,15 @@ public class CallbackController {
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         Map<String, Object> response = caseOrchestrationService.solicitorSubmission(ccdCallbackRequest, authorizationToken);
 
-        if (response != null && response.containsKey(SOLICITOR_PBA_PAYMENT_ERROR_KEY)) {
+        if (isResponseErrors(SOLICITOR_PBA_PAYMENT_ERROR_KEY, response)) {
             return ResponseEntity.ok(
                 CcdCallbackResponse.builder()
-                    .errors((List<String>) response.get(SOLICITOR_PBA_PAYMENT_ERROR_KEY))
+                    .errors(getResponseErrors(SOLICITOR_PBA_PAYMENT_ERROR_KEY, response))
                     .build());
         }
 
         return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .state(CcdStates.SUBMITTED)
+            .state(getPbaSubmittedState(ccdCallbackRequest))
             .data(response)
             .build());
     }

@@ -1,9 +1,10 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.client.PaymentClient;
@@ -12,10 +13,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeValue;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentItem;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentClientMessage;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.util.payment.PaymentClientError;
 
 import java.util.List;
 import java.util.Map;
@@ -28,71 +29,70 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CURRENCY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_CENTRE_SITEID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_PAY_BY_ACCOUNT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_FIRM_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_PBA_PAYMENT_ERROR_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContextHelper.failTask;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isSolicitorPaymentMethodPba;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.payment.PaymentClientError.getCreditAccountPaymentResponse;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class ProcessPbaPaymentTask implements Task<Map<String, Object>> {
 
     private final PaymentClient paymentClient;
     private final AuthTokenGenerator serviceAuthGenerator;
     private final ObjectMapper objectMapper;
 
-    @Autowired
-    public ProcessPbaPaymentTask(PaymentClient paymentClient,
-                                 AuthTokenGenerator serviceAuthGenerator,
-                                 ObjectMapper objectMapper) {
-        this.paymentClient = paymentClient;
-        this.serviceAuthGenerator = serviceAuthGenerator;
-        this.objectMapper = objectMapper;
-    }
-
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         String caseId = getCaseId(context);
         try {
-            if (isSolicitorPayByAccount(caseData)) {
-                log.info("About to make payment for Case ID: {}", caseId);
-
-                processCreditAccountPayment(
-                    caseId,
-                    context,
-                    buildCreditAccountPaymentRequest(context, caseData)
-                );
-
-                log.info("Payment made for Case ID: {}", caseId);
+            if (!isSolicitorPaymentMethodPba(caseData)) {
+                log.info("Payment option not PBA for CaseID: {}", caseId);
+                return caseData;
             }
-        } catch (NullPointerException exception) {
-            log.error("Missing required fields for Solicitor Payment on Case ID: {} with exception {}", caseId, exception.getMessage());
+
+            log.info("About to make payment for CaseID: {}", caseId);
+
+            processCreditAccountPayment(
+                caseId,
+                context,
+                buildCreditAccountPaymentRequest(context, caseData)
+            );
+
+            log.info("Payment made for CaseID: {}", caseId);
+
+        } catch (Exception exception) {
+            log.error("Missing required fields for Solicitor Payment on CaseID: {}, with exception {}", caseId, exception.getMessage());
             throw new TaskException(exception);
         }
 
         return caseData;
     }
 
-    private void processCreditAccountPayment(String caseId, TaskContext context, CreditAccountPaymentRequest creditAccountPaymentRequest) {
+    private void processCreditAccountPayment(String caseId,
+                                             TaskContext context,
+                                             CreditAccountPaymentRequest creditAccountPaymentRequest)
+        throws JsonProcessingException {
         try {
             paymentClient.creditAccountPayment(
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(),
                 serviceAuthGenerator.generate(),
                 creditAccountPaymentRequest
             );
-            log.info("Successful payment processed for Case ID: {}", caseId);
+            log.info("Successful payment processed for CaseID: {}", caseId);
         } catch (FeignException exception) {
-            log.info("Unsuccessful payment for Case ID: {} with exception: {}", caseId, exception.getMessage());
+            log.error("Unsuccessful payment for CaseID: {} with exception: {}", caseId, exception.getMessage());
 
             failTask(context,
                 SOLICITOR_PBA_PAYMENT_ERROR_KEY,
-                singletonList(PaymentClientMessage.getValue(exception.status())));
+                singletonList(PaymentClientError.getMessage(exception.status(), getCreditAccountPaymentResponse(exception))));
         }
     }
 
@@ -152,11 +152,5 @@ public class ProcessPbaPaymentTask implements Task<Map<String, Object>> {
 
     private void addToRequest(Consumer<String> setter, Supplier<String> value) {
         Optional.ofNullable(value.get()).ifPresent(setter);
-    }
-
-    private boolean isSolicitorPayByAccount(Map<String, Object> caseData) {
-        return Optional.ofNullable(caseData.get(SOLICITOR_HOW_TO_PAY_JSON_KEY))
-            .map(i -> i.equals(FEE_PAY_BY_ACCOUNT))
-            .orElse(false);
     }
 }

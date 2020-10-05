@@ -39,8 +39,8 @@ public class ProcessPbaPaymentTest extends IntegrationTest {
         Map<String, Object> responseData = response.getBody().path(DATA);
         String state = response.getBody().path(STATE);
 
-        assertThat(responseData.get(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY), notNullValue());
         assertThat(state, is(CcdStates.SUBMITTED));
+        assertThat(responseData.get(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY), notNullValue());
         assertNoPetitionOnDocumentGeneratedList((List) responseData.get(D8DOCUMENTS_GENERATED));
     }
 
@@ -56,10 +56,10 @@ public class ProcessPbaPaymentTest extends IntegrationTest {
         List<String> errors = response.getBody().path(ERRORS);
         String state = response.getBody().path(STATE);
 
+        assertThat(state, nullValue());
         assertThat(responseData, nullValue());
         assertThat(errors, hasSize(1));
         assertThat(errors.get(0), is("Statement of truth for solicitor and petitioner needs to be accepted"));
-        assertThat(state, nullValue());
     }
 
     private static void assertNoPetitionOnDocumentGeneratedList(List<CollectionMember<Document>> documents) {
