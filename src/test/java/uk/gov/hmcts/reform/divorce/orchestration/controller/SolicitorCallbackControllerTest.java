@@ -27,13 +27,17 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PBA_NUMBERS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_PAY_BY_ACCOUNT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DynamicList.asDynamicList;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.ccdRequestWithData;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.ccdResponseWithData;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SolicitorCallbackControllerTest {
@@ -97,8 +101,9 @@ public class SolicitorCallbackControllerTest {
     }
 
     @Test
-    public void givenPbaNumbersFound_whenRetrievePbaNumbers_thenReturnCcdResponse() throws WorkflowException {
+    public void givenPbaNumbersFoundAndPaymentMethodIsPba_whenRetrievePbaNumbers_thenReturnCcdResponse() throws WorkflowException {
         final Map<String, Object> caseDataReturnedFromService = ImmutableMap.of(
+            SOLICITOR_HOW_TO_PAY_JSON_KEY, FEE_PAY_BY_ACCOUNT,
             PBA_NUMBERS, asDynamicList(ImmutableList.of("pbaNumber1", "pbaNumber2"))
         );
 
@@ -108,8 +113,27 @@ public class SolicitorCallbackControllerTest {
     }
 
     @Test
-    public void givenNoPbaNumbers_whenRetrievePbaNumbers_thenReturnCcdResponseWithError() throws WorkflowException {
-        final Map<String, Object> caseDataReturnedFromService = Collections.emptyMap();
+    public void givenPaymentMethodIsNotPba_whenRetrievePbaNumbers_thenReturnCcdResponse() throws WorkflowException {
+        final Map<String, Object> caseDataReturnedFromService = ImmutableMap.of(
+            SOLICITOR_HOW_TO_PAY_JSON_KEY, "NotByAccount"
+        );
+
+        CcdCallbackResponse expectedResponse = ccdResponseWithData(caseDataReturnedFromService);
+
+        final CcdCallbackRequest ccdCallbackRequest = ccdRequestWithData(caseDataReturnedFromService);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.retrievePbaNumbers(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertEquals(OK, response.getStatusCode());
+        assertEquals(expectedResponse, response.getBody());
+        verifyNoInteractions(solicitorService);
+    }
+
+    @Test
+    public void givenNoPbaNumbersAndPaymentMethodIsPba_whenRetrievePbaNumbers_thenReturnCcdResponseWithError() throws WorkflowException {
+        final Map<String, Object> caseDataReturnedFromService = ImmutableMap.of(
+            SOLICITOR_HOW_TO_PAY_JSON_KEY, FEE_PAY_BY_ACCOUNT
+        );
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
             .errors(ImmutableList.of("No PBA number found for this account, please contact your organisation."))
@@ -132,6 +156,6 @@ public class SolicitorCallbackControllerTest {
 
         assertEquals(OK, response.getStatusCode());
         assertEquals(expectedResponse, response.getBody());
-        verify(solicitorService, times(1)).retrievePbaNumbers(ccdCallbackRequest, AUTH_TOKEN);
+        verify(solicitorService).retrievePbaNumbers(ccdCallbackRequest, AUTH_TOKEN);
     }
 }

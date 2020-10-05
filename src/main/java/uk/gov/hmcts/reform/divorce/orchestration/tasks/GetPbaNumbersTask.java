@@ -11,21 +11,19 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.validation.PBA
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.SolicitorDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PBA_NUMBERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_PAY_BY_ACCOUNT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DynamicList.asDynamicList;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getAuthToken;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.solicitorPaymentMethodIsPba;
 
 @Component
 @Slf4j
@@ -39,7 +37,7 @@ public class GetPbaNumbersTask implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        if (paymentMethodIsPba(SolicitorDataExtractor.getPaymentMethod(caseData))) {
+        if (solicitorPaymentMethodIsPba(caseData)) {
             String caseId = getCaseId(context);
             String bearerAuthToken = authUtil.getBearToken(getAuthToken(context));
             String solicitorEmail = idamClient.getUserDetails(bearerAuthToken).getEmail();
@@ -69,11 +67,5 @@ public class GetPbaNumbersTask implements Task<Map<String, Object>> {
 
         PBAOrganisationResponse pbaOrganisationResponse = Objects.requireNonNull(responseEntity.getBody());
         return pbaOrganisationResponse.getOrganisationEntityResponse().getPaymentAccount();
-    }
-
-    private boolean paymentMethodIsPba(String howPay) {
-        return Optional.ofNullable(howPay)
-                .map(i -> i.equals(FEE_PAY_BY_ACCOUNT))
-                .orElse(false);
     }
 }

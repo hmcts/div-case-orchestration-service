@@ -27,6 +27,7 @@ import java.util.Map;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static java.util.Arrays.asList;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -83,11 +84,23 @@ public class RetrievePbaNumbersITest extends MockedFunctionalTest {
     }
 
     @Test
-    public void givenCaseData_whenRetrievePbaNumbers_andNoPbaNumbersFound_thenReturn_CasewithNoPbaNumbers() throws Exception {
+    public void givenSolicitorEmail_whenRetrievePbaNumbers_andNoPbaNumbersFound_thenReturn_CasewithNoPbaNumbers() throws Exception {
         List<String> pbaNumbersOfSolicitor = Collections.emptyList();
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
-            .errors(ImmutableList.of("No PBA number found for this account, please contact your organisation."))
+            .errors(asList("No PBA number found for this account, please contact your organisation."))
+            .build();
+
+        whenRetrievePbaNumbersExpect(expectedResponse, pbaNumbersOfSolicitor, caseData);
+    }
+
+    @Test
+    public void givenSolicitorEmailAndSolPaymentMethodNotPba_whenRetrievePbaNumbers_thenReturn_CaseGiven() throws Exception {
+        List<String> pbaNumbersOfSolicitor = Collections.emptyList();
+        caseData.replace(SOLICITOR_HOW_TO_PAY_JSON_KEY, "NotByAccount");
+
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
+            .data(caseData)
             .build();
 
         whenRetrievePbaNumbersExpect(expectedResponse, pbaNumbersOfSolicitor, caseData);

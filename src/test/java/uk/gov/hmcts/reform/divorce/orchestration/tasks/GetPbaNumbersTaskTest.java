@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -97,7 +96,6 @@ public class GetPbaNumbersTaskTest {
 
     @Test(expected = TaskException.class)
     public void givenMissingData_whenExecuteIsCalled_thenThrowTaskException() {
-
         assertEquals(caseData, getPbaNumbersTask.execute(new DefaultTaskContext(), caseData));
 
         verifyNoInteractions(authUtil);
@@ -116,9 +114,9 @@ public class GetPbaNumbersTaskTest {
 
         assertEquals(expectedCaseData, getPbaNumbersTask.execute(context, caseData));
 
-        verify(authUtil, times(1)).getBearToken(AUTH_TOKEN);
-        verify(idamClient, times(1)).getUserDetails(BEARER_AUTH_TOKEN);
-        verify(serviceAuthGenerator, times(1)).generate();
+        verify(authUtil).getBearToken(AUTH_TOKEN);
+        verify(idamClient).getUserDetails(BEARER_AUTH_TOKEN);
+        verify(serviceAuthGenerator).generate();
         verifyRetrievePbaNumbersCalledOnce();
     }
 
@@ -132,9 +130,9 @@ public class GetPbaNumbersTaskTest {
 
         assertEquals(expectedCaseData, getPbaNumbersTask.execute(context, caseData));
 
-        verify(authUtil, times(1)).getBearToken(AUTH_TOKEN);
-        verify(idamClient, times(1)).getUserDetails(BEARER_AUTH_TOKEN);
-        verify(serviceAuthGenerator, times(1)).generate();
+        verify(authUtil).getBearToken(AUTH_TOKEN);
+        verify(idamClient).getUserDetails(BEARER_AUTH_TOKEN);
+        verify(serviceAuthGenerator).generate();
         verifyRetrievePbaNumbersCalledOnce();
     }
 
@@ -147,9 +145,9 @@ public class GetPbaNumbersTaskTest {
 
         assertEquals(expectedCaseData, getPbaNumbersTask.execute(context, caseData));
 
-        verify(authUtil, times(1)).getBearToken(AUTH_TOKEN);
-        verify(idamClient, times(1)).getUserDetails(BEARER_AUTH_TOKEN);
-        verify(serviceAuthGenerator, times(1)).generate();
+        verify(authUtil).getBearToken(AUTH_TOKEN);
+        verify(idamClient).getUserDetails(BEARER_AUTH_TOKEN);
+        verify(serviceAuthGenerator).generate();
         verifyRetrievePbaNumbersCalledOnce();
     }
 
@@ -172,7 +170,7 @@ public class GetPbaNumbersTaskTest {
     }
 
     private void verifyRetrievePbaNumbersCalledOnce() {
-        verify(pbaValidationClient,  times(1)).retrievePbaNumbers(
+        verify(pbaValidationClient).retrievePbaNumbers(
             AUTH_TOKEN,
             TEST_SERVICE_AUTH_TOKEN,
             TEST_RESP_SOLICITOR_EMAIL);
