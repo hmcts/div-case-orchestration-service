@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper;
 
@@ -18,7 +17,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 public class ServiceApplicationDataTask implements Task<Map<String, Object>> {
 
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         String caseId = getCaseId(context);
         log.info("CaseId: {} moving temp service application data to collection.", caseId);
 
