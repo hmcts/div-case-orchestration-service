@@ -80,6 +80,15 @@ public class GeneralOrderDataExtractorTest {
     }
 
     @Test
+    public void getGeneralOrderPartiesShouldReturnEmptyListWhenInvalidValue() {
+        Map<String, Object> caseData = ImmutableMap.of(
+            CcdFields.GENERAL_ORDER_PARTIES, asList("invalid value")
+        );
+
+        assertThat(GeneralOrderDataExtractor.getGeneralOrderParties(caseData).size(), is(0));
+    }
+
+    @Test
     public void getGeneralOrderPartiesShouldReturnListWhenFieldFound() {
         Map<String, Object> caseData = ImmutableMap.of(
             CcdFields.GENERAL_ORDER_PARTIES, asList(GeneralOrderParty.PETITIONER.getValue())
@@ -89,6 +98,28 @@ public class GeneralOrderDataExtractorTest {
         assertThat(
             GeneralOrderDataExtractor.getGeneralOrderParties(caseData).get(0),
             is(GeneralOrderParty.PETITIONER)
+        );
+    }
+
+    @Test
+    public void getGeneralOrderPartiesShouldRemoveNullsReturnListWhenFieldFound() {
+        Map<String, Object> caseData = ImmutableMap.of(
+            CcdFields.GENERAL_ORDER_PARTIES,
+            asList(
+                GeneralOrderParty.CORESPONDENT.getValue(),
+                "this will be not found",
+                GeneralOrderParty.RESPONDENT.getValue()
+            )
+        );
+
+        assertThat(GeneralOrderDataExtractor.getGeneralOrderParties(caseData).size(), is(2));
+        assertThat(
+            GeneralOrderDataExtractor.getGeneralOrderParties(caseData).get(0),
+            is(GeneralOrderParty.CORESPONDENT)
+        );
+        assertThat(
+            GeneralOrderDataExtractor.getGeneralOrderParties(caseData).get(1),
+            is(GeneralOrderParty.RESPONDENT)
         );
     }
 }

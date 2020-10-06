@@ -6,7 +6,7 @@ public enum GeneralOrderParty {
 
     PETITIONER("petitioner"),
     RESPONDENT("respondent"),
-    CO_RESPONDENT("co-respondent");
+    CORESPONDENT("corespondent");
 
     private final String value;
 
@@ -32,8 +32,8 @@ public enum GeneralOrderParty {
             return GeneralOrderParty.RESPONDENT;
         }
 
-        if (party.equals(CO_RESPONDENT.getValue())) {
-            return GeneralOrderParty.CO_RESPONDENT;
+        if (party.equals(CORESPONDENT.getValue())) {
+            return GeneralOrderParty.CORESPONDENT;
         }
 
         return null;
