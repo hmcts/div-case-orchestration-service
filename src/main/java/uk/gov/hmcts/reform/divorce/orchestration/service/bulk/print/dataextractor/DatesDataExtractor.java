@@ -52,7 +52,6 @@ public class DatesDataExtractor {
         return getMandatoryDateWithCustomerFormatting(caseData, CaseDataKeys.RECEIVED_SERVICE_ADDED_DATE);
     }
 
-
     public static String getServiceApplicationDecisionDate(Map<String, Object> caseData) {
         return getMandatoryDateWithCustomerFormatting(caseData, CaseDataKeys.SERVICE_APPLICATION_DECISION_DATE);
     }

@@ -207,7 +207,7 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
             caseData,
             makeServiceDecisionDateTask,
             serviceApplicationDataTask
-        ); // here
+        );
 
         verifyTasksWereNeverCalled(
             orderToDispenseGenerationTask,
