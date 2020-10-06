@@ -58,7 +58,7 @@ public class ControllerUtils {
 
     public static boolean isResponseErrors(String errorKey, Map<String, Object> errorResponse) {
         return Optional.ofNullable(errorResponse)
-            .map((errors) ->
+            .map(errors ->
                 Optional.ofNullable(errorKey)
                     .map(errors::containsKey)
                     .orElseGet(() -> false)
@@ -68,7 +68,7 @@ public class ControllerUtils {
 
     public static List<String> getResponseErrors(String errorKey, Map<String, Object> errorResponse) {
         return Optional.ofNullable(errorResponse)
-            .map((errors) -> (List<String>) errors.get(errorKey))
+            .map(errors -> (List<String>) errors.get(errorKey))
             .orElseGet(() -> null);
     }
 

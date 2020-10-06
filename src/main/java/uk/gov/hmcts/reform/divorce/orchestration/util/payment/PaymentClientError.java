@@ -56,7 +56,7 @@ public class PaymentClientError {
             paymentResponse.getReference());
 
         return Optional.of(paymentResponse)
-            .map((response) -> {
+            .map(response -> {
                 List<StatusHistoriesItem> statusHistories = Optional.ofNullable(response.getStatusHistories())
                     .orElseGet(ArrayList::new);
                 String reference = response.getReference();
@@ -84,7 +84,7 @@ public class PaymentClientError {
     private static String getCustomForbiddenMessage(List<StatusHistoriesItem> statusHistories, String reference) {
         if (!statusHistories.isEmpty()) {
             StatusHistoriesItem statusHistoriesItem = statusHistories.get(0);
-            String errorCode = statusHistoriesItem.getErrorCode();
+            String errorCode = Optional.ofNullable(statusHistoriesItem.getErrorCode()).orElseGet(() -> "");
 
             if (errorCode.equalsIgnoreCase(CAE0004)) {
                 return getCustomErrorMessage(format(CAE0004_CONTENT, reference));
