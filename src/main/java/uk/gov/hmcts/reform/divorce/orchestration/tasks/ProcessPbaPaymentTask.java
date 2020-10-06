@@ -78,8 +78,7 @@ public class ProcessPbaPaymentTask implements Task<Map<String, Object>> {
 
     private void processCreditAccountPayment(String caseId,
                                              TaskContext context,
-                                             CreditAccountPaymentRequest creditAccountPaymentRequest)
-        throws JsonProcessingException {
+                                             CreditAccountPaymentRequest creditAccountPaymentRequest) {
         try {
             paymentClient.creditAccountPayment(
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(),

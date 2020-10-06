@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.StatusHistoriesItem;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,9 +72,13 @@ public class PaymentClientError {
             .orElseGet(() -> prependContactInfo(DEFAULT));
     }
 
-    public static CreditAccountPaymentResponse getCreditAccountPaymentResponse(FeignException exception) throws JsonProcessingException {
+    public static CreditAccountPaymentResponse getCreditAccountPaymentResponse(FeignException exception) {
         ObjectMapper objectMapper = new ObjectMapper();
-        return objectMapper.readValue(exception.contentUTF8(), CreditAccountPaymentResponse.class);
+        try {
+            return objectMapper.readValue(exception.contentUTF8(), CreditAccountPaymentResponse.class);
+        } catch (JsonProcessingException e) {
+            throw new TaskException(e);
+        }
     }
 
     private static String getForbiddenMessage(List<StatusHistoriesItem> statusHistories, String reference) {
