@@ -62,14 +62,14 @@ public class PaymentClientError {
                 String reference = response.getReference();
 
                 if (httpStatus == HttpStatus.FORBIDDEN.value()) {
-                    return getForbiddenMessage(statusHistories, reference);
+                    return getCustomForbiddenMessage(statusHistories, reference);
                 } else if (httpStatus == HttpStatus.NOT_FOUND.value()) {
-                    return prependContactInfo(format(NOT_FOUND_CONTENT, reference));
+                    return getCustomErrorMessage(format(NOT_FOUND_CONTENT, reference));
                 }
 
-                return prependContactInfo(DEFAULT);
+                return getCustomErrorMessage(DEFAULT);
             })
-            .orElseGet(() -> prependContactInfo(DEFAULT));
+            .orElseGet(() -> getCustomErrorMessage(DEFAULT));
     }
 
     public static CreditAccountPaymentResponse getCreditAccountPaymentResponse(FeignException exception) {
@@ -81,21 +81,21 @@ public class PaymentClientError {
         }
     }
 
-    private static String getForbiddenMessage(List<StatusHistoriesItem> statusHistories, String reference) {
+    private static String getCustomForbiddenMessage(List<StatusHistoriesItem> statusHistories, String reference) {
         if (!statusHistories.isEmpty()) {
             StatusHistoriesItem statusHistoriesItem = statusHistories.get(0);
             String errorCode = statusHistoriesItem.getErrorCode();
 
             if (errorCode.equalsIgnoreCase(CAE0004)) {
-                return prependContactInfo(format(CAE0004_CONTENT, reference));
+                return getCustomErrorMessage(format(CAE0004_CONTENT, reference));
             } else if (errorCode.equalsIgnoreCase(CAE0001)) {
-                return prependContactInfo(format(CAE0001_CONTENT, reference));
+                return getCustomErrorMessage(format(CAE0001_CONTENT, reference));
             }
         }
-        return prependContactInfo(DEFAULT);
+        return getCustomErrorMessage(DEFAULT);
     }
 
-    private static String prependContactInfo(String value) {
+    private static String getCustomErrorMessage(String value) {
         return value + getContactInfo();
     }
 
