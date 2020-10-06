@@ -109,7 +109,12 @@ public class PaymentClientErrorTest {
 
     @Test
     public void getCreditAccountPaymentResponse_ReturnsInValidErrorResponse_Throws() {
-        assertThrows(TaskException.class, () -> PaymentClientError.getCreditAccountPaymentResponse(
-            new FeignException.FeignClientException(HttpStatus.NOT_FOUND.value(), "errorMessage", "body".getBytes())));
+        byte[] body = "body".getBytes();
+        int status = HttpStatus.NOT_FOUND.value();
+        FeignException.FeignClientException exception = new FeignException.FeignClientException(status, "errorMessage", body);
+
+        assertThrows(TaskException.class, () -> {
+            PaymentClientError.getCreditAccountPaymentResponse(exception);
+        });
     }
 }
