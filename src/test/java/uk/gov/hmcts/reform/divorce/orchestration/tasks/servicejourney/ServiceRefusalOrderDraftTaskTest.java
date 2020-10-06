@@ -33,12 +33,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractorTest.TEST_SERVICE_APPLICATION_REFUSAL_REASON;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.CTSC_CONTACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceRefusalOrderGenerationTaskTest.TEST_RECEIVED_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceApplicationTestUtil.getDocumentCollection;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithToken;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelperTest.TEST_SERVICE_APPLICATION_REFUSAL_REASON;
 
 public abstract class ServiceRefusalOrderDraftTaskTest extends BasePayloadSpecificDocumentGenerationTaskTest {
 

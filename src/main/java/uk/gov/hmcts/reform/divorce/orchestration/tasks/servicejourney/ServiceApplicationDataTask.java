@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceService
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor;
-import uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor;
 
 import java.util.Map;
 
@@ -39,10 +39,10 @@ public class ServiceApplicationDataTask implements Task<Map<String, Object>> {
         return DivorceServiceApplication.builder()
             .addedDate(DatesDataExtractor.getReceivedServiceAddedDate(caseData))
             .receivedDate(DatesDataExtractor.getReceivedServiceApplicationDate(caseData))
-            .type(ServiceApplicationRefusalHelper.getServiceApplicationType(caseData))
-            .applicationGranted(ServiceApplicationRefusalHelper.getServiceApplicationGranted(caseData))
+            .type(ServiceApplicationDataExtractor.getServiceApplicationType(caseData))
+            .applicationGranted(ServiceApplicationDataExtractor.getServiceApplicationGranted(caseData))
             .decisionDate(DatesDataExtractor.getServiceApplicationDecisionDate(caseData))
-            .refusalReason(ServiceApplicationRefusalHelper.getServiceApplicationRefusalReasonOrEmpty(caseData))
+            .refusalReason(ServiceApplicationDataExtractor.getServiceApplicationRefusalReasonOrEmpty(caseData))
             .build();
     }
 }
