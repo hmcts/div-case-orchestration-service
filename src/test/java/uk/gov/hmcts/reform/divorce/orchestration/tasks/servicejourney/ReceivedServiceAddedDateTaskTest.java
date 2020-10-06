@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
@@ -31,7 +32,7 @@ public class ReceivedServiceAddedDateTaskTest extends TestCase {
         assertThat(returnedCaseData.isEmpty(), is(false));
         assertSame(returnedCaseData, caseData);
         assertThat(
-            returnedCaseData.get(ReceivedServiceAddedDateTask.RECEIVED_SERVICE_ADDED_DATE),
+            returnedCaseData.get(CcdFields.RECEIVED_SERVICE_ADDED_DATE),
             is(DateUtils.formatDateFromLocalDate(LocalDate.now()))
         );
     }

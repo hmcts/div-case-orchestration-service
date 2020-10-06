@@ -12,11 +12,17 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.S
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ServiceApplicationRefusalHelper {
+
     public static String getServiceApplicationRefusalReason(Map<String, Object> caseData) {
         return getMandatoryStringValue(caseData, SERVICE_APPLICATION_REFUSAL_REASON);
+    }
+
+    public static String getServiceApplicationRefusalReasonOrEmpty(Map<String, Object> caseData) {
+        return getOptionalPropertyValueAsString(caseData, SERVICE_APPLICATION_REFUSAL_REASON, "");
     }
 
     public static String getServiceApplicationGranted(Map<String, Object> caseData) {
@@ -32,6 +38,6 @@ public class ServiceApplicationRefusalHelper {
     }
 
     public static boolean isServiceApplicationGranted(Map<String, Object> caseData) {
-        return YES_VALUE.equalsIgnoreCase(getMandatoryStringValue(caseData, SERVICE_APPLICATION_GRANTED));
+        return YES_VALUE.equalsIgnoreCase(getServiceApplicationGranted(caseData));
     }
 }

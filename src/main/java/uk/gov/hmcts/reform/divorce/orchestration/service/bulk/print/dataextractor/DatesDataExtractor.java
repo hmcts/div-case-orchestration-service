@@ -27,6 +27,7 @@ public class DatesDataExtractor {
         public static final String DA_GRANTED_DATE = OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
         public static final String RECEIVED_SERVICE_APPLICATION_DATE = CcdFields.RECEIVED_SERVICE_APPLICATION_DATE;
         public static final String SERVICE_APPLICATION_DECISION_DATE = CcdFields.SERVICE_APPLICATION_DECISION_DATE;
+        public static final String RECEIVED_SERVICE_ADDED_DATE = CcdFields.RECEIVED_SERVICE_ADDED_DATE;
     }
 
     public static String getHearingDate(Map<String, Object> caseData) {
@@ -44,19 +45,20 @@ public class DatesDataExtractor {
     }
 
     public static String getReceivedServiceApplicationDate(Map<String, Object> caseData) {
-        return formatDateWithCustomerFacingFormat(
-            getMandatoryStringValue(caseData, CaseDataKeys.RECEIVED_SERVICE_APPLICATION_DATE)
-        );
+        return getMandatoryDateWithCustomerFormatting(caseData, CaseDataKeys.RECEIVED_SERVICE_APPLICATION_DATE);
     }
 
+    public static String getReceivedServiceAddedDate(Map<String, Object> caseData) {
+        return getMandatoryDateWithCustomerFormatting(caseData, CaseDataKeys.RECEIVED_SERVICE_ADDED_DATE);
+    }
+
+
     public static String getServiceApplicationDecisionDate(Map<String, Object> caseData) {
-        return formatDateWithCustomerFacingFormat(
-            getMandatoryStringValue(caseData, CaseDataKeys.SERVICE_APPLICATION_DECISION_DATE)
-        );
+        return getMandatoryDateWithCustomerFormatting(caseData, CaseDataKeys.SERVICE_APPLICATION_DECISION_DATE);
     }
 
     public static String getDaGrantedDate(Map<String, Object> caseData) {
-        return formatDateWithCustomerFacingFormat(getMandatoryStringValue(caseData, CaseDataKeys.DA_GRANTED_DATE));
+        return getMandatoryDateWithCustomerFormatting(caseData, CaseDataKeys.DA_GRANTED_DATE);
     }
 
     private static LocalDate getHearingLocalDate(Map<String, Object> caseData) {
@@ -66,5 +68,9 @@ public class DatesDataExtractor {
             log.error("Hearing date was invalid.");
             throw new InvalidDataForTaskException(e);
         }
+    }
+
+    private static String getMandatoryDateWithCustomerFormatting(Map<String, Object> caseData, String field) {
+        return formatDateWithCustomerFacingFormat(getMandatoryStringValue(caseData, field));
     }
 }
