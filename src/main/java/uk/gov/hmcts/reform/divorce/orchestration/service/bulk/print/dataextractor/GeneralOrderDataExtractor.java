@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.GeneralOrderPa
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryListOfStrings;
@@ -50,6 +51,7 @@ public class GeneralOrderDataExtractor {
     public static List<GeneralOrderParty> getGeneralOrderParties(Map<String, Object> caseData) {
         return getMandatoryListOfStrings(caseData, CaseDataKeys.GENERAL_ORDER_PARTIES).stream()
             .map(GeneralOrderParty::from)
+            .filter(Objects::nonNull)
             .collect(Collectors.toList());
     }
 }
