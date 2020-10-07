@@ -6,7 +6,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Invalid
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.util.Collections.EMPTY_MAP;
 import static java.util.Collections.emptyMap;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -43,15 +42,13 @@ public class ServiceApplicationDataExtractorTest {
 
     @Test
     public void getServiceApplicationTypeShouldReturnDeemedValue() {
-        Map<String, Object> caseData = buildCaseDataWithField(
-            SERVICE_APPLICATION_TYPE,
-            DEEMED);
+        Map<String, Object> caseData = buildCaseDataWithField(SERVICE_APPLICATION_TYPE, DEEMED);
         assertThat(getServiceApplicationType(caseData), is(DEEMED));
     }
 
     @Test(expected = InvalidDataForTaskException.class)
     public void getServiceApplicationRefusalReasonShouldThrowInvalidData() {
-        getServiceApplicationRefusalReason(EMPTY_MAP);
+        getServiceApplicationRefusalReason(emptyMap());
     }
 
     @Test
