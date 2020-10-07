@@ -56,15 +56,16 @@ public class ControllerUtils {
         String paymentStatus = (String) caseData.get(ProcessPbaPaymentTask.PAYMENT_STATUS);
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
 
-        log.info("Payment status is '{}', current case state is '{}'", paymentStatus, currentState);
+        log.info("CaseID: {} Payment status is '{}', current case state is '{}'", caseId, paymentStatus, currentState);
 
         if (isPbaCaseStateToBeUpdated(caseData, paymentStatus)) {
             currentState = CcdStates.SUBMITTED;
-
-            log.info("Updated case state to '{}' for CaseID: '{}'", currentState, caseId);
+            log.info("CaseID: {} Updated case state to '{}'", currentState, caseId);
+        } else {
+            log.info("CaseID: {} State not updated. Current state is '{}'", caseId, currentState);
         }
 
-        log.info("Removing temporary payment status  '{}', in case data for CaseID '{}'", paymentStatus, caseId);
+        log.info("CaseID: {} Removing temporary payment status property '{}' in case data", caseId, ProcessPbaPaymentTask.PAYMENT_STATUS);
         caseData.remove(ProcessPbaPaymentTask.PAYMENT_STATUS);
 
         return currentState;
