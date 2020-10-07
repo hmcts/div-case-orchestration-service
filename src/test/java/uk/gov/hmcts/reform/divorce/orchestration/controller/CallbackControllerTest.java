@@ -192,6 +192,7 @@ public class CallbackControllerTest {
     public void whenProcessPbaPayment_thenReturnCcdResponse() throws Exception {
         Map<String, Object> caseData = ImmutableMap.of(SOLICITOR_HOW_TO_PAY_JSON_KEY, FEE_PAY_BY_ACCOUNT);
         CaseDetails caseDetails = CaseDetails.builder()
+            .state(TEST_STATE)
             .caseData(caseData)
             .build();
 
@@ -202,8 +203,10 @@ public class CallbackControllerTest {
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.processPbaPayment(AUTH_TOKEN, ccdCallbackRequest);
 
+        // Note: When Divorce is move to PBA config 2, payment status would return Success
+        // Update TEST_STATE to CcdStates.SUBMITTED if failing
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
-            .state(CcdStates.SUBMITTED)
+            .state(TEST_STATE)
             .data(caseData)
             .build();
 
