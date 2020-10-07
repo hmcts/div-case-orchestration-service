@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextract
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.GeneralOrderParty;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
 
 import java.util.Map;
@@ -13,6 +12,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.PETITIONER;
 
 public class GeneralOrderDataExtractorTest {
 
@@ -82,13 +82,13 @@ public class GeneralOrderDataExtractorTest {
     @Test
     public void getGeneralOrderPartiesShouldReturnListWhenFieldFound() {
         Map<String, Object> caseData = ImmutableMap.of(
-            CcdFields.GENERAL_ORDER_PARTIES, asList(GeneralOrderParty.PETITIONER.getValue())
+            CcdFields.GENERAL_ORDER_PARTIES, asList(PETITIONER.getDescription())
         );
 
         assertThat(GeneralOrderDataExtractor.getGeneralOrderParties(caseData).size(), is(1));
         assertThat(
             GeneralOrderDataExtractor.getGeneralOrderParties(caseData).get(0),
-            is(GeneralOrderParty.PETITIONER)
+            is(PETITIONER)
         );
     }
 
@@ -100,4 +100,5 @@ public class GeneralOrderDataExtractorTest {
 
         assertThat(GeneralOrderDataExtractor.getGeneralOrderParties(caseData).size(), is(0));
     }
+
 }
