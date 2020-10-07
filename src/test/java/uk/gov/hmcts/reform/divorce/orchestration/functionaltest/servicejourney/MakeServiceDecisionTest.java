@@ -118,31 +118,27 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(
-                content().string(allOf(
-                    isJson(),
-                    hasNoCcdFieldsThatShouldBeRemoved(),
-                    hasJsonPath("$.data.ServiceApplications", hasSize(1)),
-                    hasServiceApplicationAtIndex(0, "ReceivedDate", TEST_RECEIVED_DATE),
-                    hasServiceApplicationAtIndex(0, "AddedDate", TEST_ADDED_DATE),
-                    hasServiceApplicationAtIndex(0, "Type", TEST_TYPE),
-                    hasServiceApplicationAtIndex(0, "Payment", TEST_SERVICE_APPLICATION_PAYMENT),
-                    hasServiceApplicationAtIndex(0, "DecisionDate", formatDateFromLocalDate(now())),
-                    hasServiceApplicationAtIndex(0, "RefusalReason", TEST_MY_REASON),
-                    hasNoJsonPath("$.errors")
-                ))
+                content().string(
+                    allOf(
+                        isJson(),
+                        hasNoCcdFieldsThatShouldBeRemoved(),
+                        hasJsonPath("$.data.ServiceApplications", hasSize(1)),
+                        assertServiceApplicationElement(0, TEST_TYPE),
+                        hasNoJsonPath("$.data.ServiceApplicationDocuments")
+                    )
+                )
             );
     }
 
     @Test
     public void shouldGenerateOrderToDispenseAndAddItToResponse() throws Exception {
-        Map<String, Object> caseData = buildInputCaseData(ApplicationServiceTypes.DISPENSED);
+        String applicationType = ApplicationServiceTypes.DISPENSED;
+        String documentType = OrderToDispenseGenerationTask.FileMetadata.DOCUMENT_TYPE;
+
+        Map<String, Object> caseData = buildInputCaseData(applicationType);
         CcdCallbackRequest input = buildRequest(caseData);
 
-        stubDocument(
-            caseData,
-            OrderToDispenseGenerationTask.FileMetadata.TEMPLATE_ID,
-            OrderToDispenseGenerationTask.FileMetadata.DOCUMENT_TYPE
-        );
+        stubDocument(caseData, OrderToDispenseGenerationTask.FileMetadata.TEMPLATE_ID, documentType);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -151,35 +147,19 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(
-                content().string(
-                    allOf(
-                        isJson(),
-                        hasNoCcdFieldsThatShouldBeRemoved(),
-                        hasJsonPath("$.data.ServiceApplicationDocuments", hasSize(1)),
-                        hasServiceApplicationDocAtIndex(0, "DocumentFileName", "dispenseWithServiceGranted"),
-                        hasJsonPath("$.data.ServiceApplications", hasSize(1)),
-                        hasServiceApplicationAtIndex(0, "ReceivedDate", TEST_RECEIVED_DATE),
-                        hasServiceApplicationAtIndex(0, "AddedDate", TEST_ADDED_DATE),
-                        hasServiceApplicationAtIndex(0, "Type", ApplicationServiceTypes.DISPENSED),
-                        hasServiceApplicationAtIndex(0, "Payment", TEST_SERVICE_APPLICATION_PAYMENT),
-                        hasServiceApplicationAtIndex(0, "DecisionDate", formatDateFromLocalDate(now())),
-                        hasServiceApplicationAtIndex(0, "RefusalReason", TEST_MY_REASON),
-                        hasNoJsonPath("$.errors")
-                    )
-                )
+                commonExpectations(applicationType, documentType, documentType)
             );
     }
 
     @Test
     public void shouldGenerateDeemedServiceOrderAndAddItToResponse() throws Exception {
+        String applicationType = ApplicationServiceTypes.DEEMED;
+        String documentType = DeemedServiceOrderGenerationTask.FileMetadata.DOCUMENT_TYPE;
+
         Map<String, Object> caseData = buildInputCaseData(ApplicationServiceTypes.DEEMED);
         CcdCallbackRequest input = buildRequest(caseData);
 
-        stubDocument(
-            caseData,
-            DeemedServiceOrderGenerationTask.FileMetadata.TEMPLATE_ID,
-            DeemedServiceOrderGenerationTask.FileMetadata.DOCUMENT_TYPE
-        );
+        stubDocument(caseData, DeemedServiceOrderGenerationTask.FileMetadata.TEMPLATE_ID, documentType);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -188,22 +168,7 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(
-                content().string(
-                    allOf(
-                        isJson(),
-                        hasNoCcdFieldsThatShouldBeRemoved(),
-                        hasJsonPath("$.data.ServiceApplicationDocuments", hasSize(1)),
-                        hasServiceApplicationDocAtIndex(0, "DocumentFileName", "deemedAsServedGranted"),
-                        hasJsonPath("$.data.ServiceApplications", hasSize(1)),
-                        hasServiceApplicationAtIndex(0, "ReceivedDate", TEST_RECEIVED_DATE),
-                        hasServiceApplicationAtIndex(0, "AddedDate", TEST_ADDED_DATE),
-                        hasServiceApplicationAtIndex(0, "Type", ApplicationServiceTypes.DEEMED),
-                        hasServiceApplicationAtIndex(0, "Payment", TEST_SERVICE_APPLICATION_PAYMENT),
-                        hasServiceApplicationAtIndex(0, "DecisionDate", formatDateFromLocalDate(now())),
-                        hasServiceApplicationAtIndex(0, "RefusalReason", TEST_MY_REASON),
-                        hasNoJsonPath("$.errors")
-                    )
-                )
+                commonExpectations(applicationType, documentType, documentType)
             );
     }
 
@@ -222,7 +187,11 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
             .header(AUTHORIZATION, AUTH_TOKEN)
             .content(convertObjectToJsonString(ccdCallbackRequest)))
             .andExpect(status().isOk())
-            .andExpect(commonExpectationsForRefusalOrderDocuments(documentType, expectedDocumentFilename));
+            .andExpect(
+                commonExpectations(
+                    ApplicationServiceTypes.DEEMED, documentType, expectedDocumentFilename
+                )
+            );
     }
 
     @Test
@@ -240,7 +209,13 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
             .header(AUTHORIZATION, AUTH_TOKEN)
             .content(convertObjectToJsonString(ccdCallbackRequest)))
             .andExpect(status().isOk())
-            .andExpect(commonExpectationsForMultipleRefusalOrder(documentType, expectedDocumentFilename));
+            .andExpect(
+                commonExpectationsForMultipleServiceApplications(
+                    ApplicationServiceTypes.DEEMED,
+                    documentType,
+                    expectedDocumentFilename
+                )
+            );
     }
 
     @Test
@@ -258,7 +233,9 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
             .header(AUTHORIZATION, AUTH_TOKEN)
             .content(convertObjectToJsonString(ccdCallbackRequest)))
             .andExpect(status().isOk())
-            .andExpect(commonExpectationsForRefusalOrderDocuments(documentType, expectedDocumentFilename));
+            .andExpect(
+                commonExpectations(ApplicationServiceTypes.DISPENSED, documentType, expectedDocumentFilename)
+            );
     }
 
     @Test
@@ -276,36 +253,57 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
             .header(AUTHORIZATION, AUTH_TOKEN)
             .content(convertObjectToJsonString(ccdCallbackRequest)))
             .andExpect(status().isOk())
-            .andExpect(commonExpectationsForMultipleRefusalOrder(documentType, expectedDocumentFilename));
+            .andExpect(
+                commonExpectationsForMultipleServiceApplications(
+                    ApplicationServiceTypes.DISPENSED,
+                    documentType,
+                    expectedDocumentFilename
+                )
+            );
     }
 
-    private ResultMatcher commonExpectationsForRefusalOrderDocuments(String documentType, String documentFileName) {
+    private ResultMatcher commonExpectations(
+        String applicationType, String documentType, String documentFileName) {
         return content().string(allOf(
             isJson(),
             hasNoCcdFieldsThatShouldBeRemoved(),
+            hasJsonPath("$.data.ServiceApplications", hasSize(1)),
+            assertServiceApplicationElement(0, applicationType),
             hasJsonPath("$.data.ServiceApplicationDocuments", hasSize(1)),
-            hasServiceApplicationDocAtIndex(0, "DocumentType", documentType),
-            hasServiceApplicationDocAtIndex(0, "DocumentFileName", documentFileName),
+            assertServiceApplicationDocumentElement(0, documentType, documentFileName),
             hasNoJsonPath("$.errors")
         ));
     }
 
-    private ResultMatcher commonExpectationsForMultipleRefusalOrder(String documentType, String documentFileName) {
+    private ResultMatcher commonExpectationsForMultipleServiceApplications(
+        String applicationType, String documentType, String documentFileName) {
         return content().string(allOf(
             isJson(),
             hasNoCcdFieldsThatShouldBeRemoved(),
             hasJsonPath("$.data.ServiceApplications", hasSize(2)),
-            // hasServiceApplicationAtIndex(1, "ReceivedDate", TEST_RECEIVED_DATE),
-            hasServiceApplicationAtIndex(1, "AddedDate", TEST_ADDED_DATE),
-            // hasServiceApplicationAtIndex(1, "Type", documentType),
-            hasServiceApplicationAtIndex(1, "Payment", TEST_SERVICE_APPLICATION_PAYMENT),
-            hasServiceApplicationAtIndex(1, "DecisionDate", formatDateFromLocalDate(now())),
-            hasServiceApplicationAtIndex(1, "RefusalReason", TEST_MY_REASON),
+            assertServiceApplicationElement(1, applicationType),
             hasJsonPath("$.data.ServiceApplicationDocuments", hasSize(2)),
-            hasServiceApplicationDocAtIndex(1, "DocumentType", documentType),
-            hasServiceApplicationDocAtIndex(1, "DocumentFileName", documentFileName),
+            assertServiceApplicationDocumentElement(1, documentType, documentFileName),
             hasNoJsonPath("$.errors")
         ));
+    }
+
+    private Matcher<String> assertServiceApplicationDocumentElement(int index, String documentType, String documentFileName) {
+        return allOf(
+            hasServiceApplicationDocAtIndex(index, "DocumentType", documentType),
+            hasServiceApplicationDocAtIndex(index, "DocumentFileName", documentFileName)
+        );
+    }
+
+    private Matcher<String> assertServiceApplicationElement(int index, String applicationType) {
+        return allOf(
+            hasServiceApplicationAtIndex(index, "ReceivedDate", TEST_RECEIVED_DATE),
+            hasServiceApplicationAtIndex(index, "AddedDate", TEST_ADDED_DATE),
+            hasServiceApplicationAtIndex(index, "Type", applicationType),
+            hasServiceApplicationAtIndex(index, "Payment", TEST_SERVICE_APPLICATION_PAYMENT),
+            hasServiceApplicationAtIndex(index, "DecisionDate", formatDateFromLocalDate(now())),
+            hasServiceApplicationAtIndex(index, "RefusalReason", TEST_MY_REASON)
+        );
     }
 
     private Map<String, Object> buildInputCaseData(String applicationType) {
@@ -389,7 +387,8 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
         return buildRequest(caseData);
     }
 
-    private CcdCallbackRequest buildMultipleServiceRefusalOrderFixture(String templateId, String serviceType, String documentType) {
+    private CcdCallbackRequest buildMultipleServiceRefusalOrderFixture(
+        String templateId, String serviceType, String documentType) {
         CcdCallbackRequest ccdCallbackRequest = buildServiceRefusalOrderFixture(templateId, serviceType, documentType);
 
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
@@ -465,4 +464,3 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
         );
     }
 }
-

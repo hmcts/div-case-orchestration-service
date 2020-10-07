@@ -40,6 +40,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETIT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RECEIVED_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
@@ -286,7 +287,7 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
         caseData.put(RESPONDENT_FIRST_NAME, TEST_RESPONDENT_FIRST_NAME);
         caseData.put(RESPONDENT_LAST_NAME, TEST_RESPONDENT_LAST_NAME);
 
-        caseData.put(RECEIVED_SERVICE_APPLICATION_DATE, "2010-10-10");
+        caseData.put(RECEIVED_SERVICE_APPLICATION_DATE, TEST_RECEIVED_DATE);
         caseData.put(SERVICE_APPLICATION_GRANTED, isApplicationGranted);
         caseData.put(SERVICE_APPLICATION_TYPE, applicationType);
 

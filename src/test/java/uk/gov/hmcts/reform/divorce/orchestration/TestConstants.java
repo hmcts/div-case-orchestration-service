@@ -111,9 +111,7 @@ public class TestConstants {
     public static final String TEST_CO_RESPONDENT_FULL_NAME = TEST_CO_RESPONDENT_FIRST_NAME + " " + TEST_CO_RESPONDENT_LAST_NAME;
 
     public static final String TEST_RECEIVED_DATE = "2020-05-05";
-    public static final String TEST_RECEIVED_DATE_FORMATTED = DateUtils.formatDateWithCustomerFacingFormat(TEST_RECEIVED_DATE);
-    public static final String TEST_DECISION_DATE = "2010-10-10";
-    public static final String TEST_DECISION_DATE_FORMATTED = DateUtils.formatDateWithCustomerFacingFormat(TEST_DECISION_DATE);
+    public static final String TEST_DECISION_DATE = "2030-10-10";
     public static final String TEST_ADDED_DATE = "2000-01-01";
     public static final String TEST_ADDED_DATE_FORMATTED = DateUtils.formatDateWithCustomerFacingFormat(TEST_ADDED_DATE);
     public static final String TEST_SERVICE_APPLICATION_PAYMENT = "feeAccount";
