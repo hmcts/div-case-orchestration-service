@@ -4,9 +4,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.model.ccd.DivorceGeneralOrder;
+import uk.gov.hmcts.reform.divorce.model.parties.DivorceParty;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceGeneralOrder;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.GeneralOrderParty;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.GeneralOrder;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.docmosis.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
@@ -124,7 +124,7 @@ public class GeneralOrderGenerationTask extends BasePayloadSpecificDocumentGener
     }
 
     private CollectionMember<DivorceGeneralOrder> buildDivorceGeneralOrderCollectionMember(
-        List<GeneralOrderParty> allowedGeneralOrderParties, GeneratedDocumentInfo generatedDocumentInfo
+        List<DivorceParty> allowedGeneralOrderParties, GeneratedDocumentInfo generatedDocumentInfo
     ) {
         DivorceGeneralOrder divorceGeneralOrder = DivorceGeneralOrder.builder()
             .generalOrderParties(allowedGeneralOrderParties)
@@ -136,4 +136,5 @@ public class GeneralOrderGenerationTask extends BasePayloadSpecificDocumentGener
 
         return collectionMember;
     }
+
 }

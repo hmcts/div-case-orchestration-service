@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders;
 
 import org.junit.Before;
 import org.mockito.Mock;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.GeneralOrderParty;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.GeneralOrder;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.docmosis.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.JudgeTypeNotFoundException;
@@ -16,6 +15,7 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.PETITIONER;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CO_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CO_RESPONDENT_FULL_NAME;
@@ -117,7 +117,7 @@ public abstract class AbstractGeneralOrderGenerationTaskTest extends BasePayload
         caseData.put(CO_RESPONDENT_LINKED_TO_CASE, YES_VALUE);
         caseData.put(JUDGE_TYPE, TEST_JUDGE_TYPE_CODE);
         caseData.put(JUDGE_NAME, TEST_JUDGE_NAME);
-        caseData.put(GENERAL_ORDER_PARTIES, asList(GeneralOrderParty.PETITIONER.getValue()));
+        caseData.put(GENERAL_ORDER_PARTIES, asList(PETITIONER.getDescription()));
         caseData.put(GENERAL_ORDER_DETAILS, TEST_GENERAL_ORDER_DETAILS);
         caseData.put(GENERAL_ORDER_DATE, TEST_GENERAL_ORDER_DATE);
         caseData.put(GENERAL_ORDER_RECITALS, TEST_GENERAL_ORDER_RECITALS);
