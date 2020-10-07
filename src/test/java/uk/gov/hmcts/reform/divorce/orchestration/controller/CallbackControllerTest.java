@@ -205,8 +205,6 @@ public class CallbackControllerTest {
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.processPbaPayment(AUTH_TOKEN, ccdCallbackRequest);
 
-        // Note: When Divorce is move to PBA config 2, payment status would return Success
-        // Update TEST_STATE to CcdStates.SUBMITTED if failing
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
             .state(TEST_STATE)
             .data(caseData)

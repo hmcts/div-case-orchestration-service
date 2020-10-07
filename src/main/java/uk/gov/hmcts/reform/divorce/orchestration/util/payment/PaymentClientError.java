@@ -30,12 +30,11 @@ public class PaymentClientError {
     private static final String CONTACT_INFO = " For Payment Account support call %s (Option 3) or email %s.";
     private static final String DEFAULT = "Payment request failed. Please use a different account or payment method.";
 
-    private static final String CAE0004 = "CA-E0004";
-    private static final String CAE0004_CONTENT = "Payment Account %s has been deleted or is on hold.";
-
     private static final String CAE0001 = "CA-E0001";
     private static final String CAE0001_CONTENT = "Fee account %s has insufficient funds available.";
 
+    private static final String CAE0004 = "CA-E0004";
+    private static final String CAE0004_CONTENT = "Payment Account %s has been deleted or is on hold.";
 
     private static final String NOT_FOUND_CONTENT = "Payment Account %s cannot be found. "
         + "Please use a different account or payment method.";

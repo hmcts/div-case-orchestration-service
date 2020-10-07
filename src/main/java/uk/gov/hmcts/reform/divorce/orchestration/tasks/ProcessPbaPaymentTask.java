@@ -51,7 +51,6 @@ public class ProcessPbaPaymentTask implements Task<Map<String, Object>> {
     private final ObjectMapper objectMapper;
     public static final String PAYMENT_STATUS = "PaymentStatus";
 
-
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         String caseId = getCaseId(context);
@@ -170,8 +169,6 @@ public class ProcessPbaPaymentTask implements Task<Map<String, Object>> {
         Optional.ofNullable(value.get()).ifPresent(setter);
     }
 
-    // A successful payment api call is either Pending or Success
-    // this needs to be captured to change case state to 'Submitted' only if payment status is 'Success'
     private void addPaymentStatusToResponse(Map<String, Object> caseData, String paymentStatus) {
         caseData.put(PAYMENT_STATUS, paymentStatus);
     }

@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentStatus;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPaymentTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.workFlowCaseDataResponse;
 
 import java.util.List;
 import java.util.Map;
