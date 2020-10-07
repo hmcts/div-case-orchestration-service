@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.servicejourney;
 
 import com.google.common.collect.ImmutableMap;
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,10 +9,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
 import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DocumentLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceApplicationRefusalOrder;
@@ -24,9 +24,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServ
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceRefusalOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.OrderToDispenseGenerationTask;
-import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +38,6 @@ import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static java.time.LocalDate.now;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -47,17 +46,23 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ADDED_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_FAMILY_MAN_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_MY_REASON;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RECEIVED_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_APPLICATION_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RECEIVED_SERVICE_ADDED_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RECEIVED_SERVICE_APPLICATION_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATIONS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_DECISION_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_GRANTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_REFUSAL_REASON;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
@@ -75,15 +80,18 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationRefusalReason;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceApplicationDataTaskTest.buildCollectionMember;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocumentAsMap;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskTestHelper.formatWithCurrentDate;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateFromLocalDate;
+import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
 
 public class MakeServiceDecisionTest extends IdamTestSupport {
 
     private static final String API_URL = "/make-service-decision";
     private static final String anotherServiceDocumentType = "otherDocument";
+    public static final String TEST_TYPE = "other type";
 
     private CtscContactDetails ctscContactDetails;
 
@@ -103,15 +111,26 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
     public void shouldPopulateReceivedServiceAddedDateInResponse() throws Exception {
         CcdCallbackRequest input = buildRequest();
 
-        Map<String, Object> expectedCaseData = addServiceApplicationDecisionDate(input.getCaseDetails().getCaseData());
-
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .content(convertObjectToJsonString(input))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().string(containsString(convertObjectToJsonString(expectedCaseData))));
+            .andExpect(
+                content().string(allOf(
+                    isJson(),
+                    hasNoCcdFieldsThatShouldBeRemoved(),
+                    hasJsonPath("$.data.ServiceApplications", hasSize(1)),
+                    hasServiceApplicationAtIndex(0, "ReceivedDate", TEST_RECEIVED_DATE),
+                    hasServiceApplicationAtIndex(0, "AddedDate", TEST_ADDED_DATE),
+                    hasServiceApplicationAtIndex(0, "Type", TEST_TYPE),
+                    hasServiceApplicationAtIndex(0, "Payment", TEST_SERVICE_APPLICATION_PAYMENT),
+                    hasServiceApplicationAtIndex(0, "DecisionDate", formatDateFromLocalDate(now())),
+                    hasServiceApplicationAtIndex(0, "RefusalReason", TEST_MY_REASON),
+                    hasNoJsonPath("$.errors")
+                ))
+            );
     }
 
     @Test
@@ -119,7 +138,7 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
         Map<String, Object> caseData = buildInputCaseData(ApplicationServiceTypes.DISPENSED);
         CcdCallbackRequest input = buildRequest(caseData);
 
-        CcdCallbackResponse expectedResponse = buildExpectedResponse(
+        stubDocument(
             caseData,
             OrderToDispenseGenerationTask.FileMetadata.TEMPLATE_ID,
             OrderToDispenseGenerationTask.FileMetadata.DOCUMENT_TYPE
@@ -131,7 +150,24 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
+            .andExpect(
+                content().string(
+                    allOf(
+                        isJson(),
+                        hasNoCcdFieldsThatShouldBeRemoved(),
+                        hasJsonPath("$.data.ServiceApplicationDocuments", hasSize(1)),
+                        hasServiceApplicationDocAtIndex(0, "DocumentFileName", "dispenseWithServiceGranted"),
+                        hasJsonPath("$.data.ServiceApplications", hasSize(1)),
+                        hasServiceApplicationAtIndex(0, "ReceivedDate", TEST_RECEIVED_DATE),
+                        hasServiceApplicationAtIndex(0, "AddedDate", TEST_ADDED_DATE),
+                        hasServiceApplicationAtIndex(0, "Type", ApplicationServiceTypes.DISPENSED),
+                        hasServiceApplicationAtIndex(0, "Payment", TEST_SERVICE_APPLICATION_PAYMENT),
+                        hasServiceApplicationAtIndex(0, "DecisionDate", formatDateFromLocalDate(now())),
+                        hasServiceApplicationAtIndex(0, "RefusalReason", TEST_MY_REASON),
+                        hasNoJsonPath("$.errors")
+                    )
+                )
+            );
     }
 
     @Test
@@ -139,7 +175,7 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
         Map<String, Object> caseData = buildInputCaseData(ApplicationServiceTypes.DEEMED);
         CcdCallbackRequest input = buildRequest(caseData);
 
-        CcdCallbackResponse expectedResponse = buildExpectedResponse(
+        stubDocument(
             caseData,
             DeemedServiceOrderGenerationTask.FileMetadata.TEMPLATE_ID,
             DeemedServiceOrderGenerationTask.FileMetadata.DOCUMENT_TYPE
@@ -151,7 +187,24 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
+            .andExpect(
+                content().string(
+                    allOf(
+                        isJson(),
+                        hasNoCcdFieldsThatShouldBeRemoved(),
+                        hasJsonPath("$.data.ServiceApplicationDocuments", hasSize(1)),
+                        hasServiceApplicationDocAtIndex(0, "DocumentFileName", "deemedAsServedGranted"),
+                        hasJsonPath("$.data.ServiceApplications", hasSize(1)),
+                        hasServiceApplicationAtIndex(0, "ReceivedDate", TEST_RECEIVED_DATE),
+                        hasServiceApplicationAtIndex(0, "AddedDate", TEST_ADDED_DATE),
+                        hasServiceApplicationAtIndex(0, "Type", ApplicationServiceTypes.DEEMED),
+                        hasServiceApplicationAtIndex(0, "Payment", TEST_SERVICE_APPLICATION_PAYMENT),
+                        hasServiceApplicationAtIndex(0, "DecisionDate", formatDateFromLocalDate(now())),
+                        hasServiceApplicationAtIndex(0, "RefusalReason", TEST_MY_REASON),
+                        hasNoJsonPath("$.errors")
+                    )
+                )
+            );
     }
 
     @Test
@@ -229,12 +282,10 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
     private ResultMatcher commonExpectationsForRefusalOrderDocuments(String documentType, String documentFileName) {
         return content().string(allOf(
             isJson(),
-            hasNoJsonPath("$.data.ServiceRefusalDraft"),
+            hasNoCcdFieldsThatShouldBeRemoved(),
             hasJsonPath("$.data.ServiceApplicationDocuments", hasSize(1)),
-            hasJsonPath("$.data.ServiceApplicationDocuments[0].value.DocumentType",
-                is(documentType)),
-            hasJsonPath("$.data.ServiceApplicationDocuments[0].value.DocumentFileName",
-                is(documentFileName)),
+            hasServiceApplicationDocAtIndex(0, "DocumentType", documentType),
+            hasServiceApplicationDocAtIndex(0, "DocumentFileName", documentFileName),
             hasNoJsonPath("$.errors")
         ));
     }
@@ -242,12 +293,17 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
     private ResultMatcher commonExpectationsForMultipleRefusalOrder(String documentType, String documentFileName) {
         return content().string(allOf(
             isJson(),
-            hasNoJsonPath("$.data.ServiceRefusalDraft"),
+            hasNoCcdFieldsThatShouldBeRemoved(),
+            hasJsonPath("$.data.ServiceApplications", hasSize(2)),
+            // hasServiceApplicationAtIndex(1, "ReceivedDate", TEST_RECEIVED_DATE),
+            hasServiceApplicationAtIndex(1, "AddedDate", TEST_ADDED_DATE),
+            // hasServiceApplicationAtIndex(1, "Type", documentType),
+            hasServiceApplicationAtIndex(1, "Payment", TEST_SERVICE_APPLICATION_PAYMENT),
+            hasServiceApplicationAtIndex(1, "DecisionDate", formatDateFromLocalDate(now())),
+            hasServiceApplicationAtIndex(1, "RefusalReason", TEST_MY_REASON),
             hasJsonPath("$.data.ServiceApplicationDocuments", hasSize(2)),
-            hasJsonPath("$.data.ServiceApplicationDocuments[1].value.DocumentType",
-                is(documentType)),
-            hasJsonPath("$.data.ServiceApplicationDocuments[1].value.DocumentFileName",
-                is(documentFileName)),
+            hasServiceApplicationDocAtIndex(1, "DocumentType", documentType),
+            hasServiceApplicationDocAtIndex(1, "DocumentFileName", documentFileName),
             hasNoJsonPath("$.errors")
         ));
     }
@@ -256,6 +312,7 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
         Map<String, Object> caseData = buildBasicCaseData();
 
         caseData.put(SERVICE_APPLICATION_TYPE, applicationType);
+        caseData.put(SERVICE_APPLICATION_PAYMENT, TEST_SERVICE_APPLICATION_PAYMENT);
 
         return caseData;
     }
@@ -270,41 +327,28 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
         caseData.put(RESPONDENT_FIRST_NAME, TEST_RESPONDENT_FIRST_NAME);
         caseData.put(RESPONDENT_LAST_NAME, TEST_RESPONDENT_LAST_NAME);
 
-        caseData.put(RECEIVED_SERVICE_APPLICATION_DATE, "2010-10-10");
-        caseData.put(RECEIVED_SERVICE_ADDED_DATE, "2011-11-11");
+        caseData.put(RECEIVED_SERVICE_APPLICATION_DATE, TEST_RECEIVED_DATE);
+        caseData.put(SERVICE_APPLICATION_DECISION_DATE, formatDateFromLocalDate(now()));
+        caseData.put(RECEIVED_SERVICE_ADDED_DATE, TEST_ADDED_DATE);
         caseData.put(SERVICE_APPLICATION_GRANTED, YES_VALUE);
-        caseData.put(SERVICE_APPLICATION_REFUSAL_REASON, "aaaabbbbccc");
+        caseData.put(SERVICE_APPLICATION_REFUSAL_REASON, TEST_MY_REASON);
 
         return caseData;
     }
 
-    private CcdCallbackResponse buildExpectedResponse(
+    private void stubDocument(
         Map<String, Object> caseData, String templateId, String documentType) {
-        Map<String, Object> caseDataBeforeGeneratingPdf = new HashMap<>(caseData);
-        addServiceApplicationDecisionDate(caseDataBeforeGeneratingPdf);
 
-        String generatedDocumentId = stubDocumentGeneratorServiceBaseOnContextPath(
+        stubDocumentGeneratorServiceBaseOnContextPath(
             templateId,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
                 ImmutableMap.of(
-                    "id", getCaseReference(caseDataBeforeGeneratingPdf),
-                    "case_data", buildPopulatedTemplateModel(caseDataBeforeGeneratingPdf)
+                    "id", getCaseReference(caseData),
+                    "case_data", buildPopulatedTemplateModel(caseData)
                 )
             ),
             documentType
         );
-
-        Map<String, Object> expectedCaseData = new HashMap<>(caseDataBeforeGeneratingPdf);
-
-        expectedCaseData.put(
-            SERVICE_APPLICATION_DOCUMENTS,
-            buildCollectionWithOneDocument(generatedDocumentId, documentType)
-        );
-
-        return CcdCallbackResponse.builder()
-            .state(CcdStates.AWAITING_DECREE_NISI)
-            .data(expectedCaseData)
-            .build();
     }
 
     private List<Map<String, Object>> buildCollectionWithOneDocument(
@@ -315,12 +359,6 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
                 getDocumentStoreTestUrl(generatedDocumentId), documentType, documentType
             )
         );
-    }
-
-    private Map<String, Object> addServiceApplicationDecisionDate(Map<String, Object> caseDataBeforeGeneratingPdf) {
-        caseDataBeforeGeneratingPdf.put(SERVICE_APPLICATION_DECISION_DATE, formatDateFromLocalDate(now()));
-
-        return caseDataBeforeGeneratingPdf;
     }
 
     private ServiceDecisionOrder buildPopulatedTemplateModel(Map<String, Object> caseData) {
@@ -345,7 +383,8 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
 
     private CcdCallbackRequest buildRequest() {
         Map<String, Object> caseData = buildBasicCaseData();
-        caseData.put(SERVICE_APPLICATION_TYPE, "other type");
+        caseData.put(SERVICE_APPLICATION_TYPE, TEST_TYPE);
+        caseData.put(SERVICE_APPLICATION_PAYMENT, TEST_SERVICE_APPLICATION_PAYMENT);
 
         return buildRequest(caseData);
     }
@@ -360,6 +399,9 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
             buildCollectionWithOneDocument(UUID.randomUUID().toString(), anotherServiceDocumentType)
         );
 
+        caseData.put(SERVICE_APPLICATION_PAYMENT, TEST_SERVICE_APPLICATION_PAYMENT);
+        caseData.put(SERVICE_APPLICATIONS, new ArrayList<>(Arrays.asList(buildCollectionMember())));
+
         return ccdCallbackRequest;
     }
 
@@ -369,7 +411,8 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
         Map<String, Object> refusalOrderData = buildServiceRefusalOrderCaseData(
             serviceType, refusalDraftDocument
         );
-        refusalOrderData.put(RECEIVED_SERVICE_ADDED_DATE, "2010-10-01");
+        refusalOrderData.put(RECEIVED_SERVICE_ADDED_DATE, TEST_ADDED_DATE);
+        refusalOrderData.put(SERVICE_APPLICATION_PAYMENT, TEST_SERVICE_APPLICATION_PAYMENT);
 
         CcdCallbackRequest ccdCallbackRequest = buildRefusalRequest(refusalOrderData);
         ccdCallbackRequest.getCaseDetails().setState(SERVICE_APPLICATION_NOT_APPROVED);
@@ -394,8 +437,32 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
             .caseReference((String) caseData.get(CASE_ID_JSON_KEY))
             .receivedServiceApplicationDate(DatesDataExtractor.getReceivedServiceApplicationDate(caseData))
             .serviceApplicationRefusalReason(getServiceApplicationRefusalReason(caseData))
-            .documentIssuedOn(DateUtils.formatDateWithCustomerFacingFormat(LocalDate.now()))
+            .documentIssuedOn(formatDateWithCustomerFacingFormat(now()))
             .build();
+    }
+
+    private Matcher<? super Object> hasServiceApplicationDocAtIndex(int index, String field, String value) {
+        String pattern = "$.data.ServiceApplicationDocuments[%s].value.%s";
+        return hasJsonPath(String.format(pattern, index, field), is(value));
+    }
+
+    private Matcher<? super Object> hasServiceApplicationAtIndex(int index, String field, String value) {
+        String pattern = "$.data.ServiceApplications[%s].value.%s";
+        return hasJsonPath(String.format(pattern, index, field), is(value));
+    }
+
+    private Matcher<? super Object> hasNoCcdFieldsThatShouldBeRemoved() {
+        String pathPattern = "$.data.%s";
+        return allOf(
+            hasNoJsonPath(String.format(pathPattern, CcdFields.SERVICE_REFUSAL_DRAFT)),
+            hasNoJsonPath(String.format(pathPattern, CcdFields.RECEIVED_SERVICE_APPLICATION_DATE)),
+            hasNoJsonPath(String.format(pathPattern, CcdFields.RECEIVED_SERVICE_ADDED_DATE)),
+            hasNoJsonPath(String.format(pathPattern, CcdFields.SERVICE_APPLICATION_TYPE)),
+            hasNoJsonPath(String.format(pathPattern, CcdFields.SERVICE_APPLICATION_PAYMENT)),
+            hasNoJsonPath(String.format(pathPattern, CcdFields.SERVICE_APPLICATION_GRANTED)),
+            hasNoJsonPath(String.format(pathPattern, CcdFields.SERVICE_APPLICATION_DECISION_DATE)),
+            hasNoJsonPath(String.format(pathPattern, CcdFields.SERVICE_APPLICATION_REFUSAL_REASON))
+        );
     }
 }
 

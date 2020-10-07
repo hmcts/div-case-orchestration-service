@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedS
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.MakeServiceDecisionDateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.OrderToDispenseGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceApplicationDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceApplicationRemovalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceRefusalDraftRemovalTask;
 
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ public class MakeServiceDecisionWorkflow extends DefaultWorkflow<Map<String, Obj
     private final DispensedServiceRefusalOrderTask dispensedServiceRefusalOrderTask;
     private final ServiceApplicationDataTask serviceApplicationDataTask;
     private final ServiceRefusalDraftRemovalTask serviceRefusalDraftRemovalTask;
+    private final ServiceApplicationRemovalTask serviceApplicationRemovalTask;
 
     public Map<String, Object> run(CaseDetails caseDetails, String auth) throws WorkflowException {
 
@@ -75,8 +77,10 @@ public class MakeServiceDecisionWorkflow extends DefaultWorkflow<Map<String, Obj
             tasks.add(serviceRefusalDraftRemovalTask);
         }
 
-        log.info("CaseID: {}, Adding task to move all service application temp data to collection and clean up.", caseId);
+        log.info("CaseID: {}, Adding task to move all service application temp data to collection.", caseId);
         tasks.add(serviceApplicationDataTask);
+        log.info("CaseID: {}, Adding task to remove all service application temp data from case data.", caseId);
+        tasks.add(serviceApplicationRemovalTask);
 
         return this.execute(
             tasks.toArray(new Task[0]),
