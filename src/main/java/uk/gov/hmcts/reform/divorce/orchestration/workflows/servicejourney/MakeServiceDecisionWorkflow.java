@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServ
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.MakeServiceDecisionDateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.OrderToDispenseGenerationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceApplicationDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceRefusalDraftRemovalTask;
 
 import java.util.ArrayList;
@@ -28,13 +29,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Condition
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class MakeServiceDecisionDateWorkflow extends DefaultWorkflow<Map<String, Object>> {
+public class MakeServiceDecisionWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final MakeServiceDecisionDateTask makeServiceDecisionDateTask;
     private final OrderToDispenseGenerationTask orderToDispenseGenerationTask;
     private final DeemedServiceOrderGenerationTask deemedServiceOrderGenerationTask;
     private final DeemedServiceRefusalOrderTask deemedServiceRefusalOrderTask;
     private final DispensedServiceRefusalOrderTask dispensedServiceRefusalOrderTask;
+    private final ServiceApplicationDataTask serviceApplicationDataTask;
     private final ServiceRefusalDraftRemovalTask serviceRefusalDraftRemovalTask;
 
     public Map<String, Object> run(CaseDetails caseDetails, String auth) throws WorkflowException {
@@ -66,12 +68,15 @@ public class MakeServiceDecisionDateWorkflow extends DefaultWorkflow<Map<String,
                 log.info("CaseID: {}, Deemed. Adding task to generate Deemed Refusal Order.", caseId);
                 tasks.add(deemedServiceRefusalOrderTask);
             } else {
-                log.info("CaseID: {} application type != dispensed/deemed.. No draft pdf will be generated.", caseId);
+                log.info("CaseID: {} application type != dispensed/deemed. No draft pdf will be generated.", caseId);
             }
 
             log.info("CaseID: {}, Adding task to remove Refusal Order Draft from case data if exists.", caseId);
             tasks.add(serviceRefusalDraftRemovalTask);
         }
+
+        log.info("CaseID: {}, Adding task to move all service application temp data to collection and clean up.", caseId);
+        tasks.add(serviceApplicationDataTask);
 
         return this.execute(
             tasks.toArray(new Task[0]),

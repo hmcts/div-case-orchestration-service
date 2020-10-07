@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.common;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes;
 
 import java.util.Map;
@@ -22,5 +24,9 @@ public class Conditions {
 
     public static boolean isServiceApplicationDeemed(Map<String, Object> caseData) {
         return ApplicationServiceTypes.DEEMED.equalsIgnoreCase((String) caseData.get(CcdFields.SERVICE_APPLICATION_TYPE));
+    }
+
+    public static boolean isAwaitingServiceConsideration(CaseDetails caseDetails) {
+        return CcdStates.AWAITING_SERVICE_CONSIDERATION.equalsIgnoreCase(caseDetails.getState());
     }
 }

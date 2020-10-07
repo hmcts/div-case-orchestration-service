@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionDateWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceDecisionMadeWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceDecisionMakingWorkflow;
@@ -37,7 +37,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class ServiceJourneyServiceImplTest {
 
     @Mock
-    private MakeServiceDecisionDateWorkflow makeServiceDecisionDateWorkflow;
+    private MakeServiceDecisionWorkflow makeServiceDecisionWorkflow;
 
     @Mock
     private ReceivedServiceAddedDateWorkflow receivedServiceAddedDateWorkflow;
@@ -97,7 +97,7 @@ public class ServiceJourneyServiceImplTest {
             .caseData(ImmutableMap.of(CcdFields.SERVICE_APPLICATION_GRANTED, YES_VALUE))
             .build();
 
-        when(makeServiceDecisionDateWorkflow.run(any(CaseDetails.class), anyString()))
+        when(makeServiceDecisionWorkflow.run(any(CaseDetails.class), anyString()))
             .thenThrow(WorkflowException.class);
 
         classUnderTest.makeServiceDecision(caseDetails, AUTH_TOKEN);
@@ -155,7 +155,7 @@ public class ServiceJourneyServiceImplTest {
         Map<String, Object> payload = ImmutableMap.of(CcdFields.SERVICE_APPLICATION_GRANTED, decision);
         CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
 
-        when(makeServiceDecisionDateWorkflow.run(caseDetails, AUTH_TOKEN)).thenReturn(payload);
+        when(makeServiceDecisionWorkflow.run(caseDetails, AUTH_TOKEN)).thenReturn(payload);
 
         CcdCallbackResponse response = classUnderTest.makeServiceDecision(caseDetails, AUTH_TOKEN);
 
