@@ -1,7 +1,6 @@
-package uk.gov.hmcts.reform.divorce.orchestration.util;
+package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
 
 import org.junit.Test;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
 
 import java.util.HashMap;
@@ -13,17 +12,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_REFUSAL_REASON;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DA;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DEEMED;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.getServiceApplicationGranted;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.getServiceApplicationRefusalReason;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.getServiceApplicationType;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isAwaitingServiceConsideration;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.isServiceApplicationGranted;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationGranted;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationRefusalReason;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationType;
 
-public class ServiceApplicationRefusalHelperTest {
+public class ServiceApplicationDataExtractorTest {
 
     public static final String TEST_SERVICE_APPLICATION_REFUSAL_REASON = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod";
 
@@ -54,33 +49,6 @@ public class ServiceApplicationRefusalHelperTest {
     @Test(expected = InvalidDataForTaskException.class)
     public void getServiceApplicationRefusalReasonShouldThrowInvalidData() {
         getServiceApplicationRefusalReason(EMPTY_MAP);
-    }
-
-    @Test
-    public void isAwaitingServiceConsiderationShouldBeTrue() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .state(AWAITING_SERVICE_CONSIDERATION)
-            .build();
-
-        assertThat(isAwaitingServiceConsideration(caseDetails), is(true));
-    }
-
-    @Test
-    public void isAwaitingServiceConsiderationShouldBeFalse() {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .state(AWAITING_DA)
-            .build();
-
-        assertThat(isAwaitingServiceConsideration(caseDetails), is(false));
-    }
-
-    @Test
-    public void isServiceApplicationGrantedShouldBeTrue() {
-        Map<String, Object> caseData = buildCaseDataWithField(
-            SERVICE_APPLICATION_GRANTED,
-            YES_VALUE);
-
-        assertThat(isServiceApplicationGranted(caseData), is(true));
     }
 
     private static Map<String, Object> buildCaseDataWithField(String field, String value) {

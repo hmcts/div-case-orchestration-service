@@ -91,4 +91,13 @@ public class GeneralOrderDataExtractorTest {
             is(GeneralOrderParty.PETITIONER)
         );
     }
+
+    @Test
+    public void getGeneralOrderPartiesShouldReturnEmptyListWhenNullableValues() {
+        Map<String, Object> caseData = ImmutableMap.of(
+            CcdFields.GENERAL_ORDER_PARTIES, asList("this will be null", null)
+        );
+
+        assertThat(GeneralOrderDataExtractor.getGeneralOrderParties(caseData).size(), is(0));
+    }
 }
