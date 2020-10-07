@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.divorce.orchestration.testutil;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import uk.gov.hmcts.reform.divorce.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
 
 import java.util.ArrayList;
 import java.util.List;
