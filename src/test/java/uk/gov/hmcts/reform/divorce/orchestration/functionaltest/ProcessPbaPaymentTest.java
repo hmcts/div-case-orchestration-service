@@ -23,7 +23,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentItem;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPaymentTask;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -305,10 +307,13 @@ public class ProcessPbaPaymentTest extends MockedFunctionalTest {
             .build();
 
         Map<String, Object> workFlowCaseDataResponse = new HashMap<>(caseData);
-        workFlowCaseDataResponse.put("PaymentStatus", "Pending");
+        workFlowCaseDataResponse.put(ProcessPbaPaymentTask.PAYMENT_STATUS, PaymentStatus.PENDING.value());
         stubFormatterServerEndpoint(workFlowCaseDataResponse);
 
-        stubCreditAccountPayment(HttpStatus.OK, CreditAccountPaymentResponse.builder().status("Pending").build());
+        stubCreditAccountPayment(HttpStatus.OK, CreditAccountPaymentResponse.builder()
+            .status(PaymentStatus.PENDING.value())
+            .build());
+
         stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
 
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
@@ -341,9 +346,12 @@ public class ProcessPbaPaymentTest extends MockedFunctionalTest {
             .build();
 
         Map<String, Object> workFlowCaseDataResponse = new HashMap<>(caseData);
-        workFlowCaseDataResponse.put("PaymentStatus", "Success");
+        workFlowCaseDataResponse.put(ProcessPbaPaymentTask.PAYMENT_STATUS, PaymentStatus.SUCCESS.value());
 
-        stubCreditAccountPayment(HttpStatus.OK, CreditAccountPaymentResponse.builder().status("Success").build());
+        stubCreditAccountPayment(HttpStatus.OK, CreditAccountPaymentResponse.builder()
+            .status(PaymentStatus.SUCCESS.value())
+            .build());
+
         stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
         stubFormatterServerEndpoint(workFlowCaseDataResponse);
 
@@ -438,23 +446,21 @@ public class ProcessPbaPaymentTest extends MockedFunctionalTest {
 
     @Test
     public void givenCaseData_whenProcessPbaPayment_504_thenReturnErrorMessage() throws Exception {
-        Map<String, Object> caseData = buildValidCaseData();
 
         callPaymentClientWithStatusAndVerify(
             HttpStatus.GATEWAY_TIMEOUT,
             getErrorMessage(HttpStatus.GATEWAY_TIMEOUT, basicFailedResponse),
-            caseData,
+            buildValidCaseData(),
             basicFailedResponse);
     }
 
     @Test
     public void givenCaseData_whenProcessPbaPayment_AnyOtherStatus_thenReturnErrorMessage() throws Exception {
-        Map<String, Object> caseData = buildValidCaseData();
 
         callPaymentClientWithStatusAndVerify(
             HttpStatus.BAD_REQUEST,
             getDefaultErrorMessage(),
-            caseData,
+            buildValidCaseData(),
             basicFailedResponse);
     }
 
@@ -486,10 +492,12 @@ public class ProcessPbaPaymentTest extends MockedFunctionalTest {
             .build();
 
         Map<String, Object> workFlowCaseDataResponse = new HashMap<>(caseData);
-        workFlowCaseDataResponse.put("PaymentStatus", "Success");
+        workFlowCaseDataResponse.put(ProcessPbaPaymentTask.PAYMENT_STATUS, PaymentStatus.SUCCESS.value());
         stubFormatterServerEndpoint(workFlowCaseDataResponse);
 
-        stubCreditAccountPayment(HttpStatus.OK, CreditAccountPaymentResponse.builder().status("Success").build());
+        stubCreditAccountPayment(HttpStatus.OK, CreditAccountPaymentResponse.builder()
+            .status(PaymentStatus.SUCCESS.value())
+            .build());
         stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
 
         final CcdCallbackResponse expected = CcdCallbackResponse.builder()
