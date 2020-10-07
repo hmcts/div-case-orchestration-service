@@ -190,7 +190,9 @@ public class CallbackControllerTest {
 
     @Test
     public void whenProcessPbaPayment_thenReturnCcdResponse() throws Exception {
-        Map<String, Object> caseData = ImmutableMap.of(SOLICITOR_HOW_TO_PAY_JSON_KEY, FEE_PAY_BY_ACCOUNT);
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(SOLICITOR_HOW_TO_PAY_JSON_KEY, FEE_PAY_BY_ACCOUNT);
+
         CaseDetails caseDetails = CaseDetails.builder()
             .state(TEST_STATE)
             .caseData(caseData)
@@ -220,7 +222,9 @@ public class CallbackControllerTest {
 
     @Test
     public void whenProcessPbaPayment_AndPaymentTypeNotPBA_thenReturnCcdResponseSameState() throws Exception {
-        Map<String, Object> caseData = ImmutableMap.of(SOLICITOR_HOW_TO_PAY_JSON_KEY, "feesHelpWith");
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(SOLICITOR_HOW_TO_PAY_JSON_KEY, "feesHelpWith");
+
         CaseDetails caseDetails = CaseDetails.builder()
             .caseData(caseData)
             .state(TEST_STATE)

@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPaymentTask;
 
 import java.util.List;
@@ -52,14 +53,19 @@ public class ControllerUtils {
 
     public static String getPbaUpdatedState(CcdCallbackRequest ccdCallbackRequest, Map<String, Object> caseData) {
         String currentState = ccdCallbackRequest.getCaseDetails().getState();
-        String paymentStatus = (String) caseData.get(ProcessPbaPaymentTask.FileMetadata.PAYMENT_STATUS);
+        String paymentStatus = (String) caseData.get(ProcessPbaPaymentTask.PAYMENT_STATUS);
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
 
         log.info("Payment status is '{}', current case state is '{}'", paymentStatus, currentState);
 
         if (isPbaCaseStateToBeUpdated(caseData, paymentStatus)) {
             currentState = CcdStates.SUBMITTED;
-            log.info("Updated case state to '{}' for CaseID: '{}'", currentState, ccdCallbackRequest.getCaseDetails().getCaseId());
+
+            log.info("Updated case state to '{}' for CaseID: '{}'", currentState, caseId);
         }
+
+        log.info("Removing temporary payment status  '{}', in case data for CaseID '{}'", paymentStatus, caseId);
+        caseData.remove(ProcessPbaPaymentTask.PAYMENT_STATUS);
 
         return currentState;
     }
@@ -83,7 +89,7 @@ public class ControllerUtils {
     // Returns true if payment status is success and is fee account payment
     private static boolean isPbaCaseStateToBeUpdated(Map<String, Object> caseData, String paymentStatus) {
         return isSolicitorPaymentMethodPba(caseData)
-            && ProcessPbaPaymentTask.FileMetadata.SUCCESS_STATUS.equalsIgnoreCase(paymentStatus);
+            && PaymentStatus.SUCCESS.value().equalsIgnoreCase(paymentStatus);
     }
 
 }

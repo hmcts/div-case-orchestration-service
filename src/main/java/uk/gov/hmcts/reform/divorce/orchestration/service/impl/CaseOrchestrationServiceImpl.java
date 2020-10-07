@@ -523,10 +523,10 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
 
         if (solicitorSubmissionWorkflow.errors().isEmpty()) {
-            log.info("Callback pay by account for solicitor with Case ID: {} successfully completed", caseId);
+            log.info("CaseID: {} Callback pay by account for solicitor successfully completed.", caseId);
             return payLoad;
         } else {
-            log.error("Callback pay by account for solicitor with Case ID: {} failed. ", caseId);
+            log.error("CaseID: {} Callback pay by account for solicitor failed.", caseId);
             return solicitorSubmissionWorkflow.errors();
         }
     }

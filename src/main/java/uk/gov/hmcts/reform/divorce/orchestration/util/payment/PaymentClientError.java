@@ -50,9 +50,9 @@ public class PaymentClientError {
 
     public static String getErrorMessage(int httpStatus, CreditAccountPaymentResponse paymentResponse) {
 
-        log.error("Payment client failed with status: \"{}\" for payment reference: \"{}\".",
-            paymentResponse.getStatus(),
-            paymentResponse.getReference());
+        log.error("Payment reference: \"{}\". Payment client failed with status: \"{}\".",
+            paymentResponse.getReference(),
+            paymentResponse.getStatus());
 
         return Optional.of(paymentResponse)
             .map(response -> {
@@ -64,6 +64,8 @@ public class PaymentClientError {
                     return getCustomForbiddenMessage(statusHistories, reference);
                 } else if (httpStatus == HttpStatus.NOT_FOUND.value()) {
                     return getCustomErrorMessage(format(NOT_FOUND_CONTENT, reference));
+                } else {
+                    log.info("Returning default {} error message.", httpStatus);
                 }
 
                 return getCustomErrorMessage(DEFAULT);

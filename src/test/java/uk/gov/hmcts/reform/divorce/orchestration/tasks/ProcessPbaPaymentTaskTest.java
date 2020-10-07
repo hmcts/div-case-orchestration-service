@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentItem;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -178,7 +179,7 @@ public class ProcessPbaPaymentTaskTest {
 
         Map<String, Object> caseData = processPbaPaymentTask.execute(context, this.caseData);
 
-        assertThat(caseData.get(ProcessPbaPaymentTask.FileMetadata.PAYMENT_STATUS), is("Success"));
+        assertThat(caseData.get(ProcessPbaPaymentTask.PAYMENT_STATUS), is(PaymentStatus.SUCCESS.value()));
         runCommonVerifications();
     }
 
@@ -192,7 +193,7 @@ public class ProcessPbaPaymentTaskTest {
 
         Map<String, Object> caseData = processPbaPaymentTask.execute(context, this.caseData);
 
-        assertThat(caseData.get(ProcessPbaPaymentTask.FileMetadata.PAYMENT_STATUS), is("Pending"));
+        assertThat(caseData.get(ProcessPbaPaymentTask.PAYMENT_STATUS), is(PaymentStatus.PENDING.value()));
         runCommonVerifications();
     }
 

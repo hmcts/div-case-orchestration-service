@@ -304,16 +304,16 @@ public class ProcessPbaPaymentTest extends MockedFunctionalTest {
             .caseDetails(caseDetails)
             .build();
 
-        Map<String, Object> expectedCaseData = new HashMap<>(caseData);
-        expectedCaseData.put("PaymentStatus", "Pending");
+        Map<String, Object> workFlowCaseDataResponse = new HashMap<>(caseData);
+        workFlowCaseDataResponse.put("PaymentStatus", "Pending");
+        stubFormatterServerEndpoint(workFlowCaseDataResponse);
 
         stubCreditAccountPayment(HttpStatus.OK, CreditAccountPaymentResponse.builder().status("Pending").build());
         stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
-        stubFormatterServerEndpoint(expectedCaseData);
 
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
             .state(TEST_STATE)
-            .data(expectedCaseData)
+            .data(caseData)
             .build();
 
         webClient.perform(post(API_URL)
@@ -340,16 +340,16 @@ public class ProcessPbaPaymentTest extends MockedFunctionalTest {
             .caseDetails(caseDetails)
             .build();
 
-        Map<String, Object> expectedCaseData = new HashMap<>(caseData);
-        expectedCaseData.put("PaymentStatus", "Success");
+        Map<String, Object> workFlowCaseDataResponse = new HashMap<>(caseData);
+        workFlowCaseDataResponse.put("PaymentStatus", "Success");
 
         stubCreditAccountPayment(HttpStatus.OK, CreditAccountPaymentResponse.builder().status("Success").build());
         stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
-        stubFormatterServerEndpoint(expectedCaseData);
+        stubFormatterServerEndpoint(workFlowCaseDataResponse);
 
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
             .state(CcdStates.SUBMITTED)
-            .data(expectedCaseData)
+            .data(caseData)
             .build();
 
         webClient.perform(post(API_URL)
@@ -485,16 +485,17 @@ public class ProcessPbaPaymentTest extends MockedFunctionalTest {
             .caseDetails(caseDetails)
             .build();
 
-        Map<String, Object> expectedCaseData = new HashMap<>(caseData);
-        expectedCaseData.put("PaymentStatus", "Success");
-        final CcdCallbackResponse expected = CcdCallbackResponse.builder()
-            .state(CcdStates.SUBMITTED)
-            .data(expectedCaseData)
-            .build();
+        Map<String, Object> workFlowCaseDataResponse = new HashMap<>(caseData);
+        workFlowCaseDataResponse.put("PaymentStatus", "Success");
+        stubFormatterServerEndpoint(workFlowCaseDataResponse);
 
         stubCreditAccountPayment(HttpStatus.OK, CreditAccountPaymentResponse.builder().status("Success").build());
         stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
-        stubFormatterServerEndpoint(expectedCaseData);
+
+        final CcdCallbackResponse expected = CcdCallbackResponse.builder()
+            .state(CcdStates.SUBMITTED)
+            .data(caseData)
+            .build();
 
         webClient.perform(post(API_URL)
             .content(convertObjectToJsonString(ccdCallbackRequest))

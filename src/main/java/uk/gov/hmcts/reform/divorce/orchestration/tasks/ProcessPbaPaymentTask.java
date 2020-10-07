@@ -2,8 +2,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -51,24 +49,19 @@ public class ProcessPbaPaymentTask implements Task<Map<String, Object>> {
     private final PaymentClient paymentClient;
     private final AuthTokenGenerator serviceAuthGenerator;
     private final ObjectMapper objectMapper;
+    public static final String PAYMENT_STATUS = "PaymentStatus";
 
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class FileMetadata {
-        public static final String PAYMENT_STATUS = "PaymentStatus";
-        public static final String PENDING_STATUS = "Pending";
-        public static final String SUCCESS_STATUS = "Success";
-    }
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         String caseId = getCaseId(context);
         try {
             if (!isSolicitorPaymentMethodPba(caseData)) {
-                log.info("Payment option not PBA for CaseID: {}", caseId);
+                log.info("CaseID: {} Payment option not PBA", caseId);
                 return caseData;
             }
 
-            log.info("About to make payment for CaseID: {}", caseId);
+            log.info("CaseID: {} About to make payment", caseId);
 
             ResponseEntity<CreditAccountPaymentResponse> paymentResponseEntity = processCreditAccountPayment(
                 caseId,
@@ -77,12 +70,12 @@ public class ProcessPbaPaymentTask implements Task<Map<String, Object>> {
             );
 
             String paymentStatus = getPaymentStatus(paymentResponseEntity);
-            log.info("Payment successfully made for CaseID: {} with payment status: {}", caseId, paymentStatus);
+            log.info("CaseID: {} Payment successfully made with payment status: {}", caseId, paymentStatus);
 
             addPaymentStatusToResponse(caseData, paymentStatus);
 
         } catch (Exception exception) {
-            log.error("Missing required fields for Solicitor Payment on CaseID: {}, with exception {}", caseId, exception.getMessage());
+            log.error("CaseID: {} Missing required fields for Solicitor Payment with exception {}", caseId, exception.getMessage());
             throw new TaskException(exception);
         }
 
@@ -100,7 +93,7 @@ public class ProcessPbaPaymentTask implements Task<Map<String, Object>> {
                 creditAccountPaymentRequest
             );
         } catch (FeignException exception) {
-            log.error("Unsuccessful payment for CaseID: {} with exception: {}", caseId, exception.getMessage());
+            log.error("CaseID: {} Unsuccessful payment with exception {}", caseId, exception.getMessage());
 
             failTask(context,
                 SOLICITOR_PBA_PAYMENT_ERROR_KEY,
@@ -178,8 +171,8 @@ public class ProcessPbaPaymentTask implements Task<Map<String, Object>> {
     }
 
     // A successful payment api call is either Pending or Success
-    // this needs to be captured to change case state to 'Submitted' only if payment status is Success
+    // this needs to be captured to change case state to 'Submitted' only if payment status is 'Success'
     private void addPaymentStatusToResponse(Map<String, Object> caseData, String paymentStatus) {
-        caseData.put(FileMetadata.PAYMENT_STATUS, paymentStatus);
+        caseData.put(PAYMENT_STATUS, paymentStatus);
     }
 }
