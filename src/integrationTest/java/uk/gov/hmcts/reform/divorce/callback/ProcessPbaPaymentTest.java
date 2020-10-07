@@ -51,24 +51,6 @@ public class ProcessPbaPaymentTest extends IntegrationTest {
         assertNoPetitionOnDocumentGeneratedList((List) responseData.get(D8DOCUMENTS_GENERATED));
     }
 
-    @Test
-    public void givenCallbackRequestWithInvalidDataWhenProcessPbaPaymentThenReturnDataWithErrors() throws Exception {
-        Response response = postWithInvalidDataAndValidateResponse(
-            serverUrl + contextPath,
-            PAYLOAD_CONTEXT_PATH + "solicitor-invalid-request-data.json",
-            createCaseWorkerUser().getAuthToken()
-        );
-
-        Map<String, Object> responseData = response.getBody().path(DATA);
-        List<String> errors = response.getBody().path(ERRORS);
-        String state = response.getBody().path(STATE);
-
-        assertThat(state, nullValue());
-        assertThat(responseData, nullValue());
-        assertThat(errors, hasSize(1));
-//        assertThat(errors.get(0), is("Statement of truth for solicitor and petitioner needs to be accepted"));
-    }
-
     private static void assertNoPetitionOnDocumentGeneratedList(List<CollectionMember<Document>> documents) {
         int numberOfDocuments = (int) documents.stream().filter(ProcessPbaPaymentTest::isPetition).count();
         assertThat(numberOfDocuments, is(0));
