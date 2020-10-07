@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPaymentTask;
 
 import java.util.List;
 import java.util.Map;
@@ -49,11 +50,18 @@ public class ControllerUtils {
             .build();
     }
 
-    public static String getPbaSubmittedState(CcdCallbackRequest ccdCallbackRequest) {
-        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+    public static String getPbaUpdatedState(CcdCallbackRequest ccdCallbackRequest, Map<String, Object> caseData) {
         String currentState = ccdCallbackRequest.getCaseDetails().getState();
+        String paymentStatus = (String) caseData.get(ProcessPbaPaymentTask.FileMetadata.PAYMENT_STATUS);
 
-        return isSolicitorPaymentMethodPba(caseData) ? CcdStates.SUBMITTED : currentState;
+        log.info("Payment status is '{}', current case state is '{}'", paymentStatus, currentState);
+
+        if (isPbaCaseStateToBeUpdated(caseData, paymentStatus)) {
+            currentState = CcdStates.SUBMITTED;
+            log.info("Updated case state to '{}' for CaseID: '{}'", currentState, ccdCallbackRequest.getCaseDetails().getCaseId());
+        }
+
+        return currentState;
     }
 
     public static boolean isResponseErrors(String errorKey, Map<String, Object> errorResponse) {
@@ -70,6 +78,12 @@ public class ControllerUtils {
         return Optional.ofNullable(errorResponse)
             .map(errors -> (List<String>) errors.get(errorKey))
             .orElseGet(() -> null);
+    }
+
+    // Returns true if payment status is success and is fee account payment
+    private static boolean isPbaCaseStateToBeUpdated(Map<String, Object> caseData, String paymentStatus) {
+        return isSolicitorPaymentMethodPba(caseData)
+            && ProcessPbaPaymentTask.FileMetadata.SUCCESS_STATUS.equalsIgnoreCase(paymentStatus);
     }
 
 }

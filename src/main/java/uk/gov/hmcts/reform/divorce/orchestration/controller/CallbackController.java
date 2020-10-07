@@ -53,7 +53,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ANSWERS_LINK;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_PBA_PAYMENT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.getPbaSubmittedState;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.getPbaUpdatedState;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.getResponseErrors;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.isResponseErrors;
 
@@ -182,7 +182,7 @@ public class CallbackController {
         }
 
         return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .state(getPbaSubmittedState(ccdCallbackRequest))
+            .state(getPbaUpdatedState(ccdCallbackRequest, response))
             .data(response)
             .build());
     }

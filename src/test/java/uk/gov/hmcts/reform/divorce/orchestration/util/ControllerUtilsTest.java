@@ -1,11 +1,13 @@
 package uk.gov.hmcts.reform.divorce.orchestration.util;
 
+import com.microsoft.applicationinsights.boot.dependencies.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPaymentTask;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -124,12 +126,32 @@ public class ControllerUtilsTest {
 
     @Test
     public void givenNonPbaCase_whenPbaPayment_thenReturnWithSameState() {
-        assertCaseStateAsExpected(buildRequestWithSolicitorHowToPay("NotByAccount"), TEST_STATE);
+        Map<String, Object> notByAccountCaseData = ImmutableMap.of(SOLICITOR_HOW_TO_PAY_JSON_KEY, "NotByAccount",
+            ProcessPbaPaymentTask.FileMetadata.PAYMENT_STATUS, TEST_STATE);
+
+        CcdCallbackRequest ccdCallbackRequest = buildRequestWithSolicitorHowToPay(TEST_STATE, notByAccountCaseData);
+
+        assertCaseStateAsExpected(ccdCallbackRequest, notByAccountCaseData, TEST_STATE);
     }
 
     @Test
-    public void givenPbaCase_whenPbaPayment_thenReturnWithUpdatedState() {
-        assertCaseStateAsExpected(buildRequestWithSolicitorHowToPay(FEE_PAY_BY_ACCOUNT), CcdStates.SUBMITTED);
+    public void givenPbaCase_whenPbaPaymentStatusSuccess_thenReturnWithUpdatedState() {
+        Map<String, Object> successCaseData = ImmutableMap.of(SOLICITOR_HOW_TO_PAY_JSON_KEY, FEE_PAY_BY_ACCOUNT,
+            ProcessPbaPaymentTask.FileMetadata.PAYMENT_STATUS, "Success");
+
+        CcdCallbackRequest ccdCallbackRequest = buildRequestWithSolicitorHowToPay(TEST_STATE, successCaseData);
+
+        assertCaseStateAsExpected(ccdCallbackRequest, successCaseData, CcdStates.SUBMITTED);
+    }
+
+    @Test
+    public void givenPbaCase_whenPbaPaymentStatusPending_thenReturnWithUpdatedState() {
+        Map<String, Object> successPendingCaseData = ImmutableMap.of(SOLICITOR_HOW_TO_PAY_JSON_KEY, FEE_PAY_BY_ACCOUNT,
+            ProcessPbaPaymentTask.FileMetadata.PAYMENT_STATUS, "Pending");
+
+        CcdCallbackRequest ccdCallbackRequest = buildRequestWithSolicitorHowToPay(TEST_STATE, successPendingCaseData);
+
+        assertCaseStateAsExpected(ccdCallbackRequest, successPendingCaseData, TEST_STATE);
     }
 
     @Test
@@ -166,17 +188,17 @@ public class ControllerUtilsTest {
         assertThat(ControllerUtils.getResponseErrors(null, Collections.emptyMap()), nullValue());
     }
 
-    private CcdCallbackRequest buildRequestWithSolicitorHowToPay(String paymentMethod) {
+    private CcdCallbackRequest buildRequestWithSolicitorHowToPay(String expectedState, Map<String, Object> expectedResponse) {
         return CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
-                .caseData(singletonMap(SOLICITOR_HOW_TO_PAY_JSON_KEY, paymentMethod))
-                .state(TEST_STATE)
+                .caseData(expectedResponse)
+                .state(expectedState)
                 .build())
             .build();
     }
 
-    private void assertCaseStateAsExpected(CcdCallbackRequest ccdCallbackRequest, String testState) {
-        assertThat(ControllerUtils.getPbaSubmittedState(ccdCallbackRequest), is(testState));
+    private void assertCaseStateAsExpected(CcdCallbackRequest ccdCallbackRequest, Map<String, Object> responseCaseData, String expectedCaseState) {
+        assertThat(ControllerUtils.getPbaUpdatedState(ccdCallbackRequest, responseCaseData), is(expectedCaseState));
     }
 
 }

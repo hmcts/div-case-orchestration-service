@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.StatusHistoriesItem;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,15 +40,15 @@ public class PaymentClientError {
     private static final String NOT_FOUND_CONTENT = "Payment Account %s cannot be found. "
         + "Please use a different account or payment method.";
 
-    public static String getDefault() {
+    public static String getDefaultErrorMessage() {
         return DEFAULT + getContactInfo();
     }
 
-    public static String getMessage(HttpStatus httpStatus, CreditAccountPaymentResponse paymentResponse) {
-        return getMessage(httpStatus.value(), paymentResponse);
+    public static String getErrorMessage(HttpStatus httpStatus, CreditAccountPaymentResponse paymentResponse) {
+        return getErrorMessage(httpStatus.value(), paymentResponse);
     }
 
-    public static String getMessage(int httpStatus, CreditAccountPaymentResponse paymentResponse) {
+    public static String getErrorMessage(int httpStatus, CreditAccountPaymentResponse paymentResponse) {
 
         log.error("Payment client failed with status: \"{}\" for payment reference: \"{}\".",
             paymentResponse.getStatus(),
@@ -72,13 +71,15 @@ public class PaymentClientError {
             .orElseGet(() -> getCustomErrorMessage(DEFAULT));
     }
 
-    public static CreditAccountPaymentResponse getCreditAccountPaymentResponse(FeignException exception) {
+    public static CreditAccountPaymentResponse getPaymentResponse(FeignException exception) {
         ObjectMapper objectMapper = new ObjectMapper();
+        CreditAccountPaymentResponse creditAccountPaymentResponse = CreditAccountPaymentResponse.builder().build();
         try {
-            return objectMapper.readValue(exception.contentUTF8(), CreditAccountPaymentResponse.class);
-        } catch (JsonProcessingException e) {
-            throw new TaskException(e);
+            creditAccountPaymentResponse = objectMapper.readValue(exception.contentUTF8(), CreditAccountPaymentResponse.class);
+        } catch (JsonProcessingException jsonProcessingException) {
+            log.warn("Could not convert error response to CreditAccountPaymentResponse object: {}", jsonProcessingException.getMessage());
         }
+        return creditAccountPaymentResponse;
     }
 
     private static String getCustomForbiddenMessage(List<StatusHistoriesItem> statusHistories, String reference) {

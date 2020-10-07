@@ -9,10 +9,10 @@ public class PbaClientErrorTestUtil {
     public static final String TEST_REFERENCE = "RC-1601-8933-5348-8116";
 
     public static CreditAccountPaymentResponse getBasicFailedResponse() {
-        return buildFailedResponse("Failed", null, null);
+        return buildPaymentClientResponse("Failed", null, null);
     }
 
-    public static CreditAccountPaymentResponse buildFailedResponse(String status, String errorCode, String errorMessage) {
+    public static CreditAccountPaymentResponse buildPaymentClientResponse(String status, String errorCode, String errorMessage) {
         return CreditAccountPaymentResponse.builder()
             .reference(TEST_REFERENCE)
             .dateCreated("2020-10-05T10:22:33.449+0000")

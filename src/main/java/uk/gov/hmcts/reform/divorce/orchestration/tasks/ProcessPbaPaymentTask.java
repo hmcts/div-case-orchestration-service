@@ -2,8 +2,11 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.client.PaymentClient;
@@ -11,11 +14,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeItem;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeValue;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentItem;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.util.payment.PaymentClientError;
 
 import java.util.List;
 import java.util.Map;
@@ -37,7 +40,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContextHelper.failTask;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isSolicitorPaymentMethodPba;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.payment.PaymentClientError.getCreditAccountPaymentResponse;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.payment.PaymentClientError.getErrorMessage;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.payment.PaymentClientError.getPaymentResponse;
 
 @Component
 @Slf4j
@@ -47,6 +51,13 @@ public class ProcessPbaPaymentTask implements Task<Map<String, Object>> {
     private final PaymentClient paymentClient;
     private final AuthTokenGenerator serviceAuthGenerator;
     private final ObjectMapper objectMapper;
+
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class FileMetadata {
+        public static final String PAYMENT_STATUS = "PaymentStatus";
+        public static final String PENDING_STATUS = "Pending";
+        public static final String SUCCESS_STATUS = "Success";
+    }
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
@@ -59,13 +70,16 @@ public class ProcessPbaPaymentTask implements Task<Map<String, Object>> {
 
             log.info("About to make payment for CaseID: {}", caseId);
 
-            processCreditAccountPayment(
+            ResponseEntity<CreditAccountPaymentResponse> paymentResponseEntity = processCreditAccountPayment(
                 caseId,
                 context,
                 buildCreditAccountPaymentRequest(context, caseData)
             );
 
-            log.info("Payment made for CaseID: {}", caseId);
+            String paymentStatus = getPaymentStatus(paymentResponseEntity);
+            log.info("Payment successfully made for CaseID: {} with payment status: {}", caseId, paymentStatus);
+
+            addPaymentStatusToResponse(caseData, paymentStatus);
 
         } catch (Exception exception) {
             log.error("Missing required fields for Solicitor Payment on CaseID: {}, with exception {}", caseId, exception.getMessage());
@@ -75,23 +89,24 @@ public class ProcessPbaPaymentTask implements Task<Map<String, Object>> {
         return caseData;
     }
 
-    private void processCreditAccountPayment(String caseId,
-                                             TaskContext context,
-                                             CreditAccountPaymentRequest creditAccountPaymentRequest) {
+    private ResponseEntity<CreditAccountPaymentResponse> processCreditAccountPayment(String caseId,
+                                                                                     TaskContext context,
+                                                                                     CreditAccountPaymentRequest creditAccountPaymentRequest) {
+        ResponseEntity<CreditAccountPaymentResponse> paymentResponseResponseEntity = null;
         try {
-            paymentClient.creditAccountPayment(
+            paymentResponseResponseEntity = paymentClient.creditAccountPayment(
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(),
                 serviceAuthGenerator.generate(),
                 creditAccountPaymentRequest
             );
-            log.info("Successful payment processed for CaseID: {}", caseId);
         } catch (FeignException exception) {
             log.error("Unsuccessful payment for CaseID: {} with exception: {}", caseId, exception.getMessage());
 
             failTask(context,
                 SOLICITOR_PBA_PAYMENT_ERROR_KEY,
-                singletonList(PaymentClientError.getMessage(exception.status(), getCreditAccountPaymentResponse(exception))));
+                singletonList(getErrorMessage(exception.status(), getPaymentResponse(exception))));
         }
+        return paymentResponseResponseEntity;
     }
 
     private CreditAccountPaymentRequest buildCreditAccountPaymentRequest(TaskContext context, Map<String, Object> caseData) {
@@ -119,6 +134,16 @@ public class ProcessPbaPaymentTask implements Task<Map<String, Object>> {
         return objectMapper.convertValue(
             caseData.get(PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY),
             OrderSummary.class);
+    }
+
+    private String getPaymentStatus(ResponseEntity<CreditAccountPaymentResponse> paymentResponseEntity) {
+        return Optional.ofNullable(paymentResponseEntity)
+            .map(response ->
+                Optional.ofNullable(response.getBody())
+                    .map(CreditAccountPaymentResponse::getStatus)
+                    .orElseGet(() -> "")
+            )
+            .orElseGet(() -> "");
     }
 
     private List<PaymentItem> populateFeesPaymentItems(TaskContext context, Map<String, Object> caseData, OrderSummary orderSummary, FeeValue value) {
@@ -150,5 +175,11 @@ public class ProcessPbaPaymentTask implements Task<Map<String, Object>> {
 
     private void addToRequest(Consumer<String> setter, Supplier<String> value) {
         Optional.ofNullable(value.get()).ifPresent(setter);
+    }
+
+    // A successful payment api call is either Pending or Success
+    // this needs to be captured to change case state to 'Submitted' only if payment status is Success
+    private void addPaymentStatusToResponse(Map<String, Object> caseData, String paymentStatus) {
+        caseData.put(FileMetadata.PAYMENT_STATUS, paymentStatus);
     }
 }
