@@ -221,13 +221,13 @@ sourceSets {
             srcDir('src/integrationTest/resources')
         }
     }
-    pactTest {
+    contractTest {
         java {
             compileClasspath += main.output
             runtimeClasspath += main.output
-            srcDir file('src/pactTest/java')
+            srcDir file('src/contractTest/java')
         }
-        resources.srcDir file('src/pactTest/resources')
+        resources.srcDir file('src/contractTest/resources')
     }
 }
 
@@ -379,16 +379,18 @@ dependencies {
                 exclude group: 'io.reactivex', module: 'rxnetty-servo'
             }
 
-    pactTestCompile group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
-    pactTestCompile group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
-    pactTestRuntime group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
-    pactTestRuntime group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
-    pactTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-    pactTestCompile("org.junit.jupiter:junit-jupiter-api:5.3.2")
-    pactTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.3.2")
-    pactTestImplementation('org.junit.jupiter:junit-jupiter-api:5.3.2')
-    pactTestCompile sourceSets.main.runtimeClasspath
-    pactTestCompile sourceSets.test.runtimeClasspath
+    contractTestCompile group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
+    contractTestCompile group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
+    contractTestRuntime group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
+    contractTestRuntime group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
+
+    contractTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+    contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.3.2")
+    contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.3.2")
+    contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.3.2')
+
+    contractTestCompile sourceSets.main.runtimeClasspath
+    contractTestCompile sourceSets.test.runtimeClasspath
 }
 
 dependencies {
@@ -399,13 +401,6 @@ task smoke(type: Test, description: 'Runs the smoke tests.', group: 'Verificatio
     useJUnit {
         includeCategories 'uk.gov.hmcts.reform.divorce.orchestration.category.SmokeTest'
     }
-}
-
-task pactTask(type: Test) {
-    description = "Runs pact Tests"
-    useJUnitPlatform()
-    testClassesDirs = sourceSets.pactTest.output.classesDirs
-    classpath = sourceSets.pactTest.runtimeClasspath
 }
 
 task bootRunAat(type: BootRun, description: 'Runs the app using AAT config', dependsOn: 'classes', group: 'Application') {
@@ -525,4 +520,34 @@ task migratePostgresDatabase(type: org.flywaydb.gradle.task.FlywayMigrateTask) {
     if (project.hasProperty("dburl")) {
         url = "jdbc:postgresql://${dburl}"
     }
+}
+
+task contract(type: Test) {
+    group = 'Delivery pipeline'
+    description = 'Runs the consumer Pact tests'
+    useJUnitPlatform()
+    testClassesDirs = sourceSets.contractTest.output.classesDirs
+    classpath = sourceSets.contractTest.runtimeClasspath
+    include "uk/gov/hmcts/reform/divorce/orchestration/client/**"
+    systemProperty 'pact.rootDir', "pacts"
+    environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
+}
+
+task runAndPublishConsumerPactTests(type: Test){
+    logger.lifecycle("Runs pact Tests")
+    testClassesDirs = sourceSets.contractTest.output.classesDirs
+    classpath = sourceSets.contractTest.runtimeClasspath
+
+}
+
+runAndPublishConsumerPactTests.dependsOn contract
+
+runAndPublishConsumerPactTests.finalizedBy pactPublish
+
+project.ext {
+    pactVersion = getCheckedOutGitCommitHash()
+}
+
+def getCheckedOutGitCommitHash() {
+    'git rev-parse --verify --short HEAD'.execute().text.trim()
 }
