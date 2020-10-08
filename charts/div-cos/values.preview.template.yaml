@@ -17,6 +17,7 @@ java:
     SCHEDULER_ENABLED: false
     SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_ENABLED: false
     SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_CRON: "0 * * ? * * *"#Runs every minute (if enabled)
+    CASE_FORMATTER_SERVICE_API_BASEURL: "http://div-cfs-pr-224.service.core-compute-preview.internal"
 
   keyVaults:
     "div":
