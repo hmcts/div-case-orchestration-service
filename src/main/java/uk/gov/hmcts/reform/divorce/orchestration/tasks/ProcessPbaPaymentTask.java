@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentItem;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -71,7 +72,9 @@ public class ProcessPbaPaymentTask implements Task<Map<String, Object>> {
             String paymentStatus = getPaymentStatus(paymentResponseEntity);
             log.info("CaseID: {} Payment successfully made with payment status: {}", caseId, paymentStatus);
 
-            addPaymentStatusToResponse(caseData, paymentStatus);
+            if(isPaymentStatusSuccess(paymentStatus)) {
+                addPaymentStatusToResponse(caseData, paymentStatus);
+            }
 
         } catch (Exception exception) {
             log.error("CaseID: {} Missing required fields for Solicitor Payment with exception {}", caseId, exception.getMessage());
@@ -171,5 +174,9 @@ public class ProcessPbaPaymentTask implements Task<Map<String, Object>> {
 
     private void addPaymentStatusToResponse(Map<String, Object> caseData, String paymentStatus) {
         caseData.put(PAYMENT_STATUS, paymentStatus);
+    }
+
+    private boolean isPaymentStatusSuccess(String paymentStatus) {
+        return PaymentStatus.SUCCESS.value().equalsIgnoreCase(paymentStatus);
     }
 }
