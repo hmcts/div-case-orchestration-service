@@ -6,7 +6,6 @@ import feign.FeignException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.StatusHistoriesItem;
@@ -21,11 +20,7 @@ import static java.lang.String.format;
 @Slf4j
 public class PaymentClientError {
 
-    @Value("${pba.contact.phoneNumber}")
-    private static String pbaContactPhoneNumber;
-
-    @Value("${pba.contact.email}")
-    private static String pbaContactEmail;
+    private static final PaymentContactDetail paymentContactDetail = new PaymentContactDetail();
 
     private static final String CONTACT_INFO = " For Payment Account support call %s (Option 3) or email %s.";
     private static final String DEFAULT = "Payment request failed. Please use a different account or payment method.";
@@ -105,7 +100,9 @@ public class PaymentClientError {
     }
 
     private static String getContactInfo() {
-        return format(CONTACT_INFO, pbaContactPhoneNumber, pbaContactEmail);
+        return format(CONTACT_INFO,
+            paymentContactDetail.getPbaContactPhoneNumber(),
+            paymentContactDetail.getPbaContactEmail());
     }
 
 }
