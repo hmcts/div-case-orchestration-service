@@ -10,6 +10,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.model.parties.DivorceParty;
 import uk.gov.hmcts.reform.divorce.orchestration.config.IssueAosPackOfflineDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
@@ -17,7 +18,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentGenerationRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -48,6 +48,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
+import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.CO_RESPONDENT;
+import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.AOS_OFFLINE_FIVE_YEAR_SEPARATION_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME;
@@ -61,8 +63,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.Divor
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_FIVE_YEARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.UNREASONABLE_BEHAVIOUR;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.CO_RESPONDENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.BULK_PRINT_LETTER_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.DOCUMENT_TYPES_TO_PRINT;
 

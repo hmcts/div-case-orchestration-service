@@ -5,9 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.model.ccd.DivorceGeneralOrder;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceGeneralOrder;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.GeneralOrderParty;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.docmosis.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.JudgeTypeNotFoundException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -20,6 +19,7 @@ import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.core.Is.is;
+import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.PETITIONER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_ORDERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_FMT;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateFromLocalDate;
@@ -69,6 +69,7 @@ public class GeneralOrderGenerationTaskTest extends AbstractGeneralOrderGenerati
         assertThat(item.getDocument().getDocumentFileName(), is(expectedGeneralOrderFileName));
 
         assertThat(item.getGeneralOrderParties().size(), is(1));
-        assertThat(item.getGeneralOrderParties().get(0), is(GeneralOrderParty.PETITIONER));
+        assertThat(item.getGeneralOrderParties().get(0), is(PETITIONER));
     }
+
 }

@@ -5,11 +5,11 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Test;
+import uk.gov.hmcts.reform.divorce.model.ccd.DivorceGeneralOrder;
+import uk.gov.hmcts.reform.divorce.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceGeneralOrder;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceServiceApplication;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
