@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
@@ -28,6 +29,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralEmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralOrderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPaymentTask;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -192,6 +194,7 @@ public class CallbackControllerTest {
     public void whenProcessPbaPayment_thenReturnCcdResponse() throws Exception {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(SOLICITOR_HOW_TO_PAY_JSON_KEY, FEE_PAY_BY_ACCOUNT);
+        caseData.put(ProcessPbaPaymentTask.PAYMENT_STATUS, PaymentStatus.SUCCESS.value());
 
         CaseDetails caseDetails = CaseDetails.builder()
             .state(TEST_STATE)
@@ -206,16 +209,16 @@ public class CallbackControllerTest {
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.processPbaPayment(AUTH_TOKEN, ccdCallbackRequest);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
-            .state(TEST_STATE)
+            .state(CcdStates.SUBMITTED)
             .data(caseData)
             .build();
 
         CcdCallbackResponse actualCallbackResponse = Optional.ofNullable(response.getBody())
             .orElseGet(() -> CcdCallbackResponse.builder().build());
 
-        assertEquals(OK, response.getStatusCode());
-        assertEquals(expectedResponse, response.getBody());
-        assertEquals(expectedResponse.getState(), actualCallbackResponse.getState());
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody(), is(expectedResponse));
+        assertThat(actualCallbackResponse.getState(), is(expectedResponse.getState()));
     }
 
     @Test
@@ -225,7 +228,6 @@ public class CallbackControllerTest {
 
         CaseDetails caseDetails = CaseDetails.builder()
             .caseData(caseData)
-            .state(TEST_STATE)
             .build();
 
         CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
@@ -236,16 +238,15 @@ public class CallbackControllerTest {
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.processPbaPayment(AUTH_TOKEN, ccdCallbackRequest);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
-            .state(TEST_STATE)
             .data(caseData)
             .build();
 
         CcdCallbackResponse actualCallbackResponse = Optional.ofNullable(response.getBody())
             .orElseGet(() -> CcdCallbackResponse.builder().build());
 
-        assertEquals(OK, response.getStatusCode());
-        assertEquals(expectedResponse, response.getBody());
-        assertEquals(expectedResponse.getState(), actualCallbackResponse.getState());
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody(), is(expectedResponse));
+        assertThat(actualCallbackResponse.getState(), is(expectedResponse.getState()));
     }
 
     @Test

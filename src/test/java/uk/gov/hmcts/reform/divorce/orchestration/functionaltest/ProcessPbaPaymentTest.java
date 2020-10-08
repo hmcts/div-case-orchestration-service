@@ -276,7 +276,6 @@ public class ProcessPbaPaymentTest extends MockedFunctionalTest {
             .build();
 
         final CcdCallbackResponse expected = CcdCallbackResponse.builder()
-            .state(TEST_STATE)
             .data(caseData)
             .build();
 
@@ -317,7 +316,6 @@ public class ProcessPbaPaymentTest extends MockedFunctionalTest {
         stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
 
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
-            .state(TEST_STATE)
             .data(caseData)
             .build();
 

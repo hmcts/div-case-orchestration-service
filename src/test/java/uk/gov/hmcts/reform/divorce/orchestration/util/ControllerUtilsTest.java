@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPaymentTask;
 
 import java.util.Collections;
@@ -124,12 +125,13 @@ public class ControllerUtilsTest {
     }
 
     @Test
-    public void givenNonPbaCase_whenPbaPayment_thenReturnWithSameState() {
-        Map<String, Object> notByAccountCaseData = buildTestCaseData("NotByAccount", null);
+    public void givenPbaCase_whenPbaPaymentStatusSuccess_thenRemoveTemporaryVariable() {
+        Map<String, Object> successCaseData = buildTestCaseData(FEE_PAY_BY_ACCOUNT, "Success");
 
-        CcdCallbackRequest ccdCallbackRequest = buildRequestWithSolicitorHowToPay(TEST_STATE, notByAccountCaseData);
+        CcdCallbackRequest ccdCallbackRequest = buildRequestWithSolicitorHowToPay("SomeOtherState", successCaseData);
 
-        assertCaseStateAsExpected(ccdCallbackRequest, notByAccountCaseData, TEST_STATE);
+        assertCaseStateAsExpected(ccdCallbackRequest, successCaseData, CcdStates.SUBMITTED);
+        assertThat(ccdCallbackRequest.getCaseDetails().getCaseData().get(ProcessPbaPaymentTask.PAYMENT_STATUS), nullValue());
     }
 
     @Test
@@ -151,14 +153,6 @@ public class ControllerUtilsTest {
         assertThat(responseCaseData.get(ProcessPbaPaymentTask.PAYMENT_STATUS), nullValue());
     }
 
-    @Test
-    public void givenPbaCase_whenPbaPaymentStatusPending_thenReturnWithUpdatedState() {
-        Map<String, Object> successPendingCaseData = buildTestCaseData(FEE_PAY_BY_ACCOUNT, "Pending");
-
-        CcdCallbackRequest ccdCallbackRequest = buildRequestWithSolicitorHowToPay(TEST_STATE, successPendingCaseData);
-
-        assertCaseStateAsExpected(ccdCallbackRequest, successPendingCaseData, TEST_STATE);
-    }
 
     @Test
     public void givenValidErrorResponse_thenContainsErrors() {
@@ -166,6 +160,14 @@ public class ControllerUtilsTest {
         errors.put(TEST_ERROR, singletonList(TEST_ERROR_CONTENT));
 
         assertThat(ControllerUtils.isResponseErrors(TEST_ERROR, errors), is(true));
+    }
+
+    @Test
+    public void givenPbaCase_whenPaymentStatusSuccess_thenReturnCorrectValue() {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(ProcessPbaPaymentTask.PAYMENT_STATUS, PaymentStatus.SUCCESS.value());
+
+        assertThat(ControllerUtils.isPaymentSuccess(caseData), is(true));
     }
 
     @Test

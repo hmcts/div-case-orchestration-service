@@ -16,8 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isSolicitorPaymentMethodPba;
-
 @Slf4j
 @Component
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -52,23 +50,13 @@ public class ControllerUtils {
     }
 
     public static String getPbaUpdatedState(CcdCallbackRequest ccdCallbackRequest, Map<String, Object> caseData) {
-        String currentState = ccdCallbackRequest.getCaseDetails().getState();
-        String paymentStatus = (String) caseData.get(ProcessPbaPaymentTask.PAYMENT_STATUS);
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
-
-        log.info("CaseID: {} Payment status is '{}', current case state is '{}'", caseId, paymentStatus, currentState);
-
-        if (isPbaCaseStateToBeUpdated(caseData, paymentStatus)) {
-            currentState = CcdStates.SUBMITTED;
-            log.info("CaseID: {} Updated case state to '{}'", currentState, caseId);
-        } else {
-            log.info("CaseID: {} State not updated. Current state is '{}'", caseId, currentState);
-        }
 
         log.info("CaseID: {} Removing temporary payment status property '{}' in case data", caseId, ProcessPbaPaymentTask.PAYMENT_STATUS);
         caseData.remove(ProcessPbaPaymentTask.PAYMENT_STATUS);
 
-        return currentState;
+        log.info("CaseID: {} Updating case state to '{}'", CcdStates.SUBMITTED, caseId);
+        return CcdStates.SUBMITTED;
     }
 
     public static boolean isResponseErrors(String errorKey, Map<String, Object> errorResponse) {
@@ -87,9 +75,9 @@ public class ControllerUtils {
             .orElseGet(() -> null);
     }
 
-    private static boolean isPbaCaseStateToBeUpdated(Map<String, Object> caseData, String paymentStatus) {
-        return isSolicitorPaymentMethodPba(caseData)
-            && PaymentStatus.SUCCESS.value().equalsIgnoreCase(paymentStatus);
+    public static boolean isPaymentSuccess(Map<String, Object> caseData) {
+        return Optional.ofNullable((String) caseData.get(ProcessPbaPaymentTask.PAYMENT_STATUS))
+            .map(i -> i.equalsIgnoreCase(PaymentStatus.SUCCESS.value()))
+            .orElse(false);
     }
-
 }

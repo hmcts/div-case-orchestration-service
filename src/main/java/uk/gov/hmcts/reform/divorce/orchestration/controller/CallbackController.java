@@ -55,6 +55,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.getPbaUpdatedState;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.getResponseErrors;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.isPaymentSuccess;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.isResponseErrors;
 
 @RestController
@@ -179,12 +180,14 @@ public class CallbackController {
                 CcdCallbackResponse.builder()
                     .errors(getResponseErrors(SOLICITOR_PBA_PAYMENT_ERROR_KEY, response))
                     .build());
+        } else if (isPaymentSuccess(response)) {
+            return ResponseEntity.ok(CcdCallbackResponse.builder()
+                .state(getPbaUpdatedState(ccdCallbackRequest, response))
+                .data(response)
+                .build());
         }
 
-        return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .state(getPbaUpdatedState(ccdCallbackRequest, response))
-            .data(response)
-            .build());
+        return ResponseEntity.ok(CcdCallbackResponse.builder().data(response).build());
     }
 
     @PostMapping(path = "/solicitor-create", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
