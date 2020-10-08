@@ -33,6 +33,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class RetrieveAosCaseITest extends MockedFunctionalTest {
+
     private static final String API_URL = "/retrieve-aos-case";
     private static final String RETRIEVE_AOS_CASE_CONTEXT_PATH = "/casemaintenance/version/1/retrieveAosCase";
     private static final String FORMAT_TO_DIVORCE_CONTEXT_PATH = "/caseformatter/version/1/to-divorce-format";
