@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.divorce.category.ExtendedTest;
-import uk.gov.hmcts.reform.divorce.model.UserDetails;
+import uk.gov.hmcts.reform.divorce.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.CcdSubmissionSupport;
 
 import java.time.LocalDate;

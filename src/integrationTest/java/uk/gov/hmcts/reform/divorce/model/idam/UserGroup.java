@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.model;
+package uk.gov.hmcts.reform.divorce.model.idam;
 
 import lombok.Builder;
 import lombok.Getter;
