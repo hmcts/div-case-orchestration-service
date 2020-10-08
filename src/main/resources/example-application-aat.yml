@@ -145,6 +145,7 @@ feature-toggle:
     dn_refusal: true
     paper_update: true
     solicitor_dn_reject_and_amend: true
+    pay_by_account: true
 
 send-letter:
   url: ${SEND_LETTER_SERIVCE_BASEURL:http://rpe-send-letter-service-aat.service.core-compute-aat.internal}

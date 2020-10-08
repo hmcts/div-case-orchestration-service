@@ -57,6 +57,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLIC
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PBA_NUMBERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CURRENCY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_CENTRE_SITEID_JSON_KEY;
@@ -92,6 +93,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubm
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmailTask.AMEND_SOL_DESC;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmailTask.SUBMITTED_DESC;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PayByAccountTestUtil.setPbaToggleTo;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.formatCaseIdToReferenceNumber;
 
 public class ProcessPbaPaymentITest extends MockedFunctionalTest {
@@ -142,6 +144,7 @@ public class ProcessPbaPaymentITest extends MockedFunctionalTest {
         caseData.put(DIVORCE_CENTRE_SITEID_JSON_KEY, CourtEnum.EASTMIDLANDS.getSiteId());
         caseData.put(DIVORCE_UNIT_JSON_KEY, CourtEnum.EASTMIDLANDS.getId());
         caseData.put(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY, TEST_SOLICITOR_ACCOUNT_NUMBER);
+        caseData.put(PBA_NUMBERS, TEST_SOLICITOR_ACCOUNT_NUMBER);
         caseData.put(SOLICITOR_FIRM_JSON_KEY, TEST_SOLICITOR_FIRM_NAME);
         caseData.put(SOLICITOR_REFERENCE_JSON_KEY, TEST_SOLICITOR_REFERENCE);
 
@@ -166,7 +169,20 @@ public class ProcessPbaPaymentITest extends MockedFunctionalTest {
     }
 
     @Test
-    public void givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_PetitionerNewCase() throws Exception {
+    public void givenCaseData_whenProcessPbaPaymentAndPbaToggleIsOn_thenMakePaymentAndReturn_PetitionerNewCase() throws Exception {
+        setPbaToggleTo(true);
+        caseData.remove(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY);
+        givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_PetitionerNewCase();
+    }
+
+    @Test
+    public void givenCaseData_whenProcessPbaPaymentAndPbaToggleIsOff_thenMakePaymentAndReturn_PetitionerNewCase() throws Exception {
+        setPbaToggleTo(false);
+        caseData.remove(PBA_NUMBERS);
+        givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_PetitionerNewCase();
+    }
+
+    private void givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_PetitionerNewCase() throws Exception {
         caseData.put(STATEMENT_OF_TRUTH, YES_VALUE);
         caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, YES_VALUE);
 
@@ -191,7 +207,20 @@ public class ProcessPbaPaymentITest extends MockedFunctionalTest {
     }
 
     @Test
-    public void givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_PetitionerAmendedCase() throws Exception {
+    public void givenCaseData_whenProcessPbaPaymentAndToggleIsOn_thenMakePaymentAndReturn_PetitionerAmendedCase() throws Exception {
+        setPbaToggleTo(true);
+        caseData.remove(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY);
+        givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_PetitionerAmendedCase();
+    }
+
+    @Test
+    public void givenCaseData_whenProcessPbaPaymentAndPbaToggleIsOff_thenMakePaymentAndReturn_PetitionerAmendedCase() throws Exception {
+        setPbaToggleTo(false);
+        caseData.remove(PBA_NUMBERS);
+        givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_PetitionerAmendedCase();
+    }
+
+    private void givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_PetitionerAmendedCase() throws Exception {
         caseData.put(STATEMENT_OF_TRUTH, YES_VALUE);
         caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, YES_VALUE);
         caseData.put(PREVIOUS_CASE_ID_CCD_KEY, EMPTY_MAP);
@@ -217,7 +246,20 @@ public class ProcessPbaPaymentITest extends MockedFunctionalTest {
     }
 
     @Test
-    public void givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_SolicitorPetitionerAmendedCase() throws Exception {
+    public void givenCaseData_whenProcessPbaPaymentAndPbaToggleIsOn_thenMakePaymentAndReturn_SolicitorPetitionerAmendedCase() throws Exception {
+        setPbaToggleTo(true);
+        caseData.remove(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY);
+        givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_SolicitorPetitionerAmendedCase();
+    }
+
+    @Test
+    public void givenCaseData_whenProcessPbaPaymentAndPbaToggleIsOff_thenMakePaymentAndReturn_SolicitorPetitionerAmendedCase() throws Exception {
+        setPbaToggleTo(false);
+        caseData.remove(PBA_NUMBERS);
+        givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_SolicitorPetitionerAmendedCase();
+    }
+
+    private void givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_SolicitorPetitionerAmendedCase() throws Exception {
         caseData.put(STATEMENT_OF_TRUTH, YES_VALUE);
         caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, YES_VALUE);
         caseData.put(PREVIOUS_CASE_ID_CCD_KEY, EMPTY_MAP);

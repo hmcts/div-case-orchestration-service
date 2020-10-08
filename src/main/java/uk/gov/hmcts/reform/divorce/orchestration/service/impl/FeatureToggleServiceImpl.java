@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
 public class FeatureToggleServiceImpl implements FeatureToggleService {
 
     @NotNull
-    private Map<String, String> toggle = new HashMap<>();
+    public Map<String, String> toggle = new HashMap<>();
 
     @Override
     public boolean isFeatureEnabled(Features feature) {

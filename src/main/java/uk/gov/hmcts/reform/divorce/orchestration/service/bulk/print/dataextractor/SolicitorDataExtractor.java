@@ -2,10 +2,14 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextract
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
+import uk.gov.hmcts.reform.divorce.orchestration.service.impl.FeatureToggleServiceImpl;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -15,6 +19,9 @@ public class SolicitorDataExtractor {
     public static class CaseDataKeys {
         public static final String SOLICITOR_REFERENCE = OrchestrationConstants.D8_RESPONDENT_SOLICITOR_REFERENCE;
         public static final String SOLICITOR_PAYMENT_METHOD = OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
+        public static final String SOLICITOR_PBA_NUMBER_V1 = OrchestrationConstants.SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY;
+        public static final String SOLICITOR_PBA_NUMBER_V2 = CcdFields.PBA_NUMBERS;
+        public static FeatureToggleServiceImpl FEATURE_TOGGLE_SERVICE = new FeatureToggleServiceImpl();
     }
 
     public static String getSolicitorReference(Map<String, Object> caseData) {
@@ -23,5 +30,13 @@ public class SolicitorDataExtractor {
 
     public static String getPaymentMethod(Map<String, Object> caseData) {
         return getOptionalPropertyValueAsString(caseData, CaseDataKeys.SOLICITOR_PAYMENT_METHOD, "");
+    }
+
+    public static String getPbaNumber(Map<String, Object> caseData) {
+        final FeatureToggleServiceImpl featureToggleService = CaseDataKeys.FEATURE_TOGGLE_SERVICE;
+        if (featureToggleService.isFeatureEnabled(Features.PAY_BY_ACCOUNT)) {
+            return getMandatoryPropertyValueAsString(caseData, CaseDataKeys.SOLICITOR_PBA_NUMBER_V2);
+        }
+        return getMandatoryPropertyValueAsString(caseData, CaseDataKeys.SOLICITOR_PBA_NUMBER_V1);
     }
 }

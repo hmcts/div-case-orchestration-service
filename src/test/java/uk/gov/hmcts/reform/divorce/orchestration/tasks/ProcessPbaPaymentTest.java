@@ -37,6 +37,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVI
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_ACCOUNT_NUMBER;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_FIRM_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PBA_NUMBERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CURRENCY;
@@ -48,6 +49,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_FIRM_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PayByAccountTestUtil.setPbaToggleTo;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProcessPbaPaymentTest {
@@ -90,6 +92,7 @@ public class ProcessPbaPaymentTest {
         caseData.put(CASE_ID_JSON_KEY, TEST_CASE_ID);
         caseData.put(DIVORCE_CENTRE_SITEID_JSON_KEY, CourtEnum.EASTMIDLANDS.getSiteId());
         caseData.put(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY, TEST_SOLICITOR_ACCOUNT_NUMBER);
+        caseData.put(PBA_NUMBERS, TEST_SOLICITOR_ACCOUNT_NUMBER);
         caseData.put(SOLICITOR_FIRM_JSON_KEY, TEST_SOLICITOR_FIRM_NAME);
         caseData.put(SOLICITOR_REFERENCE_JSON_KEY, TEST_SOLICITOR_REFERENCE);
 
@@ -111,32 +114,34 @@ public class ProcessPbaPaymentTest {
         paymentItem.setReference(TEST_SOLICITOR_REFERENCE);
         paymentItem.setVersion(TEST_FEE_VERSION.toString());
         expectedRequest.setFees(Collections.singletonList(paymentItem));
-    }
 
-    @Test
-    public void givenValidData_whenExecuteIsCalled_thenMakePayment() throws Exception {
         when(objectMapper.convertValue(caseData.get(PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY), OrderSummary.class))
-                .thenReturn(orderSummary);
+            .thenReturn(orderSummary);
         when(serviceAuthGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
 
         when(paymentClient.creditAccountPayment(
-                AUTH_TOKEN,
-                TEST_SERVICE_AUTH_TOKEN,
-                expectedRequest))
-                .thenReturn(mock(ResponseEntity.class));
-
-        assertEquals(caseData, processPbaPayment.execute(context, caseData));
-
-        verify(objectMapper).convertValue(caseData.get(PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY), OrderSummary.class);
-        verify(serviceAuthGenerator).generate();
-        verify(paymentClient).creditAccountPayment(
-                AUTH_TOKEN,
-                TEST_SERVICE_AUTH_TOKEN,
-                expectedRequest);
+            AUTH_TOKEN,
+            TEST_SERVICE_AUTH_TOKEN,
+            expectedRequest))
+            .thenReturn(mock(ResponseEntity.class));
     }
 
     @Test
-    public void givenNotPayByAccount_whenExecuteIsCalled_thenReturnData() throws Exception {
+    public void givenValidData_whenExecuteIsCalledAndPbaToggleIsOn_thenMakePayment() throws Exception {
+        setPbaToggleTo(true);
+        caseData.remove(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY);
+        givenValidData_whenExecuteIsCalled_thenMakePayment();
+    }
+
+    @Test
+    public void givenValidData_whenExecuteIsCalledAndPbaToggleIsOff_thenMakePayment() throws Exception {
+        setPbaToggleTo(false);
+        caseData.remove(PBA_NUMBERS);
+        givenValidData_whenExecuteIsCalled_thenMakePayment();
+    }
+
+    @Test
+    public void givenNotPayByAccount_whenExecuteIsCalled_thenReturnData() {
         caseData.replace(SOLICITOR_HOW_TO_PAY_JSON_KEY, "NotByAccount");
 
         // Will fail if it attempts to call paymentClient
@@ -144,10 +149,37 @@ public class ProcessPbaPaymentTest {
     }
 
     @Test(expected = TaskException.class)
-    public void givenMissingData_whenExecuteIsCalled_thenThrowTaskException() throws Exception {
+    public void givenMissingData_whenExecuteIsCalled_thenThrowTaskException() {
         caseData = new HashMap<>();
         caseData.put(SOLICITOR_HOW_TO_PAY_JSON_KEY, FEE_PAY_BY_ACCOUNT);
 
         processPbaPayment.execute(context, caseData);
+    }
+
+    @Test(expected = TaskException.class)
+    public void givenMissingPbaNumber_whenExecuteIsCalledAndPbaToggleIsOn_thenThrowTaskException() {
+        setPbaToggleTo(true);
+        caseData.remove(PBA_NUMBERS);
+
+        processPbaPayment.execute(context, caseData);
+    }
+
+    @Test(expected = TaskException.class)
+    public void givenMissingPbaNumber_whenExecuteIsCalledAndPbaToggleIsOff_thenThrowTaskException() {
+        setPbaToggleTo(false);
+        caseData.remove(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY);
+
+        processPbaPayment.execute(context, caseData);
+    }
+
+    private void givenValidData_whenExecuteIsCalled_thenMakePayment() {
+        assertEquals(caseData, processPbaPayment.execute(context, caseData));
+
+        verify(objectMapper).convertValue(caseData.get(PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY), OrderSummary.class);
+        verify(serviceAuthGenerator).generate();
+        verify(paymentClient).creditAccountPayment(
+            AUTH_TOKEN,
+            TEST_SERVICE_AUTH_TOKEN,
+            expectedRequest);
     }
 }
