@@ -24,6 +24,7 @@ public class RetrieveCaseTest extends RetrieveCaseSupport {
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/retrieve-case/";
     private static final String COURTS_KEY = "courts";
     private static final String DATA_KEY = "data";
+
     @Autowired
     private ObjectMapper objectMapper;
 

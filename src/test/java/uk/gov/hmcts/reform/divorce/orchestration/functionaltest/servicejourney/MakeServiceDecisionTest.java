@@ -8,11 +8,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
 import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
+import uk.gov.hmcts.reform.divorce.model.ccd.DocumentLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DocumentLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceApplicationRefusalOrder;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceDecisionOrder;
@@ -53,10 +53,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETIT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RECEIVED_SERVICE_ADDED_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RECEIVED_SERVICE_APPLICATION_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_DECISION_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_GRANTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_REFUSAL_REASON;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
@@ -72,10 +74,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerFullName;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationRefusalReason;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocumentAsMap;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskTestHelper.formatWithCurrentDate;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.ServiceApplicationRefusalHelper.getServiceApplicationRefusalReason;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateFromLocalDate;
 
 public class MakeServiceDecisionTest extends IdamTestSupport {
@@ -251,6 +253,14 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
     }
 
     private Map<String, Object> buildInputCaseData(String applicationType) {
+        Map<String, Object> caseData = buildBasicCaseData();
+
+        caseData.put(SERVICE_APPLICATION_TYPE, applicationType);
+
+        return caseData;
+    }
+
+    private Map<String, Object> buildBasicCaseData() {
         Map<String, Object> caseData = new HashMap<>();
 
         caseData.put(CASE_REFERENCE, TEST_CASE_FAMILY_MAN_ID);
@@ -261,8 +271,9 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
         caseData.put(RESPONDENT_LAST_NAME, TEST_RESPONDENT_LAST_NAME);
 
         caseData.put(RECEIVED_SERVICE_APPLICATION_DATE, "2010-10-10");
+        caseData.put(RECEIVED_SERVICE_ADDED_DATE, "2011-11-11");
         caseData.put(SERVICE_APPLICATION_GRANTED, YES_VALUE);
-        caseData.put(SERVICE_APPLICATION_TYPE, applicationType);
+        caseData.put(SERVICE_APPLICATION_REFUSAL_REASON, "aaaabbbbccc");
 
         return caseData;
     }
@@ -333,7 +344,10 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
     }
 
     private CcdCallbackRequest buildRequest() {
-        return buildRequest(new HashMap<>());
+        Map<String, Object> caseData = buildBasicCaseData();
+        caseData.put(SERVICE_APPLICATION_TYPE, "other type");
+
+        return buildRequest(caseData);
     }
 
     private CcdCallbackRequest buildMultipleServiceRefusalOrderFixture(String templateId, String serviceType, String documentType) {
@@ -355,6 +369,7 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
         Map<String, Object> refusalOrderData = buildServiceRefusalOrderCaseData(
             serviceType, refusalDraftDocument
         );
+        refusalOrderData.put(RECEIVED_SERVICE_ADDED_DATE, "2010-10-01");
 
         CcdCallbackRequest ccdCallbackRequest = buildRefusalRequest(refusalOrderData);
         ccdCallbackRequest.getCaseDetails().setState(SERVICE_APPLICATION_NOT_APPROVED);

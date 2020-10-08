@@ -17,7 +17,7 @@ public class PayByAccountTestUtil {
         Map<String, String> toggles = singletonMap(Features.PAY_BY_ACCOUNT.getName(), Boolean.toString(value));
         ReflectionTestUtils.setField(featureToggleService, "toggle", toggles);
 
-        SolicitorDataExtractor.CaseDataKeys.FEATURE_TOGGLE_SERVICE = featureToggleService;
+        SolicitorDataExtractor.setFeatureToggleService(featureToggleService);
     }
 
 }

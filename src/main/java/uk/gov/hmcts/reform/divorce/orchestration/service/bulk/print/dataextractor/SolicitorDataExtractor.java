@@ -21,7 +21,7 @@ public class SolicitorDataExtractor {
         public static final String SOLICITOR_PAYMENT_METHOD = OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
         public static final String SOLICITOR_PBA_NUMBER_V1 = OrchestrationConstants.SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY;
         public static final String SOLICITOR_PBA_NUMBER_V2 = CcdFields.PBA_NUMBERS;
-        public static FeatureToggleServiceImpl FEATURE_TOGGLE_SERVICE = new FeatureToggleServiceImpl();
+        private static FeatureToggleServiceImpl featureToggleService = new FeatureToggleServiceImpl();
     }
 
     public static String getSolicitorReference(Map<String, Object> caseData) {
@@ -33,10 +33,14 @@ public class SolicitorDataExtractor {
     }
 
     public static String getPbaNumber(Map<String, Object> caseData) {
-        final FeatureToggleServiceImpl featureToggleService = CaseDataKeys.FEATURE_TOGGLE_SERVICE;
+        final FeatureToggleServiceImpl featureToggleService = CaseDataKeys.featureToggleService;
         if (featureToggleService.isFeatureEnabled(Features.PAY_BY_ACCOUNT)) {
             return getMandatoryPropertyValueAsString(caseData, CaseDataKeys.SOLICITOR_PBA_NUMBER_V2);
         }
         return getMandatoryPropertyValueAsString(caseData, CaseDataKeys.SOLICITOR_PBA_NUMBER_V1);
+    }
+
+    public static void setFeatureToggleService(FeatureToggleServiceImpl featureToggleService) {
+        CaseDataKeys.featureToggleService = featureToggleService;
     }
 }
