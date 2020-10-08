@@ -72,7 +72,7 @@ public class ProcessPbaPaymentTask implements Task<Map<String, Object>> {
             String paymentStatus = getPaymentStatus(paymentResponseEntity);
             log.info("CaseID: {} Payment successfully made with payment status: {}", caseId, paymentStatus);
 
-            if(isPaymentStatusSuccess(paymentStatus)) {
+            if (isPaymentStatusSuccess(paymentStatus)) {
                 addPaymentStatusToResponse(caseData, paymentStatus);
             }
 
