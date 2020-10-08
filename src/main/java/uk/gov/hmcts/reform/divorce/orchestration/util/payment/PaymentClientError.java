@@ -89,8 +89,11 @@ public class PaymentClientError {
             String errorCode = Optional.ofNullable(statusHistoriesItem.getErrorCode()).orElseGet(() -> "");
 
             if (errorCode.equalsIgnoreCase(CAE0004)) {
+                log.info("Payment Reference: {} Generating error message for {} error code:", reference, CAE0004);
                 return getCustomErrorMessage(format(CAE0004_CONTENT, reference));
+
             } else if (errorCode.equalsIgnoreCase(CAE0001)) {
+                log.info("Payment Reference: {} Generating error message for {} error code:", reference, CAE0001);
                 return getCustomErrorMessage(format(CAE0001_CONTENT, reference));
             }
         }
