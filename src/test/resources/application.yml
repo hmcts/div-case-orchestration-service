@@ -136,9 +136,6 @@ pba:
     service:
       api:
         baseurl: ${PRD_API_BASEURL:http://localhost:8090}
-  contact:
-    phoneNumber: "11111 222222"
-    email: "pba.client@services.com"
 
 feature-toggle:
   toggle:

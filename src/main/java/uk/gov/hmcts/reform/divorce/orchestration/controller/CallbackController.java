@@ -175,19 +175,18 @@ public class CallbackController {
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         Map<String, Object> response = caseOrchestrationService.solicitorSubmission(ccdCallbackRequest, authorizationToken);
 
+        CcdCallbackResponse.CcdCallbackResponseBuilder responseBuilder = CcdCallbackResponse.builder();
+
         if (isResponseErrors(SOLICITOR_PBA_PAYMENT_ERROR_KEY, response)) {
-            return ResponseEntity.ok(
-                CcdCallbackResponse.builder()
-                    .errors(getResponseErrors(SOLICITOR_PBA_PAYMENT_ERROR_KEY, response))
-                    .build());
+            responseBuilder.errors(getResponseErrors(SOLICITOR_PBA_PAYMENT_ERROR_KEY, response));
         } else if (isPaymentSuccess(response)) {
-            return ResponseEntity.ok(CcdCallbackResponse.builder()
-                .state(getPbaUpdatedState(ccdCallbackRequest, response))
-                .data(response)
-                .build());
+            responseBuilder.state(getPbaUpdatedState(ccdCallbackRequest, response));
+            responseBuilder.data(response);
+        } else {
+            responseBuilder.data(response);
         }
 
-        return ResponseEntity.ok(CcdCallbackResponse.builder().data(response).build());
+        return ResponseEntity.ok(responseBuilder.build());
     }
 
     @PostMapping(path = "/solicitor-create", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)

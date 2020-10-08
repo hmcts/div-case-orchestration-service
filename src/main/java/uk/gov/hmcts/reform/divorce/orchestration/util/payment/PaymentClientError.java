@@ -20,7 +20,8 @@ import static java.lang.String.format;
 @Slf4j
 public class PaymentClientError {
 
-    private static final PaymentContactDetail paymentContactDetail = new PaymentContactDetail();
+    private static final String CONTACT_NUMBER = "01633 652125";
+    private static final String CONTACT_EMAIL = "MiddleOffice.DDServices@liberata.com";
 
     private static final String CONTACT_INFO = " For Payment Account support call %s (Option 3) or email %s.";
     private static final String DEFAULT = "Payment request failed. Please use a different account or payment method.";
@@ -91,7 +92,10 @@ public class PaymentClientError {
                 log.info("Payment Reference: {} Generating error message for {} error code:", reference, CAE0001);
                 return getCustomErrorMessage(format(CAE0001_CONTENT, reference));
             }
+        } else {
+            log.info("Payment Reference: {} Status histories is empty. Cannot process custom message for this error", reference);
         }
+
         return getCustomErrorMessage(DEFAULT);
     }
 
@@ -100,9 +104,7 @@ public class PaymentClientError {
     }
 
     private static String getContactInfo() {
-        return format(CONTACT_INFO,
-            paymentContactDetail.getPbaContactPhoneNumber(),
-            paymentContactDetail.getPbaContactEmail());
+        return format(CONTACT_INFO, CONTACT_NUMBER, CONTACT_EMAIL);
     }
 
 }
