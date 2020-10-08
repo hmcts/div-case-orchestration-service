@@ -44,7 +44,7 @@ public class GetPbaNumbersTask implements Task<Map<String, Object>> {
 
             log.info("CaseId: {}. About to retrieve PBA numbers for solicitor", caseId);
 
-            List<String> pbaNumbers = pbaNumbersFor(solicitorEmail, context);
+            List<String> pbaNumbers = pbaNumbersFor(solicitorEmail, bearerAuthToken);
 
             if (CollectionUtils.isEmpty(pbaNumbers)) {
                 log.info("CaseId: {}. No PBA numbers found for this solicitor", caseId);
@@ -58,9 +58,9 @@ public class GetPbaNumbersTask implements Task<Map<String, Object>> {
         return caseData;
     }
 
-    private List<String> pbaNumbersFor(String email, TaskContext context) {
+    private List<String> pbaNumbersFor(String email, String bearerAuthToken) {
         ResponseEntity<PBAOrganisationResponse> responseEntity = pbaValidationClient.retrievePbaNumbers(
-            context.getTransientObject(AUTH_TOKEN_JSON_KEY),
+            bearerAuthToken,
             serviceAuthGenerator.generate(),
             email
         );

@@ -134,7 +134,7 @@ public class RetrievePbaNumbersITest extends MockedFunctionalTest {
 
     private void stubRetrievePbaNumbersEndpoint(HttpStatus status, PBAOrganisationResponse response) {
         pbaValidationServer.stubFor(WireMock.get(urlEqualTo(RETRIEVE_PBA_NUMBERS_URL))
-            .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
+            .withHeader(AUTHORIZATION, new EqualToPattern(BEARER_AUTH_TOKEN))
             .withHeader(SERVICE_AUTHORIZATION_HEADER, new EqualToPattern("Bearer " + TEST_SERVICE_AUTH_TOKEN))
             .willReturn(aResponse()
                 .withStatus(status.value())
