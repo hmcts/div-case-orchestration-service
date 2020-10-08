@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.draft;
 
 import feign.FeignException;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +11,6 @@ import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.cms.CmsClientSupport;
 import uk.gov.hmcts.reform.divorce.support.cos.DraftsSubmissionSupport;
-import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 
 import java.util.List;
 import java.util.Map;
@@ -19,9 +19,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
+import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJsonToObject;
 
 public class DraftServiceEndToEndTest extends IntegrationTest {
 
@@ -40,6 +41,12 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     private CmsClientSupport cmsClientSupport;
 
     private UserDetails user;
+    private Map draftResource;
+
+    @Before
+    public void setUp() {
+        draftResource = loadJsonToObject(SAVE_DRAFT_FILE, Map.class);
+    }
 
     @After
     public void tearDown() {
@@ -52,19 +59,17 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     @Test
     public void givenUserWithoutDraft_whenRetrieveDraft_thenReturn404Status() {
         user = createCitizenUser();
-        try {
-            draftsSubmissionSupport.getUserDraft(user);
-            fail("Resource not found error expected");
-        } catch (FeignException error) {
-            assertEquals(HttpStatus.NOT_FOUND.value(), error.status());
-        }
+
+        FeignException expectedException = assertThrows("Resource not found error expected", FeignException.class,
+            () -> draftsSubmissionSupport.getUserDraft(user));
+        assertEquals(HttpStatus.NOT_FOUND.value(), expectedException.status());
     }
 
     @Test
     public void givenUser_whenSaveDraft_thenCaseIsSavedInDraftStore() {
         user = createCitizenUser();
 
-        draftsSubmissionSupport.saveDraft(user, SAVE_DRAFT_FILE);
+        draftsSubmissionSupport.saveDraft(user, draftResource);
 
         assertUserDraft(DRAFT_WITH_DIVORCE_FORMAT_FILE, user);
     }
@@ -73,25 +78,22 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     public void givenUserWithDraft_whenDeleteDraft_thenDraftIsDeleted() {
         user = createCitizenUser();
 
-        draftsSubmissionSupport.saveDraft(user, SAVE_DRAFT_FILE);
+        draftsSubmissionSupport.saveDraft(user, draftResource);
 
         assertUserDraft(DRAFT_WITH_DIVORCE_FORMAT_FILE, user);
 
         draftsSubmissionSupport.deleteDraft(user);
 
-        try {
-            draftsSubmissionSupport.getUserDraft(user);
-            fail("Resource not found error expected");
-        } catch (FeignException error) {
-            assertEquals(HttpStatus.NOT_FOUND.value(), error.status());
-        }
+        FeignException expectedException = assertThrows("Resource not found error expected", FeignException.class,
+            () -> draftsSubmissionSupport.getUserDraft(user));
+        assertEquals(HttpStatus.NOT_FOUND.value(), expectedException.status());
     }
 
     @Test
     public void givenUserWithDraft_whenSubmitCase_thenDraftIsDeleted() {
         user = createCitizenUser();
 
-        draftsSubmissionSupport.saveDraft(user, SAVE_DRAFT_FILE);
+        draftsSubmissionSupport.saveDraft(user, draftResource);
 
         assertUserDraft(DRAFT_WITH_DIVORCE_FORMAT_FILE, user);
 
@@ -106,15 +108,15 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
     public void givenUserWithDraft_whenUpdateDraft_thenDraftIsUpdated() {
         user = createCitizenUser();
 
-        draftsSubmissionSupport.saveDraft(user, DRAFT_PART_1_FILE);
+        draftsSubmissionSupport.saveDraft(user, loadJsonToObject(DRAFT_PART_1_FILE, Map.class));
         assertUserDraft(DRAFT_PART_1_RESPONSE_FILE, user);
 
-        draftsSubmissionSupport.saveDraft(user, DRAFT_PART_2_FILE);
+        draftsSubmissionSupport.saveDraft(user, loadJsonToObject(DRAFT_PART_2_FILE, Map.class));
         assertUserDraft(DRAFT_PART_2_RESPONSE_FILE, user);
     }
 
     private void assertUserDraft(String draftFile, UserDetails user) {
-        final Map<String, Object> expectedDraft = getDraftResponseResource(draftFile);
+        final Map<String, Object> expectedDraft = loadJsonToObject(draftFile, Map.class);
         final Map<String, Object> actualUserDraft = draftsSubmissionSupport.getUserDraft(user);
 
         //Assert transformation fields
@@ -122,8 +124,4 @@ public class DraftServiceEndToEndTest extends IntegrationTest {
         JSONAssert.assertEquals(convertObjectToJsonString(expectedDraft), convertObjectToJsonString(actualUserDraft), false);
     }
 
-    @SuppressWarnings("unchecked")
-    private Map<String, Object> getDraftResponseResource(String file) {
-        return ResourceLoader.loadJsonToObject(file, Map.class);
-    }
 }

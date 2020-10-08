@@ -45,7 +45,6 @@ public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
     private static final String STATE_KEY = "state";
 
     private static final String SUBMIT_COMPLETE_CASE_JSON_FILE_PATH = "submit-complete-case.json";
-    private static final String NO_STATE_CHANGE_EVENT_ID = "paymentReferenceGenerated";
 
     private static final String DECREE_NISI_GRANTED_DATE_KEY = "DecreeNisiGrantedDate";
     private static final String DECREE_NISI_GRANTED_DATE = "2019-03-31";

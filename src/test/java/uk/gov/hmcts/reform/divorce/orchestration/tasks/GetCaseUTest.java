@@ -29,7 +29,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.CASE_ID_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.CASE_STATE_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.CCD_CASE_DATA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.COURT_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -73,7 +72,6 @@ public class GetCaseUTest {
         Map<String, Object> returnedCaseData = classUnderTest.execute(context, null);
 
         assertThat(returnedCaseData, is(caseData));
-        assertThat(context.getTransientObject(CCD_CASE_DATA), is(caseData));
         assertThat(context.getTransientObject(CASE_ID_KEY), is(TEST_CASE_ID));
         assertThat(context.getTransientObject(CASE_STATE_KEY), is(TEST_STATE));
         assertThat(context.getTransientObject(COURT_KEY), is(TEST_COURT));

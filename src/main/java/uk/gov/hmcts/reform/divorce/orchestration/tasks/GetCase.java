@@ -15,7 +15,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.CASE_ID_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.CASE_STATE_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.CCD_CASE_DATA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.COURT_KEY;
 
 @Component
@@ -37,7 +36,6 @@ public class GetCase implements Task<Map<String, Object>> {
         }
 
         Map<String, Object> caseData = caseDetails.getCaseData();
-        context.setTransientObject(CCD_CASE_DATA, caseData);
         context.setTransientObject(CASE_ID_KEY, caseDetails.getCaseId());
         context.setTransientObject(CASE_STATE_KEY, caseDetails.getState());
         context.setTransientObject(COURT_KEY, String.valueOf(caseData.get(D_8_DIVORCE_UNIT)));

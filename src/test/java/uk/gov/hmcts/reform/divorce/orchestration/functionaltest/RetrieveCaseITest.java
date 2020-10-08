@@ -2,12 +2,14 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.CourtsMatcher;
 
 import java.util.Collections;
@@ -19,6 +21,7 @@ import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -27,12 +30,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
-public class RetrieveCaseITest extends MockedFunctionalTest {
+public class RetrieveCaseITest extends IdamTestSupport {
+
     private static final String API_URL = "/retrieve-case";
     private static final String GET_CASE_CONTEXT_PATH = "/casemaintenance/version/1/case";
     private static final String FORMAT_TO_DIVORCE_CONTEXT_PATH = "/caseformatter/version/1/to-divorce-format";
@@ -47,6 +52,11 @@ public class RetrieveCaseITest extends MockedFunctionalTest {
 
     @Autowired
     private MockMvc webClient;
+
+    @Before
+    public void setUp() {
+        stubUserDetailsEndpoint(OK, AUTH_TOKEN, convertObjectToJsonString(UserDetails.builder().email(TEST_EMAIL).build()));
+    }
 
     @Test
     public void givenNoAuthToken_whenRetrieveCase_thenReturnBadRequest() throws Exception {
@@ -122,7 +132,7 @@ public class RetrieveCaseITest extends MockedFunctionalTest {
     }
 
     private void stubGetCaseFromCMS(CaseDetails caseDetails) {
-        stubGetCaseFromCMS(HttpStatus.OK, convertObjectToJsonString(caseDetails));
+        stubGetCaseFromCMS(OK, convertObjectToJsonString(caseDetails));
     }
 
     private void stubGetCaseFromCMS(HttpStatus status, String message) {
@@ -139,7 +149,7 @@ public class RetrieveCaseITest extends MockedFunctionalTest {
     }
 
     private void stubFormatterServerEndpoint() {
-        stubFormatterServerEndpoint(HttpStatus.OK, convertObjectToJsonString(CASE_DATA));
+        stubFormatterServerEndpoint(OK, convertObjectToJsonString(CASE_DATA));
     }
 
     private void stubFormatterServerEndpoint(HttpStatus status, String message) {
