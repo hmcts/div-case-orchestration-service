@@ -12,6 +12,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLIC
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PBA_NUMBERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_PAY_BY_ACCOUNT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DynamicList.asDynamicList;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.SolicitorDataExtractor.CaseDataKeys.SOLICITOR_PAYMENT_METHOD;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.SolicitorDataExtractor.CaseDataKeys.SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.SOLICITOR_REF;
@@ -94,10 +95,10 @@ public class SolicitorDataExtractorTest {
     }
 
     private static Map<String, Object> buildCaseDataWithPbaNumberV2(String pbaNumber) {
-        return buildCaseDataWith(PBA_NUMBERS, pbaNumber);
+        return buildCaseDataWith(PBA_NUMBERS, asDynamicList(pbaNumber));
     }
 
-    private static Map<String, Object> buildCaseDataWith(String key, String value) {
+    private static Map<String, Object> buildCaseDataWith(String key, Object value) {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(key, value);
 

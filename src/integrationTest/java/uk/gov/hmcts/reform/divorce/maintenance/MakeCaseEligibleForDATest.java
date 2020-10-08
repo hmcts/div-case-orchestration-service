@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.divorce.model.UserDetails;
+import uk.gov.hmcts.reform.divorce.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.cms.CmsClientSupport;
 import uk.gov.hmcts.reform.divorce.support.cos.RetrieveCaseSupport;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;

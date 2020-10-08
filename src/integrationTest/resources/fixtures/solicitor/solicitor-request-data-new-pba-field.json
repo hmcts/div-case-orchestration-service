@@ -165,7 +165,17 @@
           }
         ]
       },
-      "PbaNumbers" : "PBA1234567",
+      "PbaNumbers": {
+        "value": {
+          "code": "PBA1234567",
+          "label": "PBA1234567"
+        },"list_items": [
+          {
+            "code": "PBA1234567",
+            "label": "PBA1234567"
+          }
+        ]
+      },
       "D8SolicitorReference" : "SolicitorReference",
       "D8SelectedDivorceCentreSiteId" : "AA01",
       "PetitionerSolicitorFirm" : "Solicitor",

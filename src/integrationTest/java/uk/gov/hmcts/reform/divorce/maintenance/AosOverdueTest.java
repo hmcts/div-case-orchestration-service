@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.divorce.model.UserDetails;
+import uk.gov.hmcts.reform.divorce.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.cos.RetrieveCaseSupport;
 import uk.gov.hmcts.reform.divorce.util.ElasticSearchTestHelper;
 

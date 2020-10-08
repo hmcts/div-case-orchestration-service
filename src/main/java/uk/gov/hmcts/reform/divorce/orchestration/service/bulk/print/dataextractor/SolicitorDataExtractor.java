@@ -1,14 +1,17 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DynamicList;
 import uk.gov.hmcts.reform.divorce.orchestration.service.impl.FeatureToggleServiceImpl;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsObject;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 
@@ -22,6 +25,7 @@ public class SolicitorDataExtractor {
         public static final String SOLICITOR_PBA_NUMBER_V1 = OrchestrationConstants.SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY;
         public static final String SOLICITOR_PBA_NUMBER_V2 = CcdFields.PBA_NUMBERS;
         private static FeatureToggleServiceImpl featureToggleService = new FeatureToggleServiceImpl();
+        private static final ObjectMapper objectMapper = new ObjectMapper();
     }
 
     public static String getSolicitorReference(Map<String, Object> caseData) {
@@ -35,7 +39,9 @@ public class SolicitorDataExtractor {
     public static String getPbaNumber(Map<String, Object> caseData) {
         final FeatureToggleServiceImpl featureToggleService = CaseDataKeys.featureToggleService;
         if (featureToggleService.isFeatureEnabled(Features.PAY_BY_ACCOUNT)) {
-            return getMandatoryPropertyValueAsString(caseData, CaseDataKeys.SOLICITOR_PBA_NUMBER_V2);
+            DynamicList pbaNumbers = CaseDataKeys.objectMapper.convertValue(
+                getMandatoryPropertyValueAsObject(caseData, CaseDataKeys.SOLICITOR_PBA_NUMBER_V2), DynamicList.class);
+            return pbaNumbers.getValue().getCode();
         }
         return getMandatoryPropertyValueAsString(caseData, CaseDataKeys.SOLICITOR_PBA_NUMBER_V1);
     }

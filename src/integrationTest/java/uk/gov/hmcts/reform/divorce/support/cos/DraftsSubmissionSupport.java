@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.divorce.support.cos;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.model.UserDetails;
+import uk.gov.hmcts.reform.divorce.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 
 import java.util.Map;

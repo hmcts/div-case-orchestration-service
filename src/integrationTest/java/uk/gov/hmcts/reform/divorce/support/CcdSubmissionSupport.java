@@ -13,7 +13,7 @@ import org.springframework.http.HttpHeaders;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
-import uk.gov.hmcts.reform.divorce.model.UserDetails;
+import uk.gov.hmcts.reform.divorce.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
 
 import java.util.Arrays;

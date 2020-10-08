@@ -8,7 +8,7 @@ import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.divorce.model.UserDetails;
+import uk.gov.hmcts.reform.divorce.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.RetrieveAosCaseSupport;
 
 import static org.junit.Assert.assertEquals;
