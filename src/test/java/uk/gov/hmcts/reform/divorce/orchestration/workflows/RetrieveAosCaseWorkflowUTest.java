@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddCourtsToPayloadTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataToDivorceFormatter;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveAosCase;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.GeneralOrdersFilterTask;
 
 import java.util.Map;
 
@@ -41,6 +42,9 @@ public class RetrieveAosCaseWorkflowUTest {
     private RetrieveAosCase retrieveAosCase;
 
     @Mock
+    private GeneralOrdersFilterTask generalOrdersFilterTask;
+
+    @Mock
     private CaseDataToDivorceFormatter caseDataToDivorceFormatter;
 
     @Mock
@@ -65,7 +69,7 @@ public class RetrieveAosCaseWorkflowUTest {
 
                 return fetchedCaseData;
             });
-        mockTasksExecution(fetchedCaseData, caseDataToDivorceFormatter, addCourtsToPayloadTask);
+        mockTasksExecution(fetchedCaseData, generalOrdersFilterTask, caseDataToDivorceFormatter, addCourtsToPayloadTask);
 
         Map<String, Object> returnedCaseData = classUnderTest.run(AUTH_TOKEN);
 
@@ -77,7 +81,7 @@ public class RetrieveAosCaseWorkflowUTest {
         verify(retrieveAosCase).execute(taskContextArgumentCaptor.capture(), isNull());
         TaskContext originatingTaskContext = taskContextArgumentCaptor.getValue();
         assertThat(originatingTaskContext.getTransientObject(AUTH_TOKEN_JSON_KEY), is(AUTH_TOKEN));
-        verifyTasksCalledInOrder(fetchedCaseData, caseDataToDivorceFormatter, addCourtsToPayloadTask);
+        verifyTasksCalledInOrder(fetchedCaseData, generalOrdersFilterTask, caseDataToDivorceFormatter, addCourtsToPayloadTask);
     }
 
 }
