@@ -137,9 +137,6 @@ pba:
     service:
       api:
         baseurl: ${PRD_API_BASEURL:http://localhost:8090}
-  contact:
-    phoneNumber: "01633 652125"
-    email: "MiddleOffice.DDServices@liberata.com"
 
 feature-toggle:
   toggle:
