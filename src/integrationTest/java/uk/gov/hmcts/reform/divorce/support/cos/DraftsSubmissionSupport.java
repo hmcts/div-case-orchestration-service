@@ -19,8 +19,7 @@ public class DraftsSubmissionSupport {
         return cosApiClient.getDraft(userDetails.getAuthToken());
     }
 
-    public void saveDraft(UserDetails userDetails, String fileName) {
-        Map<String, Object> draftResource = ResourceLoader.loadJsonToObject(fileName, Map.class);
+    public void saveDraft(UserDetails userDetails, Map<String, Object> draftResource) {
         cosApiClient.saveDraft(userDetails.getAuthToken(), draftResource, Boolean.TRUE.toString());
     }
 
@@ -33,4 +32,5 @@ public class DraftsSubmissionSupport {
         Map<String, Object> draftResource = ResourceLoader.loadJsonToObject(fileName, Map.class);
         return cosApiClient.submitCase(userDetails.getAuthToken(), draftResource);
     }
+
 }

@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.CCD_CASE_DATA;
 
 @Component
 public class CaseDataToDivorceFormatter implements Task<Map<String, Object>> {
@@ -21,10 +20,10 @@ public class CaseDataToDivorceFormatter implements Task<Map<String, Object>> {
     }
 
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> incomingCaseData) {
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         return caseFormatterClient.transformToDivorceFormat(
             context.getTransientObject(AUTH_TOKEN_JSON_KEY),
-            context.getTransientObject(CCD_CASE_DATA)
+            caseData
         );
     }
 
