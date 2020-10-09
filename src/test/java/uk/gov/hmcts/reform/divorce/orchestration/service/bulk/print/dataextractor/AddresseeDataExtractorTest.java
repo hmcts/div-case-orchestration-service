@@ -12,16 +12,15 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.CO_RESPONDENT;
+import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.PETITIONER;
+import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_OTHER_PARTY_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_EMAIL_OTHER_RECIPIENT_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_EMAIL_OTHER_RECIPIENT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_EMAIL_PARTIES;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ListElements.CO_RESPONDENT_GENERAL_EMAIL_SELECTION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ListElements.OTHER_GENERAL_EMAIL_SELECTION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ListElements.PETITIONER_GENERAL_EMAIL_SELECTION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ListElements.RESPONDENT_GENERAL_EMAIL_SELECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_DERIVED_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS;
@@ -45,6 +44,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.buildCaseDataWithCoRespondentSolicitorNames;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.buildCaseDataWithPetitionerNames;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.buildCaseDataWithRespondentNames;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.GeneralEmailWorkflow.OTHER_GENERAL_EMAIL_SELECTION;
 
 public class AddresseeDataExtractorTest {
 
@@ -153,7 +153,7 @@ public class AddresseeDataExtractorTest {
 
     public static Map<String, Object> buildCaseDataWithPetitioner() {
         Map<String, Object> caseData = buildCaseDataWithPetitionerNames();
-        caseData.put(GENERAL_EMAIL_PARTIES, PETITIONER_GENERAL_EMAIL_SELECTION);
+        caseData.put(GENERAL_EMAIL_PARTIES, PETITIONER.getDescription());
         caseData.put(PETITIONER_ADDRESS, PETITIONERS_ADDRESS);
 
         return caseData;
@@ -161,7 +161,7 @@ public class AddresseeDataExtractorTest {
 
     public static Map<String, Object> buildCaseDataWithPetitionerSolicitor() {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(GENERAL_EMAIL_PARTIES, PETITIONER_GENERAL_EMAIL_SELECTION);
+        caseData.put(GENERAL_EMAIL_PARTIES, PETITIONER.getDescription());
         caseData.put(PETITIONER_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
         caseData.put(PETITIONER_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL);
         caseData.put(LANGUAGE_PREFERENCE_WELSH, NO_VALUE);
@@ -170,7 +170,7 @@ public class AddresseeDataExtractorTest {
 
     public static Map<String, Object> buildCaseDataWithRespondent() {
         Map<String, Object> caseData = buildCaseDataWithRespondentNames();
-        caseData.put(GENERAL_EMAIL_PARTIES, RESPONDENT_GENERAL_EMAIL_SELECTION);
+        caseData.put(GENERAL_EMAIL_PARTIES, RESPONDENT.getDescription());
         caseData.put(RESPONDENT_ADDRESS, RESPONDENTS_ADDRESS);
 
         return caseData;
@@ -179,7 +179,7 @@ public class AddresseeDataExtractorTest {
     public static Map<String, Object> buildCaseDataWithRespondentSolicitor() {
         Map<String, Object> caseData = buildCaseDataWithRespondentNames();
 
-        caseData.put(GENERAL_EMAIL_PARTIES, RESPONDENT_GENERAL_EMAIL_SELECTION);
+        caseData.put(GENERAL_EMAIL_PARTIES, RESPONDENT.getDescription());
         caseData.put(RESPONDENT_SOLICITOR_NAME, RESPONDENT_SOLICITORS_EXPECTED_NAME);
         caseData.put(RESPONDENT_SOLICITOR_ADDRESS, RESPONDENT_SOLICITORS_ADDRESS);
         caseData.put(D8_RESPONDENT_SOLICITOR_REFERENCE, RESPONDENT_SOLICITOR_REF);
@@ -190,7 +190,7 @@ public class AddresseeDataExtractorTest {
 
     public static Map<String, Object> buildCaseDataWithCoRespondent() {
         Map<String, Object> caseData = buildCaseDataWithCoRespondentNames();
-        caseData.put(GENERAL_EMAIL_PARTIES, CO_RESPONDENT_GENERAL_EMAIL_SELECTION);
+        caseData.put(GENERAL_EMAIL_PARTIES, CO_RESPONDENT.getDescription());
         caseData.put(D8_DERIVED_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS, CO_RESPONDENT_ADDRESS);
         caseData.put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE);
         caseData.put(COSTS_CLAIM_GRANTED, YES_VALUE);
@@ -202,7 +202,7 @@ public class AddresseeDataExtractorTest {
 
     public static Map<String, Object> buildCaseDataWithCoRespondentSolicitor() {
         Map<String, Object> caseData = buildCaseDataWithCoRespondentSolicitorNames(CO_RESPONDENT_SOLICITORS_EXPECTED_NAME);
-        caseData.put(GENERAL_EMAIL_PARTIES, CO_RESPONDENT_GENERAL_EMAIL_SELECTION);
+        caseData.put(GENERAL_EMAIL_PARTIES, CO_RESPONDENT.getDescription());
         caseData.put(OrchestrationConstants.CO_RESPONDENT_SOLICITOR_ADDRESS, CO_RESPONDENT_SOLICITOR_ADDRESS);
         caseData.put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE);
         caseData.put(COSTS_CLAIM_GRANTED, YES_VALUE);

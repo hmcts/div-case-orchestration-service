@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,8 @@ import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -32,13 +35,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
-public class RetrieveAosCaseITest extends MockedFunctionalTest {
+public class RetrieveAosCaseITest extends IdamTestSupport {
 
     private static final String API_URL = "/retrieve-aos-case";
     private static final String RETRIEVE_AOS_CASE_CONTEXT_PATH = "/casemaintenance/version/1/retrieveAosCase";
     private static final String FORMAT_TO_DIVORCE_CONTEXT_PATH = "/caseformatter/version/1/to-divorce-format";
 
     private static final Map<String, Object> CASE_DATA = Collections.singletonMap(D_8_DIVORCE_UNIT, TEST_COURT);
+
     private static final CaseDetails CASE_DETAILS =
         CaseDetails.builder()
             .caseId(TEST_CASE_ID)
@@ -49,6 +53,11 @@ public class RetrieveAosCaseITest extends MockedFunctionalTest {
     @Autowired
     private MockMvc webClient;
 
+    @Before
+    public void setUp() {
+        stubUserDetailsEndpoint(OK, AUTH_TOKEN, USER_DETAILS_JSON);
+    }
+
     @Test
     public void givenNoAuthToken_whenRetrieveAosCase_thenReturnBadRequest() throws Exception {
         webClient.perform(get(API_URL)
@@ -58,7 +67,7 @@ public class RetrieveAosCaseITest extends MockedFunctionalTest {
 
     @Test
     public void givenCMSThrowsException_whenRetrieveAosCase_thenPropagateException() throws Exception {
-        stubRetrieveAosCaseFromCMS(HttpStatus.INTERNAL_SERVER_ERROR, TEST_ERROR);
+        stubRetrieveAosCaseFromCMS(INTERNAL_SERVER_ERROR, TEST_ERROR);
 
         webClient.perform(get(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -81,7 +90,7 @@ public class RetrieveAosCaseITest extends MockedFunctionalTest {
     public void givenCFSThrowsException_whenRetrieveAosCase_thenPropagateException() throws Exception {
         stubRetrieveAosCaseFromCMS(CASE_DETAILS);
 
-        stubFormatterServerEndpoint(HttpStatus.INTERNAL_SERVER_ERROR, TEST_ERROR);
+        stubFormatterServerEndpoint(INTERNAL_SERVER_ERROR, TEST_ERROR);
 
         webClient.perform(get(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -112,7 +121,7 @@ public class RetrieveAosCaseITest extends MockedFunctionalTest {
     }
 
     private void stubRetrieveAosCaseFromCMS(CaseDetails caseDetails) {
-        stubRetrieveAosCaseFromCMS(HttpStatus.OK, convertObjectToJsonString(caseDetails));
+        stubRetrieveAosCaseFromCMS(OK, convertObjectToJsonString(caseDetails));
     }
 
     private void stubRetrieveAosCaseFromCMS(HttpStatus status, String message) {
@@ -125,7 +134,7 @@ public class RetrieveAosCaseITest extends MockedFunctionalTest {
     }
 
     private void stubFormatterServerEndpoint() {
-        stubFormatterServerEndpoint(HttpStatus.OK, convertObjectToJsonString(CASE_DATA));
+        stubFormatterServerEndpoint(OK, convertObjectToJsonString(CASE_DATA));
     }
 
     private void stubFormatterServerEndpoint(HttpStatus status, String message) {
