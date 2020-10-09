@@ -21,10 +21,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ListElements.CO_RESPONDENT_GENERAL_EMAIL_SELECTION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ListElements.OTHER_GENERAL_EMAIL_SELECTION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ListElements.PETITIONER_GENERAL_EMAIL_SELECTION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ListElements.RESPONDENT_GENERAL_EMAIL_SELECTION;
+import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.CO_RESPONDENT;
+import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.PETITIONER;
+import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.getGeneralEmailParties;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentDigital;
@@ -38,6 +37,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentation
 @Slf4j
 @RequiredArgsConstructor
 public class GeneralEmailWorkflow extends DefaultWorkflow<Map<String, Object>> {
+
+    public static final String OTHER_GENERAL_EMAIL_SELECTION = "other";
 
     private final GeneralEmailCoRespondentSolicitorTask generalEmailCoRespondentSolicitorTask;
     private final GeneralEmailCoRespondentTask generalEmailCoRespondentTask;
@@ -68,25 +69,25 @@ public class GeneralEmailWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
         String party = getGeneralEmailParties(caseData);
 
-        if (party.equals(PETITIONER_GENERAL_EMAIL_SELECTION)) {
+        if (PETITIONER.getDescription().equals(party)) {
             if (isPetitionerRepresented(caseData)) {
                 tasks.add(getGeneralEmailPetitionerSolicitorTask(caseId));
             } else {
                 tasks.add(getGeneralEmailPetitionerTask(caseId));
             }
-        } else if (party.equals(RESPONDENT_GENERAL_EMAIL_SELECTION)) {
+        } else if (RESPONDENT.getDescription().equals(party)) {
             if (isRespondentRepresented(caseData)) {
                 tasks.add(getGeneralEmailRespondentSolicitorTask(caseId));
             } else if (isRespondentDigital(caseData)) {
                 tasks.add(getGeneralEmailRespondentTask(caseId));
             }
-        } else if (party.equals(CO_RESPONDENT_GENERAL_EMAIL_SELECTION)) {
+        } else if (CO_RESPONDENT.getDescription().equals(party)) {
             if (isCoRespondentRepresented(caseData)) {
                 tasks.add(getGeneralEmailCoRespondentSolicitorTask(caseId));
             } else if (isCoRespondentDigital(caseData)) {
                 tasks.add(getGeneralEmailCoRespondentTask(caseId));
             }
-        } else if (party.equals(OTHER_GENERAL_EMAIL_SELECTION)) {
+        } else if (OTHER_GENERAL_EMAIL_SELECTION.equals(party)) {
             if (isOtherPartyDigital(caseData)) {
                 tasks.add(getGeneralEmailOtherPartyTask(caseId));
             }
@@ -95,7 +96,7 @@ public class GeneralEmailWorkflow extends DefaultWorkflow<Map<String, Object>> {
             throw new TaskException("CaseData could not be build with invalid Party declaration.");
         }
 
-        return tasks.toArray(new Task[]{});
+        return tasks.toArray(new Task[] {});
     }
 
     private Task<Map<String, Object>> getGeneralEmailPetitionerTask(String caseId) {

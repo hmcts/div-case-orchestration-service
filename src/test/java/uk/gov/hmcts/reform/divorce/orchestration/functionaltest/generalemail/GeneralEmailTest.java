@@ -25,6 +25,9 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.CO_RESPONDENT;
+import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.PETITIONER;
+import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CO_RESPONDENT_EMAIL;
@@ -49,10 +52,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.C
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_EMAIL_DETAILS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_EMAIL_PARTIES;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ListElements.CO_RESPONDENT_GENERAL_EMAIL_SELECTION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ListElements.OTHER_GENERAL_EMAIL_SELECTION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ListElements.PETITIONER_GENERAL_EMAIL_SELECTION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ListElements.RESPONDENT_GENERAL_EMAIL_SELECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
@@ -69,16 +68,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_SOLICITOR_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.Party.CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.Party.CO_RESPONDENT_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.Party.OTHER;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.Party.PETITIONER;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.Party.PETITIONER_SOLICITOR;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.Party.RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.Party.RESPONDENT_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getExpectedNotificationTemplateVars;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.context;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.GeneralEmailWorkflow.OTHER_GENERAL_EMAIL_SELECTION;
 
 public class GeneralEmailTest extends IdamTestSupport {
 
@@ -100,7 +97,7 @@ public class GeneralEmailTest extends IdamTestSupport {
 
     @Test
     public void shouldSendGeneralEmailWhen_toPetitioner() throws Exception {
-        Map<String, Object> caseData = buildInputCaseData(PETITIONER);
+        Map<String, Object> caseData = buildInputCaseData(GeneralEmailTaskHelper.Party.PETITIONER);
         CcdCallbackRequest ccdCallbackRequest = buildRequest(caseData);
 
         setupWebClient(ccdCallbackRequest);
@@ -130,7 +127,7 @@ public class GeneralEmailTest extends IdamTestSupport {
 
     @Test
     public void shouldSendGeneralEmailWhen_toRespondent() throws Exception {
-        Map<String, Object> caseData = buildInputCaseData(RESPONDENT);
+        Map<String, Object> caseData = buildInputCaseData(GeneralEmailTaskHelper.Party.RESPONDENT);
         CcdCallbackRequest ccdCallbackRequest = buildRequest(caseData);
 
         setupWebClient(ccdCallbackRequest);
@@ -138,7 +135,7 @@ public class GeneralEmailTest extends IdamTestSupport {
         verify(emailClient).sendEmail(
             eq(GENERAL_EMAIL_RESPONDENT),
             eq(TEST_RESPONDENT_EMAIL),
-            eq(getExpectedNotificationTemplateVars(RESPONDENT, context(), caseData)),
+            eq(getExpectedNotificationTemplateVars(GeneralEmailTaskHelper.Party.RESPONDENT, context(), caseData)),
             any()
         );
     }
@@ -160,7 +157,7 @@ public class GeneralEmailTest extends IdamTestSupport {
 
     @Test
     public void shouldSendGeneralEmailWhen_toCoRespondent() throws Exception {
-        Map<String, Object> caseData = buildInputCaseData(CO_RESPONDENT);
+        Map<String, Object> caseData = buildInputCaseData(GeneralEmailTaskHelper.Party.CO_RESPONDENT);
         CcdCallbackRequest ccdCallbackRequest = buildRequest(caseData);
 
         setupWebClient(ccdCallbackRequest);
@@ -168,7 +165,7 @@ public class GeneralEmailTest extends IdamTestSupport {
         verify(emailClient).sendEmail(
             eq(GENERAL_EMAIL_CO_RESPONDENT),
             eq(TEST_CO_RESPONDENT_EMAIL),
-            eq(getExpectedNotificationTemplateVars(CO_RESPONDENT, context(), caseData)),
+            eq(getExpectedNotificationTemplateVars(GeneralEmailTaskHelper.Party.CO_RESPONDENT, context(), caseData)),
             any()
         );
     }
@@ -233,7 +230,7 @@ public class GeneralEmailTest extends IdamTestSupport {
 
     public static Map<String, Object> getPetitionerData(Boolean isRepresented) {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(GENERAL_EMAIL_PARTIES, PETITIONER_GENERAL_EMAIL_SELECTION);
+        caseData.put(GENERAL_EMAIL_PARTIES, PETITIONER.getDescription());
         caseData.put(CcdFields.PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         caseData.put(CcdFields.PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
         caseData.put(PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
@@ -250,7 +247,7 @@ public class GeneralEmailTest extends IdamTestSupport {
 
     public static Map<String, Object> getRespondentData(Boolean isRepresented) {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(GENERAL_EMAIL_PARTIES, RESPONDENT_GENERAL_EMAIL_SELECTION);
+        caseData.put(GENERAL_EMAIL_PARTIES, RESPONDENT.getDescription());
         caseData.put(RESPONDENT_FIRST_NAME, TEST_RESPONDENT_FIRST_NAME);
         caseData.put(RESPONDENT_LAST_NAME, TEST_RESPONDENT_LAST_NAME);
         caseData.put(RESPONDENT_EMAIL, TEST_RESPONDENT_EMAIL);
@@ -268,7 +265,7 @@ public class GeneralEmailTest extends IdamTestSupport {
 
     public static Map<String, Object> getCoRespondentData(Boolean isRepresented) {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(GENERAL_EMAIL_PARTIES, CO_RESPONDENT_GENERAL_EMAIL_SELECTION);
+        caseData.put(GENERAL_EMAIL_PARTIES, CO_RESPONDENT.getDescription());
         caseData.put(CO_RESPONDENT_FIRST_NAME, TEST_CO_RESPONDENT_FIRST_NAME);
         caseData.put(CO_RESPONDENT_LAST_NAME, TEST_CO_RESPONDENT_LAST_NAME);
         caseData.put(CO_RESPONDENT_EMAIL_ADDRESS, TEST_CO_RESPONDENT_EMAIL);
