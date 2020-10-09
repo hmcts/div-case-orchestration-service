@@ -74,6 +74,8 @@ public class ProcessPbaPaymentTask implements Task<Map<String, Object>> {
             if (isPaymentStatusSuccess(paymentStatus)) {
                 log.info("CaseID: {} Payment successfully made with payment status: {}", caseId, paymentStatus);
                 addPaymentStatusToResponse(caseData, paymentStatus);
+            } else {
+                log.info("CaseID: {} PBA process completed with payment status: {}", caseId, paymentStatus);
             }
 
         } catch (Exception exception) {
