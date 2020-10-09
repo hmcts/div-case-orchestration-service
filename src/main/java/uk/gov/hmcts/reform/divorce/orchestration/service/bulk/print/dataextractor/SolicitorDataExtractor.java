@@ -1,20 +1,17 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DynamicList;
-import uk.gov.hmcts.reform.divorce.orchestration.service.impl.FeatureToggleServiceImpl;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsObject;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getAsDynamicList;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -26,8 +23,6 @@ public class SolicitorDataExtractor {
         public static final String SOLICITOR_PAYMENT_METHOD = OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
         public static final String SOLICITOR_PBA_NUMBER_V1 = OrchestrationConstants.SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY;
         public static final String SOLICITOR_PBA_NUMBER_V2 = CcdFields.PBA_NUMBERS;
-        private static FeatureToggleServiceImpl featureToggleService = new FeatureToggleServiceImpl();
-        private static final ObjectMapper objectMapper = new ObjectMapper();
     }
 
     public static String getSolicitorReference(Map<String, Object> caseData) {
@@ -38,19 +33,11 @@ public class SolicitorDataExtractor {
         return getOptionalPropertyValueAsString(caseData, CaseDataKeys.SOLICITOR_PAYMENT_METHOD, "");
     }
 
-    public static String getPbaNumber(Map<String, Object> caseData) {
-        final FeatureToggleServiceImpl featureToggleService = CaseDataKeys.featureToggleService;
-        if (featureToggleService.isFeatureEnabled(Features.PAY_BY_ACCOUNT)) {
-            log.info("PBA feature toggle on. Return new PBA field.");
-            DynamicList pbaNumbers = CaseDataKeys.objectMapper.convertValue(
-                getMandatoryPropertyValueAsObject(caseData, CaseDataKeys.SOLICITOR_PBA_NUMBER_V2), DynamicList.class);
+    public static String getPbaNumber(Map<String, Object> caseData, boolean isToggleOn) {
+        if (isToggleOn) {
+            DynamicList pbaNumbers = getAsDynamicList(caseData, CaseDataKeys.SOLICITOR_PBA_NUMBER_V2);
             return pbaNumbers.getValue().getCode();
         }
-        log.info("PBA feature toggle off. Return old PBA field.");
         return getMandatoryPropertyValueAsString(caseData, CaseDataKeys.SOLICITOR_PBA_NUMBER_V1);
-    }
-
-    public static void setFeatureToggleService(FeatureToggleServiceImpl featureToggleService) {
-        CaseDataKeys.featureToggleService = featureToggleService;
     }
 }

@@ -1,11 +1,12 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.client.PaymentClient;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeItem;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeValue;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentItem;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.SolicitorDataExtractor;
 
 import java.util.Collections;
@@ -36,20 +38,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class ProcessPbaPayment implements Task<Map<String, Object>> {
 
     private final PaymentClient paymentClient;
     private final AuthTokenGenerator serviceAuthGenerator;
     private final ObjectMapper objectMapper;
-
-    @Autowired
-    public ProcessPbaPayment(PaymentClient paymentClient,
-                             AuthTokenGenerator serviceAuthGenerator,
-                             ObjectMapper objectMapper) {
-        this.paymentClient = paymentClient;
-        this.serviceAuthGenerator = serviceAuthGenerator;
-        this.objectMapper = objectMapper;
-    }
+    private final FeatureToggleService featureToggleService;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
@@ -69,7 +64,7 @@ public class ProcessPbaPayment implements Task<Map<String, Object>> {
                 addToRequest(request::setAmount, orderSummary::getPaymentTotal);
                 addToRequest(request::setCcdCaseNumber, context.getTransientObject(CASE_ID_JSON_KEY)::toString);
                 addToRequest(request::setSiteId, caseData.get(DIVORCE_CENTRE_SITEID_JSON_KEY)::toString);
-                addToRequest(request::setAccountNumber, SolicitorDataExtractor.getPbaNumber(caseData)::toString);
+                addToRequest(request::setAccountNumber, SolicitorDataExtractor.getPbaNumber(caseData, isPbaToggleOn())::toString);
                 addToRequest(request::setOrganisationName, caseData.get(SOLICITOR_FIRM_JSON_KEY)::toString);
                 addToRequest(request::setCustomerReference, caseData.get(SOLICITOR_REFERENCE_JSON_KEY)::toString);
                 addToRequest(request::setDescription, value::getFeeDescription);
@@ -113,5 +108,9 @@ public class ProcessPbaPayment implements Task<Map<String, Object>> {
         return Optional.ofNullable(howPay)
                 .map(i -> i.equals(FEE_PAY_BY_ACCOUNT))
                 .orElse(false);
+    }
+
+    private boolean isPbaToggleOn() {
+        return featureToggleService.isFeatureEnabled(Features.PAY_BY_ACCOUNT);
     }
 }

@@ -4,7 +4,6 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
-import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
@@ -94,10 +93,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubm
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmailTask.AMEND_SOL_DESC;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmailTask.SUBMITTED_DESC;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PayByAccountTestUtil.setPbaToggleTo;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.formatCaseIdToReferenceNumber;
 
-public class ProcessPbaPaymentITest extends MockedFunctionalTest {
+public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTest {
 
     private static final String API_URL = "/process-pba-payment";
     private static final String PAYMENTS_CREDIT_ACCOUNT_CONTEXT_PATH = "/credit-account-payments";
@@ -110,10 +108,10 @@ public class ProcessPbaPaymentITest extends MockedFunctionalTest {
     @Autowired
     private MockMvc webClient;
 
-    private Map<String, Object> caseData;
-    private CaseDetails caseDetails;
-    private CcdCallbackRequest ccdCallbackRequest;
-    private CreditAccountPaymentRequest request;
+    Map<String, Object> caseData;
+    CaseDetails caseDetails;
+    CcdCallbackRequest ccdCallbackRequest;
+    CreditAccountPaymentRequest request;
 
     @Before
     public void setup() {
@@ -144,8 +142,6 @@ public class ProcessPbaPaymentITest extends MockedFunctionalTest {
         caseData.put(PETITIONER_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
         caseData.put(DIVORCE_CENTRE_SITEID_JSON_KEY, CourtEnum.EASTMIDLANDS.getSiteId());
         caseData.put(DIVORCE_UNIT_JSON_KEY, CourtEnum.EASTMIDLANDS.getId());
-        caseData.put(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY, TEST_SOLICITOR_ACCOUNT_NUMBER);
-        caseData.put(PBA_NUMBERS, asDynamicList(TEST_SOLICITOR_ACCOUNT_NUMBER));
         caseData.put(SOLICITOR_FIRM_JSON_KEY, TEST_SOLICITOR_FIRM_NAME);
         caseData.put(SOLICITOR_REFERENCE_JSON_KEY, TEST_SOLICITOR_REFERENCE);
 
@@ -169,21 +165,16 @@ public class ProcessPbaPaymentITest extends MockedFunctionalTest {
         request.setFees(Collections.singletonList(paymentItem));
     }
 
-    @Test
-    public void givenCaseData_whenProcessPbaPaymentAndPbaToggleIsOn_thenMakePaymentAndReturn_PetitionerNewCase() throws Exception {
-        setPbaToggleTo(true);
-        caseData.remove(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY);
-        givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_PetitionerNewCase();
+    void setupForToggleOn() {
+        caseData.put(PBA_NUMBERS, asDynamicList(TEST_SOLICITOR_ACCOUNT_NUMBER));
     }
 
-    @Test
-    public void givenCaseData_whenProcessPbaPaymentAndPbaToggleIsOff_thenMakePaymentAndReturn_PetitionerNewCase() throws Exception {
-        setPbaToggleTo(false);
-        caseData.remove(PBA_NUMBERS);
-        givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_PetitionerNewCase();
+    void setupForToggleOff() {
+        caseData.put(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY, TEST_SOLICITOR_ACCOUNT_NUMBER);
     }
 
-    private void givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_PetitionerNewCase() throws Exception {
+
+    void givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_PetitionerNewCase() throws Exception {
         caseData.put(STATEMENT_OF_TRUTH, YES_VALUE);
         caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, YES_VALUE);
 
@@ -207,21 +198,7 @@ public class ProcessPbaPaymentITest extends MockedFunctionalTest {
         );
     }
 
-    @Test
-    public void givenCaseData_whenProcessPbaPaymentAndToggleIsOn_thenMakePaymentAndReturn_PetitionerAmendedCase() throws Exception {
-        setPbaToggleTo(true);
-        caseData.remove(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY);
-        givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_PetitionerAmendedCase();
-    }
-
-    @Test
-    public void givenCaseData_whenProcessPbaPaymentAndPbaToggleIsOff_thenMakePaymentAndReturn_PetitionerAmendedCase() throws Exception {
-        setPbaToggleTo(false);
-        caseData.remove(PBA_NUMBERS);
-        givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_PetitionerAmendedCase();
-    }
-
-    private void givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_PetitionerAmendedCase() throws Exception {
+    void givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_PetitionerAmendedCase() throws Exception {
         caseData.put(STATEMENT_OF_TRUTH, YES_VALUE);
         caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, YES_VALUE);
         caseData.put(PREVIOUS_CASE_ID_CCD_KEY, EMPTY_MAP);
@@ -246,21 +223,7 @@ public class ProcessPbaPaymentITest extends MockedFunctionalTest {
         );
     }
 
-    @Test
-    public void givenCaseData_whenProcessPbaPaymentAndPbaToggleIsOn_thenMakePaymentAndReturn_SolicitorPetitionerAmendedCase() throws Exception {
-        setPbaToggleTo(true);
-        caseData.remove(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY);
-        givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_SolicitorPetitionerAmendedCase();
-    }
-
-    @Test
-    public void givenCaseData_whenProcessPbaPaymentAndPbaToggleIsOff_thenMakePaymentAndReturn_SolicitorPetitionerAmendedCase() throws Exception {
-        setPbaToggleTo(false);
-        caseData.remove(PBA_NUMBERS);
-        givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_SolicitorPetitionerAmendedCase();
-    }
-
-    private void givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_SolicitorPetitionerAmendedCase() throws Exception {
+    void givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_SolicitorPetitionerAmendedCase() throws Exception {
         caseData.put(STATEMENT_OF_TRUTH, YES_VALUE);
         caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, YES_VALUE);
         caseData.put(PREVIOUS_CASE_ID_CCD_KEY, EMPTY_MAP);
@@ -286,36 +249,7 @@ public class ProcessPbaPaymentITest extends MockedFunctionalTest {
         );
     }
 
-    private void makePaymentAndReturn() throws Exception {
-        caseDetails = CaseDetails.builder()
-            .caseData(caseData)
-            .caseId(TEST_CASE_ID)
-            .state(TEST_STATE)
-            .build();
-
-        ccdCallbackRequest = CcdCallbackRequest.builder()
-            .caseDetails(caseDetails)
-            .build();
-
-        final CcdCallbackResponse expected = CcdCallbackResponse.builder()
-            .data(caseData)
-            .build();
-
-        stubCreditAccountPayment(HttpStatus.OK, new CreditAccountPaymentResponse());
-        stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
-        stubFormatterServerEndpoint(caseData);
-
-        webClient.perform(post(API_URL)
-            .content(convertObjectToJsonString(ccdCallbackRequest))
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().json(convertObjectToJsonString(expected)));
-    }
-
-    @Test
-    public void givenInvalidCaseData_whenProcessPbaPayment_thenReturnErrors() throws Exception {
+    void givenInvalidCaseData_whenProcessPbaPayment_thenReturnErrors() throws Exception {
         caseData.put(STATEMENT_OF_TRUTH, NO_VALUE);
         caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, NO_VALUE);
 
@@ -334,6 +268,34 @@ public class ProcessPbaPaymentITest extends MockedFunctionalTest {
                 "Statement of truth for solicitor and petitioner needs to be accepted"
             ))
             .build();
+
+        webClient.perform(post(API_URL)
+            .content(convertObjectToJsonString(ccdCallbackRequest))
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(expected)));
+    }
+
+    private void makePaymentAndReturn() throws Exception {
+        caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .build();
+
+        ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .build();
+
+        final CcdCallbackResponse expected = CcdCallbackResponse.builder()
+            .data(caseData)
+            .build();
+
+        stubCreditAccountPayment(HttpStatus.OK, new CreditAccountPaymentResponse());
+        stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
+        stubFormatterServerEndpoint(caseData);
 
         webClient.perform(post(API_URL)
             .content(convertObjectToJsonString(ccdCallbackRequest))

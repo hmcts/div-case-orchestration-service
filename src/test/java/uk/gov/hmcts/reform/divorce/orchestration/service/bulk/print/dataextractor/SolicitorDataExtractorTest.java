@@ -16,7 +16,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Dynamic
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.SolicitorDataExtractor.CaseDataKeys.SOLICITOR_PAYMENT_METHOD;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.SolicitorDataExtractor.CaseDataKeys.SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.SOLICITOR_REF;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PayByAccountTestUtil.setPbaToggleTo;
 
 public class SolicitorDataExtractorTest {
 
@@ -58,28 +57,24 @@ public class SolicitorDataExtractorTest {
 
     @Test
     public void getPbaNumberReturnsFromNewFieldWhenFeatureToggleIsOn() {
-        setPbaToggleTo(true);
         Map<String, Object> caseData = buildCaseDataWithPbaNumberV2(TEST_SOLICITOR_ACCOUNT_NUMBER);
-        assertThat(SolicitorDataExtractor.getPbaNumber(caseData), is(TEST_SOLICITOR_ACCOUNT_NUMBER));
+        assertThat(SolicitorDataExtractor.getPbaNumber(caseData, true), is(TEST_SOLICITOR_ACCOUNT_NUMBER));
     }
 
     @Test
     public void getPbaNumberReturnsFromOldFieldWhenFeatureToggleIsOff() {
-        setPbaToggleTo(false);
         Map<String, Object> caseData = buildCaseDataWithPbaNumberV1(TEST_SOLICITOR_ACCOUNT_NUMBER);
-        assertThat(SolicitorDataExtractor.getPbaNumber(caseData), is(TEST_SOLICITOR_ACCOUNT_NUMBER));
+        assertThat(SolicitorDataExtractor.getPbaNumber(caseData, false), is(TEST_SOLICITOR_ACCOUNT_NUMBER));
     }
 
     @Test(expected = TaskException.class)
     public void getPbaNumberThrowsExceptionWhenWhenFeatureToggleIsOnAndNewFieldIsNull() {
-        setPbaToggleTo(true);
-        SolicitorDataExtractor.getPbaNumber(new HashMap<>());
+        SolicitorDataExtractor.getPbaNumber(new HashMap<>(), true);
     }
 
     @Test(expected = TaskException.class)
     public void getPbaNumberThrowsExceptionWhenWhenFeatureToggleIsOnAndOldFieldIsNull() {
-        setPbaToggleTo(false);
-        SolicitorDataExtractor.getPbaNumber(new HashMap<>());
+        SolicitorDataExtractor.getPbaNumber(new HashMap<>(), false);
     }
 
     private static Map<String, Object> buildCaseDataWithSolicitorReference(String solicitorReference) {
