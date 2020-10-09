@@ -74,7 +74,7 @@ public class UpdateRespondentDetailsUTest {
     @Before
     public void setup() {
         when(ccdUtil.getCurrentDateCcdFormat()).thenReturn(FIXED_DATE);
-        when(authUtil.getBearToken(AUTH_TOKEN)).thenCallRealMethod();
+        when(authUtil.getBearerToken(AUTH_TOKEN)).thenCallRealMethod();
     }
 
     @Test

@@ -38,7 +38,7 @@ public class GetPbaNumbersTask implements Task<Map<String, Object>> {
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
         if (solicitorPaymentMethodIsPba(caseData)) {
             String caseId = getCaseId(context);
-            String bearerAuthToken = authUtil.getBearToken(getAuthToken(context));
+            String bearerAuthToken = authUtil.getBearerToken(getAuthToken(context));
             String solicitorEmail = idamClient.getUserDetails(bearerAuthToken).getEmail();
 
             log.info("CaseId: {}. About to retrieve PBA numbers for solicitor", caseId);

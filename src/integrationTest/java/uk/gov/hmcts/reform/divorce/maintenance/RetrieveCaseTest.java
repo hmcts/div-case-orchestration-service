@@ -17,6 +17,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.A
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.STATE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.support.GeneralOrdersTestHelper.assertGeneralOrdersWereAdequatelyFiltered;
+import static uk.gov.hmcts.reform.divorce.support.GeneralOrdersTestHelper.getGeneralOrdersToAdd;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 
 public class RetrieveCaseTest extends RetrieveCaseSupport {
@@ -34,11 +36,15 @@ public class RetrieveCaseTest extends RetrieveCaseSupport {
 
         CaseDetails caseDetails = submitCase("submit-complete-case.json", userDetails,
             Pair.of(D_8_PETITIONER_EMAIL, userDetails.getEmailAddress()));
+        String caseId = String.valueOf(caseDetails.getId());
+
+        Pair<String, Object> generalOrders = getGeneralOrdersToAdd();
+        updateCase(caseId, null, NO_STATE_CHANGE_EVENT_ID, generalOrders);
 
         Response cosResponse = retrieveCase(userDetails.getAuthToken());
 
         assertEquals(HttpStatus.OK.value(), cosResponse.getStatusCode());
-        assertEquals(String.valueOf(caseDetails.getId()), cosResponse.path(CASE_ID_JSON_KEY));
+        assertEquals(caseId, cosResponse.path(CASE_ID_JSON_KEY));
         assertEquals(TEST_COURT, cosResponse.path(COURTS_KEY));
         assertEquals(AWAITING_PAYMENT, cosResponse.path(STATE_CCD_FIELD));
         String responseJson = cosResponse.getBody().asString();
@@ -48,8 +54,8 @@ public class RetrieveCaseTest extends RetrieveCaseSupport {
         String expectedResponse = loadJson(PAYLOAD_CONTEXT_PATH + "divorce-session.json")
             .replace(USER_DEFAULT_EMAIL, userDetails.getEmailAddress());
         JSONAssert.assertEquals(expectedResponse, responseJsonData, false);
+        assertGeneralOrdersWereAdequatelyFiltered(responseJsonData);
     }
-
 
     @Test
     public void givenMultipleSubmittedCaseInCcd_whenGetCase_thenReturn300() {

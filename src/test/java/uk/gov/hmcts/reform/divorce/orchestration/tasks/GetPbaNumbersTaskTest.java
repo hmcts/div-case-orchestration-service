@@ -77,7 +77,7 @@ public class GetPbaNumbersTaskTest {
 
 
         when(serviceAuthGenerator.generate()).thenReturn(TEST_SERVICE_AUTH_TOKEN);
-        when(authUtil.getBearToken(AUTH_TOKEN)).thenReturn(BEARER_AUTH_TOKEN);
+        when(authUtil.getBearerToken(AUTH_TOKEN)).thenReturn(BEARER_AUTH_TOKEN);
         when(idamClient.getUserDetails(BEARER_AUTH_TOKEN))
             .thenReturn(UserDetails.builder().email(TEST_RESP_SOLICITOR_EMAIL).build());
     }
@@ -114,7 +114,7 @@ public class GetPbaNumbersTaskTest {
 
         assertEquals(expectedCaseData, getPbaNumbersTask.execute(context, caseData));
 
-        verify(authUtil).getBearToken(AUTH_TOKEN);
+        verify(authUtil).getBearerToken(AUTH_TOKEN);
         verify(idamClient).getUserDetails(BEARER_AUTH_TOKEN);
         verify(serviceAuthGenerator).generate();
         verifyRetrievePbaNumbersCalledOnce();
@@ -130,7 +130,7 @@ public class GetPbaNumbersTaskTest {
 
         assertEquals(expectedCaseData, getPbaNumbersTask.execute(context, caseData));
 
-        verify(authUtil).getBearToken(AUTH_TOKEN);
+        verify(authUtil).getBearerToken(AUTH_TOKEN);
         verify(idamClient).getUserDetails(BEARER_AUTH_TOKEN);
         verify(serviceAuthGenerator).generate();
         verifyRetrievePbaNumbersCalledOnce();
@@ -145,7 +145,7 @@ public class GetPbaNumbersTaskTest {
 
         assertEquals(expectedCaseData, getPbaNumbersTask.execute(context, caseData));
 
-        verify(authUtil).getBearToken(AUTH_TOKEN);
+        verify(authUtil).getBearerToken(AUTH_TOKEN);
         verify(idamClient).getUserDetails(BEARER_AUTH_TOKEN);
         verify(serviceAuthGenerator).generate();
         verifyRetrievePbaNumbersCalledOnce();

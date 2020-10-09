@@ -69,7 +69,7 @@ public class RetrievePbaNumbersITest extends MockedFunctionalTest {
         caseData = new HashMap<>();
         caseData.put(SOLICITOR_HOW_TO_PAY_JSON_KEY, FEE_PAY_BY_ACCOUNT);
 
-        when(authUtil.getBearToken(AUTH_TOKEN)).thenReturn(BEARER_AUTH_TOKEN);
+        when(authUtil.getBearerToken(AUTH_TOKEN)).thenReturn(BEARER_AUTH_TOKEN);
     }
 
     @Test

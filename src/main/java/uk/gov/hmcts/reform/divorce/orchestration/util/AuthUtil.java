@@ -54,7 +54,7 @@ public class AuthUtil {
         return idamClient.authenticateUser(username, password);
     }
 
-    public String getBearToken(String token) {
+    public String getBearerToken(String token) {
         if (StringUtils.isBlank(token)) {
             return token;
         }
