@@ -100,7 +100,8 @@ public class PaymentClientErrorTest {
         byte[] body = ObjectMapperTestUtil.convertObjectToJsonString(
             CreditAccountPaymentResponse.builder()
                 .status(testStatus)
-                .build()).getBytes();
+                .build())
+            .getBytes();
 
         CreditAccountPaymentResponse errorMessage = PaymentClientError.getPaymentResponse(
             new FeignException.FeignClientException(HttpStatus.NOT_FOUND.value(), "errorMessage", body));

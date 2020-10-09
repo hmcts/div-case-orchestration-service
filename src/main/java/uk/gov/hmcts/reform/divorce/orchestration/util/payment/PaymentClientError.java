@@ -22,7 +22,6 @@ public class PaymentClientError {
 
     private static final String CONTACT_NUMBER = "01633 652125";
     private static final String CONTACT_EMAIL = "MiddleOffice.DDServices@liberata.com";
-
     private static final String CONTACT_INFO = "Please use a different account or payment method. "
         + "For Payment Account support call %s (Option 3) or email %s.";
 
@@ -46,27 +45,8 @@ public class PaymentClientError {
     }
 
     public static String getErrorMessage(int httpStatus, CreditAccountPaymentResponse paymentResponse) {
-
-        log.error("Payment reference: \"{}\". Payment client failed with status: \"{}\".",
-            paymentResponse.getReference(),
-            paymentResponse.getStatus());
-
         return Optional.of(paymentResponse)
-            .map(response -> {
-                List<StatusHistoriesItem> statusHistories = Optional.ofNullable(response.getStatusHistories())
-                    .orElseGet(ArrayList::new);
-                String reference = getPaymentReference(response);
-
-                if (httpStatus == HttpStatus.FORBIDDEN.value()) {
-                    return getCustomForbiddenMessage(statusHistories, reference);
-                } else if (httpStatus == HttpStatus.NOT_FOUND.value()) {
-                    return getCustomErrorMessage(format(NOT_FOUND_CONTENT, reference));
-                } else {
-                    log.info("Returning default {} error message.", httpStatus);
-                }
-
-                return getCustomErrorMessage(DEFAULT);
-            })
+            .map(response -> processErrorMessage(httpStatus, response))
             .orElseGet(() -> getCustomErrorMessage(DEFAULT));
     }
 
@@ -81,28 +61,55 @@ public class PaymentClientError {
         return creditAccountPaymentResponse;
     }
 
-    private static String getCustomForbiddenMessage(List<StatusHistoriesItem> statusHistories, String reference) {
+    private static String processErrorMessage(int httpStatus, CreditAccountPaymentResponse paymentResponse) {
+        log.error("Payment reference: \"{}\". Payment client failed with status: \"{}\".",
+            paymentResponse.getReference(),
+            paymentResponse.getStatus());
+
+        List<StatusHistoriesItem> statusHistories = getStatusHistories(paymentResponse);
+        String paymentReference = getPaymentReference(paymentResponse);
+
+        if (httpStatus == HttpStatus.FORBIDDEN.value()) {
+            return getCustomForbiddenMessage(statusHistories, paymentReference);
+        }
+        if (httpStatus == HttpStatus.NOT_FOUND.value()) {
+            return getCustomErrorMessage(formatContent(paymentReference, NOT_FOUND_CONTENT));
+        }
+
+        log.info("Returning default {} error message.", httpStatus);
+        return getCustomErrorMessage(DEFAULT);
+    }
+
+    private static String getCustomForbiddenMessage(List<StatusHistoriesItem> statusHistories, String paymentReference) {
         if (!statusHistories.isEmpty()) {
             StatusHistoriesItem statusHistoriesItem = statusHistories.get(0);
-            String errorCode = Optional.ofNullable(statusHistoriesItem.getErrorCode()).orElseGet(() -> "");
+            String errorCode = getErrorCode(statusHistoriesItem);
 
             if (errorCode.equalsIgnoreCase(CAE0004)) {
-                log.info("Payment Reference: {} Generating error message for {} error code:", reference, CAE0004);
-                return getCustomErrorMessage(format(CAE0004_CONTENT, reference));
-
-            } else if (errorCode.equalsIgnoreCase(CAE0001)) {
-                log.info("Payment Reference: {} Generating error message for {} error code:", reference, CAE0001);
-                return getCustomErrorMessage(format(CAE0001_CONTENT, reference));
+                log.info("Payment Reference: {} Generating error message for {} error code:", paymentReference, CAE0004);
+                return getCustomErrorMessage(formatContent(paymentReference, CAE0004_CONTENT));
+            }
+            if (errorCode.equalsIgnoreCase(CAE0001)) {
+                log.info("Payment Reference: {} Generating error message for {} error code:", paymentReference, CAE0001);
+                return getCustomErrorMessage(formatContent(paymentReference, CAE0001_CONTENT));
             }
         } else {
-            log.info("Payment Reference: {} Status histories is empty. Cannot process custom message for this error", reference);
+            log.info("Payment Reference: {} Status histories is empty. Cannot process custom message for this error", paymentReference);
         }
 
         return getCustomErrorMessage(DEFAULT);
     }
 
-    private static String getCustomErrorMessage(String value) {
-        return value + getContactInfo();
+    private static String formatContent(String paymentReference, String content) {
+        return format(content, paymentReference);
+    }
+
+    private static String getErrorCode(StatusHistoriesItem statusHistoriesItem) {
+        return Optional.ofNullable(statusHistoriesItem.getErrorCode()).orElseGet(() -> "");
+    }
+
+    private static String getCustomErrorMessage(String messageContent) {
+        return messageContent + getContactInfo();
     }
 
     private static String getContactInfo() {
@@ -111,5 +118,10 @@ public class PaymentClientError {
 
     private static String getPaymentReference(CreditAccountPaymentResponse response) {
         return Optional.ofNullable(response.getReference()).orElse("");
+    }
+
+    private static List<StatusHistoriesItem> getStatusHistories(CreditAccountPaymentResponse response) {
+        return Optional.ofNullable(response.getStatusHistories())
+            .orElseGet(ArrayList::new);
     }
 }
