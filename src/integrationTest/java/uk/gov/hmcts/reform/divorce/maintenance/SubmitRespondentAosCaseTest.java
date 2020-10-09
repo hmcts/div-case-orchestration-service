@@ -46,7 +46,6 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
         }
     }
 
-
     @Test
     public void givenConsentAndDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
         final UserDetails userDetails = createCitizenUser();
@@ -144,7 +143,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
             petitioner);
 
         Response cosResponse = submitRespondentAosCase(petitioner.getAuthToken(), caseDetails.getId(),
-                AOS_NO_DEFEND_NO_CONSENT_JSON);
+            AOS_NO_DEFEND_NO_CONSENT_JSON);
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
         assertEquals(caseDetails.getId(), cosResponse.path(CCD_CASE_ID));
@@ -182,12 +181,12 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
         CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
-                null,
-                TEST_AOS_STARTED_EVENT_ID,
-                userDetails);
+            null,
+            TEST_AOS_STARTED_EVENT_ID,
+            userDetails);
 
         Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
-                loadJson(PAYLOAD_CONTEXT_PATH + AOS_SOLICITOR_REPRESENTATION_JSON));
+            loadJson(PAYLOAD_CONTEXT_PATH + AOS_SOLICITOR_REPRESENTATION_JSON));
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
         assertEquals(caseDetails.getId(), cosResponse.path(CCD_CASE_ID));

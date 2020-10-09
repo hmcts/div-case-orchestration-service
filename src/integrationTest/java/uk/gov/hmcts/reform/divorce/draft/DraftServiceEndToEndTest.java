@@ -55,7 +55,7 @@ public class DraftServiceEndToEndTest extends CcdSubmissionSupport {
     private CmsClientSupport cmsClientSupport;
 
     private UserDetails user;
-    private Map draftResource;
+    private Map<String, Object> draftResource;
 
     @Before
     public void setUp() {
