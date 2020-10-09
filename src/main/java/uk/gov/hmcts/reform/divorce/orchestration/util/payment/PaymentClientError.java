@@ -23,8 +23,8 @@ public class PaymentClientError {
     private static final String CONTACT_NUMBER = "01633 652125";
     private static final String CONTACT_EMAIL = "MiddleOffice.DDServices@liberata.com";
 
-    private static final String CONTACT_INFO = "Please use a different account or payment method. " +
-        "For Payment Account support call %s (Option 3) or email %s.";
+    private static final String CONTACT_INFO = "Please use a different account or payment method. "
+        + "For Payment Account support call %s (Option 3) or email %s.";
     private static final String DEFAULT = "Payment request failed.";
 
     private static final String CAE0001 = "CA-E0001";
