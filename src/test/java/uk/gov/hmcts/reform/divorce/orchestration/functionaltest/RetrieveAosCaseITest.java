@@ -2,15 +2,17 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
+import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.CourtsMatcher;
+import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 
-import java.util.Collections;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -28,8 +30,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class RetrieveAosCaseITest extends MockedFunctionalTest {
@@ -37,8 +41,11 @@ public class RetrieveAosCaseITest extends MockedFunctionalTest {
     private static final String API_URL = "/retrieve-aos-case";
     private static final String RETRIEVE_AOS_CASE_CONTEXT_PATH = "/casemaintenance/version/1/retrieveAosCase";
     private static final String FORMAT_TO_DIVORCE_CONTEXT_PATH = "/caseformatter/version/1/to-divorce-format";
+    private static final String IDAM_USER_DETAILS_URL = "/details";
 
-    private static final Map<String, Object> CASE_DATA = Collections.singletonMap(D_8_DIVORCE_UNIT, TEST_COURT);
+    private static final Map<String, Object> CASE_DATA = ImmutableMap.of(
+        D_8_DIVORCE_UNIT, TEST_COURT,
+        D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
     private static final CaseDetails CASE_DETAILS =
         CaseDetails.builder()
             .caseId(TEST_CASE_ID)
@@ -79,6 +86,7 @@ public class RetrieveAosCaseITest extends MockedFunctionalTest {
 
     @Test
     public void givenCFSThrowsException_whenRetrieveAosCase_thenPropagateException() throws Exception {
+        stubIdamUserDetailsEndpoint(HttpStatus.OK, AUTH_TOKEN, getUserDetailsResponse());
         stubRetrieveAosCaseFromCMS(CASE_DETAILS);
 
         stubFormatterServerEndpoint(HttpStatus.INTERNAL_SERVER_ERROR, TEST_ERROR);
@@ -92,6 +100,7 @@ public class RetrieveAosCaseITest extends MockedFunctionalTest {
 
     @Test
     public void givenAllGoesWellProceedAsExpected() throws Exception {
+        stubIdamUserDetailsEndpoint(HttpStatus.OK, AUTH_TOKEN, getUserDetailsResponse());
         stubRetrieveAosCaseFromCMS(CASE_DETAILS);
 
         stubFormatterServerEndpoint();
@@ -135,6 +144,22 @@ public class RetrieveAosCaseITest extends MockedFunctionalTest {
                 .withStatus(status.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withBody(message)));
+    }
+
+    private void stubIdamUserDetailsEndpoint(HttpStatus status, String authHeader, String message) {
+        idamServer.stubFor(WireMock.get(IDAM_USER_DETAILS_URL)
+            .withHeader(AUTHORIZATION, new EqualToPattern(authHeader))
+            .willReturn(aResponse()
+                .withStatus(status.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .withBody(message)));
+    }
+
+    private String getUserDetailsResponse() {
+        return ObjectMapperTestUtil.convertObjectToJsonString(
+            UserDetails.builder()
+                .email(TEST_PETITIONER_EMAIL)
+                .build());
     }
 
 }
