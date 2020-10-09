@@ -41,7 +41,8 @@ public class PaymentClientErrorTest {
             "Your account is deleted");
 
         String errorMessage = PaymentClientError.getErrorMessage(HttpStatus.FORBIDDEN, failedResponse);
-        String expectedContent = "Payment Account " + TEST_REFERENCE + " has been deleted or is on hold.";
+        String expectedContent = "Payment Account " + TEST_REFERENCE + " has been deleted or is on hold. " +
+            "Please use a different account or payment method. For Payment Account support call ";
 
         assertThat(errorMessage, containsString(expectedContent));
     }
@@ -55,6 +56,7 @@ public class PaymentClientErrorTest {
         String errorMessage = PaymentClientError.getErrorMessage(HttpStatus.FORBIDDEN, failedResponse);
 
         assertThat(errorMessage, is(PaymentClientError.getDefaultErrorMessage()));
+        assertThat(errorMessage, containsString("Please use a different account or payment method. For Payment Account support call "));
     }
 
     @Test
@@ -64,7 +66,8 @@ public class PaymentClientErrorTest {
             "Payment request failed. PBA account BATCHELORS SOLICITORS have insufficient funds available");
 
         String errorMessage = PaymentClientError.getErrorMessage(HttpStatus.FORBIDDEN, failedResponse);
-        String expectedContent = "Fee account " + TEST_REFERENCE + " has insufficient funds available";
+        String expectedContent = "Fee account " + TEST_REFERENCE + " has insufficient funds available. " +
+            "Please use a different account or payment method. For Payment Account support call";
 
         assertThat(errorMessage, containsString(expectedContent));
     }

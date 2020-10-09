@@ -23,14 +23,15 @@ public class PaymentClientError {
     private static final String CONTACT_NUMBER = "01633 652125";
     private static final String CONTACT_EMAIL = "MiddleOffice.DDServices@liberata.com";
 
-    private static final String CONTACT_INFO = " For Payment Account support call %s (Option 3) or email %s.";
-    private static final String DEFAULT = "Payment request failed. Please use a different account or payment method.";
+    private static final String CONTACT_INFO = "Please use a different account or payment method. " +
+        "For Payment Account support call %s (Option 3) or email %s.";
+    private static final String DEFAULT = "Payment request failed.";
 
     private static final String CAE0001 = "CA-E0001";
-    private static final String CAE0001_CONTENT = "Fee account %s has insufficient funds available.";
+    private static final String CAE0001_CONTENT = "Fee account %s has insufficient funds available. ";
 
     private static final String CAE0004 = "CA-E0004";
-    private static final String CAE0004_CONTENT = "Payment Account %s has been deleted or is on hold.";
+    private static final String CAE0004_CONTENT = "Payment Account %s has been deleted or is on hold. ";
 
     private static final String NOT_FOUND_CONTENT = "Payment Account %s cannot be found. "
         + "Please use a different account or payment method.";
@@ -53,7 +54,7 @@ public class PaymentClientError {
             .map(response -> {
                 List<StatusHistoriesItem> statusHistories = Optional.ofNullable(response.getStatusHistories())
                     .orElseGet(ArrayList::new);
-                String reference = response.getReference();
+                String reference = getPaymentReference(response);
 
                 if (httpStatus == HttpStatus.FORBIDDEN.value()) {
                     return getCustomForbiddenMessage(statusHistories, reference);
@@ -107,4 +108,7 @@ public class PaymentClientError {
         return format(CONTACT_INFO, CONTACT_NUMBER, CONTACT_EMAIL);
     }
 
+    private static String getPaymentReference(CreditAccountPaymentResponse response) {
+        return Optional.ofNullable(response.getReference()).orElse("");
+    }
 }
