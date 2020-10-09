@@ -28,13 +28,9 @@ public class UserDivorcePartyLookup {
 
         if (Objects.equals(caseDataInCcdFormat.get(D_8_PETITIONER_EMAIL), emailAddress)) {
             divorceParty = DivorceParty.PETITIONER;
-        }
-
-        if (Objects.equals(caseDataInCcdFormat.get(RESPONDENT_EMAIL_ADDRESS), emailAddress)) {
+        } else if (Objects.equals(caseDataInCcdFormat.get(RESPONDENT_EMAIL_ADDRESS), emailAddress)) {
             divorceParty = DivorceParty.RESPONDENT;
-        }
-
-        if (Objects.equals(caseDataInCcdFormat.get(CO_RESP_EMAIL_ADDRESS), emailAddress)) {
+        } else if (Objects.equals(caseDataInCcdFormat.get(CO_RESP_EMAIL_ADDRESS), emailAddress)) {
             divorceParty = DivorceParty.CO_RESPONDENT;
         }
 
