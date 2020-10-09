@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextract
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
@@ -15,6 +16,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 
+@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class SolicitorDataExtractor {
 
@@ -39,10 +41,12 @@ public class SolicitorDataExtractor {
     public static String getPbaNumber(Map<String, Object> caseData) {
         final FeatureToggleServiceImpl featureToggleService = CaseDataKeys.featureToggleService;
         if (featureToggleService.isFeatureEnabled(Features.PAY_BY_ACCOUNT)) {
+            log.info("PBA feature toggle on. Return new PBA field.");
             DynamicList pbaNumbers = CaseDataKeys.objectMapper.convertValue(
                 getMandatoryPropertyValueAsObject(caseData, CaseDataKeys.SOLICITOR_PBA_NUMBER_V2), DynamicList.class);
             return pbaNumbers.getValue().getCode();
         }
+        log.info("PBA feature toggle off. Return old PBA field.");
         return getMandatoryPropertyValueAsString(caseData, CaseDataKeys.SOLICITOR_PBA_NUMBER_V1);
     }
 
