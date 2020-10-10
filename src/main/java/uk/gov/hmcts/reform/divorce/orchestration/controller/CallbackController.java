@@ -173,19 +173,22 @@ public class CallbackController {
     public ResponseEntity<CcdCallbackResponse> processPbaPayment(
         @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
         Map<String, Object> response = caseOrchestrationService.solicitorSubmission(ccdCallbackRequest, authorizationToken);
 
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         CcdCallbackResponse.CcdCallbackResponseBuilder responseBuilder = CcdCallbackResponse.builder();
 
         if (isResponseErrors(SOLICITOR_PBA_PAYMENT_ERROR_KEY, response)) {
             responseBuilder.errors(getResponseErrors(SOLICITOR_PBA_PAYMENT_ERROR_KEY, response));
         } else if (isPaymentSuccess(response)) {
-            responseBuilder.state(getPbaUpdatedState(ccdCallbackRequest, response));
+            responseBuilder.state(getPbaUpdatedState(caseId, response));
             responseBuilder.data(response);
         } else {
             responseBuilder.data(response);
         }
 
+        log.info("CaseID {} Exiting /process-pba-payment to receive payment from the Solicitor", caseId);
         return ResponseEntity.ok(responseBuilder.build());
     }
 

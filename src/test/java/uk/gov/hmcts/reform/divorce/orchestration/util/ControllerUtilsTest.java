@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.core.Is.is;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR_CONTENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
@@ -130,8 +131,11 @@ public class ControllerUtilsTest {
 
         CcdCallbackRequest ccdCallbackRequest = buildRequestWithSolicitorHowToPay("SomeOtherState", successCaseData);
 
-        assertCaseStateAsExpected(ccdCallbackRequest, successCaseData, CcdStates.SUBMITTED);
-        assertThat(ccdCallbackRequest.getCaseDetails().getCaseData().get(ProcessPbaPaymentTask.PAYMENT_STATUS), nullValue());
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+
+        assertCaseStateAsExpected(caseId, successCaseData, CcdStates.SUBMITTED);
+        assertThat(caseData.get(ProcessPbaPaymentTask.PAYMENT_STATUS), nullValue());
     }
 
     @Test
@@ -139,8 +143,9 @@ public class ControllerUtilsTest {
         Map<String, Object> successCaseData = buildTestCaseData(FEE_PAY_BY_ACCOUNT, "Success");
 
         CcdCallbackRequest ccdCallbackRequest = buildRequestWithSolicitorHowToPay("SomeOtherState", successCaseData);
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
 
-        assertCaseStateAsExpected(ccdCallbackRequest, successCaseData, CcdStates.SUBMITTED);
+        assertCaseStateAsExpected(caseId, successCaseData, CcdStates.SUBMITTED);
     }
 
     @Test
@@ -148,8 +153,9 @@ public class ControllerUtilsTest {
         Map<String, Object> responseCaseData = buildTestCaseData(FEE_PAY_BY_ACCOUNT, "Success");
 
         CcdCallbackRequest ccdCallbackRequest = buildRequestWithSolicitorHowToPay(TEST_STATE, responseCaseData);
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
 
-        assertCaseStateAsExpected(ccdCallbackRequest, responseCaseData, CcdStates.SUBMITTED);
+        assertCaseStateAsExpected(caseId, responseCaseData, CcdStates.SUBMITTED);
         assertThat(responseCaseData.get(ProcessPbaPaymentTask.PAYMENT_STATUS), nullValue());
     }
 
@@ -206,14 +212,15 @@ public class ControllerUtilsTest {
     private CcdCallbackRequest buildRequestWithSolicitorHowToPay(String expectedState, Map<String, Object> expectedResponse) {
         return CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
+                .caseId(TEST_CASE_ID)
                 .caseData(expectedResponse)
                 .state(expectedState)
                 .build())
             .build();
     }
 
-    private void assertCaseStateAsExpected(CcdCallbackRequest ccdCallbackRequest, Map<String, Object> responseCaseData, String expectedCaseState) {
-        assertThat(ControllerUtils.getPbaUpdatedState(ccdCallbackRequest, responseCaseData), is(expectedCaseState));
+    private void assertCaseStateAsExpected(String caseId, Map<String, Object> responseCaseData, String expectedCaseState) {
+        assertThat(ControllerUtils.getPbaUpdatedState(caseId, responseCaseData), is(expectedCaseState));
     }
 
 }

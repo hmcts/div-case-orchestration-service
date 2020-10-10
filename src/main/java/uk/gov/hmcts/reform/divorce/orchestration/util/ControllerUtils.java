@@ -49,8 +49,7 @@ public class ControllerUtils {
             .build();
     }
 
-    public static String getPbaUpdatedState(CcdCallbackRequest ccdCallbackRequest, Map<String, Object> caseData) {
-        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+    public static String getPbaUpdatedState(String caseId, Map<String, Object> caseData) {
 
         log.info("CaseID: {} Removing temporary payment status property '{}' in case data", caseId, ProcessPbaPaymentTask.PAYMENT_STATUS);
         caseData.remove(ProcessPbaPaymentTask.PAYMENT_STATUS);
