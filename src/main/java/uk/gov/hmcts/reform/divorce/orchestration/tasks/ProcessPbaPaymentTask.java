@@ -39,8 +39,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContextHelper.failTask;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isSolicitorPaymentMethodPba;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.payment.PaymentClientError.getErrorMessage;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.payment.PaymentClientError.getPaymentResponse;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.payment.PbaClientError.getErrorMessage;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.payment.PbaClientError.getPaymentResponse;
 
 @Component
 @Slf4j

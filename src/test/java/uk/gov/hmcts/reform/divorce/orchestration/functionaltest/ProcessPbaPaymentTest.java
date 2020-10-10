@@ -104,8 +104,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.buildPaymentClientResponse;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.getBasicFailedResponse;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.formatCaseIdToReferenceNumber;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.payment.PaymentClientError.getDefaultErrorMessage;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.payment.PaymentClientError.getErrorMessage;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.payment.PbaClientError.getDefaultErrorMessage;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.payment.PbaClientError.getErrorMessage;
 
 public class ProcessPbaPaymentTest extends MockedFunctionalTest {
 

@@ -17,7 +17,7 @@ public class PaymentStatusTest {
     }
 
     @Test
-    public void shouldThrowExceptionWhenDescriptionIsInvalid() {
+    public void shouldThrowExceptionWhenStatusIsInvalid() {
         IllegalArgumentException illegalArgumentException = assertThrows(
             IllegalArgumentException.class,
             () -> PaymentStatus.getStatus("Unknown")

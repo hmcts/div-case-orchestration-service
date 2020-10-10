@@ -6,6 +6,7 @@ import feign.FeignException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.StatusHistoriesItem;
@@ -18,26 +19,13 @@ import static java.lang.String.format;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
-public class PaymentClientError {
-
-    private static final String CONTACT_NUMBER = "01633 652125";
-    private static final String CONTACT_EMAIL = "MiddleOffice.DDServices@liberata.com";
-    private static final String CONTACT_INFO = "Please use a different account or payment method. "
-        + "For Payment Account support call %s (Option 3) or email %s.";
-
-    private static final String DEFAULT = "Payment request failed.";
+public class PbaClientError {
 
     private static final String CAE0001 = "CA-E0001";
-    private static final String CAE0001_CONTENT = "Fee account %s has insufficient funds available. ";
-
     private static final String CAE0004 = "CA-E0004";
-    private static final String CAE0004_CONTENT = "Payment Account %s has been deleted or is on hold. ";
-
-    private static final String NOT_FOUND_CONTENT = "Payment Account %s cannot be found. "
-        + "Please use a different account or payment method.";
 
     public static String getDefaultErrorMessage() {
-        return DEFAULT + getContactInfo();
+        return PbaErrorMessage.GENERAL.value();
     }
 
     public static String getErrorMessage(HttpStatus httpStatus, CreditAccountPaymentResponse paymentResponse) {
@@ -47,7 +35,7 @@ public class PaymentClientError {
     public static String getErrorMessage(int httpStatus, CreditAccountPaymentResponse paymentResponse) {
         return Optional.of(paymentResponse)
             .map(response -> processErrorMessage(httpStatus, response))
-            .orElseGet(() -> getCustomErrorMessage(DEFAULT));
+            .orElseGet(PbaClientError::getDefaultErrorMessage);
     }
 
     public static CreditAccountPaymentResponse getPaymentResponse(FeignException exception) {
@@ -73,11 +61,11 @@ public class PaymentClientError {
             return getCustomForbiddenMessage(statusHistories, paymentReference);
         }
         if (httpStatus == HttpStatus.NOT_FOUND.value()) {
-            return getCustomErrorMessage(formatContent(paymentReference, NOT_FOUND_CONTENT));
+            return formatContent(paymentReference, PbaErrorMessage.NOTFOUND.value());
         }
 
         log.info("Returning default {} error message.", httpStatus);
-        return getCustomErrorMessage(DEFAULT);
+        return getDefaultErrorMessage();
     }
 
     private static String getCustomForbiddenMessage(List<StatusHistoriesItem> statusHistories, String paymentReference) {
@@ -87,17 +75,17 @@ public class PaymentClientError {
 
             if (errorCode.equalsIgnoreCase(CAE0004)) {
                 log.info("Payment Reference: {} Generating error message for {} error code:", paymentReference, CAE0004);
-                return getCustomErrorMessage(formatContent(paymentReference, CAE0004_CONTENT));
+                return formatContent(paymentReference, PbaErrorMessage.CAE0004.value());
             }
             if (errorCode.equalsIgnoreCase(CAE0001)) {
                 log.info("Payment Reference: {} Generating error message for {} error code:", paymentReference, CAE0001);
-                return getCustomErrorMessage(formatContent(paymentReference, CAE0001_CONTENT));
+                return formatContent(paymentReference, PbaErrorMessage.CAE0001.value());
             }
         } else {
             log.info("Payment Reference: {} Status histories is empty. Cannot process custom message for this error", paymentReference);
         }
 
-        return getCustomErrorMessage(DEFAULT);
+        return getDefaultErrorMessage();
     }
 
     private static String formatContent(String paymentReference, String content) {
@@ -105,19 +93,13 @@ public class PaymentClientError {
     }
 
     private static String getErrorCode(StatusHistoriesItem statusHistoriesItem) {
-        return Optional.ofNullable(statusHistoriesItem.getErrorCode()).orElseGet(() -> "");
-    }
-
-    private static String getCustomErrorMessage(String messageContent) {
-        return messageContent + getContactInfo();
-    }
-
-    private static String getContactInfo() {
-        return format(CONTACT_INFO, CONTACT_NUMBER, CONTACT_EMAIL);
+        return Optional.ofNullable(statusHistoriesItem.getErrorCode())
+            .orElseGet(() -> StringUtils.EMPTY);
     }
 
     private static String getPaymentReference(CreditAccountPaymentResponse response) {
-        return Optional.ofNullable(response.getReference()).orElse("");
+        return Optional.ofNullable(response.getReference())
+            .orElse(StringUtils.EMPTY);
     }
 
     private static List<StatusHistoriesItem> getStatusHistories(CreditAccountPaymentResponse response) {

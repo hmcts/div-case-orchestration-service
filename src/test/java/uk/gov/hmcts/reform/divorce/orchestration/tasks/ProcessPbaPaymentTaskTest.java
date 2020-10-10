@@ -24,7 +24,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
-import uk.gov.hmcts.reform.divorce.orchestration.util.payment.PaymentClientError;
+import uk.gov.hmcts.reform.divorce.orchestration.util.payment.PbaClientError;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -166,7 +166,7 @@ public class ProcessPbaPaymentTaskTest {
 
         processPbaPaymentTask.execute(context, caseData);
 
-        runCommonAssertions(PaymentClientError.getErrorMessage(HttpStatus.FORBIDDEN, failedResponse));
+        runCommonAssertions(PbaClientError.getErrorMessage(HttpStatus.FORBIDDEN, failedResponse));
         runCommonVerifications();
     }
 
@@ -207,7 +207,7 @@ public class ProcessPbaPaymentTaskTest {
 
         processPbaPaymentTask.execute(context, caseData);
 
-        runCommonAssertions(PaymentClientError.getErrorMessage(HttpStatus.FORBIDDEN, failedResponse));
+        runCommonAssertions(PbaClientError.getErrorMessage(HttpStatus.FORBIDDEN, failedResponse));
         runCommonVerifications();
     }
 
@@ -218,7 +218,7 @@ public class ProcessPbaPaymentTaskTest {
 
         processPbaPaymentTask.execute(context, caseData);
 
-        runCommonAssertions(PaymentClientError.getErrorMessage(HttpStatus.NOT_FOUND, basicFailedResponse));
+        runCommonAssertions(PbaClientError.getErrorMessage(HttpStatus.NOT_FOUND, basicFailedResponse));
         runCommonVerifications();
     }
 
@@ -229,7 +229,7 @@ public class ProcessPbaPaymentTaskTest {
 
         processPbaPaymentTask.execute(context, caseData);
 
-        runCommonAssertions(PaymentClientError.getErrorMessage(HttpStatus.UNPROCESSABLE_ENTITY, basicFailedResponse));
+        runCommonAssertions(PbaClientError.getErrorMessage(HttpStatus.UNPROCESSABLE_ENTITY, basicFailedResponse));
         runCommonVerifications();
     }
 
@@ -240,7 +240,7 @@ public class ProcessPbaPaymentTaskTest {
 
         processPbaPaymentTask.execute(context, caseData);
 
-        runCommonAssertions(PaymentClientError.getDefaultErrorMessage());
+        runCommonAssertions(PbaClientError.getDefaultErrorMessage());
         runCommonVerifications();
     }
 
@@ -251,7 +251,7 @@ public class ProcessPbaPaymentTaskTest {
 
         processPbaPaymentTask.execute(context, caseData);
 
-        runCommonAssertions(PaymentClientError.getDefaultErrorMessage());
+        runCommonAssertions(PbaClientError.getDefaultErrorMessage());
         runCommonVerifications();
     }
 
