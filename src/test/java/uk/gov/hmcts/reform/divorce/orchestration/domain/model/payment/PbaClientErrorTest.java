@@ -8,118 +8,105 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.StatusHistoriesItem;
-import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
-import uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.util.payment.PbaClientError;
+import uk.gov.hmcts.reform.divorce.orchestration.util.payment.PbaErrorMessage;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.TEST_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.buildException;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.buildPaymentClientResponse;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.formatMessage;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.getBasicFailedResponse;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PbaClientErrorTest {
-
-    private static final String TEST_REFERENCE = PbaClientErrorTestUtil.TEST_REFERENCE;
-    private static final String CONTACT_DETAILS = " For Payment Account support call 01633 652125 (Option 3) "
-        + "or email MiddleOffice.DDServices@liberata.com.";
 
     private CreditAccountPaymentResponse basicFailedResponse;
 
     @Before
     public void setUp() {
-        basicFailedResponse = buildPaymentClientResponse("Failed", null, null);
+        basicFailedResponse = getBasicFailedResponse();
     }
 
     @Test
-    public void givenAnyClientError_ShouldReturnDefaultErrorMessage() {
-        String errorMessage = PbaClientError.getErrorMessage(HttpStatus.INTERNAL_SERVER_ERROR, basicFailedResponse);
+    public void given_AnyClientError_ShouldReturnDefaultErrorMessage() {
+        FeignException feignException = buildException(HttpStatus.BAD_REQUEST, basicFailedResponse);
 
-        assertThat(errorMessage, is(PbaClientError.getDefaultErrorMessage()));
-        assertContactDetailsExists(errorMessage);
+        String pbaErrorMessage = PbaClientError.getMessage(feignException);
+
+        assertThat(pbaErrorMessage, is(formatMessage(PbaErrorMessage.GENERAL)));
     }
 
     @Test
-    public void given403_With_CAE0004_ErrorCode_ShouldReturnCorrectMessage() {
-        CreditAccountPaymentResponse failedResponse = buildPaymentClientResponse("Failed", "CA-E0004",
-            "Your account is deleted");
+    public void given_403_With_CAE0004_ErrorCode_ShouldReturnCorrectMessage() {
+        CreditAccountPaymentResponse failedResponse = buildPaymentClientResponse("Failed", "CA-E0004");
+        FeignException feignException = buildException(HttpStatus.FORBIDDEN, failedResponse);
 
-        String errorMessage = PbaClientError.getErrorMessage(HttpStatus.FORBIDDEN, failedResponse);
-        String expectedContent = "Payment Account " + TEST_REFERENCE + " has been deleted or is on hold. "
-            + "Please use a different account or payment method. For Payment Account support call ";
+        String pbaErrorMessage = PbaClientError.getMessage(feignException);
 
-        assertThat(errorMessage, containsString(expectedContent));
-        assertContactDetailsExists(errorMessage);
+        assertThat(pbaErrorMessage, is(formatMessage(PbaErrorMessage.CAE0004)));
     }
 
     @Test
-    public void given403_With_NoCAE0004_ErrorCode_ShouldReturnCorrectMessage() {
-        CreditAccountPaymentResponse failedResponse = buildPaymentClientResponse("Failed", "CA-E0004",
-            "Your account is deleted");
+    public void given_403_With_No_CAE0004_ErrorCode_ShouldReturnCorrectMessage() {
+        CreditAccountPaymentResponse failedResponse = buildPaymentClientResponse("Failed", "CA-E0004");
         failedResponse.getStatusHistories().set(0, StatusHistoriesItem.builder().build());
+        FeignException feignException = buildException(HttpStatus.FORBIDDEN, failedResponse);
 
-        String errorMessage = PbaClientError.getErrorMessage(HttpStatus.FORBIDDEN, failedResponse);
+        String pbaErrorMessage = PbaClientError.getMessage(feignException);
 
-        assertThat(errorMessage, is(PbaClientError.getDefaultErrorMessage()));
-        assertThat(errorMessage, containsString("Please use a different account or payment method. For Payment Account support call "));
-        assertContactDetailsExists(errorMessage);
+        assertThat(pbaErrorMessage, is(formatMessage(PbaErrorMessage.GENERAL)));
     }
 
     @Test
-    public void given403_With_CAE0001_ErrorCode_ShouldReturnCorrectMessage() {
-        CreditAccountPaymentResponse failedResponse = buildPaymentClientResponse("Failed",
-            "CA-E0001",
-            "Payment request failed. PBA account BATCHELORS SOLICITORS have insufficient funds available");
+    public void given_403_With_CAE0001_ErrorCode_ShouldReturnCorrectMessage() {
+        CreditAccountPaymentResponse failedResponse = buildPaymentClientResponse("Failed", "CA-E0001");
+        FeignException feignException = buildException(HttpStatus.FORBIDDEN, failedResponse);
 
-        String errorMessage = PbaClientError.getErrorMessage(HttpStatus.FORBIDDEN, failedResponse);
-        String expectedContent = "Fee account " + TEST_REFERENCE + " has insufficient funds available. "
-            + "Please use a different account or payment method.";
+        String pbaErrorMessage = PbaClientError.getMessage(feignException);
 
-        assertThat(errorMessage, containsString(expectedContent));
-        assertContactDetailsExists(errorMessage);
+        assertThat(pbaErrorMessage, is(formatMessage(PbaErrorMessage.CAE0001)));
     }
 
     @Test
-    public void given404_ErrorStatus_ShouldReturnCorrectMessage() {
-        String errorMessage = PbaClientError.getErrorMessage(HttpStatus.NOT_FOUND, basicFailedResponse);
-        String expectedContent = "Payment Account " + TEST_REFERENCE + " cannot be found. Please use a different account or payment method.";
+    public void given_404_ErrorStatus_ShouldReturnCorrectMessage() {
+        FeignException feignException = buildException(HttpStatus.NOT_FOUND, basicFailedResponse);
 
-        assertThat(errorMessage, containsString(expectedContent));
-        assertContactDetailsExists(errorMessage);
+        String pbaErrorMessage = PbaClientError.getMessage(feignException);
+
+        assertThat(pbaErrorMessage, is(formatMessage(PbaErrorMessage.NOTFOUND)));
     }
 
     @Test
-    public void given422_ErrorStatus_ShouldReturnCorrectMessage() {
-        String errorMessage = PbaClientError.getErrorMessage(HttpStatus.UNPROCESSABLE_ENTITY, basicFailedResponse);
+    public void given_404_ErrorStatus_With_No_PaymentReference_ShouldReturnCorrectMessage() {
+        CreditAccountPaymentResponse failedResponse = getBasicFailedResponse();
+        failedResponse.setReference(null);
 
-        assertThat(errorMessage, is(PbaClientError.getDefaultErrorMessage()));
-        assertContactDetailsExists(errorMessage);
+        FeignException feignException = buildException(HttpStatus.NOT_FOUND, failedResponse);
+
+        String pbaErrorMessage = PbaClientError.getMessage(feignException);
+        assertThat(pbaErrorMessage, not(containsString(TEST_REFERENCE)));
     }
 
     @Test
-    public void given502_ErrorStatus_ShouldReturnCorrectMessage() {
-        String errorMessage = PbaClientError.getErrorMessage(HttpStatus.BAD_GATEWAY, basicFailedResponse);
+    public void given_422_ErrorStatus_ShouldReturnCorrectMessage() {
+        FeignException feignException = buildException(HttpStatus.UNPROCESSABLE_ENTITY, basicFailedResponse);
 
-        assertThat(errorMessage, is(PbaClientError.getDefaultErrorMessage()));
-        assertContactDetailsExists(errorMessage);
+        String pbaErrorMessage = PbaClientError.getMessage(feignException);
+
+        assertThat(pbaErrorMessage, is(formatMessage(PbaErrorMessage.GENERAL)));
     }
 
     @Test
-    public void getCreditAccountPaymentResponse_ReturnsValidErrorResponse() {
-        String testStatus = "test.status";
-        byte[] body = ObjectMapperTestUtil.convertObjectToJsonString(
-            CreditAccountPaymentResponse.builder()
-                .status(testStatus)
-                .build())
-            .getBytes();
+    public void given_502_ErrorStatus_ShouldReturnCorrectMessage() {
+        FeignException feignException = buildException(HttpStatus.BAD_GATEWAY, basicFailedResponse);
 
-        CreditAccountPaymentResponse errorMessage = PbaClientError.getPaymentResponse(
-            new FeignException.FeignClientException(HttpStatus.NOT_FOUND.value(), "errorMessage", body));
+        String pbaErrorMessage = PbaClientError.getMessage(feignException);
 
-        assertThat(errorMessage.getStatus(), is(testStatus));
+        assertThat(pbaErrorMessage, is(formatMessage(PbaErrorMessage.GENERAL)));
     }
 
-    private void assertContactDetailsExists(String errorMessage) {
-        assertThat(errorMessage, containsString(CONTACT_DETAILS));
-    }
 }

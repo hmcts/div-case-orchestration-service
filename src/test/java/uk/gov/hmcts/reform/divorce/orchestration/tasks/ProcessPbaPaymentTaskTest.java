@@ -24,7 +24,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
-import uk.gov.hmcts.reform.divorce.orchestration.util.payment.PbaClientError;
+import uk.gov.hmcts.reform.divorce.orchestration.util.payment.PbaErrorMessage;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -65,7 +66,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_PBA_PAYMENT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.TEST_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.buildPaymentClientResponse;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.formatMessage;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.getBasicFailedResponse;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -158,23 +161,19 @@ public class ProcessPbaPaymentTaskTest {
 
     @Test
     public void given403_Returned_whenExecuteIsCalled_thenHandle_CAE0001_Response() {
-        CreditAccountPaymentResponse failedResponse = buildPaymentClientResponse("Failed",
-            "CA-E0001",
-            "Payment request failed. PBA account BATCHELORS SOLICITORS have insufficient funds available");
+        CreditAccountPaymentResponse failedResponse = buildPaymentClientResponse("Failed","CA-E0001");
 
         setUpCommonFixtures(HttpStatus.FORBIDDEN, failedResponse);
 
         processPbaPaymentTask.execute(context, caseData);
 
-        runCommonAssertions(PbaClientError.getErrorMessage(HttpStatus.FORBIDDEN, failedResponse));
+        runCommonAssertions(format(PbaErrorMessage.CAE0001.value(), TEST_REFERENCE));
         runCommonVerifications();
     }
 
     @Test
     public void given201_AndPaymentStatus_Success_whenExecuteIsCalled_thenHandleResponse() {
-        CreditAccountPaymentResponse successResponse = buildPaymentClientResponse("Success",
-            null,
-            null);
+        CreditAccountPaymentResponse successResponse = buildPaymentClientResponse("Success",null);
 
         setUpCommonFixtures(HttpStatus.OK, successResponse);
 
@@ -186,9 +185,7 @@ public class ProcessPbaPaymentTaskTest {
 
     @Test
     public void given201_AndPaymentStatus_Pending_whenExecuteIsCalled_thenHandleResponse() {
-        CreditAccountPaymentResponse successResponse = buildPaymentClientResponse("Pending",
-            null,
-            null);
+        CreditAccountPaymentResponse successResponse = buildPaymentClientResponse("Pending",null);
 
         setUpCommonFixtures(HttpStatus.CREATED, successResponse);
 
@@ -200,14 +197,13 @@ public class ProcessPbaPaymentTaskTest {
 
     @Test
     public void given403_Returned_whenExecuteIsCalled_thenHandle_CAE0004_Response() {
-        CreditAccountPaymentResponse failedResponse = buildPaymentClientResponse("Failed", "CA-E0004",
-            "Your account is deleted");
+        CreditAccountPaymentResponse failedResponse = buildPaymentClientResponse("Failed", "CA-E0004");
 
         setUpCommonFixtures(HttpStatus.FORBIDDEN, failedResponse);
 
         processPbaPaymentTask.execute(context, caseData);
 
-        runCommonAssertions(PbaClientError.getErrorMessage(HttpStatus.FORBIDDEN, failedResponse));
+        runCommonAssertions(formatMessage(PbaErrorMessage.CAE0004));
         runCommonVerifications();
     }
 
@@ -218,7 +214,7 @@ public class ProcessPbaPaymentTaskTest {
 
         processPbaPaymentTask.execute(context, caseData);
 
-        runCommonAssertions(PbaClientError.getErrorMessage(HttpStatus.NOT_FOUND, basicFailedResponse));
+        runCommonAssertions(formatMessage(PbaErrorMessage.NOTFOUND));
         runCommonVerifications();
     }
 
@@ -229,7 +225,7 @@ public class ProcessPbaPaymentTaskTest {
 
         processPbaPaymentTask.execute(context, caseData);
 
-        runCommonAssertions(PbaClientError.getErrorMessage(HttpStatus.UNPROCESSABLE_ENTITY, basicFailedResponse));
+        runCommonAssertions(formatMessage(PbaErrorMessage.GENERAL));
         runCommonVerifications();
     }
 
@@ -240,7 +236,7 @@ public class ProcessPbaPaymentTaskTest {
 
         processPbaPaymentTask.execute(context, caseData);
 
-        runCommonAssertions(PbaClientError.getDefaultErrorMessage());
+        runCommonAssertions(formatMessage(PbaErrorMessage.GENERAL));
         runCommonVerifications();
     }
 
@@ -251,7 +247,7 @@ public class ProcessPbaPaymentTaskTest {
 
         processPbaPaymentTask.execute(context, caseData);
 
-        runCommonAssertions(PbaClientError.getDefaultErrorMessage());
+        runCommonAssertions(formatMessage(PbaErrorMessage.GENERAL));
         runCommonVerifications();
     }
 

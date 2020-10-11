@@ -26,6 +26,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentItem;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPaymentTask;
+import uk.gov.hmcts.reform.divorce.orchestration.util.payment.PbaErrorMessage;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -102,10 +103,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubm
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmailTask.SUBMITTED_DESC;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.buildPaymentClientResponse;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.formatMessage;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.getBasicFailedResponse;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.formatCaseIdToReferenceNumber;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.payment.PbaClientError.getDefaultErrorMessage;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.payment.PbaClientError.getErrorMessage;
 
 public class ProcessPbaPaymentTest extends MockedFunctionalTest {
 
@@ -399,25 +399,22 @@ public class ProcessPbaPaymentTest extends MockedFunctionalTest {
 
     @Test
     public void givenCaseData_whenProcessPbaPayment_403_thenReturn_CAE0001_ErrorMessage() throws Exception {
-        CreditAccountPaymentResponse failedResponse = buildPaymentClientResponse("Failed",
-            "CA-E0001",
-            "Payment request failed. PBA account BATCHELORS SOLICITORS have insufficient funds available");
+        CreditAccountPaymentResponse failedResponse = buildPaymentClientResponse("Failed","CA-E0001");
 
-        callPaymentClientWithStatusAndVerify(
+        callPaymentClientWithStatusAndVerifyErrorMessage(
             HttpStatus.FORBIDDEN,
-            getErrorMessage(HttpStatus.FORBIDDEN, failedResponse),
+            expectedErrorMessage(PbaErrorMessage.CAE0001),
             buildValidCaseData(),
             failedResponse);
     }
 
     @Test
     public void givenCaseData_whenProcessPbaPayment_403_thenReturn_CAE0004_ErrorMessage() throws Exception {
-        CreditAccountPaymentResponse failedResponse = buildPaymentClientResponse("Failed", "CA-E0004",
-            "Your account is deleted");
+        CreditAccountPaymentResponse failedResponse = buildPaymentClientResponse("Failed", "CA-E0004");
 
-        callPaymentClientWithStatusAndVerify(
+        callPaymentClientWithStatusAndVerifyErrorMessage(
             HttpStatus.FORBIDDEN,
-            getErrorMessage(HttpStatus.FORBIDDEN, failedResponse),
+            expectedErrorMessage(PbaErrorMessage.CAE0004),
             buildValidCaseData(),
             failedResponse);
     }
@@ -425,9 +422,9 @@ public class ProcessPbaPaymentTest extends MockedFunctionalTest {
     @Test
     public void givenCaseData_whenProcessPbaPayment_404_thenReturnErrorMessage() throws Exception {
 
-        callPaymentClientWithStatusAndVerify(
+        callPaymentClientWithStatusAndVerifyErrorMessage(
             HttpStatus.NOT_FOUND,
-            getErrorMessage(HttpStatus.NOT_FOUND, basicFailedResponse),
+            expectedErrorMessage(PbaErrorMessage.NOTFOUND),
             buildValidCaseData(),
             basicFailedResponse);
     }
@@ -435,9 +432,9 @@ public class ProcessPbaPaymentTest extends MockedFunctionalTest {
     @Test
     public void givenCaseData_whenProcessPbaPayment_422_thenReturnErrorMessage() throws Exception {
 
-        callPaymentClientWithStatusAndVerify(
+        callPaymentClientWithStatusAndVerifyErrorMessage(
             HttpStatus.UNPROCESSABLE_ENTITY,
-            getErrorMessage(HttpStatus.UNPROCESSABLE_ENTITY, basicFailedResponse),
+            expectedErrorMessage(PbaErrorMessage.GENERAL),
             buildValidCaseData(),
             basicFailedResponse);
     }
@@ -445,9 +442,9 @@ public class ProcessPbaPaymentTest extends MockedFunctionalTest {
     @Test
     public void givenCaseData_whenProcessPbaPayment_504_thenReturnErrorMessage() throws Exception {
 
-        callPaymentClientWithStatusAndVerify(
+        callPaymentClientWithStatusAndVerifyErrorMessage(
             HttpStatus.GATEWAY_TIMEOUT,
-            getErrorMessage(HttpStatus.GATEWAY_TIMEOUT, basicFailedResponse),
+            expectedErrorMessage(PbaErrorMessage.GENERAL),
             buildValidCaseData(),
             basicFailedResponse);
     }
@@ -455,11 +452,15 @@ public class ProcessPbaPaymentTest extends MockedFunctionalTest {
     @Test
     public void givenCaseData_whenProcessPbaPayment_AnyOtherStatus_thenReturnErrorMessage() throws Exception {
 
-        callPaymentClientWithStatusAndVerify(
+        callPaymentClientWithStatusAndVerifyErrorMessage(
             HttpStatus.BAD_REQUEST,
-            getDefaultErrorMessage(),
+            expectedErrorMessage(PbaErrorMessage.GENERAL),
             buildValidCaseData(),
             basicFailedResponse);
+    }
+
+    private String expectedErrorMessage(PbaErrorMessage pbaErrorMessage) {
+        return formatMessage(pbaErrorMessage);
     }
 
     private Map<String, Object> buildValidCaseData() {
@@ -512,10 +513,10 @@ public class ProcessPbaPaymentTest extends MockedFunctionalTest {
             .andExpect(content().json(convertObjectToJsonString(expected)));
     }
 
-    private void callPaymentClientWithStatusAndVerify(HttpStatus httpStatus,
-                                                      String expectedErrorMessage,
-                                                      Map<String, Object> caseData,
-                                                      CreditAccountPaymentResponse errorPaymentResponse)
+    private void callPaymentClientWithStatusAndVerifyErrorMessage(HttpStatus httpStatus,
+                                                                  String expectedErrorMessage,
+                                                                  Map<String, Object> caseData,
+                                                                  CreditAccountPaymentResponse errorPaymentResponse)
         throws Exception {
         ccdCallbackRequest = buildCcdCallbackRequest();
         setupStubs(httpStatus, caseData, errorPaymentResponse);

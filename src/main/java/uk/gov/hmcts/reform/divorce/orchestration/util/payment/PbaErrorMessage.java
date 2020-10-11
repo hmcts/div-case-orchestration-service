@@ -12,8 +12,8 @@ public enum PbaErrorMessage {
     private final String message;
 
     PbaErrorMessage(String errorMessage) {
-        String contactInfo = " For Payment Account support call 01633 652125 (Option 3) or email MiddleOffice.DDServices@liberata.com.";
-        this.message = errorMessage + contactInfo;
+        String contactInfo = "For Payment Account support call 01633 652125 (Option 3) or email MiddleOffice.DDServices@liberata.com.";
+        this.message = errorMessage + " " + contactInfo;
     }
 
     public static PbaErrorMessage getMessage(String enumName) {
