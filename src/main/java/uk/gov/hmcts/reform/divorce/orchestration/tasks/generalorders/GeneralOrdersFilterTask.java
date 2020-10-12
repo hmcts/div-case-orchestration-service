@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.model.ccd.DivorceGeneralOrder;
 import uk.gov.hmcts.reform.divorce.model.parties.DivorceParty;
@@ -23,6 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @RequiredArgsConstructor
 @Component
+@Slf4j
 public class GeneralOrdersFilterTask implements Task<Map<String, Object>> {
 
     private final UserDivorcePartyLookup userDivorcePartyLookup;
@@ -32,11 +34,15 @@ public class GeneralOrdersFilterTask implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
         String authToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY);
+        log.info("Looking up divorce party for user");
         Optional<DivorceParty> divorceParty = userDivorcePartyLookup.lookupDivorcePartForGivenUser(authToken, caseData);
+        String divorcePartyDescription = divorceParty.map(DivorceParty::getDescription).orElse("[none]");
+        log.info("Found divorce party {} for user", divorcePartyDescription);
 
         Map<String, Object> newCaseData = new HashMap<>(caseData);
         if (newCaseData.containsKey(GENERAL_ORDERS)) {
             List<CollectionMember<DivorceGeneralOrder>> allGeneralOrders = ccdUtil.getListOfCollectionMembers(newCaseData, GENERAL_ORDERS);
+            log.info("Found {} general orders.", allGeneralOrders.size());
 
             List<CollectionMember<DivorceGeneralOrder>> filteredGeneralOrders = divorceParty
                 .map(party -> allGeneralOrders.stream()
@@ -46,6 +52,11 @@ public class GeneralOrdersFilterTask implements Task<Map<String, Object>> {
                 .orElse(new ArrayList<>());
 
             newCaseData.put(GENERAL_ORDERS, filteredGeneralOrders);
+            log.info("{} general orders were left after filtering for {} party.",
+                allGeneralOrders.size(),
+                divorcePartyDescription);
+        } else {
+            log.info("{} field not found in case data", GENERAL_ORDERS);
         }
 
         return newCaseData;
