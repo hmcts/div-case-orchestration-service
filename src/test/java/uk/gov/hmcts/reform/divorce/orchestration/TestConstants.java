@@ -68,7 +68,6 @@ public class TestConstants {
     public static final String TEST_REASON_2_YEAR_SEP = "separation-2-years";
     public static final String TEST_REASON_UNREASONABLE_BEHAVIOUR = "unreasonable-behaviour";
     public static final String AOS_AWAITING_STATE = "AosAwaiting";
-    public static final String SUBMITTED = "Submitted";
     public static final String AWAITING_CONSIDERATION_GENERAL_APPLICATION = "AwaitingConsiderationGeneralApplication";
     public static final String D8_CASE_ID = "LV17D80101";
     public static final String UNFORMATTED_CASE_ID = "0123456789";

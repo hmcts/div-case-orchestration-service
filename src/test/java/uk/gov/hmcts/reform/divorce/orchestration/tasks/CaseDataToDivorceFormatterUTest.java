@@ -18,7 +18,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INCOMING_PAYLOAD;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PAYLOAD_TO_RETURN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.CCD_CASE_DATA;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseDataToDivorceFormatterUTest {
@@ -33,12 +32,11 @@ public class CaseDataToDivorceFormatterUTest {
     public void whenFormatData_thenReturnExpectedData() {
         final DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        context.setTransientObject(CCD_CASE_DATA, TEST_INCOMING_PAYLOAD);
 
         final Map<String, Object> expectedResults = TEST_PAYLOAD_TO_RETURN;
         when(caseFormatterClient.transformToDivorceFormat(AUTH_TOKEN, TEST_INCOMING_PAYLOAD)).thenReturn(expectedResults);
 
-        Map<String, Object> returnedCaseData = classUnderTest.execute(context, null);
+        Map<String, Object> returnedCaseData = classUnderTest.execute(context, TEST_INCOMING_PAYLOAD);
 
         assertThat(returnedCaseData, is(expectedResults));
         verify(caseFormatterClient).transformToDivorceFormat(AUTH_TOKEN, TEST_INCOMING_PAYLOAD);
