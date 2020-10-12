@@ -225,6 +225,11 @@ public interface CosApiClient {
         @RequestBody CcdCallbackRequest ccdCallbackRequest
     );
 
+    @ApiOperation("Handle make case eligble for DA sumitted")
+    @PostMapping(value = " /handle-post-make-case-eligible-for-da-submitted ")
+    CcdCallbackResponse handleMakeCaseEligibleForDASubmitted(
+        @RequestBody CcdCallbackRequest ccdCallbackRequest
+    );
 
     @ApiOperation("Handle callback for Fee lookup")
     @PostMapping(value = "/set-up-confirm-service-payment")
