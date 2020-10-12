@@ -11,8 +11,9 @@ import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.fail;
+
 
 public class MakeCaseEligibleForDATest extends IntegrationTest {
 
@@ -28,11 +29,10 @@ public class MakeCaseEligibleForDATest extends IntegrationTest {
         CcdCallbackResponse response = null ;
         try {
             response = cosApiClient.handleMakeCaseEligibleForDASubmitted(ccdCallbackRequest);
-            fail("Should not reach here as this is an exception Scenario");
         } catch (FeignException e) {
             assertThat(response.getErrors(), is(notNullValue()));
+            assertThat(response.getData(),is(nullValue()));
         }
     }
-
 
 }
