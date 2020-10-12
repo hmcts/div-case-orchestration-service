@@ -16,8 +16,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.Servic
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_SERVICE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationBailiff;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationGranted;
 
 @Component
@@ -35,7 +37,11 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
         CcdCallbackResponse.CcdCallbackResponseBuilder builder = CcdCallbackResponse.builder();
 
         if (isServiceApplicationGranted(caseDetails.getCaseData())) {
-            builder.state(AWAITING_DECREE_NISI);
+            if (isServiceApplicationBailiff(caseDetails.getCaseData())) {
+                builder.state(AWAITING_BAILIFF_SERVICE);
+            } else {
+                builder.state(AWAITING_DECREE_NISI);
+            }
         } else {
             builder.state(SERVICE_APPLICATION_NOT_APPROVED);
         }
