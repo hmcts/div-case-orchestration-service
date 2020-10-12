@@ -85,8 +85,8 @@ public class CreditAccountPaymentsConsumerTest {
     RequestResponsePact postCreditAccountPayment(PactDslWithProvider builder) throws JsonProcessingException {
         // @formatter:off
         return builder
-            .given("A payment reference exists")
-            .uponReceiving("a request for information for that payment reference")
+            .given("A credit account payment does not exist")
+            .uponReceiving("a request to create a credit account payment")
             .path("/credit-account-payments")
             .method("POST")
             .headers(HttpHeaders.AUTHORIZATION, SOME_AUTHORIZATION_TOKEN, SERVICE_AUTHORIZATION, SOME_SERVICE_AUTHORIZATION_TOKEN)
