@@ -30,12 +30,12 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @ExtendWith(PactConsumerTestExt.class)
 @ExtendWith(SpringExtension.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@PactTestFor(providerName = "payments", port = "8891")
+@PactTestFor(providerName = "payment_cardPayment", port = "8891")
 @PactFolder("pacts")
 @SpringBootTest( {
     "payment.service.api.baseurl : localhost:8891"
 })
-public class PaymentClientConsumerTest {
+public class CardPaymentsConsumerTest {
 
 
     public static final String SOME_AUTHORIZATION_TOKEN = "Bearer UserAuthToken";
@@ -64,7 +64,7 @@ public class PaymentClientConsumerTest {
         Executor.closeIdleConnections();
     }
 
-    @Pact(provider = "payments", consumer = "divorce_case_orchestrator_service")
+    @Pact(provider = "payment_cardPayment", consumer = "divorce_caseOrchestratorService")
     RequestResponsePact getPaymentsByReference(PactDslWithProvider builder) {
         // @formatter:off
         return builder
