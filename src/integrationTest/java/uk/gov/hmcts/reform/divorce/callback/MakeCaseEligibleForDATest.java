@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -24,14 +23,16 @@ public class MakeCaseEligibleForDATest extends IntegrationTest {
     private CosApiClient cosApiClient;
 
     @Test
-    public void givenCcdCallbackRequest_whenMakeCaseEligibleForDASubmissionDnDecision_thenExpectNoErrors() {
-        CcdCallbackRequest ccdCallbackRequest = ResourceLoader.loadJsonToObject(CCD_CALLBACK_REQUEST, CcdCallbackRequest.class);
+    public void givenCcdCallbackRequest_whenMakeCaseEligibleForDASubmitted_thenErrorShouldBeRaised() {
+        final CcdCallbackRequest ccdCallbackRequest = ResourceLoader.loadJsonToObject(CCD_CALLBACK_REQUEST, CcdCallbackRequest.class);
+        CcdCallbackResponse response = null ;
         try {
-            CcdCallbackResponse response = cosApiClient.handleMakeCaseEligibleForDASubmitted(ccdCallbackRequest);
-            assertThat(response.getErrors(), is(nullValue()));
-            assertThat(response.getData(), is(notNullValue()));
+            response = cosApiClient.handleMakeCaseEligibleForDASubmitted(ccdCallbackRequest);
+            fail("Should not reach here as this is an exception Scenario");
         } catch (FeignException e) {
-            fail(e.contentUTF8());
+            assertThat(response.getErrors(), is(notNullValue()));
         }
     }
+
+
 }
