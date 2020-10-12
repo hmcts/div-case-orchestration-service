@@ -13,9 +13,9 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static uk.gov.hmcts.reform.divorce.callback.SolicitorCreateAndUpdateTest.postWithDataAndValidateResponse;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PBA_NUMBERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY;
 
 public class ProcessPbaPaymentTest extends IntegrationTest {
 
@@ -35,7 +35,7 @@ public class ProcessPbaPaymentTest extends IntegrationTest {
         Map<String, Object> responseData = response.getBody().path(DATA);
 
         // There will be an error if PBA payment is unsuccessful
-        assertNotNull(responseData.get(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY));
+        assertNotNull(responseData.get(PBA_NUMBERS));
         assertNoPetitionOnDocumentGeneratedList((List)responseData.get(D8DOCUMENTS_GENERATED));
     }
 
