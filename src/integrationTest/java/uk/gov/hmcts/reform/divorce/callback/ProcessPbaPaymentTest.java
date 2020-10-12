@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.callback;
 import io.restassured.response.Response;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
@@ -18,8 +17,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY;
 
-@SpringBootTest(properties = {"feature-toggle.toggle.pay_by_account=false"})
-public class ProcessPbaPaymentFeatureSwitchedOffTest extends IntegrationTest {
+public class ProcessPbaPaymentTest extends IntegrationTest {
 
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/solicitor/";
 
@@ -27,7 +25,7 @@ public class ProcessPbaPaymentFeatureSwitchedOffTest extends IntegrationTest {
     private String contextPath;
 
     @Test
-    public void givenCallbackRequest_whenProcessPbaPaymentAndPbaToggleIsOff_thenReturnDataWithNoErrors() throws Exception {
+    public void givenCallbackRequest_whenProcessPbaPayment_thenReturnDataWithNoErrors() throws Exception {
         Response response = postWithDataAndValidateResponse(
             serverUrl + contextPath,
             PAYLOAD_CONTEXT_PATH + "solicitor-request-data.json",
@@ -42,7 +40,7 @@ public class ProcessPbaPaymentFeatureSwitchedOffTest extends IntegrationTest {
     }
 
     private static void assertNoPetitionOnDocumentGeneratedList(List<CollectionMember<Document>> documents) {
-        assertEquals(0, documents.stream().filter(ProcessPbaPaymentFeatureSwitchedOffTest::isPetition).count());
+        assertEquals(0, documents.stream().filter(ProcessPbaPaymentTest::isPetition).count());
     }
 
     private static boolean isPetition(CollectionMember<Document> item) {
