@@ -19,7 +19,7 @@ import static org.junit.Assert.fail;
 public class MakeCaseEligibleForDATest extends IntegrationTest {
 
     private static final String CCD_CALLBACK_REQUEST_DECISION_MADE = "fixtures/callback/dn-decision-made.json";
-    private static final String CCD_CALLBACK_REQUEST_CASE_ELIGIBLE_FOR_DA_SUBMITTED  = "fixtures/callback/case-eligible-for-da-submitted";
+    private static final String CCD_CALLBACK_REQUEST_CASE_ELIGIBLE_FOR_DA_SUBMITTED  = "fixtures/callback/case-eligible-for-da-submitted.json";
 
     @Autowired
     private CosApiClient cosApiClient;
