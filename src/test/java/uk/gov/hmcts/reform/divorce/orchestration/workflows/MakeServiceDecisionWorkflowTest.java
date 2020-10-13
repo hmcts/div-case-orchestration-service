@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedS
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.MakeServiceDecisionDateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.OrderToDispenseGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceApplicationDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceApplicationRemovalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceRefusalDraftRemovalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionWorkflow;
 
@@ -53,6 +54,9 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
     @Mock
     private ServiceApplicationDataTask serviceApplicationDataTask;
 
+    @Mock
+    private ServiceApplicationRemovalTask serviceApplicationRemovalTask;
+
     @InjectMocks
     private MakeServiceDecisionWorkflow makeServiceDecisionWorkflow;
 
@@ -85,7 +89,13 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
         caseData.put(CcdFields.SERVICE_APPLICATION_GRANTED, YES_VALUE);
         caseData.put(CcdFields.SERVICE_APPLICATION_TYPE, ApplicationServiceTypes.DISPENSED);
 
-        mockTasksExecution(caseData, makeServiceDecisionDateTask, serviceApplicationDataTask, orderToDispenseGenerationTask);
+        mockTasksExecution(
+            caseData,
+            makeServiceDecisionDateTask,
+            orderToDispenseGenerationTask,
+            serviceApplicationDataTask,
+            serviceApplicationRemovalTask
+        );
 
         makeServiceDecisionWorkflow.run(CaseDetails.builder().caseData(caseData).build(), AUTH_TOKEN);
 
@@ -103,8 +113,9 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
             caseData,
             makeServiceDecisionDateTask,
             deemedServiceRefusalOrderTask,
+            serviceRefusalDraftRemovalTask,
             serviceApplicationDataTask,
-            serviceRefusalDraftRemovalTask
+            serviceApplicationRemovalTask
         );
 
         makeServiceDecisionWorkflow.run(CaseDetails.builder().caseData(caseData).build(), AUTH_TOKEN);
@@ -114,7 +125,8 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
             makeServiceDecisionDateTask,
             deemedServiceRefusalOrderTask,
             serviceRefusalDraftRemovalTask,
-            serviceApplicationDataTask
+            serviceApplicationDataTask,
+            serviceApplicationRemovalTask
         );
         verifyTasksWereNeverCalled(deemedServiceOrderGenerationTask);
     }
@@ -130,7 +142,8 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
             makeServiceDecisionDateTask,
             dispensedServiceRefusalOrderTask,
             serviceRefusalDraftRemovalTask,
-            serviceApplicationDataTask
+            serviceApplicationDataTask,
+            serviceApplicationRemovalTask
         );
 
         makeServiceDecisionWorkflow.run(CaseDetails.builder().caseData(caseData).build(), AUTH_TOKEN);
@@ -140,7 +153,8 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
             makeServiceDecisionDateTask,
             dispensedServiceRefusalOrderTask,
             serviceRefusalDraftRemovalTask,
-            serviceApplicationDataTask
+            serviceApplicationDataTask,
+            serviceApplicationRemovalTask
         );
         verifyTasksWereNeverCalled(deemedServiceOrderGenerationTask);
     }
@@ -155,7 +169,8 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
             caseData,
             makeServiceDecisionDateTask,
             deemedServiceOrderGenerationTask,
-            serviceApplicationDataTask
+            serviceApplicationDataTask,
+            serviceApplicationRemovalTask
         );
 
         makeServiceDecisionWorkflow.run(CaseDetails.builder().caseData(caseData).build(), AUTH_TOKEN);
@@ -164,7 +179,8 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
             caseData,
             makeServiceDecisionDateTask,
             deemedServiceOrderGenerationTask,
-            serviceApplicationDataTask
+            serviceApplicationDataTask,
+            serviceApplicationRemovalTask
         );
         verifyTasksWereNeverCalled(orderToDispenseGenerationTask, serviceRefusalDraftRemovalTask);
     }
@@ -174,7 +190,8 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
         mockTasksExecution(caseData,
             makeServiceDecisionDateTask,
             serviceRefusalDraftRemovalTask,
-            serviceApplicationDataTask
+            serviceApplicationDataTask,
+            serviceApplicationRemovalTask
         );
 
         makeServiceDecisionWorkflow.run(CaseDetails.builder().caseData(caseData).build(), AUTH_TOKEN);
@@ -183,7 +200,8 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
             caseData,
             makeServiceDecisionDateTask,
             serviceRefusalDraftRemovalTask,
-            serviceApplicationDataTask
+            serviceApplicationDataTask,
+            serviceApplicationRemovalTask
         );
 
         verifyTasksWereNeverCalled(
@@ -198,7 +216,8 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
         throws WorkflowException {
         mockTasksExecution(caseData,
             makeServiceDecisionDateTask,
-            serviceApplicationDataTask
+            serviceApplicationDataTask,
+            serviceApplicationRemovalTask
         );
 
         makeServiceDecisionWorkflow.run(CaseDetails.builder().caseData(caseData).build(), AUTH_TOKEN);
@@ -206,7 +225,8 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
         verifyTasksCalledInOrder(
             caseData,
             makeServiceDecisionDateTask,
-            serviceApplicationDataTask
+            serviceApplicationDataTask,
+            serviceApplicationRemovalTask
         );
 
         verifyTasksWereNeverCalled(
