@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.divorce.orchestration.testutil;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import uk.gov.hmcts.reform.divorce.model.ccd.Document;
+import uk.gov.hmcts.reform.divorce.model.ccd.DocumentLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DocumentLink;
 
 import java.util.Map;
 
@@ -30,7 +30,7 @@ public class CaseDataTestHelper {
 
     public static Map<String, Object> createCollectionMemberDocumentAsMap(String url, String documentType, String fileName) {
         CollectionMember<Document> document = createCollectionMemberDocument(url, documentType, fileName);
-        return convertObject(document, new TypeReference<Map<String, Object>>() {});
+        return convertObject(document, new TypeReference<>() {});
     }
 
 }

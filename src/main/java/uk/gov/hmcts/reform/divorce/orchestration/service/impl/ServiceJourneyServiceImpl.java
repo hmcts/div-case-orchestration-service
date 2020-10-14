@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRes
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionDateWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceDecisionMadeWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceDecisionMakingWorkflow;
@@ -26,7 +26,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Condition
 public class ServiceJourneyServiceImpl implements ServiceJourneyService {
 
     private final ReceivedServiceAddedDateWorkflow receivedServiceAddedDateWorkflow;
-    private final MakeServiceDecisionDateWorkflow makeServiceDecisionDateWorkflow;
+    private final MakeServiceDecisionWorkflow makeServiceDecisionWorkflow;
     private final ServiceDecisionMadeWorkflow serviceDecisionMadeWorkflow;
     private final ServiceDecisionMakingWorkflow serviceDecisionMakingWorkflow;
 
@@ -41,7 +41,7 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
         }
 
         try {
-            builder.data(makeServiceDecisionDateWorkflow.run(caseDetails, authorisation));
+            builder.data(makeServiceDecisionWorkflow.run(caseDetails, authorisation));
         } catch (WorkflowException workflowException) {
             throw new ServiceJourneyServiceException(workflowException);
         }

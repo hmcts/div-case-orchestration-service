@@ -7,11 +7,11 @@ import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import uk.gov.hmcts.reform.divorce.model.GeneratePinRequest;
-import uk.gov.hmcts.reform.divorce.model.PinResponse;
-import uk.gov.hmcts.reform.divorce.model.RegisterUserRequest;
-import uk.gov.hmcts.reform.divorce.model.UserDetails;
-import uk.gov.hmcts.reform.divorce.model.UserGroup;
+import uk.gov.hmcts.reform.divorce.model.idam.GeneratePinRequest;
+import uk.gov.hmcts.reform.divorce.model.idam.PinResponse;
+import uk.gov.hmcts.reform.divorce.model.idam.RegisterUserRequest;
+import uk.gov.hmcts.reform.divorce.model.idam.UserDetails;
+import uk.gov.hmcts.reform.divorce.model.idam.UserGroup;
 
 import java.util.ArrayList;
 import java.util.Base64;

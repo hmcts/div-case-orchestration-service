@@ -14,6 +14,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThrows;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 public class TaskUtilsTest {
@@ -122,6 +123,48 @@ public class TaskUtilsTest {
             TaskUtils.getCaseId(context)
         );
         assertThat(exception.getMessage(), is("Could not evaluate value of mandatory property \"" + CASE_ID_JSON_KEY + "\""));
+    }
+
+    @Test
+    public void testAuthTokenCanBeRetrieved() throws TaskException {
+        DefaultTaskContext context = new DefaultTaskContext();
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, "123");
+
+        String caseId = TaskUtils.getAuthToken(context);
+
+        assertThat(caseId, equalTo("123"));
+    }
+
+    @Test
+    public void testExceptionIsThrown_WhenAuthTokenIsMissing() throws TaskException {
+        DefaultTaskContext context = new DefaultTaskContext();
+
+        TaskException exception = assertThrows(TaskException.class, () ->
+            TaskUtils.getAuthToken(context)
+        );
+        assertThat(exception.getMessage(), is("Could not evaluate value of mandatory property \"" + AUTH_TOKEN_JSON_KEY + "\""));
+    }
+
+    @Test
+    public void testExceptionIsThrown_WhenAuthTokenIsEmpty() throws TaskException {
+        DefaultTaskContext context = new DefaultTaskContext();
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, "");
+
+        TaskException exception = assertThrows(TaskException.class, () ->
+            TaskUtils.getAuthToken(context)
+        );
+        assertThat(exception.getMessage(), is("Could not evaluate value of mandatory property \"" + AUTH_TOKEN_JSON_KEY + "\""));
+    }
+
+    @Test
+    public void testExceptionIsThrown_WhenAuthTokenIsNotString() throws TaskException {
+        DefaultTaskContext context = new DefaultTaskContext();
+        context.setTransientObject(AUTH_TOKEN_JSON_KEY, 123);
+
+        TaskException exception = assertThrows(TaskException.class, () ->
+            TaskUtils.getAuthToken(context)
+        );
+        assertThat(exception.getMessage(), is("Could not evaluate value of mandatory property \"" + AUTH_TOKEN_JSON_KEY + "\""));
     }
 
     @Test

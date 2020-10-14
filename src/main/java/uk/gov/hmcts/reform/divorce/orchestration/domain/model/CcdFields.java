@@ -7,10 +7,13 @@ import lombok.NoArgsConstructor;
 public class CcdFields {
 
     public static final String SERVICE_APPLICATION_TYPE = "ServiceApplicationType";
+    public static final String SERVICE_APPLICATION_PAYMENT = "ServiceApplicationPayment";
     public static final String SERVICE_APPLICATION_GRANTED = "ServiceApplicationGranted";
     public static final String SERVICE_APPLICATION_DECISION_DATE = "ServiceApplicationDecisionDate";
     public static final String RECEIVED_SERVICE_APPLICATION_DATE = "ReceivedServiceApplicationDate";
+    public static final String RECEIVED_SERVICE_ADDED_DATE = "ReceivedServiceAddedDate";
     public static final String SERVICE_REFUSAL_DRAFT = "ServiceRefusalDraft";
+    public static final String SERVICE_APPLICATIONS = "ServiceApplications";
     public static final String SERVICE_APPLICATION_DOCUMENTS = "ServiceApplicationDocuments";
     public static final String SERVICE_APPLICATION_REFUSAL_REASON = "ServiceApplicationRefusalReason";
     public static final String HELP_WITH_FEES_REF_NUMBER = "D8HelpWithFeesReferenceNumber";
@@ -37,4 +40,6 @@ public class CcdFields {
     public static final String PETITIONER_FIRST_NAME = OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
     public static final String PETITIONER_LAST_NAME = OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
     public static final String PETITIONER_EMAIL = OrchestrationConstants.D_8_PETITIONER_EMAIL;
+
+    public static final String PBA_NUMBERS = "PbaNumbers";
 }

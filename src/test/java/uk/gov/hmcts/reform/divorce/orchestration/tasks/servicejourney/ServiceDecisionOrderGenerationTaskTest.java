@@ -1,9 +1,9 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney;
 
 import org.junit.Before;
+import uk.gov.hmcts.reform.divorce.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceDecisionOrder;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.docmosis.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
@@ -23,9 +23,11 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_FAMILY_MAN_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_DECISION_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RECEIVED_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
@@ -41,8 +43,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelp
 
 public abstract class ServiceDecisionOrderGenerationTaskTest extends BasePayloadSpecificDocumentGenerationTaskTest {
 
-    public static final String TEST_RECEIVED_DATE = "2010-10-10";
-    public static final String TEST_SERVICE_DECISION_DATE = "2010-10-11";
     public static final String TEST_DOCUMENT_ISSUED_ON = "2020-12-12";
 
     @Before
@@ -95,7 +95,7 @@ public abstract class ServiceDecisionOrderGenerationTaskTest extends BasePayload
             .petitionerFullName(TEST_PETITIONER_FULL_NAME)
             .respondentFullName(TEST_RESPONDENT_FULL_NAME)
             .caseReference(TEST_CASE_FAMILY_MAN_ID)
-            .serviceApplicationDecisionDate(DateUtils.formatDateWithCustomerFacingFormat(TEST_SERVICE_DECISION_DATE))
+            .serviceApplicationDecisionDate(DateUtils.formatDateWithCustomerFacingFormat(TEST_DECISION_DATE))
             .receivedServiceApplicationDate(DateUtils.formatDateWithCustomerFacingFormat(TEST_RECEIVED_DATE))
             .documentIssuedOn(DateUtils.formatDateWithCustomerFacingFormat(LocalDate.now()))
             .build();
@@ -112,7 +112,7 @@ public abstract class ServiceDecisionOrderGenerationTaskTest extends BasePayload
         caseData.put(RESPONDENT_LAST_NAME, TEST_RESPONDENT_LAST_NAME);
 
         caseData.put(CcdFields.RECEIVED_SERVICE_APPLICATION_DATE, TEST_RECEIVED_DATE);
-        caseData.put(CcdFields.SERVICE_APPLICATION_DECISION_DATE, TEST_SERVICE_DECISION_DATE);
+        caseData.put(CcdFields.SERVICE_APPLICATION_DECISION_DATE, TEST_DECISION_DATE);
 
         return caseData;
     }

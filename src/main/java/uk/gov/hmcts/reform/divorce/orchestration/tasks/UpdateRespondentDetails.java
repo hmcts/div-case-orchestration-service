@@ -61,7 +61,7 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
 
             UserDetails linkedUser =
                 idamClient.getUserDetails(
-                    authUtil.getBearToken(context.getTransientObject(AUTH_TOKEN_JSON_KEY)));
+                    authUtil.getBearerToken(context.getTransientObject(AUTH_TOKEN_JSON_KEY)));
 
             CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
 
