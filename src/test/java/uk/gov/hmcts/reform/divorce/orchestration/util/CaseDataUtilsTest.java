@@ -35,8 +35,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED_OLD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_PAY_BY_ACCOUNT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.DESERTION;
@@ -353,6 +355,24 @@ public class CaseDataUtilsTest {
 
         List<?> returnedGeneratedDocumentsList = (List<?>) returnedCaseData.get(D8DOCUMENTS_GENERATED);
         assertThat(returnedGeneratedDocumentsList, is(empty()));
+    }
+
+    @Test
+    public void givenSolPaymentMethodIsPba_whenSolicitorPaymentMethodIsPba_thenReturnTrue() {
+        Map<String, Object> caseData = singletonMap(SOLICITOR_HOW_TO_PAY_JSON_KEY, FEE_PAY_BY_ACCOUNT);
+        assertThat(CaseDataUtils.solicitorPaymentMethodIsPba(caseData), is(true));
+    }
+
+    @Test
+    public void givenSolPaymentMethodIsNotPba_whenSolicitorPaymentMethodIsPba_thenReturnFalse() {
+        Map<String, Object> caseData = singletonMap(SOLICITOR_HOW_TO_PAY_JSON_KEY, "NotByAccount");
+        assertThat(CaseDataUtils.solicitorPaymentMethodIsPba(caseData), is(false));
+    }
+
+    @Test
+    public void givenSolPaymentMethodDoesNotExist_whenSolicitorPaymentMethodIsPba_thenReturnFalse() {
+        Map<String, Object> caseData = emptyMap();
+        assertThat(CaseDataUtils.solicitorPaymentMethodIsPba(caseData), is(false));
     }
 
 }

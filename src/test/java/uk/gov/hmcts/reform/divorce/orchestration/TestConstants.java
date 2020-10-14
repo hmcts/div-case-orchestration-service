@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration;
 
 import com.google.common.collect.ImmutableMap;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
 import java.util.Map;
 
@@ -67,7 +68,6 @@ public class TestConstants {
     public static final String TEST_REASON_2_YEAR_SEP = "separation-2-years";
     public static final String TEST_REASON_UNREASONABLE_BEHAVIOUR = "unreasonable-behaviour";
     public static final String AOS_AWAITING_STATE = "AosAwaiting";
-    public static final String SUBMITTED = "Submitted";
     public static final String AWAITING_CONSIDERATION_GENERAL_APPLICATION = "AwaitingConsiderationGeneralApplication";
     public static final String D8_CASE_ID = "LV17D80101";
     public static final String UNFORMATTED_CASE_ID = "0123456789";
@@ -109,11 +109,17 @@ public class TestConstants {
     public static final String TEST_CO_RESPONDENT_LAST_NAME = "Wayne";
     public static final String TEST_CO_RESPONDENT_FULL_NAME = TEST_CO_RESPONDENT_FIRST_NAME + " " + TEST_CO_RESPONDENT_LAST_NAME;
 
+    public static final String TEST_RECEIVED_DATE = "2020-05-05";
+    public static final String TEST_DECISION_DATE = "2030-10-10";
+    public static final String TEST_ADDED_DATE = "2000-01-01";
+    public static final String TEST_ADDED_DATE_FORMATTED = DateUtils.formatDateWithCustomerFacingFormat(TEST_ADDED_DATE);
+    public static final String TEST_SERVICE_APPLICATION_PAYMENT = "feeAccount";
+
+    public static final String TEST_MY_REASON = "this is my reason";
 
     public static final String TEST_GENERAL_EMAIL_DETAILS = "Leverage agile frameworks to provide a robust synopsis for high level overviews.";
 
     public static final Map<String, Object> TEST_INCOMING_PAYLOAD = singletonMap("incomingKey", "incomingValue");
     public static final CaseDetails TEST_INCOMING_CASE_DETAILS = CaseDetails.builder().caseData(TEST_INCOMING_PAYLOAD).build();
     public static final Map<String, Object> TEST_PAYLOAD_TO_RETURN = singletonMap("returnedKey", "returnedValue");
-
 }

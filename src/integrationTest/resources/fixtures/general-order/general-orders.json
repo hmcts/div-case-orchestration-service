@@ -1,0 +1,46 @@
+{
+  "GeneralOrders": [
+    {
+      "id": "9320ad41-4980-47b7-885d-76daae69ff9b",
+      "value": {
+        "Document": {
+          "DocumentLink": {
+            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/f5734b18-c075-4417-81ce-c0c2e0155dbe",
+            "document_filename": "generalOrder2020-09-28.pdf",
+            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/f5734b18-c075-4417-81ce-c0c2e0155dbe/binary"
+          },
+          "DocumentType": "generalOrder",
+          "DocumentComment": null,
+          "DocumentFileName": "generalOrder2020-09-28",
+          "DocumentDateAdded": null,
+          "DocumentEmailContent": null
+        },
+        "GeneralOrderParties": [
+          "petitioner",
+          "respondent",
+          "co-respondent"
+        ]
+      }
+    },
+    {
+      "id": "e45691eb-292b-4684-bb51-4f4814b1cfef",
+      "value": {
+        "Document": {
+          "DocumentLink": {
+            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/87e11e12-073f-442c-94db-63f665f55c42",
+            "document_filename": "generalOrder2020-09-28.pdf",
+            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/87e11e12-073f-442c-94db-63f665f55c42/binary"
+          },
+          "DocumentType": "generalOrder",
+          "DocumentComment": null,
+          "DocumentFileName": "generalOrder2020-09-28",
+          "DocumentDateAdded": null,
+          "DocumentEmailContent": null
+        },
+        "GeneralOrderParties": [
+          "co-respondent"
+        ]
+      }
+    }
+  ]
+}

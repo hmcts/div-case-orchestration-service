@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.divorce.category.ExtendedTest;
-import uk.gov.hmcts.reform.divorce.model.UserDetails;
+import uk.gov.hmcts.reform.divorce.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.CcdSubmissionSupport;
 
 import java.time.LocalDate;
@@ -45,7 +45,6 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
             throw new RuntimeException(e);
         }
     }
-
 
     @Test
     public void givenConsentAndDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
@@ -144,7 +143,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
             petitioner);
 
         Response cosResponse = submitRespondentAosCase(petitioner.getAuthToken(), caseDetails.getId(),
-                AOS_NO_DEFEND_NO_CONSENT_JSON);
+            AOS_NO_DEFEND_NO_CONSENT_JSON);
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
         assertEquals(caseDetails.getId(), cosResponse.path(CCD_CASE_ID));
@@ -182,12 +181,12 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
         CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
-                null,
-                TEST_AOS_STARTED_EVENT_ID,
-                userDetails);
+            null,
+            TEST_AOS_STARTED_EVENT_ID,
+            userDetails);
 
         Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
-                loadJson(PAYLOAD_CONTEXT_PATH + AOS_SOLICITOR_REPRESENTATION_JSON));
+            loadJson(PAYLOAD_CONTEXT_PATH + AOS_SOLICITOR_REPRESENTATION_JSON));
 
         assertEquals(OK.value(), cosResponse.getStatusCode());
         assertEquals(caseDetails.getId(), cosResponse.path(CCD_CASE_ID));

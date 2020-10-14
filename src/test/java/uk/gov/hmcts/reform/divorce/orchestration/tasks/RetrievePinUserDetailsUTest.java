@@ -57,7 +57,7 @@ public class RetrievePinUserDetailsUTest {
 
     @Before
     public void setup() {
-        when(authUtil.getBearToken(BEARER_AUTH_TOKEN)).thenCallRealMethod();
+        when(authUtil.getBearerToken(BEARER_AUTH_TOKEN)).thenCallRealMethod();
         ReflectionTestUtils.setField(classUnderTest, "authUtil", authUtil);
         ReflectionTestUtils.setField(classUnderTest, "authClientId", AUTH_CLIENT_ID);
         ReflectionTestUtils.setField(classUnderTest, "authClientSecret", AUTH_CLIENT_SECRET);

@@ -18,14 +18,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.Ser
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithToken;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ServiceRefusalDraftRemovalTest {
+public class ServiceRefusalDraftRemovalTaskTest {
 
     @InjectMocks
     private ServiceRefusalDraftRemovalTask classUnderTest;
 
     @Test
     public void shouldRemoveServiceRefusalDraftKeyFromCaseData() {
-        Map<String, Object> caseData = new HashMap();
+        Map<String, Object> caseData = new HashMap<>();
         caseData.put("incomingKey", "incomingValue");
         caseData.put(SERVICE_REFUSAL_DRAFT, getDocumentLink());
 
