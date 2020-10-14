@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.S
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_FMT;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationRefusalReason;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
-import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateTimeForCcd;
+import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateTimeForDocument;
 
 @Component
 @Slf4j
@@ -55,6 +55,6 @@ public abstract class ServiceRefusalOrderGenerationTask extends BasePayloadSpeci
 
     @Override
     protected String getFileName() {
-        return format(DOCUMENT_FILENAME_FMT, getDocumentType(), formatDateTimeForCcd(LocalDateTime.now()));
+        return format(DOCUMENT_FILENAME_FMT, getDocumentType(), formatDateTimeForDocument(LocalDateTime.now()));
     }
 }

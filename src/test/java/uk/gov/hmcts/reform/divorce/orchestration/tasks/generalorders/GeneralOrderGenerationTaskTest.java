@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.
 import uk.gov.hmcts.reform.divorce.orchestration.exception.JudgeTypeNotFoundException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +22,7 @@ import static org.hamcrest.core.Is.is;
 import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.PETITIONER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_ORDERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_FMT;
-import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateFromLocalDate;
+import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateTimeForDocument;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GeneralOrderGenerationTaskTest extends AbstractGeneralOrderGenerationTaskTest {
@@ -59,7 +59,7 @@ public class GeneralOrderGenerationTaskTest extends AbstractGeneralOrderGenerati
 
     private void verifyNewDocumentWasAddedToCaseData(
         Map<String, Object> returnedCaseData, String expectedDocumentType) {
-        String expectedGeneralOrderFileName = format(DOCUMENT_FILENAME_FMT, expectedDocumentType, formatDateFromLocalDate(LocalDate.now()));
+        String expectedGeneralOrderFileName = format(DOCUMENT_FILENAME_FMT, expectedDocumentType, formatDateTimeForDocument(LocalDateTime.now()));
 
         List<CollectionMember<DivorceGeneralOrder>> generalOrdersCollection = (List) returnedCaseData.get(GENERAL_ORDERS);
         assertThat(generalOrdersCollection.size(), is(1));

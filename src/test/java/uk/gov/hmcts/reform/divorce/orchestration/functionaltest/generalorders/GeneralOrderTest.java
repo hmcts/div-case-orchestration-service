@@ -23,7 +23,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.GeneralOrde
 import uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker;
 import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -255,7 +255,7 @@ public class GeneralOrderTest extends IdamTestSupport {
     }
 
     protected String formatDocumentFileName(String documentType) {
-        return documentType + DateUtils.formatDateFromLocalDate(LocalDate.now()) + ".pdf";
+        return documentType + DateUtils.formatDateTimeForDocument(LocalDateTime.now()) + ".pdf";
     }
 
     private Matcher<String> getAllJsonKeysThatShouldNotExistWhenSuccess() {
