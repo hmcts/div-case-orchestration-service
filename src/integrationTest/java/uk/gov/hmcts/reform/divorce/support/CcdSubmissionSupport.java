@@ -13,7 +13,7 @@ import org.springframework.http.HttpHeaders;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
-import uk.gov.hmcts.reform.divorce.model.UserDetails;
+import uk.gov.hmcts.reform.divorce.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
 
 import java.util.Arrays;
@@ -43,7 +43,9 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
     protected static final String CO_RESPONDENT_DEFAULT_EMAIL = "co-respondent@notifications.service.gov.uk";
     protected static final String RESPONDENT_DEFAULT_EMAIL = "respondent@notifications.service.gov.uk";
     private static final String SUBMIT_DN_PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/submit-dn/";
+
     private static final String TEST_AOS_STARTED_EVENT_ID = "testAosStarted";
+    protected static final String NO_STATE_CHANGE_EVENT_ID = "paymentReferenceGenerated";
 
     @Autowired
     protected CcdClientSupport ccdClientSupport;

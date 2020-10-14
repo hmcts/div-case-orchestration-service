@@ -2,8 +2,8 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextract
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import uk.gov.hmcts.reform.divorce.model.parties.DivorceParty;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.GeneralOrderParty;
 
 import java.util.List;
 import java.util.Map;
@@ -47,9 +47,10 @@ public class GeneralOrderDataExtractor {
         return formatDateWithCustomerFacingFormat(getMandatoryStringValue(caseData, CaseDataKeys.GENERAL_ORDER_DATE));
     }
 
-    public static List<GeneralOrderParty> getGeneralOrderParties(Map<String, Object> caseData) {
+    public static List<DivorceParty> getGeneralOrderParties(Map<String, Object> caseData) {
         return getMandatoryListOfStrings(caseData, CaseDataKeys.GENERAL_ORDER_PARTIES).stream()
-            .map(GeneralOrderParty::from)
+            .map(DivorceParty::getDivorcePartyByDescription)
             .collect(Collectors.toList());
     }
+
 }

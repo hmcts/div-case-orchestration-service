@@ -8,7 +8,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.web.bind.WebDataBinder;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty;
+import uk.gov.hmcts.reform.divorce.model.parties.DivorceParty;
 
 import java.beans.PropertyEditorSupport;
 
@@ -19,7 +19,7 @@ import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
+import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.RESPONDENT;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GlobalControllerFormatterTest {

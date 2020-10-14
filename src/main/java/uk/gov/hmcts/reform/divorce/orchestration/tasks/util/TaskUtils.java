@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.lang.String.format;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil.parseDateUsingCcdFormat;
 
@@ -51,14 +52,22 @@ public class TaskUtils {
     }
 
     public static String getCaseId(TaskContext context) throws TaskException {
-        Object transientObject = context.getTransientObject(CASE_ID_JSON_KEY);
+        return getMandatoryContextValue(CASE_ID_JSON_KEY, context);
+    }
+
+    public static String getAuthToken(TaskContext context) throws TaskException {
+        return getMandatoryContextValue(AUTH_TOKEN_JSON_KEY, context);
+    }
+
+    public static String getMandatoryContextValue(String key, TaskContext context) {
+        Object transientObject = context.getTransientObject(key);
         if (!(transientObject instanceof String)) {
-            throw buildTaskExceptionForMandatoryProperty(CASE_ID_JSON_KEY);
+            throw buildTaskExceptionForMandatoryProperty(key);
         }
 
         String caseId = (String) transientObject;
         if (isNullOrEmpty(caseId)) {
-            throw buildTaskExceptionForMandatoryProperty(CASE_ID_JSON_KEY);
+            throw buildTaskExceptionForMandatoryProperty(key);
         }
 
         return caseId;

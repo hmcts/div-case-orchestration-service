@@ -39,7 +39,7 @@ public class AuthenticateRespondentUTest {
 
     @Before
     public void setup() {
-        Mockito.when(authUtil.getBearToken(AUTH_TOKEN)).thenCallRealMethod();
+        Mockito.when(authUtil.getBearerToken(AUTH_TOKEN)).thenCallRealMethod();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
     }
 

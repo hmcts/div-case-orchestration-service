@@ -7,12 +7,11 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.divorce.model.ccd.DivorceGeneralOrder;
+import uk.gov.hmcts.reform.divorce.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceGeneralOrder;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Document;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.GeneralOrderParty;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.GeneralOrder;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.JudgeTypeNotFoundException;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.IdamTestSupport;
@@ -43,6 +42,8 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.PETITIONER;
+import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CO_RESPONDENT_FIRST_NAME;
@@ -116,7 +117,7 @@ public class GeneralOrderTest extends IdamTestSupport {
                 hasJsonPath("$.data.GeneralOrders[0].value.Document.DocumentLink.document_filename",
                     is(fileName)),
                 hasJsonPath("$.data.GeneralOrders[0].value.GeneralOrderParties[0]",
-                    is(GeneralOrderParty.PETITIONER.getValue()))
+                    is(PETITIONER.getDescription()))
             )));
     }
 
@@ -143,7 +144,7 @@ public class GeneralOrderTest extends IdamTestSupport {
                 hasJsonPath("$.data.GeneralOrders[1].value.Document.DocumentLink.document_filename",
                     is(fileName)),
                 hasJsonPath("$.data.GeneralOrders[1].value.GeneralOrderParties[0]",
-                    is(GeneralOrderParty.PETITIONER.getValue()))
+                    is(PETITIONER.getDescription()))
             )));
     }
 
@@ -170,7 +171,7 @@ public class GeneralOrderTest extends IdamTestSupport {
         member.setValue(
             DivorceGeneralOrder.builder()
                 .document(new Document())
-                .generalOrderParties(asList(GeneralOrderParty.PETITIONER, GeneralOrderParty.RESPONDENT))
+                .generalOrderParties(asList(PETITIONER, RESPONDENT))
                 .build()
         );
 
@@ -195,7 +196,7 @@ public class GeneralOrderTest extends IdamTestSupport {
         caseData.put(GENERAL_ORDER_DETAILS, TEST_GENERAL_ORDER_DETAILS);
         caseData.put(GENERAL_ORDER_DATE, TEST_GENERAL_ORDER_DATE);
         caseData.put(GENERAL_ORDER_RECITALS, TEST_GENERAL_ORDER_RECITALS);
-        caseData.put(GENERAL_ORDER_PARTIES, asList(GeneralOrderParty.PETITIONER.getValue()));
+        caseData.put(GENERAL_ORDER_PARTIES, asList(PETITIONER.getDescription()));
 
         caseData.put(GENERAL_ORDER_DRAFT, new HashMap<>());
 

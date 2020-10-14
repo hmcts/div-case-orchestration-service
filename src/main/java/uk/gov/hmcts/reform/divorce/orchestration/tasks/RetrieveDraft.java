@@ -30,13 +30,13 @@ public class RetrieveDraft implements Task<Map<String, Object>> {
         Map<String, Object> caseData = null;
 
         CaseDetails cmsContent = caseMaintenanceClient
-                .retrievePetition(context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString());
+            .retrievePetition(context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString());
 
         if (cmsContent != null && cmsContent.getCaseData() != null && !cmsContent.getCaseData().isEmpty()) {
             caseData = cmsContent.getCaseData();
             Boolean isDraft = Optional.ofNullable(caseData.get(IS_DRAFT_KEY))
-                                .map(Boolean.class::cast)
-                                .orElse(false);
+                .map(Boolean.class::cast)
+                .orElse(false);
 
             if (!isDraft) {
                 context.setTransientObject(CASE_ID_JSON_KEY, cmsContent.getCaseId());
@@ -47,4 +47,5 @@ public class RetrieveDraft implements Task<Map<String, Object>> {
         }
         return caseData;
     }
+
 }

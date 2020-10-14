@@ -4,9 +4,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.model.ccd.DivorceGeneralOrder;
+import uk.gov.hmcts.reform.divorce.model.parties.DivorceParty;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceGeneralOrder;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.GeneralOrderParty;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.GeneralOrder;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.docmosis.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
@@ -61,7 +61,7 @@ public class GeneralOrderGenerationTask extends BasePayloadSpecificDocumentGener
     ) {
         log.info("CaseID: {} Adding general order to {} collection.", getCaseId(context), GENERAL_ORDERS);
 
-        CollectionMember<DivorceGeneralOrder> collectionMember = getDivorceGeneralOrderCollectionMember(
+        CollectionMember<DivorceGeneralOrder> collectionMember = buildDivorceGeneralOrderCollectionMember(
             GeneralOrderDataExtractor.getGeneralOrderParties(caseData), generatedDocumentInfo
         );
 
@@ -123,11 +123,11 @@ public class GeneralOrderGenerationTask extends BasePayloadSpecificDocumentGener
         return copiedCaseData;
     }
 
-    private CollectionMember<DivorceGeneralOrder> getDivorceGeneralOrderCollectionMember(
-        List<GeneralOrderParty> caseData, GeneratedDocumentInfo generatedDocumentInfo
+    private CollectionMember<DivorceGeneralOrder> buildDivorceGeneralOrderCollectionMember(
+        List<DivorceParty> allowedGeneralOrderParties, GeneratedDocumentInfo generatedDocumentInfo
     ) {
         DivorceGeneralOrder divorceGeneralOrder = DivorceGeneralOrder.builder()
-            .generalOrderParties(caseData)
+            .generalOrderParties(allowedGeneralOrderParties)
             .document(CcdMappers.mapDocumentInfoToCcdDocument(generatedDocumentInfo).getValue())
             .build();
 
@@ -136,4 +136,5 @@ public class GeneralOrderGenerationTask extends BasePayloadSpecificDocumentGener
 
         return collectionMember;
     }
+
 }
