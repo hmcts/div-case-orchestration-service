@@ -58,7 +58,7 @@ public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
     @Autowired
     private CmsClientSupport cmsClientSupport;
 
-    @Ignore //this test is very flaky and fails often in master/PRs
+    //this test is very flaky and fails often in master/PRs
     @Test
     public void givenCaseIsInDNPronounced_WhenMakeCaseEligibleForDAIsCalled_CaseStateIsAwaitingDecreeAbsolute() {
         final UserDetails citizenUser = createCitizenUser();

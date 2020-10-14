@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.callback;
 
 import feign.FeignException;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
@@ -25,6 +26,7 @@ public class MakeCaseEligibleForDATest extends IntegrationTest {
     private CosApiClient cosApiClient;
 
     @Test
+    @Ignore
     public void givenCcdCallbackRequest_whenMakeCaseEligibleForDASubmitted_thenErrorsShouldBeRaised() {
         final CcdCallbackRequest ccdCallbackRequest = ResourceLoader.loadJsonToObject(CCD_CALLBACK_REQUEST_DECISION_MADE, CcdCallbackRequest.class);
         CcdCallbackResponse response = null ;
@@ -37,6 +39,7 @@ public class MakeCaseEligibleForDATest extends IntegrationTest {
     }
 
     @Test
+    @Ignore
     public void givenCcdCallbackRequest_whenMakeCaseEligibleForDASubmitted_isTriggered_shouldReturnSuccess() {
         final CcdCallbackRequest ccdCallbackRequest = ResourceLoader
             .loadJsonToObject(CCD_CALLBACK_REQUEST_CASE_ELIGIBLE_FOR_DA_SUBMITTED, CcdCallbackRequest.class);
