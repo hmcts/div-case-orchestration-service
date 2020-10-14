@@ -50,7 +50,7 @@ public class GetGeneralApplicationWithoutNoticeFeeTaskTest {
         when(feesAndPaymentsClient.getGeneralApplicationWithoutFee()).thenReturn(feeResponse);
 
         DefaultTaskContext taskContext = new DefaultTaskContext();
-        taskContext.setTransientObject(CASE_ID_JSON_KEY,TEST_CASE_ID);
+        taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
         Map<String, Object> returnedCaseData = classToTest.execute(taskContext, new HashMap<>());
 
         OrderSummary paymentSummary = (OrderSummary) returnedCaseData.get(GENERAL_APPLICATION_WITHOUT_NOTICE_FEE_SUMMARY);
