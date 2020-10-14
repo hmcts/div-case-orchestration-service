@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.FeesAndPaymentsClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
-
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generics.SetupOrderSummaryTask;
 
 @Component
