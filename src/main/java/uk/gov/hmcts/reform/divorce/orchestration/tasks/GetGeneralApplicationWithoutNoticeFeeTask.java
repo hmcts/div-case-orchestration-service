@@ -1,28 +1,26 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.FeesAndPaymentsClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 
-import java.util.Map;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generics.SetupOrderSummaryTask;
 
 @Component
-@RequiredArgsConstructor
-public class GetGeneralApplicationWithoutNoticeFeeTask implements Task<Map<String, Object>> {
+public class GetGeneralApplicationWithoutNoticeFeeTask extends SetupOrderSummaryTask {
 
-    public static final String GENERAL_APPLICATION_WITHOUT_NOTICE_FEE_SUMMARY = "generalApplicationWithoutNoticeFeeSummary";
-    private final FeesAndPaymentsClient feesAndPaymentsClient;
+    public GetGeneralApplicationWithoutNoticeFeeTask(FeesAndPaymentsClient feesAndPaymentsClient) {
+        super(feesAndPaymentsClient);
+    }
 
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
-        OrderSummary orderSummary = new OrderSummary();
-        orderSummary.add(feesAndPaymentsClient.getGeneralApplicationWithoutFee());
+    protected String getFieldName() {
+        return CcdFields.GENERAL_APPLICATION_WITHOUT_NOTICE_FEE_SUMMARY;
+    }
 
-        caseData.put(GENERAL_APPLICATION_WITHOUT_NOTICE_FEE_SUMMARY, orderSummary);
-
-        return caseData;
+    @Override
+    protected FeeResponse getFeeResponse() {
+        return feesAndPaymentsClient.getGeneralApplicationWithoutFee();
     }
 }
