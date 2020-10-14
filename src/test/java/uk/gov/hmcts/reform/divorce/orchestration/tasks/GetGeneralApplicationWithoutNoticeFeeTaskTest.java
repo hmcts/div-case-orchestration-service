@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.FeesAndPaymentsClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,9 +17,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_DESCRIPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_VERSION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_APPLICATION_WITHOUT_NOTICE_FEE_SUMMARY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GetGeneralApplicationWithoutNoticeFeeTaskTest {
@@ -46,7 +49,9 @@ public class GetGeneralApplicationWithoutNoticeFeeTaskTest {
             .build();
         when(feesAndPaymentsClient.getGeneralApplicationWithoutFee()).thenReturn(feeResponse);
 
-        Map<String, Object> returnedCaseData = classToTest.execute(null, new HashMap<>());
+        DefaultTaskContext taskContext = new DefaultTaskContext();
+        taskContext.setTransientObject(CASE_ID_JSON_KEY,TEST_CASE_ID);
+        Map<String, Object> returnedCaseData = classToTest.execute(taskContext, new HashMap<>());
 
         OrderSummary paymentSummary = (OrderSummary) returnedCaseData.get(GENERAL_APPLICATION_WITHOUT_NOTICE_FEE_SUMMARY);
         assertThat(paymentSummary.getPaymentTotal(), is(TEST_FEE_AMOUNT_IN_PENNIES));
