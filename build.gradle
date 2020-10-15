@@ -211,7 +211,7 @@ sourceSets {
         java {
             compileClasspath += main.output + test.output
             runtimeClasspath += main.output + test.output
-            srcDir('src/integrationTest/java/uk/gov/hmcts/reform/divorce/maintenance/')
+            srcDir('src/integrationTest/java')
         }
         resources {
             srcDir('src/integrationTest/resources')
@@ -396,9 +396,6 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
     doFirst(){
         printf("Available processors:::::::::: " + Runtime.runtime.availableProcessors().intdiv(2).toString())
     }
-
-    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
-    forkEvery = 10
 
     setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
     setClasspath(sourceSets.integrationTest.runtimeClasspath)
