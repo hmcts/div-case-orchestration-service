@@ -65,7 +65,7 @@ public class RetrievePinUserDetails implements Task<UserDetails> {
             new ExchangeCodeRequest(
                 pinResponse.getCode(), GRANT_TYPE, authRedirectUrl, authClientId, authClientSecret);
 
-        String pinAuthToken = authUtil.getBearToken(
+        String pinAuthToken = authUtil.getBearerToken(
             idamClient.exchangeCode(exchangeCodeRequest).getAccessToken()
         );
 

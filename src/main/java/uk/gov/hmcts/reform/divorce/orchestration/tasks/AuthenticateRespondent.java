@@ -22,7 +22,7 @@ public class AuthenticateRespondent implements Task<Boolean> {
 
     @Override
     public Boolean execute(TaskContext context, Boolean payload) {
-        UserDetails userDetails = idamClient.getUserDetails(authUtil.getBearToken(
+        UserDetails userDetails = idamClient.getUserDetails(authUtil.getBearerToken(
             context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString()
         ));
         return isRespondentUser(userDetails);

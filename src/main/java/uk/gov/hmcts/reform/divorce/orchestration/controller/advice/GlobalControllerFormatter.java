@@ -4,8 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.InitBinder;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorcePartyNotFoundException;
+import uk.gov.hmcts.reform.divorce.model.parties.DivorceParty;
+import uk.gov.hmcts.reform.divorce.model.parties.DivorcePartyNotFoundException;
 
 import java.beans.PropertyEditorSupport;
 

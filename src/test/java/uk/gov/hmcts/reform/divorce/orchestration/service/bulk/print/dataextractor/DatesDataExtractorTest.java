@@ -14,16 +14,17 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.EMPTY_MAP;
+import static java.util.Collections.emptyMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertThrows;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATE_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.TIME_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.COSTS_CLAIM_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor.CaseDataKeys.DA_GRANTED_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor.CaseDataKeys.RECEIVED_SERVICE_ADDED_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor.CaseDataKeys.RECEIVED_SERVICE_APPLICATION_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor.CaseDataKeys.SERVICE_APPLICATION_DECISION_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor.getDeadlineToContactCourtBy;
@@ -45,7 +46,18 @@ public class DatesDataExtractorTest {
 
     @Test(expected = InvalidDataForTaskException.class)
     public void getDaGrantedDateThrowsInvalidDataForTaskExceptionWhenNoFieldFound() {
-        assertThat(DatesDataExtractor.getDaGrantedDate(EMPTY_MAP), is(EXPECTED_DATE));
+        DatesDataExtractor.getDaGrantedDate(emptyMap());
+    }
+
+    @Test
+    public void getReceivedServiceAddedDateReturnsValidValueWhenItExists() {
+        Map<String, Object> caseData = buildCaseDataWithField(RECEIVED_SERVICE_ADDED_DATE, VALID_DATE_FROM_CCD);
+        assertThat(DatesDataExtractor.getReceivedServiceAddedDate(caseData), is(EXPECTED_DATE));
+    }
+
+    @Test(expected = InvalidDataForTaskException.class)
+    public void getReceivedServiceAddedDateThrowsInvalidDataForTaskExceptionWhenNoFieldFound() {
+        DatesDataExtractor.getReceivedServiceAddedDate(emptyMap());
     }
 
     @Test
@@ -56,7 +68,40 @@ public class DatesDataExtractorTest {
 
     @Test(expected = InvalidDataForTaskException.class)
     public void getReceivedServiceApplicationDateThrowsInvalidDataForTaskExceptionWhenNoFieldFound() {
-        assertThat(DatesDataExtractor.getDaGrantedDate(EMPTY_MAP), is(EXPECTED_DATE));
+        DatesDataExtractor.getReceivedServiceApplicationDate(emptyMap());
+    }
+
+    @Test
+    public void getReceivedServiceApplicationDateUnformattedDateReturnsValidValueWhenItExists() {
+        Map<String, Object> caseData = buildCaseDataWithField(RECEIVED_SERVICE_APPLICATION_DATE, VALID_DATE_FROM_CCD);
+        assertThat(DatesDataExtractor.getReceivedServiceApplicationDateUnformatted(caseData), is(VALID_DATE_FROM_CCD));
+    }
+
+    @Test(expected = InvalidDataForTaskException.class)
+    public void getReceivedServiceApplicationDateUnformattedThrowsInvalidDataForTaskExceptionWhenNoFieldFound() {
+        DatesDataExtractor.getReceivedServiceApplicationDateUnformatted(emptyMap());
+    }
+
+    @Test
+    public void getReceivedServiceAddedDateUnformattedDateReturnsValidValueWhenItExists() {
+        Map<String, Object> caseData = buildCaseDataWithField(RECEIVED_SERVICE_ADDED_DATE, VALID_DATE_FROM_CCD);
+        assertThat(DatesDataExtractor.getReceivedServiceAddedDateUnformatted(caseData), is(VALID_DATE_FROM_CCD));
+    }
+
+    @Test(expected = InvalidDataForTaskException.class)
+    public void getReceivedServiceAddedDateUnformattedThrowsInvalidDataForTaskExceptionWhenNoFieldFound() {
+        DatesDataExtractor.getReceivedServiceAddedDateUnformatted(emptyMap());
+    }
+
+    @Test
+    public void getServiceApplicationDecisionDateUnformattedDateReturnsValidValueWhenItExists() {
+        Map<String, Object> caseData = buildCaseDataWithField(SERVICE_APPLICATION_DECISION_DATE, VALID_DATE_FROM_CCD);
+        assertThat(DatesDataExtractor.getServiceApplicationDecisionDateUnformatted(caseData), is(VALID_DATE_FROM_CCD));
+    }
+
+    @Test(expected = InvalidDataForTaskException.class)
+    public void getServiceApplicationDecisionDateUnformattedThrowsInvalidDataForTaskExceptionWhenNoFieldFound() {
+        DatesDataExtractor.getServiceApplicationDecisionDateUnformatted(emptyMap());
     }
 
     @Test
@@ -67,18 +112,16 @@ public class DatesDataExtractorTest {
 
     @Test(expected = InvalidDataForTaskException.class)
     public void getServiceApplicationDecisionDateThrowsInvalidDataForTaskExceptionWhenNoFieldFound() {
-        assertThat(DatesDataExtractor.getReceivedServiceApplicationDate(EMPTY_MAP), is(EXPECTED_DATE));
+        DatesDataExtractor.getReceivedServiceApplicationDate(emptyMap());
     }
 
     @Test
     public void getDaGrantedDateThrowsExceptions() {
         asList("", null).forEach(daDateValue -> {
-            try {
-                DatesDataExtractor.getDaGrantedDate(buildCaseDataWithField(DA_GRANTED_DATE, daDateValue));
-                fail("Should have thrown exception");
-            } catch (InvalidDataForTaskException e) {
-                thisTestPassed();
-            }
+            assertThrows(
+                InvalidDataForTaskException.class,
+                () -> DatesDataExtractor.getDaGrantedDate(buildCaseDataWithField(DA_GRANTED_DATE, daDateValue))
+            );
         });
     }
 
@@ -99,7 +142,7 @@ public class DatesDataExtractorTest {
 
     @Test
     public void getDeadlineToContactCourtByReturnsFormattedDate() {
-        MatcherAssert.assertThat(getDeadlineToContactCourtBy(createCaseData()), CoreMatchers.is(CONTACT_COURT_BY_DATE_FORMATTED));
+        assertThat(getDeadlineToContactCourtBy(createCaseData()), CoreMatchers.is(CONTACT_COURT_BY_DATE_FORMATTED));
     }
 
     @Test(expected = InvalidDataForTaskException.class)
@@ -113,14 +156,6 @@ public class DatesDataExtractorTest {
 
         return caseData;
     }
-
-    /*
-     * workaround for indicating that eg exception catch is what we exactly need to pass test
-     */
-    private static void thisTestPassed() {
-        assertThat(true, is(true));
-    }
-
 
     static Map<String, Object> createCaseData() {
         Map<String, Object> caseData = new HashMap<>();
