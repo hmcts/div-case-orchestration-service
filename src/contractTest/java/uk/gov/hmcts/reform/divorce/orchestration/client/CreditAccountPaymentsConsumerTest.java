@@ -9,8 +9,8 @@ import au.com.dius.pact.core.model.annotations.Pact;
 import au.com.dius.pact.core.model.annotations.PactFolder;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.http.HttpHeaders;
 import org.apache.http.client.fluent.Executor;
-import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.junit.After;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +19,6 @@ import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -30,6 +29,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentItem;
 
 import java.io.IOException;
 import java.util.Collections;
+import javax.validation.constraints.NotNull;
 
 import static io.pactfoundation.consumer.dsl.LambdaDsl.newJsonBody;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -49,15 +49,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @PactTestFor(providerName = "payment_creditAccountPayment", port = "8891")
 @PactFolder("pacts")
-@SpringBootTest( {
+@SpringBootTest({
     "payment.service.api.baseurl : localhost:8891"
 })
 public class CreditAccountPaymentsConsumerTest {
 
     public static final String SOME_AUTHORIZATION_TOKEN = "Bearer UserAuthToken";
     public static final String SOME_SERVICE_AUTHORIZATION_TOKEN = "ServiceToken";
-    private static final String ACCESS_TOKEN = "someAccessToken";
-    private static final String TOKEN = "someToken";
 
     @Autowired
     private PaymentClient paymentClient;
@@ -65,10 +63,7 @@ public class CreditAccountPaymentsConsumerTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    private Long USER_ID = 123456L;
-    private String PAYMENT_REFERENCE = "654321ABC";
-    private String SERVICE_AUTHORIZATION = "ServiceAuthorization";
-    private String EXPERIMENTAL = "experimental=true";
+    public static final String  SERVICE_AUTHORIZATION = "ServiceAuthorization";
 
     @BeforeEach
     public void setUpEachTest() throws InterruptedException {
@@ -88,7 +83,8 @@ public class CreditAccountPaymentsConsumerTest {
             .uponReceiving("a request to create a credit account payment")
             .path("/credit-account-payments")
             .method("POST")
-            .headers(HttpHeaders.AUTHORIZATION, SOME_AUTHORIZATION_TOKEN, SERVICE_AUTHORIZATION, SOME_SERVICE_AUTHORIZATION_TOKEN)
+            .headers(HttpHeaders.AUTHORIZATION, SOME_AUTHORIZATION_TOKEN, SERVICE_AUTHORIZATION,
+                SOME_SERVICE_AUTHORIZATION_TOKEN)
             .body(objectMapper.writeValueAsString(getCreditAccountPaymentRequest()))
             .willRespondWith()
             .status(201)
@@ -98,15 +94,21 @@ public class CreditAccountPaymentsConsumerTest {
 
     private DslPart buildCreditAccountPaymentResponseDtoPactDsl() {
         return newJsonBody((o) -> {
-            o.stringMatcher("date_created", "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}\\+\\d{4})$", "2020-10-06T18:54:48.785+0000")
+            o.stringMatcher("date_created", "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}\\+\\d{4})$",
+                "2020-10-06T18:54:48.785+0000")
                 .stringType("reference", "BJMSDFDS80808")
                 .stringType("payment_group_reference", "2020-1602010488596")
                 .stringType("status", "Success")
                 .minArrayLike("status_histories", 0, 1,
                     status ->
-                        status.stringMatcher("date_updated", "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}\\+\\d{4})$", "2020-10-06T18:54:48.785+0000")
-                            .stringMatcher("date_created", "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}\\+\\d{4})$", "2020-10-06T18:54:48.785+0000")
-                            .stringMatcher("status", "created|started|submitted|success|failed|cancelled|error|pending|decline", "success"));
+                        status.stringMatcher("date_updated",
+                            "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}\\+\\d{4})$",
+                            "2020-10-06T18:54:48.785+0000")
+                            .stringMatcher("date_created",
+                                "^(\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}\\+\\d{4})$",
+                                "2020-10-06T18:54:48.785+0000")
+                            .stringMatcher("status",
+                                "created|started|submitted|success|failed|cancelled|error|pending|decline", "success"));
         }).build();
     }
 
@@ -118,8 +120,9 @@ public class CreditAccountPaymentsConsumerTest {
         CreditAccountPaymentRequest expectedRequest = getCreditAccountPaymentRequest();
 
 
-        ResponseEntity<CreditAccountPaymentResponse> response = paymentClient.creditAccountPayment(SOME_AUTHORIZATION_TOKEN,
-            SOME_SERVICE_AUTHORIZATION_TOKEN, expectedRequest);
+        ResponseEntity<CreditAccountPaymentResponse> response =
+            paymentClient.creditAccountPayment(SOME_AUTHORIZATION_TOKEN,
+                SOME_SERVICE_AUTHORIZATION_TOKEN, expectedRequest);
         assertThat(response.getStatusCode(), equalTo(HttpStatus.CREATED));
 
     }

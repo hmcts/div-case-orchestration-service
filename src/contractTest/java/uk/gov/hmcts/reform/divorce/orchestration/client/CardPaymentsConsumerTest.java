@@ -32,7 +32,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @PactTestFor(providerName = "payment_cardPayment", port = "8891")
 @PactFolder("pacts")
-@SpringBootTest( {
+@SpringBootTest({
     "payment.service.api.baseurl : localhost:8891"
 })
 public class CardPaymentsConsumerTest {
@@ -40,8 +40,6 @@ public class CardPaymentsConsumerTest {
 
     public static final String SOME_AUTHORIZATION_TOKEN = "Bearer UserAuthToken";
     public static final String SOME_SERVICE_AUTHORIZATION_TOKEN = "ServiceToken";
-    private static final String ACCESS_TOKEN = "someAccessToken";
-    public static final String REGEX_DATE = "^((19|2[0-9])[0-9]{2})-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$";
     private static final String TOKEN = "someToken";
 
     @Autowired
@@ -49,10 +47,8 @@ public class CardPaymentsConsumerTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    private Long USER_ID = 123456L;
-    private String PAYMENT_REFERENCE = "654321ABC";
-    private String SERVICE_AUTHORIZATION = "ServiceAuthorization";
-    private String EXPERIMENTAL = "experimental=true";
+    public static final String PAYMENT_REFERENCE = "654321ABC";
+    public static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
 
     @BeforeEach
     public void setUpEachTest() throws InterruptedException {
@@ -72,7 +68,8 @@ public class CardPaymentsConsumerTest {
             .uponReceiving("a request for information for that payment reference")
             .path("/card-payments/" + PAYMENT_REFERENCE)
             .method("GET")
-            .headers(HttpHeaders.AUTHORIZATION, SOME_AUTHORIZATION_TOKEN, SERVICE_AUTHORIZATION, SOME_SERVICE_AUTHORIZATION_TOKEN)
+            .headers(HttpHeaders.AUTHORIZATION, SOME_AUTHORIZATION_TOKEN, SERVICE_AUTHORIZATION,
+                SOME_SERVICE_AUTHORIZATION_TOKEN)
             //.matchHeader("experimental", "true")
             .willRespondWith()
             //.matchHeader(HttpHeaders.CONTENT_TYPE, "\\w+\\/[-+.\\w]+;charset=(utf|UTF)-8")
@@ -84,7 +81,8 @@ public class CardPaymentsConsumerTest {
     private DslPart buildPaymentDtoPactDsl() {
         return newJsonBody((o) -> {
             o.numberType("amount", 500)
-                .stringType("description", "Filing an application for a divorce, nullity or civil partnership dissolution – fees order 1.2.")
+                .stringType("description",
+                    "Filing an application for a divorce, nullity or civil partnership dissolution – fees order 1.2.")
                 .stringType("reference", "RC-1547-0733-1813-9545")
                 .stringValue("currency", "GBP")
                 .stringType("ccd_case_number", "1547073120300616")
