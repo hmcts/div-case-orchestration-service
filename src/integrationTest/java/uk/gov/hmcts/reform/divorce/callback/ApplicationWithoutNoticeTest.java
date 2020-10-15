@@ -18,6 +18,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 
 @Slf4j
 public class ApplicationWithoutNoticeTest extends CcdSubmissionSupport {
@@ -33,7 +34,7 @@ public class ApplicationWithoutNoticeTest extends CcdSubmissionSupport {
 
         CcdCallbackResponse response = cosApiClient.setupConfirmServicePayment(
             CcdCallbackRequest.builder()
-                .caseDetails(CaseDetails.builder().caseData(new HashMap<>()).build())
+                .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(new HashMap<>()).build())
                 .build()
         );
 
