@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.callback;
 import io.restassured.response.Response;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
@@ -10,6 +11,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMemb
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static uk.gov.hmcts.reform.divorce.callback.SolicitorCreateAndUpdateTest.postWithDataAndValidateResponse;
@@ -17,9 +20,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY;
 
+
 public class ProcessPbaPaymentTest extends IntegrationTest {
 
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/solicitor/";
+    private static final String INVALID_AUTH_TOKEN = "46RJHSJSGHJFG3236842";
 
     @Value("${case.orchestration.solicitor.process-pba-payment.context-path}")
     private String contextPath;
@@ -37,6 +42,30 @@ public class ProcessPbaPaymentTest extends IntegrationTest {
         // There will be an error if PBA payment is unsuccessful
         assertNotNull(responseData.get(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY));
         assertNoPetitionOnDocumentGeneratedList((List)responseData.get(D8DOCUMENTS_GENERATED));
+    }
+
+    @Test
+    public void givenCallbackRequest_whenProcessPbaPayment_thenReturnBadRequest() throws Exception {
+        Response response = postWithDataAndValidateResponse(
+            serverUrl + contextPath,
+            PAYLOAD_CONTEXT_PATH + "solicitor-request-invalid-data.json",
+            createCaseWorkerUser().getAuthToken()
+        );
+
+        Map<String, Object> responseData = response.getBody().path(DATA);
+        assertThat(response.getStatusCode(),is(HttpStatus.BAD_REQUEST));
+    }
+
+    @Test
+    public void givenCallbackRequest_whenProcessPbaPayment_withInvalidToken_thenReturnUnAuthorized() throws Exception {
+        Response response = postWithDataAndValidateResponse(
+            serverUrl + contextPath,
+            PAYLOAD_CONTEXT_PATH + "solicitor-request-invalid-data.json",
+            INVALID_AUTH_TOKEN
+        );
+
+        Map<String, Object> responseData = response.getBody().path(DATA);
+        assertThat(response.getStatusCode(),is(HttpStatus.UNAUTHORIZED));
     }
 
     private static void assertNoPetitionOnDocumentGeneratedList(List<CollectionMember<Document>> documents) {
