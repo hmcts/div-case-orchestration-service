@@ -5,12 +5,16 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentStatus;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPaymentTask;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Component
@@ -45,4 +49,34 @@ public class ControllerUtils {
             .build();
     }
 
+    public static String getPbaUpdatedState(String caseId, Map<String, Object> caseData) {
+
+        log.info("CaseID: {} Removing temporary payment status property '{}' in case data", caseId, ProcessPbaPaymentTask.PAYMENT_STATUS);
+        caseData.remove(ProcessPbaPaymentTask.PAYMENT_STATUS);
+
+        log.info("CaseID: {} Updating case state to '{}'", CcdStates.SUBMITTED, caseId);
+        return CcdStates.SUBMITTED;
+    }
+
+    public static boolean isResponseErrors(String errorKey, Map<String, Object> errorResponse) {
+        return Optional.ofNullable(errorResponse)
+            .map(errors ->
+                Optional.ofNullable(errorKey)
+                    .map(errors::containsKey)
+                    .orElseGet(() -> false)
+            )
+            .orElseGet(() -> false);
+    }
+
+    public static List<String> getResponseErrors(String errorKey, Map<String, Object> errorResponse) {
+        return Optional.ofNullable(errorResponse)
+            .map(errors -> (List<String>) errors.get(errorKey))
+            .orElseGet(() -> null);
+    }
+
+    public static boolean isPaymentSuccess(Map<String, Object> caseData) {
+        return Optional.ofNullable((String) caseData.get(ProcessPbaPaymentTask.PAYMENT_STATUS))
+            .map(i -> i.equalsIgnoreCase(PaymentStatus.SUCCESS.value()))
+            .orElse(false);
+    }
 }

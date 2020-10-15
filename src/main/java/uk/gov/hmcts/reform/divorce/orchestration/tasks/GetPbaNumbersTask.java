@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.P
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DynamicList.asDynamicList;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getAuthToken;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.solicitorPaymentMethodIsPba;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isSolicitorPaymentMethodPba;
 
 @Component
 @Slf4j
@@ -36,7 +36,7 @@ public class GetPbaNumbersTask implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        if (solicitorPaymentMethodIsPba(caseData)) {
+        if (isSolicitorPaymentMethodPba(caseData)) {
             String caseId = getCaseId(context);
             String bearerAuthToken = authUtil.getBearerToken(getAuthToken(context));
             String solicitorEmail = idamClient.getUserDetails(bearerAuthToken).getEmail();

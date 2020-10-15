@@ -41,6 +41,7 @@ public abstract class IntegrationTest {
     protected static final String DATA = "data";
     protected static final String CASE_DATA = "case_data";
     protected static final String CASE_DETAILS = "case_details";
+    protected static final String STATE = "state";
 
     private UserDetails caseWorkerUser;
     private UserDetails caseWorkerSuperUser;

@@ -30,7 +30,7 @@ public class CaseDataTestHelper {
 
     public static Map<String, Object> createCollectionMemberDocumentAsMap(String url, String documentType, String fileName) {
         CollectionMember<Document> document = createCollectionMemberDocument(url, documentType, fileName);
-        return convertObject(document, new TypeReference<Map<String, Object>>() {});
+        return convertObject(document, new TypeReference<>() {});
     }
 
 }

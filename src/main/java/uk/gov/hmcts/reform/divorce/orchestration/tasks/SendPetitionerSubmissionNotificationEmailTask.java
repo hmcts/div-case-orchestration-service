@@ -53,7 +53,7 @@ public class SendPetitionerSubmissionNotificationEmailTask implements Task<Map<S
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
         final String caseId = getCaseId(context);
-        log.info("CaseID: {} email to petitioner/solicitor is going to be send.", caseId);
+        log.info("CaseID: {} email to petitioner/solicitor is going to be sent.", caseId);
 
         if (isPetitionAmended(caseData)) {
             sendApplicationAmendSubmittedEmailToCorrectRecipient(context, caseData);
