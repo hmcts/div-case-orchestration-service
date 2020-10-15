@@ -385,8 +385,8 @@ public class OrchestrationConstants {
     // Validation
     public static final String ERROR_STATUS = "error";
     public static final String UPDATE_RESPONDENT_DATA_ERROR_KEY = "respondent.data.not.updated_Error";
-    public static final String SOLICITOR_VALIDATION_ERROR_KEY
-        = "uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSolicitorCaseData_Error";
+    public static final String SOLICITOR_PBA_PAYMENT_ERROR_KEY
+        = "solicitor.process.pba.payment_Error";
     public static final String VALIDATION_ERROR_KEY
         = "uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseDataTask_Error";
     public static final String BULK_PRINT_ERROR_KEY
