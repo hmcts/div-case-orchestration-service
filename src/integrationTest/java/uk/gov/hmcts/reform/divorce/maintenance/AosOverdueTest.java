@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,6 +51,7 @@ public class AosOverdueTest extends RetrieveCaseSupport {
     }
 
     @Test
+    @Ignore
     public void shouldMoveEligibleCasesToAosOverdue() {
         UserDetails caseworker = createCaseWorkerUser();
         RestAssured
