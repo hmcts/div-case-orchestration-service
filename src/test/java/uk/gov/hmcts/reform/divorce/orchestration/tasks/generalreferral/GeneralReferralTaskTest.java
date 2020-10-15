@@ -1,17 +1,21 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.generalreferral;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.fail;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.context;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -25,43 +29,21 @@ public class GeneralReferralTaskTest {
     @Before
     public void setUp() {
         taskContext = context();
-        //pass case details to context
     }
 
-    // 1.)
-    // if 'GeneralReferralFee' as 'Yes' -> State: AwaitingGeneralReferralPayment
     @Test
-    @Ignore
-    public void whenGeneralReferralFeeIsYesThenCaseStateIsSetToAwaitingGeneralReferralPayment(){
-        Map<String, Object> caseData = new HashMap<>();
+    public void whenCaseDateAndGeneralReferralFeeIsNotEmptyShouldReturnCaseData() {
+        Map<String, Object> caseData = ImmutableMap.of(CcdFields.GENERAL_REFERRAL_FEE, YES_VALUE);
 
-        generalReferralTask.execute(taskContext, caseData);
+        Map<String, Object> result = generalReferralTask.execute(taskContext, caseData);
+        assertThat(result, is(caseData));
     }
 
-
-    // 2.)
-    // if 'GeneralReferralFee' as 'No' -> State: AwaitingGeneralConsideration
     @Test
-    @Ignore
-    public void whenGeneralReferralFeeIsNoThenCaseStateIsSetToAwaitingGeneralConsideration(){
-        fail("Not yet implemented");
-    }
+    public void whenCaseDateAndGeneralReferralFeeIsEmptyShouldThrowError() {
+        Map<String, Object> caseData = ImmutableMap.of("SomeOtherField", YES_VALUE);
 
-
-    // TODO 3.)
-    // if State: AwaitingGeneralReferralPayment and 'GeneralReferralFee' as 'No' -> State: AwaitingGeneralConsideration
-    @Test
-    @Ignore
-    public void whenStateIsAwaitingGeneralReferralPaymentAndGeneralReferralFeeIsNoThenStateIsSetToAwaitingGeneralConsideration(){
-        fail("Not yet implemented");
-    }
-
-    // TODO 4.)
-    // if State: AwaitingGeneralConsideration and 'GeneralReferralFee' as 'Yes' -> State: AwaitingGeneralReferralPayment
-    @Test
-    @Ignore
-    public void whenStateIsAwaitingGeneralConsiderationAndWhenGeneralReferralFeeIsYesThenStateIsSetToAwaitingGeneralReferralPayment(){
-        fail("Not yet implemented");
+        assertThrows(TaskException.class, () -> generalReferralTask.execute(taskContext, caseData));
     }
 
 }

@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralEmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralOrderService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralReferralService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPaymentTask;
@@ -52,6 +53,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -97,6 +99,9 @@ public class CallbackControllerTest {
 
     @Mock
     private GeneralEmailService generalEmailService;
+
+    @Mock
+    private GeneralReferralService generalReferralService;
 
     @InjectMocks
     private CallbackController classUnderTest;
@@ -423,7 +428,7 @@ public class CallbackControllerTest {
         assertEquals(expected, actual.getBody());
     }
 
-    @Test(expected = WorkflowException.class)
+    @Test
     public void shouldReturnOkResponse_WithErrors_whenConfirmServiceCalled_thenExceptionIsCaught() throws WorkflowException {
         final Map<String, Object> incomingPayload = new HashMap<>();
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
@@ -435,7 +440,10 @@ public class CallbackControllerTest {
         when(caseOrchestrationService.ccdCallbackConfirmPersonalService(incomingRequest, AUTH_TOKEN))
             .thenThrow(new WorkflowException(errorString));
 
-        classUnderTest.confirmPersonalService(AUTH_TOKEN, incomingRequest);
+        WorkflowException workflowException = assertThrows(WorkflowException.class,
+            () -> classUnderTest.confirmPersonalService(AUTH_TOKEN, incomingRequest));
+
+        assertThat(workflowException.getMessage(), is(errorString));
     }
 
     @Test
@@ -1355,16 +1363,19 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getErrors(), contains("Workflow error"));
     }
 
-    @Test(expected = WorkflowException.class)
+    @Test
     public void testSendAmendApplicationEmailException_returnsError_whenExecuted() throws WorkflowException {
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(DUMMY_CASE_DATA).build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
+        String errorMessage = "Workflow error";
         when(caseOrchestrationService
-            .sendAmendApplicationEmail(ccdCallbackRequest)).thenThrow(new WorkflowException("Workflow error"));
+            .sendAmendApplicationEmail(ccdCallbackRequest)).thenThrow(new WorkflowException(errorMessage));
 
-        classUnderTest.amendApplication(ccdCallbackRequest);
+        WorkflowException workflowException = assertThrows(WorkflowException.class, () -> classUnderTest.amendApplication(ccdCallbackRequest));
+
+        assertThat(workflowException.getMessage(), is(errorMessage));
     }
 
     @Test
@@ -1580,4 +1591,19 @@ public class CallbackControllerTest {
         assertThat(ccdCallbackResponse.getBody().getData(), equalTo(TEST_PAYLOAD_TO_RETURN));
         verify(generalEmailService).createGeneralEmail(TEST_INCOMING_CASE_DETAILS);
     }
+
+    @Test
+    public void shouldReturnOk_whenGeneralReferralServiceIsCalled() throws CaseOrchestrationServiceException {
+        when(generalReferralService.receiveReferral(any(), anyString())).thenReturn(CcdCallbackResponse.builder().build());
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder().build())
+            .build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generalReferral(TEST_TOKEN, ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        verify(generalReferralService).receiveReferral(any(), anyString());
+    }
+
 }
