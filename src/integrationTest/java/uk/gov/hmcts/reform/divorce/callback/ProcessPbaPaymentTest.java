@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.callback;
 
 import io.restassured.response.Response;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
