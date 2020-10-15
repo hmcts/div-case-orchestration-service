@@ -52,8 +52,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_LINK;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ANSWERS_LINK;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_VALIDATION_ERROR_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_PBA_PAYMENT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.getPbaUpdatedState;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.getResponseErrors;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.isPaymentSuccess;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.isResponseErrors;
 
 @RestController
 @Slf4j
@@ -171,16 +175,23 @@ public class CallbackController {
     public ResponseEntity<CcdCallbackResponse> processPbaPayment(
         @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
         Map<String, Object> response = caseOrchestrationService.solicitorSubmission(ccdCallbackRequest, authorizationToken);
 
-        if (response != null && response.containsKey(SOLICITOR_VALIDATION_ERROR_KEY)) {
-            return ResponseEntity.ok(
-                CcdCallbackResponse.builder()
-                    .errors((List<String>) response.get(SOLICITOR_VALIDATION_ERROR_KEY))
-                    .build());
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        CcdCallbackResponse.CcdCallbackResponseBuilder responseBuilder = CcdCallbackResponse.builder();
+
+        if (isResponseErrors(SOLICITOR_PBA_PAYMENT_ERROR_KEY, response)) {
+            responseBuilder.errors(getResponseErrors(SOLICITOR_PBA_PAYMENT_ERROR_KEY, response));
+        } else if (isPaymentSuccess(response)) {
+            responseBuilder.state(getPbaUpdatedState(caseId, response));
+            responseBuilder.data(response);
+        } else {
+            responseBuilder.data(response);
         }
 
-        return ResponseEntity.ok(CcdCallbackResponse.builder().data(response).build());
+        log.info("CaseID {} Exiting /process-pba-payment to receive payment from the Solicitor", caseId);
+        return ResponseEntity.ok(responseBuilder.build());
     }
 
     @PostMapping(path = "/solicitor-create", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
