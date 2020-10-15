@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.maintenance;
 
 import io.restassured.response.Response;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +18,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 
+@Slf4j
 public class SolicitorAmendPetitionForRefusalTest extends CcdSubmissionSupport {
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/solicitor/";
 
@@ -26,8 +28,10 @@ public class SolicitorAmendPetitionForRefusalTest extends CcdSubmissionSupport {
     @Test
     public void givenValidCase_whenSolicitorAmendPetitionForRefusalRejection_newDraftPetitionIsReturned() throws Exception {
         final UserDetails solicitorUser = createSolicitorUser();
+        log.info("givenValidCase_whenSolicitorAmendPetitionForRefusalRejection_newDraftPetitionIsReturned solicitorUser: {}", solicitorUser);
 
         Response cosResponse = postWithData("solicitor-request-data-dn-rejection.json", solicitorUser.getAuthToken());
+        log.info("givenValidCase_whenSolicitorAmendPetitionForRefusalRejection_newDraftPetitionIsReturned cosResponse: {}", cosResponse);
         assertThat(cosResponse.getStatusCode(), is(HttpStatus.OK.value()));
     }
 
