@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.generalreferral;
 
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,13 +20,22 @@ public class GeneralReferralTaskTest {
     @InjectMocks
     private GeneralReferralTask generalReferralTask;
 
+    private TaskContext taskContext;
+
+    @Before
+    public void setUp() {
+        taskContext = context();
+        //pass case details to context
+    }
+
     // 1.)
     // if 'GeneralReferralFee' as 'Yes' -> State: AwaitingGeneralReferralPayment
     @Test
     @Ignore
     public void whenGeneralReferralFeeIsYesThenCaseStateIsSetToAwaitingGeneralReferralPayment(){
         Map<String, Object> caseData = new HashMap<>();
-        generalReferralTask.execute(context(), caseData);
+
+        generalReferralTask.execute(taskContext, caseData);
     }
 
 

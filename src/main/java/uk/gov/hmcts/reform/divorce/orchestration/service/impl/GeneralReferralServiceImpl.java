@@ -16,6 +16,9 @@ public class GeneralReferralServiceImpl implements GeneralReferralService {
     @Override
     public CcdCallbackResponse receiveReferral(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
         throws CaseOrchestrationServiceException {
+        // pass case details
+        // update case details state
+        // in here copy case details state to callbackresponse state
         return CcdCallbackResponse.builder().build();
     }
 }
