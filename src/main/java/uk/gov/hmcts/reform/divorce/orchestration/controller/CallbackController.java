@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralEmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralOrderService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralReferralService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
@@ -68,6 +69,7 @@ public class CallbackController {
     private final GeneralOrderService generalOrderService;
     private final AosService aosService;
     private final GeneralEmailService generalEmailService;
+    private final GeneralReferralService generalReferralService;
 
     @PostMapping(path = "/request-clarification-petitioner")
     @ApiOperation(value = "Trigger notification email to request clarification from Petitioner")
@@ -1255,6 +1257,20 @@ public class CallbackController {
             CcdCallbackResponse.builder()
                 .data(generalEmailService.createGeneralEmail(ccdCallbackRequest.getCaseDetails()))
                 .build());
+    }
+
+    @PostMapping(path = "/general-referral", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback for general referral")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> generalReferral(
+        @RequestHeader(AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        CcdCallbackResponse response = generalReferralService.receiveReferral(ccdCallbackRequest, authorizationToken);
+        return ResponseEntity.ok(response);
     }
 
     @ExceptionHandler(CaseOrchestrationServiceException.class)
