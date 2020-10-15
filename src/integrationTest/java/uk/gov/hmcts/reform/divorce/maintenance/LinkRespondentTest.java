@@ -183,6 +183,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
 
     @Test
     @Category(ExtendedTest.class)
+    @Ignore
     public void givenLinkedCase_whenLinkCoRespondent_thenCaseShouldBeLinked() {
         final UserDetails petitionerUserDetails = createCitizenUser();
 
