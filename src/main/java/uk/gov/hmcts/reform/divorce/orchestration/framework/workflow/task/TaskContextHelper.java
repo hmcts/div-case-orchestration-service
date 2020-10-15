@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 
 import java.util.HashSet;
@@ -11,10 +12,17 @@ import java.util.Set;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public class TaskContextHelper {
 
+    public static void failTask(TaskContext context, String errorKey, List<String> errorValues) {
+        context.setTaskFailed(true);
+        context.setTransientObject(errorKey, errorValues);
+        log.info("Tasked execution failed. Key: {} with errors {}", errorKey, errorValues.toArray());
+    }
+
     public static void addToContextDocumentCollection(TaskContext context,
-                                                      GeneratedDocumentInfo documentInfoWithMetadata)  throws InvalidDataForTaskException {
+                                                      GeneratedDocumentInfo documentInfoWithMetadata) {
         Set<GeneratedDocumentInfo> documentCollection = context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new HashSet<>());
 
         if (isExistingDocument(documentCollection, documentInfoWithMetadata)) {

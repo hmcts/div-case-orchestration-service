@@ -360,19 +360,19 @@ public class CaseDataUtilsTest {
     @Test
     public void givenSolPaymentMethodIsPba_whenSolicitorPaymentMethodIsPba_thenReturnTrue() {
         Map<String, Object> caseData = singletonMap(SOLICITOR_HOW_TO_PAY_JSON_KEY, FEE_PAY_BY_ACCOUNT);
-        assertThat(CaseDataUtils.solicitorPaymentMethodIsPba(caseData), is(true));
+        assertThat(CaseDataUtils.isSolicitorPaymentMethodPba(caseData), is(true));
     }
 
     @Test
     public void givenSolPaymentMethodIsNotPba_whenSolicitorPaymentMethodIsPba_thenReturnFalse() {
         Map<String, Object> caseData = singletonMap(SOLICITOR_HOW_TO_PAY_JSON_KEY, "NotByAccount");
-        assertThat(CaseDataUtils.solicitorPaymentMethodIsPba(caseData), is(false));
+        assertThat(CaseDataUtils.isSolicitorPaymentMethodPba(caseData), is(false));
     }
 
     @Test
     public void givenSolPaymentMethodDoesNotExist_whenSolicitorPaymentMethodIsPba_thenReturnFalse() {
         Map<String, Object> caseData = emptyMap();
-        assertThat(CaseDataUtils.solicitorPaymentMethodIsPba(caseData), is(false));
+        assertThat(CaseDataUtils.isSolicitorPaymentMethodPba(caseData), is(false));
     }
 
 }
