@@ -10,6 +10,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -22,7 +23,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentItem;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPaymentTask;
+import uk.gov.hmcts.reform.divorce.orchestration.util.payment.PbaErrorMessage;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,7 +34,13 @@ import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static java.util.Collections.EMPTY_MAP;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -92,9 +102,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubm
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmailTask.AMEND_SOL_DESC;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmailTask.SUBMITTED_DESC;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.buildPaymentClientResponse;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.formatMessage;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.getBasicFailedResponse;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.formatCaseIdToReferenceNumber;
 
-public class ProcessPbaPaymentITest extends MockedFunctionalTest {
+public class ProcessPbaPaymentTest extends MockedFunctionalTest {
 
     private static final String API_URL = "/process-pba-payment";
     private static final String PAYMENTS_CREDIT_ACCOUNT_CONTEXT_PATH = "/credit-account-payments";
@@ -111,9 +124,12 @@ public class ProcessPbaPaymentITest extends MockedFunctionalTest {
     private CaseDetails caseDetails;
     private CcdCallbackRequest ccdCallbackRequest;
     private CreditAccountPaymentRequest request;
+    private CreditAccountPaymentResponse basicFailedResponse;
 
     @Before
     public void setup() {
+        basicFailedResponse = getBasicFailedResponse();
+
         FeeResponse feeResponse = FeeResponse.builder()
             .amount(TEST_FEE_AMOUNT)
             .feeCode(TEST_FEE_CODE)
@@ -243,7 +259,12 @@ public class ProcessPbaPaymentITest extends MockedFunctionalTest {
         );
     }
 
-    private void makePaymentAndReturn() throws Exception {
+    @Test
+    public void givenCaseData_whenOtherPaymentMethod_thenReturnStateUnchanged() throws Exception {
+        caseData.put(STATEMENT_OF_TRUTH, YES_VALUE);
+        caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, YES_VALUE);
+        caseData.put(SOLICITOR_HOW_TO_PAY_JSON_KEY, "NotByAccount");
+
         caseDetails = CaseDetails.builder()
             .caseData(caseData)
             .caseId(TEST_CASE_ID)
@@ -258,9 +279,84 @@ public class ProcessPbaPaymentITest extends MockedFunctionalTest {
             .data(caseData)
             .build();
 
-        stubCreditAccountPayment(HttpStatus.OK, new CreditAccountPaymentResponse());
-        stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
         stubFormatterServerEndpoint(caseData);
+
+        webClient.perform(post(API_URL)
+            .content(convertObjectToJsonString(ccdCallbackRequest))
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(expected)));
+    }
+
+    @Test
+    public void givenCaseData_whenPendingPayment_AndPaymentStatusPending_thenReturnStateUnchanged() throws Exception {
+        caseData.put(STATEMENT_OF_TRUTH, YES_VALUE);
+        caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, YES_VALUE);
+
+        caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .build();
+
+        ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .build();
+
+        Map<String, Object> workFlowCaseDataResponse = new HashMap<>(caseData);
+        workFlowCaseDataResponse.put(ProcessPbaPaymentTask.PAYMENT_STATUS, PaymentStatus.PENDING.value());
+        stubFormatterServerEndpoint(workFlowCaseDataResponse);
+
+        stubCreditAccountPayment(HttpStatus.OK, CreditAccountPaymentResponse.builder()
+            .status(PaymentStatus.PENDING.value())
+            .build());
+
+        stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
+
+        CcdCallbackResponse expected = CcdCallbackResponse.builder()
+            .data(caseData)
+            .build();
+
+        webClient.perform(post(API_URL)
+            .content(convertObjectToJsonString(ccdCallbackRequest))
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(expected)));
+    }
+
+    @Test
+    public void givenCaseData_whenSuccessPayment_AndPaymentStatusPending_thenReturnStateUnchanged() throws Exception {
+        caseData.put(STATEMENT_OF_TRUTH, YES_VALUE);
+        caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, YES_VALUE);
+
+        caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .build();
+
+        ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .build();
+
+        Map<String, Object> workFlowCaseDataResponse = new HashMap<>(caseData);
+        workFlowCaseDataResponse.put(ProcessPbaPaymentTask.PAYMENT_STATUS, PaymentStatus.SUCCESS.value());
+
+        stubCreditAccountPayment(HttpStatus.OK, CreditAccountPaymentResponse.builder()
+            .status(PaymentStatus.SUCCESS.value())
+            .build());
+
+        stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
+        stubFormatterServerEndpoint(workFlowCaseDataResponse);
+
+        CcdCallbackResponse expected = CcdCallbackResponse.builder()
+            .state(CcdStates.SUBMITTED)
+            .data(caseData)
+            .build();
 
         webClient.perform(post(API_URL)
             .content(convertObjectToJsonString(ccdCallbackRequest))
@@ -299,6 +395,157 @@ public class ProcessPbaPaymentITest extends MockedFunctionalTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expected)));
+    }
+
+    @Test
+    public void givenCaseData_whenProcessPbaPayment_403_thenReturn_CAE0001_ErrorMessage() throws Exception {
+        CreditAccountPaymentResponse failedResponse = buildPaymentClientResponse("Failed","CA-E0001");
+
+        callPaymentClientWithStatusAndVerifyErrorMessage(
+            HttpStatus.FORBIDDEN,
+            expectedErrorMessage(PbaErrorMessage.CAE0001),
+            buildValidCaseData(),
+            failedResponse);
+    }
+
+    @Test
+    public void givenCaseData_whenProcessPbaPayment_403_thenReturn_CAE0004_ErrorMessage() throws Exception {
+        CreditAccountPaymentResponse failedResponse = buildPaymentClientResponse("Failed", "CA-E0004");
+
+        callPaymentClientWithStatusAndVerifyErrorMessage(
+            HttpStatus.FORBIDDEN,
+            expectedErrorMessage(PbaErrorMessage.CAE0004),
+            buildValidCaseData(),
+            failedResponse);
+    }
+
+    @Test
+    public void givenCaseData_whenProcessPbaPayment_404_thenReturnErrorMessage() throws Exception {
+
+        callPaymentClientWithStatusAndVerifyErrorMessage(
+            HttpStatus.NOT_FOUND,
+            expectedErrorMessage(PbaErrorMessage.NOTFOUND),
+            buildValidCaseData(),
+            basicFailedResponse);
+    }
+
+    @Test
+    public void givenCaseData_whenProcessPbaPayment_422_thenReturnErrorMessage() throws Exception {
+
+        callPaymentClientWithStatusAndVerifyErrorMessage(
+            HttpStatus.UNPROCESSABLE_ENTITY,
+            expectedErrorMessage(PbaErrorMessage.GENERAL),
+            buildValidCaseData(),
+            basicFailedResponse);
+    }
+
+    @Test
+    public void givenCaseData_whenProcessPbaPayment_504_thenReturnErrorMessage() throws Exception {
+
+        callPaymentClientWithStatusAndVerifyErrorMessage(
+            HttpStatus.GATEWAY_TIMEOUT,
+            expectedErrorMessage(PbaErrorMessage.GENERAL),
+            buildValidCaseData(),
+            basicFailedResponse);
+    }
+
+    @Test
+    public void givenCaseData_whenProcessPbaPayment_AnyOtherStatus_thenReturnErrorMessage() throws Exception {
+
+        callPaymentClientWithStatusAndVerifyErrorMessage(
+            HttpStatus.BAD_REQUEST,
+            expectedErrorMessage(PbaErrorMessage.GENERAL),
+            buildValidCaseData(),
+            basicFailedResponse);
+    }
+
+    private String expectedErrorMessage(PbaErrorMessage pbaErrorMessage) {
+        return formatMessage(pbaErrorMessage);
+    }
+
+    private Map<String, Object> buildValidCaseData() {
+        caseData.put(STATEMENT_OF_TRUTH, YES_VALUE);
+        caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, YES_VALUE);
+        return caseData;
+    }
+
+    private CcdCallbackRequest buildCcdCallbackRequest() {
+        return CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .caseData(caseData)
+                .caseId(TEST_CASE_ID)
+                .state(TEST_STATE)
+                .build())
+            .build();
+    }
+
+    private void makePaymentAndReturn() throws Exception {
+        caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .build();
+
+        ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .build();
+
+        Map<String, Object> workFlowCaseDataResponse = new HashMap<>(caseData);
+        workFlowCaseDataResponse.put(ProcessPbaPaymentTask.PAYMENT_STATUS, PaymentStatus.SUCCESS.value());
+        stubFormatterServerEndpoint(workFlowCaseDataResponse);
+
+        stubCreditAccountPayment(HttpStatus.OK, CreditAccountPaymentResponse.builder()
+            .status(PaymentStatus.SUCCESS.value())
+            .build());
+        stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
+
+        final CcdCallbackResponse expected = CcdCallbackResponse.builder()
+            .state(CcdStates.SUBMITTED)
+            .data(caseData)
+            .build();
+
+        webClient.perform(post(API_URL)
+            .content(convertObjectToJsonString(ccdCallbackRequest))
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(expected)));
+    }
+
+    private void callPaymentClientWithStatusAndVerifyErrorMessage(HttpStatus httpStatus,
+                                                                  String expectedErrorMessage,
+                                                                  Map<String, Object> caseData,
+                                                                  CreditAccountPaymentResponse errorPaymentResponse)
+        throws Exception {
+        ccdCallbackRequest = buildCcdCallbackRequest();
+        setupStubs(httpStatus, caseData, errorPaymentResponse);
+        performRequestAndVerifyExpectations(expectedErrorMessage);
+    }
+
+    private void performRequestAndVerifyExpectations(String expectedErrorMessage) throws Exception {
+        webClient.perform(post(API_URL)
+            .content(convertObjectToJsonString(ccdCallbackRequest))
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(
+                allOf(
+                    isJson(),
+                    hasJsonPath("$.data", nullValue()),
+                    hasJsonPath("$.errors", hasSize(1)),
+                    hasJsonPath("$.errors[0]", is(expectedErrorMessage)),
+                    hasJsonPath("$.state", nullValue())
+                ))
+            );
+    }
+
+    private void setupStubs(HttpStatus httpStatus, Map<String, Object> caseData,
+                            CreditAccountPaymentResponse errorCreditAccountPaymentResponse) {
+        stubCreditAccountPayment(httpStatus, errorCreditAccountPaymentResponse);
+        stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
+        stubFormatterServerEndpoint(caseData);
     }
 
     private void stubCreditAccountPayment(HttpStatus status, CreditAccountPaymentResponse response) {
