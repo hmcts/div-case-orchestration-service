@@ -16,11 +16,17 @@ def type = "java"
 def product = "div"
 def component = "cos"
 
+
+
+
 withNightlyPipeline(type, product, component) {
     env.TEST_URL = params.URL_TO_TEST
 
     env.Rules = params.SecurityRules
-    enableMutationTest()
-    enableSecurityScan()
-
+    after('checkout') {
+        echo 'divorce-case-orchestration-service checked out'
+        sh './gradlew priorityFunctional'
+    }
+    //enableMutationTest()
+    //enableSecurityScan()
 }
