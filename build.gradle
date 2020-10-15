@@ -211,7 +211,7 @@ sourceSets {
         java {
             compileClasspath += main.output + test.output
             runtimeClasspath += main.output + test.output
-            srcDir('src/integrationTest/java')
+            srcDir('src/integrationTest/java/uk/gov/hmcts/reform/divorce/maintenance/')
         }
         resources {
             srcDir('src/integrationTest/resources')
