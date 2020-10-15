@@ -9,7 +9,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.FeesAndPaymentsClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
 import java.util.HashMap;
@@ -25,6 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_D
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_VERSION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_APPLICATION_WITHOUT_NOTICE_FEE_SUMMARY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.context;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GetBailiffApplicationFeeTaskTest {
@@ -41,8 +41,6 @@ public class GetBailiffApplicationFeeTaskTest {
     @Before
     public void setup() {
         testData = new HashMap<>();
-        context = new DefaultTaskContext();
-        context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
     }
 
     @Test
@@ -58,7 +56,7 @@ public class GetBailiffApplicationFeeTaskTest {
 
         when(feesAndPaymentsClient.getBailiffApplicationFee()).thenReturn(feeResponse);
 
-        assertEquals(testData, getBailiffApplicationFeeTask.execute(context, testData));
+        assertEquals(testData, getBailiffApplicationFeeTask.execute(context(), testData));
         assertEquals(summary, testData.get(GENERAL_APPLICATION_WITHOUT_NOTICE_FEE_SUMMARY));
 
         verify(feesAndPaymentsClient).getBailiffApplicationFee();
