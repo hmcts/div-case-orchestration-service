@@ -48,12 +48,24 @@ public class DatesDataExtractor {
         return getMandatoryDateWithCustomerFormatting(caseData, CaseDataKeys.RECEIVED_SERVICE_APPLICATION_DATE);
     }
 
+    public static String getReceivedServiceApplicationDateUnformatted(Map<String, Object> caseData) {
+        return getMandatoryStringValue(caseData, CaseDataKeys.RECEIVED_SERVICE_APPLICATION_DATE);
+    }
+
     public static String getReceivedServiceAddedDate(Map<String, Object> caseData) {
         return getMandatoryDateWithCustomerFormatting(caseData, CaseDataKeys.RECEIVED_SERVICE_ADDED_DATE);
     }
 
+    public static String getReceivedServiceAddedDateUnformatted(Map<String, Object> caseData) {
+        return getMandatoryStringValue(caseData, CaseDataKeys.RECEIVED_SERVICE_ADDED_DATE);
+    }
+
     public static String getServiceApplicationDecisionDate(Map<String, Object> caseData) {
         return getMandatoryDateWithCustomerFormatting(caseData, CaseDataKeys.SERVICE_APPLICATION_DECISION_DATE);
+    }
+
+    public static String getServiceApplicationDecisionDateUnformatted(Map<String, Object> caseData) {
+        return getMandatoryStringValue(caseData, CaseDataKeys.SERVICE_APPLICATION_DECISION_DATE);
     }
 
     public static String getDaGrantedDate(Map<String, Object> caseData) {

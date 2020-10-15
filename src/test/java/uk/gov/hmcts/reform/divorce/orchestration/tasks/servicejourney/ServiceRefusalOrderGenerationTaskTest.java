@@ -22,9 +22,11 @@ import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_MY_REASON;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RECEIVED_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
@@ -35,15 +37,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractorTest.TEST_SERVICE_APPLICATION_REFUSAL_REASON;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.CTSC_CONTACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceApplicationTestUtil.getDocumentCollection;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithToken;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskTestHelper.formatWithCurrentDate;
 
 public abstract class ServiceRefusalOrderGenerationTaskTest extends BasePayloadSpecificDocumentGenerationTaskTest {
-
-    public static final String TEST_RECEIVED_DATE = "2020-10-01";
 
     @Before
     public void setup() {
@@ -95,7 +94,7 @@ public abstract class ServiceRefusalOrderGenerationTaskTest extends BasePayloadS
             .petitionerFullName(TEST_PETITIONER_FULL_NAME)
             .respondentFullName(TEST_RESPONDENT_FULL_NAME)
             .caseReference(TEST_CASE_ID)
-            .serviceApplicationRefusalReason(TEST_SERVICE_APPLICATION_REFUSAL_REASON)
+            .serviceApplicationRefusalReason(TEST_MY_REASON)
             .receivedServiceApplicationDate(DateUtils.formatDateWithCustomerFacingFormat(TEST_RECEIVED_DATE))
             .documentIssuedOn(DateUtils.formatDateWithCustomerFacingFormat(LocalDate.now()))
             .build();
@@ -110,9 +109,8 @@ public abstract class ServiceRefusalOrderGenerationTaskTest extends BasePayloadS
         caseData.put(RESPONDENT_LAST_NAME, TEST_RESPONDENT_LAST_NAME);
 
         caseData.put(RECEIVED_SERVICE_APPLICATION_DATE, TEST_RECEIVED_DATE);
-        caseData.put(SERVICE_APPLICATION_REFUSAL_REASON, TEST_SERVICE_APPLICATION_REFUSAL_REASON);
+        caseData.put(SERVICE_APPLICATION_REFUSAL_REASON, TEST_MY_REASON);
 
         return caseData;
     }
-
 }
