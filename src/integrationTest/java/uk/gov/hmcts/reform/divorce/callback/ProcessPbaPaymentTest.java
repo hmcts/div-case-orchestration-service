@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.callback;
 
 import io.restassured.response.Response;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
@@ -28,10 +29,6 @@ public class ProcessPbaPaymentTest extends IntegrationTest {
     @Value("${case.orchestration.solicitor.process-pba-payment.context-path}")
     private String contextPath;
 
-    /**
-     * (Delete when irrelevant) Even happy paths may break when moved to Config 2 as validation
-     * is enabled. Test data has to be correct test data else PBA may error
-     */
     @Test
     public void givenCallbackRequestWhenProcessPbaPaymentThenReturnDataWithNoErrors() throws Exception {
         Response response = postWithDataAndValidateResponse(
