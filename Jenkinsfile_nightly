@@ -46,6 +46,14 @@ def secrets = [
 withNightlyPipeline(type, product, component) {
     env.TEST_URL = params.URL_TO_TEST
 
+    loadVaultSecrets(secrets)
+    env.Rules = params.SecurityRules
+
+    after('checkout') {
+        echo 'divorce-case-orchestration-service checked out'
+       // sh './gradlew priorityFunctional'
+    }
+
     // before('functionalTest:aat') {
     println("### Set test_environment.. ###")
     env.test_environment = 'aat'
@@ -57,12 +65,13 @@ withNightlyPipeline(type, product, component) {
     }
 
     after('functionalTest:aat') {
+        println("~~~~~~~~~~~~~~~~~  Starting Priority Functional :aat ~~~~~~~~~~")
+        sh './gradlew priorityFunctional'
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
     }
 
-    loadVaultSecrets(secrets)
-    env.Rules = params.SecurityRules
+
     enableFullFunctionalTest()
     //enableMutationTest()
     //enableSecurityScan()
