@@ -405,14 +405,15 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
     setClasspath(sourceSets.integrationTest.runtimeClasspath)
 
     //includeCategories ('uk.gov.hmcts.reform.divorce.maintenance.MakeCaseEligibleForDATest')
-    include "uk/gov/hmcts/reform/divorce/maintenance/**"
+    // include "uk/gov/hmcts/reform/divorce/maintenance/**"
+        exclude "uk/gov/hmcts/reform/divorce/maintenance/**"
 
     if (System.getenv('CHANGE_TITLE')?.startsWith('[FAST]')) {
         useJUnit {
             excludeCategories 'uk.gov.hmcts.reform.divorce.category.ExtendedTest'
         }
     }
-    finalizedBy aggregate
+    finalizedBy priorityFunctional aggregate
 }
 
 task priorityFunctional(type: Test, description: 'Runs the Prio functional tests.', group: 'Verification') {
@@ -432,7 +433,7 @@ task priorityFunctional(type: Test, description: 'Runs the Prio functional tests
             excludeCategories 'uk.gov.hmcts.reform.divorce.category.ExtendedTest'
         }
     }
-    finalizedBy aggregate
+   // finalizedBy aggregate
 }
 
 
