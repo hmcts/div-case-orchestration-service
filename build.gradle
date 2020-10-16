@@ -405,7 +405,7 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
     setClasspath(sourceSets.integrationTest.runtimeClasspath)
 
     //includeCategories ('uk.gov.hmcts.reform.divorce.maintenance.MakeCaseEligibleForDATest')
-    include "uk/gov/hmcts/reform/divorce/maintenance/**.java"
+    include "uk/gov/hmcts/reform/divorce/maintenance/**"
 
     if (System.getenv('CHANGE_TITLE')?.startsWith('[FAST]')) {
         useJUnit {
