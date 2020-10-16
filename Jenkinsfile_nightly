@@ -32,7 +32,7 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 }
 
 def secrets = [
-    'div-aat': [
+    'div-${env}': [
         secret("ccd-submission-s2s-auth-secret", "AUTH_PROVIDER_CCDSUBMISSION_CLIENT_KEY"),
         secret("div-doc-s2s-auth-secret", "AUTH_PROVIDER_DOCUMENTGENERATOR_CLIENT_KEY"),
         secret("frontend-secret", "SERVICE_AUTH_SECRET"),
@@ -40,34 +40,29 @@ def secrets = [
         secret("idam-citizen-password", "IDAM_CITIZEN_PASSWORD"),
         secret("idam-caseworker-password", "IDAM_CASEWORKER_PASSWORD")
     ]
-
 ]
 
 
 withNightlyPipeline(type, product, component) {
-    println( "value of IDAM_CASEWORKER_PASSWORD is " + IDAM_CASEWORKER_PASSWORD);
-    println( "value of div-doc-s2s-auth-secret is " + AUTH_PROVIDER_DOCUMENTGENERATOR_CLIENT_KEY);
-
     env.TEST_URL = params.URL_TO_TEST
 
+    // before('functionalTest:aat') {
+    println("### Set test_environment.. ###")
+    env.test_environment = 'aat'
+    // }
+
+    before('fullFunctionalTest:aat') {
+        println("### Starting fullFunctionalTest:aat ###")
+        env.test_environment = 'aat'
+    }
+
+    after('functionalTest:aat') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
+    }
+
     loadVaultSecrets(secrets)
-
-//    before('functionalTest:aat') {
-////        env.test_environment = 'aat'
-////    }
-////
-////    after('functionalTest:aat') {
-////        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
-////        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
-////    }
-
     env.Rules = params.SecurityRules
-//    after('checkout') {
-//        echo 'divorce-case-orchestration-service checked out'
-//        echo '~~~~~~~ DIV COS - About to Run Priority Functional Tests ~~~~~~~~~~~~~~'
-//
-//      //  sh './gradlew priorityFunctional'
-//    }
     enableFullFunctionalTest()
     //enableMutationTest()
     //enableSecurityScan()
