@@ -27,7 +27,7 @@ withNightlyPipeline(type, product, component) {
         echo 'divorce-case-orchestration-service checked out'
         echo '~~~~~~~ DIV COS - About to Run Priority Functional Tests ~~~~~~~~~~~~~~'
 
-        sh './gradlew priorityFunctional'
+      //  sh './gradlew priorityFunctional'
     }
     //enableMutationTest()
     //enableSecurityScan()
