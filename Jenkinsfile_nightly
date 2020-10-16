@@ -38,12 +38,9 @@ def secrets = [
 
 withNightlyPipeline(type, product, component) {
     env.TEST_URL = params.URL_TO_TEST
+    env.test_environment = 'aat'
 
-    before('functionalTest:aat') {
-        env.test_environment = 'aat'
-    }
-
-    after('functionalTest:aat') {
+    after('fullFunctionalTest:aat') {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
     }
