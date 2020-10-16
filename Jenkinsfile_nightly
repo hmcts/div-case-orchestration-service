@@ -29,6 +29,7 @@ withNightlyPipeline(type, product, component) {
 
       //  sh './gradlew priorityFunctional'
     }
+    enableFullFunctionalTest()
     //enableMutationTest()
     //enableSecurityScan()
 }
