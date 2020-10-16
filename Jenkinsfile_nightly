@@ -32,7 +32,7 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 }
 
 def secrets = [
-    'div-${env}': [
+    'div-aat': [
         secret("ccd-submission-s2s-auth-secret", "AUTH_PROVIDER_CCDSUBMISSION_CLIENT_KEY"),
         secret("div-doc-s2s-auth-secret", "AUTH_PROVIDER_DOCUMENTGENERATOR_CLIENT_KEY"),
         secret("frontend-secret", "SERVICE_AUTH_SECRET"),
@@ -60,12 +60,12 @@ withNightlyPipeline(type, product, component) {
     }
 
     env.Rules = params.SecurityRules
-    after('checkout') {
-        echo 'divorce-case-orchestration-service checked out'
-        echo '~~~~~~~ DIV COS - About to Run Priority Functional Tests ~~~~~~~~~~~~~~'
-
-      //  sh './gradlew priorityFunctional'
-    }
+//    after('checkout') {
+//        echo 'divorce-case-orchestration-service checked out'
+//        echo '~~~~~~~ DIV COS - About to Run Priority Functional Tests ~~~~~~~~~~~~~~'
+//
+//      //  sh './gradlew priorityFunctional'
+//    }
     enableFullFunctionalTest()
     //enableMutationTest()
     //enableSecurityScan()
