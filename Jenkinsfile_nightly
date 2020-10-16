@@ -40,15 +40,17 @@ def secrets = [
         secret("idam-citizen-password", "IDAM_CITIZEN_PASSWORD"),
         secret("idam-caseworker-password", "IDAM_CASEWORKER_PASSWORD")
     ]
+
 ]
 
 
 withNightlyPipeline(type, product, component) {
+    println( "value of IDAM_CASEWORKER_PASSWORD is " + IDAM_CASEWORKER_PASSWORD);
+    println( "value of div-doc-s2s-auth-secret is " + AUTH_PROVIDER_DOCUMENTGENERATOR_CLIENT_KEY);
+
     env.TEST_URL = params.URL_TO_TEST
 
     loadVaultSecrets(secrets)
-    enableAksStagingDeployment()
-    disableLegacyDeployment()
 
     before('functionalTest:aat') {
         env.test_environment = 'aat'
