@@ -26,25 +26,27 @@ public class GeneralReferralServiceImpl implements GeneralReferralService {
     @Override
     public CcdCallbackResponse receiveReferral(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
         throws CaseOrchestrationServiceException {
-        CcdCallbackResponse.CcdCallbackResponseBuilder responseBuilder = CcdCallbackResponse.builder();
 
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        String caseId = caseDetails.getCaseId();
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder responseBuilder = CcdCallbackResponse.builder();
         try {
-            CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
-            responseBuilder.data(generalReferralWorkflow.run(caseDetails.getCaseData(), authorizationToken));
+            responseBuilder.data(generalReferralWorkflow.run(caseDetails, authorizationToken));
 
             if (isGeneralReferralPaymentRequired(caseDetails.getCaseData())) {
                 responseBuilder.state(AWAITING_GENERAL_REFERRAL_PAYMENT);
-                log.info("Case state updated to {}", CcdStates.AWAITING_GENERAL_REFERRAL_PAYMENT);
+                log.info("CaseID: {} Case state updated to {}", caseId, CcdStates.AWAITING_GENERAL_REFERRAL_PAYMENT);
             } else {
                 responseBuilder.state(AWAITING_GENERAL_CONSIDERATION);
-                log.info("Case state updated to {}", CcdStates.AWAITING_GENERAL_CONSIDERATION);
+                log.info("CaseID: {} Case state updated to {}", caseId, CcdStates.AWAITING_GENERAL_CONSIDERATION);
             }
         } catch (WorkflowException exception) {
-            throw new CaseOrchestrationServiceException(exception);
+            throw new CaseOrchestrationServiceException(exception, caseId);
         }
 
         CcdCallbackResponse ccdCallbackResponse = responseBuilder.build();
-        log.info("General Referral workflow complete. Case state is now {}", ccdCallbackResponse.getState());
+        log.info("CaseID: {} General Referral workflow complete. Case state is now {}", caseId, ccdCallbackResponse.getState());
 
         return ccdCallbackResponse;
     }

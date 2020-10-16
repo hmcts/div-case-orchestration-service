@@ -7,6 +7,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import java.util.HashMap;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+
 public class GeneralReferralTestUtil {
 
     public static Map<String, Object> buildCaseDataWithGeneralReferralFee(String referralFeeValue) {
@@ -18,6 +20,7 @@ public class GeneralReferralTestUtil {
     public static CcdCallbackRequest buildCallbackRequest(Map<String, Object> caseData, String caseState) {
         return CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
+                .caseId(TEST_CASE_ID)
                 .state(caseState)
                 .caseData(caseData)
                 .build())

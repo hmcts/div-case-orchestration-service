@@ -11,6 +11,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 
 @Component
 @Slf4j
@@ -21,9 +22,11 @@ public class GeneralReferralTask implements Task<Map<String, Object>> {
         String generalReferral = getMandatoryStringValue(caseData, CcdFields.GENERAL_REFERRAL_FEE);
 
         if (isRequiresPayment(generalReferral)) {
-            log.info("General Referral requires payment. Updating state to {}", CcdStates.AWAITING_GENERAL_REFERRAL_PAYMENT);
+            log.info("CaseID: {} General Referral requires payment. Updating state to {}", getCaseId(context),
+                CcdStates.AWAITING_GENERAL_REFERRAL_PAYMENT);
         } else {
-            log.info("General Referral does not require payment. Updating state to {}", CcdStates.AWAITING_GENERAL_CONSIDERATION);
+            log.info("CaseID: {} General Referral does not require payment. Updating state to {}", getCaseId(context),
+                CcdStates.AWAITING_GENERAL_CONSIDERATION);
         }
         return caseData;
     }

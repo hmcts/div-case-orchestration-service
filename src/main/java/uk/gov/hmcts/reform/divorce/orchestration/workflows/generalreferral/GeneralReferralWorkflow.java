@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalreferral.GeneralRe
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @Component
 @Slf4j
@@ -20,13 +22,14 @@ public class GeneralReferralWorkflow extends DefaultWorkflow<Map<String, Object>
 
     private final GeneralReferralTask generalReferralTask;
 
-    public Map<String, Object> run(Map<String, Object> caseData, String auth) throws WorkflowException {
+    public Map<String, Object> run(CaseDetails caseDetails, String auth) throws WorkflowException {
 
         return this.execute(
             new Task[] {
                 generalReferralTask
             },
-            caseData,
+            caseDetails.getCaseData(),
+            ImmutablePair.of(CASE_ID_JSON_KEY, caseDetails.getCaseId()),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, auth)
         );
     }
