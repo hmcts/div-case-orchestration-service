@@ -418,7 +418,6 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
 task priorityFunctional(type: Test, description: 'Runs the Prio functional tests.', group: 'Verification') {
     doFirst(){
         printf("~~~~~~~~~~~~~~ Running  priorityFunctional::::::::::")
-        printf("Available processors:::::::::: " + Runtime.runtime.availableProcessors().intdiv(2).toString())
     }
 
     maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
