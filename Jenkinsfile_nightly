@@ -25,6 +25,8 @@ withNightlyPipeline(type, product, component) {
     env.Rules = params.SecurityRules
     after('checkout') {
         echo 'divorce-case-orchestration-service checked out'
+        echo '~~~~~~~ DIV COS - About to Run Priority Functional Tests ~~~~~~~~~~~~~~'
+
         sh './gradlew priorityFunctional'
     }
     //enableMutationTest()
