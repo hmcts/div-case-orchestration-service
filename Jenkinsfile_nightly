@@ -52,14 +52,14 @@ withNightlyPipeline(type, product, component) {
 
     loadVaultSecrets(secrets)
 
-    before('functionalTest:aat') {
-        env.test_environment = 'aat'
-    }
-
-    after('functionalTest:aat') {
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
-    }
+//    before('functionalTest:aat') {
+////        env.test_environment = 'aat'
+////    }
+////
+////    after('functionalTest:aat') {
+////        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+////        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
+////    }
 
     env.Rules = params.SecurityRules
 //    after('checkout') {
