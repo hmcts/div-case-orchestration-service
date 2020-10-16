@@ -29,8 +29,4 @@ public class Conditions {
     public static boolean isAwaitingServiceConsideration(CaseDetails caseDetails) {
         return CcdStates.AWAITING_SERVICE_CONSIDERATION.equalsIgnoreCase(caseDetails.getState());
     }
-
-    public static boolean isGeneralReferralPaymentRequired(Map<String, Object> caseData) {
-        return YES_VALUE.equalsIgnoreCase((String) caseData.get(CcdFields.GENERAL_REFERRAL_FEE));
-    }
 }

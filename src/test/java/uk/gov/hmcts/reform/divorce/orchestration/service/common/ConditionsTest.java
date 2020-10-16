@@ -10,14 +10,12 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_REFERRAL_FEE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isAwaitingServiceConsideration;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isGeneralReferralPaymentRequired;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationGranted;
 
 public class ConditionsTest {
@@ -55,20 +53,6 @@ public class ConditionsTest {
         Map<String, Object> caseData = ImmutableMap.of(SERVICE_APPLICATION_GRANTED, YES_VALUE);
 
         assertThat(isServiceApplicationGranted(caseData), is(true));
-    }
-
-    @Test
-    public void isGeneralReferralPaymentRequiredShouldBeTrue() {
-        Map<String, Object> caseData = ImmutableMap.of(GENERAL_REFERRAL_FEE, YES_VALUE);
-
-        assertThat(isGeneralReferralPaymentRequired(caseData), is(true));
-    }
-
-    @Test
-    public void isGeneralReferralPaymentRequiredShouldBeFalse() {
-        Map<String, Object> caseData = ImmutableMap.of(GENERAL_REFERRAL_FEE, NO_VALUE);
-
-        assertThat(isGeneralReferralPaymentRequired(caseData), is(false));
     }
 
     private static void assertApplicationIsNotGrantedForValue(Object value) {

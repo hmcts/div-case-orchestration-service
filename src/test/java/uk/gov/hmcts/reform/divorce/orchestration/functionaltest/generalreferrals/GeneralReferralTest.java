@@ -11,9 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctional
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -21,8 +19,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.GeneralReferralTestUtil.buildCallbackRequest;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.GeneralReferralTestUtil.buildCaseDataWithGeneralReferralFee;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.GeneralReferralUtil.buildCallbackRequest;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.GeneralReferralUtil.buildCaseDataWithGeneralReferralFee;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class GeneralReferralTest extends MockedFunctionalTest {
@@ -68,28 +66,6 @@ public class GeneralReferralTest extends MockedFunctionalTest {
             CcdStates.AWAITING_GENERAL_CONSIDERATION);
 
         performRequestAndValidateReferralFeeAndState(YES_VALUE, CcdStates.AWAITING_GENERAL_REFERRAL_PAYMENT);
-    }
-
-    @Test
-    public void giveCase_WhenNoGeneralReferralFee_ThenReturnWithErrors() throws Exception {
-
-        ccdCallbackRequest = buildCallbackRequest(
-            buildCaseDataWithGeneralReferralFee(null),
-            CcdStates.AWAITING_GENERAL_CONSIDERATION);
-
-        webClient.perform(post(API_URL)
-            .content(convertObjectToJsonString(ccdCallbackRequest))
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().string(
-                allOf(
-                    isJson(),
-                    hasJsonPath("$.data", nullValue()),
-                    hasJsonPath("$.state", nullValue()),
-                    hasJsonPath("$.errors", hasSize(1)))
-            ));
     }
 
     private void performRequestAndValidateReferralFeeAndState(String referralFeeValue, String newCaseState) throws Exception {
