@@ -405,8 +405,7 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
     setClasspath(sourceSets.integrationTest.runtimeClasspath)
 
     //includeCategories ('uk.gov.hmcts.reform.divorce.maintenance.MakeCaseEligibleForDATest')
-    // include "uk/gov/hmcts/reform/divorce/maintenance/**"
-        exclude "uk/gov/hmcts/reform/divorce/maintenance/**"
+     include "uk/gov/hmcts/reform/divorce/maintenance/**"
 
     if (System.getenv('CHANGE_TITLE')?.startsWith('[FAST]')) {
         useJUnit {
@@ -418,7 +417,7 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
 
 }
 
-task priorityFunctional(type: Test, description: 'Runs the Prio functional tests.', group: 'Verification') {
+task priorityFunctional(type: Test, description: 'Runs the Priority Functional tests.', group: 'Verification') {
     doFirst(){
         printf("~~~~~~~~~~~~~~ Running  priorityFunctional::::::::::")
     }
