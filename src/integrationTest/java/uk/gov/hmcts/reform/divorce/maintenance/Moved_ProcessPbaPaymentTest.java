@@ -22,6 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+
 import io.restassured.response.Response;
 import org.apache.http.entity.ContentType;
 import org.junit.Test;
@@ -32,6 +35,8 @@ import org.springframework.http.HttpStatus;
 public class Moved_ProcessPbaPaymentTest extends IntegrationTest {
 
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/solicitor/";
+    private static final String INVALID_AUTH_TOKEN = "46RJHSJSGHJFG3236842";
+
 
     @Value("${case.orchestration.solicitor.process-pba-payment.context-path}")
     private String contextPath;
@@ -60,6 +65,30 @@ public class Moved_ProcessPbaPaymentTest extends IntegrationTest {
         return item.getValue().getDocumentType().equalsIgnoreCase(DOCUMENT_TYPE_PETITION);
     }
 
+
+    @Test
+    public void givenCallbackRequest_whenProcessPbaPayment_thenReturnBadRequest() throws Exception {
+        Response response = postWithDataAndValidateResponse(
+            serverUrl + contextPath,
+            PAYLOAD_CONTEXT_PATH + "solicitor-request-invalid-data.json",
+            createCaseWorkerUser().getAuthToken()
+        );
+
+        Map<String, Object> responseData = response.getBody().path(DATA);
+        assertThat(response.getStatusCode(),is(HttpStatus.BAD_REQUEST));
+    }
+
+    @Test
+    public void givenCallbackRequest_whenProcessPbaPayment_withInvalidToken_thenReturnUnAuthorized() throws Exception {
+        Response response = postWithDataAndValidateResponse(
+            serverUrl + contextPath,
+            PAYLOAD_CONTEXT_PATH + "solicitor-request-invalid-data.json",
+            INVALID_AUTH_TOKEN
+        );
+
+        Map<String, Object> responseData = response.getBody().path(DATA);
+        assertThat(response.getStatusCode(),is(HttpStatus.UNAUTHORIZED));
+    }
 
     // Had to add this method owing to package protected in the original import
     // import static uk.gov.hmcts.reform.divorce.callback.SolicitorCreateAndUpdateTest
