@@ -32,10 +32,10 @@ public class GeneralReferralServiceImpl implements GeneralReferralService {
 
         if (isGeneralReferralPaymentRequired(caseData)) {
             responseBuilder.state(AWAITING_GENERAL_REFERRAL_PAYMENT);
-            log.info("CaseID: {} Case state updated to {}", caseId, CcdStates.AWAITING_GENERAL_REFERRAL_PAYMENT);
+            log.info("CaseID: {} Case state updated to {}", caseId, AWAITING_GENERAL_REFERRAL_PAYMENT);
         } else {
             responseBuilder.state(AWAITING_GENERAL_CONSIDERATION);
-            log.info("CaseID: {} Case state updated to {}", caseId, CcdStates.AWAITING_GENERAL_CONSIDERATION);
+            log.info("CaseID: {} Case state updated to {}", caseId, AWAITING_GENERAL_CONSIDERATION);
         }
 
         CcdCallbackResponse ccdCallbackResponse = responseBuilder.build();
