@@ -9,6 +9,7 @@ import java.util.Map;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -34,6 +35,7 @@ public class CreateBulkCaseTest extends CcdSubmissionSupport {
     private static final int  POOL_INTERVAL_IN_MILLIS = 1000;
 
     @Test
+    @Ignore
     //QA asked to disable this test, to able to test scheduler
 
     public void whenCreateBulkCase_CaseIsCreated() throws Exception {
