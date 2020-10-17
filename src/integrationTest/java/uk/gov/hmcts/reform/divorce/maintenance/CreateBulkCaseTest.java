@@ -1,19 +1,17 @@
 package uk.gov.hmcts.reform.divorce.maintenance;
 
-import io.restassured.response.Response;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.http.entity.ContentType;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.divorce.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.CcdSubmissionSupport;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import io.restassured.response.Response;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.http.entity.ContentType;
+import org.junit.Test;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -26,6 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseCon
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 
 
+
 @Slf4j
 public class CreateBulkCaseTest extends CcdSubmissionSupport {
 
@@ -36,7 +35,7 @@ public class CreateBulkCaseTest extends CcdSubmissionSupport {
 
     @Test
     //QA asked to disable this test, to able to test scheduler
-    @Ignore
+
     public void whenCreateBulkCase_CaseIsCreated() throws Exception {
         final UserDetails user1 = createCitizenUser();
         final UserDetails user2 = createCitizenUser();
