@@ -9,6 +9,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralReferralService;
 
+import java.util.Map;
+
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_GENERAL_CONSIDERATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_GENERAL_REFERRAL_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.GeneralReferralHelper.isGeneralReferralPaymentRequired;
@@ -23,11 +25,12 @@ public class GeneralReferralServiceImpl implements GeneralReferralService {
 
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         String caseId = caseDetails.getCaseId();
+        Map<String, Object> caseData = caseDetails.getCaseData();
 
         CcdCallbackResponse.CcdCallbackResponseBuilder responseBuilder = CcdCallbackResponse.builder();
-        responseBuilder.data(caseDetails.getCaseData());
+        responseBuilder.data(caseData);
 
-        if (isGeneralReferralPaymentRequired(caseDetails.getCaseData())) {
+        if (isGeneralReferralPaymentRequired(caseData)) {
             responseBuilder.state(AWAITING_GENERAL_REFERRAL_PAYMENT);
             log.info("CaseID: {} Case state updated to {}", caseId, CcdStates.AWAITING_GENERAL_REFERRAL_PAYMENT);
         } else {
