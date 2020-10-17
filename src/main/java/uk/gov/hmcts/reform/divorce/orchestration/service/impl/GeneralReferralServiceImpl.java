@@ -19,7 +19,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.GeneralReferralHelp
 public class GeneralReferralServiceImpl implements GeneralReferralService {
 
     @Override
-    public CcdCallbackResponse receiveReferral(CcdCallbackRequest ccdCallbackRequest, String authorizationToken) {
+    public CcdCallbackResponse receiveReferral(CcdCallbackRequest ccdCallbackRequest) {
 
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         String caseId = caseDetails.getCaseId();

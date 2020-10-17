@@ -1275,12 +1275,10 @@ public class CallbackController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
-    public ResponseEntity<CcdCallbackResponse> generalReferral(
-        @RequestHeader(AUTHORIZATION_HEADER)
-        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+    public ResponseEntity<CcdCallbackResponse> generalReferral(@RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest)
+        throws CaseOrchestrationServiceException {
 
-        CcdCallbackResponse response = generalReferralService.receiveReferral(ccdCallbackRequest, authorizationToken);
+        CcdCallbackResponse response = generalReferralService.receiveReferral(ccdCallbackRequest);
         return ResponseEntity.ok(response);
     }
 

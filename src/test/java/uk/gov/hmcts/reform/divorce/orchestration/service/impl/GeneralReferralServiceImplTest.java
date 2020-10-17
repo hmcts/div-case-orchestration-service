@@ -12,7 +12,6 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.GeneralReferralUtil.buildCallbackRequest;
@@ -32,7 +31,7 @@ public class GeneralReferralServiceImplTest {
         Map<String, Object> caseData = buildCaseDataWithGeneralReferralFee(YES_VALUE);
         ccdCallbackRequest = buildCallbackRequest(caseData, null);
 
-        ccdCallbackResponse = generalReferralService.receiveReferral(ccdCallbackRequest, TEST_TOKEN);
+        ccdCallbackResponse = generalReferralService.receiveReferral(ccdCallbackRequest);
 
         assertThat(ccdCallbackResponse.getState(), is(CcdStates.AWAITING_GENERAL_REFERRAL_PAYMENT));
     }
@@ -42,7 +41,7 @@ public class GeneralReferralServiceImplTest {
         Map<String, Object> caseData = buildCaseDataWithGeneralReferralFee(NO_VALUE);
         ccdCallbackRequest = buildCallbackRequest(caseData, null);
 
-        ccdCallbackResponse = generalReferralService.receiveReferral(ccdCallbackRequest, TEST_TOKEN);
+        ccdCallbackResponse = generalReferralService.receiveReferral(ccdCallbackRequest);
 
         assertThat(ccdCallbackResponse.getState(), is(CcdStates.AWAITING_GENERAL_CONSIDERATION));
     }
@@ -52,7 +51,7 @@ public class GeneralReferralServiceImplTest {
         Map<String, Object> caseData = buildCaseDataWithGeneralReferralFee(NO_VALUE);
         ccdCallbackRequest = buildCallbackRequest(caseData, CcdStates.AWAITING_GENERAL_REFERRAL_PAYMENT);
 
-        ccdCallbackResponse = generalReferralService.receiveReferral(ccdCallbackRequest, TEST_TOKEN);
+        ccdCallbackResponse = generalReferralService.receiveReferral(ccdCallbackRequest);
 
         assertThat(ccdCallbackResponse.getState(), is(CcdStates.AWAITING_GENERAL_CONSIDERATION));
     }
@@ -62,7 +61,7 @@ public class GeneralReferralServiceImplTest {
         Map<String, Object> caseData = buildCaseDataWithGeneralReferralFee(YES_VALUE);
         ccdCallbackRequest = buildCallbackRequest(caseData, CcdStates.AWAITING_GENERAL_CONSIDERATION);
 
-        ccdCallbackResponse = generalReferralService.receiveReferral(ccdCallbackRequest, TEST_TOKEN);
+        ccdCallbackResponse = generalReferralService.receiveReferral(ccdCallbackRequest);
 
         assertThat(ccdCallbackResponse.getState(), is(CcdStates.AWAITING_GENERAL_REFERRAL_PAYMENT));
     }

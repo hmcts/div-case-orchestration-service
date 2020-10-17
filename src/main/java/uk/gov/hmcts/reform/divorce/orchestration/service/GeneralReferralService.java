@@ -4,5 +4,5 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 
 public interface GeneralReferralService {
-    CcdCallbackResponse receiveReferral(CcdCallbackRequest ccdCallbackRequest, String authorizationToken) throws CaseOrchestrationServiceException;
+    CcdCallbackResponse receiveReferral(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 }
