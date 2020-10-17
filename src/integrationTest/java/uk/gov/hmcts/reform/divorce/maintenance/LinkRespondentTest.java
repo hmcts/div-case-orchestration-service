@@ -142,9 +142,10 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         assertCaseDetailsRespondent(respondentUserDetails, String.valueOf(caseDetails.getId()));
     }
 
+
     @Test
     @Ignore
-    @Category(ExtendedTest.class)
+    //@Category(ExtendedTest.class)
     public void givenValidCaseDetails_whenLinkCoRespondent_thenCaseShouldBeLinked() {
         final UserDetails petitionerUserDetails = createCitizenUser();
 

@@ -37,7 +37,6 @@ public class CreateBulkCaseTest extends CcdSubmissionSupport {
     @Test
     @Ignore
     //QA asked to disable this test, to able to test scheduler
-
     public void whenCreateBulkCase_CaseIsCreated() throws Exception {
         final UserDetails user1 = createCitizenUser();
         final UserDetails user2 = createCitizenUser();
