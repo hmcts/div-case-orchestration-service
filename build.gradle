@@ -415,6 +415,7 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
     }
 
     retry {
+        printf("~~~~~~~~~~~~~~ functional :::: Running  retry ::::::::::")
         failOnPassedAfterRetry = true
         maxFailures = 2
         maxRetries = 2
@@ -444,6 +445,7 @@ task priorityFunctional(type: Test, description: 'Runs the Priority Functional t
     }
 
     retry {
+        printf("~~~~~~~~~~~~~~ priorityFunctional :::: Running  retry ::::::::::")
         failOnPassedAfterRetry = true
         maxFailures = 2
         maxRetries = 2
