@@ -1,5 +1,14 @@
 package uk.gov.hmcts.reform.divorce.maintenance;
 
+import io.restassured.response.Response;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.http.entity.ContentType;
+//import org.junit.Ignore;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.divorce.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
@@ -14,10 +23,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.restassured.response.Response;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.http.entity.ContentType;
-
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
@@ -25,13 +30,6 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
-
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-
 
 public class AmendPetitionForRefusalTest extends CcdSubmissionSupport {
 

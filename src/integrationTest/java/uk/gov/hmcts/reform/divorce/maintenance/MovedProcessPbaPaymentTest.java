@@ -1,8 +1,29 @@
 package uk.gov.hmcts.reform.divorce.maintenance;
 
+import io.restassured.response.Response;
+import org.apache.http.entity.ContentType;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
+import uk.gov.hmcts.reform.divorce.model.ccd.Document;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPaymentTask;
+import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
+import uk.gov.hmcts.reform.divorce.util.RestUtil;
+//import io.restassured.response.Response;
+//import org.springframework.beans.factory.annotation.Value;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
@@ -11,33 +32,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY;
 
-import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
-import uk.gov.hmcts.reform.divorce.model.ccd.Document;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPaymentTask;
-import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
-import uk.gov.hmcts.reform.divorce.util.RestUtil;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-
-import io.restassured.response.Response;
-import org.apache.http.entity.ContentType;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-
-public class Moved_ProcessPbaPaymentTest extends IntegrationTest {
+public class MovedProcessPbaPaymentTest extends IntegrationTest {
 
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/solicitor/";
     private static final String INVALID_AUTH_TOKEN = "46RJHSJSGHJFG3236842";
-
-
     @Value("${case.orchestration.solicitor.process-pba-payment.context-path}")
     private String contextPath;
 
@@ -57,7 +55,7 @@ public class Moved_ProcessPbaPaymentTest extends IntegrationTest {
     }
 
     private static void assertNoPetitionOnDocumentGeneratedList(List<CollectionMember<Document>> documents) {
-        List<CollectionMember<Document>> numberOfDocuments = documents.stream().filter(Moved_ProcessPbaPaymentTest::isPetition).collect(toList());
+        List<CollectionMember<Document>> numberOfDocuments = documents.stream().filter(MovedProcessPbaPaymentTest::isPetition).collect(toList());
         assertThat(numberOfDocuments, hasSize(0));
     }
 
@@ -67,6 +65,7 @@ public class Moved_ProcessPbaPaymentTest extends IntegrationTest {
 
 
     @Test
+    @Ignore
     public void givenCallbackRequest_whenProcessPbaPayment_thenReturnBadRequest() throws Exception {
         Response response = postWithDataAndValidateResponse(
             serverUrl + contextPath,
@@ -79,6 +78,7 @@ public class Moved_ProcessPbaPaymentTest extends IntegrationTest {
     }
 
     @Test
+    @Ignore
     public void givenCallbackRequest_whenProcessPbaPayment_withInvalidToken_thenReturnUnAuthorized() throws Exception {
         Response response = postWithDataAndValidateResponse(
             serverUrl + contextPath,
