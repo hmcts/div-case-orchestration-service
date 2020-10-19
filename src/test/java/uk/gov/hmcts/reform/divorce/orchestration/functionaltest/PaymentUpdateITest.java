@@ -168,7 +168,7 @@ public class PaymentUpdateITest extends IdamTestSupport {
             .withHeader(AUTHORIZATION, new EqualToPattern(BEARER_AUTH_TOKEN_1))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withBody(ALLOWED_SERVICE)));
     }
 
@@ -177,7 +177,7 @@ public class PaymentUpdateITest extends IdamTestSupport {
             .withHeader(AUTHORIZATION, new EqualToPattern(BEARER_AUTH_TOKEN))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withBody(NOT_ALLOWED_SERVICE)));
     }
 }
