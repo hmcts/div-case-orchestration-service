@@ -86,10 +86,7 @@ public class PaymentUpdateITest extends IdamTestSupport {
             .build();
 
         caseData.put("payment", payment);
-    }
 
-    @Test
-    public void givenEventDataAndAuth_whenEventDataIsSubmitted_thenReturnSuccess() throws Exception {
         stubSignInForCaseworker();
         stubMaintenanceServerEndpointForRetrieveCaseById();
 
