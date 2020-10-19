@@ -6,6 +6,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Invalid
 
 import java.util.Map;
 
+import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
@@ -36,19 +37,21 @@ public class GeneralReferralHelperTest {
     public void shouldThrowErrorWhenNoGeneralReferralFeeExists() {
         Map<String, Object> caseData = ImmutableMap.of("SomeOtherProperty", "SomeOtherValue");
 
-        InvalidDataForTaskException taskException = assertThrows(InvalidDataForTaskException.class, () -> isGeneralReferralPaymentRequired(caseData));
-
-        String expectedMessage = "Could not evaluate value of mandatory property \"GeneralReferralFee\"";
-        assertThat(taskException.getMessage(), containsString(expectedMessage));
+        runEmptyOrNullAssertionsForGeneralReferralFee(caseData);
     }
 
     @Test
     public void shouldThrowErrorWhenGeneralReferralFeeIsEmpty() {
         Map<String, Object> caseData = ImmutableMap.of(GENERAL_REFERRAL_FEE, EMPTY_STRING);
 
+        runEmptyOrNullAssertionsForGeneralReferralFee(caseData);
+    }
+
+    private void runEmptyOrNullAssertionsForGeneralReferralFee(Map<String, Object> caseData) {
+        String expectedMessage = format("Could not evaluate value of mandatory property \"%s\"", GENERAL_REFERRAL_FEE);
+
         InvalidDataForTaskException taskException = assertThrows(InvalidDataForTaskException.class, () -> isGeneralReferralPaymentRequired(caseData));
 
-        String expectedMessage = "Could not evaluate value of mandatory property \"GeneralReferralFee\"";
         assertThat(taskException.getMessage(), containsString(expectedMessage));
     }
 }
