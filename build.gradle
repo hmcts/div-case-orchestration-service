@@ -25,7 +25,7 @@ plugins {
     id 'org.owasp.dependencycheck' version '6.0.2'
     id 'org.sonarqube' version '3.0'
     id 'org.springframework.boot' version '2.3.4.RELEASE'
-    id 'org.gradle.test-retry' version '1.1.9'
+    //id 'org.gradle.test-retry' version '1.1.9'
 }
 
 def versions = [
@@ -400,11 +400,11 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
 
     maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
     forkEvery = 10
-    retry {
-        printf("~~~~~~~~~~~~~~~~~~~~~~~~~~ task functional :::: Running  retry ::::::::::")
-        maxFailures = 25
-        maxRetries = 2
-    }
+//    retry {
+//        printf("~~~~~~~~~~~~~~~~~~~~~~~~~~ task functional :::: Running  retry ::::::::::")
+//        maxFailures = 25
+//        maxRetries = 2
+//    }
 
     setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
     setClasspath(sourceSets.integrationTest.runtimeClasspath)
@@ -426,11 +426,11 @@ task priorityFunctional(type: Test, description: 'Runs the Priority Functional t
 
     maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
     forkEvery = 10
-    retry {
-        printf("~~~~~~~~~~~~~~ priorityFunctional :::: Running  retry ::::::::::")
-        maxFailures = 25
-        maxRetries = 2
-    }
+//    retry {
+//        printf("~~~~~~~~~~~~~~ priorityFunctional :::: Running  retry ::::::::::")
+//        maxFailures = 25
+//        maxRetries = 2
+//    }
     setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
     setClasspath(sourceSets.integrationTest.runtimeClasspath)
 
