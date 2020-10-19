@@ -25,7 +25,7 @@ plugins {
     id 'org.owasp.dependencycheck' version '6.0.2'
     id 'org.sonarqube' version '3.0'
     id 'org.springframework.boot' version '2.3.4.RELEASE'
-    id 'org.gradle.test-retry' version '1.1.9'
+    id 'org.gradle.test-retry' version '1.1.6'
 }
 
 def versions = [
@@ -397,7 +397,7 @@ task bootRunAat(type: BootRun, description: 'Runs the app using AAT config', dep
 
 task functional(type: Test, description: 'Runs the functional tests.', group: 'Verification') {
     doFirst(){
-        printf("Available processors:::::::::: " + Runtime.runtime.availableProcessors().intdiv(2).toString())
+        // printf("Available processors::::::::::   " + Runtime.runtime.availableProcessors().intdiv(2).toString())
     }
 
     maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
