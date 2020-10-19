@@ -74,12 +74,5 @@ withPipeline(type, product, component) {
 
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
 
-    if (env.BRANCH_NAME == 'master') {
-        env.PACT_BRANCH_NAME = 'master'
-    }
-    else{
-        env.PACT_BRANCH_NAME = 'preview'
-    }
-
 }
 
