@@ -400,8 +400,8 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
 
     maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
     forkEvery = 10
+
 //    retry {
-//        printf("~~~~~~~~~~~~~~~~~~~~~~~~~~ task functional :::: Running  retry ::::::::::")
 //        maxFailures = 25
 //        maxRetries = 2
 //    }
@@ -426,11 +426,12 @@ task priorityFunctional(type: Test, description: 'Runs the Priority Functional t
 
     maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
     forkEvery = 10
+
 //    retry {
-//        printf("~~~~~~~~~~~~~~ priorityFunctional :::: Running  retry ::::::::::")
 //        maxFailures = 25
 //        maxRetries = 2
 //    }
+
     setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
     setClasspath(sourceSets.integrationTest.runtimeClasspath)
 
