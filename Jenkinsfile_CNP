@@ -72,6 +72,13 @@ withPipeline(type, product, component) {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
     }
 
+    if (env.BRANCH_NAME == 'master') {
+        env.PACT_BRANCH_NAME = 'master'
+    }
+    else{
+        env.PACT_BRANCH_NAME = 'preview'
+    }
+
     enablePactAs([AppPipelineDsl.PactRoles.CONSUMER])
 
 
