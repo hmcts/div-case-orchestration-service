@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.util;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.Map;
 
@@ -12,6 +11,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThrows;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_REFERRAL_FEE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.GeneralReferralHelper.isGeneralReferralPaymentRequired;
@@ -35,6 +35,16 @@ public class GeneralReferralHelperTest {
     @Test
     public void shouldThrowErrorWhenNoGeneralReferralFeeExists() {
         Map<String, Object> caseData = ImmutableMap.of("SomeOtherProperty", "SomeOtherValue");
+
+        InvalidDataForTaskException taskException = assertThrows(InvalidDataForTaskException.class, () -> isGeneralReferralPaymentRequired(caseData));
+
+        String expectedMessage = "Could not evaluate value of mandatory property \"GeneralReferralFee\"";
+        assertThat(taskException.getMessage(), containsString(expectedMessage));
+    }
+
+    @Test
+    public void shouldThrowErrorWhenGeneralReferralFeeIsEmpty() {
+        Map<String, Object> caseData = ImmutableMap.of(GENERAL_REFERRAL_FEE, EMPTY_STRING);
 
         InvalidDataForTaskException taskException = assertThrows(InvalidDataForTaskException.class, () -> isGeneralReferralPaymentRequired(caseData));
 
