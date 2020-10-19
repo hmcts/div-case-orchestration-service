@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -13,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.client.PaymentClient;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.util.payment.PbaErrorMessage;
 
@@ -54,6 +55,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVI
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_ACCOUNT_NUMBER;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_FIRM_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PBA_NUMBERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CURRENCY;
@@ -66,13 +68,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_PBA_PAYMENT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DynamicList.asDynamicList;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.TEST_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.buildPaymentClientResponse;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.formatMessage;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.getBasicFailedResponse;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ProcessPbaPaymentTaskTest {
+public abstract class ProcessPbaPaymentTaskAbstractTest {
 
     @Mock
     private PaymentClient paymentClient;
@@ -86,6 +89,9 @@ public class ProcessPbaPaymentTaskTest {
     @Mock
     private ObjectMapper objectMapper;
 
+    @Mock
+    private FeatureToggleService featureToggleService;
+
     @InjectMocks
     private ProcessPbaPaymentTask processPbaPaymentTask;
 
@@ -96,8 +102,7 @@ public class ProcessPbaPaymentTaskTest {
     private CreditAccountPaymentResponse basicFailedResponse;
     private final String errorMessage = "Payment request failed";
 
-    @Before
-    public void setup() {
+    public void commonSetup() {
         context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
@@ -118,7 +123,6 @@ public class ProcessPbaPaymentTaskTest {
         caseData.put(PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY, orderSummary);
         caseData.put(CASE_ID_JSON_KEY, TEST_CASE_ID);
         caseData.put(DIVORCE_CENTRE_SITEID_JSON_KEY, CourtEnum.EASTMIDLANDS.getSiteId());
-        caseData.put(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY, TEST_SOLICITOR_ACCOUNT_NUMBER);
         caseData.put(SOLICITOR_FIRM_JSON_KEY, TEST_SOLICITOR_FIRM_NAME);
         caseData.put(SOLICITOR_REFERENCE_JSON_KEY, TEST_SOLICITOR_REFERENCE);
 
@@ -140,6 +144,18 @@ public class ProcessPbaPaymentTaskTest {
         paymentItem.setReference(TEST_SOLICITOR_REFERENCE);
         paymentItem.setVersion(TEST_FEE_VERSION.toString());
         expectedRequest.setFees(Collections.singletonList(paymentItem));
+    }
+
+    public void setupForToggleOn() {
+        setPbaToggleTo(true);
+        this.commonSetup();
+        caseData.put(PBA_NUMBERS, asDynamicList(TEST_SOLICITOR_ACCOUNT_NUMBER));
+    }
+
+    public void setupForToggleOff() {
+        setPbaToggleTo(false);
+        this.commonSetup();
+        caseData.put(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY, TEST_SOLICITOR_ACCOUNT_NUMBER);
     }
 
     @Test
@@ -307,6 +323,10 @@ public class ProcessPbaPaymentTaskTest {
             AUTH_TOKEN,
             TEST_SERVICE_AUTH_TOKEN,
             expectedRequest);
+        verify(featureToggleService).isFeatureEnabled(Features.PAY_BY_ACCOUNT);
     }
 
+    private void setPbaToggleTo(boolean value) {
+        when(featureToggleService.isFeatureEnabled(Features.PAY_BY_ACCOUNT)).thenReturn(value);
+    }
 }

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.client.PaymentClient;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeItem;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeValue;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
@@ -18,6 +19,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.SolicitorDataExtractor;
 
 import java.util.List;
 import java.util.Map;
@@ -32,7 +35,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_CENTRE_SITEID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_FIRM_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_PBA_PAYMENT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
@@ -50,6 +52,7 @@ public class ProcessPbaPaymentTask implements Task<Map<String, Object>> {
     private final PaymentClient paymentClient;
     private final AuthTokenGenerator serviceAuthGenerator;
     private final ObjectMapper objectMapper;
+    private final FeatureToggleService featureToggleService;
     public static final String PAYMENT_STATUS = "PaymentStatus";
 
     @Override
@@ -162,7 +165,7 @@ public class ProcessPbaPaymentTask implements Task<Map<String, Object>> {
         addToRequest(request::setAmount, orderSummary::getPaymentTotal);
         addToRequest(request::setCcdCaseNumber, context.getTransientObject(CASE_ID_JSON_KEY)::toString);
         addToRequest(request::setSiteId, caseData.get(DIVORCE_CENTRE_SITEID_JSON_KEY)::toString);
-        addToRequest(request::setAccountNumber, caseData.get(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY)::toString);
+        addToRequest(request::setAccountNumber, SolicitorDataExtractor.getPbaNumber(caseData, isPbaToggleOn())::toString);
         addToRequest(request::setOrganisationName, caseData.get(SOLICITOR_FIRM_JSON_KEY)::toString);
         addToRequest(request::setCustomerReference, caseData.get(SOLICITOR_REFERENCE_JSON_KEY)::toString);
         addToRequest(request::setDescription, value::getFeeDescription);
@@ -178,5 +181,9 @@ public class ProcessPbaPaymentTask implements Task<Map<String, Object>> {
 
     private boolean isPaymentStatusSuccess(String paymentStatus) {
         return PaymentStatus.SUCCESS.value().equalsIgnoreCase(paymentStatus);
+    }
+
+    private boolean isPbaToggleOn() {
+        return featureToggleService.isFeatureEnabled(Features.PAY_BY_ACCOUNT);
     }
 }
