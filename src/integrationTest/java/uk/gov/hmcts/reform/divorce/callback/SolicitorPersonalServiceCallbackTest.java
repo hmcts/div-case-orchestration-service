@@ -21,7 +21,6 @@ public class SolicitorPersonalServiceCallbackTest extends CcdSubmissionSupport {
     private static final String DOC_TYPE_PERSONAL_SERVICE = "personalService";
     private static final String PERSONAL_SERVICE_FILE_NAME_FORMAT = "solicitor-personal-service-%s.pdf";
     private static final String SOLICITOR_STATEMENT_OF_TRUTH_PAY_SUBMIT = "solicitorStatementOfTruthPaySubmit";
-    private static final String PAYMENT_MADE_FROM_AWAITING_PAY_DECISION = "paymentMadeFromSolicitorAwaitingPayConfirm";
 
     @Autowired
     private CosApiClient cosApiClient;
@@ -34,7 +33,6 @@ public class SolicitorPersonalServiceCallbackTest extends CcdSubmissionSupport {
 
         String caseId = caseDetails.getId().toString();
         updateCase(caseId, SOLICITOR_SUBMIT_PERSONAL_SERVICE, SOLICITOR_STATEMENT_OF_TRUTH_PAY_SUBMIT, solicitorUser);
-        updateCase(caseId, null, PAYMENT_MADE_FROM_AWAITING_PAY_DECISION);
         caseDetails = updateCase(caseId, null, ISSUE_EVENT_ID);
 
         //when
