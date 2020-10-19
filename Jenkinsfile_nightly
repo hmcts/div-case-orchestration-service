@@ -70,8 +70,6 @@ withNightlyPipeline(type, product, component) {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
     }
-
-
     enableFullFunctionalTest()
     //enableMutationTest()
     //enableSecurityScan()
