@@ -167,7 +167,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         final UserDetails coRespondentUserDetails = createCitizenUser();
 
         Response linkResponse =
-            linkRespondent(
+            linkingRespondentSuccessfully(
                 coRespondentUserDetails.getAuthToken(),
                 caseDetails.getId(),
                 pinResponse.getPin()
@@ -252,9 +252,25 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
             headers.put(HttpHeaders.AUTHORIZATION, userToken);
         }
 
+        return RestUtil.postToRestService(
+                serverUrl + contextPath + "/" + caseId + "/" + pin,
+                headers,
+                null
+            );
+    }
+
+    private Response linkingRespondentSuccessfully(String userToken, Long caseId, String pin) {
+        final Map<String, Object> headers = new HashMap<>();
+        headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
+
+        if (userToken != null) {
+            headers.put(HttpHeaders.AUTHORIZATION, userToken);
+        }
+
         int retryCount = 0;
         Response response = null;
 
+        // Add a Retry of 3 times till we get back a Response of 200.
         do {
             response = RestUtil.postToRestService(
                 serverUrl + contextPath + "/" + caseId + "/" + pin,
@@ -264,7 +280,6 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
             retryCount++;
         }
         while (response.getStatusCode() == 200 && retryCount <= 3);
-
         return response;
     }
 }
