@@ -1606,4 +1606,20 @@ public class CallbackControllerTest {
         verify(generalReferralService).receiveReferral(any(CcdCallbackRequest.class));
     }
 
+    @Test
+    public void shouldReturnOk_whenGeneralConsiderationIsCalled() throws CaseOrchestrationServiceException {
+        CaseDetails caseDetails = CaseDetails.builder().build();
+        when(generalReferralService.generalConsideration(caseDetails))
+            .thenReturn(new HashMap<>());
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generalConsideration(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        verify(generalReferralService).generalConsideration(caseDetails);
+    }
+
 }
