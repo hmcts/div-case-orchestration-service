@@ -25,7 +25,7 @@ plugins {
     id 'org.owasp.dependencycheck' version '6.0.2'
     id 'org.sonarqube' version '3.0'
     id 'org.springframework.boot' version '2.3.4.RELEASE'
-    id 'org.gradle.test-retry' version '1.0.0'
+//    id 'org.gradle.test-retry' version '1.0.0'
 }
 
 def versions = [
@@ -414,12 +414,12 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
         }
     }
 
-    retry {
-        printf("~~~~~~~~~~~~~~ functional :::: Running  retry ::::::::::")
-        failOnPassedAfterRetry = true
-        maxFailures = 2
-        maxRetries = 2
-    }
+//    retry {
+//        printf("~~~~~~~~~~~~~~ functional :::: Running  retry ::::::::::")
+//        failOnPassedAfterRetry = true
+//        maxFailures = 2
+//        maxRetries = 2
+//    }
 
     finalizedBy  aggregate
     //finalizedBy priorityFunctional aggregate
@@ -444,12 +444,12 @@ task priorityFunctional(type: Test, description: 'Runs the Priority Functional t
         }
     }
 
-    retry {
-        printf("~~~~~~~~~~~~~~ priorityFunctional :::: Running  retry ::::::::::")
-        failOnPassedAfterRetry = true
-        maxFailures = 2
-        maxRetries = 2
-    }
+//    retry {
+//        printf("~~~~~~~~~~~~~~ priorityFunctional :::: Running  retry ::::::::::")
+//        failOnPassedAfterRetry = true
+//        maxFailures = 2
+//        maxRetries = 2
+//    }
    // finalizedBy aggregate
 }
 
