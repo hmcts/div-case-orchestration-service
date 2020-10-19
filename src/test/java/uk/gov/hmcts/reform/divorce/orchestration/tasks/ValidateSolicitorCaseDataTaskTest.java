@@ -15,15 +15,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_PBA_PAYMENT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_STATEMENT_OF_TRUTH;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_VALIDATION_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.STATEMENT_OF_TRUTH;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ValidateSolicitorCaseDataTest {
+public class ValidateSolicitorCaseDataTaskTest {
 
     @InjectMocks
-    private ValidateSolicitorCaseData validateSolicitorCaseData;
+    private ValidateSolicitorCaseDataTask validateSolicitorCaseDataTask;
 
     private TaskContext context;
     private Map<String, Object> caseData;
@@ -39,7 +39,7 @@ public class ValidateSolicitorCaseDataTest {
         caseData.put(STATEMENT_OF_TRUTH, "YES");
         caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, "YES");
 
-        Map<String, Object> result = validateSolicitorCaseData.execute(context, caseData);
+        Map<String, Object> result = validateSolicitorCaseDataTask.execute(context, caseData);
 
         assertEquals(result, caseData);
         assertFalse(context.hasTaskFailed());
@@ -50,11 +50,11 @@ public class ValidateSolicitorCaseDataTest {
         caseData.put(STATEMENT_OF_TRUTH, "NO");
         caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, "YES");
 
-        Map<String, Object> result = validateSolicitorCaseData.execute(context, caseData);
+        Map<String, Object> result = validateSolicitorCaseDataTask.execute(context, caseData);
 
         assertEquals(result, caseData);
         assertTrue(context.hasTaskFailed());
-        assertNotNull(context.getTransientObject(SOLICITOR_VALIDATION_ERROR_KEY));
+        assertNotNull(context.getTransientObject(SOLICITOR_PBA_PAYMENT_ERROR_KEY));
     }
 
     @Test
@@ -62,11 +62,11 @@ public class ValidateSolicitorCaseDataTest {
         caseData.put(STATEMENT_OF_TRUTH, "YES");
         caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, "NO");
 
-        Map<String, Object> result = validateSolicitorCaseData.execute(context, caseData);
+        Map<String, Object> result = validateSolicitorCaseDataTask.execute(context, caseData);
 
         assertEquals(result, caseData);
         assertTrue(context.hasTaskFailed());
-        assertNotNull(context.getTransientObject(SOLICITOR_VALIDATION_ERROR_KEY));
+        assertNotNull(context.getTransientObject(SOLICITOR_PBA_PAYMENT_ERROR_KEY));
     }
 
     @Test
@@ -74,10 +74,10 @@ public class ValidateSolicitorCaseDataTest {
         caseData.put(STATEMENT_OF_TRUTH, "NO");
         caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, "NO");
 
-        Map<String, Object> result = validateSolicitorCaseData.execute(context, caseData);
+        Map<String, Object> result = validateSolicitorCaseDataTask.execute(context, caseData);
 
         assertEquals(result, caseData);
         assertTrue(context.hasTaskFailed());
-        assertNotNull(context.getTransientObject(SOLICITOR_VALIDATION_ERROR_KEY));
+        assertNotNull(context.getTransientObject(SOLICITOR_PBA_PAYMENT_ERROR_KEY));
     }
 }
