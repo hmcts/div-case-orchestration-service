@@ -83,7 +83,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceApplicationDataTaskTest.buildCollectionMember;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocumentAsMap;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskTestHelper.formatWithCurrentDate;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskTestHelper.formatWithCurrentDateTime;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateFromLocalDate;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
 
@@ -176,7 +176,7 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
     public void shouldPopulateDocumentsWithDeemedRefusalOrderAndRemoveDraftWhenSubmitted() throws Exception {
         String templateId = DeemedServiceRefusalOrderTask.FileMetadata.TEMPLATE_ID;
         String documentType = DeemedServiceRefusalOrderTask.FileMetadata.DOCUMENT_TYPE;
-        String expectedDocumentFilename = formatWithCurrentDate(documentType);
+        String expectedDocumentFilename = formatWithCurrentDateTime(documentType);
 
         CcdCallbackRequest ccdCallbackRequest = buildServiceRefusalOrderFixture(
             templateId, ApplicationServiceTypes.DEEMED, documentType
@@ -198,7 +198,7 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
     public void shouldPopulateExistingCollectionWithDeemedRefusalOrderAndRemoveDraftWhenSubmitted() throws Exception {
         String templateId = DeemedServiceRefusalOrderTask.FileMetadata.TEMPLATE_ID;
         String documentType = DeemedServiceRefusalOrderTask.FileMetadata.DOCUMENT_TYPE;
-        String expectedDocumentFilename = formatWithCurrentDate(documentType);
+        String expectedDocumentFilename = formatWithCurrentDateTime(documentType);
 
         CcdCallbackRequest ccdCallbackRequest = buildMultipleServiceRefusalOrderFixture(
             templateId, ApplicationServiceTypes.DEEMED, documentType
@@ -222,7 +222,7 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
     public void shouldPopulateDocumentsWithDispensedRefusalOrderAndRemoveDraftWhenSubmitted() throws Exception {
         String templateId = DispensedServiceRefusalOrderTask.FileMetadata.TEMPLATE_ID;
         String documentType = DispensedServiceRefusalOrderTask.FileMetadata.DOCUMENT_TYPE;
-        String expectedDocumentFilename = formatWithCurrentDate(documentType);
+        String expectedDocumentFilename = formatWithCurrentDateTime(documentType);
 
         CcdCallbackRequest ccdCallbackRequest = buildServiceRefusalOrderFixture(
             templateId, ApplicationServiceTypes.DISPENSED, documentType
@@ -242,7 +242,7 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
     public void shouldPopulateExistingCollectionWithDispensedRefusalOrderAndRemoveDraftWhenSubmitted() throws Exception {
         String templateId = DispensedServiceRefusalOrderTask.FileMetadata.TEMPLATE_ID;
         String documentType = DispensedServiceRefusalOrderTask.FileMetadata.DOCUMENT_TYPE;
-        String expectedDocumentFilename = formatWithCurrentDate(documentType);
+        String expectedDocumentFilename = formatWithCurrentDateTime(documentType);
 
         CcdCallbackRequest ccdCallbackRequest = buildMultipleServiceRefusalOrderFixture(
             templateId, ApplicationServiceTypes.DISPENSED, documentType
