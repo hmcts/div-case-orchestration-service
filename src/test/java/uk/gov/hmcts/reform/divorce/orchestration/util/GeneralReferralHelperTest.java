@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.util;
 
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.Map;
@@ -35,7 +36,7 @@ public class GeneralReferralHelperTest {
     public void shouldThrowErrorWhenNoGeneralReferralFeeExists() {
         Map<String, Object> caseData = ImmutableMap.of("SomeOtherProperty", "SomeOtherValue");
 
-        TaskException taskException = assertThrows(TaskException.class, () -> isGeneralReferralPaymentRequired(caseData));
+        InvalidDataForTaskException taskException = assertThrows(InvalidDataForTaskException.class, () -> isGeneralReferralPaymentRequired(caseData));
 
         String expectedMessage = "Could not evaluate value of mandatory property \"GeneralReferralFee\"";
         assertThat(taskException.getMessage(), containsString(expectedMessage));
