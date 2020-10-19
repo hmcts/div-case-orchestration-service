@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.maintenance;
 import io.restassured.response.Response;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.http.entity.ContentType;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Value;
@@ -143,8 +142,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
     }
 
     @Test
-    @Ignore
-    //@Category(ExtendedTest.class)
+    @Category(ExtendedTest.class)
     public void givenValidCaseDetails_whenLinkCoRespondent_thenCaseShouldBeLinked() {
         final UserDetails petitionerUserDetails = createCitizenUser();
 
@@ -254,10 +252,19 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
             headers.put(HttpHeaders.AUTHORIZATION, userToken);
         }
 
-        return RestUtil.postToRestService(
-            serverUrl + contextPath + "/" + caseId + "/" + pin,
-            headers,
-            null
-        );
+        int retryCount = 0;
+        Response response = null;
+
+        do {
+            response = RestUtil.postToRestService(
+                serverUrl + contextPath + "/" + caseId + "/" + pin,
+                headers,
+                null
+            );
+            retryCount++;
+        }
+        while (response.getStatusCode() == 200 && retryCount <= 3);
+
+        return response;
     }
 }
