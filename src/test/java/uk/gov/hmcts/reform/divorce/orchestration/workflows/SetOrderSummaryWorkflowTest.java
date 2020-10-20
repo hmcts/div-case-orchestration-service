@@ -6,7 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseLink;
+import uk.gov.hmcts.reform.divorce.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
@@ -91,7 +91,7 @@ public class SetOrderSummaryWorkflowTest {
     @Test
     public void runGetAmendFees_WhenCaseIsAmendment_AndFeatureIsSwitchedOn() throws Exception {
         when(featureToggleService.isFeatureEnabled(SOLICITOR_DN_REJECT_AND_AMEND)).thenReturn(true);
-        testData.put(PREVIOUS_CASE_ID_CCD_KEY, new CaseLink("1234567890123456"));
+        testData.put(PREVIOUS_CASE_ID_CCD_KEY, CaseLink.builder().caseReference("1234567890123456").build());
 
         Map<String, Object> returnedCaseData = setOrderSummaryWorkflow.run(testData);
 
@@ -114,7 +114,7 @@ public class SetOrderSummaryWorkflowTest {
     @Test
     public void runGetAmendFees_WhenCaseIsAmendment_AndFeatureIsSwitchedOff() throws Exception {
         when(featureToggleService.isFeatureEnabled(SOLICITOR_DN_REJECT_AND_AMEND)).thenReturn(false);
-        testData.put(PREVIOUS_CASE_ID_CCD_KEY, new CaseLink("1234567890123456"));
+        testData.put(PREVIOUS_CASE_ID_CCD_KEY, CaseLink.builder().caseReference("1234567890123456").build());
 
         Map<String, Object> returnedCaseData = setOrderSummaryWorkflow.run(testData);
 
