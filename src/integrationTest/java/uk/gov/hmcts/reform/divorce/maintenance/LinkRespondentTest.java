@@ -270,7 +270,8 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         int retryCount = 0;
         Response response = null;
 
-        // Add a Retry of 3 times till we get back a Response of 200.
+        // Add a Retry of 3 times till we get back a Response of 200 otherwise return
+        // null back to calling method.
         do {
             response = RestUtil.postToRestService(
                 serverUrl + contextPath + "/" + caseId + "/" + pin,
