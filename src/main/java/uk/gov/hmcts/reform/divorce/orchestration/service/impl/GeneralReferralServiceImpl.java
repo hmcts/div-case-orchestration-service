@@ -6,7 +6,10 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralReferralService;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.GeneralConsiderationWorkflow;
 
 import java.util.Map;
 
@@ -18,6 +21,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.GeneralReferralHelp
 @Slf4j
 @RequiredArgsConstructor
 public class GeneralReferralServiceImpl implements GeneralReferralService {
+
+    private final GeneralConsiderationWorkflow generalConsiderationWorkflow;
 
     @Override
     public CcdCallbackResponse receiveReferral(CcdCallbackRequest ccdCallbackRequest) {
@@ -41,5 +46,14 @@ public class GeneralReferralServiceImpl implements GeneralReferralService {
         log.info("CaseID: {} General Referral workflow complete. Case state is now {}", caseId, ccdCallbackResponse.getState());
 
         return ccdCallbackResponse;
+    }
+
+    @Override
+    public Map<String, Object> generalConsideration(CaseDetails caseDetails) throws CaseOrchestrationServiceException {
+        try {
+            return generalConsiderationWorkflow.run(caseDetails);
+        } catch (WorkflowException workflowException) {
+            throw new CaseOrchestrationServiceException(workflowException, caseDetails.getCaseId());
+        }
     }
 }

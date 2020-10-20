@@ -38,6 +38,7 @@ public class CcdFields {
     public static final String GENERAL_EMAIL_PARTIES = "GeneralEmailParties";
 
     public static final String GENERAL_REFERRAL_FEE = "GeneralReferralFee";
+    public static final String GENERAL_REFERRAL_DECISION_DATE = "GeneralReferralDecisionDate";
 
     public static final String PETITIONER_FIRST_NAME = OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
     public static final String PETITIONER_LAST_NAME = OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
