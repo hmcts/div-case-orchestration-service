@@ -1621,5 +1621,4 @@ public class CallbackControllerTest {
         assertThat(response.getStatusCode(), equalTo(OK));
         verify(generalReferralService).generalConsideration(caseDetails);
     }
-
 }

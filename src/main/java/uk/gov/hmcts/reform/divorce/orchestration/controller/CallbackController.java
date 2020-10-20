@@ -1293,8 +1293,8 @@ public class CallbackController {
 
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
-            .data(generalReferralService.generalConsideration(ccdCallbackRequest.getCaseDetails()))
-            .build()
+                .data(generalReferralService.generalConsideration(ccdCallbackRequest.getCaseDetails()))
+                .build()
         );
     }
 

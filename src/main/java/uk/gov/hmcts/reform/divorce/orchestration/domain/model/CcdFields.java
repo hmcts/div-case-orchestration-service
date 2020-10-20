@@ -28,8 +28,6 @@ public class CcdFields {
     public static final String GENERAL_ORDER_RECITALS = "GeneralOrderRecitals";
     public static final String GENERAL_ORDER_PARTIES = "GeneralOrderParties";
 
-    public static final String GENERAL_REFERRAL_DECISION_DATE = "GeneralReferralDecisionDate";
-
     public static final String CO_RESPONDENT_LINKED_TO_CASE = OrchestrationConstants.CO_RESP_LINKED_TO_CASE;
     public static final String CO_RESPONDENT_SOLICITOR_EMAIL_ADDRESS = "CoRespondentSolicitorEmail";
     public static final String CO_RESPONDENT_EMAIL_ADDRESS = OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
@@ -40,6 +38,7 @@ public class CcdFields {
     public static final String GENERAL_EMAIL_PARTIES = "GeneralEmailParties";
 
     public static final String GENERAL_REFERRAL_FEE = "GeneralReferralFee";
+    public static final String GENERAL_REFERRAL_DECISION_DATE = "GeneralReferralDecisionDate";
 
     public static final String PETITIONER_FIRST_NAME = OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
     public static final String PETITIONER_LAST_NAME = OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
