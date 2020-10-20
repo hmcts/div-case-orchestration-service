@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
+import uk.gov.hmcts.reform.divorce.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
@@ -92,7 +92,7 @@ public class GetPetitionIssueFeesTest extends IntegrationTest {
     @Test
     public void givenAmendCaseCallbackRequest_whenGetPetitionIssueFees_thenReturnUpdatedData() {
         Map<String, Object> newCaseData = new HashMap<>(baseCaseData);
-        newCaseData.put(PREVIOUS_CASE_ID_CCD_KEY, new CaseLink(String.valueOf(caseDetails.getId())));
+        newCaseData.put(PREVIOUS_CASE_ID_CCD_KEY, CaseLink.builder().caseReference(String.valueOf(caseDetails.getId())).build());
         uk.gov.hmcts.reform.ccd.client.model.CaseDetails newCaseDetails = ccdClientSupport.submitSolicitorCase(newCaseData, solicitorUser);
 
         final CcdCallbackRequest callbackData = CcdCallbackRequest.builder()

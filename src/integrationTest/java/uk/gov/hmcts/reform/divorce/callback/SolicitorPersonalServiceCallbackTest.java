@@ -37,7 +37,7 @@ public class SolicitorPersonalServiceCallbackTest extends CcdSubmissionSupport {
 
         //when
         CcdCallbackRequest callbackRequest = CcdCallbackRequest.builder().caseDetails(
-                uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails.builder()
+                uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails.builder()//TODO - import - do it last
                         .caseId(caseId)
                         .caseData(caseDetails.getData())
                         .build())
