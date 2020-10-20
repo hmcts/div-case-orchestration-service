@@ -90,7 +90,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         final UserDetails respondentUserDetails = createCitizenUser();
 
         Response linkResponse =
-            linkRespondent(
+            linkingRespondentSuccessfully(
                 respondentUserDetails.getAuthToken(),
                 caseDetails.getId(),
                 pinResponse.getPin()
@@ -129,7 +129,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
 
         final UserDetails respondentUserDetails = createCitizenUser();
         Response linkResponse =
-            linkRespondent(
+            linkingRespondentSuccessfully(
                 respondentUserDetails.getAuthToken(),
                 caseDetails.getId(),
                 pinResponse.getPin()
@@ -205,7 +205,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         final UserDetails coRespondentUserDetails = createCitizenUser();
 
         Response linkResponse =
-            linkRespondent(
+            linkingRespondentSuccessfully(
                 coRespondentUserDetails.getAuthToken(),
                 caseDetails.getId(),
                 pinResponse.getPin()
@@ -217,7 +217,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         assertCaseDetailsCoRespondent(coRespondentUserDetails, String.valueOf(caseDetails.getId()));
 
         linkResponse =
-            linkRespondent(
+            linkingRespondentSuccessfully(
                 coRespondentUserDetails.getAuthToken(),
                 caseDetails.getId(),
                 pinResponse.getPin()
