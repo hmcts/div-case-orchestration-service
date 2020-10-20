@@ -406,6 +406,8 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
     }
 
     include "uk/gov/hmcts/reform/divorce/maintenance/**"
+    include "uk/gov/hmcts/reform/divorce/draft/**"
+
 
     setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
     setClasspath(sourceSets.integrationTest.runtimeClasspath)
@@ -432,6 +434,8 @@ task priorityFunctional(type: Test, description: 'Runs the Priority Functional t
     }
 
     include "uk/gov/hmcts/reform/divorce/maintenance/**"
+    include "uk/gov/hmcts/reform/divorce/draft/**"
+
 
 
     setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
