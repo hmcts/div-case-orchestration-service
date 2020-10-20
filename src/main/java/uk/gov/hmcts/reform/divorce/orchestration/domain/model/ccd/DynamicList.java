@@ -7,11 +7,13 @@ import lombok.Value;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.util.Arrays.asList;
+
 @Value
 @Builder
 public class DynamicList {
     @JsonProperty("value")
-    private ListItem defaultValue;
+    private ListItem value;
 
     @JsonProperty("list_items")
     private List<ListItem> listItems;
@@ -21,7 +23,18 @@ public class DynamicList {
             .map(DynamicList::toListItem)
             .collect(Collectors.toList());
 
-        return DynamicList.builder().listItems(formattedListItems).build();
+        return DynamicList.builder()
+            .value(ListItem.builder().build())
+            .listItems(formattedListItems)
+            .build();
+    }
+
+    public static DynamicList asDynamicList(String value) {
+        ListItem selectedValue = toListItem(value);
+        return DynamicList.builder()
+            .value(selectedValue)
+            .listItems(asList(selectedValue))
+            .build();
     }
 
     public static ListItem toListItem(String item) {
