@@ -6,9 +6,9 @@ import org.assertj.core.api.Assertions;
 import org.junit.Ignore;
 import org.junit.Test;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
+import uk.gov.hmcts.reform.divorce.model.ccd.CaseLink;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.model.idam.UserDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseLink;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.support.CcdSubmissionSupport;
 
 import java.time.LocalDateTime;
