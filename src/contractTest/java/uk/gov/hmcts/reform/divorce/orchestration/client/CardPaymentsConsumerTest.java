@@ -70,9 +70,7 @@ public class CardPaymentsConsumerTest {
             .method("GET")
             .headers(HttpHeaders.AUTHORIZATION, SOME_AUTHORIZATION_TOKEN, SERVICE_AUTHORIZATION,
                 SOME_SERVICE_AUTHORIZATION_TOKEN)
-            //.matchHeader("experimental", "true")
             .willRespondWith()
-            //.matchHeader(HttpHeaders.CONTENT_TYPE, "\\w+\\/[-+.\\w]+;charset=(utf|UTF)-8")
             .status(200)
             .body(buildPaymentDtoPactDsl())
             .toPact();
@@ -103,11 +101,9 @@ public class CardPaymentsConsumerTest {
         }).build();
     }
 
-
     @Test
     @PactTestFor(pactMethod = "getPaymentsByReference")
     public void verifyGetPaymentsByReferencePact() throws IOException, JSONException {
-
         Map<String, Object> response = paymentClient.checkPayment(SOME_AUTHORIZATION_TOKEN,
             SOME_SERVICE_AUTHORIZATION_TOKEN, PAYMENT_REFERENCE);
         assertThat(response.get("ccd_case_number"), equalTo("1547073120300616"));
