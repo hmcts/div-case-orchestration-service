@@ -92,7 +92,7 @@ public class GetPetitionIssueFeesTest extends IntegrationTest {
     @Test
     public void givenAmendCaseCallbackRequest_whenGetPetitionIssueFees_thenReturnUpdatedData() {
         Map<String, Object> newCaseData = new HashMap<>(baseCaseData);
-        newCaseData.put(PREVIOUS_CASE_ID_CCD_KEY, new CaseLink(String.valueOf(caseDetails.getId())));
+        newCaseData.put(PREVIOUS_CASE_ID_CCD_KEY, CaseLink.builder().caseReference(String.valueOf(caseDetails.getId())).build());
         uk.gov.hmcts.reform.ccd.client.model.CaseDetails newCaseDetails = ccdClientSupport.submitSolicitorCase(newCaseData, solicitorUser);
 
         final CcdCallbackRequest callbackData = CcdCallbackRequest.builder()

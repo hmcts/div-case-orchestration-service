@@ -55,9 +55,9 @@ public class RemoveCaseFromListingTest extends CcdSubmissionSupport {
         String caseId2 = createAwaitingPronouncementCase(user2).getId().toString();
 
         CollectionMember<CaseLink> caseLink1 = new CollectionMember<>();
-        caseLink1.setValue(new CaseLink(caseId1));
+        caseLink1.setValue(CaseLink.builder().caseReference(caseId1).build());
         CollectionMember<CaseLink> caseLink2 = new CollectionMember<>();
-        caseLink2.setValue(new CaseLink(caseId2));
+        caseLink2.setValue(CaseLink.builder().caseReference(caseId2).build());
 
         List<CollectionMember<CaseLink>> acceptedCases = asList(caseLink1, caseLink2);
 
@@ -98,7 +98,7 @@ public class RemoveCaseFromListingTest extends CcdSubmissionSupport {
 
     private CollectionMember<Map<String,Object>> getCaseInfo(String caseReference) {
         CollectionMember<Map<String,Object>> caseLink = new CollectionMember<>();
-        caseLink.setValue(ImmutableMap.of(CASE_REFERENCE_FIELD, new CaseLink(caseReference)));
+        caseLink.setValue(ImmutableMap.of(CASE_REFERENCE_FIELD, CaseLink.builder().caseReference(caseReference).build()));
         return caseLink;
     }
 
