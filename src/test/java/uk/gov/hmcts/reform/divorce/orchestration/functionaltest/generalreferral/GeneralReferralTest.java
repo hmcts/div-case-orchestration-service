@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.generalreferrals;
+package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.generalreferral;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
