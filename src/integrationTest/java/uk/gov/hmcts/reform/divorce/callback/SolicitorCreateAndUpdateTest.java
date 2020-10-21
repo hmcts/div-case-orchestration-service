@@ -2,10 +2,12 @@ package uk.gov.hmcts.reform.divorce.callback;
 
 import io.restassured.response.Response;
 import org.apache.http.entity.ContentType;
+import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import uk.gov.hmcts.reform.divorce.RetryRule;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
@@ -28,6 +30,9 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
 
     @Value("${case.orchestration.solicitor.solicitor-update.context-path}")
     private String solicitorUpdatePath;
+
+    @Rule
+    public RetryRule retryRule = new RetryRule(3);
 
     @Test
     public void givenCallbackRequest_whenSolicitorCreate_thenReturnUpdatedData() throws Exception {
