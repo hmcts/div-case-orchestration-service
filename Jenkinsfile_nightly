@@ -58,18 +58,18 @@ withNightlyPipeline(type, product, component) {
     env.test_environment = 'aat'
     // }
 
-    before('fullFunctionalTest:aat') {
+    /*before('fullFunctionalTest:aat') {
         println("### Starting fullFunctionalTest:aat ###")
         env.test_environment = 'aat'
-    }
+    }*/
 
-    after('functionalTest:aat') {
+    after('Dependency Check') {
         println("~~~~~~~~~~~~~~~~~  Starting Priority Functional :aat ~~~~~~~~~~")
         sh './gradlew priorityFunctional'
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
     }
-    enableFullFunctionalTest()
+    // enableFullFunctionalTest()
     //enableMutationTest()
     //enableSecurityScan()
 }
