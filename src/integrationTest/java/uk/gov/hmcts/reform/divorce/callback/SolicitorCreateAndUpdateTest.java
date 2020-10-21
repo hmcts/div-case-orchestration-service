@@ -2,12 +2,10 @@ package uk.gov.hmcts.reform.divorce.callback;
 
 import io.restassured.response.Response;
 import org.apache.http.entity.ContentType;
-import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.divorce.RetryRule;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
@@ -34,9 +32,9 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
     @Test
     public void givenCallbackRequest_whenSolicitorCreate_thenReturnUpdatedData() throws Exception {
         Response response = postWithDataAndValidateResponse(
-                serverUrl + solicitorCreatePath,
-                PAYLOAD_CONTEXT_PATH + "solicitor-request-data.json",
-                createSolicitorUser().getAuthToken()
+            serverUrl + solicitorCreatePath,
+            PAYLOAD_CONTEXT_PATH + "solicitor-request-data.json",
+            createSolicitorUser().getAuthToken()
         );
 
         assertEverythingIsFine(response);
@@ -45,9 +43,9 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
     @Test
     public void givenCallbackRequest_whenSolicitorUpdate_thenReturnUpdatedData() throws Exception {
         Response response = postWithDataAndValidateResponse(
-                serverUrl + solicitorUpdatePath,
-                PAYLOAD_CONTEXT_PATH + "solicitor-request-data.json",
-                createSolicitorUser().getAuthToken()
+            serverUrl + solicitorUpdatePath,
+            PAYLOAD_CONTEXT_PATH + "solicitor-request-data.json",
+            createSolicitorUser().getAuthToken()
         );
 
         assertEverythingIsFine(response);
@@ -62,7 +60,7 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
     }
 
     static Response postWithDataAndValidateResponse(
-            String url, String pathToFileWithData, String authToken) throws Exception {
+        String url, String pathToFileWithData, String authToken) throws Exception {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
         headers.put(HttpHeaders.AUTHORIZATION, authToken);
