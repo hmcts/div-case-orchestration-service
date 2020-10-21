@@ -1240,6 +1240,19 @@ public class CallbackController {
                 .build());
     }
 
+    @PostMapping(path = "/set-up-order-summary/without-notice-fee")
+    @ApiOperation(value = "Return service payment fee. Starting from state AwaitingGeneralReferralPayment")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Service payment callback")})
+    public ResponseEntity<CcdCallbackResponse> setupGeneralReferralPaymentEvent(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(caseOrchestrationService.setupGeneralReferralPaymentEvent(ccdCallbackRequest))
+                .build());
+    }
+
     @PostMapping(path = "/prepare-aos-not-received-for-submission")
     @ApiOperation(value = "Prepare event for submission")
     @ApiResponses(value = {

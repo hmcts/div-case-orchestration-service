@@ -5,18 +5,18 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.FeesAndPaymentsClient;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generics.FeeLookupWithoutNoticeTask;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_APPLICATION_WITHOUT_NOTICE_FEE_SUMMARY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_REFERRAL_WITHOUT_NOTICE_FEE_SUMMARY;
 
 @Component
 @Slf4j
-public class GetGeneralApplicationWithoutNoticeFeeTask extends FeeLookupWithoutNoticeTask {
+public class GetGeneralReferralApplicationFeeTask extends FeeLookupWithoutNoticeTask {
 
-    public GetGeneralApplicationWithoutNoticeFeeTask(FeesAndPaymentsClient feesAndPaymentsClient) {
+    public GetGeneralReferralApplicationFeeTask(FeesAndPaymentsClient feesAndPaymentsClient) {
         super(feesAndPaymentsClient);
     }
 
     @Override
     protected String getFieldName() {
-        return GENERAL_APPLICATION_WITHOUT_NOTICE_FEE_SUMMARY;
+        return GENERAL_REFERRAL_WITHOUT_NOTICE_FEE_SUMMARY;
     }
 }
