@@ -4,8 +4,8 @@ import io.restassured.response.Response;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.model.ccd.Document;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPaymentTask;
 
 import java.util.List;
@@ -17,9 +17,9 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static uk.gov.hmcts.reform.divorce.callback.SolicitorCreateAndUpdateTest.postWithDataAndValidateResponse;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PBA_NUMBERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY;
 
 public class ProcessPbaPaymentTest extends IntegrationTest {
 
@@ -38,7 +38,7 @@ public class ProcessPbaPaymentTest extends IntegrationTest {
 
         Map<String, Object> responseData = response.getBody().path(DATA);
 
-        assertThat(responseData.get(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY), notNullValue());
+        assertThat(responseData.get(PBA_NUMBERS), notNullValue());
         assertThat(responseData.get(ProcessPbaPaymentTask.PAYMENT_STATUS), nullValue());
         assertNoPetitionOnDocumentGeneratedList((List) responseData.get(D8DOCUMENTS_GENERATED));
     }

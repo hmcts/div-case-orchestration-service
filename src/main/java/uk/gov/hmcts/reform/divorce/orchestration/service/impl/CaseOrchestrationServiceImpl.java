@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.divorce.model.payment.Payment;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
@@ -11,7 +12,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConst
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Payment;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;

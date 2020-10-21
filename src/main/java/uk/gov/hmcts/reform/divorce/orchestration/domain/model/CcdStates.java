@@ -32,4 +32,6 @@ public class CcdStates {
     public static final String DIVORCE_GRANTED = "DivorceGranted";
     public static final String SUBMITTED = "Submitted";
     public static final String SOLICITOR_AWAITING_PAYMENT_CONFIRMATION = "solicitorAwaitingPaymentConfirmation";
+    public static final String AWAITING_GENERAL_REFERRAL_PAYMENT = "AwaitingGeneralReferralPayment";
+    public static final String AWAITING_GENERAL_CONSIDERATION = "AwaitingGeneralConsideration";
 }

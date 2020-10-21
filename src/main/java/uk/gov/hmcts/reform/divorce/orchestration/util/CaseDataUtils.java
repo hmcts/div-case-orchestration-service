@@ -5,10 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DynamicList;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
@@ -232,6 +233,10 @@ public class CaseDataUtils {
         return Optional.of(getPaymentMethod(caseData))
             .map(i -> i.equals(FEE_PAY_BY_ACCOUNT))
             .orElse(false);
+    }
+
+    public static DynamicList getAsDynamicList(Map<String, Object> caseData, String key) {
+        return objectMapper.convertValue(getMandatoryPropertyValueAsObject(caseData, key), DynamicList.class);
     }
 
 }

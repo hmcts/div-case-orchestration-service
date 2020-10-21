@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.junit.Test;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
 import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 

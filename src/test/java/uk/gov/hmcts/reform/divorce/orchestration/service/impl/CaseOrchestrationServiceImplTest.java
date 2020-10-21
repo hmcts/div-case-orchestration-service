@@ -8,16 +8,16 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.model.ccd.CaseLink;
+import uk.gov.hmcts.reform.divorce.model.payment.Payment;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Fee;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Payment;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
@@ -1037,7 +1037,7 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void shouldGenerateOnlyDnDocuments_WhenPetitionerCostsClaimIsNo() throws WorkflowException {
         Map<String, Object> caseData = new HashMap<String, Object>();
-        caseData.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
+        caseData.put(BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build());
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "No");
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
@@ -1060,7 +1060,7 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void shouldGenerateOnlyDnDocuments_WhenPetitionerCostsClaimIsYesButThenPetitionerEndsClaim() throws WorkflowException {
         Map<String, Object> caseData = new HashMap<String, Object>();
-        caseData.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
+        caseData.put(BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build());
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
         caseData.put(DN_COSTS_OPTIONS_CCD_FIELD, DN_COSTS_ENDCLAIM_VALUE);
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
@@ -1085,7 +1085,7 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void shouldGenerateBothDocuments_WhenCostsClaimContinues() throws WorkflowException {
         Map<String, Object> caseData = new HashMap<String, Object>();
-        caseData.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
+        caseData.put(BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build());
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
         caseData.put(DN_COSTS_OPTIONS_CCD_FIELD, "Continue");
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
@@ -1112,7 +1112,7 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void shouldGenerateBothDocuments_WhenCostsClaimGrantedIsNo() throws WorkflowException {
         Map<String, Object> caseData = new HashMap<String, Object>();
-        caseData.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
+        caseData.put(BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build());
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, NO_VALUE);
 
@@ -1137,7 +1137,7 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void shouldGenerateBothDocuments_WhenCostsClaimGrantedIsYes() throws WorkflowException {
         Map<String, Object> caseData = new HashMap<String, Object>();
-        caseData.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
+        caseData.put(BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build());
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
 
@@ -1176,7 +1176,7 @@ public class CaseOrchestrationServiceImplTest {
         throws WorkflowException {
 
         Map<String, Object> caseData = new HashMap<String, Object>();
-        caseData.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
+        caseData.put(BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build());
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
 
@@ -1369,7 +1369,7 @@ public class CaseOrchestrationServiceImplTest {
         throws WorkflowException {
 
         Map<String, Object> caseData = new HashMap<String, Object>();
-        caseData.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
+        caseData.put(BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build());
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
         caseData.put(LANGUAGE_PREFERENCE_WELSH, "No");
@@ -1396,7 +1396,7 @@ public class CaseOrchestrationServiceImplTest {
             .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
         Map<String, Object> expectedResult = new HashMap<>();
-        expectedResult.put(BULK_LISTING_CASE_ID_FIELD, new CaseLink(TEST_CASE_ID));
+        expectedResult.put(BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build());
         expectedResult.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
         expectedResult.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
         expectedResult.put(LANGUAGE_PREFERENCE_WELSH, NO_VALUE);
