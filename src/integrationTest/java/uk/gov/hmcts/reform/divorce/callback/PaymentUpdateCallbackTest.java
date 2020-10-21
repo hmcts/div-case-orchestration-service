@@ -33,9 +33,6 @@ public class PaymentUpdateCallbackTest extends IntegrationTest {
     @Autowired
     private CcdClientSupport ccdClientSupport;
 
-    @Rule
-    public RetryRule retryRule = new RetryRule(3);
-
     @Test
     public void givenValidPaymentRequest_whenPaymentUpdate_thenReturnStatusOkWithNoErrors() throws Exception {
         final Map<String, Object> headers = new HashMap<>();

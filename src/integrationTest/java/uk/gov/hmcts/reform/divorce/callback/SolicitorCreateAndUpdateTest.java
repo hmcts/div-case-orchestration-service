@@ -31,9 +31,6 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
     @Value("${case.orchestration.solicitor.solicitor-update.context-path}")
     private String solicitorUpdatePath;
 
-    @Rule
-    public RetryRule retryRule = new RetryRule(3);
-
     @Test
     public void givenCallbackRequest_whenSolicitorCreate_thenReturnUpdatedData() throws Exception {
         Response response = postWithDataAndValidateResponse(
