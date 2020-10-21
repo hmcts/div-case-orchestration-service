@@ -897,15 +897,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> setupConfirmServicePaymentEvent(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
-        try {
-            return setupConfirmServicePaymentWorkflow.run(ccdCallbackRequest.getCaseDetails());
-        } catch (WorkflowException exception) {
-            throw new CaseOrchestrationServiceException(exception, ccdCallbackRequest.getCaseDetails().getCaseId());
-        }
-    }
-
-    @Override
     public CcdCallbackResponse welshContinueIntercept(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
         Map<String, Object> response = welshContinueInterceptWorkflow.run(ccdCallbackRequest, authToken);
         log.info("welshContinueIntercept completed with CASE ID: {}.",

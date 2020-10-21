@@ -1236,7 +1236,7 @@ public class CallbackController {
 
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
-                .data(caseOrchestrationService.setupConfirmServicePaymentEvent(ccdCallbackRequest))
+                .data(serviceJourneyService.setupConfirmServicePaymentEvent(ccdCallbackRequest.getCaseDetails()))
                 .build());
     }
 

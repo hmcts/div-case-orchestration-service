@@ -10,8 +10,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.IdamTestSupport;
-import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 
 import java.util.HashMap;
 
@@ -38,7 +39,7 @@ public class SetupServicePaymentTest extends IdamTestSupport {
     private MockMvc webClient;
 
     @SpyBean
-    private CaseOrchestrationService caseOrchestrationService;
+    private ServiceJourneyService serviceJourneyService;
 
     @Test
     public void shouldPopulateGeneralApplicationWithoutNoticeFeeSummaryInResponse() throws Exception {
@@ -61,8 +62,10 @@ public class SetupServicePaymentTest extends IdamTestSupport {
 
     @Test
     public void givenServiceThrowsCaseOrchestrationServiceException_ThenErrorMessagesShouldBeReturned() throws Exception {
-        CaseOrchestrationServiceException serviceException = new CaseOrchestrationServiceException("My error message.");
-        doThrow(serviceException).when(caseOrchestrationService).setupConfirmServicePaymentEvent(any());
+        ServiceJourneyServiceException serviceException = new ServiceJourneyServiceException(
+            new CaseOrchestrationServiceException("My error message.")
+        );
+        doThrow(serviceException).when(serviceJourneyService).setupConfirmServicePaymentEvent(any());
 
         webClient.perform(post(API_URL)
             .content(convertObjectToJsonString(CcdCallbackRequest.builder().build()))

@@ -11,22 +11,29 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceDecisionMadeWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceDecisionMakingWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.SetupConfirmServicePaymentWorkflow;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.controller.util.CallbackControllerTestUtils.assertCaseOrchestrationServiceExceptionIsSetProperly;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
@@ -47,6 +54,9 @@ public class ServiceJourneyServiceImplTest {
 
     @Mock
     private ServiceDecisionMakingWorkflow serviceDecisionMakingWorkflow;
+
+    @Mock
+    private SetupConfirmServicePaymentWorkflow setupConfirmServicePaymentWorkflow;
 
     @InjectMocks
     private ServiceJourneyServiceImpl classUnderTest;
@@ -142,6 +152,33 @@ public class ServiceJourneyServiceImplTest {
             .thenThrow(WorkflowException.class);
 
         classUnderTest.serviceDecisionRefusal(input.getCaseDetails(), AUTH_TOKEN);
+    }
+
+
+    @Test
+    public void givenCaseData_whenSetupConfirmServicePaymentEvent_thenReturnPayload() throws Exception {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .build();
+
+        when(setupConfirmServicePaymentWorkflow.run(eq(caseDetails))).thenReturn(new HashMap<>());
+
+        classUnderTest.setupConfirmServicePaymentEvent(caseDetails);
+
+        verify(setupConfirmServicePaymentWorkflow).run(eq(caseDetails));
+    }
+
+    @Test
+    public void shouldThrowException_whenSetupConfirmServicePaymentEventFeeWorkflow_throwsWorkflowException() throws Exception {
+        when(setupConfirmServicePaymentWorkflow.run(any())).thenThrow(WorkflowException.class);
+
+        CaseOrchestrationServiceException exception = assertThrows(
+            CaseOrchestrationServiceException.class,
+            () -> classUnderTest.setupConfirmServicePaymentEvent(CaseDetails.builder().build())
+        );
+
+        assertCaseOrchestrationServiceExceptionIsSetProperly(exception);
     }
 
     private CcdCallbackRequest buildCcdCallbackRequest() {

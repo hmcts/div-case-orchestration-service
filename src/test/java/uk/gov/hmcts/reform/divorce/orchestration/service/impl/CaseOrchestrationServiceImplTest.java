@@ -78,13 +78,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshSetPreviousState
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.ApplicantDecreeAbsoluteEligibilityWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.DecreeAbsoluteAboutToBeGrantedWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.SetupGeneralReferralPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.DnSubmittedEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.NotifyApplicantCanFinaliseDivorceWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.NotifyForRefusalOrderWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.SendDaGrantedNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.SendPetitionerAmendEmailNotificationWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.SetupConfirmServicePaymentWorkflow;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.math.BigDecimal;
@@ -198,12 +196,6 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private SetOrderSummaryWorkflow setOrderSummaryWorkflow;
-
-    @Mock
-    private SetupConfirmServicePaymentWorkflow setupConfirmServicePaymentWorkflow;
-
-    @Mock
-    private SetupGeneralReferralPaymentWorkflow setupGeneralReferralPaymentWorkflow;
 
     @Mock
     private SolicitorSubmissionWorkflow solicitorSubmissionWorkflow;
@@ -1785,33 +1777,6 @@ public class CaseOrchestrationServiceImplTest {
 
         List<String> errors = workflowErrors.values().stream().map(String.class::cast).collect(Collectors.toList());
         assertThat(ccdCallbackResponse.getErrors(), is(errors));
-    }
-
-    @Test
-    public void givenCaseData_whenSetupConfirmServicePaymentEvent_thenReturnPayload() throws Exception {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .caseData(requestPayload)
-            .caseId(TEST_CASE_ID)
-            .state(TEST_STATE)
-            .build();
-
-        when(setupConfirmServicePaymentWorkflow.run(eq(caseDetails))).thenReturn(requestPayload);
-
-        classUnderTest.setupConfirmServicePaymentEvent(ccdCallbackRequest);
-
-        verify(setupConfirmServicePaymentWorkflow).run(eq(caseDetails));
-    }
-
-    @Test
-    public void shouldThrowException_whenSetupConfirmServicePaymentEventFeeWorkflow_throwsWorkflowException() throws Exception {
-        when(setupConfirmServicePaymentWorkflow.run(any())).thenThrow(WorkflowException.class);
-
-        CaseOrchestrationServiceException exception = assertThrows(
-            CaseOrchestrationServiceException.class,
-            () -> classUnderTest.setupConfirmServicePaymentEvent(ccdCallbackRequest)
-        );
-
-        assertCaseOrchestrationServiceExceptionIsSetProperly(exception);
     }
 
     @After
