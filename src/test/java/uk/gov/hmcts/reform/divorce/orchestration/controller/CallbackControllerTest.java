@@ -1571,6 +1571,21 @@ public class CallbackControllerTest {
     }
 
     @Test
+    public void shouldReturnOK_SetupGeneralReferralPaymentEventIsCalled() throws CaseOrchestrationServiceException {
+        final Map<String, Object> caseData = Collections.emptyMap();
+        final CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        when(caseOrchestrationService.setupGeneralReferralPaymentEvent(ccdCallbackRequest)).thenReturn(caseData);
+
+        final ResponseEntity<CcdCallbackResponse> response = classUnderTest.setupGeneralReferralPaymentEvent(ccdCallbackRequest);
+        final CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody(), is(expectedResponse));
+    }
+
+    @Test
     public void shouldCallRightServiceMethod_ForPreparingAosNotReceivedForSubmission() throws CaseOrchestrationServiceException {
         when(aosService.prepareAosNotReceivedEventForSubmission(any(), any())).thenReturn(TEST_PAYLOAD_TO_RETURN);
 

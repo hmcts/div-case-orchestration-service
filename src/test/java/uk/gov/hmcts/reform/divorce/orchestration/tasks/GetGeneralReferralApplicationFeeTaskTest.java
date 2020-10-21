@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_V
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_APPLICATION_WITHOUT_NOTICE_FEE_SUMMARY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GetGeneralApplicationWithoutNoticeFeeTaskTest {
+public class GetGeneralReferralApplicationFeeTaskTest {
 
     @Mock
     private FeesAndPaymentsClient feesAndPaymentsClient;
@@ -30,7 +30,7 @@ public class GetGeneralApplicationWithoutNoticeFeeTaskTest {
     private OrderSummary orderSummary;
 
     @InjectMocks
-    private GetGeneralApplicationWithoutNoticeFeeTask classToTest;
+    private GetGeneralReferralApplicationFeeTask classToTest;
 
     public static final String TEST_GENERAL_APPLICATION_WITHOUT_NOTICE_CODE = "FEE0228";
     public static final double TEST_FEE_AMOUNT_IN_POUNDS = 50d;
