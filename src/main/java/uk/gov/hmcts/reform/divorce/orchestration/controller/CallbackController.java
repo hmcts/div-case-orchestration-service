@@ -1249,7 +1249,7 @@ public class CallbackController {
 
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
-                .data(caseOrchestrationService.setupGeneralReferralPaymentEvent(ccdCallbackRequest))
+                .data(generalReferralService.setupGeneralReferralPaymentEvent(ccdCallbackRequest.getCaseDetails()))
                 .build());
     }
 

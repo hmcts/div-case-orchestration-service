@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralReferralService;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.GeneralConsiderationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.SetupGeneralReferralPaymentWorkflow;
 
 import java.util.Map;
 
@@ -23,6 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.GeneralReferralHelp
 public class GeneralReferralServiceImpl implements GeneralReferralService {
 
     private final GeneralConsiderationWorkflow generalConsiderationWorkflow;
+    private final SetupGeneralReferralPaymentWorkflow setupGeneralReferralPaymentWorkflow;
 
     @Override
     public CcdCallbackResponse receiveReferral(CcdCallbackRequest ccdCallbackRequest) {
@@ -54,6 +56,15 @@ public class GeneralReferralServiceImpl implements GeneralReferralService {
             return generalConsiderationWorkflow.run(caseDetails);
         } catch (WorkflowException workflowException) {
             throw new CaseOrchestrationServiceException(workflowException, caseDetails.getCaseId());
+        }
+    }
+
+    @Override
+    public Map<String, Object> setupGeneralReferralPaymentEvent(CaseDetails caseDetails) throws CaseOrchestrationServiceException {
+        try {
+            return setupGeneralReferralPaymentWorkflow.run(caseDetails);
+        } catch (WorkflowException exception) {
+            throw new CaseOrchestrationServiceException(exception, caseDetails.getCaseId());
         }
     }
 }

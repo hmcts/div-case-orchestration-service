@@ -1814,33 +1814,6 @@ public class CaseOrchestrationServiceImplTest {
         assertCaseOrchestrationServiceExceptionIsSetProperly(exception);
     }
 
-    @Test
-    public void givenCaseData_whenSetupConfirmServicePaymentWorkflow_thenReturnPayload() throws Exception {
-        CaseDetails caseDetails = CaseDetails.builder()
-                    .caseData(requestPayload)
-                    .caseId(TEST_CASE_ID)
-                    .state(TEST_STATE)
-                    .build();
-
-        when(setupGeneralReferralPaymentWorkflow.run(eq(caseDetails))).thenReturn(requestPayload);
-
-        classUnderTest.setupGeneralReferralPaymentEvent(ccdCallbackRequest);
-
-        verify(setupGeneralReferralPaymentWorkflow).run(eq(caseDetails));
-    }
-
-    @Test
-    public void shouldThrowException_whenSetupConfirmServicePaymentWorkflow_throwsWorkflowException() throws Exception {
-        when(setupGeneralReferralPaymentWorkflow.run(any())).thenThrow(WorkflowException.class);
-
-        CaseOrchestrationServiceException exception = assertThrows(
-            CaseOrchestrationServiceException.class,
-            () -> classUnderTest.setupGeneralReferralPaymentEvent(ccdCallbackRequest)
-        );
-
-        assertCaseOrchestrationServiceExceptionIsSetProperly(exception);
-    }
-
     @After
     public void tearDown() {
         ccdCallbackRequest = null;

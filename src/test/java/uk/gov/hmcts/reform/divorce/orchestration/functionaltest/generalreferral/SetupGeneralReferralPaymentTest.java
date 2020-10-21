@@ -9,13 +9,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.IdamTestSupport;
-import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralReferralService;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static org.hamcrest.Matchers.hasItem;
@@ -27,6 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_REFERRAL_WITHOUT_NOTICE_FEE_SUMMARY;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.FeesAndPaymentHelper.buildExpectedResponse;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.FeesAndPaymentHelper.getApplicationWithoutNoticeFee;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.FeesAndPaymentHelper.stubGetFeeFromFeesAndPayments;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
@@ -39,13 +38,16 @@ public class SetupGeneralReferralPaymentTest extends IdamTestSupport {
     private MockMvc webClient;
 
     @SpyBean
-    private CaseOrchestrationService caseOrchestrationService;
+    private GeneralReferralService generalReferralService;
 
     @Test
     public void shouldPopulateGeneralApplicationWithoutNoticeFeeSummaryInResponse() throws Exception {
         CcdCallbackRequest input = buildRequest();
         FeeResponse applicationWithoutNoticeFee = getApplicationWithoutNoticeFee();
-        CcdCallbackResponse expectedResponse = buildExpectedResponse(applicationWithoutNoticeFee);
+        CcdCallbackResponse expectedResponse = buildExpectedResponse(
+            applicationWithoutNoticeFee,
+            GENERAL_REFERRAL_WITHOUT_NOTICE_FEE_SUMMARY
+        );
 
         stubGetFeeFromFeesAndPayments(feesAndPaymentsServer, applicationWithoutNoticeFee);
 
@@ -61,7 +63,7 @@ public class SetupGeneralReferralPaymentTest extends IdamTestSupport {
     public void givenServiceThrowsCaseOrchestrationServiceException_ThenErrorMessagesShouldBeReturned()
         throws Exception {
         doThrow(new CaseOrchestrationServiceException("My error message."))
-            .when(caseOrchestrationService).setupGeneralReferralPaymentEvent(any());
+            .when(generalReferralService).setupGeneralReferralPaymentEvent(any());
 
         webClient.perform(post(API_URL)
             .content(convertObjectToJsonString(CcdCallbackRequest.builder().build()))
@@ -69,22 +71,6 @@ public class SetupGeneralReferralPaymentTest extends IdamTestSupport {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().string(hasJsonPath("$.errors", hasItem("My error message."))));
-    }
-
-    private CcdCallbackResponse buildExpectedResponse(FeeResponse applicationWithoutNoticeFee) {
-        Map<String, Object> expectedCaseData = new HashMap<>();
-
-        OrderSummary orderSummary = new OrderSummary();
-        orderSummary.add(applicationWithoutNoticeFee);
-
-        expectedCaseData.put(
-            GENERAL_REFERRAL_WITHOUT_NOTICE_FEE_SUMMARY,
-            orderSummary
-        );
-
-        return CcdCallbackResponse.builder()
-            .data(expectedCaseData)
-            .build();
     }
 
     private CcdCallbackRequest buildRequest() {

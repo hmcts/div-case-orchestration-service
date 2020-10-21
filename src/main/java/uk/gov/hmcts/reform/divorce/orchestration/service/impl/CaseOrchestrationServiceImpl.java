@@ -80,7 +80,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshSetPreviousState
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.ApplicantDecreeAbsoluteEligibilityWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.DecreeAbsoluteAboutToBeGrantedWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.SetupGeneralReferralPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.DnSubmittedEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.NotifyApplicantCanFinaliseDivorceWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.NotifyForRefusalOrderWorkflow;
@@ -187,7 +186,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final CreateNewAmendedCaseAndSubmitToCCDWorkflow createNewAmendedCaseAndSubmitToCCDWorkflow;
     private final DocumentTemplateService documentTemplateService;
     private final SetupConfirmServicePaymentWorkflow setupConfirmServicePaymentWorkflow;
-    private final SetupGeneralReferralPaymentWorkflow setupGeneralReferralPaymentWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -902,15 +900,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     public Map<String, Object> setupConfirmServicePaymentEvent(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
         try {
             return setupConfirmServicePaymentWorkflow.run(ccdCallbackRequest.getCaseDetails());
-        } catch (WorkflowException exception) {
-            throw new CaseOrchestrationServiceException(exception, ccdCallbackRequest.getCaseDetails().getCaseId());
-        }
-    }
-
-    @Override
-    public Map<String, Object> setupGeneralReferralPaymentEvent(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
-        try {
-            return setupGeneralReferralPaymentWorkflow.run(ccdCallbackRequest.getCaseDetails());
         } catch (WorkflowException exception) {
             throw new CaseOrchestrationServiceException(exception, ccdCallbackRequest.getCaseDetails().getCaseId());
         }
