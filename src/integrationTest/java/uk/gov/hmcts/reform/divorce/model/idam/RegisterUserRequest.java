@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.model.idam;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
-import uk.gov.hmcts.reform.divorce.model.idam.UserGroup;
 
 @Builder
 @Getter
