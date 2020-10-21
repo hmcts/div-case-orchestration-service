@@ -63,7 +63,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmiss
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetupConfirmServicePaymentWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetupGeneralReferralPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorUpdateWorkflow;
@@ -201,9 +200,6 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private SetupConfirmServicePaymentWorkflow setupConfirmServicePaymentWorkflow;
-
-    @Mock
-    private SetupGeneralReferralPaymentWorkflow setupGeneralReferralPaymentWorkflow;
 
     @Mock
     private SolicitorSubmissionWorkflow solicitorSubmissionWorkflow;
@@ -1813,38 +1809,6 @@ public class CaseOrchestrationServiceImplTest {
 
         try {
             classUnderTest.setupConfirmServicePaymentEvent(ccdCallbackRequest);
-            fail("Should have caught exception");
-        } catch (CaseOrchestrationServiceException exception) {
-            assertCaseOrchestrationServiceExceptionIsSetProperly(exception);
-        }
-    }
-
-    @Test
-    public void givenCaseData_whenSetupConfirmServicePaymentWorkflow_thenReturnPayload() throws Exception {
-        ccdCallbackRequest = CcdCallbackRequest.builder()
-            .caseDetails(
-                CaseDetails.builder()
-                    .caseData(requestPayload)
-                    .caseId(TEST_CASE_ID)
-                    .state(TEST_STATE)
-                    .build())
-            .eventId(TEST_EVENT_ID)
-            .token(TEST_TOKEN)
-            .build();
-
-        when(setupGeneralReferralPaymentWorkflow.run(eq(ccdCallbackRequest))).thenReturn(requestPayload);
-
-        classUnderTest.setupGeneralReferralPaymentEvent(ccdCallbackRequest);
-
-        verify(setupGeneralReferralPaymentWorkflow).run(eq(ccdCallbackRequest));
-    }
-
-    @Test
-    public void shouldThrowException_whenSetupConfirmServicePaymentWorkflow_throwsWorkflowException() throws Exception {
-        when(setupGeneralReferralPaymentWorkflow.run(ccdCallbackRequest)).thenThrow(WorkflowException.class);
-
-        try {
-            classUnderTest.setupGeneralReferralPaymentEvent(ccdCallbackRequest);
             fail("Should have caught exception");
         } catch (CaseOrchestrationServiceException exception) {
             assertCaseOrchestrationServiceExceptionIsSetProperly(exception);
