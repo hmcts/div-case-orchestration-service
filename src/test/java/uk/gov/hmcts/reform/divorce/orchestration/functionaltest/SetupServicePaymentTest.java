@@ -106,7 +106,7 @@ public class SetupServicePaymentTest extends IdamTestSupport {
     @Test
     public void givenServiceThrowsCaseOrchestrationServiceException_ThenErrorMessagesShouldBeReturned() throws Exception {
         CaseOrchestrationServiceException serviceException = new CaseOrchestrationServiceException("My error message.");
-        doThrow(serviceException).when(caseOrchestrationService).setupConfirmServicePaymentEvent(any());
+        doThrow(serviceException).when(caseOrchestrationService).setupOrderSummaryWithoutNoticeFee(any());
 
         webClient.perform(post(API_URL)
             .content(convertObjectToJsonString(CcdCallbackRequest.builder().build()))

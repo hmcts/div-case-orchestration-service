@@ -1561,9 +1561,9 @@ public class CallbackControllerTest {
         final CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
         final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
-        when(caseOrchestrationService.setupConfirmServicePaymentEvent(ccdCallbackRequest)).thenReturn(caseData);
+        when(caseOrchestrationService.setupOrderSummaryWithoutNoticeFee(ccdCallbackRequest)).thenReturn(caseData);
 
-        final ResponseEntity<CcdCallbackResponse> response = classUnderTest.setupConfirmServicePaymentEvent(ccdCallbackRequest);
+        final ResponseEntity<CcdCallbackResponse> response = classUnderTest.setupOrderSummaryWithoutNoticeFee(ccdCallbackRequest);
         final CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
         assertThat(response.getStatusCode(), is(OK));

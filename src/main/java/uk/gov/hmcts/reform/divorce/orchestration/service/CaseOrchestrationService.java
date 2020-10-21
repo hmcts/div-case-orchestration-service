@@ -167,7 +167,7 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> sendAmendApplicationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
-    Map<String, Object> setupConfirmServicePaymentEvent(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
+    Map<String, Object> setupOrderSummaryWithoutNoticeFee(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 
     CcdCallbackResponse welshSetPreviousState(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 }

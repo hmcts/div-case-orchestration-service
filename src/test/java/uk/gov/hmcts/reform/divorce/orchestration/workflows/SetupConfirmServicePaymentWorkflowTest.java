@@ -25,7 +25,7 @@ public class SetupConfirmServicePaymentWorkflowTest {
 
 
     @InjectMocks
-    private SetupConfirmServicePaymentWorkflow setupConfirmServicePaymentWorkflow;
+    private SetupOrderSummaryWithoutNoticeFeeWorkflow setupOrderSummaryWithoutNoticeFeeWorkflow;
 
     @Test
     public void whenGeneralApplicationWithoutNoticeFee_thenProcessAsExpected() throws Exception {
@@ -36,7 +36,7 @@ public class SetupConfirmServicePaymentWorkflowTest {
 
         );
 
-        Map<String, Object> returned = setupConfirmServicePaymentWorkflow.run(
+        Map<String, Object> returned = setupOrderSummaryWithoutNoticeFeeWorkflow.run(
             CcdCallbackRequest.builder()
                 .caseDetails(CaseDetails.builder()
                     .caseData(caseData)

@@ -1231,12 +1231,12 @@ public class CallbackController {
     @ApiOperation(value = "Return service payment fee.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Service payment callback")})
-    public ResponseEntity<CcdCallbackResponse> setupConfirmServicePaymentEvent(
+    public ResponseEntity<CcdCallbackResponse> setupOrderSummaryWithoutNoticeFee(
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
-                .data(caseOrchestrationService.setupConfirmServicePaymentEvent(ccdCallbackRequest))
+                .data(caseOrchestrationService.setupOrderSummaryWithoutNoticeFee(ccdCallbackRequest))
                 .build());
     }
 
