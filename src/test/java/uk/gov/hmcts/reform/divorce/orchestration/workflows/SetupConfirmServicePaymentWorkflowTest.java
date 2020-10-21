@@ -6,8 +6,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetGeneralApplicationWithoutNoticeFeeTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.GetGeneralApplicationWithoutNoticeFeeTask;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.SetupConfirmServicePaymentWorkflow;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,30 +23,21 @@ public class SetupConfirmServicePaymentWorkflowTest {
     @Mock
     private GetGeneralApplicationWithoutNoticeFeeTask getGeneralApplicationWithoutNoticeFeeTask;
 
-
     @InjectMocks
     private SetupConfirmServicePaymentWorkflow setupConfirmServicePaymentWorkflow;
 
     @Test
     public void whenGeneralApplicationWithoutNoticeFee_thenProcessAsExpected() throws Exception {
         HashMap<String, Object> caseData = new HashMap<>();
-        mockTasksExecution(
-            caseData,
-            getGeneralApplicationWithoutNoticeFeeTask
-
-        );
+        mockTasksExecution(caseData, getGeneralApplicationWithoutNoticeFeeTask);
 
         Map<String, Object> returned = setupConfirmServicePaymentWorkflow.run(
-            CcdCallbackRequest.builder()
-                .caseDetails(CaseDetails.builder()
-                    .caseData(caseData)
-                    .build())
+            CaseDetails.builder()
+                .caseData(caseData)
                 .build()
         );
+
         assertThat(returned, is(caseData));
-        verifyTaskWasCalled(
-            caseData,
-            getGeneralApplicationWithoutNoticeFeeTask
-        );
+        verifyTaskWasCalled(caseData, getGeneralApplicationWithoutNoticeFeeTask);
     }
 }

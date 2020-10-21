@@ -1,14 +1,11 @@
-package uk.gov.hmcts.reform.divorce.orchestration.tasks;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.generalreferral;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.FeesAndPaymentsClient;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generics.FeeLookupWithoutNoticeTask;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_REFERRAL_WITHOUT_NOTICE_FEE_SUMMARY;
-
 @Component
-@Slf4j
 public class GetGeneralReferralApplicationFeeTask extends FeeLookupWithoutNoticeTask {
 
     public GetGeneralReferralApplicationFeeTask(FeesAndPaymentsClient feesAndPaymentsClient) {
@@ -16,7 +13,7 @@ public class GetGeneralReferralApplicationFeeTask extends FeeLookupWithoutNotice
     }
 
     @Override
-    protected String getFieldName() {
-        return GENERAL_REFERRAL_WITHOUT_NOTICE_FEE_SUMMARY;
+    public String getFieldName() {
+        return CcdFields.GENERAL_REFERRAL_WITHOUT_NOTICE_FEE_SUMMARY;
     }
 }

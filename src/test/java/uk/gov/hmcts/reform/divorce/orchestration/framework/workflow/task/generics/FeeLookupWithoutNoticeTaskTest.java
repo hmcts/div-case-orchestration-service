@@ -1,8 +1,7 @@
-package uk.gov.hmcts.reform.divorce.orchestration.tasks;
+package uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generics;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.FeesAndPaymentsClient;
@@ -18,38 +17,53 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_DESCRIPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_VERSION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_APPLICATION_WITHOUT_NOTICE_FEE_SUMMARY;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.context;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GetGeneralApplicationWithoutNoticeFeeTaskTest {
+public class FeeLookupWithoutNoticeTaskTest {
 
     @Mock
-    private FeesAndPaymentsClient feesAndPaymentsClient;
+    protected FeesAndPaymentsClient feesAndPaymentsClient;
 
-    @InjectMocks
-    private OrderSummary orderSummary;
-
-    @InjectMocks
-    private GetGeneralApplicationWithoutNoticeFeeTask classToTest;
+    public static final String TEST_FIELD = "FeeLookupWithoutNoticeField";
 
     public static final String TEST_GENERAL_APPLICATION_WITHOUT_NOTICE_CODE = "FEE0228";
     public static final double TEST_FEE_AMOUNT_IN_POUNDS = 50d;
     public static final String TEST_FEE_AMOUNT_IN_PENNIES = "5000";
 
+    protected FeeLookupWithoutNoticeTask getTask() {
+        return new FeeLookupWithoutNoticeTask(feesAndPaymentsClient) {
+            @Override
+            public String getFieldName() {
+                return TEST_FIELD;
+            }
+        };
+    }
+
     @Test
-    public void shouldReturnGeneralApplicationWithoutFeeValue() {
+    public void shouldPopulateFieldWithSummaryOrder() {
+        runTestFieldIsPopulated();
+    }
+
+    protected void runTestFieldIsPopulated() {
         FeeResponse feeResponse = FeeResponse.builder()
             .amount(TEST_FEE_AMOUNT_IN_POUNDS)
             .feeCode(TEST_GENERAL_APPLICATION_WITHOUT_NOTICE_CODE)
             .version(TEST_FEE_VERSION)
             .description(TEST_FEE_DESCRIPTION)
             .build();
+        FeeLookupWithoutNoticeTask task = getTask();
+
         when(feesAndPaymentsClient.getGeneralApplicationWithoutFee()).thenReturn(feeResponse);
 
-        Map<String, Object> returnedCaseData = classToTest.execute(null, new HashMap<>());
+        Map<String, Object> returnedCaseData = task.execute(context(), new HashMap<>());
 
-        OrderSummary paymentSummary = (OrderSummary) returnedCaseData.get(GENERAL_APPLICATION_WITHOUT_NOTICE_FEE_SUMMARY);
+        OrderSummary paymentSummary = (OrderSummary) returnedCaseData.get(task.getFieldName());
+
         assertThat(paymentSummary.getPaymentTotal(), is(TEST_FEE_AMOUNT_IN_PENNIES));
-        assertThat(paymentSummary.getFees().get(0).getValue().getFeeCode(), equalTo(TEST_GENERAL_APPLICATION_WITHOUT_NOTICE_CODE));
+        assertThat(
+            paymentSummary.getFees().get(0).getValue().getFeeCode(),
+            equalTo(TEST_GENERAL_APPLICATION_WITHOUT_NOTICE_CODE)
+        );
     }
 }

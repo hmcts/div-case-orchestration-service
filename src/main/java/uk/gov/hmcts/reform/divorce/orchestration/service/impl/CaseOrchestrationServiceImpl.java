@@ -63,8 +63,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerEmailNo
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetupConfirmServicePaymentWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetupGeneralReferralPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnFetchDocWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorSubmissionWorkflow;
@@ -82,11 +80,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.WelshSetPreviousState
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.ApplicantDecreeAbsoluteEligibilityWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.decreeabsolute.DecreeAbsoluteAboutToBeGrantedWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.SetupGeneralReferralPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.DnSubmittedEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.NotifyApplicantCanFinaliseDivorceWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.NotifyForRefusalOrderWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.SendDaGrantedNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.SendPetitionerAmendEmailNotificationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.SetupConfirmServicePaymentWorkflow;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.math.BigDecimal;
@@ -901,7 +901,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> setupConfirmServicePaymentEvent(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
         try {
-            return setupConfirmServicePaymentWorkflow.run(ccdCallbackRequest);
+            return setupConfirmServicePaymentWorkflow.run(ccdCallbackRequest.getCaseDetails());
         } catch (WorkflowException exception) {
             throw new CaseOrchestrationServiceException(exception, ccdCallbackRequest.getCaseDetails().getCaseId());
         }
@@ -910,7 +910,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> setupGeneralReferralPaymentEvent(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
         try {
-            return setupGeneralReferralPaymentWorkflow.run(ccdCallbackRequest);
+            return setupGeneralReferralPaymentWorkflow.run(ccdCallbackRequest.getCaseDetails());
         } catch (WorkflowException exception) {
             throw new CaseOrchestrationServiceException(exception, ccdCallbackRequest.getCaseDetails().getCaseId());
         }

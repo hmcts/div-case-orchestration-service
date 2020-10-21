@@ -6,9 +6,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetGeneralApplicationWithoutNoticeFeeTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetGeneralReferralApplicationFeeTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalreferral.GetGeneralReferralApplicationFeeTask;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.SetupGeneralReferralPaymentWorkflow;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,30 +23,21 @@ public class SetupGeneralReferralApplicationWorkflowTest {
     @Mock
     private GetGeneralReferralApplicationFeeTask getGeneralReferralApplicationFeeTask;
 
-
     @InjectMocks
-    private SetupConfirmServicePaymentWorkflow setupConfirmServicePaymentWorkflow;
+    private SetupGeneralReferralPaymentWorkflow setupGeneralReferralPaymentWorkflow;
 
     @Test
     public void whenGeneralApplicationWithoutNoticeFee_thenProcessAsExpected() throws Exception {
         HashMap<String, Object> caseData = new HashMap<>();
-        mockTasksExecution(
-            caseData,
-            getGeneralReferralApplicationFeeTask
+        mockTasksExecution(caseData, getGeneralReferralApplicationFeeTask);
 
-        );
-
-        Map<String, Object> returned = setupConfirmServicePaymentWorkflow.run(
-            CcdCallbackRequest.builder()
-                .caseDetails(CaseDetails.builder()
-                    .caseData(caseData)
-                    .build())
+        Map<String, Object> returned = setupGeneralReferralPaymentWorkflow.run(
+            CaseDetails.builder()
+                .caseData(caseData)
                 .build()
         );
+
         assertThat(returned, is(caseData));
-        verifyTaskWasCalled(
-            caseData,
-            getGeneralReferralApplicationFeeTask
-        );
+        verifyTaskWasCalled(caseData, getGeneralReferralApplicationFeeTask);
     }
 }

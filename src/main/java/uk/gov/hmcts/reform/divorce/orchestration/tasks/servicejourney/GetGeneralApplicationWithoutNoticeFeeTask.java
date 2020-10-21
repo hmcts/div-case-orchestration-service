@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.tasks;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,7 @@ public class GetGeneralApplicationWithoutNoticeFeeTask extends FeeLookupWithoutN
     }
 
     @Override
-    protected String getFieldName() {
+    public String getFieldName() {
         return GENERAL_APPLICATION_WITHOUT_NOTICE_FEE_SUMMARY;
     }
 }

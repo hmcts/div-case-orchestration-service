@@ -27,6 +27,8 @@ public abstract class FeeLookupWithoutNoticeTask implements Task<Map<String, Obj
 
         OrderSummary orderSummary = getOrderSummary();
 
+        log.info("CaseId: {}, fee: {}", caseId, orderSummary.getFees().get(0));
+
         caseData.put(fieldName, orderSummary);
 
         return caseData;
@@ -39,5 +41,5 @@ public abstract class FeeLookupWithoutNoticeTask implements Task<Map<String, Obj
         return orderSummary;
     }
 
-    protected abstract String getFieldName();
+    public abstract String getFieldName();
 }
