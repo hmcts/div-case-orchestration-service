@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.callback;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -13,6 +14,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 
+@Slf4j
 public class SolicitorPersonalServiceCallbackTest extends CcdSubmissionSupport {
 
     private static final String ISSUED_SOLICITOR_PETITION_JSON = "solicitor-petition.json";
@@ -30,30 +32,30 @@ public class SolicitorPersonalServiceCallbackTest extends CcdSubmissionSupport {
         //given
         final UserDetails solicitorUser = createSolicitorUser();
         CaseDetails caseDetails = submitSolicitorCase(ISSUED_SOLICITOR_PETITION_JSON, solicitorUser);
-
         String caseId = caseDetails.getId().toString();
+        log.info("Created case [id: {}]", caseId);
         updateCase(caseId, SOLICITOR_SUBMIT_PERSONAL_SERVICE, SOLICITOR_STATEMENT_OF_TRUTH_PAY_SUBMIT, solicitorUser);
         caseDetails = updateCase(caseId, null, ISSUE_EVENT_ID);
 
         //when
         CcdCallbackRequest callbackRequest = CcdCallbackRequest.builder().caseDetails(
-                uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails.builder()//TODO - import - do it last
-                        .caseId(caseId)
-                        .caseData(caseDetails.getData())
-                        .build())
-                .build();
+            uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails.builder()
+                .caseId(caseId)
+                .caseData(caseDetails.getData())
+                .build())
+            .build();
 
         CcdCallbackResponse callbackResponse = cosApiClient.processPersonalServicePack(
-                createSolicitorUser().getAuthToken(),
-                callbackRequest
+            createSolicitorUser().getAuthToken(),
+            callbackRequest
         );
 
         //then
         assertThat(callbackResponse.getErrors(), is(nullValue()));
         CaseDetails responseCaseDetails = CaseDetails.builder()
-                .id(Long.valueOf(caseId))
-                .data(callbackResponse.getData())
-                .build();
+            .id(Long.valueOf(caseId))
+            .data(callbackResponse.getData())
+            .build();
         assertGeneratedDocumentsExists(responseCaseDetails, DOC_TYPE_PERSONAL_SERVICE, PERSONAL_SERVICE_FILE_NAME_FORMAT);
     }
 }
