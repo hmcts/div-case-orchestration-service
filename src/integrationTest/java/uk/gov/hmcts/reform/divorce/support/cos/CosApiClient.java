@@ -227,7 +227,7 @@ public interface CosApiClient {
 
 
     @ApiOperation("Handle callback for Fee lookup")
-    @PostMapping(value = "/set-up-confirm-service-payment")
+    @PostMapping(value = "/set-up-order-summary/without-notice-fee")
     CcdCallbackResponse setupConfirmServicePayment(@RequestBody CcdCallbackRequest ccdCallbackRequest);
 
     @ApiOperation("Validate bulk scanned fields")

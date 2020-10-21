@@ -1227,7 +1227,7 @@ public class CallbackController {
         );
     }
 
-    @PostMapping(path = "/set-up-confirm-service-payment")
+    @PostMapping(path = "/set-up-order-summary/without-notice-fee")
     @ApiOperation(value = "Return service payment fee.")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Service payment callback")})
