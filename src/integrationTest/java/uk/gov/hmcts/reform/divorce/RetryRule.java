@@ -9,7 +9,7 @@ import org.junit.runners.model.Statement;
 public class RetryRule implements TestRule {
     private int retryCount;
 
-    private RetryRule(int retryCount) {
+    public RetryRule(int retryCount) {
         this.retryCount = retryCount;
     }
 

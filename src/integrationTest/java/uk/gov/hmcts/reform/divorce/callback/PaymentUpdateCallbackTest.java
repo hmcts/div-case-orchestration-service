@@ -2,11 +2,13 @@ package uk.gov.hmcts.reform.divorce.callback;
 
 import io.restassured.response.Response;
 import org.apache.http.entity.ContentType;
+import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import uk.gov.hmcts.reform.divorce.RetryRule;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
@@ -30,6 +32,9 @@ public class PaymentUpdateCallbackTest extends IntegrationTest {
 
     @Autowired
     private CcdClientSupport ccdClientSupport;
+
+    @Rule
+    public RetryRule retryRule = new RetryRule(3);
 
     @Test
     public void givenValidPaymentRequest_whenPaymentUpdate_thenReturnStatusOkWithNoErrors() throws Exception {

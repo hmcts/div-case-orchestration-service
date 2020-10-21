@@ -116,16 +116,11 @@ public class CreditAccountPaymentsConsumerTest {
     @Test
     @PactTestFor(pactMethod = "postCreditAccountPayment")
     public void verifyPostCreditAccountPayment() throws IOException, JSONException {
-
-
         CreditAccountPaymentRequest expectedRequest = getCreditAccountPaymentRequest();
-
-
         ResponseEntity<CreditAccountPaymentResponse> response =
             paymentClient.creditAccountPayment(SOME_AUTHORIZATION_TOKEN,
                 SOME_SERVICE_AUTHORIZATION_TOKEN, expectedRequest);
         assertThat(response.getStatusCode(), equalTo(HttpStatus.CREATED));
-
     }
 
     @NotNull
