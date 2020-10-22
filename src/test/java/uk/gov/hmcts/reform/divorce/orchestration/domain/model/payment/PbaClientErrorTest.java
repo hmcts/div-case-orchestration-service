@@ -12,10 +12,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.payment.PbaClientError;
 import uk.gov.hmcts.reform.divorce.orchestration.util.payment.PbaErrorMessage;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.TEST_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_ACCOUNT_NUMBER;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.buildException;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.buildPaymentClientResponse;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.formatMessage;
@@ -35,7 +33,7 @@ public class PbaClientErrorTest {
     public void given_AnyClientError_ShouldReturnDefaultErrorMessage() {
         FeignException feignException = buildException(HttpStatus.BAD_REQUEST, basicFailedResponse);
 
-        String pbaErrorMessage = PbaClientError.getMessage(feignException);
+        String pbaErrorMessage = PbaClientError.getMessage(TEST_SOLICITOR_ACCOUNT_NUMBER, feignException);
 
         assertThat(pbaErrorMessage, is(formatMessage(PbaErrorMessage.GENERAL)));
     }
@@ -45,7 +43,7 @@ public class PbaClientErrorTest {
         CreditAccountPaymentResponse failedResponse = buildPaymentClientResponse("Failed", "CA-E0004");
         FeignException feignException = buildException(HttpStatus.FORBIDDEN, failedResponse);
 
-        String pbaErrorMessage = PbaClientError.getMessage(feignException);
+        String pbaErrorMessage = PbaClientError.getMessage(TEST_SOLICITOR_ACCOUNT_NUMBER, feignException);
 
         assertThat(pbaErrorMessage, is(formatMessage(PbaErrorMessage.CAE0004)));
     }
@@ -56,7 +54,7 @@ public class PbaClientErrorTest {
         failedResponse.getStatusHistories().set(0, StatusHistoriesItem.builder().build());
         FeignException feignException = buildException(HttpStatus.FORBIDDEN, failedResponse);
 
-        String pbaErrorMessage = PbaClientError.getMessage(feignException);
+        String pbaErrorMessage = PbaClientError.getMessage(TEST_SOLICITOR_ACCOUNT_NUMBER, feignException);
 
         assertThat(pbaErrorMessage, is(formatMessage(PbaErrorMessage.GENERAL)));
     }
@@ -66,7 +64,7 @@ public class PbaClientErrorTest {
         CreditAccountPaymentResponse failedResponse = buildPaymentClientResponse("Failed", "CA-E0001");
         FeignException feignException = buildException(HttpStatus.FORBIDDEN, failedResponse);
 
-        String pbaErrorMessage = PbaClientError.getMessage(feignException);
+        String pbaErrorMessage = PbaClientError.getMessage(TEST_SOLICITOR_ACCOUNT_NUMBER, feignException);
 
         assertThat(pbaErrorMessage, is(formatMessage(PbaErrorMessage.CAE0001)));
     }
@@ -75,27 +73,16 @@ public class PbaClientErrorTest {
     public void given_404_ErrorStatus_ShouldReturnCorrectMessage() {
         FeignException feignException = buildException(HttpStatus.NOT_FOUND, basicFailedResponse);
 
-        String pbaErrorMessage = PbaClientError.getMessage(feignException);
+        String pbaErrorMessage = PbaClientError.getMessage(TEST_SOLICITOR_ACCOUNT_NUMBER, feignException);
 
         assertThat(pbaErrorMessage, is(formatMessage(PbaErrorMessage.NOTFOUND)));
-    }
-
-    @Test
-    public void given_404_ErrorStatus_With_No_PaymentReference_ShouldReturnCorrectMessage() {
-        CreditAccountPaymentResponse failedResponse = getBasicFailedResponse();
-        failedResponse.setReference(null);
-
-        FeignException feignException = buildException(HttpStatus.NOT_FOUND, failedResponse);
-
-        String pbaErrorMessage = PbaClientError.getMessage(feignException);
-        assertThat(pbaErrorMessage, not(containsString(TEST_REFERENCE)));
     }
 
     @Test
     public void given_422_ErrorStatus_ShouldReturnCorrectMessage() {
         FeignException feignException = buildException(HttpStatus.UNPROCESSABLE_ENTITY, basicFailedResponse);
 
-        String pbaErrorMessage = PbaClientError.getMessage(feignException);
+        String pbaErrorMessage = PbaClientError.getMessage(TEST_SOLICITOR_ACCOUNT_NUMBER, feignException);
 
         assertThat(pbaErrorMessage, is(formatMessage(PbaErrorMessage.GENERAL)));
     }
@@ -104,7 +91,7 @@ public class PbaClientErrorTest {
     public void given_502_ErrorStatus_ShouldReturnCorrectMessage() {
         FeignException feignException = buildException(HttpStatus.BAD_GATEWAY, basicFailedResponse);
 
-        String pbaErrorMessage = PbaClientError.getMessage(feignException);
+        String pbaErrorMessage = PbaClientError.getMessage(TEST_SOLICITOR_ACCOUNT_NUMBER, feignException);
 
         assertThat(pbaErrorMessage, is(formatMessage(PbaErrorMessage.GENERAL)));
     }
