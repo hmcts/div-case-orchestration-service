@@ -67,6 +67,36 @@ public class SolicitorCallbackController {
                 .build());
     }
 
+    @PostMapping(path = "/personal-service-pack-from-aos-overdue",
+        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Migrate case from court service to personal service and generates "
+        + "the petitioner's solicitor personal service pack to be served to the respondent")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Service method migrated, document generated and emailed to the petitioner's solicitor",
+            response = CaseResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> issuePersonalServicePackFromAosOverdue(
+        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+
+        Map<String, Object> response;
+
+        try {
+            response = solicitorService.issuePersonalServicePackFromAosOverdue(ccdCallbackRequest, authorizationToken);
+        } catch (Exception e) {
+            return ResponseEntity.ok(
+                CcdCallbackResponse.builder()
+                    .data(ImmutableMap.of())
+                    .warnings(ImmutableList.of())
+                    .errors(singletonList("Failed to migrate case to personal service - " + e.getMessage()))
+                    .build());
+        }
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(response)
+                .build());
+    }
+
     @PostMapping(path = "/handle-post-personal-service-pack")
     @ApiOperation(value = "Callback to notify solicitor that personal service pack has been issued")
     @ApiResponses(value = {
@@ -74,6 +104,7 @@ public class SolicitorCallbackController {
     public ResponseEntity<CcdCallbackResponse> sendSolicitorPersonalServiceEmail(
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
+        log.info("running handle-post-personal-service-pack, Caste State: {}", ccdCallbackRequest.getCaseDetails().getState());
         return ResponseEntity.ok(CcdCallbackResponse.builder()
             .data(solicitorService.sendSolicitorPersonalServiceEmail(ccdCallbackRequest))
             .build());
