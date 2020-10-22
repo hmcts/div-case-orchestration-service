@@ -1238,7 +1238,20 @@ public class CallbackController {
 
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
-                .data(caseOrchestrationService.setupConfirmServicePaymentEvent(ccdCallbackRequest))
+                .data(serviceJourneyService.setupConfirmServicePaymentEvent(ccdCallbackRequest.getCaseDetails()))
+                .build());
+    }
+
+    @PostMapping(path = "/set-up-order-summary/without-notice-fee")
+    @ApiOperation(value = "Return service payment fee. Starting from state AwaitingGeneralReferralPayment")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Service payment callback")})
+    public ResponseEntity<CcdCallbackResponse> setupGeneralReferralPaymentEvent(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(generalReferralService.setupGeneralReferralPaymentEvent(ccdCallbackRequest.getCaseDetails()))
                 .build());
     }
 

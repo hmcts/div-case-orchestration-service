@@ -18,5 +18,4 @@ public class CallbackControllerTestUtils {
         assertThat(caseId.isPresent(), is(true));
         assertThat(caseId.get(), is(TEST_CASE_ID));
     }
-
 }

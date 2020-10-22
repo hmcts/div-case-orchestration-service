@@ -1561,11 +1561,28 @@ public class CallbackControllerTest {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
         final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
-
-        when(caseOrchestrationService.setupConfirmServicePaymentEvent(ccdCallbackRequest)).thenReturn(caseData);
-
-        final ResponseEntity<CcdCallbackResponse> response = classUnderTest.setupConfirmServicePaymentEvent(ccdCallbackRequest);
         final CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+
+        when(serviceJourneyService.setupConfirmServicePaymentEvent(caseDetails)).thenReturn(caseData);
+
+        final ResponseEntity<CcdCallbackResponse> response = classUnderTest
+            .setupConfirmServicePaymentEvent(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody(), is(expectedResponse));
+    }
+
+    @Test
+    public void shouldReturnOK_SetupGeneralReferralPaymentEventIsCalled() throws CaseOrchestrationServiceException {
+        final Map<String, Object> caseData = Collections.emptyMap();
+        final CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+        final CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+
+        when(generalReferralService.setupGeneralReferralPaymentEvent(caseDetails)).thenReturn(caseData);
+
+        final ResponseEntity<CcdCallbackResponse> response = classUnderTest
+            .setupGeneralReferralPaymentEvent(ccdCallbackRequest);
 
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody(), is(expectedResponse));
