@@ -61,6 +61,17 @@ public class PbaClientErrorTest {
     }
 
     @Test
+    public void given_403_With_Empty_StatusHistories_ShouldReturnCorrectMessage() {
+        CreditAccountPaymentResponse failedResponse = buildPaymentClientResponse("Failed", "CA-E0004");
+        failedResponse.setStatusHistories(null);
+        FeignException feignException = buildException(HttpStatus.FORBIDDEN, failedResponse);
+
+        String pbaErrorMessage = PbaClientError.getMessage(TEST_SOLICITOR_ACCOUNT_NUMBER, feignException);
+
+        assertThat(pbaErrorMessage, is(formatMessage(PbaErrorMessage.GENERAL)));
+    }
+
+    @Test
     public void given_403_With_CAE0001_ErrorCode_ShouldReturnCorrectMessage() {
         CreditAccountPaymentResponse failedResponse = buildPaymentClientResponse("Failed", "CA-E0001");
         FeignException feignException = buildException(HttpStatus.FORBIDDEN, failedResponse);
