@@ -63,7 +63,7 @@ withNightlyPipeline(type, product, component) {
         env.test_environment = 'aat'
     }*/
 
-    after('DependencyCheckNightly') {
+    after('build') {
         println("~~~~~~~~~~~~~~~~~  Starting Priority Functional :aat ~~~~~~~~~~")
         sh("./gradlew --no-daemon --init-script init.gradle priorityFunctional")
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
