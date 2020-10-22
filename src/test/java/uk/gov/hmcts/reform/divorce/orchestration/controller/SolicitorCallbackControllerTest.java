@@ -68,6 +68,25 @@ public class SolicitorCallbackControllerTest {
     }
 
     @Test
+    public void whenIssuePersonalServicePackFromAosOverdue_thenProceedAsExpected() throws WorkflowException {
+        final Map<String, Object> divorceSession = Collections.singletonMap("key", "value");
+        CcdCallbackRequest request = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder().caseData(divorceSession).build())
+            .build();
+
+        when(solicitorService.issuePersonalServicePackFromAosOverdue(request, AUTH_TOKEN))
+            .thenReturn(divorceSession);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.issuePersonalServicePackFromAosOverdue(AUTH_TOKEN, request);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody().getData(), is(divorceSession));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+
+        verify(solicitorService).issuePersonalServicePackFromAosOverdue(request, AUTH_TOKEN);
+    }
+
+    @Test
     public void whenExceptionIsThrown_thenCatchAndProceedAsExpected() throws WorkflowException {
         final Map<String, Object> divorceSession = Collections.singletonMap("key", "value");
         CcdCallbackRequest request = CcdCallbackRequest.builder()
