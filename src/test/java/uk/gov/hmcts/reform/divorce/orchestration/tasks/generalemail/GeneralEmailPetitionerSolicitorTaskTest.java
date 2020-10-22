@@ -29,7 +29,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getExpectedNotificationTemplateVars;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getRepresentedSubject;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.helpers.GeneralEmailHelper.getTaskContext;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.context;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -69,7 +68,7 @@ public class GeneralEmailPetitionerSolicitorTaskTest {
     }
 
     private void executeTask(Map<String, Object> caseData) {
-        Map<String, Object> returnPayload = task.execute(getTaskContext(), caseData);
+        Map<String, Object> returnPayload = task.execute(context(), caseData);
         assertThat(caseData, is(returnPayload));
     }
 
