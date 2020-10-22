@@ -10,4 +10,6 @@ public interface GeneralReferralService {
     CcdCallbackResponse receiveReferral(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 
     Map<String, Object> generalConsideration(CaseDetails caseDetails) throws CaseOrchestrationServiceException;
+
+    Map<String, Object> setupGeneralReferralPaymentEvent(CaseDetails caseDetails) throws CaseOrchestrationServiceException;
 }
