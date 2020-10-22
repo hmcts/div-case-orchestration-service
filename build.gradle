@@ -405,8 +405,8 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
         maxFailures = 50
     }
 
-    include "uk/gov/hmcts/reform/divorce/maintenance/**"
-    include "uk/gov/hmcts/reform/divorce/draft/**"
+    exclude "uk/gov/hmcts/reform/divorce/maintenance/**"
+    exclude "uk/gov/hmcts/reform/divorce/draft/**"
 
 
     setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)

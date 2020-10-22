@@ -3,9 +3,9 @@
 properties([
 
         [
-            $class: 'GithubProjectProperty',
-            displayName: 'Divorce Case Orchestration API ',
-            projectUrlStr: '//https://github.com/hmcts/div-case-orchestration-service'
+                $class: 'GithubProjectProperty',
+                displayName: 'Divorce Case Orchestration API ',
+                projectUrlStr: '//https://github.com/hmcts/div-case-orchestration-service'
         ],
         pipelineTriggers([cron('15 01 * * *')]),
         parameters([
@@ -14,7 +14,7 @@ properties([
                         defaultValue: 'https://raw.githubusercontent.com/hmcts/security-test-rules/master/conf/security-rules.conf',
                         description: 'The URL you want to run these tests against'),
         ])
-    ])
+])
 
 @Library("Infrastructure")
 
@@ -32,44 +32,34 @@ static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
 }
 
 def secrets = [
-    'div-${env}': [
-        secret("ccd-submission-s2s-auth-secret", "AUTH_PROVIDER_CCDSUBMISSION_CLIENT_KEY"),
-        secret("div-doc-s2s-auth-secret", "AUTH_PROVIDER_DOCUMENTGENERATOR_CLIENT_KEY"),
-        secret("frontend-secret", "SERVICE_AUTH_SECRET"),
-        secret("idam-secret", "IDAM_CLIENT_SECRET"),
-        secret("idam-citizen-password", "IDAM_CITIZEN_PASSWORD"),
-        secret("idam-caseworker-password", "IDAM_CASEWORKER_PASSWORD")
-    ]
+        'div-${env}': [
+                secret("ccd-submission-s2s-auth-secret", "AUTH_PROVIDER_CCDSUBMISSION_CLIENT_KEY"),
+                secret("div-doc-s2s-auth-secret", "AUTH_PROVIDER_DOCUMENTGENERATOR_CLIENT_KEY"),
+                secret("frontend-secret", "SERVICE_AUTH_SECRET"),
+                secret("idam-secret", "IDAM_CLIENT_SECRET"),
+                secret("idam-citizen-password", "IDAM_CITIZEN_PASSWORD"),
+                secret("idam-caseworker-password", "IDAM_CASEWORKER_PASSWORD")
+        ]
 ]
-
 
 withNightlyPipeline(type, product, component) {
     env.TEST_URL = params.URL_TO_TEST
 
     loadVaultSecrets(secrets)
     env.Rules = params.SecurityRules
-
-    after('checkout') {
-        echo 'divorce-case-orchestration-service checked out'
-    }
-
-    // before('functionalTest:aat') {
     println("### Set test_environment.. ###")
     env.test_environment = 'aat'
-    // }
-
-    /*before('fullFunctionalTest:aat') {
-        println("### Starting fullFunctionalTest:aat ###")
-        env.test_environment = 'aat'
-    }*/
-
     after('DependencyCheckNightly') {
-        println("~~~~~~~~~~~~~~~~~  Starting Priority Functional :aat ~~~~~~~~~~")
-        sh("./gradlew --no-daemon --init-script init.gradle priorityFunctional")
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
+        stage('PriorityFunctional') {
+            println("~~~~~~~~~~~~~~~~~  Starting Priority Functional :aat ~~~~~~~~~~")
+            sh("./gradlew --no-daemon --init-script init.gradle priorityFunctional")
+            steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+            steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
+
+        }
     }
-    // enableFullFunctionalTest()
-    //enableMutationTest()
-    //enableSecurityScan()
+     enableFullFunctionalTest()
+    // enableMutationTest()
+    // enableSecurityScan()
 }
+
