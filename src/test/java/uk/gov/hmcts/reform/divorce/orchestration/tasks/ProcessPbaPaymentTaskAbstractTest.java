@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -43,6 +44,7 @@ import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -55,7 +57,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVI
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_ACCOUNT_NUMBER;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_FIRM_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_REFERENCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PBA_NUMBERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CURRENCY;
@@ -63,13 +64,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_PAY_BY_ACCOUNT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_FIRM_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_PBA_PAYMENT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DynamicList.asDynamicList;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.TEST_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.buildPaymentClientResponse;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.formatMessage;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.getBasicFailedResponse;
@@ -90,19 +88,20 @@ public abstract class ProcessPbaPaymentTaskAbstractTest {
     private ObjectMapper objectMapper;
 
     @Mock
-    private FeatureToggleService featureToggleService;
+    protected FeatureToggleService featureToggleService;
 
     @InjectMocks
     private ProcessPbaPaymentTask processPbaPaymentTask;
 
     private TaskContext context;
-    private Map<String, Object> caseData;
+    protected Map<String, Object> caseData;
     private CreditAccountPaymentRequest expectedRequest;
     private OrderSummary orderSummary;
     private CreditAccountPaymentResponse basicFailedResponse;
     private final String errorMessage = "Payment request failed";
 
-    public void commonSetup() {
+    @Before()
+    public void setUp() {
         context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
@@ -146,17 +145,7 @@ public abstract class ProcessPbaPaymentTaskAbstractTest {
         expectedRequest.setFees(Collections.singletonList(paymentItem));
     }
 
-    public void setupForToggleOn() {
-        setPbaToggleTo(true);
-        this.commonSetup();
-        caseData.put(PBA_NUMBERS, asDynamicList(TEST_SOLICITOR_ACCOUNT_NUMBER));
-    }
-
-    public void setupForToggleOff() {
-        setPbaToggleTo(false);
-        this.commonSetup();
-        caseData.put(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY, TEST_SOLICITOR_ACCOUNT_NUMBER);
-    }
+    protected abstract void setPbaNumber();
 
     @Test
     public void givenValidData_whenExecuteIsCalled_thenMakePayment() {
@@ -177,19 +166,19 @@ public abstract class ProcessPbaPaymentTaskAbstractTest {
 
     @Test
     public void given403_Returned_whenExecuteIsCalled_thenHandle_CAE0001_Response() {
-        CreditAccountPaymentResponse failedResponse = buildPaymentClientResponse("Failed","CA-E0001");
+        CreditAccountPaymentResponse failedResponse = buildPaymentClientResponse("Failed", "CA-E0001");
 
         setUpCommonFixtures(HttpStatus.FORBIDDEN, failedResponse);
 
         processPbaPaymentTask.execute(context, caseData);
 
-        runCommonAssertions(format(PbaErrorMessage.CAE0001.value(), TEST_REFERENCE));
+        runCommonAssertions(format(PbaErrorMessage.CAE0001.value(), TEST_SOLICITOR_ACCOUNT_NUMBER));
         runCommonVerifications();
     }
 
     @Test
     public void given201_AndPaymentStatus_Success_whenExecuteIsCalled_thenHandleResponse() {
-        CreditAccountPaymentResponse successResponse = buildPaymentClientResponse("Success",null);
+        CreditAccountPaymentResponse successResponse = buildPaymentClientResponse("Success", null);
 
         setUpCommonFixtures(HttpStatus.OK, successResponse);
 
@@ -201,7 +190,7 @@ public abstract class ProcessPbaPaymentTaskAbstractTest {
 
     @Test
     public void given201_AndPaymentStatus_Pending_whenExecuteIsCalled_thenHandleResponse() {
-        CreditAccountPaymentResponse successResponse = buildPaymentClientResponse("Pending",null);
+        CreditAccountPaymentResponse successResponse = buildPaymentClientResponse("Pending", null);
 
         setUpCommonFixtures(HttpStatus.CREATED, successResponse);
 
@@ -323,10 +312,7 @@ public abstract class ProcessPbaPaymentTaskAbstractTest {
             AUTH_TOKEN,
             TEST_SERVICE_AUTH_TOKEN,
             expectedRequest);
-        verify(featureToggleService).isFeatureEnabled(Features.PAY_BY_ACCOUNT);
+        verify(featureToggleService, times(2)).isFeatureEnabled(Features.PAY_BY_ACCOUNT);
     }
 
-    private void setPbaToggleTo(boolean value) {
-        when(featureToggleService.isFeatureEnabled(Features.PAY_BY_ACCOUNT)).thenReturn(value);
-    }
 }
