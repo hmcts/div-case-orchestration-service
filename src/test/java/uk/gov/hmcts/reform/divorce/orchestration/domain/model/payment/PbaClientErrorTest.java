@@ -15,6 +15,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_ACCOUNT_NUMBER;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.buildException;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.buildExceptionWithOutResponseBody;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.buildPaymentClientResponse;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.formatMessage;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.getBasicFailedResponse;
@@ -90,6 +91,15 @@ public class PbaClientErrorTest {
     @Test
     public void given_502_ErrorStatus_ShouldReturnCorrectMessage() {
         FeignException feignException = buildException(HttpStatus.BAD_GATEWAY, basicFailedResponse);
+
+        String pbaErrorMessage = PbaClientError.getMessage(TEST_SOLICITOR_ACCOUNT_NUMBER, feignException);
+
+        assertThat(pbaErrorMessage, is(formatMessage(PbaErrorMessage.GENERAL)));
+    }
+
+    @Test
+    public void given_AnyError_WhenNoResponseBody_ShouldReturnDefaultMessage() {
+        FeignException feignException = buildExceptionWithOutResponseBody(HttpStatus.BAD_GATEWAY);
 
         String pbaErrorMessage = PbaClientError.getMessage(TEST_SOLICITOR_ACCOUNT_NUMBER, feignException);
 

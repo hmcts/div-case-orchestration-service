@@ -42,4 +42,8 @@ public class PbaClientErrorTestUtil {
         byte[] body = ObjectMapperTestUtil.convertObjectToJsonString(paymentResponse).getBytes();
         return new FeignException.FeignClientException(httpStatus.value(), TEST_ERROR_MESSAGE, body);
     }
+
+    public static FeignException buildExceptionWithOutResponseBody(HttpStatus httpStatus) {
+        return new FeignException.FeignClientException(httpStatus.value(), TEST_ERROR_MESSAGE, TEST_ERROR_MESSAGE.getBytes());
+    }
 }

@@ -103,11 +103,6 @@ public class PbaClientError {
             .orElseGet(() -> EMPTY);
     }
 
-    private static String getPaymentAccountNumber(CreditAccountPaymentResponse response) {
-        return Optional.ofNullable(response.getAccountNumber())
-            .orElseGet(() -> EMPTY);
-    }
-
     private static List<StatusHistoriesItem> getStatusHistories(CreditAccountPaymentResponse response) {
         return Optional.ofNullable(response.getStatusHistories())
             .orElseGet(ArrayList::new);
