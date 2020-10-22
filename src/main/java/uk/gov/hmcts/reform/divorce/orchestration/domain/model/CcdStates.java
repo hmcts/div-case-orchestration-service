@@ -30,6 +30,7 @@ public class CcdStates {
     public static final String AWAITING_ADMIN_CLARIFICATION = "AwaitingAdminClarification";
     public static final String DA_REQUESTED = "DARequested";
     public static final String DIVORCE_GRANTED = "DivorceGranted";
+    public static final String ISSUED = "Issued";
     public static final String SUBMITTED = "Submitted";
     public static final String SOLICITOR_AWAITING_PAYMENT_CONFIRMATION = "solicitorAwaitingPaymentConfirmation";
     public static final String AWAITING_GENERAL_REFERRAL_PAYMENT = "AwaitingGeneralReferralPayment";
