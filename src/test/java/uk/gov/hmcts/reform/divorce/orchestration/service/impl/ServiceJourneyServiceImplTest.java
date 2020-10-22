@@ -21,10 +21,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.SetupC
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -168,16 +166,11 @@ public class ServiceJourneyServiceImplTest {
         verify(setupConfirmServicePaymentWorkflow).run(eq(caseDetails));
     }
 
-    @Test
+    @Test(expected = ServiceJourneyServiceException.class)
     public void shouldThrowException_whenSetupConfirmServicePaymentEventFeeWorkflow_throwsWorkflowException() throws Exception {
         when(setupConfirmServicePaymentWorkflow.run(any())).thenThrow(WorkflowException.class);
 
-        ServiceJourneyServiceException exception = assertThrows(
-            ServiceJourneyServiceException.class,
-            () -> classUnderTest.setupConfirmServicePaymentEvent(CaseDetails.builder().caseId(TEST_CASE_ID).build())
-        );
-
-        assertThat(exception.getCause(), instanceOf(WorkflowException.class));
+        classUnderTest.setupConfirmServicePaymentEvent(CaseDetails.builder().caseId(TEST_CASE_ID).build());
     }
 
     private CcdCallbackRequest buildCcdCallbackRequest() {
