@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
@@ -173,9 +172,9 @@ public class ServiceJourneyServiceImplTest {
     public void shouldThrowException_whenSetupConfirmServicePaymentEventFeeWorkflow_throwsWorkflowException() throws Exception {
         when(setupConfirmServicePaymentWorkflow.run(any())).thenThrow(WorkflowException.class);
 
-        CaseOrchestrationServiceException exception = assertThrows(
-            CaseOrchestrationServiceException.class,
-            () -> classUnderTest.setupConfirmServicePaymentEvent(CaseDetails.builder().build())
+        ServiceJourneyServiceException exception = assertThrows(
+            ServiceJourneyServiceException.class,
+            () -> classUnderTest.setupConfirmServicePaymentEvent(CaseDetails.builder().caseId(TEST_CASE_ID).build())
         );
 
         assertCaseOrchestrationServiceExceptionIsSetProperly(exception);
