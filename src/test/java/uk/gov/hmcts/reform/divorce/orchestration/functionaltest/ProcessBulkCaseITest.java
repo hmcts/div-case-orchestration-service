@@ -15,9 +15,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.divorce.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.orchestration.TestConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.BulkUpdateException;
 
 import java.util.Collections;
@@ -31,7 +31,6 @@ import static org.awaitility.Awaitility.await;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -58,7 +57,7 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
     private static final String CASE_ID3 = "1546883073634743";
     private static final String BULK_CASE_ID = "1557223513377278";
     private static final String UPDATE_BODY = convertObjectToJsonString(
-        ImmutableMap.of(BULK_LISTING_CASE_ID_FIELD, new CaseLink(BULK_CASE_ID)));
+        ImmutableMap.of(BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(BULK_CASE_ID).build()));
 
     @Value("${bulk-action.retries.max:4}")
     private int maxRetries;

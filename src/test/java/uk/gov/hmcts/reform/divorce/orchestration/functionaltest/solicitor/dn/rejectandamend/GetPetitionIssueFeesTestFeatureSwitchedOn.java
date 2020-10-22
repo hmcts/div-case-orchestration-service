@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseLink;
+import uk.gov.hmcts.reform.divorce.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
 
@@ -47,7 +47,7 @@ public class GetPetitionIssueFeesTestFeatureSwitchedOn extends GetPetitionIssueF
 
     @Test
     public void givenCaseAmendment_whenGetPetitionIssueFee_thenReturnUpdatedResponseWithFees() throws Exception {
-        callbackRequest.getCaseDetails().getCaseData().put(PREVIOUS_CASE_ID_CCD_KEY, new CaseLink("1234567890123456"));
+        callbackRequest.getCaseDetails().getCaseData().put(PREVIOUS_CASE_ID_CCD_KEY, CaseLink.builder().caseReference("1234567890123456").build());
         stubMaintenanceServerEndpointForAddPetitionerSolicitorRole(HttpStatus.OK);
 
         OrderSummary orderSummary = new OrderSummary();
