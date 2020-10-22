@@ -7,7 +7,7 @@ import org.junit.runners.model.Statement;
 
 @Slf4j
 public class RetryRule implements TestRule {
-    private static final int MAX_RETRIES = 7;
+    private static final int MAX_RETRIES = 30;
     private static int totalRetries = 0;
     private int retryCount;
 
