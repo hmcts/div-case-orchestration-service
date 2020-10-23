@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import com.google.common.collect.ImmutableMap;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -66,7 +67,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLIC
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PBA_NUMBERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CURRENCY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_CENTRE_SITEID_JSON_KEY;
@@ -91,14 +91,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_AUTHORIZATION_HEADER;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_FIRM_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_STATEMENT_OF_TRUTH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.STATEMENT_OF_TRUTH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DynamicList.asDynamicList;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmailTask.AMEND_DESC;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmailTask.AMEND_SOL_DESC;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmailTask.SUBMITTED_DESC;
@@ -121,13 +119,14 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
     @Autowired
     private MockMvc webClient;
 
-    private Map<String, Object> caseData;
+    protected Map<String, Object> caseData;
     private CaseDetails caseDetails;
     private CcdCallbackRequest ccdCallbackRequest;
     private CreditAccountPaymentRequest request;
     private CreditAccountPaymentResponse basicFailedResponse;
 
-    public void commonSetup() {
+    @Before
+    public void setUp() {
         basicFailedResponse = getBasicFailedResponse();
 
         FeeResponse feeResponse = FeeResponse.builder()
@@ -180,15 +179,7 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
         request.setFees(Collections.singletonList(paymentItem));
     }
 
-    public void setupForToggleOn() {
-        this.commonSetup();
-        caseData.put(PBA_NUMBERS, asDynamicList(TEST_SOLICITOR_ACCOUNT_NUMBER));
-    }
-
-    public void setupForToggleOff() {
-        this.commonSetup();
-        caseData.put(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY, TEST_SOLICITOR_ACCOUNT_NUMBER);
-    }
+    protected abstract void setPbaNumber();
 
     @Test
     public void givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_PetitionerNewCase() throws Exception {
@@ -410,7 +401,7 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
 
     @Test
     public void givenCaseData_whenProcessPbaPayment_403_thenReturn_CAE0001_ErrorMessage() throws Exception {
-        CreditAccountPaymentResponse failedResponse = buildPaymentClientResponse("Failed","CA-E0001");
+        CreditAccountPaymentResponse failedResponse = buildPaymentClientResponse("Failed", "CA-E0001");
 
         callPaymentClientWithStatusAndVerifyErrorMessage(
             HttpStatus.FORBIDDEN,
