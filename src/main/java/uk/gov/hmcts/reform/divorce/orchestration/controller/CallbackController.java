@@ -1249,11 +1249,9 @@ public class CallbackController {
     public ResponseEntity<CcdCallbackResponse> setupGeneralReferralPaymentEvent(
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
-        Map<String, Object> data = generalReferralService.setupGeneralReferralPaymentEvent(ccdCallbackRequest.getCaseDetails());
-
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
-                .data(data)
+                .data(generalReferralService.setupGeneralReferralPaymentEvent(ccdCallbackRequest.getCaseDetails()))
                 .build());
     }
 

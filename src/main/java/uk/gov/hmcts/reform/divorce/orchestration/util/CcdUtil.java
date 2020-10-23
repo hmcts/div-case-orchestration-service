@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.model.ccd.DivorceGeneralOrder;
 import uk.gov.hmcts.reform.divorce.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceGeneralReferral;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -191,6 +192,13 @@ public class CcdUtil {
     public List<CollectionMember<DivorceServiceApplication>> getListOfServiceApplications(Map<String, Object> caseData) {
         return Optional.ofNullable(caseData.get(CcdFields.SERVICE_APPLICATIONS))
             .map(i -> objectMapper.convertValue(i, new TypeReference<List<CollectionMember<DivorceServiceApplication>>>() {
+            }))
+            .orElse(new ArrayList<>());
+    }
+
+    public List<CollectionMember<DivorceGeneralReferral>> getListOfGeneralReferrals(Map<String, Object> caseData) {
+        return Optional.ofNullable(caseData.get(CcdFields.GENERAL_REFERRALS))
+            .map(i -> objectMapper.convertValue(i, new TypeReference<List<CollectionMember<DivorceGeneralReferral>>>() {
             }))
             .orElse(new ArrayList<>());
     }
