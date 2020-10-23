@@ -20,13 +20,22 @@ public abstract class FeeLookupWithoutNoticeTask implements Task<Map<String, Obj
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
-        final String caseId = getCaseId(context);
+        log.info(
+            "CaseId: {}, getting general application without notice fee for field {}",
+            getCaseId(context),
+            getFieldName()
+        );
+
+        return updateCaseData(context, caseData);
+    }
+
+    protected Map<String, Object> updateCaseData(TaskContext context, Map<String, Object> caseData) {
         final String fieldName = getFieldName();
+        final String caseId = getCaseId(context);
 
         log.info("CaseId: {}, getting general application without notice fee for field {}", caseId, fieldName);
 
         OrderSummary orderSummary = getOrderSummary();
-
         log.info("CaseId: {}, fee: {}", caseId, orderSummary.getFees().get(0));
 
         caseData.put(fieldName, orderSummary);
