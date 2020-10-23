@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generi
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.FeesAndPaymentsClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
@@ -21,15 +22,20 @@ public abstract class FeeLookupWithoutNoticeTask implements Task<Map<String, Obj
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         final String caseId = getCaseId(context);
-        final String fieldName = getFieldName();
+        final String orderSummaryFieldName = getOrderSummaryFieldName();
+        final String feeFieldName = getFeeValueFieldName();
 
-        log.info("CaseId: {}, getting general application without notice fee for field {}", caseId, fieldName);
+        log.info("CaseId: {}, getting general application without notice fee for field {}", caseId, orderSummaryFieldName);
 
         OrderSummary orderSummary = getOrderSummary();
+        String feeValue = getFee(orderSummary);
 
         log.info("CaseId: {}, fee: {}", caseId, orderSummary.getFees().get(0));
 
-        caseData.put(fieldName, orderSummary);
+        if (StringUtils.isNotBlank(feeFieldName)) {
+            caseData.put(feeFieldName, feeValue);
+        }
+        caseData.put(orderSummaryFieldName, orderSummary);
 
         return caseData;
     }
@@ -41,5 +47,11 @@ public abstract class FeeLookupWithoutNoticeTask implements Task<Map<String, Obj
         return orderSummary;
     }
 
-    public abstract String getFieldName();
+    public abstract String getOrderSummaryFieldName();
+
+    public abstract String getFeeValueFieldName();
+
+    private String getFee(OrderSummary orderSummary) {
+        return orderSummary.getPaymentTotalInPounds();
+    }
 }

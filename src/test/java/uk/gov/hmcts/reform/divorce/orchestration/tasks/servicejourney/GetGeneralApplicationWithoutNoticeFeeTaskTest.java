@@ -24,6 +24,6 @@ public class GetGeneralApplicationWithoutNoticeFeeTaskTest extends FeeLookupWith
 
     @Test
     public void shouldReturnExpectedField() {
-        assertThat(getTask().getFieldName(), is(CcdFields.GENERAL_APPLICATION_WITHOUT_NOTICE_FEE_SUMMARY));
+        assertThat(getTask().getOrderSummaryFieldName(), is(CcdFields.GENERAL_APPLICATION_WITHOUT_NOTICE_FEE_SUMMARY));
     }
 }

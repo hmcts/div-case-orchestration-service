@@ -16,7 +16,12 @@ public class GetGeneralApplicationWithoutNoticeFeeTask extends FeeLookupWithoutN
     }
 
     @Override
-    public String getFieldName() {
+    public String getOrderSummaryFieldName() {
         return GENERAL_APPLICATION_WITHOUT_NOTICE_FEE_SUMMARY;
+    }
+
+    @Override
+    public String getFeeValueFieldName() {
+        return null;
     }
 }
