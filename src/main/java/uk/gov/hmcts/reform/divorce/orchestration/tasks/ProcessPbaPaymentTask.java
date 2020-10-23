@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.SolicitorDataExtractor;
 
 import java.util.List;
 import java.util.Map;
@@ -40,6 +39,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_PBA_PAYMENT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContextHelper.failTask;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.SolicitorDataExtractor.getPbaNumber;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getAuthToken;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isSolicitorPaymentMethodPba;
@@ -93,6 +93,7 @@ public class ProcessPbaPaymentTask implements Task<Map<String, Object>> {
                                                                                      TaskContext context,
                                                                                      Map<String, Object> caseData) {
         ResponseEntity<CreditAccountPaymentResponse> paymentResponseResponseEntity = null;
+        String pbaNumber = getPbaNumber(caseData, isPbaToggleOn());
         try {
             paymentResponseResponseEntity = paymentClient.creditAccountPayment(
                 getAuthToken(context),
@@ -100,11 +101,11 @@ public class ProcessPbaPaymentTask implements Task<Map<String, Object>> {
                 buildCreditAccountPaymentRequest(context, caseData)
             );
         } catch (FeignException exception) {
-            log.error("CaseID: {} Unsuccessful payment with exception {}", caseId, exception.getMessage());
+            log.error("CaseID: {} Unsuccessful payment for account number {} with exception {}", caseId, pbaNumber, exception.getMessage());
 
             failTask(context,
                 SOLICITOR_PBA_PAYMENT_ERROR_KEY,
-                singletonList(getMessage(exception)));
+                singletonList(getMessage(pbaNumber, exception)));
         }
         return paymentResponseResponseEntity;
     }
@@ -167,7 +168,7 @@ public class ProcessPbaPaymentTask implements Task<Map<String, Object>> {
         addToRequest(request::setAmount, orderSummary::getPaymentTotal);
         addToRequest(request::setCcdCaseNumber, context.getTransientObject(CASE_ID_JSON_KEY)::toString);
         addToRequest(request::setSiteId, caseData.get(DIVORCE_CENTRE_SITEID_JSON_KEY)::toString);
-        addToRequest(request::setAccountNumber, SolicitorDataExtractor.getPbaNumber(caseData, isPbaToggleOn())::toString);
+        addToRequest(request::setAccountNumber, getPbaNumber(caseData, isPbaToggleOn())::toString);
         addToRequest(request::setOrganisationName, caseData.get(SOLICITOR_FIRM_JSON_KEY)::toString);
         addToRequest(request::setCustomerReference, caseData.get(SOLICITOR_REFERENCE_JSON_KEY)::toString);
         addToRequest(request::setDescription, value::getFeeDescription);
