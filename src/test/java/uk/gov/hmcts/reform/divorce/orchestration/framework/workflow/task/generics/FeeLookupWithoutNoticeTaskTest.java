@@ -34,16 +34,6 @@ public class FeeLookupWithoutNoticeTaskTest {
     public static final String TEST_FEE_AMOUNT_IN_PENNIES = "5000";
     public static final String TEST_FEE_AMOUNT_IN_POUNDS_AS_STRING = "50";
 
-    protected FeeResponse setupFeeResponse() {
-        FeeResponse feeResponse = FeeResponse.builder()
-            .amount(TEST_FEE_AMOUNT_IN_POUNDS)
-            .feeCode(TEST_GENERAL_APPLICATION_WITHOUT_NOTICE_CODE)
-            .version(TEST_FEE_VERSION)
-            .description(TEST_FEE_DESCRIPTION)
-            .build();
-
-        return feeResponse;
-    }
     protected FeeLookupWithoutNoticeTask getTask() {
         return new FeeLookupWithoutNoticeTask(feesAndPaymentsClient) {
             @Override
@@ -142,5 +132,16 @@ public class FeeLookupWithoutNoticeTaskTest {
         OrderSummary orderSummary = new OrderSummary();
         orderSummary.add(feeResponse);
         return orderSummary;
+    }
+
+    private FeeResponse setupFeeResponse() {
+        FeeResponse feeResponse = FeeResponse.builder()
+            .amount(TEST_FEE_AMOUNT_IN_POUNDS)
+            .feeCode(TEST_GENERAL_APPLICATION_WITHOUT_NOTICE_CODE)
+            .version(TEST_FEE_VERSION)
+            .description(TEST_FEE_DESCRIPTION)
+            .build();
+
+        return feeResponse;
     }
 }
