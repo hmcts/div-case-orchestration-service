@@ -40,20 +40,20 @@ public class PaymentUpdateCallbackTest extends IntegrationTest {
         UserDetails citizenUser = createCitizenUser();
 
         String caseId = ccdClientSupport.submitCase(
-                ResourceLoader.loadJsonToObject(SUBMIT_PAYLOAD_CONTEXT_PATH + "submit-case-data.json", Map.class),
-                citizenUser
+            ResourceLoader.loadJsonToObject(SUBMIT_PAYLOAD_CONTEXT_PATH + "submit-case-data.json", Map.class),
+            citizenUser
         ).getId().toString();
 
         PaymentUpdate paymentUpdate = ResourceLoader.loadJsonToObject(
-                PAYLOAD_CONTEXT_PATH + "paymentUpdate.json", PaymentUpdate.class
+            PAYLOAD_CONTEXT_PATH + "paymentUpdate.json", PaymentUpdate.class
         );
 
         paymentUpdate.setCcdCaseNumber(caseId);
 
         Response response = RestUtil.putToRestService(
-                serverUrl + contextPath,
-                Collections.singletonMap(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString()),
-                paymentUpdate
+            serverUrl + contextPath,
+            Collections.singletonMap(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString()),
+            paymentUpdate
         );
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode());
