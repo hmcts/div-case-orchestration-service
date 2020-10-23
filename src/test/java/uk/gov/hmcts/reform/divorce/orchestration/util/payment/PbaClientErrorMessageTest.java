@@ -19,10 +19,9 @@ public class PbaClientErrorMessageTest {
 
     @Test
     public void shouldReturnFullErrorMessageContent() {
-        String fullMessage = "Payment request failed. Please use a different account or payment method."
-            + " For Payment Account support call 01633 652125 (Option 3) or email MiddleOffice.DDServices@liberata.com.";
+        String generalMessage = "Payment request failed. " + PbaErrorMessage.ERROR_INFO;
 
-        assertThat(PbaErrorMessage.GENERAL.value(), is(fullMessage));
+        assertThat(PbaErrorMessage.GENERAL.value(), is(generalMessage));
     }
 
     @Test
