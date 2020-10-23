@@ -46,7 +46,7 @@ public class HttpConnectionConfiguration {
 
     @Bean
     @Primary
-    public MappingJackson2HttpMessageConverter jackson2HttpCoverter(@Autowired ObjectMapper objectMapper) {
+    public MappingJackson2HttpMessageConverter jackson2HttpConverter(@Autowired ObjectMapper objectMapper) {
         MappingJackson2HttpMessageConverter jackson2HttpConverter
             = new MappingJackson2HttpMessageConverter(objectMapper);
         jackson2HttpConverter.setSupportedMediaTypes(ImmutableList.of(MediaType.APPLICATION_JSON));
