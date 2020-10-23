@@ -227,7 +227,7 @@ public class CallbackControllerTest {
     }
 
     @Test
-    public void whenProcessPbaPayment_AndPaymentTypeNotPBA_thenReturnCcdResponseSameState() throws Exception {
+    public void whenProcessPbaPayment_AndPaymentTypeNotPBA_thenReturnCcdResponseWithSolicitorAwaitingPaymentConfirmationState() throws Exception {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(SOLICITOR_HOW_TO_PAY_JSON_KEY, "feesHelpWith");
 
@@ -243,6 +243,7 @@ public class CallbackControllerTest {
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.processPbaPayment(AUTH_TOKEN, ccdCallbackRequest);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
+            .state(CcdStates.SOLICITOR_AWAITING_PAYMENT_CONFIRMATION)
             .data(caseData)
             .build();
 
