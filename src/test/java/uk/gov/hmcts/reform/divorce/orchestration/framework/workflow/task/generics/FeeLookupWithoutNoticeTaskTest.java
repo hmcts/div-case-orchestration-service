@@ -45,7 +45,7 @@ public class FeeLookupWithoutNoticeTaskTest {
         runTestFieldIsPopulated();
     }
 
-    protected void runTestFieldIsPopulated() {
+    protected Map<String, Object> runTestFieldIsPopulated() {
         FeeResponse feeResponse = FeeResponse.builder()
             .amount(TEST_FEE_AMOUNT_IN_POUNDS)
             .feeCode(TEST_GENERAL_APPLICATION_WITHOUT_NOTICE_CODE)
@@ -65,5 +65,7 @@ public class FeeLookupWithoutNoticeTaskTest {
             paymentSummary.getFees().get(0).getValue().getFeeCode(),
             equalTo(TEST_GENERAL_APPLICATION_WITHOUT_NOTICE_CODE)
         );
+
+        return returnedCaseData;
     }
 }

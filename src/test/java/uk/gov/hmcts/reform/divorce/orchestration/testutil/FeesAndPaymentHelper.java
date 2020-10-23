@@ -40,13 +40,19 @@ public class FeesAndPaymentHelper {
     public static CcdCallbackResponse buildExpectedResponse(FeeResponse applicationWithoutNoticeFee, String field) {
         Map<String, Object> expectedCaseData = new HashMap<>();
 
-        OrderSummary orderSummary = new OrderSummary();
-        orderSummary.add(applicationWithoutNoticeFee);
+        OrderSummary orderSummary = getOrderSummary(applicationWithoutNoticeFee);
 
         expectedCaseData.put(field, orderSummary);
 
         return CcdCallbackResponse.builder()
             .data(expectedCaseData)
             .build();
+    }
+
+    public static OrderSummary getOrderSummary(FeeResponse feeResponse) {
+        OrderSummary orderSummary = new OrderSummary();
+        orderSummary.add(feeResponse);
+
+        return orderSummary;
     }
 }
