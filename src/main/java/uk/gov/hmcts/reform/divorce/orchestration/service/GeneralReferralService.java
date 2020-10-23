@@ -7,9 +7,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRes
 import java.util.Map;
 
 public interface GeneralReferralService {
-    CcdCallbackResponse receiveReferral(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 
-    Map<String, Object> generalConsideration(CaseDetails caseDetails) throws CaseOrchestrationServiceException;
+    CcdCallbackResponse receiveReferral(CcdCallbackRequest ccdCallbackRequest)
+        throws CaseOrchestrationServiceException;
 
-    Map<String, Object> setupGeneralReferralPaymentEvent(CaseDetails caseDetails) throws CaseOrchestrationServiceException;
+    Map<String, Object> generalConsideration(CaseDetails caseDetails)
+        throws CaseOrchestrationServiceException;
+
+    Map<String, Object> setupGeneralReferralPaymentEvent(CaseDetails caseDetails)
+        throws CaseOrchestrationServiceException;
 }
