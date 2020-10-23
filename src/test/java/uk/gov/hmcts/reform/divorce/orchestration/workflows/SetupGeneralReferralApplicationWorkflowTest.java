@@ -6,8 +6,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.GetGeneralApplicationWithoutNoticeFeeTask;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.SetupConfirmServicePaymentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalreferral.GetGeneralReferralApplicationFeeTask;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.SetupGeneralReferralPaymentWorkflow;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,26 +18,26 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mo
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTaskWasCalled;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SetupConfirmServicePaymentWorkflowTest {
+public class SetupGeneralReferralApplicationWorkflowTest {
 
     @Mock
-    private GetGeneralApplicationWithoutNoticeFeeTask getGeneralApplicationWithoutNoticeFeeTask;
+    private GetGeneralReferralApplicationFeeTask getGeneralReferralApplicationFeeTask;
 
     @InjectMocks
-    private SetupConfirmServicePaymentWorkflow setupConfirmServicePaymentWorkflow;
+    private SetupGeneralReferralPaymentWorkflow setupGeneralReferralPaymentWorkflow;
 
     @Test
     public void whenGeneralApplicationWithoutNoticeFee_thenProcessAsExpected() throws Exception {
         HashMap<String, Object> caseData = new HashMap<>();
-        mockTasksExecution(caseData, getGeneralApplicationWithoutNoticeFeeTask);
+        mockTasksExecution(caseData, getGeneralReferralApplicationFeeTask);
 
-        Map<String, Object> returned = setupConfirmServicePaymentWorkflow.run(
+        Map<String, Object> returned = setupGeneralReferralPaymentWorkflow.run(
             CaseDetails.builder()
                 .caseData(caseData)
                 .build()
         );
 
         assertThat(returned, is(caseData));
-        verifyTaskWasCalled(caseData, getGeneralApplicationWithoutNoticeFeeTask);
+        verifyTaskWasCalled(caseData, getGeneralReferralApplicationFeeTask);
     }
 }

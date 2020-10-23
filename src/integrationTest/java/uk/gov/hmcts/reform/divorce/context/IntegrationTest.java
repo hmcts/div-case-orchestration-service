@@ -59,7 +59,7 @@ public abstract class IntegrationTest {
     public SpringIntegrationMethodRule springMethodIntegration;
 
     @Rule
-    public RetryRule retryRule;
+    public RetryRule retryRule = new RetryRule(3);
 
     protected IntegrationTest() {
         this.springMethodIntegration = new SpringIntegrationMethodRule();
