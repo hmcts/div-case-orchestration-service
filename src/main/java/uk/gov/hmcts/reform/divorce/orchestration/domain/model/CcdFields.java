@@ -39,11 +39,14 @@ public class CcdFields {
 
     public static final String GENERAL_REFERRAL_FEE = "GeneralReferralFee";
     public static final String GENERAL_REFERRAL_DECISION_DATE = "GeneralReferralDecisionDate";
+    public static final String GENERAL_APPLICATION_ADDED_DATE = "GeneralApplicationAddedDate";
 
     public static final String PETITIONER_FIRST_NAME = OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
     public static final String PETITIONER_LAST_NAME = OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
     public static final String PETITIONER_EMAIL = OrchestrationConstants.D_8_PETITIONER_EMAIL;
 
     public static final String PBA_NUMBERS = "PbaNumbers";
+    public static final String GENERAL_APPLICATION_WITHOUT_NOTICE_FEE_SUMMARY = "generalApplicationWithoutNoticeFeeSummary";
+    public static final String GENERAL_REFERRAL_WITHOUT_NOTICE_FEE_SUMMARY = "generalReferralWithoutNoticeFeeSummary";
 
 }
