@@ -41,7 +41,6 @@ public class RetrieveDraftITest extends IdamTestSupport {
     private static final String CMS_UPDATE_CASE_PATH =
         "/casemaintenance/version/1/updateCase/1547073120300616/paymentMade";
     private static final String CFS_CONTEXT_PATH = "/caseformatter/version/1/to-divorce-format";
-    private static final String CFS_TO_CCD_CONTEXT_PATH = "/caseformatter/version/1/to-ccd-format";
 
     private static final String CARD_PAYMENT_PATH = "/card-payments/RC-1547-0733-1813-9545";
     private static final String USER_TOKEN = "Some JWT Token";
@@ -147,9 +146,6 @@ public class RetrieveDraftITest extends IdamTestSupport {
         String paymentResponse = ResourceLoader.loadResourceAsString(paymentPath);
         stubPaymentServerEndpoint(paymentResponse);
 
-        String formattedPaymentPath = "jsonExamples/payloads/formattedPayment.json";
-        String formattedPayment = ResourceLoader.loadResourceAsString(formattedPaymentPath);
-        stubCfsToCCDServerEndpoint(formattedPayment);
         stubCmsServerEndpoint(CMS_UPDATE_CASE_PATH, HttpStatus.OK, caseDetails, HttpMethod.POST);
 
         stubUserDetailsEndpoint(HttpStatus.OK, AUTH_TOKEN, convertObjectToJsonString(UserDetails.builder().email(TEST_EMAIL).build()));
@@ -176,14 +172,6 @@ public class RetrieveDraftITest extends IdamTestSupport {
 
     private void stubCfsServerEndpoint(String body) {
         formatterServiceServer.stubFor(WireMock.post(CFS_CONTEXT_PATH)
-            .willReturn(aResponse()
-                .withStatus(HttpStatus.OK.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                .withBody(body)));
-    }
-
-    private void stubCfsToCCDServerEndpoint(String body) {
-        formatterServiceServer.stubFor(WireMock.post(CFS_TO_CCD_CONTEXT_PATH)
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
