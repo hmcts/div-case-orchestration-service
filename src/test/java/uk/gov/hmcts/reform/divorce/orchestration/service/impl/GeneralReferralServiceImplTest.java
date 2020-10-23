@@ -88,18 +88,20 @@ public class GeneralReferralServiceImplTest {
         verify(generalReferralWorkflow).run(ccdCallbackRequest.getCaseDetails());
     }
 
-    @Test(expected = CaseOrchestrationServiceException.class)
+    @Test
     public void workflowExceptionIsMappedToCaseOrchestrationException()
-        throws CaseOrchestrationServiceException, WorkflowException {
+        throws WorkflowException {
         Map<String, Object> caseData = buildCaseDataWithGeneralReferralFee(NO_VALUE);
         ccdCallbackRequest = buildCallbackRequest(caseData, CcdStates.AWAITING_GENERAL_REFERRAL_PAYMENT);
 
-        when(generalReferralWorkflow.run(any()))
-            .thenThrow(WorkflowException.class);
+        when(generalReferralWorkflow.run(any())).thenThrow(WorkflowException.class);
 
-        ccdCallbackResponse = generalReferralService.receiveReferral(ccdCallbackRequest);
+        CaseOrchestrationServiceException exception = assertThrows(
+            CaseOrchestrationServiceException.class,
+            () -> generalReferralService.receiveReferral(ccdCallbackRequest)
+        );
 
-        verify(generalReferralWorkflow).run(ccdCallbackRequest.getCaseDetails());
+        assertCaseOrchestrationServiceExceptionIsSetProperly(exception);
     }
 
     @Test
