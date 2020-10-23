@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.workflows;
+package uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

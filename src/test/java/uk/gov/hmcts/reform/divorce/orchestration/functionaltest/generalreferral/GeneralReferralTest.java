@@ -7,9 +7,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
+import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
+import static java.time.LocalDate.now;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -79,6 +81,10 @@ public class GeneralReferralTest extends MockedFunctionalTest {
                 allOf(
                     isJson(),
                     hasJsonPath("$.data.GeneralReferralFee", is(referralFeeValue)),
+                    hasJsonPath(
+                        "$.data.GeneralApplicationAddedDate",
+                        is(DateUtils.formatDateFromLocalDate(now()))
+                    ),
                     hasJsonPath("$.state", is(newCaseState)))
             ));
     }
