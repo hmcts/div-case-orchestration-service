@@ -260,7 +260,7 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
     }
 
     @Test
-    public void givenCaseData_whenOtherPaymentMethod_thenReturnStateUnchanged() throws Exception {
+    public void givenCaseData_whenOtherPaymentMethod_thenReturnDefaultStateForNonPbaPayments() throws Exception {
         caseData.put(STATEMENT_OF_TRUTH, YES_VALUE);
         caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, YES_VALUE);
         caseData.put(SOLICITOR_HOW_TO_PAY_JSON_KEY, "NotByAccount");
@@ -276,6 +276,7 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
             .build();
 
         final CcdCallbackResponse expected = CcdCallbackResponse.builder()
+            .state(ProcessPbaPaymentTask.DEFAULT_END_STATE_FOR_NON_PBA_PAYMENTS)
             .data(caseData)
             .build();
 
@@ -291,7 +292,7 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
     }
 
     @Test
-    public void givenCaseData_whenPendingPayment_AndPaymentStatusPending_thenReturnStateUnchanged() throws Exception {
+    public void givenCaseData_whenPendingPayment_AndPaymentStatusPending_thenReturnStateSolicitorAwaitingPaymentConfirmation() throws Exception {
         caseData.put(STATEMENT_OF_TRUTH, YES_VALUE);
         caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, YES_VALUE);
 
@@ -316,6 +317,7 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
         stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
 
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
+            .state(ProcessPbaPaymentTask.DEFAULT_END_STATE_FOR_NON_PBA_PAYMENTS)
             .data(caseData)
             .build();
 
@@ -329,7 +331,7 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
     }
 
     @Test
-    public void givenCaseData_whenSuccessPayment_AndPaymentStatusPending_thenReturnStateUnchanged() throws Exception {
+    public void givenCaseData_whenSuccessPayment_AndPaymentStatusSuccess_thenReturnStateSubmitted() throws Exception {
         caseData.put(STATEMENT_OF_TRUTH, YES_VALUE);
         caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, YES_VALUE);
 

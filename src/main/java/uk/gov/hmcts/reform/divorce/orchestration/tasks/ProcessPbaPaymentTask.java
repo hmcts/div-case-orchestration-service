@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.client.PaymentClient;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeItem;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeValue;
@@ -54,6 +55,7 @@ public class ProcessPbaPaymentTask implements Task<Map<String, Object>> {
     private final ObjectMapper objectMapper;
     private final FeatureToggleService featureToggleService;
     public static final String PAYMENT_STATUS = "PaymentStatus";
+    public static final String DEFAULT_END_STATE_FOR_NON_PBA_PAYMENTS = CcdStates.SOLICITOR_AWAITING_PAYMENT_CONFIRMATION;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
