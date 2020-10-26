@@ -38,9 +38,7 @@ public class ProcessPbaPaymentTest extends IntegrationTest {
     private static final String AWAITING_PAYMENT_CONFIRMATION = CcdStates.SOLICITOR_AWAITING_PAYMENT_CONFIRMATION;
     private static final String SUBMITTED = CcdStates.SUBMITTED;
 
-    /**
-     * One attempt only needed as any other attempt within 2min would still fail
-     */
+    // One attempt only needed as any other attempt within 2min would still fail
     @Rule
     public RetryRule retryRule = new RetryRule(1);
 
