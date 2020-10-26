@@ -2,10 +2,8 @@ package uk.gov.hmcts.reform.divorce.callback;
 
 import io.restassured.response.Response;
 import org.hamcrest.Matcher;
-import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
-import uk.gov.hmcts.reform.divorce.RetryRule;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.util.payment.PbaErrorMessage;
@@ -37,10 +35,6 @@ public class ProcessPbaPaymentTest extends IntegrationTest {
 
     private static final String AWAITING_PAYMENT_CONFIRMATION = CcdStates.SOLICITOR_AWAITING_PAYMENT_CONFIRMATION;
     private static final String SUBMITTED = CcdStates.SUBMITTED;
-
-    // One attempt only needed as any other attempt within 2min would still fail
-    @Rule
-    public RetryRule retryRule = new RetryRule(1);
 
     @Value("${case.orchestration.solicitor.process-pba-payment.context-path}")
     private String contextPath;
