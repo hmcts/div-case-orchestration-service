@@ -19,6 +19,11 @@ public class FeesAndPaymentHelper {
 
     public static final String APPLICATION_WITHOUT_NOTICE_FEE_URL = "/fees-and-payments/version/1/application-without-notice-fee";
 
+    public static final String APPLICATION_WITHOUT_NOTICE = "Application (without notice)";
+    public static final Integer AMOUNT = 50;
+    public static final String AMOUNT_IN_PENNIES = String.valueOf(AMOUNT * 100);
+    public static final String FEE_CODE = "FEE0228";
+
     public static void stubGetFeeFromFeesAndPayments(
         WireMockClassRule feesAndPaymentsServer, FeeResponse feeResponse) {
         feesAndPaymentsServer.stubFor(WireMock.get(APPLICATION_WITHOUT_NOTICE_FEE_URL)
@@ -30,9 +35,9 @@ public class FeesAndPaymentHelper {
 
     public static FeeResponse getApplicationWithoutNoticeFee() {
         return FeeResponse.builder()
-            .amount(50d)
-            .description("Application (without notice)")
-            .feeCode("FEE0228")
+            .amount(AMOUNT * 1d)
+            .description(APPLICATION_WITHOUT_NOTICE)
+            .feeCode(FEE_CODE)
             .version(1)
             .build();
     }
@@ -40,13 +45,19 @@ public class FeesAndPaymentHelper {
     public static CcdCallbackResponse buildExpectedResponse(FeeResponse applicationWithoutNoticeFee, String field) {
         Map<String, Object> expectedCaseData = new HashMap<>();
 
-        OrderSummary orderSummary = new OrderSummary();
-        orderSummary.add(applicationWithoutNoticeFee);
+        OrderSummary orderSummary = getOrderSummary(applicationWithoutNoticeFee);
 
         expectedCaseData.put(field, orderSummary);
 
         return CcdCallbackResponse.builder()
             .data(expectedCaseData)
             .build();
+    }
+
+    public static OrderSummary getOrderSummary(FeeResponse feeResponse) {
+        OrderSummary orderSummary = new OrderSummary();
+        orderSummary.add(feeResponse);
+
+        return orderSummary;
     }
 }
