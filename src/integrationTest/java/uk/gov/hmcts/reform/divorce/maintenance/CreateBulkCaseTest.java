@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.maintenance;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.entity.ContentType;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -36,7 +35,6 @@ public class CreateBulkCaseTest extends CcdSubmissionSupport {
 
     @Test
     //QA asked to disable this test, to able to test scheduler
-    @Ignore
     public void whenCreateBulkCase_CaseIsCreated() throws Exception {
         final UserDetails user1 = createCitizenUser();
         final UserDetails user2 = createCitizenUser();

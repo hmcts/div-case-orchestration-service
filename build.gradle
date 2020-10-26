@@ -400,6 +400,8 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
     forkEvery = 10
 
     exclude "uk/gov/hmcts/reform/divorce/maintenance/nightly/**"
+    exclude "uk/gov/hmcts/reform/divorce/callback/nightly/**"
+
 
     setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
     setClasspath(sourceSets.integrationTest.runtimeClasspath)
@@ -421,7 +423,9 @@ task priorityFunctional(type: Test, description: 'Runs the Priority Functional t
     forkEvery = 10
 
     include "uk/gov/hmcts/reform/divorce/maintenance/nightly/**"
-    
+    include "uk/gov/hmcts/reform/divorce/callback/nightly/**"
+
+
     setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
     setClasspath(sourceSets.integrationTest.runtimeClasspath)
 

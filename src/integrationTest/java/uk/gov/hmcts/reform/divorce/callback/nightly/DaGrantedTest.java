@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.callback;
+package uk.gov.hmcts.reform.divorce.callback.nightly;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
