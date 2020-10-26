@@ -137,6 +137,9 @@ pba:
     service:
       api:
         baseurl: ${PRD_API_BASEURL:http://rd-professional-api-aat.service.core-compute-aat.internal}
+  contact:
+    phoneNumber: "01633 652125"
+    email: "MiddleOffice.DDServices@liberata.com"
 
 feature-toggle:
   toggle:
@@ -145,6 +148,7 @@ feature-toggle:
     dn_refusal: true
     paper_update: true
     solicitor_dn_reject_and_amend: true
+    pay_by_account: true
 
 send-letter:
   url: ${SEND_LETTER_SERIVCE_BASEURL:http://rpe-send-letter-service-aat.service.core-compute-aat.internal}

@@ -19,11 +19,10 @@ import java.util.Map;
 import java.util.Objects;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PBA_NUMBERS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DynamicList.asDynamicList;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getAuthToken;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.solicitorPaymentMethodIsPba;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isSolicitorPaymentMethodPba;
 
 @Component
 @Slf4j
@@ -37,14 +36,14 @@ public class GetPbaNumbersTask implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
-        if (solicitorPaymentMethodIsPba(caseData)) {
+        if (isSolicitorPaymentMethodPba(caseData)) {
             String caseId = getCaseId(context);
             String bearerAuthToken = authUtil.getBearerToken(getAuthToken(context));
             String solicitorEmail = idamClient.getUserDetails(bearerAuthToken).getEmail();
 
             log.info("CaseId: {}. About to retrieve PBA numbers for solicitor", caseId);
 
-            List<String> pbaNumbers = pbaNumbersFor(solicitorEmail, context);
+            List<String> pbaNumbers = pbaNumbersFor(solicitorEmail, bearerAuthToken);
 
             if (CollectionUtils.isEmpty(pbaNumbers)) {
                 log.info("CaseId: {}. No PBA numbers found for this solicitor", caseId);
@@ -58,9 +57,9 @@ public class GetPbaNumbersTask implements Task<Map<String, Object>> {
         return caseData;
     }
 
-    private List<String> pbaNumbersFor(String email, TaskContext context) {
+    private List<String> pbaNumbersFor(String email, String bearerAuthToken) {
         ResponseEntity<PBAOrganisationResponse> responseEntity = pbaValidationClient.retrievePbaNumbers(
-            context.getTransientObject(AUTH_TOKEN_JSON_KEY),
+            bearerAuthToken,
             serviceAuthGenerator.generate(),
             email
         );

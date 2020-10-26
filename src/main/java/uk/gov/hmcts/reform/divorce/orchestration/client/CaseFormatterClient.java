@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentUpdateRequest;
 
 import java.util.Map;
 
@@ -16,14 +15,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @FeignClient(name = "formatter-service-client", url = "${case.formatter.service.api.baseurl}")
 public interface CaseFormatterClient {
-
-    @ApiOperation("Add documents to case")
-    @PostMapping(value = "/caseformatter/version/1/add-documents",
-        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE)
-    @Deprecated
-    Map<String, Object> addDocuments(
-        @RequestBody DocumentUpdateRequest documentUpdateRequest
-    );
 
     @ApiOperation("Remove all Petition documents from case data")
     @PostMapping(value = "/caseformatter/version/1/remove-all-petition-documents",
@@ -38,14 +29,6 @@ public interface CaseFormatterClient {
     Map<String, Object> removeAllDocumentsByType(
         @PathVariable("documentType") String eventId,
         @RequestBody Map<String, Object> caseData
-    );
-
-    @ApiOperation("Transform data from Divorce format to CCD format")
-    @PostMapping(value = "/caseformatter/version/1/to-ccd-format",
-        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE)
-    Map<String, Object> transformToCCDFormat(
-        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken,
-        @RequestBody Map<String, Object> transformToCCDFormat
     );
 
     @ApiOperation("Transform data to Divorce format")

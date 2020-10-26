@@ -36,10 +36,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class SolicitorAmendPetitionForRefusalITest extends MockedFunctionalTest {
+
     private static final String CASE_ID = "1234567890";
     private static final String NEW_CASE_ID = "1234";
     private static final String API_URL = "/solicitor-amend-petition-dn-rejection";
-    private static final String CCD_FORMAT_CONTEXT_PATH = "/caseformatter/version/1/to-ccd-format";
     private static final String SOLICITOR_SUBMISSION_CONTEXT_PATH = "/casemaintenance/version/1/solicitor-submit";
     private static final String CMS_AMEND_PETITION_CONTEXT_PATH = String.format(
         "/casemaintenance/version/1/amended-petition-draft-refusal/%s",
@@ -79,11 +79,11 @@ public class SolicitorAmendPetitionForRefusalITest extends MockedFunctionalTest 
         formattedDraftData.put(ID, NEW_CASE_ID);
 
         String content = convertObjectToJsonString(draftData);
-        String formattedContent = convertObjectToJsonString(formattedDraftData);
-
         stubCmsAmendPetitionDraftEndpoint(HttpStatus.OK, content);
-        stubFormatterServerEndpoint(HttpStatus.OK, formattedContent);
+
+        String formattedContent = convertObjectToJsonString(formattedDraftData);
         stubMaintenanceServerEndpointForSubmit(HttpStatus.OK, formattedContent);
+
         when(validationService.validate(any())).thenReturn(validationResponseOk);
 
         webClient.perform(post(API_URL)
@@ -100,14 +100,6 @@ public class SolicitorAmendPetitionForRefusalITest extends MockedFunctionalTest 
 
     private void stubCmsAmendPetitionDraftEndpoint(HttpStatus status, String body) {
         maintenanceServiceServer.stubFor(WireMock.put(CMS_AMEND_PETITION_CONTEXT_PATH)
-            .willReturn(aResponse()
-                .withStatus(status.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                .withBody(body)));
-    }
-
-    private void stubFormatterServerEndpoint(HttpStatus status, String body) {
-        formatterServiceServer.stubFor(WireMock.post(CCD_FORMAT_CONTEXT_PATH)
             .willReturn(aResponse()
                 .withStatus(status.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)

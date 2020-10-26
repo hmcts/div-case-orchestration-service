@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeSe
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceDecisionMadeWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceDecisionMakingWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.SetupConfirmServicePaymentWorkflow;
 
 import java.util.Map;
 
@@ -29,6 +30,7 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
     private final MakeServiceDecisionWorkflow makeServiceDecisionWorkflow;
     private final ServiceDecisionMadeWorkflow serviceDecisionMadeWorkflow;
     private final ServiceDecisionMakingWorkflow serviceDecisionMakingWorkflow;
+    private final SetupConfirmServicePaymentWorkflow setupConfirmServicePaymentWorkflow;
 
     @Override
     public CcdCallbackResponse makeServiceDecision(CaseDetails caseDetails, String authorisation) throws ServiceJourneyServiceException {
@@ -79,6 +81,16 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
                 .build();
         } catch (WorkflowException e) {
             throw new ServiceJourneyServiceException(e, caseDetails.getCaseId());
+        }
+    }
+
+    @Override
+    public Map<String, Object> setupConfirmServicePaymentEvent(CaseDetails caseDetails)
+        throws ServiceJourneyServiceException {
+        try {
+            return setupConfirmServicePaymentWorkflow.run(caseDetails);
+        } catch (WorkflowException exception) {
+            throw new ServiceJourneyServiceException(exception, caseDetails.getCaseId());
         }
     }
 }

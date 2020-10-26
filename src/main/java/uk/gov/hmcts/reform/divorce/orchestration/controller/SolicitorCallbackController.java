@@ -27,7 +27,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PBA_NUMBERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_HEADER;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.solicitorPaymentMethodIsPba;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isSolicitorPaymentMethodPba;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.responseWithData;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.responseWithErrors;
 
@@ -91,7 +91,7 @@ public class SolicitorCallbackController {
         Map<String, Object> caseData = caseDetails.getCaseData();
         String caseId = caseDetails.getCaseId();
 
-        if (!solicitorPaymentMethodIsPba(caseData)) {
+        if (!isSolicitorPaymentMethodPba(caseData)) {
             log.info("Case ID: {}. /retrieve-pba-numbers called but for payment method other than PBA", caseId);
             return responseWithData(caseData);
         }

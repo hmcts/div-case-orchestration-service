@@ -34,8 +34,12 @@ public class ApplicationWithoutNoticeTest extends CcdSubmissionSupport {
 
         CcdCallbackResponse response = cosApiClient.setupConfirmServicePayment(
             CcdCallbackRequest.builder()
-                .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(new HashMap<>()).build())
-                .build()
+                .caseDetails(
+                    CaseDetails.builder()
+                        .caseData(new HashMap<>())
+                        .caseId(TEST_CASE_ID)
+                        .build()
+                ).build()
         );
 
         assertNotNull(response);

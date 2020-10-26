@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeItem;
@@ -9,6 +11,8 @@ import java.util.List;
 
 @Data
 @ToString
+@Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CreditAccountPaymentResponse {
 
     @JsonProperty("account_number")

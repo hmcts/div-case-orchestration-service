@@ -4,18 +4,22 @@ import io.restassured.response.Response;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.model.ccd.Document;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPaymentTask;
 
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static java.util.stream.Collectors.toList;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static uk.gov.hmcts.reform.divorce.callback.SolicitorCreateAndUpdateTest.postWithDataAndValidateResponse;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PBA_NUMBERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY;
 
 public class ProcessPbaPaymentTest extends IntegrationTest {
 
@@ -25,22 +29,23 @@ public class ProcessPbaPaymentTest extends IntegrationTest {
     private String contextPath;
 
     @Test
-    public void givenCallbackRequest_whenProcessPbaPayment_thenReturnDataWithNoErrors() throws Exception {
+    public void givenCallbackRequestWhenProcessPbaPaymentThenReturnDataWithNoErrors() throws Exception {
         Response response = postWithDataAndValidateResponse(
-                serverUrl + contextPath,
-                PAYLOAD_CONTEXT_PATH + "solicitor-request-data.json",
-                createCaseWorkerUser().getAuthToken()
+            serverUrl + contextPath,
+            PAYLOAD_CONTEXT_PATH + "solicitor-request-data.json",
+            createCaseWorkerUser().getAuthToken()
         );
 
         Map<String, Object> responseData = response.getBody().path(DATA);
 
-        // There will be an error if PBA payment is unsuccessful
-        assertNotNull(responseData.get(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY));
-        assertNoPetitionOnDocumentGeneratedList((List)responseData.get(D8DOCUMENTS_GENERATED));
+        assertThat(responseData.get(PBA_NUMBERS), notNullValue());
+        assertThat(responseData.get(ProcessPbaPaymentTask.PAYMENT_STATUS), nullValue());
+        assertNoPetitionOnDocumentGeneratedList((List) responseData.get(D8DOCUMENTS_GENERATED));
     }
 
     private static void assertNoPetitionOnDocumentGeneratedList(List<CollectionMember<Document>> documents) {
-        assertEquals(0, documents.stream().filter(ProcessPbaPaymentTest::isPetition).count());
+        List<CollectionMember<Document>> numberOfDocuments = documents.stream().filter(ProcessPbaPaymentTest::isPetition).collect(toList());
+        assertThat(numberOfDocuments, hasSize(0));
     }
 
     private static boolean isPetition(CollectionMember<Document> item) {
