@@ -1,7 +1,7 @@
 {
   "event_id": "solicitorStatementOfTruthPaySubmit",
   "case_details": {
-    "id": "1602844945064286",
+    "id": "1602844945078286",
     "jurisdiction": "DIVORCE",
     "state": "SOTAgreementPayAndSubmitRequired",
     "case_type_id": "DIVORCE",
@@ -17,7 +17,7 @@
       "D8MarriagePetitionerName": "John Doe",
       "D8Cohort": "onlineSubmissionPrivateBeta",
       "D8MarriageDate": "2001-02-02",
-      "D8caseReference": "LV17D80100",
+      "D8caseReference": "LV17D80200",
       "D8HelpWithFeesNeedHelp": "NO",
       "D8DivorceWho": "husband",
       "D8MarriageCanDivorce": "YES",
@@ -45,8 +45,7 @@
           "label": "PBA0077051"
         },"list_items": []
       },
-      "SolicitorFeeAccountNumber": "PBA0077051",
-      "D8SolicitorReference" : "SolicitorReference",
+      "D8SolicitorReference" : "SolicitorReference2",
       "D8SelectedDivorceCentreSiteId" : "AA01",
       "PetitionerSolicitorFirm" : "Solicitor",
       "PetitionerSolicitorPhone" : "01234567890",

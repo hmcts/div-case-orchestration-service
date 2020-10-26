@@ -28,8 +28,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 public class ProcessPbaPaymentTest extends IntegrationTest {
 
+    private static final String ACTIVE_ACCOUNT = "PBA0077051";
     private static final String DELETED_ACCOUNT = "PBA0078600";
-    private static final String MISSING_DATA_ACCOUNT = "PBA0082848";
     private static final String NON_EXISTING_ACCOUNT = "PBA1357924";
 
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/solicitor/";
@@ -64,6 +64,14 @@ public class ProcessPbaPaymentTest extends IntegrationTest {
     }
 
     @Test
+    public void givenValidRequestWithInsufficientFundsThenHandle403AndReturnWithCAE0001ErrorMessage() throws Exception {
+        Response cosResponse = getOkResponseWithRequestData("insufficient-funds-request");
+        String expectedErrorMessage = getExpectedErrorMessage(ACTIVE_ACCOUNT, PbaErrorMessage.CAE0001);
+
+        assertThat(getResponseBody(cosResponse), isResponseWithErrorMessage(expectedErrorMessage));
+    }
+
+    @Test
     public void givenValidRequestWithInactiveAccountThenHandle403AndReturnWithCAE0004ErrorMessage() throws Exception {
         Response cosResponse = getOkResponseWithRequestData("inactive-account-request");
         String expectedErrorMessage = getExpectedErrorMessage(DELETED_ACCOUNT, PbaErrorMessage.CAE0004);
@@ -82,7 +90,7 @@ public class ProcessPbaPaymentTest extends IntegrationTest {
     @Test
     public void givenValidRequestWithInvalidOrMissingDataThenHandle422AndReturnWithErrorMessage() throws Exception {
         Response cosResponse = getOkResponseWithRequestData("missing-data-request");
-        String expectedErrorMessage = getExpectedErrorMessage(MISSING_DATA_ACCOUNT, PbaErrorMessage.GENERAL);
+        String expectedErrorMessage = getExpectedErrorMessage(ACTIVE_ACCOUNT, PbaErrorMessage.GENERAL);
 
         assertThat(getResponseBody(cosResponse), isResponseWithErrorMessage(expectedErrorMessage));
     }

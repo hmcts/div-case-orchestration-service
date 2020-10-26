@@ -1,7 +1,7 @@
 {
   "event_id": "solicitorStatementOfTruthPaySubmit",
   "case_details": {
-    "id": "1602846103335259",
+    "id": "1602846203335259",
     "jurisdiction": "DIVORCE",
     "state": "SOTAgreementPayAndSubmitRequired",
     "case_type_id": "DIVORCE",
@@ -40,11 +40,10 @@
       },
       "PbaNumbers": {
         "value": {
-          "code": "PBA0082848",
-          "label": "PBA0082848"
+          "code": "PBA0077051",
+          "label": "PBA0077051"
         },"list_items": []
       },
-      "SolicitorFeeAccountNumber": "PBA0082848",
       "D8SolicitorReference" : "SolicitorReference",
       "D8SelectedDivorceCentreSiteId" : "AA01",
       "PetitionerSolicitorFirm" : "Solicitor",
