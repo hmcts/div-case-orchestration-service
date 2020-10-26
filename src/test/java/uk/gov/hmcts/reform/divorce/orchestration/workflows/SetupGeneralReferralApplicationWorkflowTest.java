@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalreferral.GetGeneralReferralApplicationFeeTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalreferral.GeneralReferralApplicationFeeTask;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.SetupGeneralReferralPaymentWorkflow;
 
 import java.util.HashMap;
@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.ve
 public class SetupGeneralReferralApplicationWorkflowTest {
 
     @Mock
-    private GetGeneralReferralApplicationFeeTask getGeneralReferralApplicationFeeTask;
+    private GeneralReferralApplicationFeeTask generalReferralApplicationFeeTask;
 
     @InjectMocks
     private SetupGeneralReferralPaymentWorkflow setupGeneralReferralPaymentWorkflow;
@@ -29,7 +29,7 @@ public class SetupGeneralReferralApplicationWorkflowTest {
     @Test
     public void whenGeneralApplicationWithoutNoticeFee_thenProcessAsExpected() throws Exception {
         HashMap<String, Object> caseData = new HashMap<>();
-        mockTasksExecution(caseData, getGeneralReferralApplicationFeeTask);
+        mockTasksExecution(caseData, generalReferralApplicationFeeTask);
 
         Map<String, Object> returned = setupGeneralReferralPaymentWorkflow.run(
             CaseDetails.builder()
@@ -38,6 +38,6 @@ public class SetupGeneralReferralApplicationWorkflowTest {
         );
 
         assertThat(returned, is(caseData));
-        verifyTaskWasCalled(caseData, getGeneralReferralApplicationFeeTask);
+        verifyTaskWasCalled(caseData, generalReferralApplicationFeeTask);
     }
 }

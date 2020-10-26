@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalreferral.GetGeneralReferralApplicationFeeTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalreferral.GeneralReferralApplicationFeeTask;
 
 import java.util.Map;
 
@@ -17,12 +17,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class SetupGeneralReferralPaymentWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final GetGeneralReferralApplicationFeeTask getGeneralReferralApplicationFeeTask;
+    private final GeneralReferralApplicationFeeTask generalReferralApplicationFeeTask;
 
     public Map<String, Object> run(CaseDetails caseDetails) throws WorkflowException {
         return this.execute(
             new Task[] {
-                getGeneralReferralApplicationFeeTask
+                generalReferralApplicationFeeTask
             },
             caseDetails.getCaseData(),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseDetails.getCaseId())
