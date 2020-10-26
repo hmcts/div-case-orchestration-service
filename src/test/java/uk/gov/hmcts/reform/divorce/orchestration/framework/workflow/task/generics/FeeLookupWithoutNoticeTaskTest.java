@@ -7,6 +7,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.FeesAndPaymentsClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +31,11 @@ public class FeeLookupWithoutNoticeTaskTest {
 
     protected FeeLookupWithoutNoticeTask getTask() {
         return new FeeLookupWithoutNoticeTask(feesAndPaymentsClient) {
+            @Override
+            protected Map<String, Object> updateCaseData(TaskContext context, Map<String, Object> caseData) {
+                return updateOrderSummary(context, caseData);
+            }
+
             @Override
             public String getFieldName() {
                 return TEST_FIELD;

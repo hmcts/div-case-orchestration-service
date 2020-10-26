@@ -29,9 +29,7 @@ public abstract class FeeLookupWithoutNoticeTask implements Task<Map<String, Obj
         return updateCaseData(context, caseData);
     }
 
-    protected Map<String, Object> updateCaseData(TaskContext context, Map<String, Object> caseData) {
-        return updateOrderSummary(context, caseData);
-    }
+    protected abstract Map<String, Object> updateCaseData(TaskContext context, Map<String, Object> caseData);
 
     protected Map<String, Object> updateOrderSummary(TaskContext context, Map<String, Object> caseData) {
         final String fieldName = getFieldName();
