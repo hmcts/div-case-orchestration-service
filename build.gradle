@@ -71,7 +71,7 @@ def versions = [
         springfoxSwagger             : '2.9.2',
         springSecurityCrypto         : '5.2.4.RELEASE',
         springSecurityRsa            : '1.0.8.RELEASE',
-        tomcat                       : '9.0.37',
+        tomcat                       : '9.0.39',
         unirest                      : '1.4.9',
         embeddedPostgres             : '1.5.5',
         pact_version                 : '4.1.7'
@@ -158,7 +158,7 @@ allprojects {
             }
             // CVE-2019-10086
             dependency group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
-            // CVE-2020-9484
+            // CVE-2020-9484, CVE-2020-13943
             dependencySet(group: 'org.apache.tomcat.embed', version: versions.tomcat) {
                 entry 'tomcat-embed-core'
                 entry 'tomcat-embed-websocket'
