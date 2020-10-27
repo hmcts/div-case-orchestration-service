@@ -38,7 +38,7 @@ public class FeeLookupWithoutNoticeTaskTest {
             }
 
             @Override
-            public String getFieldName() {
+            public String getOrderSummaryFieldName() {
                 return TEST_FIELD;
             }
 
@@ -58,7 +58,7 @@ public class FeeLookupWithoutNoticeTaskTest {
 
         Map<String, Object> returnedCaseData = task.execute(context(), new HashMap<>());
 
-        OrderSummary paymentSummary = (OrderSummary) returnedCaseData.get(task.getFieldName());
+        OrderSummary paymentSummary = (OrderSummary) returnedCaseData.get(task.getOrderSummaryFieldName());
 
         assertThat(paymentSummary.getPaymentTotal(), is(AMOUNT_IN_PENNIES));
         assertThat(

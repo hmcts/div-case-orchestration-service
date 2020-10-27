@@ -26,7 +26,7 @@ public class GeneralReferralApplicationFeeLookupTaskTest extends FeeLookupWithou
 
     @Test
     public void shouldReturnExpectedField() {
-        assertThat(getTask().getFieldName(), is(CcdFields.GENERAL_REFERRAL_WITHOUT_NOTICE_FEE_SUMMARY));
+        assertThat(getTask().getOrderSummaryFieldName(), is(CcdFields.GENERAL_REFERRAL_WITHOUT_NOTICE_FEE_SUMMARY));
     }
 
     @Test

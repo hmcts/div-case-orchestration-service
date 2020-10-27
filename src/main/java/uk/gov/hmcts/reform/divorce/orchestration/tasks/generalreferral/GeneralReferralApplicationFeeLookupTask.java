@@ -31,13 +31,13 @@ public class GeneralReferralApplicationFeeLookupTask extends FeeLookupWithoutNot
     }
 
     private String getFeeValue(Map<String, Object> caseData) {
-        OrderSummary orderSummary = (OrderSummary) caseData.get(getFieldName());
+        OrderSummary orderSummary = (OrderSummary) caseData.get(getOrderSummaryFieldName());
 
         return orderSummary.getPaymentTotalInPounds();
     }
 
     @Override
-    public String getFieldName() {
+    public String getOrderSummaryFieldName() {
         return CcdFields.GENERAL_REFERRAL_WITHOUT_NOTICE_FEE_SUMMARY;
     }
 }
