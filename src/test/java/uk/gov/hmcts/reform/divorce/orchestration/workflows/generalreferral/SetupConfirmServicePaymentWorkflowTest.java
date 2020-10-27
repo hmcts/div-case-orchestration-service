@@ -6,9 +6,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetGeneralApplicationWithoutNoticeFeeTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.GetBailiffApplicationFeeTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.GetGeneralApplicationWithoutNoticeFeeTask;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.SetupConfirmServicePaymentWorkflow;
 
 import java.util.HashMap;
@@ -57,11 +57,9 @@ public class SetupConfirmServicePaymentWorkflowTest {
         );
 
         Map<String, Object> returned = setupConfirmServicePaymentWorkflow.run(
-            CcdCallbackRequest.builder()
-                .caseDetails(CaseDetails.builder()
+            CaseDetails.builder()
                     .caseData(caseData)
-                    .build())
-                .build()
+                    .build()
         );
         assertThat(returned, is(caseData));
         verifyTaskWasCalled(

@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.client.FeesAndPaymentsClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.GetBailiffApplicationFeeTask;
 
 import java.util.HashMap;
 import java.util.Map;
