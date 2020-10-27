@@ -29,12 +29,12 @@ public abstract class FeeLookupWithoutNoticeTask implements Task<Map<String, Obj
         );
 
         Map<String, Object> updatedCaseData = updateOrderSummary(context, caseData, fieldName);
-        return updateCaseData(context, updatedCaseData);
+        return furtherUpdateCaseData(context, updatedCaseData);
     }
 
     public abstract String getFieldName();
 
-    protected Map<String, Object> updateOrderSummary(TaskContext context, Map<String, Object> caseData, String orderSummaryFieldName) {
+    private Map<String, Object> updateOrderSummary(TaskContext context, Map<String, Object> caseData, String orderSummaryFieldName) {
         final String caseId = getCaseId(context);
 
         log.info("CaseId: {}, getting general application without notice fee for field {}", caseId, orderSummaryFieldName);
@@ -47,13 +47,13 @@ public abstract class FeeLookupWithoutNoticeTask implements Task<Map<String, Obj
         return caseData;
     }
 
-    protected OrderSummary getOrderSummary() {
+    private OrderSummary getOrderSummary() {
         OrderSummary orderSummary = new OrderSummary();
         orderSummary.add(feesAndPaymentsClient.getGeneralApplicationWithoutFee());
 
         return orderSummary;
     }
 
-    protected abstract Map<String, Object> updateCaseData(TaskContext context, Map<String, Object> updatedCaseData);
+    protected abstract Map<String, Object> furtherUpdateCaseData(TaskContext context, Map<String, Object> updatedCaseData);
 
 }

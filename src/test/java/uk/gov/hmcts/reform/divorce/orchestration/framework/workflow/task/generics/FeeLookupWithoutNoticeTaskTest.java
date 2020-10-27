@@ -31,15 +31,17 @@ public class FeeLookupWithoutNoticeTaskTest {
 
     protected FeeLookupWithoutNoticeTask getTask() {
         return new FeeLookupWithoutNoticeTask(feesAndPaymentsClient) {
+
             @Override
-            protected Map<String, Object> updateCaseData(TaskContext context, Map<String, Object> caseData) {
-                return updateOrderSummary(context, caseData, getFieldName());
+            protected Map<String, Object> furtherUpdateCaseData(TaskContext context, Map<String, Object> caseData) {
+                return caseData;
             }
 
             @Override
             public String getFieldName() {
                 return TEST_FIELD;
             }
+
         };
     }
 

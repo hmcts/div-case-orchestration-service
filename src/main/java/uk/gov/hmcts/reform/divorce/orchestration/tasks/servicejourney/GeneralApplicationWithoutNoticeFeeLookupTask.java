@@ -19,7 +19,7 @@ public class GeneralApplicationWithoutNoticeFeeLookupTask extends FeeLookupWitho
     }
 
     @Override
-    protected Map<String, Object> updateCaseData(TaskContext context, Map<String, Object> updatedCaseData) {
+    protected Map<String, Object> furtherUpdateCaseData(TaskContext context, Map<String, Object> updatedCaseData) {
         return updatedCaseData;
     }
 

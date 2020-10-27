@@ -21,7 +21,7 @@ public class GeneralReferralApplicationFeeLookupTask extends FeeLookupWithoutNot
     }
 
     @Override
-    protected Map<String, Object> updateCaseData(TaskContext context, Map<String, Object> updatedCaseData) {
+    protected Map<String, Object> furtherUpdateCaseData(TaskContext context, Map<String, Object> updatedCaseData) {
         String feeValue = getFeeValue(updatedCaseData);
 
         log.info("CaseId: {}, populate field {} with fee value from SummaryOrder (in pennies)", getCaseId(context), feeValue);
