@@ -14,15 +14,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 
 @Component
 @Slf4j
-public class GeneralReferralApplicationFeeTask extends FeeLookupWithoutNoticeTask {
+public class GeneralReferralApplicationFeeLookupTask extends FeeLookupWithoutNoticeTask {
 
-    public GeneralReferralApplicationFeeTask(FeesAndPaymentsClient feesAndPaymentsClient) {
+    public GeneralReferralApplicationFeeLookupTask(FeesAndPaymentsClient feesAndPaymentsClient) {
         super(feesAndPaymentsClient);
     }
 
     @Override
-    protected Map<String, Object> updateCaseData(TaskContext context, Map<String, Object> caseData) {
-        Map<String, Object> updatedCaseData = updateOrderSummary(context, caseData);
+    protected Map<String, Object> updateCaseData(TaskContext context, Map<String, Object> updatedCaseData) {
         String feeValue = getFeeValue(updatedCaseData);
 
         log.info("CaseId: {}, populate field {} with fee value from SummaryOrder (in pennies)", getCaseId(context), feeValue);

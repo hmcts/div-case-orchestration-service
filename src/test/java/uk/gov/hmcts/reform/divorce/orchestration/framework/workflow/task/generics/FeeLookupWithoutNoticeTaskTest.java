@@ -33,7 +33,7 @@ public class FeeLookupWithoutNoticeTaskTest {
         return new FeeLookupWithoutNoticeTask(feesAndPaymentsClient) {
             @Override
             protected Map<String, Object> updateCaseData(TaskContext context, Map<String, Object> caseData) {
-                return updateOrderSummary(context, caseData);
+                return updateOrderSummary(context, caseData, getFieldName());
             }
 
             @Override

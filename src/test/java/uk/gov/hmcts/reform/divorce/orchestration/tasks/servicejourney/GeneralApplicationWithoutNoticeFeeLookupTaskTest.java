@@ -15,11 +15,11 @@ import static org.hamcrest.Matchers.is;
 public class GetGeneralApplicationWithoutNoticeFeeTaskTest extends FeeLookupWithoutNoticeTaskTest {
 
     @InjectMocks
-    private GetGeneralApplicationWithoutNoticeFeeTask getGeneralApplicationWithoutNoticeFeeTask;
+    private GeneralApplicationWithoutNoticeFeeLookupTask generalApplicationWithoutNoticeFeeTask;
 
     @Override
     protected FeeLookupWithoutNoticeTask getTask() {
-        return getGeneralApplicationWithoutNoticeFeeTask;
+        return generalApplicationWithoutNoticeFeeTask;
     }
 
     @Test

@@ -16,31 +16,33 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @Slf4j
 @RequiredArgsConstructor
 public abstract class FeeLookupWithoutNoticeTask implements Task<Map<String, Object>> {
+
     private final FeesAndPaymentsClient feesAndPaymentsClient;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
+        String fieldName = getFieldName();
         log.info(
             "CaseId: {}, getting general application without notice fee for field {}",
             getCaseId(context),
-            getFieldName()
+            fieldName
         );
 
-        return updateCaseData(context, caseData);
+        Map<String, Object> updatedCaseData = updateOrderSummary(context, caseData, fieldName);
+        return updateCaseData(context, updatedCaseData);
     }
 
-    protected abstract Map<String, Object> updateCaseData(TaskContext context, Map<String, Object> caseData);
+    public abstract String getFieldName();
 
-    protected Map<String, Object> updateOrderSummary(TaskContext context, Map<String, Object> caseData) {
-        final String fieldName = getFieldName();
+    protected Map<String, Object> updateOrderSummary(TaskContext context, Map<String, Object> caseData, String orderSummaryFieldName) {
         final String caseId = getCaseId(context);
 
-        log.info("CaseId: {}, getting general application without notice fee for field {}", caseId, fieldName);
+        log.info("CaseId: {}, getting general application without notice fee for field {}", caseId, orderSummaryFieldName);
 
         OrderSummary orderSummary = getOrderSummary();
         log.info("CaseId: {}, fee: {}", caseId, orderSummary.getFees().get(0));
 
-        caseData.put(fieldName, orderSummary);
+        caseData.put(orderSummaryFieldName, orderSummary);
 
         return caseData;
     }
@@ -52,5 +54,6 @@ public abstract class FeeLookupWithoutNoticeTask implements Task<Map<String, Obj
         return orderSummary;
     }
 
-    public abstract String getFieldName();
+    protected abstract Map<String, Object> updateCaseData(TaskContext context, Map<String, Object> updatedCaseData);
+
 }

@@ -12,19 +12,20 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.G
 
 @Component
 @Slf4j
-public class GetGeneralApplicationWithoutNoticeFeeTask extends FeeLookupWithoutNoticeTask {
+public class GeneralApplicationWithoutNoticeFeeLookupTask extends FeeLookupWithoutNoticeTask {
 
-    public GetGeneralApplicationWithoutNoticeFeeTask(FeesAndPaymentsClient feesAndPaymentsClient) {
+    public GeneralApplicationWithoutNoticeFeeLookupTask(FeesAndPaymentsClient feesAndPaymentsClient) {
         super(feesAndPaymentsClient);
     }
 
     @Override
-    protected Map<String, Object> updateCaseData(TaskContext context, Map<String, Object> caseData) {
-        return updateOrderSummary(context, caseData);
+    protected Map<String, Object> updateCaseData(TaskContext context, Map<String, Object> updatedCaseData) {
+        return updatedCaseData;
     }
 
     @Override
     public String getFieldName() {
         return GENERAL_APPLICATION_WITHOUT_NOTICE_FEE_SUMMARY;
     }
+
 }

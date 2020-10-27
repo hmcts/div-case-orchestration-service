@@ -14,14 +14,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GeneralReferralApplicationFeeTaskTest extends FeeLookupWithoutNoticeTaskTest {
+public class GeneralReferralApplicationFeeLookupTaskTest extends FeeLookupWithoutNoticeTaskTest {
 
     @InjectMocks
-    private GeneralReferralApplicationFeeTask generalReferralApplicationFeeTask;
+    private GeneralReferralApplicationFeeLookupTask generalReferralApplicationFeeLookupTask;
 
     @Override
     protected FeeLookupWithoutNoticeTask getTask() {
-        return generalReferralApplicationFeeTask;
+        return generalReferralApplicationFeeLookupTask;
     }
 
     @Test
