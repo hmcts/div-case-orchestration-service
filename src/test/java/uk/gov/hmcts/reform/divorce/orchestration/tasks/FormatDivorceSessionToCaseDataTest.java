@@ -1,51 +1,39 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.client.CaseFormatterClient;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.service.DataMapTransformer;
 
 import java.util.Map;
 
-import static java.util.Collections.singletonMap;
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow.SELECTED_COURT;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INCOMING_PAYLOAD;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PAYLOAD_TO_RETURN;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FormatDivorceSessionToCaseDataTest {
 
     @Mock
-    private CaseFormatterClient caseFormatterClient;
+    private DataMapTransformer dataMapTransformer;
 
     @InjectMocks
     private FormatDivorceSessionToCaseData formatDivorceSessionToCaseData;
 
-    private Map<String, Object> testData;
-    private TaskContext context;
-
-    @Before
-    public void setup() {
-        testData = singletonMap("Hello", "World");
-        context = new DefaultTaskContext();
-        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-    }
-
     @Test
     public void shouldCallCaseFormatterClientTransformToCCDFormat() {
-        when(caseFormatterClient.transformToCCDFormat(eq(AUTH_TOKEN), any())).thenReturn(testData);
-        context.setTransientObject(SELECTED_COURT, "randomlySelectedCourt");
+        when(dataMapTransformer.transformDivorceCaseDataToCourtCaseData(any())).thenReturn(TEST_PAYLOAD_TO_RETURN);
 
-        assertEquals(testData, formatDivorceSessionToCaseData.execute(context, testData));
+        Map<String, Object> returnedCoreCaseData = formatDivorceSessionToCaseData.execute(null, TEST_INCOMING_PAYLOAD);
+
+        assertThat(returnedCoreCaseData, is(TEST_PAYLOAD_TO_RETURN));
+        verify(dataMapTransformer).transformDivorceCaseDataToCourtCaseData(TEST_INCOMING_PAYLOAD);
     }
 
 }

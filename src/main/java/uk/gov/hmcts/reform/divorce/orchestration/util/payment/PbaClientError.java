@@ -1,13 +1,12 @@
 package uk.gov.hmcts.reform.divorce.orchestration.util.payment;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.StatusHistoriesItem;
 
 import java.util.ArrayList;
@@ -16,6 +15,7 @@ import java.util.Optional;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static uk.gov.hmcts.reform.bsp.common.utils.ResourceLoader.jsonToObject;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
@@ -24,27 +24,37 @@ public class PbaClientError {
     private static final String CAE0001 = "CA-E0001";
     private static final String CAE0004 = "CA-E0004";
 
-    public static String getMessage(FeignException exception) {
-        return getErrorMessage(getHttpStatus(exception), getPaymentResponse(exception));
+    public static String getMessage(String pbaNumber, FeignException exception) {
+        return getErrorMessage(getHttpStatus(exception), getPaymentResponse(exception), pbaNumber);
     }
 
-    private static String getErrorMessage(HttpStatus httpStatus, CreditAccountPaymentResponse paymentResponse) {
+    private static String getErrorMessage(HttpStatus httpStatus, CreditAccountPaymentResponse paymentResponse, String pbaNumber) {
         return Optional.of(paymentResponse)
-            .map(response -> processErrorMessage(httpStatus, response))
+            .map(response -> processErrorMessage(httpStatus, response, pbaNumber))
             .orElseGet(PbaClientError::getDefaultErrorMessage);
     }
 
     private static CreditAccountPaymentResponse getPaymentResponse(FeignException exception) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        CreditAccountPaymentResponse creditAccountPaymentResponse = CreditAccountPaymentResponse.builder().build();
+        CreditAccountPaymentResponse creditAccountPaymentResponse = buildErrorPaymentResponse();
         try {
-            creditAccountPaymentResponse = objectMapper.readValue(exception.contentUTF8(), CreditAccountPaymentResponse.class);
-        } catch (JsonProcessingException jsonProcessingException) {
-            log.warn("Could not convert error response '{}' to CreditAccountPaymentResponse object: {}",
-                exception.contentUTF8(),
-                jsonProcessingException.getMessage());
+            creditAccountPaymentResponse = getPaymentResponseObjectFromException(exception);
+        } catch (RuntimeException jsonProcessingException) {
+            log.warn("Could not convert error response to CreditAccountPaymentResponse object. Error message was \"{}\"",
+                exception.contentUTF8());
+            log.error(jsonProcessingException.getMessage());
+            creditAccountPaymentResponse.setStatus(exception.contentUTF8());
         }
         return creditAccountPaymentResponse;
+    }
+
+    private static CreditAccountPaymentResponse buildErrorPaymentResponse() {
+        return CreditAccountPaymentResponse.builder()
+            .status(PaymentStatus.FAILED.value())
+            .build();
+    }
+
+    private static CreditAccountPaymentResponse getPaymentResponseObjectFromException(FeignException exception) {
+        return jsonToObject(exception.contentUTF8().getBytes(), CreditAccountPaymentResponse.class);
     }
 
     private static String getDefaultErrorMessage() {
@@ -56,40 +66,39 @@ public class PbaClientError {
             .orElseGet(() -> HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    private static String processErrorMessage(HttpStatus httpStatus, CreditAccountPaymentResponse paymentResponse) {
-        log.error("Payment reference: \"{}\". Payment client failed with status: \"{}\".",
-            paymentResponse.getReference(),
+    private static String processErrorMessage(HttpStatus httpStatus, CreditAccountPaymentResponse paymentResponse, String pbaNumber) {
+        log.error("PBA account {}. Payment client failed with status: \"{}\".",
+            pbaNumber,
             paymentResponse.getStatus());
 
         List<StatusHistoriesItem> statusHistories = getStatusHistories(paymentResponse);
-        String paymentReference = getPaymentReference(paymentResponse);
 
         if (httpStatus == HttpStatus.FORBIDDEN) {
-            return getCustomForbiddenMessage(statusHistories, paymentReference);
+            return getCustomForbiddenMessage(statusHistories, pbaNumber);
         }
         if (httpStatus == HttpStatus.NOT_FOUND) {
-            return formatContent(paymentReference, PbaErrorMessage.NOTFOUND.value());
+            return formatContent(pbaNumber, PbaErrorMessage.NOTFOUND.value());
         }
 
         log.info("Returning default {} error message.", httpStatus);
         return getDefaultErrorMessage();
     }
 
-    private static String getCustomForbiddenMessage(List<StatusHistoriesItem> statusHistories, String paymentReference) {
+    private static String getCustomForbiddenMessage(List<StatusHistoriesItem> statusHistories, String pbaNumber) {
         if (!statusHistories.isEmpty()) {
             StatusHistoriesItem statusHistoriesItem = statusHistories.get(0);
             String errorCode = getErrorCode(statusHistoriesItem);
 
             if (errorCode.equalsIgnoreCase(CAE0001)) {
-                log.info("Payment Reference: {} Generating error message for {} error code:", paymentReference, CAE0001);
-                return formatContent(paymentReference, PbaErrorMessage.CAE0001.value());
+                log.info("Payment Reference: {} Generating error message for {} error code:", pbaNumber, CAE0001);
+                return formatContent(pbaNumber, PbaErrorMessage.CAE0001.value());
             }
             if (errorCode.equalsIgnoreCase(CAE0004)) {
-                log.info("Payment Reference: {} Generating error message for {} error code:", paymentReference, CAE0004);
-                return formatContent(paymentReference, PbaErrorMessage.CAE0004.value());
+                log.info("Payment Reference: {} Generating error message for {} error code:", pbaNumber, CAE0004);
+                return formatContent(pbaNumber, PbaErrorMessage.CAE0004.value());
             }
         } else {
-            log.info("Payment Reference: {} Status histories is empty. Cannot process custom message for this error", paymentReference);
+            log.info("Payment Reference: {} Status histories is empty. Cannot process custom message for this error", pbaNumber);
         }
 
         return getDefaultErrorMessage();
@@ -104,13 +113,9 @@ public class PbaClientError {
             .orElseGet(() -> EMPTY);
     }
 
-    private static String getPaymentReference(CreditAccountPaymentResponse response) {
-        return Optional.ofNullable(response.getReference())
-            .orElseGet(() -> EMPTY);
-    }
-
     private static List<StatusHistoriesItem> getStatusHistories(CreditAccountPaymentResponse response) {
         return Optional.ofNullable(response.getStatusHistories())
             .orElseGet(ArrayList::new);
     }
+
 }

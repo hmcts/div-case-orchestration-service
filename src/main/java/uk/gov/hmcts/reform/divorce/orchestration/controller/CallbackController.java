@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralOrderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralReferralService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPaymentTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.Collections;
@@ -187,6 +188,7 @@ public class CallbackController {
             responseBuilder.state(getPbaUpdatedState(caseId, response));
             responseBuilder.data(response);
         } else {
+            responseBuilder.state(ProcessPbaPaymentTask.DEFAULT_END_STATE_FOR_NON_PBA_PAYMENTS);
             responseBuilder.data(response);
         }
 
@@ -1236,7 +1238,22 @@ public class CallbackController {
 
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
-                .data(caseOrchestrationService.setupConfirmServicePaymentEvent(ccdCallbackRequest))
+                .data(serviceJourneyService.setupConfirmServicePaymentEvent(ccdCallbackRequest.getCaseDetails()))
+                .build());
+    }
+
+    @PostMapping(path = "/set-up-order-summary/without-notice-fee")
+    @ApiOperation(value = "Return service payment fee. Starting from state AwaitingGeneralReferralPayment")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Service payment callback")})
+    public ResponseEntity<CcdCallbackResponse> setupGeneralReferralPaymentEvent(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        Map<String, Object> data = generalReferralService.setupGeneralReferralPaymentEvent(ccdCallbackRequest.getCaseDetails());
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(data)
                 .build());
     }
 
