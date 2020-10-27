@@ -16,11 +16,38 @@ def type = "java"
 def product = "div"
 def component = "cos"
 
+static LinkedHashMap<String, Object> secret(String secretName, String envVar) {
+    [ $class: 'AzureKeyVaultSecret',
+      secretType: 'Secret',
+      name: secretName,
+      version: '',
+      envVariable: envVar
+    ]
+}
+
+def secrets = [
+        'div-${env}': [
+                secret("ccd-submission-s2s-auth-secret", "AUTH_PROVIDER_CCDSUBMISSION_CLIENT_KEY"),
+                secret("div-doc-s2s-auth-secret", "AUTH_PROVIDER_DOCUMENTGENERATOR_CLIENT_KEY"),
+                secret("frontend-secret", "SERVICE_AUTH_SECRET"),
+                secret("idam-secret", "IDAM_CLIENT_SECRET"),
+                secret("idam-citizen-password", "IDAM_CITIZEN_PASSWORD"),
+                secret("idam-caseworker-password", "IDAM_CASEWORKER_PASSWORD")
+        ]
+]
+
 withNightlyPipeline(type, product, component) {
     env.TEST_URL = params.URL_TO_TEST
+    env.test_environment = 'aat'
 
+    after('fullFunctionalTest') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
+    }
+
+    loadVaultSecrets(secrets)
     env.Rules = params.SecurityRules
+    enableFullFunctionalTest()
     enableMutationTest()
     enableSecurityScan()
-
 }
