@@ -29,7 +29,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.G
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.FeesAndPaymentHelper.buildExpectedResponse;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.FeesAndPaymentHelper.getApplicationWithoutNoticeFee;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.FeesAndPaymentHelper.stubGetFeeFromFeesAndPayments;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_APPLICATION_WITHOUT_NOTICE_FEE_SUMMARY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class SetupServicePaymentTest extends IdamTestSupport {
