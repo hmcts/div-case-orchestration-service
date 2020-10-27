@@ -16,9 +16,9 @@ buildscript {
 plugins {
     id 'application'
     id 'checkstyle'
-    id 'com.github.ben-manes.versions' version '0.28.0'
-    id 'com.jfrog.bintray' version '1.8.4'
-    id 'info.solidsoft.pitest' version '1.5.1'
+    id 'com.github.ben-manes.versions' version '0.33.0'
+    id 'com.jfrog.bintray' version '1.8.5'
+    id 'info.solidsoft.pitest' version '1.5.2'
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id 'jacoco'
     id 'org.flywaydb.flyway' version '6.5.5'
@@ -29,15 +29,15 @@ plugins {
 }
 
 def versions = [
-        awaitility                   : '4.0.2',
-        bcpkixJdk15on                : '1.64',
+        awaitility                   : '4.0.3',
+        bcpkixJdk15on                : '1.66',
         bspCommonLib                 : '0.0.47',
         ccdStoreClient               : '4.7.3',
         commonsBeanUtils             : '1.9.4',
         commonsIo                    : '2.6',
-        commonsLang3                 : '3.9',
+        commonsLang3                 : '3.11',
         commonsMath3                 : '3.6.1',
-        divCommonLib                 : '1.1.35',
+        divCommonLib                 : '1.1.36',
         dumbster                     : '1.7.1',
         elasticsearch                : '7.9.0',
         feignHttpClient              : '10.3.0',
@@ -56,22 +56,22 @@ def versions = [
         jdbi                         : '2.78',
         jsonAssert                   : '1.2.3',
         jsonPathAssert               : '2.2.0',
-        lombok                       : '1.18.12',
+        lombok                       : '1.18.16',
         pitest                       : '1.4.10',
-        postgresql                   : '42.2.13',
+        postgresql                   : '42.2.18',
         puppyCrawl                   : '8.29',
         reformHealth                 : '0.0.5',
         reformPropertiesVolume       : '0.0.4',
         reformsJavaLogging           : '5.1.6',
         sendLetterClient             : '2.2.0',
         serenity                     : '2.1.13',
-        serenityCucumber             : '1.9.50',
+        serenityCucumber             : '1.9.51',
         serviceTokenGenerator        : '3.1.1',
         sonarPitest                  : '0.5',
         springfoxSwagger             : '2.9.2',
         springSecurityCrypto         : '5.2.4.RELEASE',
         springSecurityRsa            : '1.0.8.RELEASE',
-        tomcat                       : '9.0.37',
+        tomcat                       : '9.0.39',
         unirest                      : '1.4.9',
         embeddedPostgres             : '1.5.5',
         pact_version                 : '4.1.7'

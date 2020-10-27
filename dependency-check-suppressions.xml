@@ -126,4 +126,14 @@
         <packageUrl regex="true">^pkg:maven/org\.hibernate/hibernate\-core@.*$</packageUrl>
         <cve>CVE-2019-14900</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[ file name: spring-cloud-contract-wiremock-2.2.4.RELEASE.jar ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.springframework\.cloud/spring\-cloud\-contract\-wiremock@.*$</packageUrl>
+        <cpe>cpe:/a:wiremock:wiremock</cpe>
+    </suppress>
+    <suppress>
+        <notes><![CDATA[ file name: xz-1.8.jar ]]></notes>
+        <sha1>c4f7d054303948eb6a4066194253886c8af07128</sha1>
+        <cpe>cpe:/a:tukaani:xz</cpe>
+    </suppress>
 </suppressions>
