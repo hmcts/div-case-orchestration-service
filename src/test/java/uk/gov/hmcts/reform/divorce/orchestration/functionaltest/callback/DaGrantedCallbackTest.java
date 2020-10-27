@@ -82,7 +82,7 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
 
     private static final String API_URL = "/handle-post-da-granted";
 
-    private static final String DECREE_ABSOLUTE_ID = "7d10126d-0e88-4f0e-b475-628b54a87ca6";
+    private static final String DECREE_ABSOLUTE_ID = "812f2709-7891-4f7e-835e-11a84a1fa008";
 
     private static final Map<String, Object> BASE_CASE_DATA = ImmutableMap.<String, Object>builder()
         .put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME)
