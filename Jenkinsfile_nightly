@@ -59,6 +59,6 @@ withNightlyPipeline(type, product, component) {
         }
     }
      enableFullFunctionalTest()
-     enableMutationTest()
-     enableSecurityScan()
+     //enableMutationTest()
+     //enableSecurityScan()
 }
