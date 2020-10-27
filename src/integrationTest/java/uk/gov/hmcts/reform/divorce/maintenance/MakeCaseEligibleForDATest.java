@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.maintenance.nightly;
+package uk.gov.hmcts.reform.divorce.maintenance;
 
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;

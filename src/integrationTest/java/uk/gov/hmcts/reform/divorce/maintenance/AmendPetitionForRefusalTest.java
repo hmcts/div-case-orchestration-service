@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.maintenance.nightly;
+package uk.gov.hmcts.reform.divorce.maintenance;
 
 import io.restassured.response.Response;
 import org.apache.commons.lang3.tuple.ImmutablePair;
