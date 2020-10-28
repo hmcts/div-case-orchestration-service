@@ -178,4 +178,19 @@ public class TaskUtilsTest {
         assertThat(exception.getMessage(), is("Could not format date from \"testKey\" field."));
     }
 
+    @Test
+    public void testIsYesReturnsTrueWhenValueIsUpperCaseYes() throws TaskException {
+        assertThat(TaskUtils.isYes("YES"), is(true));
+    }
+
+    @Test
+    public void testIsYesReturnsTrueWhenValueIsLowerCaseYes() throws TaskException {
+        assertThat(TaskUtils.isYes("yes"), is(true));
+    }
+
+    @Test
+    public void testIsYesReturnsFalseWhenValueIsNotYes() throws TaskException {
+        assertThat(TaskUtils.isYes("no"), is(false));
+    }
+
 }

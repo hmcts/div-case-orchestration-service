@@ -48,19 +48,31 @@ public class GeneralReferralDataTask implements Task<Map<String, Object>> {
     }
 
     private DivorceGeneralReferral build(Map<String, Object> caseData) {
-        return DivorceGeneralReferral.builder()
+        DivorceGeneralReferral.DivorceGeneralReferralBuilder divorceGeneralReferralBuilder = DivorceGeneralReferral.builder()
             .generalReferralReason(GeneralReferralDataExtractor.getReason(caseData))
-            .generalApplicationFrom(GeneralReferralDataExtractor.getApplicationFrom(caseData))
             .generalApplicationReferralDate(GeneralReferralDataExtractor.getApplicationReferralDateUnformatted(caseData))
             .generalApplicationAddedDate(GeneralReferralDataExtractor.getApplicationAddedDateUnformatted(caseData))
             .generalReferralType(GeneralReferralDataExtractor.getType(caseData))
             .generalReferralDetails(GeneralReferralDataExtractor.getDetails(caseData))
-            .alternativeServiceMedium(GeneralReferralDataExtractor.getAlternativeMedium(caseData))
-            .generalReferralFee(GeneralReferralDataExtractor.getFee(caseData))
+            .generalReferralFee(GeneralReferralDataExtractor.getIsFeeRequired(caseData))
             .generalReferralDecision(GeneralReferralDataExtractor.getDecision(caseData))
-            .generalReferralPaymentType(GeneralReferralDataExtractor.getPaymentType(caseData))
             .generalReferralDecisionDate(GeneralReferralDataExtractor.getDecisionDateUnformatted(caseData))
-            .generalReferralDecisionReason(GeneralReferralDataExtractor.getDecisionReason(caseData))
-            .build();
+            .generalReferralDecisionReason(GeneralReferralDataExtractor.getDecisionReason(caseData));
+        addConditionalFieldsFor(divorceGeneralReferralBuilder, caseData);
+        return divorceGeneralReferralBuilder.build();
+    }
+
+    private void addConditionalFieldsFor(DivorceGeneralReferral.DivorceGeneralReferralBuilder generalReferral, Map<String, Object> caseData) {
+        if (GeneralReferralDataExtractor.isFeeRequired(caseData)) {
+            generalReferral.generalReferralPaymentType(GeneralReferralDataExtractor.getPaymentType(caseData));
+        }
+
+        if (GeneralReferralDataExtractor.isReasonGeneralApplicationReferral(caseData)) {
+            generalReferral.generalApplicationFrom(GeneralReferralDataExtractor.getApplicationFrom(caseData));
+        }
+
+        if (GeneralReferralDataExtractor.isTypeOfAlternativeServiceApplication(caseData)) {
+            generalReferral.alternativeServiceMedium(GeneralReferralDataExtractor.getAlternativeMedium(caseData));
+        }
     }
 }

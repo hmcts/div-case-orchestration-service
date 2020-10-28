@@ -12,6 +12,7 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.lang.String.format;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil.parseDateUsingCcdFormat;
 
 public class TaskUtils {
@@ -71,6 +72,10 @@ public class TaskUtils {
         }
 
         return caseId;
+    }
+
+    public static boolean isYes(String value) {
+        return YES_VALUE.equalsIgnoreCase(value);
     }
 
     private static TaskException buildTaskExceptionForMandatoryProperty(String key) {

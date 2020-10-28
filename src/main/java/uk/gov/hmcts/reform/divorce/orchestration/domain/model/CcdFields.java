@@ -48,7 +48,9 @@ public class CcdFields {
     public static final String GENERAL_REFERRAL_DECISION_REASON = "GeneralReferralDecisionReason";
     public static final String GENERAL_APPLICATION_ADDED_DATE = "GeneralApplicationAddedDate";
     public static final String GENERAL_APPLICATION_FROM = "GeneralApplicationFrom";
+    public static final String GENERAL_APPLICATION_REFERRAL = "generalApplicationReferral";
     public static final String GENERAL_APPLICATION_REFERRAL_DATE = "GeneralApplicationReferralDate";
+    public static final String ALTERNATIVE_SERVICE_APPLICATION = "alternativeServiceApplication";
     public static final String ALTERNATIVE_SERVICE_MEDIUM = "AlternativeServiceMedium";
     public static final String FEE_AMOUNT_WITHOUT_NOTICE = "FeeAmountWithoutNotice";
 
