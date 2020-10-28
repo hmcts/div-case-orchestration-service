@@ -44,7 +44,7 @@ withNightlyPipeline(type, product, component) {
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
         steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
     }
-
+    // COMMENT ADDED TO ALLOW PR TO BE CREATED AND RUN API TESTS IN BUILD PIPELINE - DO NOT MERGE!!
     loadVaultSecrets(secrets)
     env.Rules = params.SecurityRules
     enableFullFunctionalTest()
