@@ -280,6 +280,7 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+    implementation group: 'org.springframework.retry', name: 'spring-retry'
     implementation group: 'uk.gov.hmcts.reform', name: 'bsp-common-lib', version: versions.bspCommonLib
     implementation group: 'uk.gov.hmcts.reform', name: 'div-common-lib', version: versions.divCommonLib
     implementation group: 'uk.gov.hmcts.reform', name: 'idam-client', version: versions.idamClient
@@ -436,7 +437,7 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
     finalizedBy aggregate
 }
 
-task priorityFunctional(type: Test, description: 'Runs the Priority Functional tests.', group: 'Verification') {
+task lowerPriorityFunctional(type: Test, description: 'Runs the Priority Functional tests.', group: 'Verification') {
     doFirst(){
         printf("~~~~~~~~~~~~~~ Running  priorityFunctional::::::::::")
     }
@@ -446,7 +447,6 @@ task priorityFunctional(type: Test, description: 'Runs the Priority Functional t
 
     include "uk/gov/hmcts/reform/divorce/maintenance/**"
 
-
     setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
     setClasspath(sourceSets.integrationTest.runtimeClasspath)
 
@@ -455,7 +455,7 @@ task priorityFunctional(type: Test, description: 'Runs the Priority Functional t
             excludeCategories 'uk.gov.hmcts.reform.divorce.category.ExtendedTest'
         }
     }
-    // finalizedBy aggregate
+    finalizedBy aggregate
 }
 
 pitest {
