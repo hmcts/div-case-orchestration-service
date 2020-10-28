@@ -7,11 +7,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Invalid
 import static java.util.Collections.emptyMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.ALTERNATIVE_SERVICE_APPLICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.ALTERNATIVE_SERVICE_MEDIUM;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_APPLICATION_ADDED_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_APPLICATION_FROM;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_APPLICATION_REFERRAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_APPLICATION_REFERRAL_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_REFERRAL_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_REFERRAL_DECISION_DATE;
@@ -34,9 +32,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor.getPaymentType;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor.getReason;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor.getType;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor.isFeeRequired;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor.isReasonGeneralApplicationReferral;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor.isTypeOfAlternativeServiceApplication;
 
 public class GeneralReferralDataExtractorTest {
 
@@ -157,35 +152,5 @@ public class GeneralReferralDataExtractorTest {
     @Test(expected = InvalidDataForTaskException.class)
     public void getAlternativeMediumShouldThrowInvalidDataForTaskException() {
         getAlternativeMedium(emptyMap());
-    }
-
-    @Test
-    public void isFeeRequiredShouldReturnValidValue() {
-        assertThat(isFeeRequired(ImmutableMap.of(GENERAL_REFERRAL_FEE, YES_VALUE)), is(true));
-    }
-
-    @Test(expected = InvalidDataForTaskException.class)
-    public void isFeeRequiredShouldThrowInvalidDataForTaskException() {
-        isFeeRequired(emptyMap());
-    }
-
-    @Test
-    public void isReasonGeneralApplicationReferralShouldReturnValidValue() {
-        assertThat(isReasonGeneralApplicationReferral(ImmutableMap.of(GENERAL_REFERRAL_REASON, GENERAL_APPLICATION_REFERRAL)), is(true));
-    }
-
-    @Test(expected = InvalidDataForTaskException.class)
-    public void isReasonGeneralApplicationReferralShouldThrowInvalidDataForTaskException() {
-        isReasonGeneralApplicationReferral(emptyMap());
-    }
-
-    @Test
-    public void isTypeOfAlternativeServiceApplicationShouldReturnValidValue() {
-        assertThat(isTypeOfAlternativeServiceApplication(ImmutableMap.of(GENERAL_REFERRAL_TYPE, ALTERNATIVE_SERVICE_APPLICATION)), is(true));
-    }
-
-    @Test(expected = InvalidDataForTaskException.class)
-    public void isTypeOfAlternativeServiceApplicationShouldThrowInvalidDataForTaskException() {
-        isTypeOfAlternativeServiceApplication(emptyMap());
     }
 }

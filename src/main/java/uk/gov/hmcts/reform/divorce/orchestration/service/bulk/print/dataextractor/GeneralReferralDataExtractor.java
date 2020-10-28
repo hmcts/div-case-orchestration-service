@@ -8,7 +8,6 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.isYes;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GeneralReferralDataExtractor {
@@ -27,8 +26,6 @@ public class GeneralReferralDataExtractor {
         public static final String GENERAL_APPLICATION_FROM = CcdFields.GENERAL_APPLICATION_FROM;
         public static final String GENERAL_APPLICATION_REFERRAL_DATE = CcdFields.GENERAL_APPLICATION_REFERRAL_DATE;
         public static final String ALTERNATIVE_SERVICE_MEDIUM = CcdFields.ALTERNATIVE_SERVICE_MEDIUM;
-        public static final String GENERAL_APPLICATION_REFERRAL = CcdFields.GENERAL_APPLICATION_REFERRAL;
-        public static final String ALTERNATIVE_SERVICE_APPLICATION = CcdFields.ALTERNATIVE_SERVICE_APPLICATION;
     }
 
     public static String getIsFeeRequired(Map<String, Object> caseData) {
@@ -77,17 +74,5 @@ public class GeneralReferralDataExtractor {
 
     public static String getAlternativeMedium(Map<String, Object> caseData) {
         return getMandatoryStringValue(caseData, CaseDataKeys.ALTERNATIVE_SERVICE_MEDIUM);
-    }
-
-    public static boolean isFeeRequired(Map<String, Object> caseData) {
-        return isYes(getIsFeeRequired(caseData));
-    }
-
-    public static boolean isReasonGeneralApplicationReferral(Map<String, Object> caseData) {
-        return getReason(caseData).equals(CaseDataKeys.GENERAL_APPLICATION_REFERRAL);
-    }
-
-    public static boolean isTypeOfAlternativeServiceApplication(Map<String, Object> caseData) {
-        return getType(caseData).equals(CaseDataKeys.ALTERNATIVE_SERVICE_APPLICATION);
     }
 }
