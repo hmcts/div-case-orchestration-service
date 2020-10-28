@@ -1,13 +1,12 @@
 package uk.gov.hmcts.reform.divorce.orchestration.util.payment;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.StatusHistoriesItem;
 
 import java.util.ArrayList;
@@ -16,6 +15,7 @@ import java.util.Optional;
 
 import static java.lang.String.format;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static uk.gov.hmcts.reform.bsp.common.utils.ResourceLoader.jsonToObject;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
@@ -35,16 +35,26 @@ public class PbaClientError {
     }
 
     private static CreditAccountPaymentResponse getPaymentResponse(FeignException exception) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        CreditAccountPaymentResponse creditAccountPaymentResponse = CreditAccountPaymentResponse.builder().build();
+        CreditAccountPaymentResponse creditAccountPaymentResponse = buildErrorPaymentResponse();
         try {
-            creditAccountPaymentResponse = objectMapper.readValue(exception.contentUTF8(), CreditAccountPaymentResponse.class);
-        } catch (JsonProcessingException jsonProcessingException) {
-            log.warn("Could not convert error response to CreditAccountPaymentResponse object. Error message was {}",
+            creditAccountPaymentResponse = getPaymentResponseObjectFromException(exception);
+        } catch (RuntimeException jsonProcessingException) {
+            log.warn("Could not convert error response to CreditAccountPaymentResponse object. Error message was \"{}\"",
                 exception.contentUTF8());
             log.error(jsonProcessingException.getMessage());
+            creditAccountPaymentResponse.setStatus(exception.contentUTF8());
         }
         return creditAccountPaymentResponse;
+    }
+
+    private static CreditAccountPaymentResponse buildErrorPaymentResponse() {
+        return CreditAccountPaymentResponse.builder()
+            .status(PaymentStatus.FAILED.value())
+            .build();
+    }
+
+    private static CreditAccountPaymentResponse getPaymentResponseObjectFromException(FeignException exception) {
+        return jsonToObject(exception.contentUTF8().getBytes(), CreditAccountPaymentResponse.class);
     }
 
     private static String getDefaultErrorMessage() {
@@ -107,4 +117,5 @@ public class PbaClientError {
         return Optional.ofNullable(response.getStatusHistories())
             .orElseGet(ArrayList::new);
     }
+
 }
