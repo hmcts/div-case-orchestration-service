@@ -27,7 +27,7 @@ public class GeneralReferralFieldsRemovalTaskTest {
     @Test
     public void shouldRemoveGeneralReferralDraftKeysFromCaseData() {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put("incomingKey", "incomingValue");
+        caseData.put("keyToKeep", "valueToKeep");
         for (int i = 0; i <= 12; i++) {
             caseData.put(classUnderTest.getFieldsToRemove().get(i), "element-" + i);
         }
@@ -35,7 +35,7 @@ public class GeneralReferralFieldsRemovalTaskTest {
         Map<String, Object> returnedPayload = classUnderTest.execute(context(), caseData);
 
         assertThat(returnedPayload.size(), is(1));
-        assertThat(returnedPayload, hasEntry("incomingKey", "incomingValue"));
+        assertThat(returnedPayload, hasEntry("keyToKeep", "valueToKeep"));
         assertNoFieldsToRemoveIn(returnedPayload);
     }
 

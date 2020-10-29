@@ -1,10 +1,15 @@
 package uk.gov.hmcts.reform.divorce.orchestration.util;
 
 import com.google.common.collect.ImmutableMap;
+import org.hamcrest.Matchers;
 import org.junit.Test;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceGeneralReferral;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceServiceApplication;
 
 import java.util.HashMap;
 import java.util.List;
@@ -373,6 +378,62 @@ public class CaseDataUtilsTest {
     public void givenSolPaymentMethodDoesNotExist_whenSolicitorPaymentMethodIsPba_thenReturnFalse() {
         Map<String, Object> caseData = emptyMap();
         assertThat(CaseDataUtils.isSolicitorPaymentMethodPba(caseData), is(false));
+    }
+
+    @Test
+    public void givenNoField_whenGetListOfServiceApplications_shouldReturnAnEmptyArray() {
+        List<CollectionMember<DivorceServiceApplication>> result = CaseDataUtils.getListOfServiceApplications(emptyMap());
+
+        assertThat(result, Matchers.is(Matchers.empty()));
+    }
+
+    @Test
+    public void givenFieldWithAnEmptyArray_whenGetListOfServiceApplications_shouldReturnEmptyArray() {
+        final List<CollectionMember<DivorceServiceApplication>> myList = emptyList();
+
+        List<CollectionMember<DivorceServiceApplication>> result = CaseDataUtils
+            .getListOfServiceApplications(ImmutableMap.of(CcdFields.SERVICE_APPLICATIONS, myList));
+
+        assertThat(result, Matchers.is(Matchers.empty()));
+    }
+
+    @Test
+    public void givenFieldWithPopulatedArray_whenGetListOfServiceApplications_shouldReturnPopulatedArray() {
+        final List<CollectionMember<DivorceServiceApplication>> myList = asList(new CollectionMember<>());
+
+        List<CollectionMember<DivorceServiceApplication>> result = CaseDataUtils
+            .getListOfServiceApplications(ImmutableMap.of(CcdFields.SERVICE_APPLICATIONS, myList));
+
+        assertThat(result.size(), Matchers.is(1));
+        assertThat(result, Matchers.is(myList));
+    }
+    
+    @Test
+    public void givenNoField_whenGetListOfGeneralReferrals_shouldReturnAnEmptyArray() {
+        List<CollectionMember<DivorceGeneralReferral>> result = CaseDataUtils.getListOfGeneralReferrals(emptyMap());
+
+        assertThat(result, Matchers.is(Matchers.empty()));
+    }
+
+    @Test
+    public void givenFieldWithAnEmptyArray_whenGetListOfGeneralReferrals_shouldReturnEmptyArray() {
+        final List<CollectionMember<DivorceGeneralReferral>> myList = emptyList();
+
+        List<CollectionMember<DivorceGeneralReferral>> result = CaseDataUtils
+            .getListOfGeneralReferrals(ImmutableMap.of(CcdFields.GENERAL_REFERRALS, myList));
+
+        assertThat(result, Matchers.is(Matchers.empty()));
+    }
+
+    @Test
+    public void givenFieldWithPopulatedArray_whenGetListOfGeneralReferrals_shouldReturnPopulatedArray() {
+        final List<CollectionMember<DivorceGeneralReferral>> myList = asList(new CollectionMember<>());
+
+        List<CollectionMember<DivorceGeneralReferral>> result = CaseDataUtils
+            .getListOfGeneralReferrals(ImmutableMap.of(CcdFields.GENERAL_REFERRALS, myList));
+
+        assertThat(result.size(), Matchers.is(1));
+        assertThat(result, Matchers.is(myList));
     }
 
 }

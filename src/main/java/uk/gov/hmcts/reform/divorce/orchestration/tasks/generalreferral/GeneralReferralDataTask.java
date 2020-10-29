@@ -9,11 +9,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceGeneral
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor;
-import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember.buildCollectionMember;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.GeneralReferralHelper.isGeneralReferralPaymentRequired;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.GeneralReferralHelper.isReasonGeneralApplicationReferral;
@@ -23,8 +24,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.GeneralReferralHelp
 @Slf4j
 @AllArgsConstructor
 public class GeneralReferralDataTask implements Task<Map<String, Object>> {
-
-    private final CcdUtil ccdUtil;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
@@ -56,9 +55,8 @@ public class GeneralReferralDataTask implements Task<Map<String, Object>> {
     private Map<String, Object> addNewServiceApplicationToCaseData(
         Map<String, Object> caseData, DivorceGeneralReferral serviceApplication) {
 
-        List<CollectionMember<DivorceGeneralReferral>> generalReferrals = ccdUtil.getListOfGeneralReferrals(caseData);
-        CollectionMember<DivorceGeneralReferral> collectionMember = new CollectionMember<>();
-        collectionMember.setValue(serviceApplication);
+        List<CollectionMember<DivorceGeneralReferral>> generalReferrals = CaseDataUtils.getListOfGeneralReferrals(caseData);
+        CollectionMember<DivorceGeneralReferral> collectionMember = buildCollectionMember(serviceApplication);
 
         generalReferrals.add(collectionMember);
 

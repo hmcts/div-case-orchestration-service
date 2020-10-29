@@ -80,7 +80,7 @@ public class GeneralReferralHelperTest {
 
         runEmptyOrNullAssertionsForGeneralReferralReason(caseData);
     }
-    //
+
     @Test
     public void isTypeOfAlternativeServiceApplicationShouldBeTrue() {
         Map<String, Object> caseData = ImmutableMap.of(GENERAL_REFERRAL_TYPE, ALTERNATIVE_SERVICE_APPLICATION);
@@ -113,7 +113,8 @@ public class GeneralReferralHelperTest {
     private void runEmptyOrNullAssertionsForGeneralReferralFee(Map<String, Object> caseData) {
         String expectedMessage = format("Could not evaluate value of mandatory property \"%s\"", GENERAL_REFERRAL_FEE);
 
-        InvalidDataForTaskException taskException = assertThrows(InvalidDataForTaskException.class, () -> isGeneralReferralPaymentRequired(caseData));
+        InvalidDataForTaskException taskException =
+            assertThrows(InvalidDataForTaskException.class, () -> isGeneralReferralPaymentRequired(caseData));
 
         assertThat(taskException.getMessage(), containsString(expectedMessage));
     }
@@ -121,7 +122,8 @@ public class GeneralReferralHelperTest {
     private void runEmptyOrNullAssertionsForGeneralReferralReason(Map<String, Object> caseData) {
         String expectedMessage = format("Could not evaluate value of mandatory property \"%s\"", GENERAL_REFERRAL_REASON);
 
-        InvalidDataForTaskException taskException = assertThrows(InvalidDataForTaskException.class, () -> isReasonGeneralApplicationReferral(caseData));
+        InvalidDataForTaskException taskException =
+            assertThrows(InvalidDataForTaskException.class, () -> isReasonGeneralApplicationReferral(caseData));
 
         assertThat(taskException.getMessage(), containsString(expectedMessage));
     }
@@ -129,7 +131,8 @@ public class GeneralReferralHelperTest {
     private void runEmptyOrNullAssertionsForGeneralReferralType(Map<String, Object> caseData) {
         String expectedMessage = format("Could not evaluate value of mandatory property \"%s\"", GENERAL_REFERRAL_TYPE);
 
-        InvalidDataForTaskException taskException = assertThrows(InvalidDataForTaskException.class, () -> isTypeOfAlternativeServiceApplication(caseData));
+        InvalidDataForTaskException taskException =
+            assertThrows(InvalidDataForTaskException.class, () -> isTypeOfAlternativeServiceApplication(caseData));
 
         assertThat(taskException.getMessage(), containsString(expectedMessage));
     }

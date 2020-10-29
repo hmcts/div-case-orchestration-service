@@ -3,12 +3,10 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.generalreferral;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceGeneralReferral;
-import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,7 +16,6 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_REFERRALS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -39,69 +36,59 @@ public class GeneralReferralDataTaskTest {
     public static final String TEST_FROM = "GeneralApplicationFrom";
     public static final String TEST_REFERRAL_DATE = "2000-01-01";
     public static final String TEST_ALTERNATIVE = "AlternativeServiceMedium";
-    @Mock
-    private CcdUtil ccdUtil;
 
     @InjectMocks
     private GeneralReferralDataTask generalReferralDataTask;
 
     @Test
     public void shouldExecuteAndAddElementToNewCollection() {
-        Map<String, Object> input = buildCaseData();
-        int originalSize = input.size();
+        Map<String, Object> caseData = buildCaseData();
+        int originalSize = caseData.size();
 
-        when(ccdUtil.getListOfGeneralReferrals(input)).thenReturn(new ArrayList<>());
-
-        Map<String, Object> output = generalReferralDataTask.execute(context(), input);
+        Map<String, Object> output = generalReferralDataTask.execute(context(), caseData);
 
         List<CollectionMember<DivorceGeneralReferral>> collectionMembers = (List) output.get(GENERAL_REFERRALS);
         DivorceGeneralReferral generalReferral = collectionMembers.get(0).getValue();
 
         assertThat(output.size(), is(originalSize + 1));
-        assertGeneralReferralIsCorrect(generalReferral);
+        assertGeneralReferralIsAsExpected(generalReferral);
     }
 
     @Test
     public void shouldExecuteAndAddAnotherElementToExistingCollection() {
-        Map<String, Object> input = buildCaseData();
-        List<CollectionMember<DivorceGeneralReferral>> memberList = new ArrayList<>(asList(buildCollectionMember()));
+        Map<String, Object> caseData = buildCaseData();
+        List<CollectionMember<DivorceGeneralReferral>> originalMemberList = new ArrayList<>(asList(buildCollectionMember()));
+        caseData.put(GENERAL_REFERRALS, originalMemberList);
 
-        when(ccdUtil.getListOfGeneralReferrals(input)).thenReturn(memberList);
-
-        Map<String, Object> output = generalReferralDataTask.execute(context(), input);
+        Map<String, Object> output = generalReferralDataTask.execute(context(), caseData);
 
         List<CollectionMember<DivorceGeneralReferral>> collectionMembers = (List) output.get(GENERAL_REFERRALS);
-
-        assertThat(collectionMembers.size(), is(2));
-
         DivorceGeneralReferral generalReferral = collectionMembers.get(1).getValue();
 
-        assertGeneralReferralIsCorrect(generalReferral);
+        assertThat(collectionMembers.size(), is(originalMemberList.size() + 1));
+        assertGeneralReferralIsAsExpected(generalReferral);
     }
 
     @Test
     public void shouldExecuteAndNotIncludeConditionalValues() {
-        Map<String, Object> input = buildCaseData();
-        input.replace(CcdFields.GENERAL_REFERRAL_FEE, NO_VALUE);
-        input.replace(CcdFields.GENERAL_REFERRAL_REASON,  TEST_REASON);
-        input.replace(CcdFields.GENERAL_REFERRAL_TYPE, TEST_TYPE);
+        Map<String, Object> caseData = buildCaseData();
+        caseData.replace(CcdFields.GENERAL_REFERRAL_FEE, NO_VALUE);
+        caseData.replace(CcdFields.GENERAL_REFERRAL_REASON,  TEST_REASON);
+        caseData.replace(CcdFields.GENERAL_REFERRAL_TYPE, TEST_TYPE);
 
-        List<CollectionMember<DivorceGeneralReferral>> memberList = new ArrayList<>(asList(buildCollectionMember()));
+        List<CollectionMember<DivorceGeneralReferral>> originalMemberList = new ArrayList<>(asList(buildCollectionMember()));
+        caseData.put(GENERAL_REFERRALS, originalMemberList);
 
-        when(ccdUtil.getListOfGeneralReferrals(input)).thenReturn(memberList);
-
-        Map<String, Object> output = generalReferralDataTask.execute(context(), input);
+        Map<String, Object> output = generalReferralDataTask.execute(context(), caseData);
 
         List<CollectionMember<DivorceGeneralReferral>> collectionMembers = (List) output.get(GENERAL_REFERRALS);
-
-        assertThat(collectionMembers.size(), is(2));
-
         DivorceGeneralReferral generalReferral = collectionMembers.get(1).getValue();
 
+        assertThat(collectionMembers.size(), is(originalMemberList.size() + 1));
         assertGeneralReferralDoesNotContainConditionalFields(generalReferral);
     }
 
-    private void assertGeneralReferralIsCorrect(DivorceGeneralReferral generalReferral) {
+    private void assertGeneralReferralIsAsExpected(DivorceGeneralReferral generalReferral) {
         DivorceGeneralReferral  expectedGeneralReferral = DivorceGeneralReferral.builder()
             .generalReferralReason(CcdFields.GENERAL_APPLICATION_REFERRAL)
             .generalReferralDecisionReason(TEST_DECISION_REASON)
@@ -116,6 +103,7 @@ public class GeneralReferralDataTaskTest {
             .generalApplicationFrom(TEST_FROM)
             .generalReferralPaymentType(TEST_PAYMENT_TYPE)
             .build();
+
         assertThat(generalReferral, is(expectedGeneralReferral));
     }
 
@@ -131,6 +119,7 @@ public class GeneralReferralDataTaskTest {
             .generalReferralType(TEST_TYPE)
             .generalApplicationReferralDate(TEST_REFERRAL_DATE)
             .build();
+
         assertThat(generalReferral, is(expectedGeneralReferral));
     }
 

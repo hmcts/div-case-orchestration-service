@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
@@ -77,7 +78,20 @@ public class GeneralConsiderationTest extends MockedFunctionalTest {
 
         ccdCallbackRequest = buildCallbackRequest(addElementToCollection(caseData), CcdStates.AWAITING_GENERAL_CONSIDERATION);
 
-        runTestForParams(2, true);
+        ResultActions request = requestApi();
+
+        int expectedListSize = 2;
+        int indexOfItemToCheck = expectedListSize - 1;
+        request
+            .andExpect(status().isOk())
+            .andExpect(content().string(
+                allOf(
+                    isJson(),
+                    assertFieldsToRemoveNotInResponse(),
+                    hasJsonPath("$.data.GeneralReferrals", hasSize(expectedListSize)),
+                    assertFieldValuesWithAllConditionalFields(indexOfItemToCheck)
+                )
+            ));
     }
 
     @Test
@@ -89,93 +103,20 @@ public class GeneralConsiderationTest extends MockedFunctionalTest {
 
         ccdCallbackRequest = buildCallbackRequest(addElementToCollection(caseData), CcdStates.AWAITING_GENERAL_CONSIDERATION);
 
-        runTestForParams(2, false);
-    }
+        ResultActions request = requestApi();
 
-    private void runTestForParams(int size, boolean isWithConditionalFields) throws Exception {
-        int index = size - 1;
-        webClient.perform(post(API_URL)
-            .content(convertObjectToJsonString(ccdCallbackRequest))
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
+        int expectedListSize = 2;
+        int indexOfItemToCheck = expectedListSize - 1;
+        request
             .andExpect(status().isOk())
             .andExpect(content().string(
                 allOf(
                     isJson(),
-                    assertKeysNotInResponse(),
-                    hasJsonPath("$.data.GeneralReferrals", hasSize(size)),
-                    assertFieldValues(index, isWithConditionalFields)
+                    assertFieldsToRemoveNotInResponse(),
+                    hasJsonPath("$.data.GeneralReferrals", hasSize(expectedListSize)),
+                    assertFieldValuesWithoutConditionalFields(indexOfItemToCheck)
                 )
             ));
-    }
-
-    private Matcher<? super Object> assertKeysNotInResponse() {
-        return allOf(
-            hasNoJsonKeyInResponse(GENERAL_REFERRAL_FEE),
-            hasNoJsonKeyInResponse(GENERAL_REFERRAL_DECISION_DATE),
-            hasNoJsonKeyInResponse(GENERAL_REFERRAL_REASON),
-            hasNoJsonKeyInResponse(GENERAL_REFERRAL_TYPE),
-            hasNoJsonKeyInResponse(GENERAL_REFERRAL_DETAILS),
-            hasNoJsonKeyInResponse(GENERAL_REFERRAL_PAYMENT_TYPE),
-            hasNoJsonKeyInResponse(GENERAL_REFERRAL_DECISION),
-            hasNoJsonKeyInResponse(GENERAL_REFERRAL_DECISION_REASON),
-            hasNoJsonKeyInResponse(GENERAL_APPLICATION_ADDED_DATE),
-            hasNoJsonKeyInResponse(GENERAL_APPLICATION_FROM),
-            hasNoJsonKeyInResponse(GENERAL_APPLICATION_REFERRAL_DATE),
-            hasNoJsonKeyInResponse(ALTERNATIVE_SERVICE_MEDIUM),
-            hasNoJsonKeyInResponse(FEE_AMOUNT_WITHOUT_NOTICE)
-        );
-    }
-
-    private Matcher<? super Object> assertFieldValues(int index, boolean isWithConditionalFields) {
-        if (isWithConditionalFields) {
-            return assertFieldValuesWithAllConditionalFields(index);
-        }
-        return assertFieldValuesWithoutConditionalFields(index);
-    }
-
-    private Matcher<? super Object> assertFieldValuesWithAllConditionalFields(int index) {
-        return allOf(
-            assertFieldInResponseIs(index, GENERAL_REFERRAL_FEE, YES_VALUE),
-            assertFieldInResponseIs(index, GENERAL_REFERRAL_DECISION_DATE, DateUtils.formatDateFromLocalDate(now())),
-            assertFieldInResponseIs(index, GENERAL_REFERRAL_REASON, CcdFields.GENERAL_APPLICATION_REFERRAL),
-            assertFieldInResponseIs(index, GENERAL_REFERRAL_TYPE, CcdFields.ALTERNATIVE_SERVICE_APPLICATION),
-            assertFieldInResponseIs(index, GENERAL_REFERRAL_DETAILS, TEST_DETAILS),
-            assertFieldInResponseIs(index, GENERAL_REFERRAL_PAYMENT_TYPE, TEST_PAYMENT_TYPE),
-            assertFieldInResponseIs(index, GENERAL_REFERRAL_DECISION, TEST_DECISION),
-            assertFieldInResponseIs(index, GENERAL_REFERRAL_DECISION_REASON, TEST_DECISION_REASON),
-            assertFieldInResponseIs(index, GENERAL_APPLICATION_ADDED_DATE, TEST_ADDED_DATE),
-            assertFieldInResponseIs(index, GENERAL_APPLICATION_FROM, TEST_FROM),
-            assertFieldInResponseIs(index, GENERAL_APPLICATION_REFERRAL_DATE, TEST_REFERRAL_DATE),
-            assertFieldInResponseIs(index, ALTERNATIVE_SERVICE_MEDIUM, TEST_ALTERNATIVE)
-        );
-    }
-
-    private Matcher<? super Object> assertFieldValuesWithoutConditionalFields(int index) {
-        return allOf(
-            assertFieldInResponseIs(index, GENERAL_REFERRAL_FEE, NO_VALUE),
-            assertFieldInResponseIs(index, GENERAL_REFERRAL_DECISION_DATE, DateUtils.formatDateFromLocalDate(now())),
-            assertFieldInResponseIs(index, GENERAL_REFERRAL_REASON, TEST_REASON),
-            assertFieldInResponseIs(index, GENERAL_REFERRAL_TYPE, TEST_TYPE),
-            assertFieldInResponseIs(index, GENERAL_REFERRAL_DETAILS, TEST_DETAILS),
-            assertFieldInResponseIs(index, GENERAL_REFERRAL_DECISION, TEST_DECISION),
-            assertFieldInResponseIs(index, GENERAL_REFERRAL_DECISION_REASON, TEST_DECISION_REASON),
-            assertFieldInResponseIs(index, GENERAL_APPLICATION_ADDED_DATE, TEST_ADDED_DATE),
-            assertFieldInResponseIs(index, GENERAL_APPLICATION_REFERRAL_DATE, TEST_REFERRAL_DATE),
-            assertFieldIsNotInResponse(index, GENERAL_REFERRAL_PAYMENT_TYPE),
-            assertFieldIsNotInResponse(index, GENERAL_APPLICATION_FROM),
-            assertFieldIsNotInResponse(index, ALTERNATIVE_SERVICE_MEDIUM)
-        );
-    }
-
-    private Map<String, Object> addElementToCollection(Map<String, Object> caseData) {
-        List<CollectionMember<DivorceGeneralReferral>> collection = new ArrayList<>();
-        collection.add(new CollectionMember<>());
-
-        caseData.put(GENERAL_REFERRALS, collection);
-
-        return caseData;
     }
 
     private Map<String, Object> buildCaseData(String isFeeRequired, String referralReason, String referralType) {
@@ -187,21 +128,74 @@ public class GeneralConsiderationTest extends MockedFunctionalTest {
         return caseData;
     }
 
-    private Matcher<? super Object> hasNoJsonKeyInResponse(String key) {
-        String path = String.format("$.data.%s", key);
+    private Map<String, Object> addElementToCollection(Map<String, Object> caseData) {
+        List<CollectionMember<DivorceGeneralReferral>> collection = new ArrayList<>();
+        collection.add(new CollectionMember<>());
 
-        return hasNoJsonPath(path);
+        caseData.put(GENERAL_REFERRALS, collection);
+
+        return caseData;
     }
 
-    private Matcher<? super Object> assertFieldInResponseIs(int newlyAddedItemIndex, String key, Object expected) {
-        String path = String.format("$.data.GeneralReferrals[%s].value.%s", newlyAddedItemIndex, key);
-
-        return hasJsonPath(path, is(expected));
+    private ResultActions requestApi() throws Exception {
+        return webClient.perform(post(API_URL)
+            .content(convertObjectToJsonString(ccdCallbackRequest))
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON));
     }
 
-    private Matcher<? super Object> assertFieldIsNotInResponse(int newlyAddedItemIndex, String key) {
-        String path = String.format("$.data.GeneralReferrals[%s].value.%s", newlyAddedItemIndex, key);
+    private Matcher<? super Object> assertFieldsToRemoveNotInResponse() {
+        return hasJsonPath("$.data", allOf(
+            hasNoJsonPath(GENERAL_REFERRAL_FEE),
+            hasNoJsonPath(GENERAL_REFERRAL_DECISION_DATE),
+            hasNoJsonPath(GENERAL_REFERRAL_REASON),
+            hasNoJsonPath(GENERAL_REFERRAL_TYPE),
+            hasNoJsonPath(GENERAL_REFERRAL_DETAILS),
+            hasNoJsonPath(GENERAL_REFERRAL_PAYMENT_TYPE),
+            hasNoJsonPath(GENERAL_REFERRAL_DECISION),
+            hasNoJsonPath(GENERAL_REFERRAL_DECISION_REASON),
+            hasNoJsonPath(GENERAL_APPLICATION_ADDED_DATE),
+            hasNoJsonPath(GENERAL_APPLICATION_FROM),
+            hasNoJsonPath(GENERAL_APPLICATION_REFERRAL_DATE),
+            hasNoJsonPath(ALTERNATIVE_SERVICE_MEDIUM),
+            hasNoJsonPath(FEE_AMOUNT_WITHOUT_NOTICE)
+        ));
+    }
 
-        return hasNoJsonPath(path);
+    private Matcher<? super Object> assertFieldValuesWithAllConditionalFields(int index) {
+        String generalReferralPath = String.format("$.data.GeneralReferrals[%s].value", index);
+        return hasJsonPath(generalReferralPath, allOf(
+            hasJsonPath(GENERAL_REFERRAL_FEE, is(YES_VALUE)),
+            hasJsonPath(GENERAL_REFERRAL_DECISION_DATE, is(DateUtils.formatDateFromLocalDate(now()))),
+            hasJsonPath(GENERAL_REFERRAL_REASON, is(CcdFields.GENERAL_APPLICATION_REFERRAL)),
+            hasJsonPath(GENERAL_REFERRAL_TYPE, is(CcdFields.ALTERNATIVE_SERVICE_APPLICATION)),
+            hasJsonPath(GENERAL_REFERRAL_DETAILS, is(TEST_DETAILS)),
+            hasJsonPath(GENERAL_REFERRAL_PAYMENT_TYPE, is(TEST_PAYMENT_TYPE)),
+            hasJsonPath(GENERAL_REFERRAL_DECISION, is(TEST_DECISION)),
+            hasJsonPath(GENERAL_REFERRAL_DECISION_REASON, is(TEST_DECISION_REASON)),
+            hasJsonPath(GENERAL_APPLICATION_ADDED_DATE, is(TEST_ADDED_DATE)),
+            hasJsonPath(GENERAL_APPLICATION_FROM, is(TEST_FROM)),
+            hasJsonPath(GENERAL_APPLICATION_REFERRAL_DATE, is(TEST_REFERRAL_DATE)),
+            hasJsonPath(ALTERNATIVE_SERVICE_MEDIUM, is(TEST_ALTERNATIVE))
+        ));
+    }
+
+    private Matcher<? super Object> assertFieldValuesWithoutConditionalFields(int index) {
+        String generalReferralPath = String.format("$.data.GeneralReferrals[%s].value", index);
+        return hasJsonPath(generalReferralPath, allOf(
+            hasJsonPath(GENERAL_REFERRAL_FEE, is(NO_VALUE)),
+            hasJsonPath(GENERAL_REFERRAL_DECISION_DATE, is(DateUtils.formatDateFromLocalDate(now()))),
+            hasJsonPath(GENERAL_REFERRAL_REASON, is(TEST_REASON)),
+            hasJsonPath(GENERAL_REFERRAL_TYPE, is(TEST_TYPE)),
+            hasJsonPath(GENERAL_REFERRAL_DETAILS, is(TEST_DETAILS)),
+            hasJsonPath(GENERAL_REFERRAL_DECISION, is(TEST_DECISION)),
+            hasJsonPath(GENERAL_REFERRAL_DECISION_REASON, is(TEST_DECISION_REASON)),
+            hasJsonPath(GENERAL_APPLICATION_ADDED_DATE, is(TEST_ADDED_DATE)),
+            hasJsonPath(GENERAL_APPLICATION_REFERRAL_DATE, is(TEST_REFERRAL_DATE)),
+            hasNoJsonPath(GENERAL_REFERRAL_PAYMENT_TYPE),
+            hasNoJsonPath(GENERAL_APPLICATION_FROM),
+            hasNoJsonPath(ALTERNATIVE_SERVICE_MEDIUM)
+        ));
     }
 }
