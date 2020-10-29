@@ -12,7 +12,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GetGeneralApplicationWithoutNoticeFeeTaskTest extends FeeLookupWithoutNoticeTaskTest {
+public class GeneralApplicationWithoutNoticeFeeLookupTaskTest extends FeeLookupWithoutNoticeTaskTest {
 
     @InjectMocks
     private GeneralApplicationWithoutNoticeFeeLookupTask generalApplicationWithoutNoticeFeeTask;
