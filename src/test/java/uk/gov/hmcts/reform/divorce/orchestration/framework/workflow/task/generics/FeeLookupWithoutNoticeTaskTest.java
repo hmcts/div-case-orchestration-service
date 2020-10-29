@@ -7,6 +7,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.FeesAndPaymentsClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,10 +31,17 @@ public class FeeLookupWithoutNoticeTaskTest {
 
     protected FeeLookupWithoutNoticeTask getTask() {
         return new FeeLookupWithoutNoticeTask(feesAndPaymentsClient) {
+
             @Override
-            public String getFieldName() {
+            protected Map<String, Object> furtherUpdateCaseData(TaskContext context, Map<String, Object> caseData) {
+                return caseData;
+            }
+
+            @Override
+            public String getOrderSummaryFieldName() {
                 return TEST_FIELD;
             }
+
         };
     }
 
@@ -50,7 +58,7 @@ public class FeeLookupWithoutNoticeTaskTest {
 
         Map<String, Object> returnedCaseData = task.execute(context(), new HashMap<>());
 
-        OrderSummary paymentSummary = (OrderSummary) returnedCaseData.get(task.getFieldName());
+        OrderSummary paymentSummary = (OrderSummary) returnedCaseData.get(task.getOrderSummaryFieldName());
 
         assertThat(paymentSummary.getPaymentTotal(), is(AMOUNT_IN_PENNIES));
         assertThat(
