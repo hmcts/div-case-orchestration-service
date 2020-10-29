@@ -28,7 +28,8 @@ public class GeneralReferralFieldsRemovalTaskTest {
     public void shouldRemoveGeneralReferralDraftKeysFromCaseData() {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put("keyToKeep", "valueToKeep");
-        for (int i = 0; i <= 12; i++) {
+        int sizeOfFieldsToRemoveList = 12;
+        for (int i = 0; i <= sizeOfFieldsToRemoveList; i++) {
             caseData.put(classUnderTest.getFieldsToRemove().get(i), "element-" + i);
         }
 

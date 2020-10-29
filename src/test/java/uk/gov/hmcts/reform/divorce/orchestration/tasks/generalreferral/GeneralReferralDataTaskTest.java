@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.generalreferral;
 
+import com.google.common.collect.Maps;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -15,7 +16,9 @@ import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_REFERRALS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -43,14 +46,14 @@ public class GeneralReferralDataTaskTest {
     @Test
     public void shouldExecuteAndAddElementToNewCollection() {
         Map<String, Object> caseData = buildCaseData();
-        int originalSize = caseData.size();
+        Map<String, Object> caseDataCopy = Maps.newHashMap(caseData);
 
-        Map<String, Object> output = generalReferralDataTask.execute(context(), caseData);
+        Map<String, Object> output = generalReferralDataTask.execute(context(), caseDataCopy);
 
         List<CollectionMember<DivorceGeneralReferral>> collectionMembers = (List) output.get(GENERAL_REFERRALS);
         DivorceGeneralReferral generalReferral = collectionMembers.get(0).getValue();
 
-        assertThat(output.size(), is(originalSize + 1));
+        assertThat(output.size(), is(caseData.size() + 1));
         assertGeneralReferralIsAsExpected(generalReferral);
     }
 
@@ -65,7 +68,7 @@ public class GeneralReferralDataTaskTest {
         List<CollectionMember<DivorceGeneralReferral>> collectionMembers = (List) output.get(GENERAL_REFERRALS);
         DivorceGeneralReferral generalReferral = collectionMembers.get(1).getValue();
 
-        assertThat(collectionMembers.size(), is(originalMemberList.size() + 1));
+        assertThat(collectionMembers, hasSize(originalMemberList.size() + 1));
         assertGeneralReferralIsAsExpected(generalReferral);
     }
 
@@ -84,43 +87,38 @@ public class GeneralReferralDataTaskTest {
         List<CollectionMember<DivorceGeneralReferral>> collectionMembers = (List) output.get(GENERAL_REFERRALS);
         DivorceGeneralReferral generalReferral = collectionMembers.get(1).getValue();
 
-        assertThat(collectionMembers.size(), is(originalMemberList.size() + 1));
+        assertThat(collectionMembers, hasSize(originalMemberList.size() + 1));
         assertGeneralReferralDoesNotContainConditionalFields(generalReferral);
     }
 
     private void assertGeneralReferralIsAsExpected(DivorceGeneralReferral generalReferral) {
-        DivorceGeneralReferral  expectedGeneralReferral = DivorceGeneralReferral.builder()
-            .generalReferralReason(CcdFields.GENERAL_APPLICATION_REFERRAL)
-            .generalReferralDecisionReason(TEST_DECISION_REASON)
-            .generalReferralDecision(TEST_DECISION)
-            .generalApplicationAddedDate(TEST_ADDED_DATE)
-            .generalReferralDecisionDate(TEST_DECISION_DATE)
-            .generalReferralDetails(TEST_DETAILS)
-            .generalReferralFee(TEST_FEE)
-            .generalReferralType(CcdFields.ALTERNATIVE_SERVICE_APPLICATION)
-            .generalApplicationReferralDate(TEST_REFERRAL_DATE)
-            .alternativeServiceMedium(TEST_ALTERNATIVE)
-            .generalApplicationFrom(TEST_FROM)
-            .generalReferralPaymentType(TEST_PAYMENT_TYPE)
-            .build();
-
-        assertThat(generalReferral, is(expectedGeneralReferral));
+        assertThat(generalReferral.getGeneralReferralReason(), is(CcdFields.GENERAL_APPLICATION_REFERRAL));
+        assertThat(generalReferral.getGeneralReferralDecisionReason(), is(TEST_DECISION_REASON));
+        assertThat(generalReferral.getGeneralReferralDecision(), is(TEST_DECISION));
+        assertThat(generalReferral.getGeneralApplicationAddedDate(), is(TEST_ADDED_DATE));
+        assertThat(generalReferral.getGeneralReferralDecisionDate(), is(TEST_DECISION_DATE));
+        assertThat(generalReferral.getGeneralReferralDetails(), is(TEST_DETAILS));
+        assertThat(generalReferral.getGeneralReferralFee(), is(TEST_FEE));
+        assertThat(generalReferral.getGeneralReferralType(), is(CcdFields.ALTERNATIVE_SERVICE_APPLICATION));
+        assertThat(generalReferral.getGeneralApplicationReferralDate(), is(TEST_REFERRAL_DATE));
+        assertThat(generalReferral.getGeneralApplicationFrom(), is(TEST_FROM));
+        assertThat(generalReferral.getGeneralReferralPaymentType(), is(TEST_PAYMENT_TYPE));
+        assertThat(generalReferral.getAlternativeServiceMedium(), is(TEST_ALTERNATIVE));
     }
 
     private void assertGeneralReferralDoesNotContainConditionalFields(DivorceGeneralReferral generalReferral) {
-        DivorceGeneralReferral  expectedGeneralReferral = DivorceGeneralReferral.builder()
-            .generalReferralReason(TEST_REASON)
-            .generalReferralDecisionReason(TEST_DECISION_REASON)
-            .generalReferralDecision(TEST_DECISION)
-            .generalApplicationAddedDate(TEST_ADDED_DATE)
-            .generalReferralDecisionDate(TEST_DECISION_DATE)
-            .generalReferralDetails(TEST_DETAILS)
-            .generalReferralFee(NO_VALUE)
-            .generalReferralType(TEST_TYPE)
-            .generalApplicationReferralDate(TEST_REFERRAL_DATE)
-            .build();
-
-        assertThat(generalReferral, is(expectedGeneralReferral));
+        assertThat(generalReferral.getGeneralReferralReason(), is(TEST_REASON));
+        assertThat(generalReferral.getGeneralReferralDecisionReason(), is(TEST_DECISION_REASON));
+        assertThat(generalReferral.getGeneralReferralDecision(), is(TEST_DECISION));
+        assertThat(generalReferral.getGeneralApplicationAddedDate(), is(TEST_ADDED_DATE));
+        assertThat(generalReferral.getGeneralReferralDecisionDate(), is(TEST_DECISION_DATE));
+        assertThat(generalReferral.getGeneralReferralDetails(), is(TEST_DETAILS));
+        assertThat(generalReferral.getGeneralReferralFee(), is(NO_VALUE));
+        assertThat(generalReferral.getGeneralReferralType(), is(TEST_TYPE));
+        assertThat(generalReferral.getGeneralApplicationReferralDate(), is(TEST_REFERRAL_DATE));
+        assertThat(generalReferral.getGeneralApplicationFrom(), is(nullValue()));
+        assertThat(generalReferral.getGeneralReferralPaymentType(), is(nullValue()));
+        assertThat(generalReferral.getAlternativeServiceMedium(), is(nullValue()));
     }
 
     public static Map<String, Object> buildCaseData() {

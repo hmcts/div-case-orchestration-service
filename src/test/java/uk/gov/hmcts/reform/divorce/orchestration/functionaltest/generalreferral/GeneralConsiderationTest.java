@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
@@ -78,11 +77,14 @@ public class GeneralConsiderationTest extends MockedFunctionalTest {
 
         ccdCallbackRequest = buildCallbackRequest(addElementToCollection(caseData), CcdStates.AWAITING_GENERAL_CONSIDERATION);
 
-        ResultActions request = requestApi();
-
         int expectedListSize = 2;
         int indexOfItemToCheck = expectedListSize - 1;
-        request
+
+        webClient.perform(post(API_URL)
+            .content(convertObjectToJsonString(ccdCallbackRequest))
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().string(
                 allOf(
@@ -103,11 +105,14 @@ public class GeneralConsiderationTest extends MockedFunctionalTest {
 
         ccdCallbackRequest = buildCallbackRequest(addElementToCollection(caseData), CcdStates.AWAITING_GENERAL_CONSIDERATION);
 
-        ResultActions request = requestApi();
-
         int expectedListSize = 2;
         int indexOfItemToCheck = expectedListSize - 1;
-        request
+
+        webClient.perform(post(API_URL)
+            .content(convertObjectToJsonString(ccdCallbackRequest))
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().string(
                 allOf(
@@ -135,14 +140,6 @@ public class GeneralConsiderationTest extends MockedFunctionalTest {
         caseData.put(GENERAL_REFERRALS, collection);
 
         return caseData;
-    }
-
-    private ResultActions requestApi() throws Exception {
-        return webClient.perform(post(API_URL)
-            .content(convertObjectToJsonString(ccdCallbackRequest))
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON));
     }
 
     private Matcher<? super Object> assertFieldsToRemoveNotInResponse() {

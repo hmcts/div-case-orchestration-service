@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.util;
 
 import com.google.common.collect.ImmutableMap;
-import org.hamcrest.Matchers;
 import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
@@ -384,7 +383,7 @@ public class CaseDataUtilsTest {
     public void givenNoField_whenGetListOfServiceApplications_shouldReturnAnEmptyArray() {
         List<CollectionMember<DivorceServiceApplication>> result = CaseDataUtils.getListOfServiceApplications(emptyMap());
 
-        assertThat(result, Matchers.is(Matchers.empty()));
+        assertThat(result, is(empty()));
     }
 
     @Test
@@ -394,7 +393,7 @@ public class CaseDataUtilsTest {
         List<CollectionMember<DivorceServiceApplication>> result = CaseDataUtils
             .getListOfServiceApplications(ImmutableMap.of(CcdFields.SERVICE_APPLICATIONS, myList));
 
-        assertThat(result, Matchers.is(Matchers.empty()));
+        assertThat(result, is(empty()));
     }
 
     @Test
@@ -404,15 +403,15 @@ public class CaseDataUtilsTest {
         List<CollectionMember<DivorceServiceApplication>> result = CaseDataUtils
             .getListOfServiceApplications(ImmutableMap.of(CcdFields.SERVICE_APPLICATIONS, myList));
 
-        assertThat(result.size(), Matchers.is(1));
-        assertThat(result, Matchers.is(myList));
+        assertThat(result.size(), is(1));
+        assertThat(result, is(myList));
     }
-    
+
     @Test
     public void givenNoField_whenGetListOfGeneralReferrals_shouldReturnAnEmptyArray() {
         List<CollectionMember<DivorceGeneralReferral>> result = CaseDataUtils.getListOfGeneralReferrals(emptyMap());
 
-        assertThat(result, Matchers.is(Matchers.empty()));
+        assertThat(result, is(empty()));
     }
 
     @Test
@@ -422,7 +421,7 @@ public class CaseDataUtilsTest {
         List<CollectionMember<DivorceGeneralReferral>> result = CaseDataUtils
             .getListOfGeneralReferrals(ImmutableMap.of(CcdFields.GENERAL_REFERRALS, myList));
 
-        assertThat(result, Matchers.is(Matchers.empty()));
+        assertThat(result, is(empty()));
     }
 
     @Test
@@ -432,8 +431,8 @@ public class CaseDataUtilsTest {
         List<CollectionMember<DivorceGeneralReferral>> result = CaseDataUtils
             .getListOfGeneralReferrals(ImmutableMap.of(CcdFields.GENERAL_REFERRALS, myList));
 
-        assertThat(result.size(), Matchers.is(1));
-        assertThat(result, Matchers.is(myList));
+        assertThat(result.size(), is(1));
+        assertThat(result, is(myList));
     }
 
 }

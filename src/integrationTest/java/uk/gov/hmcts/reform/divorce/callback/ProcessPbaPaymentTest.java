@@ -1,12 +1,19 @@
 package uk.gov.hmcts.reform.divorce.callback;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import org.apache.http.HttpStatus;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.util.payment.PbaErrorMessage;
+
+import java.util.Random;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
@@ -21,8 +28,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static uk.gov.hmcts.reform.divorce.callback.SolicitorCreateAndUpdateTest.postWithDataAndValidateResponse;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
 public class ProcessPbaPaymentTest extends IntegrationTest {
 
@@ -30,18 +37,19 @@ public class ProcessPbaPaymentTest extends IntegrationTest {
     private static final String DELETED_ACCOUNT = "PBA0078600";
     private static final String NON_EXISTING_ACCOUNT = "PBA1357924";
 
-    private static final String PAYLOAD_CONTEXT_PATH = "fixtures/solicitor/";
-    private static final String PAYMENT_FIXTURES = "payment/";
+    private static final String PAYLOAD_CONTEXT_PATH = "/fixtures/solicitor/payment/";
 
     private static final String AWAITING_PAYMENT_CONFIRMATION = CcdStates.SOLICITOR_AWAITING_PAYMENT_CONFIRMATION;
     private static final String SUBMITTED = CcdStates.SUBMITTED;
+
+    private static final Random RANDOM_NUMBER_GENERATOR = new Random();
 
     @Value("${case.orchestration.solicitor.process-pba-payment.context-path}")
     private String contextPath;
 
     @Test
     public void givenValidRequestWithFeeAccountThenReturnStateAsSubmitted() throws Exception {
-        Response cosResponse = getOkResponseWithRequestData("active-account-request");
+        Response cosResponse = getOkResponseWithRequestData(PAYLOAD_CONTEXT_PATH + "active-account-request.json");
 
         assertThat(getResponseBody(cosResponse),
             allOf(
@@ -52,14 +60,14 @@ public class ProcessPbaPaymentTest extends IntegrationTest {
 
     @Test
     public void givenValidRequestWithHelpWithFeeThenReturnStateAsSolicitorAwaitingPaymentConfirmation() throws Exception {
-        Response cosResponse = getOkResponseWithRequestData("help-with-fee-request");
+        Response cosResponse = getOkResponseWithRequestData(PAYLOAD_CONTEXT_PATH + "help-with-fee-request.json");
 
         assertThat(getResponseBody(cosResponse), isResponseWithExpectedState(AWAITING_PAYMENT_CONFIRMATION));
     }
 
     @Test
     public void givenValidRequestWithInsufficientFundsThenHandle403AndReturnWithCAE0001ErrorMessage() throws Exception {
-        Response cosResponse = getOkResponseWithRequestData("insufficient-funds-request");
+        Response cosResponse = getOkResponseWithRequestData(PAYLOAD_CONTEXT_PATH + "insufficient-funds-request.json");
         String expectedErrorMessage = getExpectedErrorMessage(ACTIVE_ACCOUNT, PbaErrorMessage.CAE0001);
 
         assertThat(getResponseBody(cosResponse), isResponseWithErrorMessage(expectedErrorMessage));
@@ -67,7 +75,7 @@ public class ProcessPbaPaymentTest extends IntegrationTest {
 
     @Test
     public void givenValidRequestWithInactiveAccountThenHandle403AndReturnWithCAE0004ErrorMessage() throws Exception {
-        Response cosResponse = getOkResponseWithRequestData("inactive-account-request");
+        Response cosResponse = getOkResponseWithRequestData(PAYLOAD_CONTEXT_PATH + "inactive-account-request.json");
         String expectedErrorMessage = getExpectedErrorMessage(DELETED_ACCOUNT, PbaErrorMessage.CAE0004);
 
         assertThat(getResponseBody(cosResponse), isResponseWithErrorMessage(expectedErrorMessage));
@@ -75,7 +83,7 @@ public class ProcessPbaPaymentTest extends IntegrationTest {
 
     @Test
     public void givenValidRequestWithNonExistingAccountThenHandle404AndReturnWithErrorMessage() throws Exception {
-        Response cosResponse = getOkResponseWithRequestData("nonexisting-account-request");
+        Response cosResponse = getOkResponseWithRequestData(PAYLOAD_CONTEXT_PATH + "nonexisting-account-request.json");
         String expectedErrorMessage = getExpectedErrorMessage(NON_EXISTING_ACCOUNT, PbaErrorMessage.NOTFOUND);
 
         assertThat(getResponseBody(cosResponse), isResponseWithErrorMessage(expectedErrorMessage));
@@ -83,7 +91,7 @@ public class ProcessPbaPaymentTest extends IntegrationTest {
 
     @Test
     public void givenValidRequestWithInvalidOrMissingDataThenHandle422AndReturnWithErrorMessage() throws Exception {
-        Response cosResponse = getOkResponseWithRequestData("missing-data-request");
+        Response cosResponse = getOkResponseWithRequestData(PAYLOAD_CONTEXT_PATH + "missing-data-request.json");
         String expectedErrorMessage = getExpectedErrorMessage(ACTIVE_ACCOUNT, PbaErrorMessage.GENERAL);
 
         assertThat(getResponseBody(cosResponse), isResponseWithErrorMessage(expectedErrorMessage));
@@ -120,10 +128,31 @@ public class ProcessPbaPaymentTest extends IntegrationTest {
     }
 
     private Response getOkResponseWithRequestData(String fixtureFileName) throws Exception {
-        return postWithDataAndValidateResponse(
-            serverUrl + contextPath,
-            PAYLOAD_CONTEXT_PATH + PAYMENT_FIXTURES + fixtureFileName + ".json",
-            createCaseWorkerUser().getAuthToken()
-        );
+        String randomCaseId = generateRandomCaseId();
+        String requestBody = getJsonFromResourceFile(fixtureFileName, JsonNode.class)
+            .toString()
+            .replace("replace_with_case_id", randomCaseId);
+
+        return RestAssured.given()
+            .contentType(ContentType.JSON)
+            .header(HttpHeaders.AUTHORIZATION, createCaseWorkerUser().getAuthToken())
+            .body(requestBody)
+            .when()
+            .post(serverUrl + contextPath)
+            .then()
+            .statusCode(HttpStatus.SC_OK)
+            .extract()
+            .response();
     }
+
+    private String generateRandomCaseId() {
+        int randomCaseId = RANDOM_NUMBER_GENERATOR.nextInt();
+
+        if (randomCaseId < 0) {
+            randomCaseId = randomCaseId * -1;
+        }
+
+        return String.valueOf(randomCaseId);
+    }
+
 }
