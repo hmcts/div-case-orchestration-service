@@ -1,7 +1,7 @@
 {
   "event_id": "solicitorStatementOfTruthPaySubmit",
   "case_details": {
-    "id": "1603205953442146",
+    "id": "replace_with_case_id",
     "jurisdiction": "DIVORCE",
     "state": "SOTAgreementPayAndSubmitRequired",
     "case_type_id": "DIVORCE",
