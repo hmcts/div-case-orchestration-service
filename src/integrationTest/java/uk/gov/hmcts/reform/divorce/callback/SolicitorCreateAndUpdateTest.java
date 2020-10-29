@@ -59,8 +59,7 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
         assertNotNull(responseData.get(DIVORCE_CENTRE_SITEID_JSON_KEY));
     }
 
-    static Response postWithDataAndValidateResponse(
-        String url, String pathToFileWithData, String authToken) throws Exception {
+    static Response postWithDataAndValidateResponse(String url, String pathToFileWithData, String authToken) throws Exception {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
         headers.put(HttpHeaders.AUTHORIZATION, authToken);
