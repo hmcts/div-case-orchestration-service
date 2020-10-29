@@ -55,5 +55,4 @@ public abstract class FeeLookupWithoutNoticeTask implements Task<Map<String, Obj
     }
 
     protected abstract Map<String, Object> furtherUpdateCaseData(TaskContext context, Map<String, Object> updatedCaseData);
-
 }
