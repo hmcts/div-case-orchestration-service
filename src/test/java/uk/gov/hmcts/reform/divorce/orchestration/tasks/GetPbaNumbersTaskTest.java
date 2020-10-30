@@ -163,7 +163,7 @@ public class GetPbaNumbersTaskTest {
     private void whenRetrievePbaNumbersReturn(PBAOrganisationResponse response) {
         when(responseEntity.getBody()).thenReturn(response);
         when(pbaValidationClient.retrievePbaNumbers(
-            AUTH_TOKEN,
+            BEARER_AUTH_TOKEN,
             TEST_SERVICE_AUTH_TOKEN,
             TEST_RESP_SOLICITOR_EMAIL))
             .thenReturn(responseEntity);
@@ -171,7 +171,7 @@ public class GetPbaNumbersTaskTest {
 
     private void verifyRetrievePbaNumbersCalledOnce() {
         verify(pbaValidationClient).retrievePbaNumbers(
-            AUTH_TOKEN,
+            BEARER_AUTH_TOKEN,
             TEST_SERVICE_AUTH_TOKEN,
             TEST_RESP_SOLICITOR_EMAIL);
     }

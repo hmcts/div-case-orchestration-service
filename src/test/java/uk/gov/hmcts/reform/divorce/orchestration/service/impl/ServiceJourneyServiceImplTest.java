@@ -17,7 +17,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeSe
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceDecisionMadeWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceDecisionMakingWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.SetupConfirmServicePaymentWorkflow;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -28,6 +30,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_SERVICE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
@@ -49,6 +53,9 @@ public class ServiceJourneyServiceImplTest {
 
     @Mock
     private ServiceDecisionMakingWorkflow serviceDecisionMakingWorkflow;
+
+    @Mock
+    private SetupConfirmServicePaymentWorkflow setupConfirmServicePaymentWorkflow;
 
     @InjectMocks
     private ServiceJourneyServiceImpl classUnderTest;
@@ -150,6 +157,28 @@ public class ServiceJourneyServiceImplTest {
             .thenThrow(WorkflowException.class);
 
         classUnderTest.serviceDecisionRefusal(input.getCaseDetails(), AUTH_TOKEN);
+    }
+
+
+    @Test
+    public void givenCaseData_whenSetupConfirmServicePaymentEvent_thenReturnPayload() throws Exception {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .build();
+
+        when(setupConfirmServicePaymentWorkflow.run(eq(caseDetails))).thenReturn(new HashMap<>());
+
+        classUnderTest.setupConfirmServicePaymentEvent(caseDetails);
+
+        verify(setupConfirmServicePaymentWorkflow).run(eq(caseDetails));
+    }
+
+    @Test(expected = ServiceJourneyServiceException.class)
+    public void shouldThrowException_whenSetupConfirmServicePaymentEventFeeWorkflow_throwsWorkflowException() throws Exception {
+        when(setupConfirmServicePaymentWorkflow.run(any())).thenThrow(WorkflowException.class);
+
+        classUnderTest.setupConfirmServicePaymentEvent(CaseDetails.builder().caseId(TEST_CASE_ID).build());
     }
 
     private CcdCallbackRequest buildCcdCallbackRequest() {

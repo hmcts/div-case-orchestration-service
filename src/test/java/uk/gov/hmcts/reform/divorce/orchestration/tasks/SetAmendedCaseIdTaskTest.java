@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseLink;
+import uk.gov.hmcts.reform.divorce.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
@@ -29,7 +29,7 @@ public class SetAmendedCaseIdTaskTest {
         final Map<String, Object> oldCaseData = new HashMap<>();
         final Map<String, Object> newCaseData = new HashMap<>(ImmutableMap.of(ID, TEST_CASE_ID));
         final Map<String, Object> expectedCaseData = new HashMap<>(ImmutableMap.of(
-            AMENDED_CASE_ID_CCD_KEY, new CaseLink(TEST_CASE_ID)
+            AMENDED_CASE_ID_CCD_KEY, CaseLink.builder().caseReference(TEST_CASE_ID).build()
         ));
 
         final TaskContext context = new DefaultTaskContext();

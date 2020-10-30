@@ -9,6 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.config.EmailTemplatesConfig;
@@ -16,7 +17,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.service.BulkPrintService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
@@ -119,7 +119,7 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
     private static final String SOLICITOR_GENERIC_UPDATE_EMAIL_TEMPLATE_ID = "951d26d9-e5fc-40de-a9da-d3ab957cb5e3";
     private static final String GENERIC_UPDATE_RESPONDENT_EMAIL_TEMPLATE_ID = "dc47109d-95f0-4a55-a11f-de41a5201cbc";
 
-    private static final String COST_ORDER_DM_ID = "7d10126d-0e88-4f0e-b475-628b54a87ca6";
+    private static final String COST_ORDER_DM_ID = "812f2709-7891-4f7e-835e-11a84a1fa008";
     private static final String DN_GRANTED_DM_ID = "23423432-5675-2543-b324-53g324234sd2";
 
     private static final String TEST_CO_RESPONDENT_EMAIL = TEST_USER_EMAIL;

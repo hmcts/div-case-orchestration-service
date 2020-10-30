@@ -4,9 +4,9 @@ import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Ignore;
 import org.junit.Test;
+import uk.gov.hmcts.reform.divorce.model.ccd.CaseLink;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.model.idam.UserDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseLink;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.support.CcdSubmissionSupport;
 
 import java.time.LocalDateTime;
@@ -41,9 +41,9 @@ public class ScheduleBulkCaseForListingTest extends CcdSubmissionSupport {
         String caseId2 = createAwaitingPronouncementCase(user2).getId().toString();
 
         CollectionMember<CaseLink> caseLink1 = new CollectionMember<>();
-        caseLink1.setValue(new CaseLink(caseId1));
+        caseLink1.setValue(CaseLink.builder().caseReference(caseId1).build());
         CollectionMember<CaseLink> caseLink2 = new CollectionMember<>();
-        caseLink2.setValue(new CaseLink(caseId2));
+        caseLink2.setValue(CaseLink.builder().caseReference(caseId2).build());
 
         List<CollectionMember<CaseLink>> acceptedCases = ImmutableList.of(caseLink1, caseLink2);
 

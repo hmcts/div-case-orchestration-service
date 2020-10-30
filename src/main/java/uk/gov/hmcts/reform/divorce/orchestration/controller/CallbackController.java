@@ -28,8 +28,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralEmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralOrderService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralReferralService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPaymentTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.Collections;
@@ -72,6 +74,7 @@ public class CallbackController {
     private final GeneralOrderService generalOrderService;
     private final AosService aosService;
     private final GeneralEmailService generalEmailService;
+    private final GeneralReferralService generalReferralService;
 
     @PostMapping(path = "/request-clarification-petitioner")
     @ApiOperation(value = "Trigger notification email to request clarification from Petitioner")
@@ -185,6 +188,7 @@ public class CallbackController {
             responseBuilder.state(getPbaUpdatedState(caseId, response));
             responseBuilder.data(response);
         } else {
+            responseBuilder.state(ProcessPbaPaymentTask.DEFAULT_END_STATE_FOR_NON_PBA_PAYMENTS);
             responseBuilder.data(response);
         }
 
@@ -1234,7 +1238,22 @@ public class CallbackController {
 
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
-                .data(caseOrchestrationService.setupConfirmServicePaymentEvent(ccdCallbackRequest))
+                .data(serviceJourneyService.setupConfirmServicePaymentEvent(ccdCallbackRequest.getCaseDetails()))
+                .build());
+    }
+
+    @PostMapping(path = "/set-up-order-summary/without-notice-fee")
+    @ApiOperation(value = "Return service payment fee. Starting from state AwaitingGeneralReferralPayment")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Service payment callback")})
+    public ResponseEntity<CcdCallbackResponse> setupGeneralReferralPaymentEvent(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        Map<String, Object> data = generalReferralService.setupGeneralReferralPaymentEvent(ccdCallbackRequest.getCaseDetails());
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(data)
                 .build());
     }
 
@@ -1266,6 +1285,34 @@ public class CallbackController {
             CcdCallbackResponse.builder()
                 .data(generalEmailService.createGeneralEmail(ccdCallbackRequest.getCaseDetails()))
                 .build());
+    }
+
+    @PostMapping(path = "/general-referral", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback for general referral")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> generalReferral(@RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest)
+        throws CaseOrchestrationServiceException {
+
+        CcdCallbackResponse response = generalReferralService.receiveReferral(ccdCallbackRequest);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping(path = "/general-consideration", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback for general consideration")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> generalConsideration(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest)
+        throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(generalReferralService.generalConsideration(ccdCallbackRequest.getCaseDetails()))
+                .build()
+        );
     }
 
     @ExceptionHandler(CaseOrchestrationServiceException.class)
