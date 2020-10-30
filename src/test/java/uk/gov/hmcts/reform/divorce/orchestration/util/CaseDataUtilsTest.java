@@ -8,7 +8,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceGeneralReferral;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceServiceApplication;
 
 import java.util.HashMap;
 import java.util.List;
