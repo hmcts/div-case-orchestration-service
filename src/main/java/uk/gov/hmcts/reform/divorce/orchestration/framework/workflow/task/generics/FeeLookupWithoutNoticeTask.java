@@ -17,7 +17,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @RequiredArgsConstructor
 public abstract class FeeLookupWithoutNoticeTask implements Task<Map<String, Object>> {
 
-    private final FeesAndPaymentsClient feesAndPaymentsClient;
+    protected final FeesAndPaymentsClient feesAndPaymentsClient;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
@@ -47,7 +47,7 @@ public abstract class FeeLookupWithoutNoticeTask implements Task<Map<String, Obj
         return caseData;
     }
 
-    private OrderSummary getOrderSummary() {
+    protected OrderSummary getOrderSummary() {
         OrderSummary orderSummary = new OrderSummary();
         orderSummary.add(feesAndPaymentsClient.getGeneralApplicationWithoutFee());
 

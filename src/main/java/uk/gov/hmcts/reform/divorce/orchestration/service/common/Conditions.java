@@ -26,6 +26,10 @@ public class Conditions {
         return ApplicationServiceTypes.DEEMED.equalsIgnoreCase((String) caseData.get(CcdFields.SERVICE_APPLICATION_TYPE));
     }
 
+    public static boolean isServiceApplicationBailiff(Map<String, Object> caseData) {
+        return ApplicationServiceTypes.BAILIFF.equalsIgnoreCase((String) caseData.get(CcdFields.SERVICE_APPLICATION_TYPE));
+    }
+
     public static boolean isAwaitingServiceConsideration(CaseDetails caseDetails) {
         return CcdStates.AWAITING_SERVICE_CONSIDERATION.equalsIgnoreCase(caseDetails.getState());
     }
