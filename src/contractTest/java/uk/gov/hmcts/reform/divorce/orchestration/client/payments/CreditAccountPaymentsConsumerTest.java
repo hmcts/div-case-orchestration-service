@@ -105,9 +105,10 @@ public class CreditAccountPaymentsConsumerTest {
             "CA-E0004", "Your account is deleted");
     }
 
-    private RequestResponsePact buildRequestResponsePact(PactDslWithProvider builder, String stateName, String amount, int statusCode, String success,
-                                                         String paymentStatus,
-                                                         String errorCode, String errorMessage) throws JsonProcessingException {
+    private RequestResponsePact buildRequestResponsePact(PactDslWithProvider builder, String stateName, String amount,
+                                                         int statusCode, String status, String paymentStatus,
+                                                         String errorCode, String errorMessage)
+        throws JsonProcessingException {
         Map<String, Object> paymentMap = new HashMap<>();
         paymentMap.put("accountNumber", "test.solicitor.account");
         paymentMap.put("availableBalance", "1000.00");
@@ -123,7 +124,7 @@ public class CreditAccountPaymentsConsumerTest {
             .body(objectMapper.writeValueAsString(getCreditAccountPaymentRequest(amount)))
             .willRespondWith()
             .status(statusCode)
-            .body(buildCreditAccountPaymentResponseDtoPactDsl(success, paymentStatus, errorCode,
+            .body(buildCreditAccountPaymentResponseDtoPactDsl(status, paymentStatus, errorCode,
                 errorMessage))
             .toPact();
     }
