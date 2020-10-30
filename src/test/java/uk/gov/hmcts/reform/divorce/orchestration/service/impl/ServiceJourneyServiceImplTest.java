@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionWorkflow;
@@ -31,6 +32,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_SERVICE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
@@ -59,15 +61,21 @@ public class ServiceJourneyServiceImplTest {
     private ServiceJourneyServiceImpl classUnderTest;
 
     @Test
-    public void whenServiceApplicationIsGrantedThenReturnServiceApplicationNotApproved()
+    public void whenServiceApplicationIsNotGrantedThenReturnServiceApplicationNotApproved()
         throws ServiceJourneyServiceException, WorkflowException {
-        runTestMakeServiceDecision(NO_VALUE, SERVICE_APPLICATION_NOT_APPROVED);
+        runTestMakeServiceDecision(NO_VALUE, SERVICE_APPLICATION_NOT_APPROVED, ApplicationServiceTypes.BAILIFF);
     }
 
     @Test
-    public void whenServiceApplicationNotGrantedThenReturnAwaitingDNApplication()
+    public void whenBailiffServiceApplicationGrantedThenReturnAwaitingBailiffService()
         throws ServiceJourneyServiceException, WorkflowException {
-        runTestMakeServiceDecision(YES_VALUE, AWAITING_DECREE_NISI);
+        runTestMakeServiceDecision(YES_VALUE, AWAITING_BAILIFF_SERVICE, ApplicationServiceTypes.BAILIFF);
+    }
+
+    @Test
+    public void whenNonBailiffServiceApplicationGrantedThenReturnAwaitingDNApplication()
+        throws ServiceJourneyServiceException, WorkflowException {
+        runTestMakeServiceDecision(YES_VALUE, AWAITING_DECREE_NISI, ApplicationServiceTypes.DEEMED);
     }
 
     @Test
@@ -179,9 +187,12 @@ public class ServiceJourneyServiceImplTest {
             .build();
     }
 
-    private void runTestMakeServiceDecision(String decision, String expectedState)
+    private void runTestMakeServiceDecision(String decision, String expectedState, String applicationType)
         throws ServiceJourneyServiceException, WorkflowException {
-        Map<String, Object> payload = ImmutableMap.of(CcdFields.SERVICE_APPLICATION_GRANTED, decision);
+        Map<String, Object> payload = ImmutableMap.of(
+            CcdFields.SERVICE_APPLICATION_GRANTED, decision,
+            CcdFields.SERVICE_APPLICATION_TYPE, applicationType);
+
         CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
 
         when(makeServiceDecisionWorkflow.run(caseDetails, AUTH_TOKEN)).thenReturn(payload);
