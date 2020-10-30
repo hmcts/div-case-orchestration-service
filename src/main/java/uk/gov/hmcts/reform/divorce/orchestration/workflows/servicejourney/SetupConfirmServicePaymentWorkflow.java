@@ -26,7 +26,7 @@ public class SetupConfirmServicePaymentWorkflow extends DefaultWorkflow<Map<Stri
         return this.execute(
             new Task[] {
                 Conditions.isServiceApplicationBailiff(caseDetails.getCaseData()) ? getBailiffApplicationFeeTask
-                    : getGeneralApplicationWithoutNoticeFeeTask
+                    : generalApplicationWithoutNoticeFeeTask
             },
             caseDetails.getCaseData(),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseDetails.getCaseId())
