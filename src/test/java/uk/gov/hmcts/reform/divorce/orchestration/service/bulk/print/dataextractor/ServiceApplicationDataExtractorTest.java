@@ -1,14 +1,23 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
 
+import com.google.common.collect.ImmutableMap;
+import org.hamcrest.core.Is;
 import org.junit.Test;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_MY_REASON;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_REFUSAL_REASON;
@@ -16,6 +25,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.S
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DEEMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.CaseDataKeys.SERVICE_APPLICATION_PAYMENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getListOfServiceApplications;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationGranted;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationPayment;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationRefusalReason;
@@ -63,6 +73,34 @@ public class ServiceApplicationDataExtractorTest {
     @Test(expected = InvalidDataForTaskException.class)
     public void getServiceApplicationPaymentShouldThrowInvalidDataForTaskException() {
         getServiceApplicationPayment(emptyMap());
+    }
+
+    @Test
+    public void givenNoField_whenGetListOfServiceApplications_shouldReturnAnEmptyArray() {
+        List<CollectionMember<DivorceServiceApplication>> result = getListOfServiceApplications(emptyMap());
+
+        assertThat(result, Is.is(empty()));
+    }
+
+    @Test
+    public void givenFieldWithAnEmptyArray_whenGetListOfServiceApplications_shouldReturnEmptyArray() {
+        final List<CollectionMember<DivorceServiceApplication>> myList = emptyList();
+
+        List<CollectionMember<DivorceServiceApplication>> result =
+            getListOfServiceApplications(ImmutableMap.of(CcdFields.SERVICE_APPLICATIONS, myList));
+
+        assertThat(result, Is.is(empty()));
+    }
+
+    @Test
+    public void givenFieldWithPopulatedArray_whenGetListOfServiceApplications_shouldReturnPopulatedArray() {
+        final List<CollectionMember<DivorceServiceApplication>> myList = asList(new CollectionMember<>());
+
+        List<CollectionMember<DivorceServiceApplication>> result =
+            getListOfServiceApplications(ImmutableMap.of(CcdFields.SERVICE_APPLICATIONS, myList));
+
+        assertThat(result.size(), Is.is(1));
+        assertThat(result, Is.is(myList));
     }
 
     private static Map<String, Object> buildCaseDataWithField(String field, String value) {

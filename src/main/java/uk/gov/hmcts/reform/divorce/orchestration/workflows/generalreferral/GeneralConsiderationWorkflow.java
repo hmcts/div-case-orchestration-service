@@ -8,7 +8,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalreferral.GeneralReferralDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalreferral.GeneralReferralDecisionDateTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalreferral.GeneralReferralFieldsRemovalTask;
 
 import java.util.Map;
 
@@ -20,6 +22,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class GeneralConsiderationWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final GeneralReferralDecisionDateTask generalReferralDecisionDateTask;
+    private final GeneralReferralDataTask generalReferralDataTask;
+    private final GeneralReferralFieldsRemovalTask generalReferralFieldsRemovalTask;
 
     public Map<String, Object> run(CaseDetails caseDetails) throws WorkflowException {
 
@@ -29,7 +33,9 @@ public class GeneralConsiderationWorkflow extends DefaultWorkflow<Map<String, Ob
 
         return this.execute(
             new Task[] {
-                generalReferralDecisionDateTask
+                generalReferralDecisionDateTask,
+                generalReferralDataTask,
+                generalReferralFieldsRemovalTask
             },
             caseDetails.getCaseData(),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseId)
