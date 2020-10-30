@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceGeneral
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor;
-import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -55,7 +54,7 @@ public class GeneralReferralDataTask implements Task<Map<String, Object>> {
     private Map<String, Object> addNewServiceApplicationToCaseData(
         Map<String, Object> caseData, DivorceGeneralReferral serviceApplication) {
 
-        List<CollectionMember<DivorceGeneralReferral>> generalReferrals = CaseDataUtils.getListOfGeneralReferrals(caseData);
+        List<CollectionMember<DivorceGeneralReferral>> generalReferrals = GeneralReferralDataExtractor.getListOfGeneralReferrals(caseData);
         CollectionMember<DivorceGeneralReferral> collectionMember = buildCollectionMember(serviceApplication);
 
         generalReferrals.add(collectionMember);

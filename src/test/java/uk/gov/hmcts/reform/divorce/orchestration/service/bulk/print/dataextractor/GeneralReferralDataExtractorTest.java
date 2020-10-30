@@ -1,12 +1,21 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
 
 import com.google.common.collect.ImmutableMap;
+import org.hamcrest.core.Is;
 import org.junit.Test;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceGeneralReferral;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
 
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.emptyMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.ALTERNATIVE_SERVICE_MEDIUM;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_APPLICATION_ADDED_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_APPLICATION_FROM;
@@ -29,6 +38,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor.getDecisionReason;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor.getDetails;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor.getIsFeeRequired;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor.getListOfGeneralReferrals;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor.getPaymentType;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor.getReason;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor.getType;
@@ -152,5 +162,31 @@ public class GeneralReferralDataExtractorTest {
     @Test(expected = InvalidDataForTaskException.class)
     public void getAlternativeMediumShouldThrowInvalidDataForTaskException() {
         getAlternativeMedium(emptyMap());
+    }
+
+    @Test
+    public void givenNoField_whenGetListOfGeneralReferrals_shouldReturnAnEmptyArray() {
+        List<CollectionMember<DivorceGeneralReferral>> result = getListOfGeneralReferrals(emptyMap());
+
+        assertThat(result, Is.is(empty()));
+    }
+
+    @Test
+    public void givenFieldWithAnEmptyArray_whenGetListOfGeneralReferrals_shouldReturnEmptyArray() {
+        final List<CollectionMember<DivorceGeneralReferral>> myList = emptyList();
+
+        List<CollectionMember<DivorceGeneralReferral>> result = getListOfGeneralReferrals(ImmutableMap.of(CcdFields.GENERAL_REFERRALS, myList));
+
+        assertThat(result, Is.is(empty()));
+    }
+
+    @Test
+    public void givenFieldWithPopulatedArray_whenGetListOfGeneralReferrals_shouldReturnPopulatedArray() {
+        final List<CollectionMember<DivorceGeneralReferral>> myList = asList(new CollectionMember<>());
+
+        List<CollectionMember<DivorceGeneralReferral>> result = getListOfGeneralReferrals(ImmutableMap.of(CcdFields.GENERAL_REFERRALS, myList));
+
+        assertThat(result.size(), Is.is(1));
+        assertThat(result, Is.is(myList));
     }
 }

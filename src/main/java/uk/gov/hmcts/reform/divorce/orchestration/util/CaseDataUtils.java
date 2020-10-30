@@ -242,18 +242,19 @@ public class CaseDataUtils {
         return objectMapper.convertValue(getMandatoryPropertyValueAsObject(caseData, key), DynamicList.class);
     }
 
-    public static List<CollectionMember<DivorceServiceApplication>> getListOfServiceApplications(Map<String, Object> caseData) {
-        return Optional.ofNullable(caseData.get(CcdFields.SERVICE_APPLICATIONS))
-            .map(i -> objectMapper.convertValue(i, new TypeReference<List<CollectionMember<DivorceServiceApplication>>>() {
-            }))
-            .orElse(new ArrayList<>());
-    }
+    public static <T> List<CollectionMember<T>> getListOfCollectionMembers(String field, Map<String, Object> caseData) {
+        List<CollectionMember<T>> listOfCollectionMembers;
 
-    public static List<CollectionMember<DivorceGeneralReferral>> getListOfGeneralReferrals(Map<String, Object> caseData) {
-        return Optional.ofNullable(caseData.get(CcdFields.GENERAL_REFERRALS))
-            .map(i -> objectMapper.convertValue(i, new TypeReference<List<CollectionMember<DivorceGeneralReferral>>>() {
-            }))
-            .orElse(new ArrayList<>());
+        Optional<Object> optionalCaseField = Optional.ofNullable(caseData.get(field));
+
+        if (optionalCaseField.isPresent()){
+            listOfCollectionMembers = objectMapper.convertValue(optionalCaseField.get(), new TypeReference<>() {
+            });
+        } else {
+            listOfCollectionMembers = new ArrayList<>();
+        }
+
+        return listOfCollectionMembers;
     }
 
 }

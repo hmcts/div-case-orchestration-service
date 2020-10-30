@@ -380,56 +380,28 @@ public class CaseDataUtilsTest {
     }
 
     @Test
-    public void givenNoField_whenGetListOfServiceApplications_shouldReturnAnEmptyArray() {
-        List<CollectionMember<DivorceServiceApplication>> result = CaseDataUtils.getListOfServiceApplications(emptyMap());
+    public void givenNoField_whenGetListOfCollectionMembers_shouldReturnAnEmptyArray() {
+        List<CollectionMember<DivorceGeneralReferral>> result = CaseDataUtils.getListOfCollectionMembers(CcdFields.GENERAL_REFERRALS, emptyMap());
 
         assertThat(result, is(empty()));
     }
 
     @Test
-    public void givenFieldWithAnEmptyArray_whenGetListOfServiceApplications_shouldReturnEmptyArray() {
-        final List<CollectionMember<DivorceServiceApplication>> myList = emptyList();
-
-        List<CollectionMember<DivorceServiceApplication>> result = CaseDataUtils
-            .getListOfServiceApplications(ImmutableMap.of(CcdFields.SERVICE_APPLICATIONS, myList));
-
-        assertThat(result, is(empty()));
-    }
-
-    @Test
-    public void givenFieldWithPopulatedArray_whenGetListOfServiceApplications_shouldReturnPopulatedArray() {
-        final List<CollectionMember<DivorceServiceApplication>> myList = asList(new CollectionMember<>());
-
-        List<CollectionMember<DivorceServiceApplication>> result = CaseDataUtils
-            .getListOfServiceApplications(ImmutableMap.of(CcdFields.SERVICE_APPLICATIONS, myList));
-
-        assertThat(result.size(), is(1));
-        assertThat(result, is(myList));
-    }
-
-    @Test
-    public void givenNoField_whenGetListOfGeneralReferrals_shouldReturnAnEmptyArray() {
-        List<CollectionMember<DivorceGeneralReferral>> result = CaseDataUtils.getListOfGeneralReferrals(emptyMap());
-
-        assertThat(result, is(empty()));
-    }
-
-    @Test
-    public void givenFieldWithAnEmptyArray_whenGetListOfGeneralReferrals_shouldReturnEmptyArray() {
+    public void givenFieldWithAnEmptyArray_whenGetListOfCollectionMembers_shouldReturnEmptyArray() {
         final List<CollectionMember<DivorceGeneralReferral>> myList = emptyList();
 
         List<CollectionMember<DivorceGeneralReferral>> result = CaseDataUtils
-            .getListOfGeneralReferrals(ImmutableMap.of(CcdFields.GENERAL_REFERRALS, myList));
+            .getListOfCollectionMembers(CcdFields.GENERAL_REFERRALS, ImmutableMap.of(CcdFields.GENERAL_REFERRALS, myList));
 
         assertThat(result, is(empty()));
     }
 
     @Test
-    public void givenFieldWithPopulatedArray_whenGetListOfGeneralReferrals_shouldReturnPopulatedArray() {
+    public void givenFieldWithPopulatedArray_whenGetListOfCollectionMembers_shouldReturnPopulatedArray() {
         final List<CollectionMember<DivorceGeneralReferral>> myList = asList(new CollectionMember<>());
 
         List<CollectionMember<DivorceGeneralReferral>> result = CaseDataUtils
-            .getListOfGeneralReferrals(ImmutableMap.of(CcdFields.GENERAL_REFERRALS, myList));
+            .getListOfCollectionMembers(CcdFields.GENERAL_REFERRALS, ImmutableMap.of(CcdFields.GENERAL_REFERRALS, myList));
 
         assertThat(result.size(), is(1));
         assertThat(result, is(myList));

@@ -2,12 +2,16 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextract
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceServiceApplication;
 
+import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getListOfCollectionMembers;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ServiceApplicationDataExtractor {
@@ -38,5 +42,9 @@ public class ServiceApplicationDataExtractor {
 
     public static String getServiceApplicationPayment(Map<String, Object> caseData) {
         return getMandatoryStringValue(caseData, CaseDataKeys.SERVICE_APPLICATION_PAYMENT);
+    }
+
+    public static List<CollectionMember<DivorceServiceApplication>> getListOfServiceApplications(Map<String, Object> caseData) {
+        return getListOfCollectionMembers(CcdFields.SERVICE_APPLICATIONS, caseData);
     }
 }

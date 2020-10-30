@@ -2,12 +2,16 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextract
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceGeneralReferral;
 
+import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getListOfCollectionMembers;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class GeneralReferralDataExtractor {
@@ -74,5 +78,9 @@ public class GeneralReferralDataExtractor {
 
     public static String getAlternativeMedium(Map<String, Object> caseData) {
         return getMandatoryStringValue(caseData, CaseDataKeys.ALTERNATIVE_SERVICE_MEDIUM);
+    }
+
+    public static List<CollectionMember<DivorceGeneralReferral>> getListOfGeneralReferrals(Map<String, Object> caseData) {
+        return getListOfCollectionMembers(CcdFields.GENERAL_REFERRALS, caseData);
     }
 }
