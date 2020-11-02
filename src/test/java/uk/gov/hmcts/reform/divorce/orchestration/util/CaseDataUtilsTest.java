@@ -2,9 +2,12 @@ package uk.gov.hmcts.reform.divorce.orchestration.util;
 
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceGeneralReferral;
 
 import java.util.HashMap;
 import java.util.List;
@@ -373,6 +376,34 @@ public class CaseDataUtilsTest {
     public void givenSolPaymentMethodDoesNotExist_whenSolicitorPaymentMethodIsPba_thenReturnFalse() {
         Map<String, Object> caseData = emptyMap();
         assertThat(CaseDataUtils.isSolicitorPaymentMethodPba(caseData), is(false));
+    }
+
+    @Test
+    public void givenNoField_whenGetListOfCollectionMembers_shouldReturnAnEmptyArray() {
+        List<CollectionMember<DivorceGeneralReferral>> result = CaseDataUtils.getListOfCollectionMembers(CcdFields.GENERAL_REFERRALS, emptyMap());
+
+        assertThat(result, is(empty()));
+    }
+
+    @Test
+    public void givenFieldWithAnEmptyArray_whenGetListOfCollectionMembers_shouldReturnEmptyArray() {
+        final List<CollectionMember<DivorceGeneralReferral>> myList = emptyList();
+
+        List<CollectionMember<DivorceGeneralReferral>> result = CaseDataUtils
+            .getListOfCollectionMembers(CcdFields.GENERAL_REFERRALS, ImmutableMap.of(CcdFields.GENERAL_REFERRALS, myList));
+
+        assertThat(result, is(empty()));
+    }
+
+    @Test
+    public void givenFieldWithPopulatedArray_whenGetListOfCollectionMembers_shouldReturnPopulatedArray() {
+        final List<CollectionMember<DivorceGeneralReferral>> myList = asList(new CollectionMember<>());
+
+        List<CollectionMember<DivorceGeneralReferral>> result = CaseDataUtils
+            .getListOfCollectionMembers(CcdFields.GENERAL_REFERRALS, ImmutableMap.of(CcdFields.GENERAL_REFERRALS, myList));
+
+        assertThat(result.size(), is(1));
+        assertThat(result, is(myList));
     }
 
 }

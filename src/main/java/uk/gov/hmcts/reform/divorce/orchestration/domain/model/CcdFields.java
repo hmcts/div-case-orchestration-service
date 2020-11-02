@@ -37,9 +37,21 @@ public class CcdFields {
     public static final String GENERAL_EMAIL_OTHER_RECIPIENT_EMAIL = "GeneralEmailOtherRecipientEmail";
     public static final String GENERAL_EMAIL_PARTIES = "GeneralEmailParties";
 
+    public static final String GENERAL_REFERRALS = "GeneralReferrals";
     public static final String GENERAL_REFERRAL_FEE = "GeneralReferralFee";
     public static final String GENERAL_REFERRAL_DECISION_DATE = "GeneralReferralDecisionDate";
+    public static final String GENERAL_REFERRAL_REASON = "GeneralReferralReason";
+    public static final String GENERAL_REFERRAL_TYPE = "GeneralReferralType";
+    public static final String GENERAL_REFERRAL_DETAILS = "GeneralReferralDetails";
+    public static final String GENERAL_REFERRAL_PAYMENT_TYPE = "GeneralReferralPaymentType";
+    public static final String GENERAL_REFERRAL_DECISION = "GeneralReferralDecision";
+    public static final String GENERAL_REFERRAL_DECISION_REASON = "GeneralReferralDecisionReason";
     public static final String GENERAL_APPLICATION_ADDED_DATE = "GeneralApplicationAddedDate";
+    public static final String GENERAL_APPLICATION_FROM = "GeneralApplicationFrom";
+    public static final String GENERAL_APPLICATION_REFERRAL = "generalApplicationReferral";
+    public static final String GENERAL_APPLICATION_REFERRAL_DATE = "GeneralApplicationReferralDate";
+    public static final String ALTERNATIVE_SERVICE_APPLICATION = "alternativeServiceApplication";
+    public static final String ALTERNATIVE_SERVICE_MEDIUM = "AlternativeServiceMedium";
     public static final String FEE_AMOUNT_WITHOUT_NOTICE = "FeeAmountWithoutNotice";
 
     public static final String PETITIONER_FIRST_NAME = OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
@@ -47,7 +59,7 @@ public class CcdFields {
     public static final String PETITIONER_EMAIL = OrchestrationConstants.D_8_PETITIONER_EMAIL;
 
     public static final String PBA_NUMBERS = "PbaNumbers";
+
     public static final String GENERAL_APPLICATION_WITHOUT_NOTICE_FEE_SUMMARY = "generalApplicationWithoutNoticeFeeSummary";
     public static final String GENERAL_REFERRAL_WITHOUT_NOTICE_FEE_SUMMARY = "generalReferralWithoutNoticeFeeSummary";
-
 }

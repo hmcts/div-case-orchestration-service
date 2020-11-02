@@ -12,18 +12,18 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GetGeneralApplicationWithoutNoticeFeeTaskTest extends FeeLookupWithoutNoticeTaskTest {
+public class GeneralApplicationWithoutNoticeFeeLookupTaskTest extends FeeLookupWithoutNoticeTaskTest {
 
     @InjectMocks
-    private GetGeneralApplicationWithoutNoticeFeeTask getGeneralApplicationWithoutNoticeFeeTask;
+    private GeneralApplicationWithoutNoticeFeeLookupTask generalApplicationWithoutNoticeFeeTask;
 
     @Override
     protected FeeLookupWithoutNoticeTask getTask() {
-        return getGeneralApplicationWithoutNoticeFeeTask;
+        return generalApplicationWithoutNoticeFeeTask;
     }
 
     @Test
     public void shouldReturnExpectedField() {
-        assertThat(getTask().getFieldName(), is(CcdFields.GENERAL_APPLICATION_WITHOUT_NOTICE_FEE_SUMMARY));
+        assertThat(getTask().getOrderSummaryFieldName(), is(CcdFields.GENERAL_APPLICATION_WITHOUT_NOTICE_FEE_SUMMARY));
     }
 }

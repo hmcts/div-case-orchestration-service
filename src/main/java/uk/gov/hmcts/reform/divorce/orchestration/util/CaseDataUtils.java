@@ -239,4 +239,19 @@ public class CaseDataUtils {
         return objectMapper.convertValue(getMandatoryPropertyValueAsObject(caseData, key), DynamicList.class);
     }
 
+    public static <T> List<CollectionMember<T>> getListOfCollectionMembers(String field, Map<String, Object> caseData) {
+        List<CollectionMember<T>> listOfCollectionMembers;
+
+        Optional<Object> optionalCaseField = Optional.ofNullable(caseData.get(field));
+
+        if (optionalCaseField.isPresent()) {
+            listOfCollectionMembers = objectMapper.convertValue(optionalCaseField.get(), new TypeReference<>() {
+            });
+        } else {
+            listOfCollectionMembers = new ArrayList<>();
+        }
+
+        return listOfCollectionMembers;
+    }
+
 }

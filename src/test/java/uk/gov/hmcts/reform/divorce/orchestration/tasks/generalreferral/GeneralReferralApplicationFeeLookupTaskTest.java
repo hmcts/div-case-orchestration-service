@@ -14,19 +14,19 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GetGeneralReferralApplicationFeeTaskTest extends FeeLookupWithoutNoticeTaskTest {
+public class GeneralReferralApplicationFeeLookupTaskTest extends FeeLookupWithoutNoticeTaskTest {
 
     @InjectMocks
-    private GetGeneralReferralApplicationFeeTask getGeneralReferralApplicationFeeTask;
+    private GeneralReferralApplicationFeeLookupTask generalReferralApplicationFeeLookupTask;
 
     @Override
     protected FeeLookupWithoutNoticeTask getTask() {
-        return getGeneralReferralApplicationFeeTask;
+        return generalReferralApplicationFeeLookupTask;
     }
 
     @Test
     public void shouldReturnExpectedField() {
-        assertThat(getTask().getFieldName(), is(CcdFields.GENERAL_REFERRAL_WITHOUT_NOTICE_FEE_SUMMARY));
+        assertThat(getTask().getOrderSummaryFieldName(), is(CcdFields.GENERAL_REFERRAL_WITHOUT_NOTICE_FEE_SUMMARY));
     }
 
     @Test

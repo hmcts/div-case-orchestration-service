@@ -36,15 +36,15 @@ public class GeneralReferralServiceImpl implements GeneralReferralService {
 
         CcdCallbackResponse.CcdCallbackResponseBuilder responseBuilder = CcdCallbackResponse.builder();
 
+        String state = isGeneralReferralPaymentRequired(caseDetails.getCaseData())
+            ? AWAITING_GENERAL_REFERRAL_PAYMENT
+            : AWAITING_GENERAL_CONSIDERATION;
+
         try {
             responseBuilder.data(generalReferralWorkflow.run(caseDetails));
         } catch (WorkflowException workflowException) {
             throw new CaseOrchestrationServiceException(workflowException, caseId);
         }
-
-        String state = isGeneralReferralPaymentRequired(caseDetails.getCaseData())
-            ? AWAITING_GENERAL_REFERRAL_PAYMENT
-            : AWAITING_GENERAL_CONSIDERATION;
 
         log.info("CaseID: {} Case state updated to {}", caseId, state);
 
