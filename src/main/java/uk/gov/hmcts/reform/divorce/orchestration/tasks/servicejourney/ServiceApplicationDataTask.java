@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor;
-import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.List;
 import java.util.Map;
@@ -21,8 +20,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @Slf4j
 @AllArgsConstructor
 public class ServiceApplicationDataTask implements Task<Map<String, Object>> {
-
-    private final CcdUtil ccdUtil;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
@@ -37,7 +34,7 @@ public class ServiceApplicationDataTask implements Task<Map<String, Object>> {
     private Map<String, Object> addNewServiceApplicationToCaseData(
         Map<String, Object> caseData, DivorceServiceApplication serviceApplication) {
 
-        List<CollectionMember<DivorceServiceApplication>> collection = ccdUtil.getListOfServiceApplications(caseData);
+        List<CollectionMember<DivorceServiceApplication>> collection = ServiceApplicationDataExtractor.getListOfServiceApplications(caseData);
         CollectionMember<DivorceServiceApplication> collectionMember = new CollectionMember<>();
         collectionMember.setValue(serviceApplication);
 
