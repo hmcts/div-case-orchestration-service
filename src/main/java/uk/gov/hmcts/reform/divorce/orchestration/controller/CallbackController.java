@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.divorce.model.parties.DivorceParty;
 import uk.gov.hmcts.reform.divorce.model.response.ValidationResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -1310,6 +1311,23 @@ public class CallbackController {
             CcdCallbackResponse.builder()
                 .data(generalReferralService.generalConsideration(ccdCallbackRequest.getCaseDetails()))
                 .build()
+        );
+    }
+
+    @PostMapping(path = "/state-before-general-referral", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback to set a case back to the state it had before triggering a General Referral")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> returnToStateBeforeGeneralReferral(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+
+        return ResponseEntity.ok(CcdCallbackResponse.builder()
+            .state(caseData.get(CcdFields.GENERAL_REFERRAL_PREVIOUS_CASE_STATE).toString())
+            .data(caseData)
+            .build()
         );
     }
 
