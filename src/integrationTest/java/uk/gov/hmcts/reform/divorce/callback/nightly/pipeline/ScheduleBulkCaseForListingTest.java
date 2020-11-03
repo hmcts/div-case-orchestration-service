@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.callback;
+package uk.gov.hmcts.reform.divorce.callback.nightly.pipeline;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.tuple.Pair;

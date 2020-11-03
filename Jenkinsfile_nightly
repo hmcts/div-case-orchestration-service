@@ -44,9 +44,9 @@ withNightlyPipeline(type, product, component) {
     println("### Set test_environment.. ###")
     env.test_environment = 'aat'
     after('DependencyCheckNightly') {
-        stage('LowerPriorityFunctional') {
-            println("~~~~~~~~~~~~~~~~~  Starting Lower Priority Functional :aat ~~~~~~~~~~")
-            sh("./gradlew --no-daemon --init-script init.gradle lowerPriorityFunctional")
+        stage('NightlyFunctional') {
+            println("~~~~~~~~~~~~~~~~~  Starting Nightly Only Functional :aat ~~~~~~~~~~")
+            sh("./gradlew --no-daemon --init-script init.gradle nightlyFunctional")
             steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/site/serenity/**/*'
             steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'build/reports/**/*'
 

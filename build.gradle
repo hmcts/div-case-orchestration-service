@@ -424,7 +424,9 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
     maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
     forkEvery = 10
 
-    exclude "uk/gov/hmcts/reform/divorce/maintenance/**"
+    exclude "uk/gov/hmcts/reform/divorce/callback/nightly/pipeline/**"
+    exclude "uk/gov/hmcts/reform/divorce/maintenance/nightly/pipeline/**"
+
 
     setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
     setClasspath(sourceSets.integrationTest.runtimeClasspath)
@@ -437,15 +439,17 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
     finalizedBy aggregate
 }
 
-task lowerPriorityFunctional(type: Test, description: 'Runs the Priority Functional tests.', group: 'Verification') {
+task nightlyFunctional(type: Test, description: 'Runs the Nightly Only Functional tests.', group: 'Verification') {
     doFirst(){
-        printf("~~~~~~~~~~~~~~ Running  priorityFunctional::::::::::")
+        printf("::::::::::  Running  nightlyFunctional ::::::::::")
     }
 
     maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
     forkEvery = 10
 
-    include "uk/gov/hmcts/reform/divorce/maintenance/**"
+    include "uk/gov/hmcts/reform/divorce/callback/nightly/pipeline/**"
+    include "uk/gov/hmcts/reform/divorce/maintenance/nightly/pipeline/**"
+
 
     setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
     setClasspath(sourceSets.integrationTest.runtimeClasspath)

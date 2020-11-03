@@ -35,8 +35,8 @@ public class CreateBulkCaseTest extends CcdSubmissionSupport {
     private static final int  POOL_INTERVAL_IN_MILLIS = 1000;
 
     @Test
-    @Ignore
     //QA asked to disable this test, to able to test scheduler
+    @Ignore
     public void whenCreateBulkCase_CaseIsCreated() throws Exception {
         final UserDetails user1 = createCitizenUser();
         final UserDetails user2 = createCitizenUser();
