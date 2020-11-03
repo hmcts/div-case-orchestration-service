@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral;
+package uk.gov.hmcts.reform.divorce.orchestration.workflows.alternativeservice;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalreferral.GeneralReferralApplicationFeeLookupTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDateTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,27 +17,26 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mo
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTaskWasCalled;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SetupConfirmServicePaymentWorkflowTest {
+public class ConfirmAlternativeServiceWorkflowTest {
 
     @Mock
-    private GeneralReferralApplicationFeeLookupTask generalReferralApplicationFeeLookupTask;
-
+    private ModifyDueDateTask modifyDueDateTask;
 
     @InjectMocks
-    private SetupGeneralReferralPaymentWorkflow setupGeneralReferralPaymentWorkflow;
+    private ConfirmAlternativeServiceWorkflow confirmAlternativeServiceWorkflow;
 
     @Test
-    public void whenGeneralReferralWithoutNoticeFee_thenProcessGeneralAppFeeAsExpected() throws Exception {
+    public void whenConfirmAlternativeServiceWorkflowModifyDueDateTaskIsExecuted() throws Exception {
         HashMap<String, Object> caseData = new HashMap<>();
-        mockTasksExecution(caseData, generalReferralApplicationFeeLookupTask);
+        mockTasksExecution(caseData, modifyDueDateTask);
 
-        Map<String, Object> returned = setupGeneralReferralPaymentWorkflow.run(
+        Map<String, Object> returned = confirmAlternativeServiceWorkflow.run(
             CaseDetails.builder()
                 .caseData(caseData)
                 .build()
         );
 
         assertThat(returned, is(caseData));
-        verifyTaskWasCalled(caseData, generalReferralApplicationFeeLookupTask);
+        verifyTaskWasCalled(caseData, modifyDueDateTask);
     }
 }
