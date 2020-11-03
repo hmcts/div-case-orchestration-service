@@ -16,4 +16,7 @@ public interface GeneralReferralService {
 
     Map<String, Object> setupGeneralReferralPaymentEvent(CaseDetails caseDetails)
         throws CaseOrchestrationServiceException;
+
+    CcdCallbackResponse validateStateRollbackToBeforeGeneralReferral(CaseDetails caseDetails)
+        throws CaseOrchestrationServiceException;
 }

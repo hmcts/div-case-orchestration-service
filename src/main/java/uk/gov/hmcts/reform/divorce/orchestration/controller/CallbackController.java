@@ -9,16 +9,9 @@ import io.swagger.annotations.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import uk.gov.hmcts.reform.divorce.model.parties.DivorceParty;
 import uk.gov.hmcts.reform.divorce.model.response.ValidationResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -1320,15 +1313,11 @@ public class CallbackController {
         @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> returnToStateBeforeGeneralReferral(
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest)
+        throws CaseOrchestrationServiceException {
 
-        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
-
-        return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .state(caseData.get(CcdFields.GENERAL_REFERRAL_PREVIOUS_CASE_STATE).toString())
-            .data(caseData)
-            .build()
-        );
+        CcdCallbackResponse response = generalReferralService.validateStateRollbackToBeforeGeneralReferral(ccdCallbackRequest.getCaseDetails());
+        return ResponseEntity.ok(response);
     }
 
     @ExceptionHandler(CaseOrchestrationServiceException.class)

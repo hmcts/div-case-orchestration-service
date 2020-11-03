@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.model.ccd.DocumentLink;
 import uk.gov.hmcts.reform.divorce.model.response.ValidationResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
@@ -81,6 +82,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.ccdRequestWithData;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CallbackControllerTest {
@@ -1638,5 +1640,23 @@ public class CallbackControllerTest {
 
         assertThat(response.getStatusCode(), equalTo(OK));
         verify(generalReferralService).generalConsideration(caseDetails);
+    }
+
+    @Test
+    public void shouldReturnOk_whenReturnToStateBeforeGeneralReferralIsCalled() throws CaseOrchestrationServiceException {
+        Map<String, Object> caseData = ImmutableMap.of(
+            CcdFields.GENERAL_REFERRAL_PREVIOUS_CASE_STATE, "previousCaseState");
+        CcdCallbackRequest ccdCallbackRequest = ccdRequestWithData(caseData);
+        when(generalReferralService.validateStateRollbackToBeforeGeneralReferral(any()))
+            .thenReturn(CcdCallbackResponse.builder()
+                .state("previousCaseState")
+                .data(caseData)
+                .build());
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.returnToStateBeforeGeneralReferral(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getState(), is("previousCaseState"));
+        verify(generalReferralService).validateStateRollbackToBeforeGeneralReferral(ccdCallbackRequest.getCaseDetails());
     }
 }
