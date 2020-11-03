@@ -21,6 +21,5 @@ public class AlternativeServiceServiceImpl implements AlternativeServiceService 
         } catch (WorkflowException workflowException) {
             throw new CaseOrchestrationServiceException(workflowException, caseDetails.getCaseId());
         }
-
     }
 }
