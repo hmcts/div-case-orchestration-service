@@ -38,18 +38,18 @@ public class GeneralReferralTest extends MockedFunctionalTest {
     public void givenCaseData_whenGeneralReferralFee_Yes_ThenState_Is_AwaitingGeneralReferralPayment() throws Exception {
         ccdCallbackRequest = buildCallbackRequest(
             buildCaseDataWithGeneralReferralFee(YES_VALUE),
-            null);
+            "anyState");
 
-        performRequestAndValidateReferralFeeAndState(YES_VALUE, CcdStates.AWAITING_GENERAL_REFERRAL_PAYMENT);
+        performRequestAndValidateReferralFeeAndState(YES_VALUE, "anyState", CcdStates.AWAITING_GENERAL_REFERRAL_PAYMENT);
     }
 
     @Test
     public void givenCaseData_whenGeneralReferralFee_No_ThenState_Is_AwaitingGeneralConsideration() throws Exception {
         ccdCallbackRequest = buildCallbackRequest(
             buildCaseDataWithGeneralReferralFee(NO_VALUE),
-            null);
+            "anyState");
 
-        performRequestAndValidateReferralFeeAndState(NO_VALUE, CcdStates.AWAITING_GENERAL_CONSIDERATION);
+        performRequestAndValidateReferralFeeAndState(NO_VALUE, "anyState", CcdStates.AWAITING_GENERAL_CONSIDERATION);
     }
 
     @Test
@@ -58,19 +58,19 @@ public class GeneralReferralTest extends MockedFunctionalTest {
             buildCaseDataWithGeneralReferralFee(NO_VALUE),
             CcdStates.AWAITING_GENERAL_REFERRAL_PAYMENT);
 
-        performRequestAndValidateReferralFeeAndState(NO_VALUE, CcdStates.AWAITING_GENERAL_CONSIDERATION);
+        performRequestAndValidateReferralFeeAndState(NO_VALUE, CcdStates.AWAITING_GENERAL_REFERRAL_PAYMENT, CcdStates.AWAITING_GENERAL_CONSIDERATION);
     }
 
     @Test
-    public void giveState_AwaitingGeneralConsideration_WhenGeneralReferralFee_Yes_ThenState_Is_AwaitingGeneralReferralPayment() throws Exception {
+    public void givenState_AwaitingGeneralConsideration_WhenGeneralReferralFee_Yes_ThenState_Is_AwaitingGeneralReferralPayment() throws Exception {
         ccdCallbackRequest = buildCallbackRequest(
             buildCaseDataWithGeneralReferralFee(YES_VALUE),
             CcdStates.AWAITING_GENERAL_CONSIDERATION);
 
-        performRequestAndValidateReferralFeeAndState(YES_VALUE, CcdStates.AWAITING_GENERAL_REFERRAL_PAYMENT);
+        performRequestAndValidateReferralFeeAndState(YES_VALUE, CcdStates.AWAITING_GENERAL_CONSIDERATION, CcdStates.AWAITING_GENERAL_REFERRAL_PAYMENT);
     }
 
-    private void performRequestAndValidateReferralFeeAndState(String referralFeeValue, String newCaseState) throws Exception {
+    private void performRequestAndValidateReferralFeeAndState(String referralFeeValue, String previousCaseState, String newCaseState) throws Exception {
         webClient.perform(post(API_URL)
             .content(convertObjectToJsonString(ccdCallbackRequest))
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -85,7 +85,8 @@ public class GeneralReferralTest extends MockedFunctionalTest {
                         "$.data.GeneralApplicationAddedDate",
                         is(DateUtils.formatDateFromLocalDate(now()))
                     ),
-                    hasJsonPath("$.state", is(newCaseState)))
+                    hasJsonPath("$.state", is(newCaseState)),
+                    hasJsonPath("$.data.CaseStateBeforeGeneralReferral", is(previousCaseState)))
             ));
     }
 
