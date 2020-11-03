@@ -13,6 +13,8 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThrows;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.ALTERNATIVE_SERVICE_APPLICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_APPLICATION_REFERRAL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_REFERRAL_DECISION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_REFERRAL_DECISION_REFUSE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_REFERRAL_FEE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_REFERRAL_REASON;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_REFERRAL_TYPE;
@@ -20,6 +22,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.GeneralReferralHelper.isGeneralReferralPaymentRequired;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.GeneralReferralHelper.isGeneralReferralRejected;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.GeneralReferralHelper.isReasonGeneralApplicationReferral;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.GeneralReferralHelper.isTypeOfAlternativeServiceApplication;
 
@@ -109,9 +112,37 @@ public class GeneralReferralHelperTest {
         runEmptyOrNullAssertionsForGeneralReferralType(caseData);
     }
 
+    @Test
+    public void isGeneralReferralRejectedShouldBeTrue() {
+        Map<String, Object> caseData = ImmutableMap.of(GENERAL_REFERRAL_DECISION, GENERAL_REFERRAL_DECISION_REFUSE);
+
+        assertThat(isGeneralReferralRejected(caseData), is(true));
+    }
+
+    @Test
+    public void isGeneralReferralRejectedShouldBeFalse() {
+        Map<String, Object> caseData = ImmutableMap.of(GENERAL_REFERRAL_DECISION, "NotRefuse");
+
+        assertThat(isGeneralReferralRejected(caseData), is(false));
+    }
+
+    @Test
+    public void shouldThrowErrorWhenNoGeneralReferralDecisionExists() {
+        Map<String, Object> caseData = ImmutableMap.of("SomeOtherProperty", "SomeOtherValue");
+
+        runEmptyOrNullAssertionsForGeneralReferralDecision(caseData);
+    }
+
+    @Test
+    public void shouldThrowErrorWhenGeneralReferralDecisionIsEmpty() {
+        Map<String, Object> caseData = ImmutableMap.of(GENERAL_REFERRAL_DECISION, EMPTY_STRING);
+
+        runEmptyOrNullAssertionsForGeneralReferralDecision(caseData);
+    }
+
 
     private void runEmptyOrNullAssertionsForGeneralReferralFee(Map<String, Object> caseData) {
-        String expectedMessage = format("Could not evaluate value of mandatory property \"%s\"", GENERAL_REFERRAL_FEE);
+        String expectedMessage = getMissingPropertyErrorMessage(GENERAL_REFERRAL_FEE);
 
         InvalidDataForTaskException taskException =
             assertThrows(InvalidDataForTaskException.class, () -> isGeneralReferralPaymentRequired(caseData));
@@ -120,7 +151,7 @@ public class GeneralReferralHelperTest {
     }
 
     private void runEmptyOrNullAssertionsForGeneralReferralReason(Map<String, Object> caseData) {
-        String expectedMessage = format("Could not evaluate value of mandatory property \"%s\"", GENERAL_REFERRAL_REASON);
+        String expectedMessage = getMissingPropertyErrorMessage(GENERAL_REFERRAL_REASON);
 
         InvalidDataForTaskException taskException =
             assertThrows(InvalidDataForTaskException.class, () -> isReasonGeneralApplicationReferral(caseData));
@@ -129,11 +160,24 @@ public class GeneralReferralHelperTest {
     }
 
     private void runEmptyOrNullAssertionsForGeneralReferralType(Map<String, Object> caseData) {
-        String expectedMessage = format("Could not evaluate value of mandatory property \"%s\"", GENERAL_REFERRAL_TYPE);
+        String expectedMessage = getMissingPropertyErrorMessage(GENERAL_REFERRAL_TYPE);
 
         InvalidDataForTaskException taskException =
             assertThrows(InvalidDataForTaskException.class, () -> isTypeOfAlternativeServiceApplication(caseData));
 
         assertThat(taskException.getMessage(), containsString(expectedMessage));
+    }
+
+    private void runEmptyOrNullAssertionsForGeneralReferralDecision(Map<String, Object> caseData) {
+        String expectedMessage = getMissingPropertyErrorMessage(GENERAL_REFERRAL_DECISION);
+
+        InvalidDataForTaskException taskException =
+            assertThrows(InvalidDataForTaskException.class, () -> isGeneralReferralRejected(caseData));
+
+        assertThat(taskException.getMessage(), containsString(expectedMessage));
+    }
+
+    private String getMissingPropertyErrorMessage(String missingField) {
+        return format("Could not evaluate value of mandatory property \"%s\"", missingField);
     }
 }

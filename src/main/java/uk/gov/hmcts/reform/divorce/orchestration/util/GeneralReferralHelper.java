@@ -26,4 +26,8 @@ public class GeneralReferralHelper {
         return GeneralReferralDataExtractor.getType(caseData).equals(CcdFields.ALTERNATIVE_SERVICE_APPLICATION);
     }
 
+    public static boolean isGeneralReferralRejected(Map<String, Object> caseData) {
+        return GeneralReferralDataExtractor.getDecision(caseData).equals(CcdFields.GENERAL_REFERRAL_DECISION_REFUSE);
+    }
+
 }

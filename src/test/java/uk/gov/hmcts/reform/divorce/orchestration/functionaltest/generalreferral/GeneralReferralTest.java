@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
 import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
+
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static java.time.LocalDate.now;
@@ -67,10 +68,12 @@ public class GeneralReferralTest extends MockedFunctionalTest {
             buildCaseDataWithGeneralReferralFee(YES_VALUE),
             CcdStates.AWAITING_GENERAL_CONSIDERATION);
 
-        performRequestAndValidateReferralFeeAndState(YES_VALUE, CcdStates.AWAITING_GENERAL_CONSIDERATION, CcdStates.AWAITING_GENERAL_REFERRAL_PAYMENT);
+        performRequestAndValidateReferralFeeAndState(
+            YES_VALUE, CcdStates.AWAITING_GENERAL_CONSIDERATION, CcdStates.AWAITING_GENERAL_REFERRAL_PAYMENT);
     }
 
-    private void performRequestAndValidateReferralFeeAndState(String referralFeeValue, String previousCaseState, String newCaseState) throws Exception {
+    private void performRequestAndValidateReferralFeeAndState(
+        String referralFeeValue, String previousCaseState, String newCaseState) throws Exception {
         webClient.perform(post(API_URL)
             .content(convertObjectToJsonString(ccdCallbackRequest))
             .header(AUTHORIZATION, AUTH_TOKEN)

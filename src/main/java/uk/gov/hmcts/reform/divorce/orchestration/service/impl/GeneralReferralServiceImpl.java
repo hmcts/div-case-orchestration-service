@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
@@ -12,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralReferralService;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.GeneralConsiderationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.GeneralReferralWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.SetupGeneralReferralPaymentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.ValidateStateRollbackToBeforeGeneralReferralWorkflow;
 
 import java.util.Map;
 
@@ -27,6 +29,7 @@ public class GeneralReferralServiceImpl implements GeneralReferralService {
     private final GeneralReferralWorkflow generalReferralWorkflow;
     private final GeneralConsiderationWorkflow generalConsiderationWorkflow;
     private final SetupGeneralReferralPaymentWorkflow setupGeneralReferralPaymentWorkflow;
+    private final ValidateStateRollbackToBeforeGeneralReferralWorkflow validateStateRollbackToBeforeGeneralReferralWorkflow;
 
     @Override
     public CcdCallbackResponse receiveReferral(CcdCallbackRequest ccdCallbackRequest)
@@ -68,6 +71,26 @@ public class GeneralReferralServiceImpl implements GeneralReferralService {
             return setupGeneralReferralPaymentWorkflow.run(caseDetails);
         } catch (WorkflowException exception) {
             throw new CaseOrchestrationServiceException(exception, caseDetails.getCaseId());
+        }
+    }
+
+    @Override
+    public CcdCallbackResponse validateStateRollbackToBeforeGeneralReferral(CaseDetails caseDetails)
+        throws CaseOrchestrationServiceException {
+        String caseId = caseDetails.getCaseId();
+
+        try {
+            Map<String, Object> response = validateStateRollbackToBeforeGeneralReferralWorkflow.run(caseDetails);
+            String previousCaseState = response.get(CcdFields.GENERAL_REFERRAL_PREVIOUS_CASE_STATE).toString();
+
+            log.info("CaseID: {} Case state updated to {}", caseId, previousCaseState);
+
+            return CcdCallbackResponse.builder()
+                .state(previousCaseState)
+                .data(response)
+                .build();
+        } catch (WorkflowException workflowException) {
+            throw new CaseOrchestrationServiceException(workflowException, caseId);
         }
     }
 }
