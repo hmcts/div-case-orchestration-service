@@ -67,10 +67,12 @@ public class GeneralReferralTest extends MockedFunctionalTest {
             buildCaseDataWithGeneralReferralFee(YES_VALUE),
             CcdStates.AWAITING_GENERAL_CONSIDERATION);
 
-        performRequestAndValidateReferralFeeAndState(YES_VALUE, CcdStates.AWAITING_GENERAL_CONSIDERATION, CcdStates.AWAITING_GENERAL_REFERRAL_PAYMENT);
+        performRequestAndValidateReferralFeeAndState(
+            YES_VALUE, CcdStates.AWAITING_GENERAL_CONSIDERATION, CcdStates.AWAITING_GENERAL_REFERRAL_PAYMENT);
     }
 
-    private void performRequestAndValidateReferralFeeAndState(String referralFeeValue, String previousCaseState, String newCaseState) throws Exception {
+    private void performRequestAndValidateReferralFeeAndState(
+        String referralFeeValue, String previousCaseState, String newCaseState) throws Exception {
         webClient.perform(post(API_URL)
             .content(convertObjectToJsonString(ccdCallbackRequest))
             .header(AUTHORIZATION, AUTH_TOKEN)

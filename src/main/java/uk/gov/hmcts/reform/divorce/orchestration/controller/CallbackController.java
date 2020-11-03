@@ -60,6 +60,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.get
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.getResponseErrors;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.isPaymentSuccess;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.isResponseErrors;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.responseWithErrors;
 
 @RestController
 @Slf4j
@@ -1323,6 +1324,17 @@ public class CallbackController {
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+
+        if (!("refuse").equals(caseData.get(CcdFields.GENERAL_REFERRAL_DECISION))) {
+            return responseWithErrors(
+                ImmutableList.of("Your previous general referral application has not been rejected. You cannot rollback the state."));
+        }
+
+        Object previousCaseState = caseData.get(CcdFields.GENERAL_REFERRAL_PREVIOUS_CASE_STATE);
+
+        if (previousCaseState == null) {
+            return responseWithErrors(ImmutableList.of("No previous case state found"));
+        }
 
         return ResponseEntity.ok(CcdCallbackResponse.builder()
             .state(caseData.get(CcdFields.GENERAL_REFERRAL_PREVIOUS_CASE_STATE).toString())

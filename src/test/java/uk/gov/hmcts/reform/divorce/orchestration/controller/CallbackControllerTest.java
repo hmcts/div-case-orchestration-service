@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.model.ccd.DocumentLink;
 import uk.gov.hmcts.reform.divorce.model.response.ValidationResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
@@ -39,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -60,6 +62,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.CO_RESPONDENT;
@@ -81,6 +84,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.ccdRequestWithData;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CallbackControllerTest {
@@ -1638,5 +1642,45 @@ public class CallbackControllerTest {
 
         assertThat(response.getStatusCode(), equalTo(OK));
         verify(generalReferralService).generalConsideration(caseDetails);
+    }
+
+    @Test
+    public void shouldReturnOk_whenReturnToStateBeforeGeneralReferralIsCalled() {
+        CcdCallbackRequest ccdCallbackRequest = ccdRequestWithData(
+            ImmutableMap.of(
+                CcdFields.GENERAL_REFERRAL_DECISION, "refuse",
+                CcdFields.GENERAL_REFERRAL_PREVIOUS_CASE_STATE, "previousCaseState")
+        );
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.returnToStateBeforeGeneralReferral(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getState(), is("previousCaseState"));
+        verifyNoInteractions(generalReferralService);
+    }
+
+    @Test
+    public void shouldReturnErrorMessage_whenReturnToStateBeforeGeneralReferralIsCalledWithNoPreviousCaseState() {
+        CcdCallbackRequest ccdCallbackRequest = ccdRequestWithData(
+            ImmutableMap.of(CcdFields.GENERAL_REFERRAL_DECISION, "refuse")
+        );
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.returnToStateBeforeGeneralReferral(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getErrors(), hasItem(equalTo("No previous case state found")));
+        verifyNoInteractions(generalReferralService);
+    }
+
+    @Test
+    public void shouldReturnErrorMessage_whenReturnToStateBeforeGeneralReferralIsCalledWithGeneralReferralNotRejected() {
+        CcdCallbackRequest ccdCallbackRequest = ccdRequestWithData(emptyMap());
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.returnToStateBeforeGeneralReferral(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getErrors(),
+            hasItem(equalTo("Your previous general referral application has not been rejected. You cannot rollback the state.")));
+        verifyNoInteractions(generalReferralService);
     }
 }
