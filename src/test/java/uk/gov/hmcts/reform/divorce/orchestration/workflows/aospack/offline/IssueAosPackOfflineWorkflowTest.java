@@ -25,7 +25,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MarkJourneyAsOffline;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MultipleDocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.DocumentGenerator;
@@ -123,7 +123,7 @@ public class IssueAosPackOfflineWorkflowTest {
     private BulkPrinterTask bulkPrinterTask;
 
     @Mock
-    private ModifyDueDate modifyDueDate;
+    private ModifyDueDateTask modifyDueDateTask;
 
     @Mock
     private MarkJourneyAsOffline markJourneyAsOffline;
@@ -152,7 +152,7 @@ public class IssueAosPackOfflineWorkflowTest {
         when(fetchPrintDocsFromDmStore.execute(any(), any())).thenReturn(singletonMap("returnedKey3", "returnedValue3"));
         when(bulkPrinterTask.execute(any(), any())).thenReturn(singletonMap("returnedKey4", "returnedValue4"));
         when(markJourneyAsOffline.execute(any(), any())).thenReturn(singletonMap("returnedKey5", "returnedValue5"));
-        when(modifyDueDate.execute(any(), any())).thenReturn(singletonMap("returnedKey6", "returnedValue6"));
+        when(modifyDueDateTask.execute(any(), any())).thenReturn(singletonMap("returnedKey6", "returnedValue6"));
 
         ImmutableMap<DivorceFacts, DocumentGenerator> issueAosPackOffLine = ImmutableMap.of(
                 SEPARATION_TWO_YEARS,
@@ -428,13 +428,13 @@ public class IssueAosPackOfflineWorkflowTest {
     }
 
     private void verifyModifyDueDateIsCalled() {
-        verify(modifyDueDate).execute(any(), argThat(allOf(
+        verify(modifyDueDateTask).execute(any(), argThat(allOf(
                 Matchers.<String, Object>hasEntry("returnedKey5", "returnedValue5")
         )));
     }
 
     private void verifyModifyDueDateIsNotCalled() {
-        verifyNoInteractions(modifyDueDate);
+        verifyNoInteractions(modifyDueDateTask);
     }
 
     private void verifyBulkPrintIsCalledAsExpected(String expectedLetterType, List<String> expectedDocumentTypesToPrint) {
