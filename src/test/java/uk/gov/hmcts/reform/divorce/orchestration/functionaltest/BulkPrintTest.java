@@ -3,18 +3,18 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.testutil.DateCalculator;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,6 +46,9 @@ public class BulkPrintTest extends IdamTestSupport {
 
     private static final String API_URL = "/bulk-print";
 
+    @Value("${bulk-print.dueDate}")
+    private Integer dueDateOffset;
+
     @Autowired
     private MockMvc webClient;
 
@@ -67,7 +70,11 @@ public class BulkPrintTest extends IdamTestSupport {
         stubSendLetterService(HttpStatus.OK);
 
         Map<String, Object> expectedCaseData = caseDataWithDocuments();
-        expectedCaseData.put("dueDate", LocalDate.now().plus(9, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE));
+        expectedCaseData.put(
+            CcdFields.DUE_DATE,
+            DateCalculator.getDateWithOffset(dueDateOffset)
+        );
+
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
             .data(expectedCaseData)
             .errors(Collections.emptyList())

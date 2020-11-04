@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.model.parties.DivorceParty;
 import uk.gov.hmcts.reform.divorce.orchestration.config.IssueAosPackOfflineDocuments;
@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MarkJourneyAsOffline;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MultipleDocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
 
@@ -38,6 +38,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOffl
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.RESPONDENT_AOS_INVITATION_LETTER_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_GENERATION_REQUESTS_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.DIVORCE_PARTY;
@@ -46,70 +47,60 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.Bulk
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.DOCUMENT_TYPES_TO_PRINT;
 
 @Component
+@AllArgsConstructor
 @Slf4j
 public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     public static final String AOS_PACK_OFFLINE_RESPONDENT_LETTER_TYPE = "aos-pack-offline-respondent";
     public static final String AOS_PACK_OFFLINE_CO_RESPONDENT_LETTER_TYPE = "aos-pack-offline-co-respondent";
 
-    @Autowired
-    private MultipleDocumentGenerationTask documentsGenerationTask;
-
-    @Autowired
-    private AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
-
-    @Autowired
-    private FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
-
-    @Autowired
-    private BulkPrinterTask bulkPrinterTask;
-
-    @Autowired
-    private MarkJourneyAsOffline markJourneyAsOffline;
-
-    @Autowired
-    private ModifyDueDate modifyDueDate;
-
-    @Autowired
-    private DocumentTemplateService documentTemplateService;
-
-    @Autowired
-    private IssueAosPackOfflineDocuments issueAosPackOfflineDocuments;
-
     private static final String ERROR_MESSAGE = "No record for 'reason for divorce' %s";
 
-    public Map<String, Object> run(String authToken, CaseDetails caseDetails, DivorceParty divorceParty) throws WorkflowException {
+    private final MultipleDocumentGenerationTask documentsGenerationTask;
+    private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
+    private final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
+    private final BulkPrinterTask bulkPrinterTask;
+    private final MarkJourneyAsOffline markJourneyAsOffline;
+    private final ModifyDueDateTask modifyDueDateTask;
+    private final DocumentTemplateService documentTemplateService;
+    private final IssueAosPackOfflineDocuments issueAosPackOfflineDocuments;
+
+    public Map<String, Object> run(String authToken, CaseDetails caseDetails, DivorceParty divorceParty)
+        throws WorkflowException {
+        final String caseId = caseDetails.getCaseId();
         final Map<String, Object> caseData = caseDetails.getCaseData();
         final String reasonForDivorce = (String) caseData.get(D_8_REASON_FOR_DIVORCE);
 
         final String letterType = getLetterType(divorceParty);
         final List<DocumentGenerationRequest> documentGenerationRequestsList =
-                getDocumentGenerationRequestsList(divorceParty, reasonForDivorce, caseData);
+            getDocumentGenerationRequestsList(divorceParty, reasonForDivorce, caseData);
         final List<String> documentTypesToPrint = documentGenerationRequestsList.stream()
             .map(DocumentGenerationRequest::getDocumentType)
             .collect(Collectors.toList());
 
         final List<Task> tasks = new ArrayList<>();
 
-        log.warn("documentGenerationRequestsList = {}", documentGenerationRequestsList);
-        log.warn("documentTypesToPrint = {}", documentTypesToPrint);
+        log.warn("CaseId {}, documentGenerationRequestsList = {}", caseId, documentGenerationRequestsList);
+        log.warn("CaseId {}, documentTypesToPrint = {}", caseId, documentTypesToPrint);
 
         tasks.add(documentsGenerationTask);
         tasks.add(addNewDocumentsToCaseDataTask);
         tasks.add(fetchPrintDocsFromDmStore);
         tasks.add(bulkPrinterTask);
         tasks.add(markJourneyAsOffline);
+
         if (divorceParty.equals(RESPONDENT)) {
-            log.warn("modify modifyDueDate");
-            tasks.add(modifyDueDate);
+            log.warn("CaseId {}, modify modifyDueDate", caseId);
+            tasks.add(modifyDueDateTask);
         }
 
-        log.warn("number of tasks to be executed {}", tasks.size());
+        log.warn("CaseId {}, number of tasks to be executed {}", caseId, tasks.size());
 
         return execute(tasks.toArray(new Task[0]),
             caseData,
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
+            ImmutablePair.of(CASE_ID_JSON_KEY, caseDetails.getCaseId()),
             ImmutablePair.of(DOCUMENT_GENERATION_REQUESTS_KEY, documentGenerationRequestsList),
             ImmutablePair.of(BULK_PRINT_LETTER_TYPE, letterType),
             ImmutablePair.of(DOCUMENT_TYPES_TO_PRINT, documentTypesToPrint),
