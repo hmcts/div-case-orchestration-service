@@ -8,15 +8,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.IdamTestSupport;
-import uk.gov.hmcts.reform.divorce.utils.DateUtils;
+import uk.gov.hmcts.reform.divorce.orchestration.testutil.DateCalculator;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
-import static java.time.temporal.ChronoUnit.DAYS;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -53,7 +51,7 @@ public class ConfirmAlternativeServiceTest extends IdamTestSupport {
                 isJson(),
                 hasJsonPath(
                     "$.data.dueDate",
-                    is(DateUtils.formatDateFromLocalDate(LocalDate.now().plus(dueDateOffset, DAYS)))
+                    is(DateCalculator.getDateWithOffset(dueDateOffset))
                 ),
                 hasNoJsonPath("$.errors"),
                 hasNoJsonPath("$.warnings")
