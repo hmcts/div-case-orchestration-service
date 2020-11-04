@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ServiceMethodValidationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoRespondentAosPackPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.RespondentAosPackPrinterTask;
@@ -35,7 +35,7 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
     private final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
     private final RespondentAosPackPrinterTask respondentAosPackPrinterTask;
     private final CoRespondentAosPackPrinterTask coRespondentAosPackPrinterTask;
-    private final ModifyDueDate modifyDueDate;
+    private final ModifyDueDateTask modifyDueDateTask;
 
     private final CaseDataUtils caseDataUtils;
 
@@ -53,7 +53,7 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
         if (caseDataUtils.isAdulteryCaseWithNamedCoRespondent(caseDetails.getCaseData())) {
             tasks.add(coRespondentAosPackPrinterTask);
         }
-        tasks.add(modifyDueDate);
+        tasks.add(modifyDueDateTask);
 
         return this.execute(tasks.toArray(new Task[0]),
             caseDetails.getCaseData(),
