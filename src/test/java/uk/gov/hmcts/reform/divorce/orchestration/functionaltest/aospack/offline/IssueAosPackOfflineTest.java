@@ -11,11 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.DateCalculator;
-import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
@@ -265,5 +261,4 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
             .andExpect(content().string(allOf(isJson())))
             .andExpect(content().string(hasNoJsonPath("$.data.dueDate")));
     }
-
 }
