@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
@@ -16,7 +17,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
@@ -71,10 +71,10 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
         templateFields.put(NOTIFICATION_COURT_ADDRESS_KEY, court.getFormattedAddress());
         templateFields.put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, welshPpetRelToRespondent);
 
-        String formSubmissionDateLimit = ccdUtil.getFormattedDueDate(caseDataPayload, CCD_DUE_DATE);
+        String formSubmissionDateLimit = ccdUtil.getFormattedDueDate(caseDataPayload, CcdFields.DUE_DATE);
         templateFields.put(NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY, formSubmissionDateLimit);
 
-        String welshFormSubmissionDateLimit = ccdUtil.getWelshFormattedDate(caseDataPayload, CCD_DUE_DATE);
+        String welshFormSubmissionDateLimit = ccdUtil.getWelshFormattedDate(caseDataPayload, CcdFields.DUE_DATE);
         templateFields.put(OrchestrationConstants.NOTIFICATION_WELSH_FORM_SUBMISSION_DATE_LIMIT_KEY, welshFormSubmissionDateLimit);
 
         LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseDataPayload);
