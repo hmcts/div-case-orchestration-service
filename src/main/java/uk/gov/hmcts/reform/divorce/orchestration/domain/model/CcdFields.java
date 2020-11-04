@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CcdFields {
 
+    public static final String DUE_DATE = "dueDate";
+
     public static final String SERVICE_APPLICATION_TYPE = "ServiceApplicationType";
     public static final String SERVICE_APPLICATION_PAYMENT = "ServiceApplicationPayment";
     public static final String SERVICE_APPLICATION_GRANTED = "ServiceApplicationGranted";
