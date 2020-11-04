@@ -6,16 +6,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.GeneralApplicationWithoutNoticeFeeLookupTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.GetBailiffApplicationFeeTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalreferral.GeneralReferralApplicationFeeLookupTask;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.SetupGeneralReferralPaymentWorkflow;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTaskWasCalled;
 
@@ -23,47 +21,24 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.ve
 public class SetupGeneralReferralPaymentWorkflowTest {
 
     @Mock
-    private GeneralApplicationWithoutNoticeFeeLookupTask generalApplicationWithoutNoticeFeeTask;
+    private GeneralReferralApplicationFeeLookupTask generalReferralApplicationFeeLookupTask;
 
-    @Mock
-    private GetBailiffApplicationFeeTask getBailiffApplicationFeeTask;
 
     @InjectMocks
-    private SetupConfirmServicePaymentWorkflow setupConfirmServicePaymentWorkflow;
+    private SetupGeneralReferralPaymentWorkflow setupGeneralReferralPaymentWorkflow;
 
     @Test
-    public void whenGeneralApplicationWithoutNoticeFee_thenProcessGeneralAppFeeAsExpected() throws Exception {
+    public void whenGeneralReferralWithoutNoticeFee_thenProcessGeneralAppFeeAsExpected() throws Exception {
         HashMap<String, Object> caseData = new HashMap<>();
-        mockTasksExecution(caseData, generalApplicationWithoutNoticeFeeTask);
+        mockTasksExecution(caseData, generalReferralApplicationFeeLookupTask);
 
-        Map<String, Object> returned = setupConfirmServicePaymentWorkflow.run(
+        Map<String, Object> returned = setupGeneralReferralPaymentWorkflow.run(
             CaseDetails.builder()
                 .caseData(caseData)
                 .build()
         );
 
         assertThat(returned, is(caseData));
-        verifyTaskWasCalled(caseData, generalApplicationWithoutNoticeFeeTask);
-    }
-
-    @Test
-    public void whenBaliffServiceType_thenProcessBaliffFeeAsExpected() throws Exception {
-        HashMap<String, Object> caseData = new HashMap<>();
-        caseData.put(SERVICE_APPLICATION_TYPE, ApplicationServiceTypes.BAILIFF);
-        mockTasksExecution(
-            caseData,
-            getBailiffApplicationFeeTask
-        );
-
-        Map<String, Object> returned = setupConfirmServicePaymentWorkflow.run(
-            CaseDetails.builder()
-                .caseData(caseData)
-                .build()
-        );
-        assertThat(returned, is(caseData));
-        verifyTaskWasCalled(
-            caseData,
-            getBailiffApplicationFeeTask
-        );
+        verifyTaskWasCalled(caseData, generalReferralApplicationFeeLookupTask);
     }
 }

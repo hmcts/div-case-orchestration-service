@@ -7,10 +7,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.utils.DateUtils;
+import uk.gov.hmcts.reform.divorce.orchestration.testutil.DateCalculator;
 
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -55,6 +53,6 @@ public class ModifyDueDateTaskTest {
     }
 
     private String getCcdFormattedDueDate() {
-        return DateUtils.formatDateFromLocalDate(LocalDate.now().plus(OFFSET, ChronoUnit.DAYS));
+        return DateCalculator.getDateWithOffset(OFFSET);
     }
 }

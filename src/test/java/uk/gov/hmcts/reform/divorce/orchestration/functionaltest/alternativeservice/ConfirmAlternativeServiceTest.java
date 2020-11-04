@@ -38,7 +38,7 @@ public class ConfirmAlternativeServiceTest extends IdamTestSupport {
     public void givenCaseData_whenCalledEndpoint_thenDueDateFieldIsPopulated() throws Exception {
         CcdCallbackRequest input = new CcdCallbackRequest(
             AUTH_TOKEN,
-            "event",
+            "confirmAlternativeService",
             CaseDetails.builder().caseData(new HashMap<>()).caseId(TEST_CASE_ID).build()
         );
 
