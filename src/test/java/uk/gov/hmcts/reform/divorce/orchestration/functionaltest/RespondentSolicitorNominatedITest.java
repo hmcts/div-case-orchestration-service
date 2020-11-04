@@ -4,16 +4,19 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.idam.Pin;
+import uk.gov.hmcts.reform.divorce.orchestration.testutil.DateCalculator;
 import uk.gov.hmcts.reform.idam.client.models.GeneratePinRequest;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.OK;
@@ -35,11 +38,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class RespondentSolicitorNominatedITest extends IdamTestSupport {
 
     private static final String API_URL = "/aos-solicitor-nominated";
-    private static final String AOS_SOL_NOMINATED_JSON = "/jsonExamples/payloads/aosSolicitorNominated.json";
 
-    private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
-    private static final String FORMAT_ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
+    private static final String AOS_SOL_NOMINATED_JSON = "/jsonExamples/payloads/aosSolicitorNominated.json";
     private static final String RESPONDENT_INVITATION_TEMPLATE_NAME = "aosinvitation";
+
+    @Value("${bulk-print.dueDate}")
+    private Integer dueDateOffset;
 
     @Autowired
     private MockMvc webClient;
@@ -80,8 +84,11 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
             .andExpect(status().isOk())
             .andExpect(content().string(allOf(
                 isJson(),
+                hasJsonPath(
+                    "$.data.dueDate",
+                    is(DateCalculator.getDateWithOffset(dueDateOffset))
+                ),
                 hasJsonPath("$.errors", nullValue())
             )));
     }
-
 }

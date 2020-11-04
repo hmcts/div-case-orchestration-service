@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetRespondentLinkingFields;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
@@ -53,7 +53,7 @@ public class RespondentSolicitorNominatedWorkflowTest {
     private RespondentAosPackPrinterTask respondentAosPackPrinterTask;
 
     @Mock
-    private ModifyDueDate modifyDueDate;
+    private ModifyDueDateTask modifyDueDateTask;
 
     @Mock
     private ResetRespondentLinkingFields resetRespondentLinkingFields;
@@ -70,7 +70,7 @@ public class RespondentSolicitorNominatedWorkflowTest {
             addNewDocumentsToCaseDataTask,
             fetchPrintDocsFromDmStore,
             respondentAosPackPrinterTask,
-            modifyDueDate,
+            modifyDueDateTask,
             resetRespondentLinkingFields
         );
 
@@ -97,7 +97,7 @@ public class RespondentSolicitorNominatedWorkflowTest {
         when(addNewDocumentsToCaseDataTask.execute(context, payload)).thenReturn(payload);
         when(fetchPrintDocsFromDmStore.execute(context, payload)).thenReturn(payload);
         when(respondentAosPackPrinterTask.execute(context, payload)).thenReturn(payload);
-        when(modifyDueDate.execute(context, payload)).thenReturn(payload);
+        when(modifyDueDateTask.execute(context, payload)).thenReturn(payload);
         when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
 
         //When
@@ -110,7 +110,7 @@ public class RespondentSolicitorNominatedWorkflowTest {
             addNewDocumentsToCaseDataTask,
             fetchPrintDocsFromDmStore,
             respondentAosPackPrinterTask,
-            modifyDueDate,
+            modifyDueDateTask,
             resetRespondentLinkingFields);
         assertThat(response, is(payload));
         inOrder.verify(respondentPinGenerator).execute(context, payload);
@@ -118,7 +118,7 @@ public class RespondentSolicitorNominatedWorkflowTest {
         inOrder.verify(addNewDocumentsToCaseDataTask).execute(context, payload);
         inOrder.verify(fetchPrintDocsFromDmStore).execute(context, payload);
         inOrder.verify(respondentAosPackPrinterTask).execute(context, payload);
-        inOrder.verify(modifyDueDate).execute(context, payload);
+        inOrder.verify(modifyDueDateTask).execute(context, payload);
         inOrder.verify(resetRespondentLinkingFields).execute(context, payload);
     }
 }
