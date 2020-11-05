@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.maintenance;
+package uk.gov.hmcts.reform.divorce.maintenance.nightly.pipeline;
 
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
@@ -7,7 +7,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.entity.ContentType;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -58,7 +57,6 @@ public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
     @Autowired
     private CmsClientSupport cmsClientSupport;
 
-    @Ignore //this test is very flaky and fails often in master/PRs
     @Test
     public void givenCaseIsInDNPronounced_WhenMakeCaseEligibleForDAIsCalled_CaseStateIsAwaitingDecreeAbsolute() {
         final UserDetails citizenUser = createCitizenUser();
