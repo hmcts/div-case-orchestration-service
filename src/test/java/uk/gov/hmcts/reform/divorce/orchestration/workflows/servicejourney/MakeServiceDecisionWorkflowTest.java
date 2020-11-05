@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.OrderToDis
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceApplicationDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceApplicationRemovalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceRefusalDraftRemovalTask;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionWorkflow;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task;
 
 import org.junit.Test;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
+import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 
 import java.util.ArrayList;
 import java.util.List;

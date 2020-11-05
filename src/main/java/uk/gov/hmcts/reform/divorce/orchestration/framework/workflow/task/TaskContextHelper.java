@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
+import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 
 import java.util.HashSet;
 import java.util.List;
