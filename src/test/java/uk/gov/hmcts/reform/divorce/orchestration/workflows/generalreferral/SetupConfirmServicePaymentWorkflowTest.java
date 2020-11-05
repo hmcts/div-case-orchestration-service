@@ -58,8 +58,8 @@ public class SetupConfirmServicePaymentWorkflowTest {
 
         Map<String, Object> returned = setupConfirmServicePaymentWorkflow.run(
             CaseDetails.builder()
-                    .caseData(caseData)
-                    .build()
+                .caseData(caseData)
+                .build()
         );
         assertThat(returned, is(caseData));
         verifyTaskWasCalled(
