@@ -28,7 +28,7 @@ public class SubmitCaseToCCDIntegrationTest extends RetrieveCaseSupport {
 
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/submit/";
     private static final String DIVORCE_SESSION_WITH_COURT_SELECTED_JSON_PATH = "divorce-session-with-court-selected.json";
-    private static final String DIVORCE_SESSION_WITH_DOCUMENT_LOCALHOST_URL_JSON_PATH ="divorce-session-with-localhost-document-url.json";
+    private static final String DIVORCE_SESSION_WITH_DOCUMENT_LOCALHOST_URL_JSON_PATH = "divorce-session-with-localhost-document-url.json";
     private static final String ALLOCATED_COURT_ID_KEY = "allocatedCourt.courtId";
 
     @Value("${case.orchestration.maintenance.submit.context-path}")
@@ -81,14 +81,14 @@ public class SubmitCaseToCCDIntegrationTest extends RetrieveCaseSupport {
         String body = null;
         if (fileName != null) {
             body = ResourceLoader.loadJson(PAYLOAD_CONTEXT_PATH + fileName)
-            .replaceAll(USER_DEFAULT_EMAIL, userDetails.getEmailAddress());
+                .replaceAll(USER_DEFAULT_EMAIL, userDetails.getEmailAddress());
 
         }
 
         return RestUtil.postToRestService(
-                serverUrl + caseCreationContextPath,
-                headers,
-                body
+            serverUrl + caseCreationContextPath,
+            headers,
+            body
         );
     }
 
@@ -97,6 +97,7 @@ public class SubmitCaseToCCDIntegrationTest extends RetrieveCaseSupport {
         UserDetails userDetails = createCitizenUser();
         Response submissionResponse = submitCase(userDetails, DIVORCE_SESSION_WITH_DOCUMENT_LOCALHOST_URL_JSON_PATH);
         assertThat(submissionResponse.getStatusCode(), is(HttpStatus.UNPROCESSABLE_ENTITY.value()));
-        assertThat(submissionResponse.getBody().asString(), CoreMatchers.containsString("does not match Document Management domain or expected URL path"));
+        assertThat(submissionResponse.getBody().asString(),
+            CoreMatchers.containsString("does not match Document Management domain or expected URL path"));
     }
 }
