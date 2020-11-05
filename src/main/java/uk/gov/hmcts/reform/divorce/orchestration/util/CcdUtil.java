@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.model.ccd.DivorceGeneralOrder;
 import uk.gov.hmcts.reform.divorce.model.ccd.Document;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
+import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.mapper.CcdMappers;
 import uk.gov.hmcts.reform.divorce.utils.DateUtils;
