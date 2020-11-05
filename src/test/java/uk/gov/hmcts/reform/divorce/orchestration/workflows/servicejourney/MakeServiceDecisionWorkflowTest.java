@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.workflows;
+package uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney;
 
 import junit.framework.TestCase;
 import org.junit.Test;
