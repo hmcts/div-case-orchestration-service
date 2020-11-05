@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.maintenance;
 import io.restassured.response.Response;
 import io.restassured.response.ResponseBody;
 import org.apache.http.entity.ContentType;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,6 +28,7 @@ public class SubmitCaseToCCDIntegrationTest extends RetrieveCaseSupport {
 
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/submit/";
     private static final String DIVORCE_SESSION_WITH_COURT_SELECTED_JSON_PATH = "divorce-session-with-court-selected.json";
+    private static final String DIVORCE_SESSION_WITH_DOCUMENT_LOCALHOST_URL_JSON_PATH ="divorce-session-with-localhost-document-url.json";
     private static final String ALLOCATED_COURT_ID_KEY = "allocatedCourt.courtId";
 
     @Value("${case.orchestration.maintenance.submit.context-path}")
@@ -88,5 +90,13 @@ public class SubmitCaseToCCDIntegrationTest extends RetrieveCaseSupport {
                 headers,
                 body
         );
+    }
+
+    @Test
+    public void givenDivorceSession_WithDocumentLocalHostUrl_whenSubmitIsCalled_documentUrlReturnsEnvironmentVariable() throws Exception {
+        UserDetails userDetails = createCitizenUser();
+        Response submissionResponse = submitCase(userDetails, DIVORCE_SESSION_WITH_DOCUMENT_LOCALHOST_URL_JSON_PATH);
+        assertThat(submissionResponse.getStatusCode(), is(HttpStatus.UNPROCESSABLE_ENTITY.value()));
+        assertThat(submissionResponse.getBody().asString(), CoreMatchers.containsString("does not match Document Management domain or expected URL path"));
     }
 }
