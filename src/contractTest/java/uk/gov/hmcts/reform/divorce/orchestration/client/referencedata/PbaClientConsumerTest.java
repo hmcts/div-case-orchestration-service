@@ -42,7 +42,6 @@ public class PbaClientConsumerTest {
 
     public static final String SOME_AUTHORIZATION_TOKEN = "Bearer UserAuthToken";
     public static final String SOME_SERVICE_AUTHORIZATION_TOKEN = "ServiceToken";
-    private static final String TOKEN = "someToken";
 
     @Autowired
     private PbaValidationClient pbaValidationClient;

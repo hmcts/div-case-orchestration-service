@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.AlternativeServiceService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
@@ -104,6 +105,9 @@ public class CallbackControllerTest {
 
     @Mock
     private GeneralReferralService generalReferralService;
+
+    @Mock
+    private AlternativeServiceService alternativeServiceService;
 
     @InjectMocks
     private CallbackController classUnderTest;
@@ -1640,6 +1644,22 @@ public class CallbackControllerTest {
 
         assertThat(response.getStatusCode(), equalTo(OK));
         verify(generalReferralService).generalConsideration(caseDetails);
+    }
+
+    @Test
+    public void shouldReturnOk_whenConfirmAlternativeServiceIsCalled() throws CaseOrchestrationServiceException {
+        CaseDetails caseDetails = CaseDetails.builder().build();
+        when(alternativeServiceService.confirmAlternativeService(caseDetails))
+            .thenReturn(CaseDetails.builder().build());
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.confirmAlternativeService(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        verify(alternativeServiceService).confirmAlternativeService(caseDetails);
     }
 
     @Test
