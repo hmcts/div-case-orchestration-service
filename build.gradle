@@ -2,7 +2,7 @@ import org.springframework.boot.gradle.tasks.run.BootRun
 
 buildscript {
     ext {
-        springBootVersion = '2.3.5.RELEASE'
+        springBootVersion = '2.3.4.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -37,7 +37,7 @@ def versions = [
         commonsIo                    : '2.6',
         commonsLang3                 : '3.9',
         commonsMath3                 : '3.6.1',
-        divCommonLib                 : '1.1.38',
+        divCommonLib                 : '1.2.0',
         dumbster                     : '1.7.1',
         elasticsearch                : '7.9.3',
         feignHttpClient              : '10.3.0',
@@ -80,7 +80,7 @@ def versions = [
 
 allprojects {
 
-    def springBootVersion = '2.3.5.RELEASE'
+    def springBootVersion = '2.3.4.RELEASE'
 
     apply plugin: 'checkstyle'
     apply plugin: 'com.github.ben-manes.versions'
@@ -424,8 +424,36 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
     maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
     forkEvery = 10
 
+    exclude "uk/gov/hmcts/reform/divorce/callback/nightly/pipeline/**"
+    exclude "uk/gov/hmcts/reform/divorce/maintenance/nightly/pipeline/**"
+
+
     setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
     setClasspath(sourceSets.integrationTest.runtimeClasspath)
+
+    if (System.getenv('CHANGE_TITLE')?.startsWith('[FAST]')) {
+        useJUnit {
+            excludeCategories 'uk.gov.hmcts.reform.divorce.category.ExtendedTest'
+        }
+    }
+    finalizedBy aggregate
+}
+
+task nightlyFunctional(type: Test, description: 'Runs the Nightly Only Functional tests.', group: 'Verification') {
+    doFirst(){
+        printf("::::::::::  Running  nightlyFunctional ::::::::::")
+    }
+
+    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+    forkEvery = 10
+
+    include "uk/gov/hmcts/reform/divorce/callback/nightly/pipeline/**"
+    include "uk/gov/hmcts/reform/divorce/maintenance/nightly/pipeline/**"
+
+
+    setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
+    setClasspath(sourceSets.integrationTest.runtimeClasspath)
+
     if (System.getenv('CHANGE_TITLE')?.startsWith('[FAST]')) {
         useJUnit {
             excludeCategories 'uk.gov.hmcts.reform.divorce.category.ExtendedTest'

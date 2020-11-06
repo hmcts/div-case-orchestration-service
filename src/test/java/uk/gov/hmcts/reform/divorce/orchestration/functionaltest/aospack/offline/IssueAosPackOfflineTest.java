@@ -4,15 +4,14 @@ import org.json.JSONArray;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
+import uk.gov.hmcts.reform.divorce.orchestration.testutil.DateCalculator;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.containing;
@@ -72,6 +71,9 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
 
     private static final String TEST_PAYLOAD = "/jsonExamples/payloads/genericPetitionerDataWithPreviouslyGeneratedDocument.json";
     private static final String TEST_DOCUMENT_ID_IN_EXAMPLE_PAYLOAD = "1234";
+
+    @Value("${bulk-print.dueDate}")
+    private Integer dueDateOffset;
 
     @Autowired
     private MockMvc webClient;
@@ -218,7 +220,8 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
         stubDMStore(invitationLetterDocumentId, FIRST_FILE_BYTES);
         stubDMStore(formDocumentId, SECOND_FILE_BYTES);
 
-        String expectedDueDate = LocalDate.now().plus(9, ChronoUnit.DAYS).format(DateTimeFormatter.ISO_LOCAL_DATE);
+        String expectedDueDate = DateCalculator.getDateWithOffset(dueDateOffset);
+
         webClient.perform(post(format(API_URL, RESPONDENT.getDescription()))
             .content(convertObjectToJsonString(ccdCallbackRequest))
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -258,5 +261,4 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
             .andExpect(content().string(allOf(isJson())))
             .andExpect(content().string(hasNoJsonPath("$.data.dueDate")));
     }
-
 }

@@ -1,9 +1,8 @@
-package uk.gov.hmcts.reform.divorce.callback;
+package uk.gov.hmcts.reform.divorce.callback.nightly.pipeline;
 
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.tuple.Pair;
 import org.assertj.core.api.Assertions;
-import org.junit.Ignore;
 import org.junit.Test;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.divorce.model.ccd.CaseLink;
@@ -44,7 +43,6 @@ public class RemoveCaseFromListingTest extends CcdSubmissionSupport {
     private static final int  MAX_WAITING_TIME_IN_SECONDS = 90;
     private static final int  POOL_INTERVAL_IN_MILLIS = 1000;
 
-    @Ignore
     @Test
     public void whenScheduleBulkCaseForRemoval_thenIndividualCasesShouldBeUpdated() throws Exception {
 
