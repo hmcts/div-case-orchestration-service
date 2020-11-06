@@ -11,7 +11,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import uk.gov.hmcts.reform.divorce.model.payment.Payment;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Fee;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Payment;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 
 import java.math.BigDecimal;
@@ -48,7 +47,6 @@ public class PaymentUpdateITest extends IdamTestSupport {
             "/casemaintenance/version/1/case/%s",
             CASE_ID
     );
-    private static final String CCD_FORMAT_CONTEXT_PATH = "/caseformatter/version/1/to-ccd-format";
     private static final String UPDATE_CONTEXT_PATH = String.format(
             "/casemaintenance/version/1/updateCase/%s/%s",
             CASE_ID,
