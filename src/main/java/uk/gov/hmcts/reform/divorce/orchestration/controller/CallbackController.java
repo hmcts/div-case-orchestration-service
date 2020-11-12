@@ -1342,7 +1342,7 @@ public class CallbackController {
 
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
-                .data(alternativeServiceService.confirmAlternativeService(ccdCallbackRequest.getCaseDetails()).getCaseData())
+                .data(alternativeServiceService.confirmProcessServer(ccdCallbackRequest.getCaseDetails()).getCaseData())
                 .build()
         );
     }

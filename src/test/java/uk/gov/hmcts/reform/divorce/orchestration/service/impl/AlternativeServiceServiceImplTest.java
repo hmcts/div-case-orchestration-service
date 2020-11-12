@@ -49,4 +49,15 @@ public class AlternativeServiceServiceImplTest {
             () -> alternativeServiceService.confirmAlternativeService(CaseDetails.builder().build())
         );
     }
+
+    @Test
+    public void whenConfirmProcessServer_thenConfirmAlternativeServiceWorkflowIsCalled()
+        throws CaseOrchestrationServiceException, WorkflowException {
+        Map<String, Object> caseData = new HashMap<>();
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).caseId(TEST_CASE_ID).build();
+
+        alternativeServiceService.confirmProcessServer(caseDetails);
+
+        verify(confirmAlternativeServiceWorkflow).run(caseDetails);
+    }
 }
