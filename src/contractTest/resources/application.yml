@@ -100,6 +100,9 @@ scheduler:
 aos-overdue:
   grace-period: ${AOS_OVERDUE_GRACE_PERIOD:0}
 
+alternative-service:
+  days-until-overdue: 7
+
 server:
   port: ${CASE_ORCHESTRATION_SERVICE_URL:4012}
 
@@ -148,7 +151,7 @@ send-letter:
   url: ${SEND_LETTER_SERIVCE_BASEURL:http://localhost:4021}
 
 bulk-print:
-  dueDate: 9
+  dueDate: 30
 
 bulk-action:
   page-size: 50
