@@ -22,4 +22,13 @@ public class AlternativeServiceServiceImpl implements AlternativeServiceService 
             throw new CaseOrchestrationServiceException(workflowException, caseDetails.getCaseId());
         }
     }
+
+    @Override
+    public CaseDetails confirmProcessServer(CaseDetails caseDetails) throws CaseOrchestrationServiceException {
+        try {
+            return CaseDetails.builder().caseData(confirmAlternativeServiceWorkflow.run(caseDetails)).build();
+        } catch (WorkflowException workflowException) {
+            throw new CaseOrchestrationServiceException(workflowException, caseDetails.getCaseId());
+        }
+    }
 }
