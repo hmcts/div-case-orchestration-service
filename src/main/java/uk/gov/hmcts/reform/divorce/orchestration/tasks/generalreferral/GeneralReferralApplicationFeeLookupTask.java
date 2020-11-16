@@ -24,7 +24,7 @@ public class GeneralReferralApplicationFeeLookupTask extends FeeLookupWithoutNot
     protected Map<String, Object> furtherUpdateCaseData(TaskContext context, Map<String, Object> updatedCaseData) {
         String feeValue = getFeeValue(updatedCaseData);
 
-        log.info("CaseId: {}, populate field {} with fee value from SummaryOrder", getCaseId(context), feeValue);
+        log.info("CaseId: {}, populate field {} with fee value from SummaryOrder (in pounds and pennies)", getCaseId(context), feeValue);
         updatedCaseData.put(CcdFields.FEE_AMOUNT_WITHOUT_NOTICE, feeValue);
 
         return updatedCaseData;

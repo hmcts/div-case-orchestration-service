@@ -1664,7 +1664,7 @@ public class CallbackControllerTest {
     public void shouldReturnOk_whenConfirmProcessServerServiceIsCalled() throws CaseOrchestrationServiceException {
         CaseDetails caseDetails = CaseDetails.builder().build();
         when(alternativeServiceService.confirmProcessServerService(caseDetails))
-            .thenReturn(CaseDetails.builder().build());
+            .thenReturn(caseDetails);
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
             .caseDetails(caseDetails)

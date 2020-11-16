@@ -13,6 +13,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.alternativeservice.Co
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -51,7 +54,7 @@ public class AlternativeServiceServiceImplTest {
     }
 
     @Test
-    public void whenConfirmProcessServer_thenConfirmAlternativeServiceWorkflowIsCalled()
+    public void whenConfirmProcessServerService_thenConfirmAlternativeServiceWorkflowIsCalled()
         throws CaseOrchestrationServiceException, WorkflowException {
         Map<String, Object> caseData = new HashMap<>();
         CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).caseId(TEST_CASE_ID).build();
@@ -59,5 +62,6 @@ public class AlternativeServiceServiceImplTest {
         alternativeServiceService.confirmProcessServerService(caseDetails);
 
         verify(confirmAlternativeServiceWorkflow).run(caseDetails);
+        assertThat(caseDetails.getCaseId(), is(TEST_CASE_ID));
     }
 }
