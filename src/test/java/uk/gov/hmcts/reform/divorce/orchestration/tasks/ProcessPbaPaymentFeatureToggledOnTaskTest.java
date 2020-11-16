@@ -7,19 +7,20 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_ACCOUNT_NUMBER;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PBA_NUMBERS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DynamicList.asDynamicList;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ProcessPbaPaymentFeatureToggledOffTaskAbstractTest extends ProcessPbaPaymentTaskAbstractTest {
+public class ProcessPbaPaymentFeatureToggledOnTaskTest extends ProcessPbaPaymentTaskAbstractTest {
 
     @Before
     public void setup() {
-        when(featureToggleService.isFeatureEnabled(Features.PAY_BY_ACCOUNT)).thenReturn(false);
+        when(featureToggleService.isFeatureEnabled(Features.PAY_BY_ACCOUNT)).thenReturn(true);
         setPbaNumber();
     }
 
     @Override
     protected void setPbaNumber() {
-        caseData.put(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY, TEST_SOLICITOR_ACCOUNT_NUMBER);
+        caseData.put(PBA_NUMBERS, asDynamicList(TEST_SOLICITOR_ACCOUNT_NUMBER));
     }
 }

@@ -15,9 +15,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AosPackDueDateSetterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MarkJourneyAsOffline;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MultipleDocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
 
@@ -61,7 +61,7 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
     private final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
     private final BulkPrinterTask bulkPrinterTask;
     private final MarkJourneyAsOffline markJourneyAsOffline;
-    private final ModifyDueDateTask modifyDueDateTask;
+    private final AosPackDueDateSetterTask aosPackDueDateSetterTask;
     private final DocumentTemplateService documentTemplateService;
     private final IssueAosPackOfflineDocuments issueAosPackOfflineDocuments;
 
@@ -91,7 +91,7 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
 
         if (divorceParty.equals(RESPONDENT)) {
             log.warn("CaseId {}, modify modifyDueDate", caseId);
-            tasks.add(modifyDueDateTask);
+            tasks.add(aosPackDueDateSetterTask);
         }
 
         log.warn("CaseId {}, number of tasks to be executed {}", caseId, tasks.size());

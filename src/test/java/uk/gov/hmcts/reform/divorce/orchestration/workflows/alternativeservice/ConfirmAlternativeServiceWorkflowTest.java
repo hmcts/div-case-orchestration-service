@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDateTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AlternativeServiceDueDateSetterTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +20,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.ve
 public class ConfirmAlternativeServiceWorkflowTest {
 
     @Mock
-    private ModifyDueDateTask modifyDueDateTask;
+    private AlternativeServiceDueDateSetterTask alternativeServiceDueDateSetterTask;
 
     @InjectMocks
     private ConfirmAlternativeServiceWorkflow confirmAlternativeServiceWorkflow;
@@ -28,7 +28,7 @@ public class ConfirmAlternativeServiceWorkflowTest {
     @Test
     public void whenConfirmAlternativeServiceWorkflowModifyDueDateTaskIsExecuted() throws Exception {
         HashMap<String, Object> caseData = new HashMap<>();
-        mockTasksExecution(caseData, modifyDueDateTask);
+        mockTasksExecution(caseData, alternativeServiceDueDateSetterTask);
 
         Map<String, Object> returned = confirmAlternativeServiceWorkflow.run(
             CaseDetails.builder()
@@ -37,6 +37,6 @@ public class ConfirmAlternativeServiceWorkflowTest {
         );
 
         assertThat(returned, is(caseData));
-        verifyTaskWasCalled(caseData, modifyDueDateTask);
+        verifyTaskWasCalled(caseData, alternativeServiceDueDateSetterTask);
     }
 }
