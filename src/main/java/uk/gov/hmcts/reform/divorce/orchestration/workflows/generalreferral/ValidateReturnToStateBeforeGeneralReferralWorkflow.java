@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalreferral.VerifyIsEligibleForStateRollbackBeforeGeneralReferralTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalreferral.GeneralReferralReturnToPreviousStateValidationTask;
 
 import java.util.Map;
 
@@ -17,19 +17,19 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class ValidateStateRollbackToBeforeGeneralReferralWorkflow extends DefaultWorkflow<Map<String, Object>> {
+public class ValidateReturnToStateBeforeGeneralReferralWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final VerifyIsEligibleForStateRollbackBeforeGeneralReferralTask verifyIsEligibleForStateRollbackToBeforeGeneralReferralTask;
+    private final GeneralReferralReturnToPreviousStateValidationTask generalReferralReturnToPreviousStateValidationTask;
 
     public Map<String, Object> run(CaseDetails caseDetails) throws WorkflowException {
 
         String caseId = caseDetails.getCaseId();
 
-        log.info("CaseID: {} Validate state rollback before general referral workflow is going to be executed.", caseId);
+        log.info("CaseID: {} Validate return to state before general referral workflow is going to be executed.", caseId);
 
         return this.execute(
             new Task[] {
-                verifyIsEligibleForStateRollbackToBeforeGeneralReferralTask
+                generalReferralReturnToPreviousStateValidationTask
             },
             caseDetails.getCaseData(),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseId)

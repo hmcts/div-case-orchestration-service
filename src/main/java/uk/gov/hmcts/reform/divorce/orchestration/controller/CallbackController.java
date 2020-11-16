@@ -1331,7 +1331,7 @@ public class CallbackController {
         );
     }
 
-    @PostMapping(path = "/state-before-general-referral", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @PostMapping(path = "/return-to-state-before-general-referral", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Callback to set a case back to the state it had before triggering a General Referral")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
@@ -1340,7 +1340,7 @@ public class CallbackController {
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest)
         throws CaseOrchestrationServiceException {
 
-        CcdCallbackResponse response = generalReferralService.validateStateRollbackToBeforeGeneralReferral(ccdCallbackRequest.getCaseDetails());
+        CcdCallbackResponse response = generalReferralService.validateReturnToStateBeforeGeneralReferral(ccdCallbackRequest.getCaseDetails());
         return ResponseEntity.ok(response);
     }
 

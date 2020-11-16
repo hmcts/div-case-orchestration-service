@@ -1667,7 +1667,7 @@ public class CallbackControllerTest {
         Map<String, Object> caseData = ImmutableMap.of(
             CcdFields.GENERAL_REFERRAL_PREVIOUS_CASE_STATE, "previousCaseState");
         CcdCallbackRequest ccdCallbackRequest = ccdRequestWithData(caseData);
-        when(generalReferralService.validateStateRollbackToBeforeGeneralReferral(any()))
+        when(generalReferralService.validateReturnToStateBeforeGeneralReferral(any()))
             .thenReturn(CcdCallbackResponse.builder()
                 .state("previousCaseState")
                 .data(caseData)
@@ -1677,6 +1677,6 @@ public class CallbackControllerTest {
 
         assertThat(response.getStatusCode(), equalTo(OK));
         assertThat(response.getBody().getState(), is("previousCaseState"));
-        verify(generalReferralService).validateStateRollbackToBeforeGeneralReferral(ccdCallbackRequest.getCaseDetails());
+        verify(generalReferralService).validateReturnToStateBeforeGeneralReferral(ccdCallbackRequest.getCaseDetails());
     }
 }

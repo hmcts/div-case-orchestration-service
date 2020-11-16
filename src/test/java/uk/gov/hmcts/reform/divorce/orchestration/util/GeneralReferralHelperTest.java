@@ -1,9 +1,14 @@
 package uk.gov.hmcts.reform.divorce.orchestration.util;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
 
+import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -13,17 +18,16 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThrows;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.ALTERNATIVE_SERVICE_APPLICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_APPLICATION_REFERRAL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_REFERRAL_DECISION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_REFERRAL_DECISION_REFUSE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_REFERRAL_FEE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_REFERRAL_REASON;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_REFERRAL_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.GeneralReferralHelper.GENERAL_REFERRAL_WORKFLOW_STATES;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.GeneralReferralHelper.isGeneralReferralPaymentRequired;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.GeneralReferralHelper.isGeneralReferralRejected;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.GeneralReferralHelper.isReasonGeneralApplicationReferral;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.GeneralReferralHelper.isStatePartOfGeneralReferralWorkflow;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.GeneralReferralHelper.isTypeOfAlternativeServiceApplication;
 
 public class GeneralReferralHelperTest {
@@ -113,33 +117,25 @@ public class GeneralReferralHelperTest {
     }
 
     @Test
-    public void isGeneralReferralRejectedShouldBeTrue() {
-        Map<String, Object> caseData = ImmutableMap.of(GENERAL_REFERRAL_DECISION, GENERAL_REFERRAL_DECISION_REFUSE);
+    public void generalReferralWorkflowStatesListIsAsExpected() {
+        assertThat(GENERAL_REFERRAL_WORKFLOW_STATES, is(getExpectedGeneralReferralWorkflowStates()));
+    }
 
-        assertThat(isGeneralReferralRejected(caseData), is(true));
+    @ParameterizedTest
+    @MethodSource("getExpectedGeneralReferralWorkflowStates")
+    public void isStatePartOfGeneralReferralWorkflowShouldBeTrue(String state) {
+        assertThat(isStatePartOfGeneralReferralWorkflow(state), is(true));
     }
 
     @Test
-    public void isGeneralReferralRejectedShouldBeFalse() {
-        Map<String, Object> caseData = ImmutableMap.of(GENERAL_REFERRAL_DECISION, "NotRefuse");
-
-        assertThat(isGeneralReferralRejected(caseData), is(false));
+    public void isStatePartOfGeneralReferralWorkflowShouldBeFalse() {
+        assertThat(isStatePartOfGeneralReferralWorkflow("notGeneralReferralWorkflowState"), is(false));
     }
 
     @Test
-    public void shouldThrowErrorWhenNoGeneralReferralDecisionExists() {
-        Map<String, Object> caseData = ImmutableMap.of("SomeOtherProperty", "SomeOtherValue");
-
-        runEmptyOrNullAssertionsForGeneralReferralDecision(caseData);
+    public void isStatePartOfGeneralReferralWorkflowShouldBeFalseGivenNullValue() {
+        assertThat(isStatePartOfGeneralReferralWorkflow(null), is(false));
     }
-
-    @Test
-    public void shouldThrowErrorWhenGeneralReferralDecisionIsEmpty() {
-        Map<String, Object> caseData = ImmutableMap.of(GENERAL_REFERRAL_DECISION, EMPTY_STRING);
-
-        runEmptyOrNullAssertionsForGeneralReferralDecision(caseData);
-    }
-
 
     private void runEmptyOrNullAssertionsForGeneralReferralFee(Map<String, Object> caseData) {
         String expectedMessage = getMissingPropertyErrorMessage(GENERAL_REFERRAL_FEE);
@@ -168,16 +164,14 @@ public class GeneralReferralHelperTest {
         assertThat(taskException.getMessage(), containsString(expectedMessage));
     }
 
-    private void runEmptyOrNullAssertionsForGeneralReferralDecision(Map<String, Object> caseData) {
-        String expectedMessage = getMissingPropertyErrorMessage(GENERAL_REFERRAL_DECISION);
-
-        InvalidDataForTaskException taskException =
-            assertThrows(InvalidDataForTaskException.class, () -> isGeneralReferralRejected(caseData));
-
-        assertThat(taskException.getMessage(), containsString(expectedMessage));
-    }
-
     private String getMissingPropertyErrorMessage(String missingField) {
         return format("Could not evaluate value of mandatory property \"%s\"", missingField);
+    }
+
+    private static List<String> getExpectedGeneralReferralWorkflowStates() {
+        return ImmutableList.of(
+            CcdStates.AWAITING_GENERAL_REFERRAL_PAYMENT,
+            CcdStates.AWAITING_GENERAL_CONSIDERATION,
+            CcdStates.GENERAL_CONSIDERATION_COMPLETE);
     }
 }

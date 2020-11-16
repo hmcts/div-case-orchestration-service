@@ -13,6 +13,7 @@ import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static java.lang.String.format;
+import static java.util.Collections.emptyMap;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
@@ -24,9 +25,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.GeneralReferralUtil.buildCallbackRequest;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
-public class StateBeforeGeneralReferralTest extends MockedFunctionalTest {
+public class ReturnToStateBeforeGeneralReferralTest extends MockedFunctionalTest {
 
-    private static final String API_URL = "/state-before-general-referral";
+    private static final String API_URL = "/return-to-state-before-general-referral";
 
     @Autowired
     private MockMvc webClient;
@@ -37,7 +38,6 @@ public class StateBeforeGeneralReferralTest extends MockedFunctionalTest {
     public void givenState_AwaitingGeneralConsideration_WhenGeneralReferralFee_Yes_ThenState_Is_AwaitingGeneralReferralPayment() throws Exception {
         ccdCallbackRequest = buildCallbackRequest(
             ImmutableMap.of(
-                CcdFields.GENERAL_REFERRAL_DECISION, CcdFields.GENERAL_REFERRAL_DECISION_REFUSE,
                 CcdFields.GENERAL_REFERRAL_PREVIOUS_CASE_STATE, "caseStateBeforeGeneralReferral"),
             "anyState");
 
@@ -47,21 +47,11 @@ public class StateBeforeGeneralReferralTest extends MockedFunctionalTest {
     @Test
     public void givenNoPreviousCaseState_WhenStateBeforeGeneralReferral_ThenReturns_Error() throws Exception {
         ccdCallbackRequest = buildCallbackRequest(
-            ImmutableMap.of(CcdFields.GENERAL_REFERRAL_DECISION, CcdFields.GENERAL_REFERRAL_DECISION_REFUSE),
+            emptyMap(),
             "anyState");
 
         performRequestAndValidateHasError(
             format("Could not evaluate value of mandatory property \"%s\"", CcdFields.GENERAL_REFERRAL_PREVIOUS_CASE_STATE));
-    }
-
-    @Test
-    public void givenGeneralReferralIsNotRejected_WhenStateBeforeGeneralReferral_ThenReturns_Error() throws Exception {
-        ccdCallbackRequest = buildCallbackRequest(
-            ImmutableMap.of(CcdFields.GENERAL_REFERRAL_DECISION, "notRejected"),
-            "anyState");
-
-        performRequestAndValidateHasError(
-            "Your previous general referral application has not been rejected. You cannot rollback the state.");
     }
 
     private void performRequestAndValidateStateIs(String newCaseState) throws Exception {

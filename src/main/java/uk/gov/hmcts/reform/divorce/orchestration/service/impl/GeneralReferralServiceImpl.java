@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralReferralService;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.GeneralConsiderationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.GeneralReferralWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.SetupGeneralReferralPaymentWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.ValidateStateRollbackToBeforeGeneralReferralWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.ValidateReturnToStateBeforeGeneralReferralWorkflow;
 
 import java.util.Map;
 
@@ -29,7 +29,7 @@ public class GeneralReferralServiceImpl implements GeneralReferralService {
     private final GeneralReferralWorkflow generalReferralWorkflow;
     private final GeneralConsiderationWorkflow generalConsiderationWorkflow;
     private final SetupGeneralReferralPaymentWorkflow setupGeneralReferralPaymentWorkflow;
-    private final ValidateStateRollbackToBeforeGeneralReferralWorkflow validateStateRollbackToBeforeGeneralReferralWorkflow;
+    private final ValidateReturnToStateBeforeGeneralReferralWorkflow validateReturnToStateBeforeGeneralReferralWorkflow;
 
     @Override
     public CcdCallbackResponse receiveReferral(CcdCallbackRequest ccdCallbackRequest)
@@ -75,12 +75,12 @@ public class GeneralReferralServiceImpl implements GeneralReferralService {
     }
 
     @Override
-    public CcdCallbackResponse validateStateRollbackToBeforeGeneralReferral(CaseDetails caseDetails)
+    public CcdCallbackResponse validateReturnToStateBeforeGeneralReferral(CaseDetails caseDetails)
         throws CaseOrchestrationServiceException {
         String caseId = caseDetails.getCaseId();
 
         try {
-            Map<String, Object> response = validateStateRollbackToBeforeGeneralReferralWorkflow.run(caseDetails);
+            Map<String, Object> response = validateReturnToStateBeforeGeneralReferralWorkflow.run(caseDetails);
             String previousCaseState = response.get(CcdFields.GENERAL_REFERRAL_PREVIOUS_CASE_STATE).toString();
 
             log.info("CaseID: {} Case state updated to {}", caseId, previousCaseState);

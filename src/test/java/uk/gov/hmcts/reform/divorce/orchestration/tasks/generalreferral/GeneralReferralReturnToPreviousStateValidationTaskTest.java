@@ -19,19 +19,18 @@ import static org.junit.Assert.assertThrows;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.context;
 
 @RunWith(MockitoJUnitRunner.class)
-public class VerifyIsEligibleForStateRollbackBeforeGeneralReferralTaskTest extends TestCase {
+public class GeneralReferralReturnToPreviousStateValidationTaskTest extends TestCase {
 
     @InjectMocks
-    private VerifyIsEligibleForStateRollbackBeforeGeneralReferralTask verifyIsEligibleForStateRollbackBeforeGeneralReferralTask;
+    private GeneralReferralReturnToPreviousStateValidationTask generalReferralReturnToPreviousStateValidationTask;
 
     @Test
     public void executeShouldReturnCaseData() throws TaskException {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(CcdFields.GENERAL_REFERRAL_DECISION, CcdFields.GENERAL_REFERRAL_DECISION_REFUSE);
         caseData.put(CcdFields.GENERAL_REFERRAL_PREVIOUS_CASE_STATE, "previousCaseState");
         TaskContext context = context();
 
-        Map<String, Object> returnedCaseData = verifyIsEligibleForStateRollbackBeforeGeneralReferralTask
+        Map<String, Object> returnedCaseData = generalReferralReturnToPreviousStateValidationTask
             .execute(context, caseData);
 
         assertThat(returnedCaseData.isEmpty(), is(false));
@@ -40,40 +39,24 @@ public class VerifyIsEligibleForStateRollbackBeforeGeneralReferralTaskTest exten
     }
 
     @Test
-    public void executeShouldThrowExceptionIfGeneralReferralDecisionIsMissing() throws TaskException {
-        Map<String, Object> caseData = new HashMap<>();
-        caseData.put(CcdFields.GENERAL_REFERRAL_PREVIOUS_CASE_STATE, "previousCaseState");
-        TaskContext context = context();
-
-        TaskException exception = assertThrows(TaskException.class, () ->
-            verifyIsEligibleForStateRollbackBeforeGeneralReferralTask.execute(context, caseData)
-        );
-        assertThat(exception.getMessage(),
-            CoreMatchers.containsString("Could not evaluate value of mandatory property \"" + CcdFields.GENERAL_REFERRAL_DECISION + "\""));
-    }
-
-    @Test
-    public void executeShouldThrowExceptionIfGeneralReferralIsNotRejected() throws TaskException {
-        Map<String, Object> caseData = new HashMap<>();
-        caseData.put(CcdFields.GENERAL_REFERRAL_DECISION, "notRejected");
-        caseData.put(CcdFields.GENERAL_REFERRAL_PREVIOUS_CASE_STATE, "previousCaseState");
-        TaskContext context = context();
-
-        TaskException exception = assertThrows(TaskException.class, () ->
-            verifyIsEligibleForStateRollbackBeforeGeneralReferralTask.execute(context, caseData)
-        );
-        assertThat(exception.getMessage(),
-            CoreMatchers.is("Your previous general referral application has not been rejected. You cannot rollback the state."));
-    }
-
-    @Test
     public void executeShouldThrowExceptionIfPreviousCaseStateIsMissing() throws TaskException {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(CcdFields.GENERAL_REFERRAL_DECISION, CcdFields.GENERAL_REFERRAL_DECISION_REFUSE);
         TaskContext context = context();
 
         TaskException exception = assertThrows(TaskException.class, () ->
-            verifyIsEligibleForStateRollbackBeforeGeneralReferralTask.execute(context, caseData)
+            generalReferralReturnToPreviousStateValidationTask.execute(context, caseData)
+        );
+        assertThat(exception.getMessage(),
+            CoreMatchers.is("Could not evaluate value of mandatory property \"" + CcdFields.GENERAL_REFERRAL_PREVIOUS_CASE_STATE + "\""));
+    }
+
+    @Test
+    public void executeShouldThrowExceptionIfCurrentCaseStateIsMissing() throws TaskException {
+        Map<String, Object> caseData = new HashMap<>();
+        TaskContext context = context();
+
+        TaskException exception = assertThrows(TaskException.class, () ->
+            generalReferralReturnToPreviousStateValidationTask.execute(context, caseData)
         );
         assertThat(exception.getMessage(),
             CoreMatchers.is("Could not evaluate value of mandatory property \"" + CcdFields.GENERAL_REFERRAL_PREVIOUS_CASE_STATE + "\""));
@@ -82,12 +65,11 @@ public class VerifyIsEligibleForStateRollbackBeforeGeneralReferralTaskTest exten
     @Test
     public void executeShouldThrowExceptionIfPreviousCaseStateIsEmpty() throws TaskException {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(CcdFields.GENERAL_REFERRAL_DECISION, CcdFields.GENERAL_REFERRAL_DECISION_REFUSE);
         caseData.put(CcdFields.GENERAL_REFERRAL_PREVIOUS_CASE_STATE, "");
         TaskContext context = context();
 
         TaskException exception = assertThrows(TaskException.class, () ->
-            verifyIsEligibleForStateRollbackBeforeGeneralReferralTask.execute(context, caseData)
+            generalReferralReturnToPreviousStateValidationTask.execute(context, caseData)
         );
         assertThat(exception.getMessage(),
             CoreMatchers.is("Could not evaluate value of mandatory property \"" + CcdFields.GENERAL_REFERRAL_PREVIOUS_CASE_STATE + "\""));

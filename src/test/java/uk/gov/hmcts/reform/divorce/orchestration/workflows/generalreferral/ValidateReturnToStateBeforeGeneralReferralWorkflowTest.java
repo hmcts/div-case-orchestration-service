@@ -7,7 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalreferral.VerifyIsEligibleForStateRollbackBeforeGeneralReferralTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalreferral.GeneralReferralReturnToPreviousStateValidationTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,21 +16,21 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mo
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTaskWasCalled;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ValidateStateRollbackToBeforeGeneralReferralWorkflowTest extends TestCase {
+public class ValidateReturnToStateBeforeGeneralReferralWorkflowTest extends TestCase {
 
     @Mock
-    private VerifyIsEligibleForStateRollbackBeforeGeneralReferralTask verifyIsEligibleForStateRollbackBeforeGeneralReferralTask;
+    private GeneralReferralReturnToPreviousStateValidationTask generalReferralReturnToPreviousStateValidationTask;
 
     @InjectMocks
-    private ValidateStateRollbackToBeforeGeneralReferralWorkflow validateStateRollbackToBeforeGeneralReferralWorkflow;
+    private ValidateReturnToStateBeforeGeneralReferralWorkflow validateReturnToStateBeforeGeneralReferralWorkflow;
 
     @Test
     public void runShouldBeExecutedAndCallExpectedTasks() throws Exception {
         Map<String, Object> caseData = new HashMap<>();
-        mockTasksExecution(caseData, verifyIsEligibleForStateRollbackBeforeGeneralReferralTask);
+        mockTasksExecution(caseData, generalReferralReturnToPreviousStateValidationTask);
 
-        validateStateRollbackToBeforeGeneralReferralWorkflow.run(CaseDetails.builder().caseData(caseData).build());
+        validateReturnToStateBeforeGeneralReferralWorkflow.run(CaseDetails.builder().caseData(caseData).build());
 
-        verifyTaskWasCalled(caseData, verifyIsEligibleForStateRollbackBeforeGeneralReferralTask);
+        verifyTaskWasCalled(caseData, generalReferralReturnToPreviousStateValidationTask);
     }
 }
