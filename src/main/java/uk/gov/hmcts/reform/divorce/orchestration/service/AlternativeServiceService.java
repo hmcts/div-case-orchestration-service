@@ -7,6 +7,6 @@ public interface AlternativeServiceService {
     CaseDetails confirmAlternativeService(CaseDetails caseDetails)
         throws CaseOrchestrationServiceException;
 
-    CaseDetails confirmProcessServer(CaseDetails caseDetails)
+    CaseDetails confirmProcessServerService(CaseDetails caseDetails)
         throws CaseOrchestrationServiceException;
 }

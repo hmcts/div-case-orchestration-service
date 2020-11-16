@@ -56,7 +56,7 @@ public class AlternativeServiceServiceImplTest {
         Map<String, Object> caseData = new HashMap<>();
         CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).caseId(TEST_CASE_ID).build();
 
-        alternativeServiceService.confirmProcessServer(caseDetails);
+        alternativeServiceService.confirmProcessServerService(caseDetails);
 
         verify(confirmAlternativeServiceWorkflow).run(caseDetails);
     }

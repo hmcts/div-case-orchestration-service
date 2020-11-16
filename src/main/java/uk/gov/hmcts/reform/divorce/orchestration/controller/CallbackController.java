@@ -1336,13 +1336,13 @@ public class CallbackController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback for confirm process server service has been processed.", response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
-    public ResponseEntity<CcdCallbackResponse> confirmProcessServer(
+    public ResponseEntity<CcdCallbackResponse> confirmProcessServerService(
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest)
         throws CaseOrchestrationServiceException {
 
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
-                .data(alternativeServiceService.confirmProcessServer(ccdCallbackRequest.getCaseDetails()).getCaseData())
+                .data(alternativeServiceService.confirmProcessServerService(ccdCallbackRequest.getCaseDetails()).getCaseData())
                 .build()
         );
     }

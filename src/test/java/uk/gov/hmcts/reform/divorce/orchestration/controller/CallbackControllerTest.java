@@ -1661,18 +1661,18 @@ public class CallbackControllerTest {
     }
 
     @Test
-    public void shouldReturnOk_whenConfirmProcessServerIsCalled() throws CaseOrchestrationServiceException {
+    public void shouldReturnOk_whenConfirmProcessServerServiceIsCalled() throws CaseOrchestrationServiceException {
         CaseDetails caseDetails = CaseDetails.builder().build();
-        when(alternativeServiceService.confirmProcessServer(caseDetails))
+        when(alternativeServiceService.confirmProcessServerService(caseDetails))
             .thenReturn(CaseDetails.builder().build());
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
             .caseDetails(caseDetails)
             .build();
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.confirmProcessServer(ccdCallbackRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.confirmProcessServerService(ccdCallbackRequest);
 
         assertThat(response.getStatusCode(), equalTo(OK));
-        verify(alternativeServiceService).confirmProcessServer(caseDetails);
+        verify(alternativeServiceService).confirmProcessServerService(caseDetails);
     }
 }
