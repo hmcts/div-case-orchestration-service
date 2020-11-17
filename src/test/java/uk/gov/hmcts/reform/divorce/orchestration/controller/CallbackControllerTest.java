@@ -1675,4 +1675,4 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getData(), is(TEST_PAYLOAD_TO_RETURN));
         verify(alternativeServiceService).confirmProcessServerService(TEST_INCOMING_CASE_DETAILS);
     }
-}ConfirmProcessServerServiceTest.java
+}
