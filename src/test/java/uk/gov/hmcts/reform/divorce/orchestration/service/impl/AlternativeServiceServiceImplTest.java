@@ -63,4 +63,15 @@ public class AlternativeServiceServiceImplTest {
         verify(confirmAlternativeServiceWorkflow).run(caseDetails);
         assertThat(caseDetails.getCaseId(), is(TEST_CASE_ID));
     }
+
+    @Test
+    public void whenConfirmProcessServerServiceWorkflowThrowsWorkflowException_thenThrowServiceException()
+        throws WorkflowException {
+        when(confirmAlternativeServiceWorkflow.run(any())).thenThrow(WorkflowException.class);
+
+        assertThrows(
+            CaseOrchestrationServiceException.class,
+            () -> alternativeServiceService.confirmProcessServerService(CaseDetails.builder().build())
+        );
+    }
 }
