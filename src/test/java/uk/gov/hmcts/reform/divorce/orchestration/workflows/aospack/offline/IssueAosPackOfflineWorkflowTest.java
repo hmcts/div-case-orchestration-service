@@ -23,9 +23,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AosPackDueDateSetterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MarkJourneyAsOffline;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MultipleDocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.DocumentGenerator;
@@ -123,7 +123,7 @@ public class IssueAosPackOfflineWorkflowTest {
     private BulkPrinterTask bulkPrinterTask;
 
     @Mock
-    private ModifyDueDateTask modifyDueDateTask;
+    private AosPackDueDateSetterTask aosPackDueDateSetterTask;
 
     @Mock
     private MarkJourneyAsOffline markJourneyAsOffline;
@@ -152,7 +152,7 @@ public class IssueAosPackOfflineWorkflowTest {
         when(fetchPrintDocsFromDmStore.execute(any(), any())).thenReturn(singletonMap("returnedKey3", "returnedValue3"));
         when(bulkPrinterTask.execute(any(), any())).thenReturn(singletonMap("returnedKey4", "returnedValue4"));
         when(markJourneyAsOffline.execute(any(), any())).thenReturn(singletonMap("returnedKey5", "returnedValue5"));
-        when(modifyDueDateTask.execute(any(), any())).thenReturn(singletonMap("returnedKey6", "returnedValue6"));
+        when(aosPackDueDateSetterTask.execute(any(), any())).thenReturn(singletonMap("returnedKey6", "returnedValue6"));
 
         ImmutableMap<DivorceFacts, DocumentGenerator> issueAosPackOffLine = ImmutableMap.of(
                 SEPARATION_TWO_YEARS,
@@ -428,13 +428,13 @@ public class IssueAosPackOfflineWorkflowTest {
     }
 
     private void verifyModifyDueDateIsCalled() {
-        verify(modifyDueDateTask).execute(any(), argThat(allOf(
+        verify(aosPackDueDateSetterTask).execute(any(), argThat(allOf(
                 Matchers.<String, Object>hasEntry("returnedKey5", "returnedValue5")
         )));
     }
 
     private void verifyModifyDueDateIsNotCalled() {
-        verifyNoInteractions(modifyDueDateTask);
+        verifyNoInteractions(aosPackDueDateSetterTask);
     }
 
     private void verifyBulkPrintIsCalledAsExpected(String expectedLetterType, List<String> expectedDocumentTypesToPrint) {

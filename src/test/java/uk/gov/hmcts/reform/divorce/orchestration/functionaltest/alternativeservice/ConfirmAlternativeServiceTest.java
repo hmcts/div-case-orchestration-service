@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.alternativeserv
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -27,9 +26,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class ConfirmAlternativeServiceTest extends IdamTestSupport {
 
     private static final String API_URL = "/confirm-alternative-service";
-
-    @Value("${bulk-print.dueDate}")
-    private Integer dueDateOffset;
+    private static final Integer DUE_DATE_OFFSET = 7;
 
     @Autowired
     private MockMvc webClient;
@@ -51,7 +48,7 @@ public class ConfirmAlternativeServiceTest extends IdamTestSupport {
                 isJson(),
                 hasJsonPath(
                     "$.data.dueDate",
-                    is(DateCalculator.getDateWithOffset(dueDateOffset))
+                    is(DateCalculator.getDateWithOffset(DUE_DATE_OFFSET))
                 ),
                 hasNoJsonPath("$.errors"),
                 hasNoJsonPath("$.warnings")
