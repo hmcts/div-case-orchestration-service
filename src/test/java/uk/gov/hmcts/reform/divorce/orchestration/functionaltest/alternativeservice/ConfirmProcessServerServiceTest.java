@@ -47,8 +47,7 @@ public class ConfirmProcessServerServiceTest extends IdamTestSupport {
             .andExpect(content().string(allOf(
                 isJson(),
                 hasJsonPath(
-                    "$.data.dueDate",
-                    is(DateCalculator.getDateWithOffset(DUE_DATE_OFFSET))
+                    "$.data.dueDate", is(DateCalculator.getDateWithOffset(DUE_DATE_OFFSET))
                 ),
                 hasNoJsonPath("$.errors"),
                 hasNoJsonPath("$.warnings")

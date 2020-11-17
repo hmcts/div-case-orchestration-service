@@ -8,6 +8,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.AlternativeServiceServi
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.alternativeservice.ConfirmAlternativeServiceWorkflow;
 
+import java.util.Map;
+
 @Component
 @AllArgsConstructor
 public class AlternativeServiceServiceImpl implements AlternativeServiceService {
@@ -26,7 +28,8 @@ public class AlternativeServiceServiceImpl implements AlternativeServiceService 
     @Override
     public CaseDetails confirmProcessServerService(CaseDetails caseDetails) throws CaseOrchestrationServiceException {
         try {
-            return CaseDetails.builder().caseData(confirmAlternativeServiceWorkflow.run(caseDetails)).build();
+            Map<String, Object> caseData = confirmAlternativeServiceWorkflow.run(caseDetails);
+            return CaseDetails.builder().caseData(caseData).build();
         } catch (WorkflowException workflowException) {
             throw new CaseOrchestrationServiceException(workflowException, caseDetails.getCaseId());
         }

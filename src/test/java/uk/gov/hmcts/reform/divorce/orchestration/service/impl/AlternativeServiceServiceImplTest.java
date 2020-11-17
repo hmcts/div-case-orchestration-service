@@ -20,6 +20,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INCOMING_CASE_DETAILS;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PAYLOAD_TO_RETURN;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AlternativeServiceServiceImplTest {
@@ -55,13 +57,13 @@ public class AlternativeServiceServiceImplTest {
     @Test
     public void whenConfirmProcessServerService_thenConfirmAlternativeServiceWorkflowIsCalled()
         throws CaseOrchestrationServiceException, WorkflowException {
-        Map<String, Object> caseData = new HashMap<>();
-        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).caseId(TEST_CASE_ID).build();
 
-        CaseDetails returnedPayload = alternativeServiceService.confirmProcessServerService(caseDetails);
+        when(confirmAlternativeServiceWorkflow.run(any())).thenReturn(TEST_PAYLOAD_TO_RETURN);
 
-        verify(confirmAlternativeServiceWorkflow).run(caseDetails);
-        assertThat(returnedPayload.getCaseData(), is(caseDetails.getCaseData()));
+        CaseDetails returnedCaseDetails = alternativeServiceService.confirmProcessServerService(TEST_INCOMING_CASE_DETAILS);
+
+        assertThat(returnedCaseDetails.getCaseData(), is(TEST_PAYLOAD_TO_RETURN));
+        verify(confirmAlternativeServiceWorkflow).run(TEST_INCOMING_CASE_DETAILS);
     }
 
     @Test
