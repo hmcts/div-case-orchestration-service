@@ -8,17 +8,18 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralReferralService;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.GeneralConsiderationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.GeneralReferralWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.SetupGeneralReferralPaymentWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.ValidateReturnToStateBeforeGeneralReferralWorkflow;
 
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_GENERAL_CONSIDERATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_GENERAL_REFERRAL_PAYMENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.GeneralReferralHelper.isGeneralReferralPaymentRequired;
 
 @Component
@@ -29,7 +30,6 @@ public class GeneralReferralServiceImpl implements GeneralReferralService {
     private final GeneralReferralWorkflow generalReferralWorkflow;
     private final GeneralConsiderationWorkflow generalConsiderationWorkflow;
     private final SetupGeneralReferralPaymentWorkflow setupGeneralReferralPaymentWorkflow;
-    private final ValidateReturnToStateBeforeGeneralReferralWorkflow validateReturnToStateBeforeGeneralReferralWorkflow;
 
     @Override
     public CcdCallbackResponse receiveReferral(CcdCallbackRequest ccdCallbackRequest)
@@ -75,22 +75,23 @@ public class GeneralReferralServiceImpl implements GeneralReferralService {
     }
 
     @Override
-    public CcdCallbackResponse validateReturnToStateBeforeGeneralReferral(CaseDetails caseDetails)
+    public CcdCallbackResponse returnToStateBeforeGeneralReferral(CaseDetails caseDetails)
         throws CaseOrchestrationServiceException {
         String caseId = caseDetails.getCaseId();
+        Map<String, Object> caseData = caseDetails.getCaseData();
 
         try {
-            Map<String, Object> response = validateReturnToStateBeforeGeneralReferralWorkflow.run(caseDetails);
-            String previousCaseState = response.get(CcdFields.GENERAL_REFERRAL_PREVIOUS_CASE_STATE).toString();
+            String previousCaseState = getMandatoryPropertyValueAsString(caseData, CcdFields.GENERAL_REFERRAL_PREVIOUS_CASE_STATE);
 
             log.info("CaseID: {} Case state updated to {}", caseId, previousCaseState);
 
             return CcdCallbackResponse.builder()
                 .state(previousCaseState)
-                .data(response)
+                .data(caseData)
                 .build();
-        } catch (WorkflowException workflowException) {
-            throw new CaseOrchestrationServiceException(workflowException, caseId);
+        } catch (TaskException taskException) {
+            throw new CaseOrchestrationServiceException(
+                new WorkflowException(taskException.getMessage(), taskException), caseId);
         }
     }
 }

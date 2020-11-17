@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.GeneralConsiderationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.GeneralReferralWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.SetupGeneralReferralPaymentWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.ValidateReturnToStateBeforeGeneralReferralWorkflow;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -48,9 +47,6 @@ public class GeneralReferralServiceImplTest {
 
     @Mock
     private SetupGeneralReferralPaymentWorkflow setupGeneralReferralPaymentWorkflow;
-
-    @Mock
-    private ValidateReturnToStateBeforeGeneralReferralWorkflow validateReturnToStateBeforeGeneralReferralWorkflow;
 
     @InjectMocks
     private GeneralReferralServiceImpl generalReferralService;
@@ -172,7 +168,7 @@ public class GeneralReferralServiceImplTest {
     }
 
     @Test
-    public void givenCaseData_whenValidateReturnToStateBeforeGeneralReferral_thenReturnPayloadAndNewCaseState() throws Exception {
+    public void givenCaseData_whenReturnToStateBeforeGeneralReferral_thenReturnPayloadAndNewCaseState() throws Exception {
         Map<String, Object> caseData = ImmutableMap.of(
             CcdFields.GENERAL_REFERRAL_PREVIOUS_CASE_STATE, "previousCaseState");
         CaseDetails caseDetails = CaseDetails.builder()
@@ -181,22 +177,20 @@ public class GeneralReferralServiceImplTest {
             .state(TEST_STATE)
             .build();
 
-        when(validateReturnToStateBeforeGeneralReferralWorkflow.run(eq(caseDetails))).thenReturn(caseData);
+        ccdCallbackResponse = generalReferralService.returnToStateBeforeGeneralReferral(caseDetails);
 
-        ccdCallbackResponse = generalReferralService.validateReturnToStateBeforeGeneralReferral(caseDetails);
-
-        verify(validateReturnToStateBeforeGeneralReferralWorkflow).run(eq(caseDetails));
         assertThat(ccdCallbackResponse.getState(), is("previousCaseState"));
     }
 
     @Test
-    public void shouldThrowException_whenValidateReturnToStateBeforeGeneralReferral_throwsWorkflowException() throws Exception {
-        when(validateReturnToStateBeforeGeneralReferralWorkflow.run(any())).thenThrow(WorkflowException.class);
-
+    public void givenMissingPreviousStateField_whenReturnToStateBeforeGeneralReferral_thenThrowException() {
         CaseOrchestrationServiceException exception = assertThrows(
             CaseOrchestrationServiceException.class,
-            () -> generalReferralService.validateReturnToStateBeforeGeneralReferral(
-                CaseDetails.builder().caseId(TEST_CASE_ID).build()
+            () -> generalReferralService.returnToStateBeforeGeneralReferral(
+                CaseDetails.builder()
+                    .caseId(TEST_CASE_ID)
+                    .caseData(new HashMap<>())
+                    .build()
             )
         );
 

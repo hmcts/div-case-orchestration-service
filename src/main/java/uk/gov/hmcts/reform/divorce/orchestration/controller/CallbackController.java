@@ -1340,7 +1340,7 @@ public class CallbackController {
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest)
         throws CaseOrchestrationServiceException {
 
-        CcdCallbackResponse response = generalReferralService.validateReturnToStateBeforeGeneralReferral(ccdCallbackRequest.getCaseDetails());
+        CcdCallbackResponse response = generalReferralService.returnToStateBeforeGeneralReferral(ccdCallbackRequest.getCaseDetails());
         return ResponseEntity.ok(response);
     }
 

@@ -22,6 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.GeneralReferralUtil.buildCallbackRequest;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
@@ -39,7 +40,7 @@ public class ReturnToStateBeforeGeneralReferralTest extends MockedFunctionalTest
         ccdCallbackRequest = buildCallbackRequest(
             ImmutableMap.of(
                 CcdFields.GENERAL_REFERRAL_PREVIOUS_CASE_STATE, "caseStateBeforeGeneralReferral"),
-            "anyState");
+                TEST_STATE);
 
         performRequestAndValidateStateIs("caseStateBeforeGeneralReferral");
     }
@@ -48,7 +49,7 @@ public class ReturnToStateBeforeGeneralReferralTest extends MockedFunctionalTest
     public void givenNoPreviousCaseState_WhenStateBeforeGeneralReferral_ThenReturns_Error() throws Exception {
         ccdCallbackRequest = buildCallbackRequest(
             emptyMap(),
-            "anyState");
+            TEST_STATE);
 
         performRequestAndValidateHasError(
             format("Could not evaluate value of mandatory property \"%s\"", CcdFields.GENERAL_REFERRAL_PREVIOUS_CASE_STATE));
