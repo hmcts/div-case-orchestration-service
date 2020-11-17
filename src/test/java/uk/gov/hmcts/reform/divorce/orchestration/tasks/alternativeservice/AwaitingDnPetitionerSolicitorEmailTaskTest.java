@@ -51,7 +51,7 @@ public class AwaitingDnPetitionerSolicitorEmailTaskTest {
 
         executeTask(caseData);
 
-        verifySolicitorEmailSent(caseData);
+        verifySolicitorEmailSent();
     }
 
     @Test
@@ -89,7 +89,7 @@ public class AwaitingDnPetitionerSolicitorEmailTaskTest {
         assertEquals(caseData, returnPayload);
     }
 
-    private void verifySolicitorEmailSent(Map<String, Object> caseData) {
+    private void verifySolicitorEmailSent() {
         verify(emailService).sendEmail(
             TEST_SOLICITOR_EMAIL,
             PET_SOL_AWAITING_DN_SERVED_BY_PROCESS.name(),
