@@ -67,7 +67,7 @@ def versions = [
         serenity                     : '2.1.13',
         serenityCucumber             : '1.9.50',
         serviceTokenGenerator        : '3.1.1',
-        sonarPitest                  : '0.5',
+        sonarPitest                  : '0.6',
         springfoxSwagger             : '2.9.2',
         springSecurityCrypto         : '5.2.4.RELEASE',
         springSecurityRsa            : '1.0.8.RELEASE',
@@ -427,10 +427,9 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
     exclude "uk/gov/hmcts/reform/divorce/callback/nightly/pipeline/**"
     exclude "uk/gov/hmcts/reform/divorce/maintenance/nightly/pipeline/**"
 
-
     setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
     setClasspath(sourceSets.integrationTest.runtimeClasspath)
-  
+
     if (System.getenv('CHANGE_TITLE')?.startsWith('[FAST]')) {
         useJUnit {
             excludeCategories 'uk.gov.hmcts.reform.divorce.category.ExtendedTest'
