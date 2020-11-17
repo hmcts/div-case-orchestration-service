@@ -430,7 +430,7 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
 
     setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
     setClasspath(sourceSets.integrationTest.runtimeClasspath)
-    
+
     if (System.getenv('CHANGE_TITLE')?.startsWith('[FAST]')) {
         useJUnit {
             excludeCategories 'uk.gov.hmcts.reform.divorce.category.ExtendedTest'
