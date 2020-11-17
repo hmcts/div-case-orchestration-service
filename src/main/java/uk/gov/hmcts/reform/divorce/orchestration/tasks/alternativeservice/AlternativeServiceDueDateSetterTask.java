@@ -1,7 +1,8 @@
-package uk.gov.hmcts.reform.divorce.orchestration.tasks;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.alternativeservice;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.DueDateSetterTask;
 
 @Service
 public class AlternativeServiceDueDateSetterTask extends DueDateSetterTask {
