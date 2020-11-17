@@ -58,10 +58,10 @@ public class AlternativeServiceServiceImplTest {
         Map<String, Object> caseData = new HashMap<>();
         CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).caseId(TEST_CASE_ID).build();
 
-        alternativeServiceService.confirmProcessServerService(caseDetails);
+        CaseDetails returnedPayload = alternativeServiceService.confirmProcessServerService(caseDetails);
 
         verify(confirmAlternativeServiceWorkflow).run(caseDetails);
-        assertThat(caseDetails.getCaseId(), is(TEST_CASE_ID));
+        assertThat(returnedPayload.getCaseData(), is(caseDetails.getCaseData()));
     }
 
     @Test
