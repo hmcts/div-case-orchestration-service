@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.testutil;
 
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
+import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

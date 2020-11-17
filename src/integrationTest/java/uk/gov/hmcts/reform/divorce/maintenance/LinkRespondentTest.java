@@ -90,7 +90,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         final UserDetails respondentUserDetails = createCitizenUser();
 
         Response linkResponse =
-            linkRespondent(
+            linkingRespondentSuccessfully(
                 respondentUserDetails.getAuthToken(),
                 caseDetails.getId(),
                 pinResponse.getPin()
@@ -129,7 +129,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
 
         final UserDetails respondentUserDetails = createCitizenUser();
         Response linkResponse =
-            linkRespondent(
+            linkingRespondentSuccessfully(
                 respondentUserDetails.getAuthToken(),
                 caseDetails.getId(),
                 pinResponse.getPin()
@@ -167,7 +167,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         final UserDetails coRespondentUserDetails = createCitizenUser();
 
         Response linkResponse =
-            linkRespondent(
+            linkingRespondentSuccessfully(
                 coRespondentUserDetails.getAuthToken(),
                 caseDetails.getId(),
                 pinResponse.getPin()
@@ -205,7 +205,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         final UserDetails coRespondentUserDetails = createCitizenUser();
 
         Response linkResponse =
-            linkRespondent(
+            linkingRespondentSuccessfully(
                 coRespondentUserDetails.getAuthToken(),
                 caseDetails.getId(),
                 pinResponse.getPin()
@@ -217,7 +217,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         assertCaseDetailsCoRespondent(coRespondentUserDetails, String.valueOf(caseDetails.getId()));
 
         linkResponse =
-            linkRespondent(
+            linkingRespondentSuccessfully(
                 coRespondentUserDetails.getAuthToken(),
                 caseDetails.getId(),
                 pinResponse.getPin()
@@ -253,9 +253,34 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
         }
 
         return RestUtil.postToRestService(
-            serverUrl + contextPath + "/" + caseId + "/" + pin,
-            headers,
-            null
-        );
+                serverUrl + contextPath + "/" + caseId + "/" + pin,
+                headers,
+                null
+            );
+    }
+
+    private Response linkingRespondentSuccessfully(String userToken, Long caseId, String pin) {
+        final Map<String, Object> headers = new HashMap<>();
+        headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
+
+        if (userToken != null) {
+            headers.put(HttpHeaders.AUTHORIZATION, userToken);
+        }
+
+        int retryCount = 0;
+        Response response = null;
+
+        // Add a Retry of 3 times till we get back a Response of 200 otherwise return
+        // null back to calling method.
+        do {
+            response = RestUtil.postToRestService(
+                serverUrl + contextPath + "/" + caseId + "/" + pin,
+                headers,
+                null
+            );
+            retryCount++;
+        }
+        while (response.getStatusCode() == 200 && retryCount <= 3);
+        return response;
     }
 }

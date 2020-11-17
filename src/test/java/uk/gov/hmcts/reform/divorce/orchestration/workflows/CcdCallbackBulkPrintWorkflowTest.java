@@ -13,8 +13,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AosPackDueDateSetterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ServiceMethodValidationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoRespondentAosPackPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.RespondentAosPackPrinterTask;
@@ -54,7 +54,7 @@ public class CcdCallbackBulkPrintWorkflowTest {
     private CoRespondentAosPackPrinterTask coRespondentAosPackPrinterTask;
 
     @Mock
-    private ModifyDueDateTask modifyDueDateTask;
+    private AosPackDueDateSetterTask aosPackDueDateSetterTask;
 
     @Mock
     private CaseDataUtils caseDataUtils;
@@ -96,7 +96,7 @@ public class CcdCallbackBulkPrintWorkflowTest {
     public void whenWorkflowRunsForAdulteryCase_WithNamedCoRespondent_allTasksRun_payloadReturned() throws WorkflowException, TaskException {
         when(serviceMethodValidationTask.execute(context, payload)).thenReturn(payload);
         when(fetchPrintDocsFromDmStore.execute(context, payload)).thenReturn(payload);
-        when(modifyDueDateTask.execute(context, payload)).thenReturn(payload);
+        when(aosPackDueDateSetterTask.execute(context, payload)).thenReturn(payload);
         when(respondentAosPackPrinterTask.execute(context, payload)).thenReturn(payload);
         when(coRespondentAosPackPrinterTask.execute(context, payload)).thenReturn(payload);
         when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(true);
@@ -109,21 +109,21 @@ public class CcdCallbackBulkPrintWorkflowTest {
             fetchPrintDocsFromDmStore,
             respondentAosPackPrinterTask,
             coRespondentAosPackPrinterTask,
-            modifyDueDateTask
+            aosPackDueDateSetterTask
         );
 
         inOrder.verify(serviceMethodValidationTask).execute(context, payload);
         inOrder.verify(fetchPrintDocsFromDmStore).execute(context, payload);
         inOrder.verify(respondentAosPackPrinterTask).execute(context, payload);
         inOrder.verify(coRespondentAosPackPrinterTask).execute(context, payload);
-        inOrder.verify(modifyDueDateTask).execute(context, payload);
+        inOrder.verify(aosPackDueDateSetterTask).execute(context, payload);
     }
 
     @Test
     public void whenWorkflowRunsForNonAdulteryCase_allTasksRunExceptForCoRespondent_payloadReturned() throws WorkflowException, TaskException {
         when(serviceMethodValidationTask.execute(context, payload)).thenReturn(payload);
         when(fetchPrintDocsFromDmStore.execute(context, payload)).thenReturn(payload);
-        when(modifyDueDateTask.execute(context, payload)).thenReturn(payload);
+        when(aosPackDueDateSetterTask.execute(context, payload)).thenReturn(payload);
         when(respondentAosPackPrinterTask.execute(context, payload)).thenReturn(payload);
         when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(false);
 
@@ -134,12 +134,12 @@ public class CcdCallbackBulkPrintWorkflowTest {
             serviceMethodValidationTask,
             fetchPrintDocsFromDmStore,
             respondentAosPackPrinterTask,
-            modifyDueDateTask
+            aosPackDueDateSetterTask
         );
         inOrder.verify(serviceMethodValidationTask).execute(context, payload);
         inOrder.verify(fetchPrintDocsFromDmStore).execute(context, payload);
         inOrder.verify(respondentAosPackPrinterTask).execute(context, payload);
-        inOrder.verify(modifyDueDateTask).execute(context, payload);
+        inOrder.verify(aosPackDueDateSetterTask).execute(context, payload);
 
         verifyNoInteractions(coRespondentAosPackPrinterTask);
     }

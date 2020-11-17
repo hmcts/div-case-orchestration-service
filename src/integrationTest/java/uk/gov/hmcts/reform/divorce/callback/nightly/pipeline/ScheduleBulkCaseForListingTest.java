@@ -1,8 +1,7 @@
-package uk.gov.hmcts.reform.divorce.callback;
+package uk.gov.hmcts.reform.divorce.callback.nightly.pipeline;
 
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.tuple.Pair;
-import org.junit.Ignore;
 import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
@@ -32,7 +31,6 @@ public class ScheduleBulkCaseForListingTest extends CcdSubmissionSupport {
     private static final int  POOL_INTERVAL_IN_MILLIS = 1000;
 
     @Test
-    @Ignore
     public void whenScheduleBulkCaseForListing_thenIndividualCasesShouldBeUpdated() throws Exception {
         final UserDetails user1 = createCitizenUser();
         final UserDetails user2 = createCitizenUser();
