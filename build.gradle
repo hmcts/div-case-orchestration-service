@@ -67,7 +67,7 @@ def versions = [
         serenity                     : '2.1.13',
         serenityCucumber             : '1.9.50',
         serviceTokenGenerator        : '3.1.1',
-        sonarPitest                  : '0.5.1',
+        sonarPitest                  : '0.5',
         springfoxSwagger             : '2.9.2',
         springSecurityCrypto         : '5.2.4.RELEASE',
         springSecurityRsa            : '1.0.8.RELEASE',
@@ -384,9 +384,9 @@ dependencies {
     contractTestRuntime group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
 
     contractTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-    contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.3.2")
-    contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.3.2")
-    contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.3.2')
+    contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.7")
+    contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.7")
+    contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.7')
 
     contractTestCompile sourceSets.main.runtimeClasspath
     contractTestCompile sourceSets.test.runtimeClasspath
