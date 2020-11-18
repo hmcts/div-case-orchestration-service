@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.alternativeservice;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DueDateSetterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DueDateSetterTaskTest;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.alternativeservice.AlternativeServiceDueDateSetterTask;
 
 public class AlternativeServiceDueDateSetterTaskTest extends DueDateSetterTaskTest {
 
