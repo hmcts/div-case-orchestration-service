@@ -20,6 +20,7 @@ import javax.annotation.PostConstruct;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport.ELASTIC_SEARCH_DAYS_REPRESENTATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport.buildDateForTodayMinusGivenPeriod;
 
@@ -33,22 +34,22 @@ public class MarkAosCasesAsOverdueTask extends AsyncTask<Void> {
     @Autowired
     private CaseOrchestrationValues caseOrchestrationValues;
 
-    private QueryBuilder[] queryBuilders;
+    private QueryBuilder query;
 
     @PostConstruct
     public void init() {
         String aosOverdueGracePeriod = caseOrchestrationValues.getAosOverdueGracePeriod();
         log.info("Initialising {} with {} days of grace period.", MarkAosCasesAsOverdueTask.class.getSimpleName(), aosOverdueGracePeriod);
         String limitDate = buildDateForTodayMinusGivenPeriod(aosOverdueGracePeriod + ELASTIC_SEARCH_DAYS_REPRESENTATION);
-        queryBuilders = new QueryBuilder[] {
-            QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AOS_AWAITING),
-            QueryBuilders.rangeQuery("data.dueDate").lt(limitDate)
-        };
+        query = QueryBuilders.boolQuery()
+            .filter(QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AOS_AWAITING))
+            .filter(QueryBuilders.rangeQuery("data.dueDate").lt(limitDate))
+            .mustNot(QueryBuilders.matchQuery("data.ServedByProcessServer", YES_VALUE));
     }
 
     @Override
     public List<ApplicationEvent> getApplicationEvent(TaskContext context, Void payload) {
-        List<ApplicationEvent> events = cmsElasticSearchSupport.searchCMSCases(context.getTransientObject(AUTH_TOKEN_JSON_KEY), queryBuilders)
+        List<ApplicationEvent> events = cmsElasticSearchSupport.searchCMSCasesWithSingleQuery(context.getTransientObject(AUTH_TOKEN_JSON_KEY), query)
             .map(CaseDetails::getCaseId)
             .map(caseId -> new AosOverdueRequest(this, caseId))
             .collect(Collectors.toList());

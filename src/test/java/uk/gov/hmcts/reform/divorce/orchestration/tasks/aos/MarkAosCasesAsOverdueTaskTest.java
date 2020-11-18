@@ -35,6 +35,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MarkAosCasesAsOverdueTaskTest {
@@ -57,7 +58,7 @@ public class MarkAosCasesAsOverdueTaskTest {
     private ArgumentCaptor<AosOverdueRequest> argumentCaptor;
 
     private DefaultTaskContext context;
-    private QueryBuilder[] queryBuilders;
+    private QueryBuilder query;
 
     @Before
     public void setUp() {
@@ -68,21 +69,22 @@ public class MarkAosCasesAsOverdueTaskTest {
         context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
 
-        QueryBuilder stateQuery = QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AOS_AWAITING);
-        QueryBuilder dateFilter = QueryBuilders.rangeQuery("data.dueDate").lt("now/d-" + TEST_GRACE_PERIOD + "d");
-        queryBuilders = new QueryBuilder[] {stateQuery, dateFilter};
+        query = QueryBuilders.boolQuery()
+            .filter(QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AOS_AWAITING))
+            .filter(QueryBuilders.rangeQuery("data.dueDate").lt("now/d-" + TEST_GRACE_PERIOD + "d"))
+            .mustNot(QueryBuilders.matchQuery("data.ServedByProcessServer", YES_VALUE));
     }
 
     @Test
     public void shouldPublishMessagesForEligibleCases() throws TaskException {
-        when(cmsElasticSearchSupport.searchCMSCases(eq(AUTH_TOKEN), any(), any())).thenReturn(Stream.of(
+        when(cmsElasticSearchSupport.searchCMSCasesWithSingleQuery(eq(AUTH_TOKEN), any())).thenReturn(Stream.of(
             CaseDetails.builder().caseId("123").build(),
             CaseDetails.builder().caseId("456").build()
         ));
 
         classUnderTest.execute(context, null);
 
-        verify(cmsElasticSearchSupport).searchCMSCases(AUTH_TOKEN, queryBuilders);
+        verify(cmsElasticSearchSupport).searchCMSCasesWithSingleQuery(AUTH_TOKEN, query);
         verify(applicationEventPublisher, times(2)).publishEvent(argumentCaptor.capture());
         List<AosOverdueRequest> requestMessages = argumentCaptor.getAllValues();
         assertThat(requestMessages, hasSize(2));

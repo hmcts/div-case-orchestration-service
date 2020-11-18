@@ -34,10 +34,10 @@ public class ElasticSearchTestHelper {
     }
 
     private List<CaseDetails> searchCasesWithElasticSearch(final String caseId, final String authToken, String expectedState) {
-        QueryBuilder caseIdFilter = QueryBuilders.matchQuery(ES_CASE_ID_KEY, caseId);
-        QueryBuilder stateFilter = QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, expectedState);
-
-        String searchSourceBuilder = buildCMSBooleanSearchSource(0, 10, caseIdFilter, stateFilter);
+        QueryBuilder queryBuilder = QueryBuilders.boolQuery()
+            .filter(QueryBuilders.matchQuery(ES_CASE_ID_KEY, caseId))
+            .filter(QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, expectedState));
+        String searchSourceBuilder = buildCMSBooleanSearchSource(0, 10, queryBuilder);
 
         return cmsClientSupport.searchCases(searchSourceBuilder, authToken);
     }

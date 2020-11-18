@@ -89,6 +89,24 @@ public class CMSElasticSearchSupportTest {
     }
 
     @Test
+    public void execute_pageSize10_totalResults5_With_Single_Query() {
+        final List<String> expectedCaseIds = asList("1", "2", "3", "4", "5");
+        when(caseMaintenanceClient.searchCases(eq(AUTH_TOKEN), any()))
+            .thenReturn(SearchResult.builder()
+                .total(expectedCaseIds.size())
+                .cases(buildCases(0, 5))
+                .build());
+
+        List<String> caseDetails = classUnderTest.searchCMSCasesWithSingleQuery(AUTH_TOKEN, QueryBuilders.boolQuery().filter(TEST_QUERY_BUILDER))
+            .map(CaseDetails::getCaseId)
+            .collect(Collectors.toList());
+        assertThat(caseDetails, equalTo(expectedCaseIds));
+
+        verify(caseMaintenanceClient).searchCases(eq(AUTH_TOKEN), argThat(
+            jsonPathValueMatcher("$.query.bool.filter[*].match.state.query", hasItem(DN_PRONOUNCED))));
+    }
+
+    @Test
     public void execute_pageSize10_totalResults10() {
         final List<String> expectedCaseIds = asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10");
         when(caseMaintenanceClient.searchCases(eq(AUTH_TOKEN), any()))
@@ -211,7 +229,7 @@ public class CMSElasticSearchSupportTest {
             .from(start)
             .size(pageSize);
 
-        String actualSearchSource = CMSElasticSearchSupport.buildCMSBooleanSearchSource(0, 10, firstQuery);
+        String actualSearchSource = CMSElasticSearchSupport.buildCMSBooleanSearchSource(0, 10, QueryBuilders.boolQuery().filter(firstQuery));
 
         assertEquals(expectedSearchSource.toString(), actualSearchSource);
     }
@@ -223,7 +241,6 @@ public class CMSElasticSearchSupportTest {
         QueryBuilder firstQuery = QueryBuilders.matchQuery("testKey", "AwaitingDA");
         QueryBuilder secondQuery = QueryBuilders.existsQuery("EXIST_KEY");
         QueryBuilder thirdQuery = QueryBuilders.rangeQuery("DATE_KEY").lte("2019-11-02");
-
 
         QueryBuilder testQuery = QueryBuilders
             .boolQuery()
@@ -237,7 +254,11 @@ public class CMSElasticSearchSupportTest {
             .from(start)
             .size(pageSize);
 
-        String actualSearchSource = CMSElasticSearchSupport.buildCMSBooleanSearchSource(0, 5, firstQuery, secondQuery, thirdQuery);
+        QueryBuilder queryBuilder = QueryBuilders.boolQuery()
+            .filter(firstQuery)
+            .filter(secondQuery)
+            .filter(thirdQuery);
+        String actualSearchSource = CMSElasticSearchSupport.buildCMSBooleanSearchSource(0, 5, queryBuilder);
 
         assertEquals(expectedSearchSource.toString(), actualSearchSource);
     }
