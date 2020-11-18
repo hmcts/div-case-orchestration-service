@@ -14,11 +14,15 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.alternativeservice.Co
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INCOMING_CASE_DETAILS;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PAYLOAD_TO_RETURN;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AlternativeServiceServiceImplTest {
@@ -51,6 +55,29 @@ public class AlternativeServiceServiceImplTest {
         assertThrows(
             CaseOrchestrationServiceException.class,
             () -> alternativeServiceService.confirmAlternativeService(CaseDetails.builder().build())
+        );
+    }
+
+    @Test
+    public void whenConfirmProcessServerService_thenConfirmAlternativeServiceWorkflowIsCalled()
+        throws CaseOrchestrationServiceException, WorkflowException {
+
+        when(confirmAlternativeServiceWorkflow.run(any())).thenReturn(TEST_PAYLOAD_TO_RETURN);
+
+        CaseDetails returnedCaseDetails = alternativeServiceService.confirmProcessServerService(TEST_INCOMING_CASE_DETAILS);
+
+        assertThat(returnedCaseDetails.getCaseData(), is(TEST_PAYLOAD_TO_RETURN));
+        verify(confirmAlternativeServiceWorkflow).run(TEST_INCOMING_CASE_DETAILS);
+    }
+
+    @Test
+    public void whenConfirmProcessServerServiceWorkflowThrowsWorkflowException_thenThrowServiceException()
+        throws WorkflowException {
+        when(confirmAlternativeServiceWorkflow.run(any())).thenThrow(WorkflowException.class);
+
+        assertThrows(
+            CaseOrchestrationServiceException.class,
+            () -> alternativeServiceService.confirmProcessServerService(CaseDetails.builder().build())
         );
     }
 

@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -159,6 +161,36 @@ public class GeneralReferralServiceImplTest {
             CaseOrchestrationServiceException.class,
             () -> generalReferralService.setupGeneralReferralPaymentEvent(
                 CaseDetails.builder().caseId(TEST_CASE_ID).build()
+            )
+        );
+
+        assertCaseOrchestrationServiceExceptionIsSetProperly(exception);
+    }
+
+    @Test
+    public void givenCaseData_whenReturnToStateBeforeGeneralReferral_thenReturnPayloadAndNewCaseState() throws Exception {
+        Map<String, Object> caseData = ImmutableMap.of(
+            CcdFields.GENERAL_REFERRAL_PREVIOUS_CASE_STATE, "previousCaseState");
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .build();
+
+        ccdCallbackResponse = generalReferralService.returnToStateBeforeGeneralReferral(caseDetails);
+
+        assertThat(ccdCallbackResponse.getState(), is("previousCaseState"));
+    }
+
+    @Test
+    public void givenMissingPreviousStateField_whenReturnToStateBeforeGeneralReferral_thenThrowException() {
+        CaseOrchestrationServiceException exception = assertThrows(
+            CaseOrchestrationServiceException.class,
+            () -> generalReferralService.returnToStateBeforeGeneralReferral(
+                CaseDetails.builder()
+                    .caseId(TEST_CASE_ID)
+                    .caseData(new HashMap<>())
+                    .build()
             )
         );
 
