@@ -1072,12 +1072,12 @@
   "reasonForDivorceClaimingAdultery": false,
   "marriageCertificateFiles": [
     {
-      "id": "0a3b70d5-b295-4975-a9b7-03c1b77f73b7",
+      "id": null,
       "createdBy": 0,
       "createdOn": 15129500000,
       "modifiedOn": null,
-      "filename": "govuklogo.png",
-      "fileUrl": "http://localhost:5006/documents/90e79312-82a0-484d-8a45-c19063d3f052",
+      "filename": "test_pdf.pdf",
+      "fileUrl": "http://localhost:5006/documents/9b66469d-b763-4c9b-9e76-d5b3ddaa5efa",
       "mimetype": null,
       "status": null
     }

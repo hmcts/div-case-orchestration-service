@@ -1072,24 +1072,19 @@
   "reasonForDivorceClaimingAdultery": false,
   "marriageCertificateFiles": [
     {
-      "createdBy": 12661,
-      "createdOn": "2017-12-11",
-      "lastModifiedBy": 12661,
-      "modifiedOn": "2017-12-11",
-      "fileName": "govuklogo.png",
-      "fileUrl": "http://dm-store-aat.service.core-compute-aat.internal/documents/7f63ca9b-c361-49ab-aa8c-8fbdb6bc2936",
-      "mimeType": "image/png",
-      "status": "OK"
-    },
-    {
-      "createdBy": 12661,
-      "createdOn": "2017-12-11",
-      "lastModifiedBy": 12661,
-      "modifiedOn": "2017-12-11",
-      "fileName": "d8-eng.pdf",
-      "fileUrl": "https://api-gateway.test.dm.reform.hmcts.net/documents/560f4bd1-fcf2-4dc5-80d1-d7e00d861683",
-      "mimeType": "application/pdf",
-      "status": "OK"
+      "id": null,
+      "value": {
+        "DocumentType": "marriageCert",
+        "DocumentEmailContent": null,
+        "DocumentDateAdded": null,
+        "DocumentComment": null,
+        "DocumentFileName": null,
+        "DocumentLink": {
+          "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/9b66469d-b763-4c9b-9e76-d5b3ddaa5efa",
+          "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/9b66469d-b763-4c9b-9e76-d5b3ddaa5efa/binary",
+          "document_filename": "test_pdf.pdf"
+        }
+      }
     }
   ],
   "confirmPrayer": "Yes"
