@@ -34,4 +34,5 @@ public class CcdStates {
     public static final String SOLICITOR_AWAITING_PAYMENT_CONFIRMATION = "solicitorAwaitingPaymentConfirmation";
     public static final String AWAITING_GENERAL_REFERRAL_PAYMENT = "AwaitingGeneralReferralPayment";
     public static final String AWAITING_GENERAL_CONSIDERATION = "AwaitingGeneralConsideration";
+    public static final String GENERAL_CONSIDERATION_COMPLETE = "GeneralConsiderationComplete";
 }
