@@ -89,8 +89,9 @@ public class AuthUtil {
         if (isBlank(authHeader)) {
             throw new AuthenticationError("Provided S2S token is missing or invalid");
         }
+        String bearerAuthToken = getBearerToken(authHeader);
 
-        return authTokenValidator.getServiceName(authHeader);
+        return authTokenValidator.getServiceName(bearerAuthToken);
     }
 
 }
