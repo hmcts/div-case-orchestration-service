@@ -1331,6 +1331,35 @@ public class CallbackController {
         );
     }
 
+    @PostMapping(path = "/return-to-state-before-general-referral", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback to set a case back to the state it had before triggering a General Referral")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> returnToStateBeforeGeneralReferral(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest)
+        throws CaseOrchestrationServiceException {
+
+        CcdCallbackResponse response = generalReferralService.returnToStateBeforeGeneralReferral(ccdCallbackRequest.getCaseDetails());
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping(path = "/confirm-process-server-service", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback for confirm process server service")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback for confirm process server service has been processed.", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> confirmProcessServerService(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest)
+        throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(alternativeServiceService.confirmProcessServerService(ccdCallbackRequest.getCaseDetails()).getCaseData())
+                .build()
+        );
+    }
+
     @PostMapping(path = "/aos-not-received-for-process-server", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Callback for aos not received for process server")
     @ApiResponses(value = {

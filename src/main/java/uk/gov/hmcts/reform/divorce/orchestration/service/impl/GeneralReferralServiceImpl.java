@@ -3,10 +3,12 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralReferralService;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.GeneralConsiderationWorkflow;
@@ -17,6 +19,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_GENERAL_CONSIDERATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_GENERAL_REFERRAL_PAYMENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.GeneralReferralHelper.isGeneralReferralPaymentRequired;
 
 @Component
@@ -68,6 +71,27 @@ public class GeneralReferralServiceImpl implements GeneralReferralService {
             return setupGeneralReferralPaymentWorkflow.run(caseDetails);
         } catch (WorkflowException exception) {
             throw new CaseOrchestrationServiceException(exception, caseDetails.getCaseId());
+        }
+    }
+
+    @Override
+    public CcdCallbackResponse returnToStateBeforeGeneralReferral(CaseDetails caseDetails)
+        throws CaseOrchestrationServiceException {
+        String caseId = caseDetails.getCaseId();
+        Map<String, Object> caseData = caseDetails.getCaseData();
+
+        try {
+            String previousCaseState = getMandatoryPropertyValueAsString(caseData, CcdFields.GENERAL_REFERRAL_PREVIOUS_CASE_STATE);
+
+            log.info("CaseID: {} Case state updated to {}", caseId, previousCaseState);
+
+            return CcdCallbackResponse.builder()
+                .state(previousCaseState)
+                .data(caseData)
+                .build();
+        } catch (TaskException taskException) {
+            throw new CaseOrchestrationServiceException(
+                new WorkflowException(taskException.getMessage(), taskException), caseId);
         }
     }
 }
