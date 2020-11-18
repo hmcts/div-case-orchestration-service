@@ -21,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class ConfirmProcessServerServiceTest extends IdamTestSupport {
@@ -46,9 +47,10 @@ public class ConfirmProcessServerServiceTest extends IdamTestSupport {
             .andExpect(status().isOk())
             .andExpect(content().string(allOf(
                 isJson(),
-                hasJsonPath(
-                    "$.data.dueDate", is(DateCalculator.getDateWithOffset(DUE_DATE_OFFSET))
-                ),
+                hasJsonPath("$.data", allOf(
+                    hasJsonPath("dueDate", is(DateCalculator.getDateWithOffset(DUE_DATE_OFFSET))),
+                    hasJsonPath("ServedByProcessServer", is(YES_VALUE))
+                )),
                 hasNoJsonPath("$.errors"),
                 hasNoJsonPath("$.warnings")
             )));
