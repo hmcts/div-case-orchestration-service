@@ -9,6 +9,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.alternativeservice.AosNotReceivedForProcessServerWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.alternativeservice.ConfirmAlternativeServiceWorkflow;
 
+import java.util.Map;
+
 @Component
 @AllArgsConstructor
 public class AlternativeServiceServiceImpl implements AlternativeServiceService {
@@ -29,6 +31,16 @@ public class AlternativeServiceServiceImpl implements AlternativeServiceService 
     public CaseDetails aosNotReceivedForProcessServer(CaseDetails caseDetails) throws CaseOrchestrationServiceException {
         try {
             return CaseDetails.builder().caseData(aosNotReceivedForProcessServerWorkflow.run(caseDetails)).build();
+        } catch (WorkflowException workflowException) {
+            throw new CaseOrchestrationServiceException(workflowException, caseDetails.getCaseId());
+        }
+    }
+
+    @Override
+    public CaseDetails confirmProcessServerService(CaseDetails caseDetails) throws CaseOrchestrationServiceException {
+        try {
+            Map<String, Object> caseData = confirmAlternativeServiceWorkflow.run(caseDetails);
+            return CaseDetails.builder().caseData(caseData).build();
         } catch (WorkflowException workflowException) {
             throw new CaseOrchestrationServiceException(workflowException, caseDetails.getCaseId());
         }

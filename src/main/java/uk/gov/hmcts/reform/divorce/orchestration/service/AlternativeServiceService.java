@@ -9,4 +9,7 @@ public interface AlternativeServiceService {
 
     CaseDetails aosNotReceivedForProcessServer(CaseDetails caseDetails)
         throws CaseOrchestrationServiceException;
+
+    CaseDetails confirmProcessServerService(CaseDetails caseDetails)
+        throws CaseOrchestrationServiceException;
 }
