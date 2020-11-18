@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.alternativeservice.AosNotReceivedForProcessServerWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.alternativeservice.ConfirmAlternativeServiceWorkflow;
 
 import java.util.HashMap;
@@ -28,6 +29,9 @@ public class AlternativeServiceServiceImplTest {
 
     @Mock
     private ConfirmAlternativeServiceWorkflow confirmAlternativeServiceWorkflow;
+
+    @Mock
+    private AosNotReceivedForProcessServerWorkflow aosNotReceivedForProcessServerWorkflow;
 
     @InjectMocks
     private AlternativeServiceServiceImpl alternativeServiceService;
@@ -74,6 +78,28 @@ public class AlternativeServiceServiceImplTest {
         assertThrows(
             CaseOrchestrationServiceException.class,
             () -> alternativeServiceService.confirmProcessServerService(CaseDetails.builder().build())
+        );
+    }
+
+    @Test
+    public void whenAosNotReceivedForProcessServer_thenAosNotReceivedForProcessServerWorkflowIsCalled()
+        throws CaseOrchestrationServiceException, WorkflowException {
+        Map<String, Object> caseData = new HashMap<>();
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).caseId(TEST_CASE_ID).build();
+
+        alternativeServiceService.aosNotReceivedForProcessServer(caseDetails);
+
+        verify(aosNotReceivedForProcessServerWorkflow).run(caseDetails);
+    }
+
+    @Test
+    public void whenAosNotReceivedForProcessServerThrowsWorkflowException_thenRethrowServiceException()
+        throws WorkflowException {
+        when(aosNotReceivedForProcessServerWorkflow.run(any())).thenThrow(WorkflowException.class);
+
+        assertThrows(
+            CaseOrchestrationServiceException.class,
+            () -> alternativeServiceService.aosNotReceivedForProcessServer(CaseDetails.builder().build())
         );
     }
 }

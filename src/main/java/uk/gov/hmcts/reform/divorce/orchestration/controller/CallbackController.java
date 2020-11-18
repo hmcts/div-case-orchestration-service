@@ -1347,6 +1347,22 @@ public class CallbackController {
         );
     }
 
+    @PostMapping(path = "/aos-not-received-for-process-server", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback for aos not received for process server")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> aosNotReceivedForProcessServer(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest)
+        throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(alternativeServiceService.aosNotReceivedForProcessServer(ccdCallbackRequest.getCaseDetails()).getCaseData())
+                .build()
+        );
+    }
+
     @ExceptionHandler(CaseOrchestrationServiceException.class)
     ResponseEntity<CcdCallbackResponse> handleCaseOrchestrationServiceExceptionForCcdCallback(CaseOrchestrationServiceException exception) {
         log.error(exception.getIdentifiableMessage(), exception);
