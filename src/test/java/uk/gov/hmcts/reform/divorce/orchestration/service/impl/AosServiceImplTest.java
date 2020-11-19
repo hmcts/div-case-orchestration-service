@@ -154,7 +154,7 @@ public class AosServiceImplTest {
 
     @Test
     public void shouldCallAppropriateWorkflowWhenMarkingCasesToBeMovedToAosOverdue() throws WorkflowException, CaseOrchestrationServiceException {
-        classUnderTest.markCasesToBeMovedToAosOverdue(AUTH_TOKEN);
+        classUnderTest.findCasesForWhichAosIsOverdue(AUTH_TOKEN);
 
         verify(aosOverdueEligibilityWorkflow).run(AUTH_TOKEN);
     }
@@ -165,7 +165,7 @@ public class AosServiceImplTest {
 
         CaseOrchestrationServiceException exception = assertThrows(
             CaseOrchestrationServiceException.class,
-            () -> classUnderTest.markCasesToBeMovedToAosOverdue(AUTH_TOKEN)
+            () -> classUnderTest.findCasesForWhichAosIsOverdue(AUTH_TOKEN)
         );
         assertThat(exception.getCause(), is(instanceOf(WorkflowException.class)));
 

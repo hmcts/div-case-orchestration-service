@@ -63,14 +63,14 @@ public class AosServiceImpl implements AosService {
     }
 
     @Override
-    public void markCasesToBeMovedToAosOverdue(String authToken) throws CaseOrchestrationServiceException {
-        log.info("Searching for cases that are eligible to be moved to AosOverdue");
+    public void findCasesForWhichAosIsOverdue(String authToken) throws CaseOrchestrationServiceException {
+        log.info("Searching for cases for which AOS are overdue");
 
         try {
             aosOverdueEligibilityWorkflow.run(authToken);
         } catch (WorkflowException e) {
             CaseOrchestrationServiceException caseOrchestrationServiceException = new CaseOrchestrationServiceException(e);
-            log.error("Error trying to find cases to move to AOSOverdue", caseOrchestrationServiceException);
+            log.error("Error trying to find cases for which AOS are overdue", caseOrchestrationServiceException);
             throw caseOrchestrationServiceException;
         }
     }
