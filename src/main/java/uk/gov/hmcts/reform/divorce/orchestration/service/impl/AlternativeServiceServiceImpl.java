@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.AlternativeServiceServi
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.alternativeservice.AosNotReceivedForProcessServerWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.alternativeservice.ConfirmAlternativeServiceWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.alternativeservice.ConfirmProcessServerServiceWorkflow;
 
 import java.util.Map;
 
@@ -16,6 +17,7 @@ import java.util.Map;
 public class AlternativeServiceServiceImpl implements AlternativeServiceService {
 
     private final ConfirmAlternativeServiceWorkflow confirmAlternativeServiceWorkflow;
+    private final ConfirmProcessServerServiceWorkflow confirmProcessServerServiceWorkflow;
     private final AosNotReceivedForProcessServerWorkflow aosNotReceivedForProcessServerWorkflow;
 
     @Override
@@ -39,7 +41,7 @@ public class AlternativeServiceServiceImpl implements AlternativeServiceService 
     @Override
     public CaseDetails confirmProcessServerService(CaseDetails caseDetails) throws CaseOrchestrationServiceException {
         try {
-            Map<String, Object> caseData = confirmAlternativeServiceWorkflow.run(caseDetails);
+            Map<String, Object> caseData = confirmProcessServerServiceWorkflow.run(caseDetails);
             return CaseDetails.builder().caseData(caseData).build();
         } catch (WorkflowException workflowException) {
             throw new CaseOrchestrationServiceException(workflowException, caseDetails.getCaseId());
