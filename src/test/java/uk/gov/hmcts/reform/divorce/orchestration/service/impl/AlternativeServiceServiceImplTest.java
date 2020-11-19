@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.alternativeservice.AosNotReceivedForProcessServerWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.alternativeservice.ConfirmAlternativeServiceWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.alternativeservice.ConfirmProcessServerServiceWorkflow;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +30,9 @@ public class AlternativeServiceServiceImplTest {
 
     @Mock
     private ConfirmAlternativeServiceWorkflow confirmAlternativeServiceWorkflow;
+
+    @Mock
+    private ConfirmProcessServerServiceWorkflow confirmProcessServerServiceWorkflow;
 
     @Mock
     private AosNotReceivedForProcessServerWorkflow aosNotReceivedForProcessServerWorkflow;
@@ -62,18 +66,18 @@ public class AlternativeServiceServiceImplTest {
     public void whenConfirmProcessServerService_thenConfirmAlternativeServiceWorkflowIsCalled()
         throws CaseOrchestrationServiceException, WorkflowException {
 
-        when(confirmAlternativeServiceWorkflow.run(any())).thenReturn(TEST_PAYLOAD_TO_RETURN);
+        when(confirmProcessServerServiceWorkflow.run(any())).thenReturn(TEST_PAYLOAD_TO_RETURN);
 
         CaseDetails returnedCaseDetails = alternativeServiceService.confirmProcessServerService(TEST_INCOMING_CASE_DETAILS);
 
         assertThat(returnedCaseDetails.getCaseData(), is(TEST_PAYLOAD_TO_RETURN));
-        verify(confirmAlternativeServiceWorkflow).run(TEST_INCOMING_CASE_DETAILS);
+        verify(confirmProcessServerServiceWorkflow).run(TEST_INCOMING_CASE_DETAILS);
     }
 
     @Test
     public void whenConfirmProcessServerServiceWorkflowThrowsWorkflowException_thenThrowServiceException()
         throws WorkflowException {
-        when(confirmAlternativeServiceWorkflow.run(any())).thenThrow(WorkflowException.class);
+        when(confirmProcessServerServiceWorkflow.run(any())).thenThrow(WorkflowException.class);
 
         assertThrows(
             CaseOrchestrationServiceException.class,
