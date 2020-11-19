@@ -13,7 +13,7 @@ public interface AosService {
     Map<String, Object> processAosPackOfflineAnswers(String authToken, CaseDetails caseDetails, DivorceParty divorceParty)
         throws CaseOrchestrationServiceException;
 
-    void markCasesToBeMovedToAosOverdue(String authToken) throws CaseOrchestrationServiceException;
+    void findCasesForWhichAosIsOverdue(String authToken) throws CaseOrchestrationServiceException;
 
     void makeCaseAosOverdue(String authToken, String caseId) throws CaseOrchestrationServiceException;
 

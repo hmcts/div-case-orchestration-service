@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.aos;
 
 import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +15,14 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseOrchestrationValues;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
+import static org.apache.commons.lang3.StringUtils.SPACE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_STARTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport.ELASTIC_SEARCH_DAYS_REPRESENTATION;
@@ -25,7 +30,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSup
 
 @Component
 @Slf4j
-public class MarkAosCasesAsOverdueTask extends AsyncTask<Void> {
+public class MarkCasesAsAosOverdueTask extends AsyncTask<Void> {
 
     @Autowired
     private CMSElasticSearchSupport cmsElasticSearchSupport;
@@ -33,27 +38,43 @@ public class MarkAosCasesAsOverdueTask extends AsyncTask<Void> {
     @Autowired
     private CaseOrchestrationValues caseOrchestrationValues;
 
-    private QueryBuilder[] queryBuilders;
+    private QueryBuilder query;
 
     @PostConstruct
     public void init() {
         String aosOverdueGracePeriod = caseOrchestrationValues.getAosOverdueGracePeriod();
-        log.info("Initialising {} with {} days of grace period.", MarkAosCasesAsOverdueTask.class.getSimpleName(), aosOverdueGracePeriod);
+        log.info("Initialising {} with {} days of grace period.", MarkCasesAsAosOverdueTask.class.getSimpleName(), aosOverdueGracePeriod);
         String limitDate = buildDateForTodayMinusGivenPeriod(aosOverdueGracePeriod + ELASTIC_SEARCH_DAYS_REPRESENTATION);
-        queryBuilders = new QueryBuilder[] {
-            QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AOS_AWAITING),
-            QueryBuilders.rangeQuery("data.dueDate").lt(limitDate)
-        };
+
+        String elasticSearchMultiStateSearchQuery = String.join(SPACE, AOS_AWAITING, AOS_STARTED);
+
+        query = QueryBuilders.boolQuery()
+            .filter(QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, elasticSearchMultiStateSearchQuery).operator(Operator.OR))
+            .filter(QueryBuilders.rangeQuery("data." + DUE_DATE).lt(limitDate));
     }
 
     @Override
     public List<ApplicationEvent> getApplicationEvent(TaskContext context, Void payload) {
-        List<ApplicationEvent> events = cmsElasticSearchSupport.searchCMSCases(context.getTransientObject(AUTH_TOKEN_JSON_KEY), queryBuilders)
+        List<ApplicationEvent> events = cmsElasticSearchSupport.searchCMSCasesWithSingleQuery(context.getTransientObject(AUTH_TOKEN_JSON_KEY), query)
+            .map(caseDetails -> {
+                String state = caseDetails.getState();
+
+                if (AOS_STARTED.equalsIgnoreCase(state)) {
+                    log.info("Case {} would have been marked as AOS Overdue, but it will be ignored because it's in {} state.",
+                        caseDetails.getCaseId(),
+                        state);
+                    return null;
+                } else {
+                    log.info("Case {} will be marked as AOS Overdue.", caseDetails.getCaseId());
+                    return caseDetails;
+                }
+            })
+            .filter(Objects::nonNull)
             .map(CaseDetails::getCaseId)
             .map(caseId -> new AosOverdueRequest(this, caseId))
             .collect(Collectors.toList());
 
-        log.info("Found {} cases eligible to be moved to AOS Overdue.", events.size());
+        log.info("Found {} cases for which AOS is overdue.", events.size());
 
         return events;
     }

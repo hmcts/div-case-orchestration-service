@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.aos;
 
+import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.Before;
@@ -33,13 +34,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_STARTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MarkAosCasesAsOverdueTaskTest {
+public class MarkCasesAsAosOverdueTaskTest {
 
     private static final String TEST_GRACE_PERIOD = "12";
+    private static final String TWO_STATES_ELASTIC_SEARCH_OR_STATEMENT = AOS_AWAITING + " " + AOS_STARTED;
 
     @Mock
     private CMSElasticSearchSupport cmsElasticSearchSupport;
@@ -51,13 +54,13 @@ public class MarkAosCasesAsOverdueTaskTest {
     private CaseOrchestrationValues caseOrchestrationValues;
 
     @InjectMocks
-    private MarkAosCasesAsOverdueTask classUnderTest;
+    private MarkCasesAsAosOverdueTask classUnderTest;
 
     @Captor
     private ArgumentCaptor<AosOverdueRequest> argumentCaptor;
 
     private DefaultTaskContext context;
-    private QueryBuilder[] queryBuilders;
+    private QueryBuilder query;
 
     @Before
     public void setUp() {
@@ -68,26 +71,27 @@ public class MarkAosCasesAsOverdueTaskTest {
         context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
 
-        QueryBuilder stateQuery = QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AOS_AWAITING);
-        QueryBuilder dateFilter = QueryBuilders.rangeQuery("data.dueDate").lt("now/d-" + TEST_GRACE_PERIOD + "d");
-        queryBuilders = new QueryBuilder[] {stateQuery, dateFilter};
+        query = QueryBuilders.boolQuery()
+            .filter(QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, TWO_STATES_ELASTIC_SEARCH_OR_STATEMENT).operator(Operator.OR))
+            .filter(QueryBuilders.rangeQuery("data.dueDate").lt("now/d-" + TEST_GRACE_PERIOD + "d"));
     }
 
     @Test
     public void shouldPublishMessagesForEligibleCases() throws TaskException {
-        when(cmsElasticSearchSupport.searchCMSCases(eq(AUTH_TOKEN), any(), any())).thenReturn(Stream.of(
-            CaseDetails.builder().caseId("123").build(),
-            CaseDetails.builder().caseId("456").build()
+        when(cmsElasticSearchSupport.searchCMSCasesWithSingleQuery(eq(AUTH_TOKEN), any())).thenReturn(Stream.of(
+            CaseDetails.builder().state(AOS_STARTED).caseId("123").build(),
+            CaseDetails.builder().state(AOS_AWAITING).caseId("456").build(),
+            CaseDetails.builder().state(AOS_AWAITING).caseId("789").build()
         ));
 
         classUnderTest.execute(context, null);
 
-        verify(cmsElasticSearchSupport).searchCMSCases(AUTH_TOKEN, queryBuilders);
+        verify(cmsElasticSearchSupport).searchCMSCasesWithSingleQuery(AUTH_TOKEN, query);
         verify(applicationEventPublisher, times(2)).publishEvent(argumentCaptor.capture());
         List<AosOverdueRequest> requestMessages = argumentCaptor.getAllValues();
         assertThat(requestMessages, hasSize(2));
-        assertRequestMessage(requestMessages.get(0), "123");
-        assertRequestMessage(requestMessages.get(1), "456");
+        assertRequestMessage(requestMessages.get(0), "456");
+        assertRequestMessage(requestMessages.get(1), "789");
     }
 
     private void assertRequestMessage(AosOverdueRequest requestMessage, String expectedCaseId) {

@@ -30,7 +30,7 @@ public class AosInternalController {
         throws CaseOrchestrationServiceException {
 
         log.info("Will look for cases that are eligible to be moved to 'AOSOverdue' state");
-        aosService.markCasesToBeMovedToAosOverdue(authorizationToken);
+        aosService.findCasesForWhichAosIsOverdue(authorizationToken);
 
         return ResponseEntity.ok().build();
     }
