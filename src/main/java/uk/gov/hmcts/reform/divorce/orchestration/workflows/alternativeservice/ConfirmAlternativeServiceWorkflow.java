@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.alternativeservice.AlternativeServiceDueDateSetterTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.alternativeservice.MarkJourneyAsServedByProcessServerTask;
 
 import java.util.Map;
 
@@ -20,6 +21,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class ConfirmAlternativeServiceWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final AlternativeServiceDueDateSetterTask alternativeServiceDueDateSetterTask;
+    private final MarkJourneyAsServedByProcessServerTask markJourneyAsServedByProcessServerTask;
 
     public Map<String, Object> run(CaseDetails caseDetails) throws WorkflowException {
         String caseId = caseDetails.getCaseId();
@@ -28,7 +30,8 @@ public class ConfirmAlternativeServiceWorkflow extends DefaultWorkflow<Map<Strin
 
         return this.execute(
             new Task[] {
-                alternativeServiceDueDateSetterTask
+                alternativeServiceDueDateSetterTask,
+                markJourneyAsServedByProcessServerTask
             },
             caseDetails.getCaseData(),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseId)
