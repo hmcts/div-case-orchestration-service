@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.alternativeservice;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -10,7 +9,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import java.util.Map;
 
 @Component
-@Slf4j
 public class AwaitingDnPetitionerSolicitorEmailTask extends PetitionerSolicitorSendEmailTask {
 
     public AwaitingDnPetitionerSolicitorEmailTask(EmailService emailService) {
