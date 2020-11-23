@@ -5,26 +5,28 @@ import lombok.AllArgsConstructor;
 
 import java.util.stream.Stream;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING_SOLICITOR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_COMPLETED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_DRAFTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_OVERDUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_PRE_SUBMITTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_STARTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_SUBMITTED_AWAITING_ANSWER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_HWF_DECISION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_REISSUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.INVALID_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.ISSUED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.PENDING_REJECTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.REJECTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SOLICITOR_AWAITING_PAYMENT_CONFIRMATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SUBMITTED;
+
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class PreviousAmendPetitionStateLoggerHelper {
-    public static final String INVALID_STATE = "Invalid state";
-    public static final String AWAITING_HWF_DECISION = "AwaitingHWFDecision";
-    public static final String SUBMITTED = "Submitted";
-    public static final String ISSUED = "Issued";
-    public static final String REJECTED = "Rejected";
-    public static final String PENDING_REJECTION = "PendingRejection";
-    public static final String SOLICITOR_AWAITING_PAYMENT_CONFIRMATION = "solicitorAwaitingPaymentConfirmation";
-    public static final String AOS_AWAITING = "AosAwaiting";
-    public static final String AOS_STARTED = "AosStarted";
-    public static final String AOS_OVERDUE = "AosOverdue";
-    public static final String AWAITING_REISSUE = "AwaitingReissue";
-    public static final String AOS_COMPLETED = "AosCompleted";
-    public static final String AOS_AWAITING_SOLICITOR = "AosAwaitingSol";
-    public static final String AOS_PRE_SUBMITTED = "AosPreSubmit";
-    public static final String AOS_DRAFTED = "AosDrafted";
-    public static final String AWAITING_SERVICE = "AwaitingService";
-    public static final String AOS_SUBMITTED_AWAITING_ANSWER = "AosSubmittedAwaitingAnswer";
-    public static final String AWAITING_DECREE_NISI = "AwaitingDecreeNisi";
+
 
     public static String getAmendPetitionPreviousState(String stateId) {
         return getAmendPetitionPreStates()
@@ -40,7 +42,6 @@ public class PreviousAmendPetitionStateLoggerHelper {
             ISSUED,
             REJECTED,
             PENDING_REJECTION,
-            SOLICITOR_AWAITING_PAYMENT_CONFIRMATION,
             SOLICITOR_AWAITING_PAYMENT_CONFIRMATION,
             AOS_AWAITING,
             AOS_STARTED,

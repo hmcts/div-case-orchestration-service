@@ -24,7 +24,6 @@ import java.util.Map;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AOS_AWAITING_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AWAITING_CONSIDERATION_GENERAL_APPLICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN;
@@ -33,6 +32,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_OVERDUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
@@ -91,7 +91,7 @@ public class UpdateRespondentDetailsUTest {
         final CaseDetails caseDetails =
             CaseDetails.builder()
                 .caseId(TEST_CASE_ID)
-                .state(AOS_AWAITING_STATE)
+                .state(AOS_AWAITING)
                 .caseData(caseData)
                 .build();
 
@@ -218,7 +218,7 @@ public class UpdateRespondentDetailsUTest {
         final CaseDetails caseDetails =
             CaseDetails.builder()
                 .caseId(TEST_CASE_ID)
-                .state(AOS_AWAITING_STATE)
+                .state(AOS_AWAITING)
                 .caseData(caseData)
                 .build();
 

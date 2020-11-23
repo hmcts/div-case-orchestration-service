@@ -28,8 +28,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AOS_AWAITING_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
@@ -69,7 +69,7 @@ public class SendPetitionerAmendEmailTaskTest {
         taskContext = new DefaultTaskContext();
         taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
         taskContext.setTransientObject(PETITION_FEE_JSON_KEY, TEST_FEES);
-        taskContext.setTransientObject(CASE_DETAILS_JSON_KEY, CaseDetails.builder().state(AOS_AWAITING_STATE).build());
+        taskContext.setTransientObject(CASE_DETAILS_JSON_KEY, CaseDetails.builder().state(AOS_AWAITING).build());
     }
 
     @Test

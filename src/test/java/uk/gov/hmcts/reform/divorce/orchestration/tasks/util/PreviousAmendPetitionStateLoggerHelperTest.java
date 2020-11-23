@@ -4,24 +4,24 @@ import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.PreviousAmendPetitionStateLoggerHelper.AOS_AWAITING;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.PreviousAmendPetitionStateLoggerHelper.AOS_AWAITING_SOLICITOR;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.PreviousAmendPetitionStateLoggerHelper.AOS_COMPLETED;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.PreviousAmendPetitionStateLoggerHelper.AOS_DRAFTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.PreviousAmendPetitionStateLoggerHelper.AOS_OVERDUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.PreviousAmendPetitionStateLoggerHelper.AOS_PRE_SUBMITTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.PreviousAmendPetitionStateLoggerHelper.AOS_STARTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.PreviousAmendPetitionStateLoggerHelper.AOS_SUBMITTED_AWAITING_ANSWER;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.PreviousAmendPetitionStateLoggerHelper.AWAITING_DECREE_NISI;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.PreviousAmendPetitionStateLoggerHelper.AWAITING_HWF_DECISION;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.PreviousAmendPetitionStateLoggerHelper.AWAITING_REISSUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.PreviousAmendPetitionStateLoggerHelper.AWAITING_SERVICE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.PreviousAmendPetitionStateLoggerHelper.INVALID_STATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.PreviousAmendPetitionStateLoggerHelper.ISSUED;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.PreviousAmendPetitionStateLoggerHelper.PENDING_REJECTION;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.PreviousAmendPetitionStateLoggerHelper.REJECTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.PreviousAmendPetitionStateLoggerHelper.SOLICITOR_AWAITING_PAYMENT_CONFIRMATION;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.PreviousAmendPetitionStateLoggerHelper.SUBMITTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING_SOLICITOR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_COMPLETED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_DRAFTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_OVERDUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_PRE_SUBMITTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_STARTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_SUBMITTED_AWAITING_ANSWER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_HWF_DECISION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_REISSUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.INVALID_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.ISSUED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.PENDING_REJECTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.REJECTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SOLICITOR_AWAITING_PAYMENT_CONFIRMATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SUBMITTED;
 
 public class PreviousAmendPetitionStateLoggerHelperTest {
 

@@ -34,7 +34,6 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AOS_AWAITING_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AWAITING_CONSIDERATION_GENERAL_APPLICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN;
@@ -45,6 +44,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_LETTER_HOLDER_ID_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE;
@@ -83,7 +83,7 @@ public class LinkRespondentIdamITest extends IdamTestSupport {
     private static final CaseDetails CASE_DETAILS_AOS =
         CaseDetails.builder()
             .caseId(TEST_CASE_ID)
-            .state(AOS_AWAITING_STATE)
+            .state(AOS_AWAITING)
             .caseData(CASE_DATA_RESPONDENT)
             .build();
     private static final CaseDetails CASE_DETAILS_NO_AOS =
@@ -255,7 +255,7 @@ public class LinkRespondentIdamITest extends IdamTestSupport {
 
         CaseDetails caseDetailsCoResp = CaseDetails.builder()
             .caseId(TEST_CASE_ID)
-            .state(AOS_AWAITING_STATE)
+            .state(AOS_AWAITING)
             .caseData(caseData)
             .build();
         stubRetrieveCaseByIdFromCMS(OK, convertObjectToJsonString(caseDetailsCoResp));
