@@ -36,6 +36,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.PERSONAL_SERVICE_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.SOL_SERVICE_METHOD_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.ISSUED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_INVITATION;
@@ -136,7 +137,7 @@ public class BulkPrintTest extends IdamTestSupport {
         );
 
         final CaseDetails caseDetails = CaseDetails.builder()
-            .state("Issued")
+            .state(ISSUED)
             .caseData(caseData)
             .build();
 

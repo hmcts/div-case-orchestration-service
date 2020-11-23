@@ -35,6 +35,9 @@ public class CcdStates {
     public static final String DN_REFUSED = "DNisRefused";
     public static final String GENERAL_CONSIDERATION_COMPLETE = "GeneralConsiderationComplete";
     public static final String INVALID_STATE = "Invalid state";
+    public static final String ISSUE_AOS = "issueAos";
+    public static final String ISSUE_FROM_REJECTED = "issueFromRejected";
+    public static final String ISSUE_FROM_SUBMITTED = "issueFromSubmitted";
     public static final String ISSUED = "Issued";
     public static final String PENDING_REJECTION = "PendingRejection";
     public static final String REJECTED = "Rejected";

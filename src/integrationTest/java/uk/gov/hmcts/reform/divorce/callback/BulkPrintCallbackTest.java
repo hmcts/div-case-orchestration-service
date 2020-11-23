@@ -23,6 +23,8 @@ import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.ISSUED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SUBMITTED;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 import static uk.gov.hmcts.reform.divorce.util.RestUtil.postToRestService;
 
@@ -67,7 +69,7 @@ public class BulkPrintCallbackTest extends IntegrationTest {
         Map<String, Object> response = callApiToGenerateAos(NON_ADULTERY_CASE);
 
         CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
-        ccdCallbackRequest.setCaseDetails(CaseDetails.builder().caseData((Map) response.get("data")).caseId("323").state("submitted").build());
+        ccdCallbackRequest.setCaseDetails(CaseDetails.builder().caseData((Map) response.get("data")).caseId("323").state(SUBMITTED).build());
 
         String jsonResponse = callBulkPrintAsCaseworker(ccdCallbackRequest);
         assertThat(jsonResponse, allOf(
@@ -85,7 +87,7 @@ public class BulkPrintCallbackTest extends IntegrationTest {
             CaseDetails.builder()
                 .caseData((Map<String, Object>) response.get("data"))
                 .caseId("323")
-                .state("submitted")
+                .state(SUBMITTED)
                 .build()
         );
 
@@ -103,7 +105,7 @@ public class BulkPrintCallbackTest extends IntegrationTest {
             CaseDetails.builder()
                 .caseData((Map<String, Object>) response.get(DATA))
                 .caseId("1517833758870511")
-                .state("Issued")
+                .state(ISSUED)
                 .build()
         );
 

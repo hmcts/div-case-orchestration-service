@@ -22,6 +22,10 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.ISSUE_AOS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.ISSUE_FROM_REJECTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.ISSUE_FROM_SUBMITTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.REJECTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE;
@@ -46,10 +50,6 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
     private static final String AOS_DEFEND_CONSENT_JSON = "aos-defend-consent.json";
 
     private static final String PAYMENT_MADE_JSON = "payment-made.json";
-    private static final String ISSUE_EVENT_ID = "issueFromSubmitted";
-    private static final String ISSUE_AOS_EVENT_ID = "issueAos";
-    private static final String REJECTED_EVENT_ID = "rejected";
-    private static final String ISSUE_FROM_REJECTED_EVENT_ID = "issueFromRejected";
 
     private static final String DOC_TYPE_MINI_PETITION = "petition";
     private static final String DOC_TYPE_AOS_INVITATION = "aos";
@@ -67,7 +67,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
 
         // make payment
         updateCase(caseDetails.getId().toString(), PAYMENT_MADE_JSON, PAYMENT_MADE_EVENT);
-        final CaseDetails issuedCase = fireEvent(caseDetails.getId().toString(), ISSUE_EVENT_ID);
+        final CaseDetails issuedCase = fireEvent(caseDetails.getId().toString(), ISSUE_FROM_SUBMITTED);
 
         assertGeneratedDocumentsExists(issuedCase, true, false);
     }
@@ -80,7 +80,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
 
         // make payment
         updateCase(caseDetails.getId().toString(), PAYMENT_MADE_JSON, PAYMENT_MADE_EVENT);
-        final CaseDetails issuedCase = fireEvent(caseDetails.getId().toString(), ISSUE_EVENT_ID);
+        final CaseDetails issuedCase = fireEvent(caseDetails.getId().toString(), ISSUE_FROM_SUBMITTED);
 
         assertGeneratedDocumentsExists(issuedCase, true, true);
     }
@@ -93,12 +93,12 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
 
         // make payment
         updateCase(caseDetails.getId().toString(), null, PAYMENT_MADE_EVENT);
-        fireEvent(caseDetails.getId().toString(), ISSUE_EVENT_ID);
+        fireEvent(caseDetails.getId().toString(), ISSUE_FROM_SUBMITTED);
 
         log.info("case {}", caseDetails.getId().toString());
 
         // put case in aos awaiting
-        CaseDetails updatedCaseDetails = fireEvent(caseDetails.getId().toString(), ISSUE_AOS_EVENT_ID);
+        CaseDetails updatedCaseDetails = fireEvent(caseDetails.getId().toString(), ISSUE_AOS);
 
         // link the respondent
         final UserDetails respondentUser = createCitizenUser();
@@ -121,7 +121,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
         submitCoRespondentAosCase(coRespondentUser, coRespondentAnswersJson);
 
         // reject the case
-        final CaseDetails beforeReIssue = fireEvent(caseDetails.getId().toString(), REJECTED_EVENT_ID);
+        final CaseDetails beforeReIssue = fireEvent(caseDetails.getId().toString(), REJECTED);
 
         assertThat(beforeReIssue.getData(), allOf(
             hasEntry(equalTo(CO_RESP_LINKED_TO_CASE), notNullValue()),
@@ -135,7 +135,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
         ));
 
         // issue the case
-        final CaseDetails caseAfterReIssue = fireEvent(caseDetails.getId().toString(), ISSUE_FROM_REJECTED_EVENT_ID);
+        final CaseDetails caseAfterReIssue = fireEvent(caseDetails.getId().toString(), ISSUE_FROM_REJECTED);
         final Map<String, Object> result = caseAfterReIssue.getData();
 
         // assert fields have been nullified

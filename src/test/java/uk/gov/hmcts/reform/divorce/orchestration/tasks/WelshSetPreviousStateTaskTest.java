@@ -21,6 +21,8 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.BO_WELSH_RESPONSE_AWAITING_REVIEW;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.PENDING_REJECTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SUBMITTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_PREVIOUS_STATE;
@@ -43,20 +45,20 @@ public class WelshSetPreviousStateTaskTest {
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, "KEY");
         context.setTransientObject(CASE_ID_JSON_KEY, "CASEID");
         Set<String> ignoreStates = new HashSet<>();
-        ignoreStates.add("Submitted");
-        ignoreStates.add("PendingRejection");
+        ignoreStates.add(SUBMITTED);
+        ignoreStates.add(PENDING_REJECTION);
         ReflectionTestUtils.setField(welshSetPreviousStateTask, "allowStates", ignoreStates);
     }
 
     @Test
     public void testExecuteSuccess() throws TaskException {
-        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).state("Submitted").build();
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).state(SUBMITTED).build();
         when(caseMaintenanceClient.retrievePetitionById(context.getTransientObject(AUTH_TOKEN_JSON_KEY),
             context.getTransientObject(CASE_ID_JSON_KEY))).thenReturn(caseDetails);
 
         welshSetPreviousStateTask.execute(context, caseData);
 
-        assertThat(caseData).containsEntry(WELSH_PREVIOUS_STATE, "Submitted");
+        assertThat(caseData).containsEntry(WELSH_PREVIOUS_STATE, SUBMITTED);
     }
 
     @Test

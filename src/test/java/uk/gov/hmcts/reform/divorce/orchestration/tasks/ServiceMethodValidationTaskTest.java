@@ -14,6 +14,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.PERSONAL_SERVICE_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.SOL_SERVICE_METHOD_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.INVALID_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -44,7 +46,7 @@ public class ServiceMethodValidationTaskTest {
 
     @Test
     public void testExecuteDoesNotThrowAnExceptionIfServiceMethodIsPersonalServiceAndStateIsAwaitingService() throws TaskException {
-        taskContext.setTransientObject(CASE_STATE_JSON_KEY, "AwaitingService");
+        taskContext.setTransientObject(CASE_STATE_JSON_KEY, AWAITING_SERVICE);
         Map<String, Object> payload = Collections.singletonMap(
                 SOL_SERVICE_METHOD_CCD_FIELD, PERSONAL_SERVICE_VALUE
         );
@@ -53,7 +55,7 @@ public class ServiceMethodValidationTaskTest {
 
     @Test(expected = TaskException.class)
     public void testExecuteThrowsExceptionIfServiceMethodIsPersonalServiceAndStateIsNotAwaitingService() throws TaskException {
-        taskContext.setTransientObject(CASE_STATE_JSON_KEY, "SomeOtherState");
+        taskContext.setTransientObject(CASE_STATE_JSON_KEY, INVALID_STATE);
         Map<String, Object> payload = Collections.singletonMap(
                 SOL_SERVICE_METHOD_CCD_FIELD, PERSONAL_SERVICE_VALUE
         );

@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PERSONAL_SERVICE_VALUE;
@@ -19,14 +20,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @Component
 public class ServiceMethodValidationTask implements Task<Map<String, Object>> {
 
-    private static final String AWAITING_SERVICE_STATE = "AwaitingService";
-
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
         String solServiceMethod = getOptionalPropertyValueAsString(payload, SOL_SERVICE_METHOD_CCD_FIELD, null);
         if (!Strings.isNullOrEmpty(solServiceMethod) && PERSONAL_SERVICE_VALUE.equals(solServiceMethod)) {
             String currentCaseState = context.getTransientObject(CASE_STATE_JSON_KEY);
-            if (!AWAITING_SERVICE_STATE.equals(currentCaseState)) {
+            if (!AWAITING_SERVICE.equals(currentCaseState)) {
                 final String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
                 log.error("Unexpected service method {} - Case ID: {}, State: {}",
                         solServiceMethod,

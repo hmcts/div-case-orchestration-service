@@ -13,13 +13,13 @@ import uk.gov.hmcts.reform.divorce.support.cos.CosApiClient;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.ISSUE_FROM_SUBMITTED;
 
 @Slf4j
 public class SolicitorPersonalServiceCallbackTest extends CcdSubmissionSupport {
 
     private static final String ISSUED_SOLICITOR_PETITION_JSON = "solicitor-petition.json";
     private static final String SOLICITOR_SUBMIT_PERSONAL_SERVICE = "solicitor-submit-personal-service.json";
-    private static final String ISSUE_EVENT_ID = "issueFromSubmitted";
     private static final String DOC_TYPE_PERSONAL_SERVICE = "personalService";
     private static final String PERSONAL_SERVICE_FILE_NAME_FORMAT = "solicitor-personal-service-%s.pdf";
     private static final String SOLICITOR_STATEMENT_OF_TRUTH_PAY_SUBMIT = "solicitorStatementOfTruthPaySubmit";
@@ -35,7 +35,7 @@ public class SolicitorPersonalServiceCallbackTest extends CcdSubmissionSupport {
         String caseId = caseDetails.getId().toString();
         log.info("Created case [id: {}]", caseId);
         updateCase(caseId, SOLICITOR_SUBMIT_PERSONAL_SERVICE, SOLICITOR_STATEMENT_OF_TRUTH_PAY_SUBMIT, solicitorUser);
-        caseDetails = updateCase(caseId, null, ISSUE_EVENT_ID);
+        caseDetails = updateCase(caseId, null, ISSUE_FROM_SUBMITTED);
 
         //when
         CcdCallbackRequest callbackRequest = CcdCallbackRequest.builder().caseDetails(
