@@ -53,7 +53,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 @AutoConfigureMockMvc
 public class SolicitorPersonalServiceAosOverdueTest extends MockedFunctionalTest {
 
-    private static final String API_URL = "/personal-service-pack-from-aos-overdue";
+    private static final String API_URL = "/migrate-to-personal-service-pack";
 
     @Autowired
     private MockMvc webClient;

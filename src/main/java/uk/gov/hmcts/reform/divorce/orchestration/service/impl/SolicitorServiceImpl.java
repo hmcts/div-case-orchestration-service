@@ -6,8 +6,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.SolicitorService;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssuePersonalServicePackFromAosOverdueWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssuePersonalServicePackWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.MigrateToPersonalServicePackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrievePbaNumbersWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.SendSolicitorPersonalServiceEmailWorkflow;
 
@@ -18,7 +18,7 @@ import java.util.Map;
 public class SolicitorServiceImpl implements SolicitorService {
 
     private final IssuePersonalServicePackWorkflow issuePersonalServicePackWorkflow;
-    private final IssuePersonalServicePackFromAosOverdueWorkflow issuePersonalServicePackFromAosOverdueWorkflow;
+    private final MigrateToPersonalServicePackWorkflow migrateToPersonalServicePackWorkflow;
     private final SendSolicitorPersonalServiceEmailWorkflow sendSolicitorPersonalServiceEmailWorkflow;
     private final RetrievePbaNumbersWorkflow retrievePbaNumbersWorkflow;
 
@@ -28,8 +28,8 @@ public class SolicitorServiceImpl implements SolicitorService {
     }
 
     @Override
-    public Map<String, Object> issuePersonalServicePackFromAosOverdue(CcdCallbackRequest callbackRequest, String authToken) throws WorkflowException {
-        return issuePersonalServicePackFromAosOverdueWorkflow.run(callbackRequest, authToken);
+    public Map<String, Object> migrateToPersonalServicePack(CcdCallbackRequest callbackRequest, String authToken) throws WorkflowException {
+        return migrateToPersonalServicePackWorkflow.run(callbackRequest, authToken);
     }
 
     @Override

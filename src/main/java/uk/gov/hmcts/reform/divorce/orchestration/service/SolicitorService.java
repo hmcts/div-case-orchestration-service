@@ -8,7 +8,7 @@ import java.util.Map;
 public interface SolicitorService {
     Map<String, Object> issuePersonalServicePack(CcdCallbackRequest callbackRequest, String authToken) throws WorkflowException;
 
-    Map<String, Object> issuePersonalServicePackFromAosOverdue(CcdCallbackRequest callbackRequest, String authToken) throws WorkflowException;
+    Map<String, Object> migrateToPersonalServicePack(CcdCallbackRequest callbackRequest, String authToken) throws WorkflowException;
 
     Map<String, Object> sendSolicitorPersonalServiceEmail(CcdCallbackRequest callbackRequest) throws WorkflowException;
 

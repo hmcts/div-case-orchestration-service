@@ -31,7 +31,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class IssuePersonalServicePackFromAosOverdueWorkflow extends DefaultWorkflow<Map<String, Object>> {
+public class MigrateToPersonalServicePackWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final CourtServiceValidationTask courtServiceValidationTask;
     private final MigrateCaseToPersonalServiceTask migrateCaseToPersonalServiceTask;
