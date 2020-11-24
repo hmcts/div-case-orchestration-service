@@ -29,6 +29,7 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_OVERDUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
@@ -41,7 +42,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_PERSONAL_SERVICE_LETTER_FILENAME;
 
 @RunWith(MockitoJUnitRunner.class)
-public class IssuePersonalServicePackFromAosOverdueWorkflowTest {
+public class MigrateToPersonalServicePackWorkflowTest {
 
     @Mock
     CourtServiceValidationTask courtServiceValidationTask;
@@ -59,7 +60,7 @@ public class IssuePersonalServicePackFromAosOverdueWorkflowTest {
     private DocumentTemplateService documentTemplateService;
 
     @InjectMocks
-    IssuePersonalServicePackFromAosOverdueWorkflow issuePersonalServicePackFromAosOverdueWorkflow;
+    MigrateToPersonalServicePackWorkflow migrateToPersonalServicePackWorkflow;
 
     private static final String SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID = "FL-DIV-GNO-ENG-00073.docx";
 
@@ -112,7 +113,28 @@ public class IssuePersonalServicePackFromAosOverdueWorkflowTest {
         caseData = Collections.singletonMap("SolServiceMethod", COURT_SERVICE_VALUE);
         setupTest(AOS_OVERDUE, caseData);
 
-        Map<String, Object> response = issuePersonalServicePackFromAosOverdueWorkflow.run(request, TEST_TOKEN);
+        Map<String, Object> response = migrateToPersonalServicePackWorkflow.run(request, TEST_TOKEN);
+
+        //then
+        assertThat(response, is(caseData));
+        InOrder inOrder = inOrder(
+            courtServiceValidationTask,
+            migrateCaseToPersonalServiceTask,
+            documentGenerationTask,
+            addNewDocumentsToCaseDataTask
+        );
+        inOrder.verify(courtServiceValidationTask).execute(context, caseData);
+        inOrder.verify(migrateCaseToPersonalServiceTask).execute(context, caseData);
+        inOrder.verify(documentGenerationTask).execute(context, caseData);
+        inOrder.verify(addNewDocumentsToCaseDataTask).execute(context, caseData);
+    }
+
+    @Test
+    public void testRunExecutesExpectedTasksInOrderForCaseStateAosAwaiting() throws WorkflowException, TaskException {
+        caseData = Collections.singletonMap("SolServiceMethod", COURT_SERVICE_VALUE);
+        setupTest(AOS_AWAITING, caseData);
+
+        Map<String, Object> response = migrateToPersonalServicePackWorkflow.run(request, TEST_TOKEN);
 
         //then
         assertThat(response, is(caseData));
