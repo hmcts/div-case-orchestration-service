@@ -67,7 +67,7 @@ public class SolicitorCallbackController {
                 .build());
     }
 
-    @PostMapping(path = "/personal-service-pack-from-aos-overdue",
+    @PostMapping(path = "/migrate-to-personal-service-pack",
         consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Migrate case from court service to personal service and generates "
         + "the petitioner's solicitor personal service pack to be served to the respondent")
@@ -82,7 +82,7 @@ public class SolicitorCallbackController {
         Map<String, Object> response;
 
         try {
-            response = solicitorService.issuePersonalServicePackFromAosOverdue(ccdCallbackRequest, authorizationToken);
+            response = solicitorService.migrateToPersonalServicePack(ccdCallbackRequest, authorizationToken);
         } catch (Exception e) {
             return ResponseEntity.ok(
                 CcdCallbackResponse.builder()

@@ -8,8 +8,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssuePersonalServicePackFromAosOverdueWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssuePersonalServicePackWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.MigrateToPersonalServicePackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrievePbaNumbersWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.SendSolicitorPersonalServiceEmailWorkflow;
 
@@ -28,7 +28,7 @@ public class SolicitorServiceImplTest {
     IssuePersonalServicePackWorkflow issuePersonalServicePack;
 
     @Mock
-    IssuePersonalServicePackFromAosOverdueWorkflow issuePersonalServicePackFromAosOverdueWorkflow;
+    MigrateToPersonalServicePackWorkflow migrateToPersonalServicePackWorkflow;
 
     @Mock
     SendSolicitorPersonalServiceEmailWorkflow sendSolicitorPersonalServiceEmailWorkflow;
@@ -56,9 +56,9 @@ public class SolicitorServiceImplTest {
             .caseDetails(CaseDetails.builder().build())
             .build();
 
-        solicitorService.issuePersonalServicePackFromAosOverdue(request, TEST_TOKEN);
+        solicitorService.migrateToPersonalServicePack(request, TEST_TOKEN);
 
-        verify(issuePersonalServicePackFromAosOverdueWorkflow).run(request, TEST_TOKEN);
+        verify(migrateToPersonalServicePackWorkflow).run(request, TEST_TOKEN);
     }
 
     @Test

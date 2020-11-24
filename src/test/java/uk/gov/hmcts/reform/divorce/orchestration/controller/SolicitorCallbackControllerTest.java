@@ -74,7 +74,7 @@ public class SolicitorCallbackControllerTest {
             .caseDetails(CaseDetails.builder().caseData(divorceSession).build())
             .build();
 
-        when(solicitorService.issuePersonalServicePackFromAosOverdue(request, AUTH_TOKEN))
+        when(solicitorService.migrateToPersonalServicePack(request, AUTH_TOKEN))
             .thenReturn(divorceSession);
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.issuePersonalServicePackFromAosOverdue(AUTH_TOKEN, request);
@@ -83,7 +83,7 @@ public class SolicitorCallbackControllerTest {
         assertThat(response.getBody().getData(), is(divorceSession));
         assertThat(response.getBody().getErrors(), is(nullValue()));
 
-        verify(solicitorService).issuePersonalServicePackFromAosOverdue(request, AUTH_TOKEN);
+        verify(solicitorService).migrateToPersonalServicePack(request, AUTH_TOKEN);
     }
 
     @Test
