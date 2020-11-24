@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosNotReceivedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueEligibilityWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueForProcessServerCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline.AosPackOfflineAnswersWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline.IssueAosPackOfflineWorkflow;
@@ -30,6 +31,7 @@ public class AosServiceImpl implements AosService {
     private final AosOverdueEligibilityWorkflow aosOverdueEligibilityWorkflow;
     private final AosOverdueWorkflow aosOverdueWorkflow;
     private final AosNotReceivedWorkflow aosNotReceivedWorkflow;
+    private final AosOverdueForProcessServerCaseWorkflow aosOverdueForProcessServerCaseWorkflow;
 
     @Override
     public Map<String, Object> issueAosPackOffline(String authToken, CaseDetails caseDetails, DivorceParty divorceParty)
@@ -45,9 +47,10 @@ public class AosServiceImpl implements AosService {
 
         try {
             return issueAosPackOfflineWorkflow.run(authToken, caseDetails, divorceParty);
-        } catch (WorkflowException e) {
-            log.error(format("Error occurred issuing Aos Pack Offline for case id %s", caseDetails.getCaseId()), e);
-            throw new CaseOrchestrationServiceException(e);
+        } catch (WorkflowException exception) {
+            String caseId = caseDetails.getCaseId();
+            log.error(format("Error occurred issuing Aos Pack Offline for case id %s", caseId), exception);
+            throw new CaseOrchestrationServiceException(exception, caseId);
         }
     }
 
@@ -63,31 +66,31 @@ public class AosServiceImpl implements AosService {
     }
 
     @Override
-    public void markCasesToBeMovedToAosOverdue(String authToken) throws CaseOrchestrationServiceException {
-        log.info("Searching for cases that are eligible to be moved to AosOverdue");
+    public void findCasesForWhichAosIsOverdue(String authToken) throws CaseOrchestrationServiceException {
+        log.info("Searching for cases for which AOS are overdue");
 
         try {
             aosOverdueEligibilityWorkflow.run(authToken);
-        } catch (WorkflowException e) {
-            CaseOrchestrationServiceException caseOrchestrationServiceException = new CaseOrchestrationServiceException(e);
-            log.error("Error trying to find cases to move to AOSOverdue", caseOrchestrationServiceException);
+        } catch (WorkflowException exception) {
+            CaseOrchestrationServiceException caseOrchestrationServiceException = new CaseOrchestrationServiceException(exception);
+            log.error("Error trying to find cases for which AOS are overdue", caseOrchestrationServiceException);
             throw caseOrchestrationServiceException;
         }
     }
 
     @Override
     public void makeCaseAosOverdue(String authToken, String caseId) throws CaseOrchestrationServiceException {
-        log.info("Will move case [id: {}] to AOSOverdue.", caseId);
+        log.info("Will make AOS overdue for case [id: {}].", caseId);
 
         try {
             aosOverdueWorkflow.run(authToken, caseId);
-        } catch (WorkflowException e) {
-            CaseOrchestrationServiceException caseOrchestrationServiceException = new CaseOrchestrationServiceException(e);
+        } catch (WorkflowException exception) {
+            CaseOrchestrationServiceException caseOrchestrationServiceException = new CaseOrchestrationServiceException(exception, caseId);
             log.error("Error trying to move case {} to AOS Overdue", caseId, caseOrchestrationServiceException);
             throw caseOrchestrationServiceException;
         }
 
-        log.info("Moved case [id: {}] to AOSOverdue.", caseId);
+        log.info("Made AOS overdue for case [id: {}].", caseId);
     }
 
     @Override
@@ -101,6 +104,21 @@ public class AosServiceImpl implements AosService {
             throw new CaseOrchestrationServiceException(workflowException, caseId);
         }
 
+    }
+
+    @Override
+    public void markAosNotReceivedForProcessServerCase(String authToken, String caseId) throws CaseOrchestrationServiceException {
+        log.info("Will make AOS overdue for case [id: {}] (served by process server).", caseId);
+
+        try {
+            aosOverdueForProcessServerCaseWorkflow.run(authToken, caseId);
+        } catch (WorkflowException exception) {
+            CaseOrchestrationServiceException caseOrchestrationServiceException = new CaseOrchestrationServiceException(exception, caseId);
+            log.error("Error trying to move case {} to AOS Overdue (served by process server)", caseId, caseOrchestrationServiceException);
+            throw caseOrchestrationServiceException;
+        }
+
+        log.info("Made AOS overdue for case [id: {}] (served by process server).", caseId);
     }
 
 }

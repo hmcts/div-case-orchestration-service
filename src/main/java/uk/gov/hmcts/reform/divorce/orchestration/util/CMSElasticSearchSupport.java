@@ -27,7 +27,16 @@ public class CMSElasticSearchSupport {
         this.caseMaintenanceClient = caseMaintenanceClient;
     }
 
-    public Stream<CaseDetails> searchCMSCases(String authToken, QueryBuilder... builders) {
+    public Stream<CaseDetails> searchCMSCases(String authToken, QueryBuilder... filters) {
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+        for (QueryBuilder filter : filters) {
+            queryBuilder = queryBuilder.filter(filter);
+        }
+
+        return searchCMSCasesWithSingleQuery(authToken, queryBuilder);
+    }
+
+    public Stream<CaseDetails> searchCMSCasesWithSingleQuery(String authToken, QueryBuilder query) {
         SearchResult finalResult = SearchResult.builder()
             .total(0)
             .cases(new ArrayList<>())
@@ -42,7 +51,7 @@ public class CMSElasticSearchSupport {
         do {
             SearchResult currentSearchResult = caseMaintenanceClient.searchCases(
                 authToken,
-                buildCMSBooleanSearchSource(start, pageSize, builders)
+                buildCMSBooleanSearchSource(start, pageSize, query)
             );
             searchTotalNumberOfResults = currentSearchResult.getTotal();
             upperSearchLimit = searchTotalNumberOfResults;
@@ -62,13 +71,7 @@ public class CMSElasticSearchSupport {
         return String.format("now/%s-%s", timeUnit, durationExp);
     }
 
-    public static String buildCMSBooleanSearchSource(int start, int batchSize, QueryBuilder... builders) {
-        BoolQueryBuilder query = QueryBuilders.boolQuery();
-
-        for (QueryBuilder queryBuilder : builders) {
-            query.filter(queryBuilder);
-        }
-
+    public static String buildCMSBooleanSearchSource(int start, int batchSize, QueryBuilder query) {
         return SearchSourceBuilder
             .searchSource()
             .query(query)
