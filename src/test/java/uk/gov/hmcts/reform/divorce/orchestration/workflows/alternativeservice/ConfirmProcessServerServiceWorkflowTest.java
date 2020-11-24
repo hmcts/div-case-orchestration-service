@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.alternativeservice.AlternativeServiceDueDateSetterTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.alternativeservice.MarkServedByAlternativeMethodAsYesTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.alternativeservice.MarkServedByAlternativeMethodAsNoTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.alternativeservice.MarkServedByProcessServerAsYesTask;
 
 import java.util.HashMap;
@@ -28,19 +28,19 @@ public class ConfirmProcessServerServiceWorkflowTest {
     private MarkServedByProcessServerAsYesTask markServedByProcessServerAsYesTask;
 
     @Mock
-    private MarkServedByAlternativeMethodAsYesTask markServedByAlternativeMethodAsYesTask;
+    private MarkServedByAlternativeMethodAsNoTask markServedByAlternativeMethodAsNoTask;
 
     @InjectMocks
     private ConfirmProcessServerServiceWorkflow confirmProcessServerServiceWorkflow;
 
     @Test
-    public void whenConfirmAlternativeServiceWorkflowModifyDueDateTaskIsExecuted() throws Exception {
+    public void whenConfirmProcessServerServiceWorkflow_ModifyDueDateTaskIsExecuted() throws Exception {
         HashMap<String, Object> caseData = new HashMap<>();
         mockTasksExecution(
             caseData,
             alternativeServiceDueDateSetterTask,
             markServedByProcessServerAsYesTask,
-            markServedByAlternativeMethodAsYesTask
+            markServedByAlternativeMethodAsNoTask
         );
 
         Map<String, Object> returned = confirmProcessServerServiceWorkflow.run(
@@ -54,7 +54,7 @@ public class ConfirmProcessServerServiceWorkflowTest {
             caseData,
             alternativeServiceDueDateSetterTask,
             markServedByProcessServerAsYesTask,
-            markServedByAlternativeMethodAsYesTask
+            markServedByAlternativeMethodAsNoTask
         );
     }
 }
