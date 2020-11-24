@@ -12,4 +12,7 @@ public interface AlternativeServiceService {
 
     CaseDetails confirmProcessServerService(CaseDetails caseDetails)
         throws CaseOrchestrationServiceException;
+
+    CaseDetails confirmServiceByAlternativeMethod(CaseDetails caseDetails)
+        throws CaseOrchestrationServiceException;
 }

@@ -7,8 +7,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.alternativeservice.AlternativeServiceDueDateSetterTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.alternativeservice.MarkJourneyAsServedByAlternativeMethodTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.alternativeservice.MarkJourneyAsServedByProcessServerTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.alternativeservice.MarkServedByAlternativeMethodAsYesTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.alternativeservice.MarkServedByProcessServerAsYesTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,10 +25,10 @@ public class ConfirmProcessServerServiceWorkflowTest {
     private AlternativeServiceDueDateSetterTask alternativeServiceDueDateSetterTask;
 
     @Mock
-    private MarkJourneyAsServedByProcessServerTask markJourneyAsServedByProcessServerTask;
+    private MarkServedByProcessServerAsYesTask markServedByProcessServerAsYesTask;
 
     @Mock
-    private MarkJourneyAsServedByAlternativeMethodTask markJourneyAsServedByAlternativeMethodTask;
+    private MarkServedByAlternativeMethodAsYesTask markServedByAlternativeMethodAsYesTask;
 
     @InjectMocks
     private ConfirmProcessServerServiceWorkflow confirmProcessServerServiceWorkflow;
@@ -39,8 +39,8 @@ public class ConfirmProcessServerServiceWorkflowTest {
         mockTasksExecution(
             caseData,
             alternativeServiceDueDateSetterTask,
-            markJourneyAsServedByProcessServerTask,
-            markJourneyAsServedByAlternativeMethodTask
+            markServedByProcessServerAsYesTask,
+            markServedByAlternativeMethodAsYesTask
         );
 
         Map<String, Object> returned = confirmProcessServerServiceWorkflow.run(
@@ -53,8 +53,8 @@ public class ConfirmProcessServerServiceWorkflowTest {
         verifyTasksCalledInOrder(
             caseData,
             alternativeServiceDueDateSetterTask,
-            markJourneyAsServedByProcessServerTask,
-            markJourneyAsServedByAlternativeMethodTask
+            markServedByProcessServerAsYesTask,
+            markServedByAlternativeMethodAsYesTask
         );
     }
 }

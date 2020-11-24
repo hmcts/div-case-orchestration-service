@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.alternativeservice.AosNotReceivedForProcessServerWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.alternativeservice.ConfirmAlternativeServiceWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.alternativeservice.ConfirmProcessServerServiceWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.alternativeservice.ConfirmServiceByAlternativeMethodWorkflow;
 
 import java.util.Map;
 
@@ -18,6 +19,7 @@ public class AlternativeServiceServiceImpl implements AlternativeServiceService 
 
     private final ConfirmAlternativeServiceWorkflow confirmAlternativeServiceWorkflow;
     private final ConfirmProcessServerServiceWorkflow confirmProcessServerServiceWorkflow;
+    private final ConfirmServiceByAlternativeMethodWorkflow confirmServiceByAlternativeMethodWorkflow;
     private final AosNotReceivedForProcessServerWorkflow aosNotReceivedForProcessServerWorkflow;
 
     @Override
@@ -42,6 +44,16 @@ public class AlternativeServiceServiceImpl implements AlternativeServiceService 
     public CaseDetails confirmProcessServerService(CaseDetails caseDetails) throws CaseOrchestrationServiceException {
         try {
             Map<String, Object> caseData = confirmProcessServerServiceWorkflow.run(caseDetails);
+            return CaseDetails.builder().caseData(caseData).build();
+        } catch (WorkflowException workflowException) {
+            throw new CaseOrchestrationServiceException(workflowException, caseDetails.getCaseId());
+        }
+    }
+
+    @Override
+    public CaseDetails confirmServiceByAlternativeMethod(CaseDetails caseDetails) throws CaseOrchestrationServiceException {
+        try {
+            Map<String, Object> caseData = confirmServiceByAlternativeMethodWorkflow.run(caseDetails);
             return CaseDetails.builder().caseData(caseData).build();
         } catch (WorkflowException workflowException) {
             throw new CaseOrchestrationServiceException(workflowException, caseDetails.getCaseId());

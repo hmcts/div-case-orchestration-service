@@ -11,19 +11,19 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.context;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MarkJourneyAsServedByAlternativeMethodTaskTest {
+public class MarkServedByProcessServerAsNoTaskTest {
 
     @InjectMocks
-    private MarkJourneyAsServedByAlternativeMethodTask markJourneyAsServedByAlternativeMethodTask;
+    private MarkServedByProcessServerAsNoTask markServedByProcessServerAsNoTask;
 
     @Test
-    public void whenExecute_thenServedByProcessServerIsSetToYes() {
-        Map<String, Object> returnedPayload = markJourneyAsServedByAlternativeMethodTask.execute(context(), new HashMap<>());
+    public void whenMarkServedByProcessServerAsNoTaskIsExecuted_thenServedByProcessServerIsSetToNo() {
+        Map<String, Object> returnedPayload = markServedByProcessServerAsNoTask.execute(context(), new HashMap<>());
 
-        assertThat(returnedPayload, hasEntry(CcdFields.SERVED_BY_ALTERNATIVE_METHOD, YES_VALUE));
+        assertThat(returnedPayload, hasEntry(CcdFields.SERVED_BY_PROCESS_SERVER, NO_VALUE));
     }
 }

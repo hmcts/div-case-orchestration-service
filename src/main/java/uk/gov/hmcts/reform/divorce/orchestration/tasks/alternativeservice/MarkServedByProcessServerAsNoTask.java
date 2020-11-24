@@ -7,14 +7,14 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 
 @Service
-public class MarkJourneyAsServedByAlternativeMethodTask implements Task<Map<String, Object>> {
+public class MarkServedByProcessServerAsNoTask implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload)  {
-        payload.put(CcdFields.SERVED_BY_ALTERNATIVE_METHOD, YES_VALUE);
+        payload.put(CcdFields.SERVED_BY_PROCESS_SERVER, NO_VALUE);
         return payload;
     }
 }

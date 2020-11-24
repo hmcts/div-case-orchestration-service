@@ -8,9 +8,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.alternativeservice.AlternativeServiceDueDateSetterTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.alternativeservice.MarkServedByAlternativeMethodAsNoTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.alternativeservice.MarkServedByProcessServerAsYesTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.alternativeservice.MarkServedByAlternativeMethodAsYesTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.alternativeservice.MarkServedByProcessServerAsNoTask;
 
 import java.util.Map;
 
@@ -19,11 +18,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 @AllArgsConstructor
 @Slf4j
-public class ConfirmProcessServerServiceWorkflow extends DefaultWorkflow<Map<String, Object>> {
+public class ConfirmServiceByAlternativeMethodWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final AlternativeServiceDueDateSetterTask alternativeServiceDueDateSetterTask;
-    private final MarkServedByProcessServerAsYesTask markServedByProcessServerAsYesTask;
-    private final MarkServedByAlternativeMethodAsNoTask markServedByAlternativeMethodAsNoTask;
+    private final MarkServedByProcessServerAsNoTask markServedByProcessServerAsNoTask;
+    private final MarkServedByAlternativeMethodAsYesTask markServedByAlternativeMethodAsYesTask;
 
     public Map<String, Object> run(CaseDetails caseDetails) throws WorkflowException {
         String caseId = caseDetails.getCaseId();
@@ -32,9 +30,8 @@ public class ConfirmProcessServerServiceWorkflow extends DefaultWorkflow<Map<Str
 
         return this.execute(
             new Task[] {
-                alternativeServiceDueDateSetterTask,
-                markServedByProcessServerAsYesTask,
-                markServedByAlternativeMethodAsNoTask
+                markServedByProcessServerAsNoTask,
+                markServedByAlternativeMethodAsYesTask
             },
             caseDetails.getCaseData(),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseId)
