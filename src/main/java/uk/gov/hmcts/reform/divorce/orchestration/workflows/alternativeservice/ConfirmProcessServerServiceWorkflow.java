@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.alternativeservice.AlternativeServiceDueDateSetterTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.alternativeservice.MarkJourneyAsServedByAlternativeMethodTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.alternativeservice.MarkJourneyAsServedByProcessServerTask;
 
 import java.util.Map;
@@ -22,6 +23,7 @@ public class ConfirmProcessServerServiceWorkflow extends DefaultWorkflow<Map<Str
 
     private final AlternativeServiceDueDateSetterTask alternativeServiceDueDateSetterTask;
     private final MarkJourneyAsServedByProcessServerTask markJourneyAsServedByProcessServerTask;
+    private final MarkJourneyAsServedByAlternativeMethodTask markJourneyAsServedByAlternativeMethodTask;
 
     public Map<String, Object> run(CaseDetails caseDetails) throws WorkflowException {
         String caseId = caseDetails.getCaseId();
@@ -31,7 +33,8 @@ public class ConfirmProcessServerServiceWorkflow extends DefaultWorkflow<Map<Str
         return this.execute(
             new Task[] {
                 alternativeServiceDueDateSetterTask,
-                markJourneyAsServedByProcessServerTask
+                markJourneyAsServedByProcessServerTask,
+                markJourneyAsServedByAlternativeMethodTask
             },
             caseDetails.getCaseData(),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseId)
