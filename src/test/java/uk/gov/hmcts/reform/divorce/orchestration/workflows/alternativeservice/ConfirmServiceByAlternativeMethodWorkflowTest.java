@@ -24,10 +24,10 @@ public class ConfirmServiceByAlternativeMethodWorkflowTest {
     private MarkServedByAlternativeMethodAsYesTask markServedByAlternativeMethodAsYesTask;
 
     @InjectMocks
-    private ConfirmProcessServerServiceWorkflow confirmProcessServerServiceWorkflow;
+    private ConfirmServiceByAlternativeMethodWorkflow confirmServiceByAlternativeMethodWorkflow;
 
     @Test
-    public void whenConfirmProcessServerServiceWorkflow_ModifyDueDateTaskIsExecuted() throws Exception {
+    public void whenConfirmServiceByAlternativeMethodWorkflow_markingProcessServerAndAltMethodTasksAreExecuted() throws Exception {
         HashMap<String, Object> caseData = new HashMap<>();
         mockTasksExecution(
             caseData,
@@ -35,7 +35,7 @@ public class ConfirmServiceByAlternativeMethodWorkflowTest {
             markServedByAlternativeMethodAsYesTask
         );
 
-        Map<String, Object> returned = confirmProcessServerServiceWorkflow.run(
+        Map<String, Object> returned = confirmServiceByAlternativeMethodWorkflow.run(
             CaseDetails.builder()
                 .caseData(caseData)
                 .build()
