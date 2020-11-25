@@ -71,10 +71,9 @@ public class AosOverdueTest extends RetrieveCaseSupport {
 
     @Test
     public void shouldMoveEligibleCasesToAosOverdue() {
-        UserDetails caseworker = createCaseWorkerUser();
         RestAssured
             .given()
-            .header(HttpHeaders.AUTHORIZATION, caseworker.getAuthToken())
+            .header(HttpHeaders.AUTHORIZATION, caseworkerUser.getAuthToken())
             .when()
             .post(serverUrl + jobSchedulerContextPath)
             .then()
@@ -88,7 +87,7 @@ public class AosOverdueTest extends RetrieveCaseSupport {
     }
 
     private void assertCaseIsInExpectedState(String caseId, String expectedState) {
-        CaseDetails caseDetails = retrieveCase(caseworkerUser, caseId);
+        CaseDetails caseDetails = retrieveCase(citizenUser, caseId);
         String state = caseDetails.getState();
         assertThat(format("Case %s should be in \"%s\" state", caseId, expectedState), state, is(expectedState));
     }
