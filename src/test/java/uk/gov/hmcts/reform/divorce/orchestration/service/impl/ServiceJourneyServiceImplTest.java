@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRes
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ConfirmServicePaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceDecisionMadeWorkflow;
@@ -56,6 +57,9 @@ public class ServiceJourneyServiceImplTest {
 
     @Mock
     private SetupConfirmServicePaymentWorkflow setupConfirmServicePaymentWorkflow;
+
+    @Mock
+    private ConfirmServicePaymentWorkflow confirmServicePaymentWorkflow;
 
     @InjectMocks
     private ServiceJourneyServiceImpl classUnderTest;
@@ -172,6 +176,20 @@ public class ServiceJourneyServiceImplTest {
         classUnderTest.setupConfirmServicePaymentEvent(caseDetails);
 
         verify(setupConfirmServicePaymentWorkflow).run(eq(caseDetails));
+    }
+
+    @Test
+    public void givenCaseData_whenConfirmServicePaymentEvent_thenReturnPayload() throws Exception {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .build();
+
+        when(confirmServicePaymentWorkflow.run(eq(caseDetails))).thenReturn(new HashMap<>());
+
+        classUnderTest.confirmServicePaymentEvent(caseDetails);
+
+        verify(confirmServicePaymentWorkflow).run(eq(caseDetails));
     }
 
     @Test(expected = ServiceJourneyServiceException.class)

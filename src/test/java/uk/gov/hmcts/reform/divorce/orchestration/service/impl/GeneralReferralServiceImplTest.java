@@ -196,4 +196,8 @@ public class GeneralReferralServiceImplTest {
 
         assertCaseOrchestrationServiceExceptionIsSetProperly(exception);
     }
+
+    // TODO general referral test cases
+    // 1. when there is empty/no collection, create a collection of one item
+    // 2. when there is a collection of one item, update collection to two items
 }

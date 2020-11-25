@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRes
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ConfirmServicePaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceDecisionMadeWorkflow;
@@ -33,6 +34,7 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
     private final ServiceDecisionMadeWorkflow serviceDecisionMadeWorkflow;
     private final ServiceDecisionMakingWorkflow serviceDecisionMakingWorkflow;
     private final SetupConfirmServicePaymentWorkflow setupConfirmServicePaymentWorkflow;
+    private final ConfirmServicePaymentWorkflow confirmServicePaymentWorkflow;
 
     @Override
     public CcdCallbackResponse makeServiceDecision(CaseDetails caseDetails, String authorisation) throws ServiceJourneyServiceException {
@@ -95,6 +97,15 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
         throws ServiceJourneyServiceException {
         try {
             return setupConfirmServicePaymentWorkflow.run(caseDetails);
+        } catch (WorkflowException exception) {
+            throw new ServiceJourneyServiceException(exception, caseDetails.getCaseId());
+        }
+    }
+
+    @Override
+    public Map<String, Object> confirmServicePaymentEvent(CaseDetails caseDetails) throws ServiceJourneyServiceException {
+        try {
+            return confirmServicePaymentWorkflow.run(caseDetails);
         } catch (WorkflowException exception) {
             throw new ServiceJourneyServiceException(exception, caseDetails.getCaseId());
         }

@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralReferralService;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.GeneralConsiderationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.GeneralReferralPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.GeneralReferralWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.SetupGeneralReferralPaymentWorkflow;
 
@@ -30,6 +31,7 @@ public class GeneralReferralServiceImpl implements GeneralReferralService {
     private final GeneralReferralWorkflow generalReferralWorkflow;
     private final GeneralConsiderationWorkflow generalConsiderationWorkflow;
     private final SetupGeneralReferralPaymentWorkflow setupGeneralReferralPaymentWorkflow;
+    private final GeneralReferralPaymentWorkflow generalReferralPaymentWorkflow;
 
     @Override
     public CcdCallbackResponse receiveReferral(CcdCallbackRequest ccdCallbackRequest)
@@ -92,6 +94,15 @@ public class GeneralReferralServiceImpl implements GeneralReferralService {
         } catch (TaskException taskException) {
             throw new CaseOrchestrationServiceException(
                 new WorkflowException(taskException.getMessage(), taskException), caseId);
+        }
+    }
+
+    @Override
+    public Map<String, Object> generalReferralPaymentEvent(CaseDetails caseDetails) throws CaseOrchestrationServiceException {
+        try {
+            return generalReferralPaymentWorkflow.run(caseDetails);
+        } catch (WorkflowException exception) {
+            throw new CaseOrchestrationServiceException(exception, caseDetails.getCaseId());
         }
     }
 }
