@@ -50,16 +50,11 @@ public class MigrateToPersonalServicePackWorkflow extends DefaultWorkflow<Map<St
             new Task[]{
                 courtServiceValidationTask,
                 migrateCaseToPersonalServiceTask,
-                documentGenerationTask,
-                addNewDocumentsToCaseDataTask
             },
             callbackRequest.getCaseDetails().getCaseData(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_ID_JSON_KEY, callbackRequest.getCaseDetails().getCaseId()),
-            ImmutablePair.of(CASE_DETAILS_JSON_KEY, callbackRequest.getCaseDetails()),
-            ImmutablePair.of(DOCUMENT_TYPE, SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE),
-            ImmutablePair.of(DOCUMENT_TEMPLATE_ID, templateId),
-            ImmutablePair.of(DOCUMENT_FILENAME, SOLICITOR_PERSONAL_SERVICE_LETTER_FILENAME)
+            ImmutablePair.of(CASE_DETAILS_JSON_KEY, callbackRequest.getCaseDetails())
         );
     }
 }
