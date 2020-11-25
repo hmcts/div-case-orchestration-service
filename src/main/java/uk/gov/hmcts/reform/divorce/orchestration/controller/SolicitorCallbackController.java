@@ -81,6 +81,9 @@ public class SolicitorCallbackController {
 
         Map<String, Object> response;
 
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+
+        log.info("running migrate-to-personal-service-pack, Case ID: {}", caseId);
         try {
             response = solicitorService.migrateToPersonalServicePack(ccdCallbackRequest, authorizationToken);
         } catch (Exception e) {
@@ -104,7 +107,9 @@ public class SolicitorCallbackController {
     public ResponseEntity<CcdCallbackResponse> sendSolicitorPersonalServiceEmail(
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
-        log.info("running handle-post-personal-service-pack, Caste State: {}", ccdCallbackRequest.getCaseDetails().getState());
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+
+        log.info("running handle-post-personal-service-pack, Case ID: {}", caseId);
         return ResponseEntity.ok(CcdCallbackResponse.builder()
             .data(solicitorService.sendSolicitorPersonalServiceEmail(ccdCallbackRequest))
             .build());
