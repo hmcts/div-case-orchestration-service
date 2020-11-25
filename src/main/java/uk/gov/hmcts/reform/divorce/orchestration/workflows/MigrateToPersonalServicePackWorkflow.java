@@ -4,12 +4,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CourtServiceValidationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MigrateCaseToPersonalServiceTask;
 
@@ -27,10 +25,8 @@ public class MigrateToPersonalServicePackWorkflow extends DefaultWorkflow<Map<St
 
     private final CourtServiceValidationTask courtServiceValidationTask;
     private final MigrateCaseToPersonalServiceTask migrateCaseToPersonalServiceTask;
-    private final DocumentTemplateService documentTemplateService;
 
     public Map<String, Object> run(CcdCallbackRequest callbackRequest, String authToken) throws WorkflowException {
-        CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
         return this.execute(
             new Task[]{
