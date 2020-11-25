@@ -40,10 +40,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.SOL_SERVIC
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_OVERDUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COURT_SERVICE_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PERSONAL_SERVICE_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 @RunWith(SpringRunner.class)
@@ -139,12 +136,6 @@ public class SolicitorPersonalServiceAosOverdueTest extends MockedFunctionalTest
 
         migratedCaseData.put(SOL_SERVICE_METHOD_CCD_FIELD, PERSONAL_SERVICE_VALUE);
 
-        final CaseDetails migratedCaseDetails = CaseDetails.builder()
-            .caseId(TEST_CASE_ID)
-            .state(AOS_OVERDUE)
-            .caseData(migratedCaseData)
-            .build();
-
         CcdCallbackRequest request = CcdCallbackRequest.builder()
             .caseDetails(caseDetails)
             .build();
@@ -155,12 +146,6 @@ public class SolicitorPersonalServiceAosOverdueTest extends MockedFunctionalTest
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withBody("{}")));
 
-        stubDocumentGeneratorServiceBaseOnContextPath(
-            "FL-DIV-GNO-ENG-00073.docx",
-            Collections.singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, migratedCaseDetails),
-            SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE
-        );
-
         webClient.perform(post(API_URL)
             .content(convertObjectToJsonString(request))
             .contentType(MediaType.APPLICATION_JSON)
@@ -170,7 +155,7 @@ public class SolicitorPersonalServiceAosOverdueTest extends MockedFunctionalTest
             .andExpect(content().string(allOf(
                 isJson(),
                 hasJsonPath("$.data",
-                    hasJsonPath(D8DOCUMENTS_GENERATED)),
+                    is(is(Collections.emptyMap()))),
                 hasJsonPath("$.errors",
                     is(emptyOrNullString())
                 )
