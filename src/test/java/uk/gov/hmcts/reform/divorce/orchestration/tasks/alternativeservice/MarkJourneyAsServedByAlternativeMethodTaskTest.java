@@ -16,16 +16,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.context;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MarkJourneyAsServedByProcessServerTaskTest {
+public class MarkJourneyAsServedByAlternativeMethodTaskTest {
 
     @InjectMocks
-    private MarkJourneyAsServedByProcessServerTask markJourneyAsServedByProcessServerTask;
+    private MarkJourneyAsServedByAlternativeMethodTask markJourneyAsServedByAlternativeMethodTask;
 
     @Test
-    public void whenExecute_thenServedByProcessServerIsSetToYesAndAlternativeMethodIsSetToNo() {
-        Map<String, Object> returnedPayload = markJourneyAsServedByProcessServerTask.execute(context(), new HashMap<>());
+    public void whenExecute_thenAlternativeMethodIsSetToYesAndServedByProcessServerIsSetToNo() {
+        Map<String, Object> returnedPayload = markJourneyAsServedByAlternativeMethodTask.execute(context(), new HashMap<>());
 
-        assertThat(returnedPayload, hasEntry(CcdFields.SERVED_BY_PROCESS_SERVER, YES_VALUE));
-        assertThat(returnedPayload, hasEntry(CcdFields.SERVED_BY_ALTERNATIVE_METHOD, NO_VALUE));
+        assertThat(returnedPayload, hasEntry(CcdFields.SERVED_BY_ALTERNATIVE_METHOD, YES_VALUE));
+        assertThat(returnedPayload, hasEntry(CcdFields.SERVED_BY_PROCESS_SERVER, NO_VALUE));
     }
 }
