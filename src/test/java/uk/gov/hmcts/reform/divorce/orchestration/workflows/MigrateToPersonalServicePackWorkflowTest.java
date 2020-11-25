@@ -80,10 +80,6 @@ public class MigrateToPersonalServicePackWorkflowTest {
             .caseData(caseData)
             .build();
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
-            DocumentType.SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID))
-            .thenReturn(SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID);
-
         context = new DefaultTaskContext();
 
         context.setTransientObjects(new HashMap<String, Object>() {
@@ -91,9 +87,6 @@ public class MigrateToPersonalServicePackWorkflowTest {
                 put(AUTH_TOKEN_JSON_KEY, TEST_TOKEN);
                 put(CASE_ID_JSON_KEY, TEST_CASE_ID);
                 put(CASE_DETAILS_JSON_KEY, caseDetails);
-                put(DOCUMENT_TYPE, SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE);
-                put(DOCUMENT_TEMPLATE_ID, SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID);
-                put(DOCUMENT_FILENAME, SOLICITOR_PERSONAL_SERVICE_LETTER_FILENAME);
             }
         });
 
@@ -104,8 +97,6 @@ public class MigrateToPersonalServicePackWorkflowTest {
         //when
         when(courtServiceValidationTask.execute(context, caseData)).thenReturn(caseData);
         when(migrateCaseToPersonalServiceTask.execute(context, caseData)).thenReturn(caseData);
-        when(documentGenerationTask.execute(context, caseData)).thenReturn(caseData);
-        when(addNewDocumentsToCaseDataTask.execute(context, caseData)).thenReturn(caseData);
     }
 
     @Test
@@ -140,13 +131,9 @@ public class MigrateToPersonalServicePackWorkflowTest {
         assertThat(response, is(caseData));
         InOrder inOrder = inOrder(
             courtServiceValidationTask,
-            migrateCaseToPersonalServiceTask,
-            documentGenerationTask,
-            addNewDocumentsToCaseDataTask
+            migrateCaseToPersonalServiceTask
         );
         inOrder.verify(courtServiceValidationTask).execute(context, caseData);
         inOrder.verify(migrateCaseToPersonalServiceTask).execute(context, caseData);
-        inOrder.verify(documentGenerationTask).execute(context, caseData);
-        inOrder.verify(addNewDocumentsToCaseDataTask).execute(context, caseData);
     }
 }
