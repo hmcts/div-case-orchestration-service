@@ -6,17 +6,12 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CourtServiceValidationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MigrateCaseToPersonalServiceTask;
 
 import java.util.Collections;
@@ -35,11 +30,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COURT_SERVICE_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TEMPLATE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_PERSONAL_SERVICE_LETTER_FILENAME;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MigrateToPersonalServicePackWorkflowTest {
@@ -50,19 +40,8 @@ public class MigrateToPersonalServicePackWorkflowTest {
     @Mock
     MigrateCaseToPersonalServiceTask migrateCaseToPersonalServiceTask;
 
-    @Mock
-    DocumentGenerationTask documentGenerationTask;
-
-    @Mock
-    AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
-
-    @Mock
-    private DocumentTemplateService documentTemplateService;
-
     @InjectMocks
     MigrateToPersonalServicePackWorkflow migrateToPersonalServicePackWorkflow;
-
-    private static final String SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID = "FL-DIV-GNO-ENG-00073.docx";
 
     DefaultTaskContext context;
 
@@ -110,14 +89,10 @@ public class MigrateToPersonalServicePackWorkflowTest {
         assertThat(response, is(caseData));
         InOrder inOrder = inOrder(
             courtServiceValidationTask,
-            migrateCaseToPersonalServiceTask,
-            documentGenerationTask,
-            addNewDocumentsToCaseDataTask
+            migrateCaseToPersonalServiceTask
         );
         inOrder.verify(courtServiceValidationTask).execute(context, caseData);
         inOrder.verify(migrateCaseToPersonalServiceTask).execute(context, caseData);
-        inOrder.verify(documentGenerationTask).execute(context, caseData);
-        inOrder.verify(addNewDocumentsToCaseDataTask).execute(context, caseData);
     }
 
     @Test
