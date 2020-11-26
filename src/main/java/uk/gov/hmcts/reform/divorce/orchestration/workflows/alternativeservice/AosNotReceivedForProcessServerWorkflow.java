@@ -13,10 +13,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.alternativeservice.Awaiti
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVED_BY_PROCESS_SERVER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerRepresented;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.alternativeservice.AlternativeServiceHelper.isServedByProcessServer;
 
 @Component
 @AllArgsConstructor
@@ -47,9 +46,5 @@ public class AosNotReceivedForProcessServerWorkflow extends DefaultWorkflow<Map<
         return new Task[] {
             isPetitionerRepresented(caseData) ? awaitingDnPetitionerSolicitorEmailTask : awaitingDnPetitionerEmailTask
         };
-    }
-
-    private boolean isServedByProcessServer(Map<String, Object> caseData) {
-        return YES_VALUE.equalsIgnoreCase((String) caseData.get(SERVED_BY_PROCESS_SERVER));
     }
 }

@@ -221,6 +221,7 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         } else if (isCoRespNamedAndNotReplied(caseDetails)) {
             template = EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED;
         }
+
         return template;
     }
 
