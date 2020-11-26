@@ -26,7 +26,7 @@ public class ConfirmProcessServerServiceWorkflow extends DefaultWorkflow<Map<Str
     public Map<String, Object> run(CaseDetails caseDetails) throws WorkflowException {
         String caseId = caseDetails.getCaseId();
 
-        log.info("CaseID: {} Confirm alternative service workflow is going to be executed.", caseId);
+        log.info("CaseID: {} Confirm alternative service (process server) workflow is going to be executed.", caseId);
 
         return this.execute(
             new Task[] {

@@ -71,4 +71,5 @@ public class CcdFields {
     public static final String GENERAL_REFERRAL_WITHOUT_NOTICE_FEE_SUMMARY = "generalReferralWithoutNoticeFeeSummary";
 
     public static final String SERVED_BY_PROCESS_SERVER = "ServedByProcessServer";
+    public static final String SERVED_BY_ALTERNATIVE_METHOD = "ServedByAlternativeMethod";
 }

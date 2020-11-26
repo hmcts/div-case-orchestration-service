@@ -11,12 +11,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Service
-public class MarkJourneyAsServedByProcessServerTask implements Task<Map<String, Object>> {
+public class MarkJourneyAsServedByAlternativeMethodTask implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload)  {
-        payload.put(CcdFields.SERVED_BY_PROCESS_SERVER, YES_VALUE);
-        payload.put(CcdFields.SERVED_BY_ALTERNATIVE_METHOD, NO_VALUE);
+        payload.put(CcdFields.SERVED_BY_ALTERNATIVE_METHOD, YES_VALUE);
+        payload.put(CcdFields.SERVED_BY_PROCESS_SERVER, NO_VALUE);
         return payload;
     }
 }
