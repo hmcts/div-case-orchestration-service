@@ -17,7 +17,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 @RequiredArgsConstructor
-public class IssuePersonalServicePackWorkflow extends DefaultWorkflow<Map<String, Object>> {
+public class ValidateForPersonalServicePackWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final PersonalServiceValidationTask personalServiceValidationTask;
 

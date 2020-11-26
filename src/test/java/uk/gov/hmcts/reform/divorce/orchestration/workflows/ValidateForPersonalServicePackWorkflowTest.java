@@ -27,13 +27,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class IssuePersonalServicePackWorkflowTest {
+public class ValidateForPersonalServicePackWorkflowTest {
 
     @Mock
     PersonalServiceValidationTask personalServiceValidationTask;
 
     @InjectMocks
-    IssuePersonalServicePackWorkflow issuePersonalServicePackWorkflow;
+    ValidateForPersonalServicePackWorkflow validateForPersonalServicePackWorkflow;
 
     @Test
     public void testRunExecutesExpectedTasksInOrder() throws WorkflowException, TaskException {
@@ -59,7 +59,7 @@ public class IssuePersonalServicePackWorkflowTest {
         //when
         when(personalServiceValidationTask.execute(context, caseData)).thenReturn(caseData);
 
-        Map<String, Object> response = issuePersonalServicePackWorkflow.run(request, TEST_TOKEN);
+        Map<String, Object> response = validateForPersonalServicePackWorkflow.run(request, TEST_TOKEN);
 
         //then
         assertThat(response, is(caseData));

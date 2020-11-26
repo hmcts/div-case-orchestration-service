@@ -8,8 +8,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssuePersonalServicePackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrievePbaNumbersWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateForPersonalServicePackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.SendSolicitorPersonalServiceEmailWorkflow;
 
 import java.util.Collections;
@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN
 public class SolicitorServiceImplTest {
 
     @Mock
-    IssuePersonalServicePackWorkflow issuePersonalServicePack;
+    ValidateForPersonalServicePackWorkflow issuePersonalServicePack;
 
     @Mock
     SendSolicitorPersonalServiceEmailWorkflow sendSolicitorPersonalServiceEmailWorkflow;
@@ -41,7 +41,7 @@ public class SolicitorServiceImplTest {
                 .caseDetails(CaseDetails.builder().build())
                 .build();
 
-        solicitorService.issuePersonalServicePack(request, TEST_TOKEN);
+        solicitorService.validateForPersonalServicePack(request, TEST_TOKEN);
 
         verify(issuePersonalServicePack).run(request, TEST_TOKEN);
     }
