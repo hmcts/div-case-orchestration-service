@@ -45,8 +45,8 @@ public abstract class FurtherPaymentTask implements Task<Map<String, Object>> {
         return caseData;
     }
 
-    private List getFurtherPaymentReferenceCollection(Map<String, Object> caseData) {
-        return (List) caseData.get(getFurtherPaymentReferenceNumbersField());
+    private List<CollectionMember<ReferenceNumber>> getFurtherPaymentReferenceCollection(Map<String, Object> caseData) {
+        return (List<CollectionMember<ReferenceNumber>>) caseData.get(getFurtherPaymentReferenceNumbersField());
     }
 
     private String getPaymentReferenceNumber(Map<String, Object> caseData) {
