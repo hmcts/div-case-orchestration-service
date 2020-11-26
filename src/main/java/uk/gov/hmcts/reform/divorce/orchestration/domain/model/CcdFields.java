@@ -62,6 +62,10 @@ public class CcdFields {
     public static final String PETITIONER_EMAIL = OrchestrationConstants.D_8_PETITIONER_EMAIL;
 
     public static final String PBA_NUMBERS = "PbaNumbers";
+    public static final String FURTHER_HWF_REFERENCE = "HelpWithFeesReferenceNumber";
+    public static final String FURTHER_PBA_REFERENCE = "FeeAccountReferenceNumber";
+    public static final String FURTHER_HWF_REFERENCE_NUMBERS = "FurtherHWFReferenceNumbers";
+    public static final String FURTHER_PBA_REFERENCE_NUMBERS = "FurtherPBAReferenceNumbers";
 
     public static final String GENERAL_APPLICATION_WITHOUT_NOTICE_FEE_SUMMARY = "generalApplicationWithoutNoticeFeeSummary";
     public static final String GENERAL_REFERRAL_WITHOUT_NOTICE_FEE_SUMMARY = "generalReferralWithoutNoticeFeeSummary";
