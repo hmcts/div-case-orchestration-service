@@ -1244,6 +1244,19 @@ public class CallbackController {
                 .build());
     }
 
+    @PostMapping(path = "/confirm-service-payment")
+    @ApiOperation(value = "Returns updated case data with payment reference collection")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Service payment confirmation callback")})
+    public ResponseEntity<CcdCallbackResponse> confirmServicePaymentEvent(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(serviceJourneyService.confirmServicePaymentEvent(ccdCallbackRequest.getCaseDetails()))
+                .build());
+    }
+
     @PostMapping(path = "/set-up-order-summary/without-notice-fee")
     @ApiOperation(value = "Return service payment fee. Starting from state AwaitingGeneralReferralPayment")
     @ApiResponses(value = {
@@ -1254,6 +1267,19 @@ public class CallbackController {
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
                 .data(generalReferralService.setupGeneralReferralPaymentEvent(ccdCallbackRequest.getCaseDetails()))
+                .build());
+    }
+
+    @PostMapping(path = "/general-referral-payment")
+    @ApiOperation(value = "Returns updated case data with payment reference collection")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "General referral payment confirmation callback")})
+    public ResponseEntity<CcdCallbackResponse> generalReferralPaymentEvent(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(generalReferralService.generalReferralPaymentEvent(ccdCallbackRequest.getCaseDetails()))
                 .build());
     }
 

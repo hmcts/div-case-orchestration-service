@@ -37,4 +37,5 @@ public class GeneralReferralHelper {
     public static boolean isStatePartOfGeneralReferralWorkflow(String state) {
         return GENERAL_REFERRAL_WORKFLOW_STATES.contains(state);
     }
+
 }
