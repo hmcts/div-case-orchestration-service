@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRes
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ConfirmServicePaymentWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.FurtherPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceDecisionMadeWorkflow;
@@ -23,6 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.A
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationBailiff;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationGranted;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.FurtherPaymentsHelper.getServiceApplicationPaymentType;
 
 @Component
 @Slf4j
@@ -34,7 +35,7 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
     private final ServiceDecisionMadeWorkflow serviceDecisionMadeWorkflow;
     private final ServiceDecisionMakingWorkflow serviceDecisionMakingWorkflow;
     private final SetupConfirmServicePaymentWorkflow setupConfirmServicePaymentWorkflow;
-    private final ConfirmServicePaymentWorkflow confirmServicePaymentWorkflow;
+    private final FurtherPaymentWorkflow furtherPaymentWorkflow;
 
     @Override
     public CcdCallbackResponse makeServiceDecision(CaseDetails caseDetails, String authorisation) throws ServiceJourneyServiceException {
@@ -105,7 +106,7 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
     @Override
     public Map<String, Object> confirmServicePaymentEvent(CaseDetails caseDetails) throws ServiceJourneyServiceException {
         try {
-            return confirmServicePaymentWorkflow.run(caseDetails);
+            return furtherPaymentWorkflow.run(caseDetails, getServiceApplicationPaymentType());
         } catch (WorkflowException exception) {
             throw new ServiceJourneyServiceException(exception, caseDetails.getCaseId());
         }

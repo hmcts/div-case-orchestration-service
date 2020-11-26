@@ -5,7 +5,6 @@ import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.ReferenceNumber;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +22,7 @@ public abstract class FurtherPaymentTask implements Task<Map<String, Object>> {
     protected abstract String getPaymentReferenceNumberField();
 
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         String referenceNumber = getPaymentReferenceNumber(caseData);
 
         if (referenceNumber == null) {
@@ -40,7 +39,7 @@ public abstract class FurtherPaymentTask implements Task<Map<String, Object>> {
             furtherReferenceNumbers.add(buildReferenceData(referenceNumber));
         }
 
-        log.info("CaseID: {}. Removing payment reference number '{}' from case data", getCaseId(context), referenceNumber);
+        log.info("CaseID: {}. Resetting payment reference number value '{}' to empty in case data", getCaseId(context), referenceNumber);
         caseData.put(getPaymentReferenceNumberField(), null);
 
         return caseData;

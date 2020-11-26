@@ -11,8 +11,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralReferralService;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.FurtherPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.GeneralConsiderationWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.GeneralReferralPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.GeneralReferralWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.SetupGeneralReferralPaymentWorkflow;
 
@@ -21,6 +21,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_GENERAL_CONSIDERATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_GENERAL_REFERRAL_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.FurtherPaymentsHelper.getGeneralReferralPaymentType;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.GeneralReferralHelper.isGeneralReferralPaymentRequired;
 
 @Component
@@ -31,7 +32,7 @@ public class GeneralReferralServiceImpl implements GeneralReferralService {
     private final GeneralReferralWorkflow generalReferralWorkflow;
     private final GeneralConsiderationWorkflow generalConsiderationWorkflow;
     private final SetupGeneralReferralPaymentWorkflow setupGeneralReferralPaymentWorkflow;
-    private final GeneralReferralPaymentWorkflow generalReferralPaymentWorkflow;
+    private final FurtherPaymentWorkflow furtherPaymentWorkflow;
 
     @Override
     public CcdCallbackResponse receiveReferral(CcdCallbackRequest ccdCallbackRequest)
@@ -100,7 +101,7 @@ public class GeneralReferralServiceImpl implements GeneralReferralService {
     @Override
     public Map<String, Object> generalReferralPaymentEvent(CaseDetails caseDetails) throws CaseOrchestrationServiceException {
         try {
-            return generalReferralPaymentWorkflow.run(caseDetails);
+            return furtherPaymentWorkflow.run(caseDetails, getGeneralReferralPaymentType());
         } catch (WorkflowException exception) {
             throw new CaseOrchestrationServiceException(exception, caseDetails.getCaseId());
         }
