@@ -19,4 +19,7 @@ public interface GeneralReferralService {
 
     CcdCallbackResponse returnToStateBeforeGeneralReferral(CaseDetails caseDetails)
         throws CaseOrchestrationServiceException;
+
+    Map<String, Object> generalReferralPaymentEvent(CaseDetails caseDetails)
+        throws CaseOrchestrationServiceException;
 }

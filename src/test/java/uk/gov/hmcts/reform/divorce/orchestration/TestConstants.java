@@ -35,6 +35,8 @@ public class TestConstants {
     public static final String TEST_FEE_CODE = "FEE000";
     public static final Integer TEST_FEE_VERSION = 3;
     public static final String TEST_FEE_DESCRIPTION = "Test Fee";
+    public static final String TEST_HWF_REF = "HWF-123-456";
+    public static final String TEST_PBA_REF = "PBA089786";
     public static final String TEST_SOLICITOR_ACCOUNT_NUMBER = "test.solicitor.account";
     public static final String TEST_SOLICITOR_FIRM_NAME = "test.solicitor.firm";
     public static final String TEST_SOLICITOR_COMPANY = "Awesome Solicitors LLP";
