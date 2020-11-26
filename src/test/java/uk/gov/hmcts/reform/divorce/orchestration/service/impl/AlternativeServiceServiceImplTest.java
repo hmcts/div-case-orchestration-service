@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.alternativeservice.AlternativeServiceConfirmedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.alternativeservice.AosNotReceivedForProcessServerWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.alternativeservice.ConfirmAlternativeServiceWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.alternativeservice.ConfirmProcessServerServiceWorkflow;
@@ -37,11 +38,14 @@ public class AlternativeServiceServiceImplTest {
     @Mock
     private AosNotReceivedForProcessServerWorkflow aosNotReceivedForProcessServerWorkflow;
 
+    @Mock
+    private AlternativeServiceConfirmedWorkflow alternativeServiceConfirmedWorkflow;
+
     @InjectMocks
     private AlternativeServiceServiceImpl alternativeServiceService;
 
     @Test
-    public void whenConfirmAlternativeService_thenConfirmAlternativeServiceWorkflowIsCalled()
+    public void whenConfirmAlternativeServiceThenConfirmAlternativeServiceWorkflowIsCalled()
         throws CaseOrchestrationServiceException, WorkflowException {
         Map<String, Object> caseData = new HashMap<>();
         CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).caseId(TEST_CASE_ID).build();
@@ -63,7 +67,7 @@ public class AlternativeServiceServiceImplTest {
     }
 
     @Test
-    public void whenConfirmProcessServerService_thenConfirmAlternativeServiceWorkflowIsCalled()
+    public void whenConfirmProcessServerServiceThenConfirmAlternativeServiceWorkflowIsCalled()
         throws CaseOrchestrationServiceException, WorkflowException {
 
         when(confirmProcessServerServiceWorkflow.run(any())).thenReturn(TEST_PAYLOAD_TO_RETURN);
@@ -104,6 +108,28 @@ public class AlternativeServiceServiceImplTest {
         assertThrows(
             CaseOrchestrationServiceException.class,
             () -> alternativeServiceService.aosNotReceivedForProcessServer(CaseDetails.builder().build())
+        );
+    }
+
+    @Test
+    public void whenAlternativeServiceConfirmedThenAlternativeServiceConfirmedWorkflowIsCalled()
+        throws CaseOrchestrationServiceException, WorkflowException {
+        Map<String, Object> caseData = new HashMap<>();
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).caseId(TEST_CASE_ID).build();
+
+        alternativeServiceService.alternativeServiceConfirmed(caseDetails);
+
+        verify(alternativeServiceConfirmedWorkflow).run(caseDetails);
+    }
+
+    @Test
+    public void whenAlternativeServiceConfirmedThrowsWorkflowExceptionThenRethrowServiceException()
+        throws WorkflowException {
+        when(alternativeServiceConfirmedWorkflow.run(any())).thenThrow(WorkflowException.class);
+
+        assertThrows(
+            CaseOrchestrationServiceException.class,
+            () -> alternativeServiceService.alternativeServiceConfirmed(CaseDetails.builder().build())
         );
     }
 }

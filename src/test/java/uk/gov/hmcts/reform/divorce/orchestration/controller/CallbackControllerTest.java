@@ -1710,4 +1710,20 @@ public class CallbackControllerTest {
         assertThat(response.getStatusCode(), equalTo(OK));
         verify(alternativeServiceService).aosNotReceivedForProcessServer(caseDetails);
     }
+
+    @Test
+    public void shouldReturnOk_whenAlternativeServiceConfirmedIsCalled() throws CaseOrchestrationServiceException {
+        CaseDetails caseDetails = CaseDetails.builder().build();
+        when(alternativeServiceService.alternativeServiceConfirmed(caseDetails))
+            .thenReturn(CaseDetails.builder().build());
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.alternativeServiceConfirmed(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        verify(alternativeServiceService).alternativeServiceConfirmed(caseDetails);
+    }
 }
