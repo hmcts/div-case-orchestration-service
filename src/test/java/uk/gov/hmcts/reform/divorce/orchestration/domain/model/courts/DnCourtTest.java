@@ -4,12 +4,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static org.apache.commons.lang3.StringUtils.SPACE;
 import static org.junit.Assert.assertEquals;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CARE_OF_PREFIX;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMAIL_LABEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINE_SEPARATOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PHONE_LABEL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SPACE_SEPARATOR;
 
 @RunWith(SpringRunner.class)
 public class DnCourtTest {
@@ -27,10 +27,10 @@ public class DnCourtTest {
         dnCourt.setEmail(TEST_COURT_EMAIL);
         dnCourt.setPhone(TEST_COURT_PHONE);
 
-        String expectedFormat = CARE_OF_PREFIX + SPACE_SEPARATOR + TEST_COURT_NAME
+        String expectedFormat = CARE_OF_PREFIX + SPACE + TEST_COURT_NAME
                 + LINE_SEPARATOR + TEST_COURT_ADDRESS + LINE_SEPARATOR
-                + LINE_SEPARATOR + EMAIL_LABEL + SPACE_SEPARATOR + TEST_COURT_EMAIL
-                + LINE_SEPARATOR + PHONE_LABEL + SPACE_SEPARATOR + TEST_COURT_PHONE;
+                + LINE_SEPARATOR + EMAIL_LABEL + SPACE + TEST_COURT_EMAIL
+                + LINE_SEPARATOR + PHONE_LABEL + SPACE + TEST_COURT_PHONE;
         assertEquals(expectedFormat, dnCourt.getFormattedContactDetails());
     }
 }
