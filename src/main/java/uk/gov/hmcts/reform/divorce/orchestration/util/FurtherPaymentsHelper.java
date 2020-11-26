@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 
 import java.util.Map;
@@ -9,6 +11,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseFieldCo
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseFieldConstants.HELP_WITH_FEE_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FurtherPaymentsHelper {
 
     public static String getGeneralReferralPaymentType() {
