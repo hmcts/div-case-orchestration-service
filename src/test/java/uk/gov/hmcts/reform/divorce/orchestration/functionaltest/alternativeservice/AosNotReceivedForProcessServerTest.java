@@ -71,7 +71,7 @@ public class AosNotReceivedForProcessServerTest extends IdamTestSupport {
 
     @Test
     public void petitionerRepresentedThenSendEmailToPetitionerSolicitor() throws Exception {
-        callEndpointWithData(buildCaseDataForSolicitor());
+        callEndpointWithData(buildCaseDataForSolicitor(SERVED_BY_PROCESS_SERVER));
 
         verify(emailClient).sendEmail(
             eq(PET_SOL_AWAITING_DN_SERVED_BY_PROCESS),
@@ -83,7 +83,7 @@ public class AosNotReceivedForProcessServerTest extends IdamTestSupport {
 
     @Test
     public void petitionerNotRepresentedThenSendEmailToPetitioner() throws Exception {
-        callEndpointWithData(buildCaseDataForPetitioner());
+        callEndpointWithData(buildCaseDataForPetitioner(SERVED_BY_PROCESS_SERVER));
 
         verify(emailClient).sendEmail(
             eq(CITIZEN_AWAITING_DN_SERVED_BY_PROCESS),
@@ -119,8 +119,8 @@ public class AosNotReceivedForProcessServerTest extends IdamTestSupport {
             )));
     }
 
-    private Map<String, Object> buildCaseDataForSolicitor() {
-        Map<String, Object> caseData = buildCommonCaseData();
+    static Map<String, Object> buildCaseDataForSolicitor(String field) {
+        Map<String, Object> caseData = buildCommonCaseData(field);
 
         caseData.put(PETITIONER_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
         caseData.put(PETITIONER_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL);
@@ -128,8 +128,8 @@ public class AosNotReceivedForProcessServerTest extends IdamTestSupport {
         return caseData;
     }
 
-    private Map<String, Object> buildCaseDataForPetitioner() {
-        Map<String, Object> caseData = buildCommonCaseData();
+    static Map<String, Object> buildCaseDataForPetitioner(String field) {
+        Map<String, Object> caseData = buildCommonCaseData(field);
 
         caseData.put(D_8_CASE_REFERENCE, TEST_CASE_FAMILY_MAN_ID);
         caseData.put(D_8_INFERRED_PETITIONER_GENDER, MALE.getValue());
@@ -139,10 +139,10 @@ public class AosNotReceivedForProcessServerTest extends IdamTestSupport {
         return caseData;
     }
 
-    private Map<String, Object> buildCommonCaseData() {
+    static Map<String, Object> buildCommonCaseData(String field) {
         Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithRespondent();
 
-        caseData.put(SERVED_BY_PROCESS_SERVER, YES_VALUE);
+        caseData.put(field, YES_VALUE);
 
         caseData.put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         caseData.put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
@@ -152,7 +152,7 @@ public class AosNotReceivedForProcessServerTest extends IdamTestSupport {
         return caseData;
     }
 
-    private Map<String, String> getExpectedSolicitorTemplateVars() {
+    static Map<String, String> getExpectedSolicitorTemplateVars() {
         return ImmutableMap.of(
             NOTIFICATION_PET_NAME, TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME,
             NOTIFICATION_RESP_NAME, TEST_RESPONDENT_FIRST_NAME + " " + TEST_RESPONDENT_LAST_NAME,
@@ -161,7 +161,7 @@ public class AosNotReceivedForProcessServerTest extends IdamTestSupport {
         );
     }
 
-    private Map<String, String> getExpectedPetitionerTemplateVars() {
+    static Map<String, String> getExpectedPetitionerTemplateVars() {
         return ImmutableMap.of(
             NOTIFICATION_PET_NAME, TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME,
             NOTIFICATION_CASE_NUMBER_KEY, TEST_CASE_FAMILY_MAN_ID,
