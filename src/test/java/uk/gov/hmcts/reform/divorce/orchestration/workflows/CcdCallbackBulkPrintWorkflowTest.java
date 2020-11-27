@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AosPackDueDateSetterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStoreTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ServiceMethodValidationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoRespondentAosPackPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.RespondentAosPackPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
@@ -40,9 +39,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @RunWith(MockitoJUnitRunner.class)
 public class CcdCallbackBulkPrintWorkflowTest {
-
-    @Mock
-    private ServiceMethodValidationTask serviceMethodValidationTask;
 
     @Mock
     private FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask;
@@ -94,7 +90,6 @@ public class CcdCallbackBulkPrintWorkflowTest {
 
     @Test
     public void whenWorkflowRunsForAdulteryCase_WithNamedCoRespondent_allTasksRun_payloadReturned() throws WorkflowException, TaskException {
-        when(serviceMethodValidationTask.execute(context, payload)).thenReturn(payload);
         when(fetchPrintDocsFromDmStoreTask.execute(context, payload)).thenReturn(payload);
         when(aosPackDueDateSetterTask.execute(context, payload)).thenReturn(payload);
         when(respondentAosPackPrinterTask.execute(context, payload)).thenReturn(payload);
@@ -105,14 +100,12 @@ public class CcdCallbackBulkPrintWorkflowTest {
         assertThat(response, is(payload));
 
         final InOrder inOrder = inOrder(
-            serviceMethodValidationTask,
             fetchPrintDocsFromDmStoreTask,
             respondentAosPackPrinterTask,
             coRespondentAosPackPrinterTask,
             aosPackDueDateSetterTask
         );
 
-        inOrder.verify(serviceMethodValidationTask).execute(context, payload);
         inOrder.verify(fetchPrintDocsFromDmStoreTask).execute(context, payload);
         inOrder.verify(respondentAosPackPrinterTask).execute(context, payload);
         inOrder.verify(coRespondentAosPackPrinterTask).execute(context, payload);
@@ -121,7 +114,6 @@ public class CcdCallbackBulkPrintWorkflowTest {
 
     @Test
     public void whenWorkflowRunsForNonAdulteryCase_allTasksRunExceptForCoRespondent_payloadReturned() throws WorkflowException, TaskException {
-        when(serviceMethodValidationTask.execute(context, payload)).thenReturn(payload);
         when(fetchPrintDocsFromDmStoreTask.execute(context, payload)).thenReturn(payload);
         when(aosPackDueDateSetterTask.execute(context, payload)).thenReturn(payload);
         when(respondentAosPackPrinterTask.execute(context, payload)).thenReturn(payload);
@@ -131,12 +123,10 @@ public class CcdCallbackBulkPrintWorkflowTest {
         assertThat(response, is(payload));
 
         final InOrder inOrder = inOrder(
-            serviceMethodValidationTask,
             fetchPrintDocsFromDmStoreTask,
             respondentAosPackPrinterTask,
             aosPackDueDateSetterTask
         );
-        inOrder.verify(serviceMethodValidationTask).execute(context, payload);
         inOrder.verify(fetchPrintDocsFromDmStoreTask).execute(context, payload);
         inOrder.verify(respondentAosPackPrinterTask).execute(context, payload);
         inOrder.verify(aosPackDueDateSetterTask).execute(context, payload);

@@ -8,6 +8,8 @@ import java.util.Map;
 public interface SolicitorService {
     Map<String, Object> validateForPersonalServicePack(CcdCallbackRequest callbackRequest, String authToken) throws WorkflowException;
 
+    Map<String, Object> solicitorConfirmPersonalService(CcdCallbackRequest callbackRequest) throws WorkflowException;
+
     Map<String, Object> sendSolicitorPersonalServiceEmail(CcdCallbackRequest callbackRequest) throws WorkflowException;
 
     Map<String, Object> retrievePbaNumbers(CcdCallbackRequest callbackRequest, String authToken) throws WorkflowException;
