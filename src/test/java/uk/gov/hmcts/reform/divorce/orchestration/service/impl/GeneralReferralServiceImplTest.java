@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.FurtherPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.GeneralConsiderationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.GeneralReferralWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.SetupGeneralReferralPaymentWorkflow;
@@ -25,6 +26,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -47,6 +49,9 @@ public class GeneralReferralServiceImplTest {
 
     @Mock
     private SetupGeneralReferralPaymentWorkflow setupGeneralReferralPaymentWorkflow;
+
+    @Mock
+    private FurtherPaymentWorkflow furtherPaymentWorkflow;
 
     @InjectMocks
     private GeneralReferralServiceImpl generalReferralService;
@@ -195,5 +200,19 @@ public class GeneralReferralServiceImplTest {
         );
 
         assertCaseOrchestrationServiceExceptionIsSetProperly(exception);
+    }
+
+    @Test
+    public void givenCaseData_whenGeneralReferralPaymentEvent_thenReturnPayload() throws Exception {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .build();
+
+        when(furtherPaymentWorkflow.run(eq(caseDetails), anyString())).thenReturn(new HashMap<>());
+
+        generalReferralService.generalReferralPaymentEvent(caseDetails);
+
+        verify(furtherPaymentWorkflow).run(eq(caseDetails), anyString());
     }
 }
