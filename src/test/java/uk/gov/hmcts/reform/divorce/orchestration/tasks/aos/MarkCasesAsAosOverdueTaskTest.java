@@ -18,19 +18,18 @@ import uk.gov.hmcts.reform.divorce.orchestration.event.domain.AosOverdueEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.domain.AosOverdueForProcessServerCaseEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseOrchestrationValues;
+import uk.gov.hmcts.reform.divorce.orchestration.util.elasticsearch.CMSElasticSearchIterator;
+import uk.gov.hmcts.reform.divorce.orchestration.util.elasticsearch.CMSElasticSearchSupport;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
+import static java.util.Collections.emptyList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -49,7 +48,10 @@ public class MarkCasesAsAosOverdueTaskTest {
     private static final String TWO_STATES_ELASTIC_SEARCH_OR_STATEMENT = AOS_AWAITING + " " + AOS_STARTED;
 
     @Mock
-    private CMSElasticSearchSupport cmsElasticSearchSupport;
+    private CMSElasticSearchSupport mockCmsElasticSearchSupport;
+
+    @Mock
+    private CMSElasticSearchIterator mockElasticSearchIterator;
 
     @Mock
     private ApplicationEventPublisher applicationEventPublisher;
@@ -78,16 +80,23 @@ public class MarkCasesAsAosOverdueTaskTest {
         query = QueryBuilders.boolQuery()
             .filter(QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, TWO_STATES_ELASTIC_SEARCH_OR_STATEMENT).operator(Operator.OR))
             .filter(QueryBuilders.rangeQuery("data.dueDate").lt("now/d-" + TEST_GRACE_PERIOD + "d"));
+
+        when(mockCmsElasticSearchSupport.createNewCMSElasticSearchIterator(AUTH_TOKEN, query)).thenReturn(mockElasticSearchIterator);
     }
 
     @Test
     public void shouldPublishMessagesForEligibleCases() throws TaskException {
-        when(cmsElasticSearchSupport.searchCMSCasesWithSingleQuery(eq(AUTH_TOKEN), any())).thenReturn(Stream.of(
-            CaseDetails.builder().state(AOS_STARTED).caseId("1").build(),
-            CaseDetails.builder().state(AOS_AWAITING).caseId("2").build(),
-            CaseDetails.builder().state(AOS_AWAITING).caseId("3").caseData(Map.of(SERVED_BY_PROCESS_SERVER, YES_VALUE)).build(),
-            CaseDetails.builder().state(AOS_STARTED).caseId("4").caseData(Map.of(SERVED_BY_PROCESS_SERVER, YES_VALUE)).build()
-        ));
+        when(mockElasticSearchIterator.fetchNextBatch()).thenReturn(
+            List.of(
+                CaseDetails.builder().state(AOS_STARTED).caseId("1").build(),
+                CaseDetails.builder().state(AOS_AWAITING).caseId("2").build()
+            ),
+            List.of(
+                CaseDetails.builder().state(AOS_AWAITING).caseId("3").caseData(Map.of(SERVED_BY_PROCESS_SERVER, YES_VALUE)).build(),
+                CaseDetails.builder().state(AOS_STARTED).caseId("4").caseData(Map.of(SERVED_BY_PROCESS_SERVER, YES_VALUE)).build()
+            ),
+            emptyList()
+        );
 
         classUnderTest.execute(context, null);
 
@@ -98,7 +107,7 @@ public class MarkCasesAsAosOverdueTaskTest {
         assertPublishedEvent(publishedEvents.get(0), "2", AosOverdueEvent.class);
         assertPublishedEvent(publishedEvents.get(1), "3", AosOverdueForProcessServerCaseEvent.class);
         assertPublishedEvent(publishedEvents.get(2), "4", AosOverdueForProcessServerCaseEvent.class);
-        verify(cmsElasticSearchSupport).searchCMSCasesWithSingleQuery(AUTH_TOKEN, query);
+        verify(mockElasticSearchIterator, times(3)).fetchNextBatch();
     }
 
     private void assertPublishedEvent(ApplicationEvent requestMessage, String expectedCaseId, Class<? extends ApplicationEvent> expectedEventType) {

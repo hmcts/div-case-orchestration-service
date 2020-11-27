@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequ
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport;
+import uk.gov.hmcts.reform.divorce.orchestration.util.elasticsearch.CMSElasticSearchSupport;
 
 import java.io.File;
 import java.io.IOException;
