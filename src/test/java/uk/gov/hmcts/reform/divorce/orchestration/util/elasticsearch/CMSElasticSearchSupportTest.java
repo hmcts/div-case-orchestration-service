@@ -15,7 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Optional;
 
 import static java.util.Arrays.asList;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
@@ -79,7 +79,7 @@ public class CMSElasticSearchSupportTest {
 
         List<String> foundCaseDetails = new ArrayList<>();
         CMSElasticSearchSupport.searchTransformAndProcessCMSElasticSearchCases(cmsElasticSearchIterator,
-            caseDetails -> Stream.of(caseDetails.getCaseId()),
+            caseDetails -> Optional.ofNullable(caseDetails.getCaseId()),
             foundCaseDetails::add
         );
 

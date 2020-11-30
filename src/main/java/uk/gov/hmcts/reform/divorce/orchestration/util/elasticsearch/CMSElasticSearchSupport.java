@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -21,7 +22,7 @@ import java.util.stream.Stream;
 public class CMSElasticSearchSupport {
 
     public static final String ELASTIC_SEARCH_DAYS_REPRESENTATION = "d";
-    private static final Function<CaseDetails, Stream<CaseDetails>> NO_OP_CASE_DETAILS_TRANSFORMATION_FUNCTION = Stream::of;
+    private static final Function<CaseDetails, Optional<CaseDetails>> NO_OP_CASE_DETAILS_TRANSFORMATION_FUNCTION = Optional::ofNullable;
 
     private final CaseMaintenanceClient caseMaintenanceClient;
 
@@ -39,7 +40,7 @@ public class CMSElasticSearchSupport {
     }
 
     public static <T> void searchTransformAndProcessCMSElasticSearchCases(CMSElasticSearchIterator cmsElasticSearchIterator,
-                                                                          Function<CaseDetails, Stream<T>> caseDetailsTransformationFunction,
+                                                                          Function<CaseDetails, Optional<T>> caseDetailsTransformationFunction,
                                                                           Consumer<? super T> postTransformationOperation) {
 
         List<CaseDetails> caseDetails;
@@ -47,7 +48,9 @@ public class CMSElasticSearchSupport {
             caseDetails = cmsElasticSearchIterator.fetchNextBatch();
 
             caseDetails.stream()
-                .flatMap(caseDetailsTransformationFunction)
+                .map(caseDetailsTransformationFunction)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .forEach(postTransformationOperation);
         }
         while (!caseDetails.isEmpty());
