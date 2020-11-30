@@ -19,13 +19,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.event.domain.AosOverdueForProce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseOrchestrationValues;
-import uk.gov.hmcts.reform.divorce.orchestration.util.elasticsearch.CMSElasticSearchIterator;
 import uk.gov.hmcts.reform.divorce.orchestration.util.elasticsearch.CMSElasticSearchSupport;
+import uk.gov.hmcts.reform.divorce.orchestration.util.elasticsearch.CMSElasticSearchUtils;
 
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Collections.emptyList;
+import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasProperty;
@@ -49,9 +49,6 @@ public class MarkCasesAsAosOverdueTaskTest {
 
     @Mock
     private CMSElasticSearchSupport mockCmsElasticSearchSupport;
-
-    @Mock
-    private CMSElasticSearchIterator mockElasticSearchIterator;
 
     @Mock
     private ApplicationEventPublisher applicationEventPublisher;
@@ -80,22 +77,19 @@ public class MarkCasesAsAosOverdueTaskTest {
         query = QueryBuilders.boolQuery()
             .filter(QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, TWO_STATES_ELASTIC_SEARCH_OR_STATEMENT).operator(Operator.OR))
             .filter(QueryBuilders.rangeQuery("data.dueDate").lt("now/d-" + TEST_GRACE_PERIOD + "d"));
-
-        when(mockCmsElasticSearchSupport.createNewCMSElasticSearchIterator(AUTH_TOKEN, query)).thenReturn(mockElasticSearchIterator);
     }
 
     @Test
     public void shouldPublishMessagesForEligibleCases() throws TaskException {
-        when(mockElasticSearchIterator.fetchNextBatch()).thenReturn(
-            List.of(
+        CMSElasticSearchUtils.mockCMSElasticSearchSupportToProduceIteratorWithCaseDetailsBatches(mockCmsElasticSearchSupport, AUTH_TOKEN, query,
+            asList(
                 CaseDetails.builder().state(AOS_STARTED).caseId("1").build(),
                 CaseDetails.builder().state(AOS_AWAITING).caseId("2").build()
             ),
-            List.of(
+            asList(
                 CaseDetails.builder().state(AOS_AWAITING).caseId("3").caseData(Map.of(SERVED_BY_PROCESS_SERVER, YES_VALUE)).build(),
                 CaseDetails.builder().state(AOS_STARTED).caseId("4").caseData(Map.of(SERVED_BY_PROCESS_SERVER, YES_VALUE)).build()
-            ),
-            emptyList()
+            )
         );
 
         classUnderTest.execute(context, null);
@@ -107,7 +101,6 @@ public class MarkCasesAsAosOverdueTaskTest {
         assertPublishedEvent(publishedEvents.get(0), "2", AosOverdueEvent.class);
         assertPublishedEvent(publishedEvents.get(1), "3", AosOverdueForProcessServerCaseEvent.class);
         assertPublishedEvent(publishedEvents.get(2), "4", AosOverdueForProcessServerCaseEvent.class);
-        verify(mockElasticSearchIterator, times(3)).fetchNextBatch();
     }
 
     private void assertPublishedEvent(ApplicationEvent requestMessage, String expectedCaseId, Class<? extends ApplicationEvent> expectedEventType) {

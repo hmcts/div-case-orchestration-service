@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.elasticsearch.CMSElasticSe
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
 
 import static org.apache.commons.lang3.StringUtils.SPACE;
@@ -71,7 +70,7 @@ public class MarkCasesAsAosOverdueTask extends SelfPublishingAsyncTask<Void> {
         log.info("Found {} cases for which AOS is overdue.", cmsElasticSearchIterator.getAmountOfCasesRetrieved());
     }
 
-    private Function<CaseDetails, Stream<ApplicationEvent>> caseDetailsTransformationFunction = caseDetails -> {
+    private Function<CaseDetails, Optional<ApplicationEvent>> caseDetailsTransformationFunction = caseDetails -> {
         ApplicationEvent eventToRaise;
 
         boolean caseServedByProcessServer = Optional.ofNullable(caseDetails.getCaseData())
@@ -98,7 +97,7 @@ public class MarkCasesAsAosOverdueTask extends SelfPublishingAsyncTask<Void> {
             }
         }
 
-        return Stream.ofNullable(eventToRaise);
+        return Optional.ofNullable(eventToRaise);
     };
 
 }
