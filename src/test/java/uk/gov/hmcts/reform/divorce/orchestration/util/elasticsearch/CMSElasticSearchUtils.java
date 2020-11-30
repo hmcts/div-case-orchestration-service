@@ -32,7 +32,8 @@ public class CMSElasticSearchUtils {
         }
         iteratorStubbing.thenReturn(emptyList());
 
-        when(mockCmsElasticSearchSupport.createNewCMSElasticSearchIterator(expectedAuthToken, expectedQueryBuilder)).thenReturn(mockElasticSearchIterator);
+        when(mockCmsElasticSearchSupport.createNewCMSElasticSearchIterator(expectedAuthToken, expectedQueryBuilder))
+            .thenReturn(mockElasticSearchIterator);
     }
 
 }
