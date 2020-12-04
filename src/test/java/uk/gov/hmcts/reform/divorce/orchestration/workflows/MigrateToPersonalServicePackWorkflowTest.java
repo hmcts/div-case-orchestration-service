@@ -23,11 +23,13 @@ import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_OVERDUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COURT_SERVICE_VALUE;
 
@@ -65,12 +67,13 @@ public class MigrateToPersonalServicePackWorkflowTest {
             {
                 put(AUTH_TOKEN_JSON_KEY, TEST_TOKEN);
                 put(CASE_ID_JSON_KEY, TEST_CASE_ID);
-                put(CASE_DETAILS_JSON_KEY, caseDetails);
+                put(CASE_EVENT_ID_JSON_KEY, TEST_EVENT_ID);
             }
         });
 
         request = CcdCallbackRequest.builder()
             .caseDetails(caseDetails)
+            .eventId(TEST_EVENT_ID)
             .build();
 
         //when
