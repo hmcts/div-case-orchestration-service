@@ -147,4 +147,11 @@
         <packageUrl regex="true">^pkg:maven/junit/junit@.*$</packageUrl>
         <vulnerabilityName>CVE-2020-15250</vulnerabilityName>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: httpclient-4.5.10.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.httpcomponents/httpclient@.*$</packageUrl>
+        <cpe>cpe:/a:apache:httpclient</cpe>
+    </suppress>
 </suppressions>
