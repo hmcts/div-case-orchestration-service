@@ -147,8 +147,4 @@
         <packageUrl regex="true">^pkg:maven/junit/junit@.*$</packageUrl>
         <vulnerabilityName>CVE-2020-15250</vulnerabilityName>
     </suppress>
-    <suppress until="2021-06-30Z">
-        <notes>This vulnerability has been modified. A new analysis is due.</notes>
-        <cve>CVE-2007-5615</cve>
-    </suppress>
 </suppressions>
