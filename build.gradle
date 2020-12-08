@@ -62,7 +62,7 @@ def versions = [
         puppyCrawl                   : '8.29',
         reformHealth                 : '0.0.5',
         reformPropertiesVolume       : '0.0.4',
-        reformsJavaLogging           : '5.1.6',
+        reformsJavaLogging           : '5.1.7',
         sendLetterClient             : '2.2.0',
         serenity                     : '2.1.13',
         serenityCucumber             : '1.9.50',
@@ -74,7 +74,8 @@ def versions = [
         tomcat                       : '9.0.39',
         unirest                      : '1.4.9',
         embeddedPostgres             : '1.5.5',
-        pact_version                 : '4.1.7'
+        pact_version                 : '4.1.7',
+        httpComponents               : '4.5.13'
 
 ]
 
@@ -286,10 +287,14 @@ dependencies {
     implementation group: 'uk.gov.hmcts.reform', name: 'idam-client', version: versions.idamClient
     implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformsJavaLogging
     implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformsJavaLogging
-    implementation group: 'uk.gov.hmcts.reform', name: 'logging-httpcomponents', version: versions.reformsJavaLogging
+    implementation (group: 'uk.gov.hmcts.reform', name: 'logging-httpcomponents', version: versions.reformsJavaLogging){
+        exclude group: 'org.apache.httpcomponents', 'module': 'httpclient'
+    }
     implementation group: 'uk.gov.hmcts.reform', name: 'logging-spring', version: versions.reformsJavaLogging
     implementation group: 'uk.gov.hmcts.reform', name: 'health-spring-boot-starter', version: versions.reformHealth
     implementation group: 'uk.gov.hmcts.reform', name: 'properties-volume-spring-boot-starter', version: versions.reformPropertiesVolume
+    implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: versions.httpComponents
+    implementation group: 'org.apache.httpcomponents', name: 'fluent-hc', version: versions.httpComponents
     implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: versions.serviceTokenGenerator
     implementation group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: versions.sendLetterClient
     implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: versions.hmctsNotify
