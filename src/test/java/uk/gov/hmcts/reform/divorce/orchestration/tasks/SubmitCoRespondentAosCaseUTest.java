@@ -34,9 +34,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CO_RESP_SUBMISSION_AWAITING_ALTERNATIVE_SERVICE_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CO_RESP_SUBMISSION_AWAITING_DWP_RESPONSE_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CO_RESP_SUBMISSION_AWAITING_PROCESS_SERVER_SERVICE_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CO_RESP_SUBMISSION_AWAITING_ALTERNATIVE_SERVICE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CO_RESP_SUBMISSION_AWAITING_DWP_RESPONSE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CO_RESP_SUBMISSION_AWAITING_PROCESS_SERVER_SERVICE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_COMPLETED;
@@ -192,21 +192,21 @@ public class SubmitCoRespondentAosCaseUTest {
     public void givenCaseIsAwaitingAlternativeService_whenCoRespondentSubmits_thenSubmitCorrectEvent() throws TaskException {
         assertForGivenStateWhenCoRespondentSubmitsThenSubmitCorrectEvent(
             AWAITING_ALTERNATIVE_SERVICE,
-            CO_RESP_SUBMISSION_AWAITING_ALTERNATIVE_SERVICE_EVENT_ID);
+            CO_RESP_SUBMISSION_AWAITING_ALTERNATIVE_SERVICE);
     }
 
     @Test
     public void givenCaseIsAwaitingProcessServerService_whenCoRespondentSubmits_thenSubmitCorrectEvent() throws TaskException {
         assertForGivenStateWhenCoRespondentSubmitsThenSubmitCorrectEvent(
             AWAITING_PROCESS_SERVER_SERVICE,
-            CO_RESP_SUBMISSION_AWAITING_PROCESS_SERVER_SERVICE_EVENT_ID);
+            CO_RESP_SUBMISSION_AWAITING_PROCESS_SERVER_SERVICE);
     }
 
     @Test
     public void givenCaseIsAwaitingDWPResponse_whenCoRespondentSubmits_thenSubmitCorrectEvent() throws TaskException {
         assertForGivenStateWhenCoRespondentSubmitsThenSubmitCorrectEvent(
             AWAITING_DWP_RESPONSE,
-            CO_RESP_SUBMISSION_AWAITING_DWP_RESPONSE_EVENT_ID);
+            CO_RESP_SUBMISSION_AWAITING_DWP_RESPONSE);
     }
 
     @Test

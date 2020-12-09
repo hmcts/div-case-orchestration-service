@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.CaseNotFoundException;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.ValidationException;
@@ -13,11 +14,9 @@ import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
 import java.time.Clock;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CO_RESP_SUBMISSION_AWAITING_ALTERNATIVE_SERVICE_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CO_RESP_SUBMISSION_AWAITING_DWP_RESPONSE_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CO_RESP_SUBMISSION_AWAITING_PROCESS_SERVER_SERVICE_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_COMPLETED;
@@ -53,6 +52,23 @@ public class SubmitCoRespondentAosCase implements Task<Map<String, Object>> {
     private final Clock clock;
 
     private static final int DAYS_ALLOWED_FOR_DEFENCE = 21;
+    private static final Map<String, String> STATE_TO_SUBMISSION_EVENT_MAP;
+
+    static {
+        STATE_TO_SUBMISSION_EVENT_MAP = new HashMap<>();
+        STATE_TO_SUBMISSION_EVENT_MAP.put(AOS_AWAITING, CO_RESPONDENT_SUBMISSION_AOS_AWAITING_EVENT_ID);
+        STATE_TO_SUBMISSION_EVENT_MAP.put(AOS_AWAITING_SOLICITOR, CO_RESPONDENT_SUBMISSION_AOS_AWAITING_EVENT_ID);
+        STATE_TO_SUBMISSION_EVENT_MAP.put(AOS_STARTED, CO_RESPONDENT_SUBMISSION_AOS_STARTED_EVENT_ID);
+        STATE_TO_SUBMISSION_EVENT_MAP.put(AOS_SUBMITTED_AWAITING_ANSWER, CO_RESPONDENT_SUBMISSION_AOS_SUBMIT_AWAIT_EVENT_ID);
+        STATE_TO_SUBMISSION_EVENT_MAP.put(AOS_OVERDUE, CO_RESPONDENT_SUBMISSION_AOS_OVERDUE_EVENT_ID);
+        STATE_TO_SUBMISSION_EVENT_MAP.put(DEFENDED, CO_RESPONDENT_SUBMISSION_AOS_DEFENDED_EVENT_ID);
+        STATE_TO_SUBMISSION_EVENT_MAP.put(AOS_COMPLETED, CO_RESPONDENT_SUBMISSION_AOS_COMPLETED_EVENT_ID);
+        STATE_TO_SUBMISSION_EVENT_MAP.put(AWAITING_DECREE_NISI, CO_RESPONDENT_SUBMISSION_AWAITING_DN_EVENT_ID);
+        STATE_TO_SUBMISSION_EVENT_MAP.put(AWAITING_LEGAL_ADVISOR_REFERRAL, CO_RESPONDENT_SUBMISSION_AWAITING_LA_EVENT_ID);
+        STATE_TO_SUBMISSION_EVENT_MAP.put(AWAITING_ALTERNATIVE_SERVICE, CcdEvents.CO_RESP_SUBMISSION_AWAITING_ALTERNATIVE_SERVICE);
+        STATE_TO_SUBMISSION_EVENT_MAP.put(AWAITING_PROCESS_SERVER_SERVICE, CcdEvents.CO_RESP_SUBMISSION_AWAITING_PROCESS_SERVER_SERVICE);
+        STATE_TO_SUBMISSION_EVENT_MAP.put(AWAITING_DWP_RESPONSE, CcdEvents.CO_RESP_SUBMISSION_AWAITING_DWP_RESPONSE);
+    }
 
     @Autowired
     public SubmitCoRespondentAosCase(final CaseMaintenanceClient caseMaintenanceClient, final Clock clock) {
@@ -64,20 +80,14 @@ public class SubmitCoRespondentAosCase implements Task<Map<String, Object>> {
     public Map<String, Object> execute(final TaskContext context, final Map<String, Object> submissionData) throws TaskException {
         final String authToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY);
 
-        final CaseDetails currentCaseDetails = caseMaintenanceClient.retrieveAosCase(authToken);
+        final CaseDetails caseDetails = caseMaintenanceClient.retrieveAosCase(authToken);
 
-        if (currentCaseDetails == null) {
+        if (caseDetails == null) {
             throw new TaskException(new CaseNotFoundException("No case found for user."));
         }
 
-        final String currentCaseState = currentCaseDetails.getState();
-        final String eventId = getCoRespondentSubmissionEventForCaseState(currentCaseState);
-
-        if (eventId == null) {
-            throw new TaskException(new ValidationException(
-                String.format("Cannot create co-respondent submission event for case [%s] in state [%s].", currentCaseDetails.getCaseId(),
-                    currentCaseState)));
-        }
+        final String caseState = caseDetails.getState();
+        final String eventId = getCoRespondentSubmissionEventForCaseState(caseState, caseDetails.getCaseId());
 
         final boolean isCoRespondentDefending = submissionData.getOrDefault(CO_RESPONDENT_DEFENDS_DIVORCE, "NO").equals("YES");
         if (isCoRespondentDefending) {
@@ -89,7 +99,7 @@ public class SubmitCoRespondentAosCase implements Task<Map<String, Object>> {
 
         final Map<String, Object> updateCase = caseMaintenanceClient.updateCase(
             authToken,
-            currentCaseDetails.getCaseId(),
+            caseDetails.getCaseId(),
             eventId,
             submissionData
         );
@@ -101,49 +111,15 @@ public class SubmitCoRespondentAosCase implements Task<Map<String, Object>> {
         return updateCase;
     }
 
-    private String getCoRespondentSubmissionEventForCaseState(final String currentCaseState) {
-        if (AOS_AWAITING.equals(currentCaseState) || AOS_AWAITING_SOLICITOR.equals(currentCaseState)) {
-            // Co-respondent can respond even if the respondent has not yet responded.
-            return CO_RESPONDENT_SUBMISSION_AOS_AWAITING_EVENT_ID;
-        }
-        if (AOS_STARTED.equals(currentCaseState)) {
-            // Co-respondent can respond at the same time the respondent has responded.
-            return CO_RESPONDENT_SUBMISSION_AOS_STARTED_EVENT_ID;
-        }
-        if (AOS_SUBMITTED_AWAITING_ANSWER.equals(currentCaseState)) {
-            // The Respondent is intending to defend (having actually submitted their AOS), so it is perfectly acceptable
-            // for the co-respondent to respond also (even if Co-resp is NOT defending)
-            return CO_RESPONDENT_SUBMISSION_AOS_SUBMIT_AWAIT_EVENT_ID;
-        }
-        if (AOS_OVERDUE.equals(currentCaseState)) {
-            // Co-respondent can respond even if the respondent is late to respond.
-            return CO_RESPONDENT_SUBMISSION_AOS_OVERDUE_EVENT_ID;
-        }
-        if (DEFENDED.equals(currentCaseState)) {
-            // The Respondent did their online AOS and their paper defence; case will now go to court hearing.
-            // But the co-respondent can still reply as their reply may be relevant in the court hearing.
-            return CO_RESPONDENT_SUBMISSION_AOS_DEFENDED_EVENT_ID;
-        }
-        if (AOS_COMPLETED.equals(currentCaseState)) {
-            return CO_RESPONDENT_SUBMISSION_AOS_COMPLETED_EVENT_ID;
-        }
-        if (AWAITING_DECREE_NISI.equals(currentCaseState)) {
-            return CO_RESPONDENT_SUBMISSION_AWAITING_DN_EVENT_ID;
-        }
-        if (AWAITING_LEGAL_ADVISOR_REFERRAL.equals(currentCaseState)) {
-            return CO_RESPONDENT_SUBMISSION_AWAITING_LA_EVENT_ID;
-        }
-        if (AWAITING_ALTERNATIVE_SERVICE.equals(currentCaseState)) {
-            return CO_RESP_SUBMISSION_AWAITING_ALTERNATIVE_SERVICE_EVENT_ID;
-        }
-        if (AWAITING_PROCESS_SERVER_SERVICE.equals(currentCaseState)) {
-            return CO_RESP_SUBMISSION_AWAITING_PROCESS_SERVER_SERVICE_EVENT_ID;
-        }
-        if (AWAITING_DWP_RESPONSE.equals(currentCaseState)) {
-            return CO_RESP_SUBMISSION_AWAITING_DWP_RESPONSE_EVENT_ID;
-        }
+    private String getCoRespondentSubmissionEventForCaseState(String state, String caseId) {
+        String correspondingEvent = STATE_TO_SUBMISSION_EVENT_MAP.get(state);
 
-        return null;
+        if (correspondingEvent == null) {
+            throw new TaskException(new ValidationException(
+                String.format("Cannot create co-respondent submission event for case [%s] in state [%s].", caseId,
+                    state)));
+        }
+        return correspondingEvent;
     }
 
     private String getDueDateForCoRespondent() {
