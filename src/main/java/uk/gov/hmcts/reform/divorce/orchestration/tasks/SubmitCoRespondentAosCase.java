@@ -15,14 +15,20 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CO_RESP_SUBMISSION_AWAITING_ALTERNATIVE_SERVICE_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CO_RESP_SUBMISSION_AWAITING_DWP_RESPONSE_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CO_RESP_SUBMISSION_AWAITING_PROCESS_SERVER_SERVICE_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_COMPLETED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_OVERDUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_STARTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_SUBMITTED_AWAITING_ANSWER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_ALTERNATIVE_SERVICE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DWP_RESPONSE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_LEGAL_ADVISOR_REFERRAL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PROCESS_SERVER_SERVICE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.DEFENDED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
@@ -126,6 +132,15 @@ public class SubmitCoRespondentAosCase implements Task<Map<String, Object>> {
         }
         if (AWAITING_LEGAL_ADVISOR_REFERRAL.equals(currentCaseState)) {
             return CO_RESPONDENT_SUBMISSION_AWAITING_LA_EVENT_ID;
+        }
+        if (AWAITING_ALTERNATIVE_SERVICE.equals(currentCaseState)) {
+            return CO_RESP_SUBMISSION_AWAITING_ALTERNATIVE_SERVICE_EVENT_ID;
+        }
+        if (AWAITING_PROCESS_SERVER_SERVICE.equals(currentCaseState)) {
+            return CO_RESP_SUBMISSION_AWAITING_PROCESS_SERVER_SERVICE_EVENT_ID;
+        }
+        if (AWAITING_DWP_RESPONSE.equals(currentCaseState)) {
+            return CO_RESP_SUBMISSION_AWAITING_DWP_RESPONSE_EVENT_ID;
         }
 
         return null;
