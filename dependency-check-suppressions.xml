@@ -126,14 +126,14 @@
         <packageUrl regex="true">^pkg:maven/org\.hibernate/hibernate\-core@.*$</packageUrl>
         <cve>CVE-2019-14900</cve>
     </suppress>
-    <suppress until="2020-11-30Z">
+    <suppress until="2021-06-30Z">
         <notes>
             <![CDATA[file name: tomcat-embed-core-9.0.39.jar]]>
         </notes>
         <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-core@.*$</packageUrl>
         <cve>CVE-2020-13943</cve>
     </suppress>
-    <suppress until="2020-11-30Z">
+    <suppress until="2021-06-30Z">
         <notes>
             <![CDATA[file name: tomcat-embed-websocket-9.0.39.jar]]>
         </notes>
