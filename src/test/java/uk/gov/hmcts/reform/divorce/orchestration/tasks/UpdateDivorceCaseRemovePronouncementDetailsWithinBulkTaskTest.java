@@ -24,7 +24,7 @@ public class UpdateDivorceCaseRemovePronouncementDetailsWithinBulkTaskTest {
         context.setTransientObject(BULK_CASE_DETAILS_CONTEXT_KEY, new HashMap<>());
         Map<String, Object> payload  = Collections.emptyMap();
 
-        List<ApplicationEvent> result = classToTest.getApplicationEvent(context, payload);
+        List<ApplicationEvent> result = classToTest.getApplicationEventsToPublish(context, payload);
         assertEquals(1, result.size());
     }
 }
