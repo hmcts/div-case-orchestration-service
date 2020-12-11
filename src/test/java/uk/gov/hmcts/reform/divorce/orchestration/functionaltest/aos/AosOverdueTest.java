@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -32,8 +33,10 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_NOT_RECEIVED_FOR_PROCESS_SERVER_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.DUE_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVED_BY_ALTERNATIVE_METHOD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVED_BY_PROCESS_SERVER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_STARTED;
@@ -59,14 +62,9 @@ public class AosOverdueTest extends MockedFunctionalTest {
     public void setUp() {
         when(authUtil.getCaseworkerToken()).thenReturn(AUTH_TOKEN);
 
-        maintenanceServiceServer.stubFor(
-            WireMock.post(urlPathMatching("/casemaintenance/version/1/updateCase/.*/" + NOT_RECEIVED_AOS_EVENT_ID))
-                .withHeader(AUTHORIZATION, equalTo(AUTH_TOKEN))
-                .willReturn(ok()));
-        maintenanceServiceServer.stubFor(
-            WireMock.post(urlPathMatching("/casemaintenance/version/1/updateCase/.*/" + AOS_NOT_RECEIVED_FOR_PROCESS_SERVER_EVENT_ID))
-                .withHeader(AUTHORIZATION, equalTo(AUTH_TOKEN))
-                .willReturn(ok()));
+        stubUpdateCaseEndpointForGivenEvents(NOT_RECEIVED_AOS_EVENT_ID,
+            AOS_NOT_RECEIVED_FOR_PROCESS_SERVER_EVENT_ID,
+            AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD_EVENT_ID);
     }
 
     @Test
@@ -79,7 +77,9 @@ public class AosOverdueTest extends MockedFunctionalTest {
             CaseDetails.builder().state(AOS_AWAITING).caseId("2").build(),
             CaseDetails.builder().state(AOS_AWAITING).caseId("3").build(),
             CaseDetails.builder().state(AOS_STARTED).caseId("4").caseData(Map.of(SERVED_BY_PROCESS_SERVER, YES_VALUE)).build(),
-            CaseDetails.builder().state(AOS_AWAITING).caseId("5").caseData(Map.of(SERVED_BY_PROCESS_SERVER, YES_VALUE)).build()
+            CaseDetails.builder().state(AOS_AWAITING).caseId("5").caseData(Map.of(SERVED_BY_PROCESS_SERVER, YES_VALUE)).build(),
+            CaseDetails.builder().state(AOS_STARTED).caseId("6").caseData(Map.of(SERVED_BY_ALTERNATIVE_METHOD, YES_VALUE)).build(),
+            CaseDetails.builder().state(AOS_AWAITING).caseId("7").caseData(Map.of(SERVED_BY_ALTERNATIVE_METHOD, YES_VALUE)).build()
         ), expectedQuery);
 
         mockMvc.perform(post("/cases/aos/make-overdue").header(AUTHORIZATION, AUTH_TOKEN))
@@ -90,6 +90,8 @@ public class AosOverdueTest extends MockedFunctionalTest {
             verifyCaseWasUpdated("3", NOT_RECEIVED_AOS_EVENT_ID);
             verifyCaseWasUpdated("4", AOS_NOT_RECEIVED_FOR_PROCESS_SERVER_EVENT_ID);
             verifyCaseWasUpdated("5", AOS_NOT_RECEIVED_FOR_PROCESS_SERVER_EVENT_ID);
+            verifyCaseWasUpdated("6", AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD_EVENT_ID);
+            verifyCaseWasUpdated("7", AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD_EVENT_ID);
         });
         verifyCaseWasNotUpdated("1", NOT_RECEIVED_AOS_EVENT_ID);
     }
@@ -115,6 +117,15 @@ public class AosOverdueTest extends MockedFunctionalTest {
             newRequestPattern(RequestMethod.POST, urlPathMatching(format("/casemaintenance/version/1/updateCase/%s/.*", caseId)))
                 .withHeader(AUTHORIZATION, equalTo(AUTH_TOKEN))
                 .withRequestBody(new AnythingPattern())
+        );
+    }
+
+    private void stubUpdateCaseEndpointForGivenEvents(String... eventIds) {
+        Arrays.stream(eventIds).forEach(
+            eventId -> maintenanceServiceServer.stubFor(
+                WireMock.post(urlPathMatching("/casemaintenance/version/1/updateCase/.*/" + eventId))
+                    .withHeader(AUTHORIZATION, equalTo(AUTH_TOKEN))
+                    .willReturn(ok()))
         );
     }
 

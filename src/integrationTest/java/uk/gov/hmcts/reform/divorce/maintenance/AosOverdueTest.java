@@ -20,6 +20,7 @@ import static org.awaitility.Awaitility.await;
 import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVED_BY_ALTERNATIVE_METHOD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVED_BY_PROCESS_SERVER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_OVERDUE;
@@ -40,6 +41,7 @@ public class AosOverdueTest extends RetrieveCaseSupport {
     private String aosAwaitingCaseId;
     private String aosStartedCaseId;
     private String servedByProcessServerCaseId;
+    private String servedByAlternativeMethodCaseId;
 
     private UserDetails citizenUser;
     private UserDetails caseworkerUser;
@@ -55,9 +57,12 @@ public class AosOverdueTest extends RetrieveCaseSupport {
         aosAwaitingCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_AWAITING_EVENT_ID);
         aosStartedCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_STARTED_EVENT_ID);
         servedByProcessServerCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_STARTED_EVENT_ID, Pair.of(SERVED_BY_PROCESS_SERVER, YES_VALUE));
+        servedByAlternativeMethodCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_STARTED_EVENT_ID, Pair.of(SERVED_BY_ALTERNATIVE_METHOD, YES_VALUE));
 
         elasticSearchTestHelper.ensureCaseIsSearchable(aosAwaitingCaseId, caseworkerUser.getAuthToken(), AOS_AWAITING);
         elasticSearchTestHelper.ensureCaseIsSearchable(aosStartedCaseId, caseworkerUser.getAuthToken(), AOS_STARTED);
+        elasticSearchTestHelper.ensureCaseIsSearchable(servedByProcessServerCaseId, caseworkerUser.getAuthToken(), AOS_STARTED);
+        elasticSearchTestHelper.ensureCaseIsSearchable(servedByAlternativeMethodCaseId, caseworkerUser.getAuthToken(), AOS_STARTED);
     }
 
     private String createCaseAndTriggerGivenEvent(String eventId, Pair<String, Object>... additionalCaseData) {
@@ -70,7 +75,7 @@ public class AosOverdueTest extends RetrieveCaseSupport {
     }
 
     @Test
-    public void shouldMoveEligibleCasesToAosOverdue() {
+    public void shouldMoveEligibleCasesWhenAosIsOverdue() {
         RestAssured
             .given()
             .header(HttpHeaders.AUTHORIZATION, caseworkerUser.getAuthToken())
@@ -83,6 +88,7 @@ public class AosOverdueTest extends RetrieveCaseSupport {
             assertCaseIsInExpectedState(aosAwaitingCaseId, AOS_OVERDUE);
             assertCaseIsInExpectedState(aosStartedCaseId, AOS_STARTED);
             assertCaseIsInExpectedState(servedByProcessServerCaseId, AWAITING_DECREE_NISI);
+            assertCaseIsInExpectedState(servedByAlternativeMethodCaseId, AWAITING_DECREE_NISI);
         });
     }
 

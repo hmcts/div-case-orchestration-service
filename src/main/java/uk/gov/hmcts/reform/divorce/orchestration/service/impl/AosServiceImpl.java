@@ -4,13 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.model.parties.DivorceParty;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosNotReceivedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueEligibilityWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueForProcessServerCaseWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueForAlternativeServiceCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline.AosPackOfflineAnswersWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline.IssueAosPackOfflineWorkflow;
@@ -19,6 +20,8 @@ import java.util.Map;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_ALTERNATIVE_METHOD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_PROCESS_SERVER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
 
 @Slf4j
@@ -31,7 +34,7 @@ public class AosServiceImpl implements AosService {
     private final AosOverdueEligibilityWorkflow aosOverdueEligibilityWorkflow;
     private final AosOverdueWorkflow aosOverdueWorkflow;
     private final AosNotReceivedWorkflow aosNotReceivedWorkflow;
-    private final AosOverdueForProcessServerCaseWorkflow aosOverdueForProcessServerCaseWorkflow;
+    private final AosOverdueForAlternativeServiceCaseWorkflow aosOverdueForAlternativeServiceCaseWorkflow;
 
     @Override
     public Map<String, Object> issueAosPackOffline(String authToken, CaseDetails caseDetails, DivorceParty divorceParty)
@@ -108,17 +111,31 @@ public class AosServiceImpl implements AosService {
 
     @Override
     public void markAosNotReceivedForProcessServerCase(String authToken, String caseId) throws CaseOrchestrationServiceException {
-        log.info("Will make AOS overdue for case [id: {}] (served by process server).", caseId);
+        markAlternativeServiceCaseAsAosOverdue(authToken, caseId, SERVED_BY_PROCESS_SERVER);
+    }
+
+    @Override
+    public void markAosNotReceivedForAlternativeMethodCase(String authToken, String caseId) throws CaseOrchestrationServiceException {
+        markAlternativeServiceCaseAsAosOverdue(authToken, caseId, SERVED_BY_ALTERNATIVE_METHOD);
+    }
+
+    private void markAlternativeServiceCaseAsAosOverdue(String authToken,
+                                                        String caseId,
+                                                        AlternativeServiceType servedByAlternativeMethod) throws CaseOrchestrationServiceException {
+        log.info("Case id: {}. Will make AOS overdue for case ({}).", caseId, servedByAlternativeMethod);
 
         try {
-            aosOverdueForProcessServerCaseWorkflow.run(authToken, caseId);
+            aosOverdueForAlternativeServiceCaseWorkflow.run(authToken, caseId, servedByAlternativeMethod);
         } catch (WorkflowException exception) {
             CaseOrchestrationServiceException caseOrchestrationServiceException = new CaseOrchestrationServiceException(exception, caseId);
-            log.error("Error trying to move case {} to AOS Overdue (served by process server)", caseId, caseOrchestrationServiceException);
+            log.error("Case id: {}. Error trying to make AOS overdue for case ({}).",
+                caseId,
+                servedByAlternativeMethod,
+                caseOrchestrationServiceException);
             throw caseOrchestrationServiceException;
         }
 
-        log.info("Made AOS overdue for case [id: {}] (served by process server).", caseId);
+        log.info("Case id: {}. Made AOS overdue for case ({}).", caseId, servedByAlternativeMethod);
     }
 
 }
