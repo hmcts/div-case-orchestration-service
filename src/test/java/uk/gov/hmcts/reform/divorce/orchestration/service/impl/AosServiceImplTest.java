@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosNotReceivedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueEligibilityWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueForProcessServerCaseWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueForAlternativeServiceCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline.AosPackOfflineAnswersWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline.IssueAosPackOfflineWorkflow;
@@ -42,6 +42,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INCOM
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PAYLOAD_TO_RETURN;
 import static uk.gov.hmcts.reform.divorce.orchestration.controller.util.CallbackControllerTestUtils.assertCaseOrchestrationServiceExceptionIsSetProperly;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_ALTERNATIVE_METHOD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_PROCESS_SERVER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
 
@@ -61,7 +63,7 @@ public class AosServiceImplTest {
     private AosOverdueWorkflow aosOverdueWorkflow;
 
     @Mock
-    private AosOverdueForProcessServerCaseWorkflow aosOverdueForProcessServerCaseWorkflow;
+    private AosOverdueForAlternativeServiceCaseWorkflow aosOverdueForAlternativeServiceCaseWorkflow;
 
     @Mock
     private AosNotReceivedWorkflow aosNotReceivedWorkflow;
@@ -224,15 +226,36 @@ public class AosServiceImplTest {
         throws WorkflowException, CaseOrchestrationServiceException {
         classUnderTest.markAosNotReceivedForProcessServerCase(AUTH_TOKEN, TEST_CASE_ID);
 
-        verify(aosOverdueForProcessServerCaseWorkflow).run(AUTH_TOKEN, TEST_CASE_ID);
+        verify(aosOverdueForAlternativeServiceCaseWorkflow).run(AUTH_TOKEN, TEST_CASE_ID, SERVED_BY_PROCESS_SERVER);
     }
 
     @Test
     public void shouldThrowCaseOrchestrationWhenMovingProcessServerCaseToAwaitingDecreeNisiFails() throws WorkflowException {
-        doThrow(WorkflowException.class).when(aosOverdueForProcessServerCaseWorkflow).run(AUTH_TOKEN, TEST_CASE_ID);
+        doThrow(WorkflowException.class)
+            .when(aosOverdueForAlternativeServiceCaseWorkflow).run(AUTH_TOKEN, TEST_CASE_ID, SERVED_BY_PROCESS_SERVER);
 
         CaseOrchestrationServiceException exception = assertThrows(CaseOrchestrationServiceException.class,
             () -> classUnderTest.markAosNotReceivedForProcessServerCase(AUTH_TOKEN, TEST_CASE_ID));
+
+        assertThat(exception.getCaseId().get(), is(TEST_CASE_ID));
+        assertThat(exception.getCause(), isA(WorkflowException.class));
+    }
+
+    @Test
+    public void shouldCallAppropriateWorkflowForMovingAlternativeMethodCaseToAwaitingDecreeNisi()
+        throws WorkflowException, CaseOrchestrationServiceException {
+        classUnderTest.markAosNotReceivedForAlternativeMethodCase(AUTH_TOKEN, TEST_CASE_ID);
+
+        verify(aosOverdueForAlternativeServiceCaseWorkflow).run(AUTH_TOKEN, TEST_CASE_ID, SERVED_BY_ALTERNATIVE_METHOD);
+    }
+
+    @Test
+    public void shouldThrowCaseOrchestrationWhenMovingAlternativeMethodCaseToAwaitingDecreeNisiFails() throws WorkflowException {
+        doThrow(WorkflowException.class)
+            .when(aosOverdueForAlternativeServiceCaseWorkflow).run(AUTH_TOKEN, TEST_CASE_ID, SERVED_BY_ALTERNATIVE_METHOD);
+
+        CaseOrchestrationServiceException exception = assertThrows(CaseOrchestrationServiceException.class,
+            () -> classUnderTest.markAosNotReceivedForAlternativeMethodCase(AUTH_TOKEN, TEST_CASE_ID));
 
         assertThat(exception.getCaseId().get(), is(TEST_CASE_ID));
         assertThat(exception.getCause(), isA(WorkflowException.class));
