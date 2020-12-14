@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceGeneralReferral;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.GeneralReferralDataExtractable;
 
 import java.util.List;
 import java.util.Map;
@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.GeneralReferralHelp
 @Component
 @Slf4j
 @AllArgsConstructor
-public class GeneralReferralDataTask implements Task<Map<String, Object>> {
+public class GeneralReferralDataTask implements Task<Map<String, Object>>, GeneralReferralDataExtractable {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
@@ -36,15 +36,15 @@ public class GeneralReferralDataTask implements Task<Map<String, Object>> {
 
     private DivorceGeneralReferral buildGeneralReferral(Map<String, Object> caseData) {
         DivorceGeneralReferral.DivorceGeneralReferralBuilder divorceGeneralReferralBuilder = DivorceGeneralReferral.builder()
-            .generalReferralReason(GeneralReferralDataExtractor.getReason(caseData))
-            .generalApplicationReferralDate(GeneralReferralDataExtractor.getApplicationReferralDateUnformatted(caseData))
-            .generalApplicationAddedDate(GeneralReferralDataExtractor.getApplicationAddedDateUnformatted(caseData))
-            .generalReferralType(GeneralReferralDataExtractor.getType(caseData))
-            .generalReferralDetails(GeneralReferralDataExtractor.getDetails(caseData))
-            .generalReferralFee(GeneralReferralDataExtractor.getIsFeeRequired(caseData))
-            .generalReferralDecision(GeneralReferralDataExtractor.getDecision(caseData))
-            .generalReferralDecisionDate(GeneralReferralDataExtractor.getDecisionDateUnformatted(caseData))
-            .generalReferralDecisionReason(GeneralReferralDataExtractor.getDecisionReason(caseData));
+            .generalReferralReason(getReason(caseData))
+            .generalApplicationReferralDate(getApplicationReferralDateUnformatted(caseData))
+            .generalApplicationAddedDate(getApplicationAddedDateUnformatted(caseData))
+            .generalReferralType(getType(caseData))
+            .generalReferralDetails(getDetails(caseData))
+            .generalReferralFee(getIsFeeRequired(caseData))
+            .generalReferralDecision(getDecision(caseData))
+            .generalReferralDecisionDate(getDecisionDateUnformatted(caseData))
+            .generalReferralDecisionReason(getDecisionReason(caseData));
 
         addConditionalFieldsFor(divorceGeneralReferralBuilder, caseData);
 
@@ -54,7 +54,7 @@ public class GeneralReferralDataTask implements Task<Map<String, Object>> {
     private Map<String, Object> addNewServiceApplicationToCaseData(
         Map<String, Object> caseData, DivorceGeneralReferral serviceApplication) {
 
-        List<CollectionMember<DivorceGeneralReferral>> generalReferrals = GeneralReferralDataExtractor.getListOfGeneralReferrals(caseData);
+        List<CollectionMember<DivorceGeneralReferral>> generalReferrals = getListOfGeneralReferrals(caseData);
         CollectionMember<DivorceGeneralReferral> collectionMember = buildCollectionMember(serviceApplication);
 
         generalReferrals.add(collectionMember);
@@ -66,15 +66,15 @@ public class GeneralReferralDataTask implements Task<Map<String, Object>> {
 
     private void addConditionalFieldsFor(DivorceGeneralReferral.DivorceGeneralReferralBuilder generalReferral, Map<String, Object> caseData) {
         if (isGeneralReferralPaymentRequired(caseData)) {
-            generalReferral.generalReferralPaymentType(GeneralReferralDataExtractor.getPaymentType(caseData));
+            generalReferral.generalReferralPaymentType(getPaymentType(caseData));
         }
 
         if (isReasonGeneralApplicationReferral(caseData)) {
-            generalReferral.generalApplicationFrom(GeneralReferralDataExtractor.getApplicationFrom(caseData));
+            generalReferral.generalApplicationFrom(getApplicationFrom(caseData));
         }
 
         if (isTypeOfAlternativeServiceApplication(caseData)) {
-            generalReferral.alternativeServiceMedium(GeneralReferralDataExtractor.getAlternativeMedium(caseData));
+            generalReferral.alternativeServiceMedium(getAlternativeMedium(caseData));
         }
     }
 }

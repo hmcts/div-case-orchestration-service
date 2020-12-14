@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplat
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.EmailDataExtractable;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.Map;
@@ -17,7 +18,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public abstract class SendEmailTask implements Task<Map<String, Object>> {
+public abstract class SendEmailTask implements Task<Map<String, Object>>, EmailDataExtractable {
 
     private final EmailService emailService;
 

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor;
 
 import com.google.common.collect.ImmutableMap;
 import org.hamcrest.core.Is;
@@ -24,12 +24,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.S
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DEEMED;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.CaseDataKeys.SERVICE_APPLICATION_PAYMENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getListOfServiceApplications;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationGranted;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationPayment;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationRefusalReason;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationType;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.ServiceApplicationDataExtractor.CaseDataKeys.SERVICE_APPLICATION_PAYMENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.ServiceApplicationDataExtractor.getListOfServiceApplications;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationGranted;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationPayment;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationRefusalReason;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationType;
 
 public class ServiceApplicationDataExtractorTest {
 

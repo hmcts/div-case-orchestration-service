@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -6,10 +6,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConst
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
-
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class CaseDataExtractor {
+public class CaseDataExtractor extends Extractable {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class CaseDataKeys {

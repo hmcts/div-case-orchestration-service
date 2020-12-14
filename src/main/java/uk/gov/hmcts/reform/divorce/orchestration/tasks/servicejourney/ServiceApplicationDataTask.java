@@ -8,8 +8,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.DatesDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.ServiceApplicationDataExtractor;
 
 import java.util.List;
 import java.util.Map;
