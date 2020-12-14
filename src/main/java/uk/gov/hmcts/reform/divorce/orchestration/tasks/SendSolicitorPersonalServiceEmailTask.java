@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class SendSolicitorPersonalServiceEmailTask extends SolicitorEmailTask implements Task<Map<String, Object>> {
+public class SendSolicitorPersonalServiceEmailTask extends SolicitorEmailTask {
 
     private static final String SOL_PERSONAL_SERVICE_EMAIL = "Solicitor Personal Service email";
 

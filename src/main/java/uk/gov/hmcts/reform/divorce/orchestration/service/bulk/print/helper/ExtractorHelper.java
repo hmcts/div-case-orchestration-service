@@ -14,7 +14,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ExtractorHelper {
 
-    public static String getMandatoryStringValue(Map<String, Object> caseData, String field) {
+    public static String getMandatoryStringValue(Map<String, Object> caseData, String field) {//TODO - get rid of this class?
         try {
             return getMandatoryPropertyValueAsString(caseData, field);
         } catch (TaskException exception) {
