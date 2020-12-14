@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor;
 
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
@@ -35,15 +35,15 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.CaseDataKeys.PETITIONER_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.CaseDataKeys.RESPONDENT_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.CaseDataKeys.RESPONDENT_SOLICITOR_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.COSTS_CLAIM_GRANTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_SOLICITOR_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.buildCaseDataWithCoRespondentNames;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.buildCaseDataWithCoRespondentSolicitorNames;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.buildCaseDataWithPetitionerNames;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.buildCaseDataWithRespondentNames;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.AddresseeDataExtractor.CaseDataKeys.PETITIONER_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.AddresseeDataExtractor.CaseDataKeys.RESPONDENT_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.AddresseeDataExtractor.CaseDataKeys.RESPONDENT_SOLICITOR_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.COSTS_CLAIM_GRANTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.FullNamesDataExtractorTest.buildCaseDataWithCoRespondentNames;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.FullNamesDataExtractorTest.buildCaseDataWithCoRespondentSolicitorNames;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.FullNamesDataExtractorTest.buildCaseDataWithPetitionerNames;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.FullNamesDataExtractorTest.buildCaseDataWithRespondentNames;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.GeneralEmailWorkflow.OTHER_GENERAL_EMAIL_SELECTION;
 
 public class AddresseeDataExtractorTest {

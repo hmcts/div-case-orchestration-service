@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.Extractable;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,19 +14,20 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryListOfStrings;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
 
-public class ExtractorHelperTest {
+public class ExtractableTest {
 
     public static final String FIELD = "field";
     public static final String VALUE = "value";
+
+    private Extractable extractable = new Extractable() {
+    };
 
     @Test
     public void getMandatoryStringValueReturnsValueWhenFieldExists() {
         Map<String, Object> caseData = ImmutableMap.of(FIELD, VALUE);
 
-        assertThat(getMandatoryStringValue(caseData, FIELD), is(VALUE));
+        assertThat(extractable.getMandatoryStringValue(caseData, FIELD), is(VALUE));
     }
 
     @Test(expected = InvalidDataForTaskException.class)
@@ -33,7 +35,7 @@ public class ExtractorHelperTest {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(FIELD, null);
 
-        getMandatoryStringValue(caseData, FIELD);
+        extractable.getMandatoryStringValue(caseData, FIELD);
     }
 
     @Test(expected = InvalidDataForTaskException.class)
@@ -41,21 +43,21 @@ public class ExtractorHelperTest {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(FIELD, EMPTY_STRING);
 
-        getMandatoryStringValue(caseData, FIELD);
+        extractable.getMandatoryStringValue(caseData, FIELD);
     }
 
     @Test(expected = InvalidDataForTaskException.class)
     public void getMandatoryStringValueThrowsInvalidDataForTaskExceptionWhenFieldDoesntExist() {
         Map<String, Object> caseData = new HashMap<>();
 
-        getMandatoryStringValue(caseData, FIELD);
+        extractable.getMandatoryStringValue(caseData, FIELD);
     }
 
     @Test(expected = InvalidDataForTaskException.class)
     public void getMandatoryListOfStringsThrowsInvalidDataForTaskExceptionWhenEmptyMap() {
         Map<String, Object> caseData = new HashMap<>();
 
-        getMandatoryListOfStrings(caseData, FIELD);
+        extractable.getMandatoryListOfStrings(caseData, FIELD);
     }
 
     @Test(expected = InvalidDataForTaskException.class)
@@ -63,7 +65,7 @@ public class ExtractorHelperTest {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put("some other field", emptyList());
 
-        getMandatoryListOfStrings(caseData, FIELD);
+        extractable.getMandatoryListOfStrings(caseData, FIELD);
     }
 
     @Test(expected = ClassCastException.class)
@@ -71,7 +73,7 @@ public class ExtractorHelperTest {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(FIELD, new HashMap<>());
 
-        getMandatoryListOfStrings(caseData, FIELD);
+        extractable.getMandatoryListOfStrings(caseData, FIELD);
     }
 
     @Test(expected = ClassCastException.class)
@@ -79,7 +81,7 @@ public class ExtractorHelperTest {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(FIELD, new HashSet<>(asList("a", "b", "c")));
 
-        getMandatoryListOfStrings(caseData, FIELD);
+        extractable.getMandatoryListOfStrings(caseData, FIELD);
     }
 
     @Test(expected = InvalidDataForTaskException.class)
@@ -87,7 +89,7 @@ public class ExtractorHelperTest {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(FIELD, null);
 
-        getMandatoryListOfStrings(caseData, FIELD);
+        extractable.getMandatoryListOfStrings(caseData, FIELD);
     }
 
     @Test
@@ -95,7 +97,7 @@ public class ExtractorHelperTest {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(FIELD, emptyList());
 
-        assertThat(getMandatoryListOfStrings(caseData, FIELD), is(emptyList()));
+        assertThat(extractable.getMandatoryListOfStrings(caseData, FIELD), is(emptyList()));
     }
 
     @Test
@@ -103,6 +105,6 @@ public class ExtractorHelperTest {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(FIELD, asList("a", "b", "c"));
 
-        assertThat(getMandatoryListOfStrings(caseData, FIELD).size(), is(3));
+        assertThat(extractable.getMandatoryListOfStrings(caseData, FIELD).size(), is(3));
     }
 }

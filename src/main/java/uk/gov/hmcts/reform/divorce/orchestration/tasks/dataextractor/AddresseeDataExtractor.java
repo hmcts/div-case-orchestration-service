@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -6,15 +6,14 @@ import uk.gov.hmcts.reform.bsp.common.model.document.Addressee;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getCoRespondentFullName;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getCoRespondentSolicitorFullName;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerFullName;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getRespondentFullName;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getRespondentSolicitorFullName;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.FullNamesDataExtractor.getCoRespondentFullName;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.FullNamesDataExtractor.getCoRespondentSolicitorFullName;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.FullNamesDataExtractor.getPetitionerFullName;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.FullNamesDataExtractor.getRespondentFullName;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.FullNamesDataExtractor.getRespondentSolicitorFullName;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class AddresseeDataExtractor {
+public class AddresseeDataExtractor extends Extractable {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class CaseDataKeys {

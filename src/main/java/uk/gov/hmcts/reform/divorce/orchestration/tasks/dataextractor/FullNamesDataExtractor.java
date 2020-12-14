@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

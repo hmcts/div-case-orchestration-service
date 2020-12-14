@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -14,13 +14,12 @@ import java.time.LocalDate;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.Settings.ZONE_ID;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
 
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class DatesDataExtractor {
+public class DatesDataExtractor extends Extractable {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class CaseDataKeys {

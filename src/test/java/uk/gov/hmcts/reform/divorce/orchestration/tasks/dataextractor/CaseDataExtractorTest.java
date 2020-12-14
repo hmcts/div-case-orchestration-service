@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor;
 
 import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
@@ -10,7 +10,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_FAMILY_MAN_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.CaseDataExtractor.CaseDataKeys.CASE_REFERENCE;
 
 public class CaseDataExtractorTest {
 

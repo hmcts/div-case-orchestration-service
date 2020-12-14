@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor;
 
 import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Gender;
@@ -14,9 +14,9 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.COSTS_CLAIM_GRANTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.COURT_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.PETITIONER_GENDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.COSTS_CLAIM_GRANTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.COURT_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.PETITIONER_GENDER;
 
 public class CoECoverLetterDataExtractorTest {
 

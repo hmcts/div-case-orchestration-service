@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -10,10 +10,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Relation;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class CoECoverLetterDataExtractor {
+public class CoECoverLetterDataExtractor extends Extractable {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class CaseDataKeys {

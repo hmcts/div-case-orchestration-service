@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor;
 
 import com.google.common.collect.ImmutableMap;
 import org.hamcrest.core.Is;
@@ -29,144 +29,134 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.G
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_REFERRAL_REASON;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_REFERRAL_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor.getAlternativeMedium;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor.getApplicationAddedDateUnformatted;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor.getApplicationFrom;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor.getApplicationReferralDateUnformatted;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor.getDecision;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor.getDecisionDateUnformatted;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor.getDecisionReason;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor.getDetails;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor.getIsFeeRequired;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor.getListOfGeneralReferrals;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor.getPaymentType;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor.getReason;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.GeneralReferralDataExtractor.getType;
 
-public class GeneralReferralDataExtractorTest {
+public class GeneralReferralDataExtractableTest {
 
     public static final String VALUE = "expected data";
     public static final String DATE = "2010-20-10";
 
+    private GeneralReferralDataExtractable classUnderTest = new GeneralReferralDataExtractable() {
+    };
+
     @Test
     public void getIsFeeRequiredShouldReturnValidValue() {
-        assertThat(getIsFeeRequired(ImmutableMap.of(GENERAL_REFERRAL_FEE, YES_VALUE)), is(YES_VALUE));
+        assertThat(classUnderTest.getIsFeeRequired(ImmutableMap.of(GENERAL_REFERRAL_FEE, YES_VALUE)), is(YES_VALUE));
     }
 
     @Test(expected = InvalidDataForTaskException.class)
     public void getIsFeeRequiredShouldThrowInvalidDataForTaskException() {
-        getIsFeeRequired(emptyMap());
+        classUnderTest.getIsFeeRequired(emptyMap());
     }
 
     @Test
     public void getDecisionDateUnformattedReturnsValidValue() {
-        assertThat(getDecisionDateUnformatted(ImmutableMap.of(GENERAL_REFERRAL_DECISION_DATE, DATE)), is(DATE));
+        assertThat(classUnderTest.getDecisionDateUnformatted(ImmutableMap.of(GENERAL_REFERRAL_DECISION_DATE, DATE)), is(DATE));
     }
 
     @Test(expected = InvalidDataForTaskException.class)
     public void getDecisionDateShouldThrowInvalidDataForTaskException() {
-        getDecisionDateUnformatted(emptyMap());
+        classUnderTest.getDecisionDateUnformatted(emptyMap());
     }
 
     @Test
     public void getReasonReturnsValidValue() {
-        assertThat(getReason(ImmutableMap.of(GENERAL_REFERRAL_REASON, VALUE)), is(VALUE));
+        assertThat(classUnderTest.getReason(ImmutableMap.of(GENERAL_REFERRAL_REASON, VALUE)), is(VALUE));
     }
 
     @Test(expected = InvalidDataForTaskException.class)
     public void getReasonShouldThrowInvalidDataForTaskException() {
-        getReason(emptyMap());
+        classUnderTest.getReason(emptyMap());
     }
 
     @Test
     public void getTypeReturnsValidValue() {
-        assertThat(getType(ImmutableMap.of(GENERAL_REFERRAL_TYPE, VALUE)), is(VALUE));
+        assertThat(classUnderTest.getType(ImmutableMap.of(GENERAL_REFERRAL_TYPE, VALUE)), is(VALUE));
     }
 
     @Test(expected = InvalidDataForTaskException.class)
     public void getTypeShouldThrowInvalidDataForTaskException() {
-        getType(emptyMap());
+        classUnderTest.getType(emptyMap());
     }
 
     @Test
     public void getDetailsReturnsValidValue() {
-        assertThat(getDetails(ImmutableMap.of(GENERAL_REFERRAL_DETAILS, VALUE)), is(VALUE));
+        assertThat(classUnderTest.getDetails(ImmutableMap.of(GENERAL_REFERRAL_DETAILS, VALUE)), is(VALUE));
     }
 
     @Test(expected = InvalidDataForTaskException.class)
     public void getDetailsShouldThrowInvalidDataForTaskException() {
-        getDetails(emptyMap());
+        classUnderTest.getDetails(emptyMap());
     }
 
     @Test
     public void getPaymentTypeReturnsValidValue() {
-        assertThat(getPaymentType(ImmutableMap.of(GENERAL_REFERRAL_PAYMENT_TYPE, VALUE)), is(VALUE));
+        assertThat(classUnderTest.getPaymentType(ImmutableMap.of(GENERAL_REFERRAL_PAYMENT_TYPE, VALUE)), is(VALUE));
     }
 
     @Test(expected = InvalidDataForTaskException.class)
     public void getPaymentTypeShouldThrowInvalidDataForTaskException() {
-        getPaymentType(emptyMap());
+        classUnderTest.getPaymentType(emptyMap());
     }
 
     @Test
     public void getDecisionReturnsValidValue() {
-        assertThat(getDecision(ImmutableMap.of(GENERAL_REFERRAL_DECISION, VALUE)), is(VALUE));
+        assertThat(classUnderTest.getDecision(ImmutableMap.of(GENERAL_REFERRAL_DECISION, VALUE)), is(VALUE));
     }
 
     @Test(expected = InvalidDataForTaskException.class)
     public void getDecisionShouldThrowInvalidDataForTaskException() {
-        getDecision(emptyMap());
+        classUnderTest.getDecision(emptyMap());
     }
 
     @Test
     public void getDecisionReasonReturnsValidValue() {
-        assertThat(getDecisionReason(ImmutableMap.of(GENERAL_REFERRAL_DECISION_REASON, VALUE)), is(VALUE));
+        assertThat(classUnderTest.getDecisionReason(ImmutableMap.of(GENERAL_REFERRAL_DECISION_REASON, VALUE)), is(VALUE));
     }
 
     @Test(expected = InvalidDataForTaskException.class)
     public void getDecisionReasonShouldThrowInvalidDataForTaskException() {
-        getDecisionReason(emptyMap());
+        classUnderTest.getDecisionReason(emptyMap());
     }
 
     @Test
     public void getApplicationAddedDateUnformattedReturnsValidValue() {
-        assertThat(getApplicationAddedDateUnformatted(ImmutableMap.of(GENERAL_APPLICATION_ADDED_DATE, DATE)), is(DATE));
+        assertThat(classUnderTest.getApplicationAddedDateUnformatted(ImmutableMap.of(GENERAL_APPLICATION_ADDED_DATE, DATE)), is(DATE));
     }
 
     @Test(expected = InvalidDataForTaskException.class)
     public void getApplicationAddedDateUnformattedShouldThrowInvalidDataForTaskException() {
-        getApplicationAddedDateUnformatted(emptyMap());
+        classUnderTest.getApplicationAddedDateUnformatted(emptyMap());
     }
 
     @Test
     public void getApplicationFromReturnsValidValue() {
-        assertThat(getApplicationFrom(ImmutableMap.of(GENERAL_APPLICATION_FROM, VALUE)), is(VALUE));
+        assertThat(classUnderTest.getApplicationFrom(ImmutableMap.of(GENERAL_APPLICATION_FROM, VALUE)), is(VALUE));
     }
 
     @Test(expected = InvalidDataForTaskException.class)
     public void getApplicationFromShouldThrowInvalidDataForTaskException() {
-        getApplicationFrom(emptyMap());
+        classUnderTest.getApplicationFrom(emptyMap());
     }
 
     @Test
     public void getApplicationReferralDateUnformattedReturnsValidValue() {
-        assertThat(getApplicationReferralDateUnformatted(ImmutableMap.of(GENERAL_APPLICATION_REFERRAL_DATE, DATE)), is(DATE));
-        assertThat(getApplicationReferralDateUnformatted(emptyMap()), is(""));
+        assertThat(classUnderTest.getApplicationReferralDateUnformatted(ImmutableMap.of(GENERAL_APPLICATION_REFERRAL_DATE, DATE)), is(DATE));
+        assertThat(classUnderTest.getApplicationReferralDateUnformatted(emptyMap()), is(""));
     }
 
     @Test
     public void getAlternativeMediumReturnsValidValue() {
-        assertThat(getAlternativeMedium(ImmutableMap.of(ALTERNATIVE_SERVICE_MEDIUM, VALUE)), is(VALUE));
+        assertThat(classUnderTest.getAlternativeMedium(ImmutableMap.of(ALTERNATIVE_SERVICE_MEDIUM, VALUE)), is(VALUE));
     }
 
     @Test(expected = InvalidDataForTaskException.class)
     public void getAlternativeMediumShouldThrowInvalidDataForTaskException() {
-        getAlternativeMedium(emptyMap());
+        classUnderTest.getAlternativeMedium(emptyMap());
     }
 
     @Test
     public void givenNoField_whenGetListOfGeneralReferrals_shouldReturnAnEmptyArray() {
-        List<CollectionMember<DivorceGeneralReferral>> result = getListOfGeneralReferrals(emptyMap());
+        List<CollectionMember<DivorceGeneralReferral>> result = classUnderTest.getListOfGeneralReferrals(emptyMap());
 
         assertThat(result, Is.is(empty()));
     }
@@ -175,7 +165,7 @@ public class GeneralReferralDataExtractorTest {
     public void givenFieldWithAnEmptyArray_whenGetListOfGeneralReferrals_shouldReturnEmptyArray() {
         final List<CollectionMember<DivorceGeneralReferral>> myList = emptyList();
 
-        List<CollectionMember<DivorceGeneralReferral>> result = getListOfGeneralReferrals(ImmutableMap.of(CcdFields.GENERAL_REFERRALS, myList));
+        List<CollectionMember<DivorceGeneralReferral>> result = classUnderTest.getListOfGeneralReferrals(ImmutableMap.of(CcdFields.GENERAL_REFERRALS, myList));
 
         assertThat(result, Is.is(empty()));
     }
@@ -184,7 +174,7 @@ public class GeneralReferralDataExtractorTest {
     public void givenFieldWithPopulatedArray_whenGetListOfGeneralReferrals_shouldReturnPopulatedArray() {
         final List<CollectionMember<DivorceGeneralReferral>> myList = asList(new CollectionMember<>());
 
-        List<CollectionMember<DivorceGeneralReferral>> result = getListOfGeneralReferrals(ImmutableMap.of(CcdFields.GENERAL_REFERRALS, myList));
+        List<CollectionMember<DivorceGeneralReferral>> result = classUnderTest.getListOfGeneralReferrals(ImmutableMap.of(CcdFields.GENERAL_REFERRALS, myList));
 
         assertThat(result.size(), Is.is(1));
         assertThat(result, Is.is(myList));

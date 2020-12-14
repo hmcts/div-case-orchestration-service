@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.Gener
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.getCoRespondentSolicitorEmail;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.EmailDataExtractable.getCoRespondentSolicitorEmail;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getRepresentedSubject;
 
 @Component

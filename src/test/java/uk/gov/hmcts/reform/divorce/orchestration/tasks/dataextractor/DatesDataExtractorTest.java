@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor;
 
 import com.google.common.collect.ImmutableMap;
 import org.hamcrest.CoreMatchers;
@@ -22,13 +22,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATE_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.TIME_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.COSTS_CLAIM_GRANTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor.CaseDataKeys.DA_GRANTED_DATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor.CaseDataKeys.RECEIVED_SERVICE_ADDED_DATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor.CaseDataKeys.RECEIVED_SERVICE_APPLICATION_DATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor.CaseDataKeys.SERVICE_APPLICATION_DECISION_DATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor.getDeadlineToContactCourtBy;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor.getHearingDate;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.COSTS_CLAIM_GRANTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.DatesDataExtractor.CaseDataKeys.DA_GRANTED_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.DatesDataExtractor.CaseDataKeys.RECEIVED_SERVICE_ADDED_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.DatesDataExtractor.CaseDataKeys.RECEIVED_SERVICE_APPLICATION_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.DatesDataExtractor.CaseDataKeys.SERVICE_APPLICATION_DECISION_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.DatesDataExtractor.getDeadlineToContactCourtBy;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.DatesDataExtractor.getHearingDate;
 
 public class DatesDataExtractorTest {
 

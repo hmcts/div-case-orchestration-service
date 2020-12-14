@@ -13,9 +13,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceApplicationRefusalOrder;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.IdamTestSupport;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor;
-import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.CtscContactDetailsDataProviderService;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.DatesDataExtractor;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.FullNamesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceRefusalOrderDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderDraftTask;
 import uk.gov.hmcts.reform.divorce.utils.DateUtils;
@@ -43,8 +43,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.servicejo
 import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.servicejourney.ServiceDecisionMadeTest.buildRefusalRequest;
 import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.servicejourney.ServiceDecisionMadeTest.buildServiceRefusalOrderCaseData;
 import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.servicejourney.ServiceDecisionMadeTest.generateDocumentLink;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerFullName;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationRefusalReason;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.FullNamesDataExtractor.getPetitionerFullName;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationRefusalReason;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class ServiceDecisionMakingTest extends IdamTestSupport {

@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
+package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextractor;
 
 import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
