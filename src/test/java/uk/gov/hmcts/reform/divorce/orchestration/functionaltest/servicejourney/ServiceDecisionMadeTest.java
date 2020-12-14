@@ -35,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_FAMILY_MAN_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_DECISION_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_MY_REASON;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
@@ -45,10 +46,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RECEIVED_SERVICE_APPLICATION_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATIONS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_DOCUMENTS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_REFUSAL_REASON;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_REFUSAL_DRAFT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
@@ -284,6 +287,7 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
         caseData.put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
         caseData.put(RESPONDENT_FIRST_NAME, TEST_RESPONDENT_FIRST_NAME);
         caseData.put(RESPONDENT_LAST_NAME, TEST_RESPONDENT_LAST_NAME);
+        caseData.put(RECEIVED_SERVICE_APPLICATION_DATE, TEST_DECISION_DATE);
 
         caseData.put(SERVICE_APPLICATIONS, asList(buildCollectionMember(isApplicationGranted, applicationType)));
 
@@ -312,6 +316,7 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
 
         Map<String, Object> payload = ImmutableMap.of(
             SERVICE_APPLICATION_GRANTED, NO_VALUE,
+            SERVICE_APPLICATION_TYPE, serviceApplicationType,
             SERVICE_REFUSAL_DRAFT, serviceRefusalDraft,
             SERVICE_APPLICATION_DOCUMENTS, generatedDocumentInfoList,
             SERVICE_APPLICATION_REFUSAL_REASON, TEST_MY_REASON
