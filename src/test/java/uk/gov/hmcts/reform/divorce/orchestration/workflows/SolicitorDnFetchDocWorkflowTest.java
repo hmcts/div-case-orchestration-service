@@ -118,7 +118,7 @@ public class SolicitorDnFetchDocWorkflowTest {
         verify(populateDocLink).execute(taskContext, caseData);
     }
 
-    private Map<String, Object> buildCaseData(String type, String granted) {
+    public static Map<String, Object> buildCaseData(String type, String granted) {
 
         CollectionMember<DivorceServiceApplication> application = new CollectionMember<>();
         DivorceServiceApplication.DivorceServiceApplicationBuilder applicationBuilder = DivorceServiceApplication.builder();
