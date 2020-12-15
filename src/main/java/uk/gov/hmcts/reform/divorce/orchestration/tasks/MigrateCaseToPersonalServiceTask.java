@@ -38,10 +38,12 @@ public class MigrateCaseToPersonalServiceTask implements Task<Map<String, Object
                 context.getTransientObject(CASE_EVENT_ID_JSON_KEY),
                 payload
             );
+            log.info("CMC update case completed. Updated {} to value: {}",
+                SOL_SERVICE_METHOD_CCD_FIELD, payload.get(SOL_SERVICE_METHOD_CCD_FIELD));
         } catch (FeignException exception) {
             throw new TaskException("Case update failed", exception);
         }
-
+        log.info("returning payload from MigrateCaseToPersonalService Task");
         return payload;
     }
 }
