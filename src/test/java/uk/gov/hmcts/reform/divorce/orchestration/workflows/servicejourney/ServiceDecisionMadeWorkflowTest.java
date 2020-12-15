@@ -246,7 +246,18 @@ public class ServiceDecisionMadeWorkflowTest {
     @Test
     public void whenApplicationIsGrantedAndUnknownTypeShouldNotExecuteAnyTask()
         throws WorkflowException {
-        Map<String, Object> caseData = buildCaseData("I don't exist", YES_VALUE);
+        runTestWithUnknownServiceApplicartionTypeToVerifyNoTaskIsExecutedForGranted(YES_VALUE);
+    }
+
+    @Test
+    public void whenApplicationIsNotGrantedAndUnknownTypeShouldNotExecuteAnyTask()
+        throws WorkflowException {
+        runTestWithUnknownServiceApplicartionTypeToVerifyNoTaskIsExecutedForGranted(NO_VALUE);
+    }
+
+    private void runTestWithUnknownServiceApplicartionTypeToVerifyNoTaskIsExecutedForGranted(String granted)
+        throws WorkflowException {
+        Map<String, Object> caseData = buildCaseData("I don't exist", granted);
         CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_DECREE_NISI);
 
         executeWorkflow(caseDetails);
