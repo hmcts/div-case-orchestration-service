@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.Dis
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedApprovedSolicitorEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedNotApprovedPetitionerEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.DispensedNotApprovedSolicitorEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.util.propertyextractor.ContextAwarePropertyExtractor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +46,8 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
 
     private final DispensedNotApprovedSolicitorEmailTask dispensedNotApprovedSolicitorEmailTask;
     private final DispensedNotApprovedPetitionerEmailTask dispensedNotApprovedPetitionerEmailTask;
+
+    private final ContextAwarePropertyExtractor propertyExtractor;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authorisation)
         throws WorkflowException {

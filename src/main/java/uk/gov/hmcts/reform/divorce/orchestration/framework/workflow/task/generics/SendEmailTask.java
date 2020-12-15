@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generi
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
@@ -9,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
+import uk.gov.hmcts.reform.divorce.orchestration.util.propertyextractor.ContextAwarePropertyExtractor;
 
 import java.util.Map;
 
@@ -36,6 +38,9 @@ public abstract class SendEmailTask implements Task<Map<String, Object>> {
     protected boolean canEmailBeSent(Map<String, Object> caseData) {
         return true;
     }
+
+    @Autowired//TODO - reconsider using final field
+    private ContextAwarePropertyExtractor propertyExtractor;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {

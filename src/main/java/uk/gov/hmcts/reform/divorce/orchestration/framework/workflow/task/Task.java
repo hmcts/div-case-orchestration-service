@@ -6,4 +6,3 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.Template;
 public interface Task<T> extends Template {
     T execute(TaskContext context, T payload) throws TaskException;
 }
-    
