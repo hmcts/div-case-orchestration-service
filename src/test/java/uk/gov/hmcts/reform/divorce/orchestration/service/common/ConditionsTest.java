@@ -204,6 +204,7 @@ public class ConditionsTest {
             is(false)
         );
     }
+
     private static DivorceServiceApplication buildModelWithType(String type) {
         return DivorceServiceApplication.builder().type(type).build();
     }
