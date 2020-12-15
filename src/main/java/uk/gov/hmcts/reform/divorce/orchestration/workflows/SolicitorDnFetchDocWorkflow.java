@@ -17,8 +17,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ANSWERS_LINK;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getLastServiceApplication;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDeemed;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDispensed;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDeemedOrDispensed;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationGranted;
 
 @Component
@@ -50,13 +49,12 @@ public class SolicitorDnFetchDocWorkflow extends DefaultWorkflow<Map<String, Obj
     }
 
     private boolean isRespondentAnswersRequestedButNotRequired(Map<String, Object> caseData, String docLinkFieldName) {
-        DivorceServiceApplication lastServiceApplication = getLastServiceApplication(caseData);
+        DivorceServiceApplication serviceApplication = getLastServiceApplication(caseData);
 
         boolean isRespondentAnswersRequested = RESP_ANSWERS_LINK.equals(docLinkFieldName);
 
-        boolean isValidServiceApplicationGranted = isServiceApplicationGranted(lastServiceApplication)
-            && (isServiceApplicationDeemed(lastServiceApplication)
-            || isServiceApplicationDispensed(lastServiceApplication));
+        boolean isValidServiceApplicationGranted = isServiceApplicationGranted(serviceApplication)
+            && isServiceApplicationDeemedOrDispensed(serviceApplication);
 
         return isRespondentAnswersRequested && isValidServiceApplicationGranted;
     }

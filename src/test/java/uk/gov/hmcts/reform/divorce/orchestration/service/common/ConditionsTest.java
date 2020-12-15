@@ -22,6 +22,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.Ap
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isAwaitingServiceConsideration;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationBailiff;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDeemed;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDeemedOrDispensed;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDispensed;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationGranted;
 
@@ -60,7 +61,7 @@ public class ConditionsTest {
     @Test
     public void isServiceApplicationDispensedForElementShouldReturnTrue() {
         assertThat(
-            isServiceApplicationDispensed(DivorceServiceApplication.builder().type(DISPENSED).build()),
+            isServiceApplicationDispensed(buildModelWithType(DISPENSED)),
             is(true)
         );
     }
@@ -83,7 +84,7 @@ public class ConditionsTest {
     @Test
     public void isServiceApplicationDeemedForElementShouldReturnTrue() {
         assertThat(
-            isServiceApplicationDeemed(DivorceServiceApplication.builder().type(DEEMED).build()),
+            isServiceApplicationDeemed(buildModelWithType(DEEMED)),
             is(true)
         );
     }
@@ -101,6 +102,16 @@ public class ConditionsTest {
     @Test
     public void isServiceApplicationBailiffForValuesShouldReturnFalse() {
         asList(DEEMED, DISPENSED, "", null).forEach(ConditionsTest::assertApplicationIsNotBailiffForValue);
+    }
+
+    @Test
+    public void isServiceApplicationDeemedOrDispensedShouldReturnTrue() {
+        asList(DEEMED, DISPENSED).forEach(ConditionsTest::assertApplicationIsDeemedOrDispensed);
+    }
+
+    @Test
+    public void isServiceApplicationDeemedOrDispensedShouldReturnFalse() {
+        asList(BAILIFF, "", "other", null).forEach(ConditionsTest::assertApplicationIsNotDeemedOrDispensed);
     }
 
     @Test
@@ -139,6 +150,14 @@ public class ConditionsTest {
         assertThat(isServiceApplicationBailiff(caseData), is(false));
     }
 
+    private static void assertApplicationIsDeemedOrDispensed(String value) {
+        assertThat(isServiceApplicationDeemedOrDispensed(buildModelWithType(value)), is(true));
+    }
+
+    private static void assertApplicationIsNotDeemedOrDispensed(String value) {
+        assertThat(isServiceApplicationDeemedOrDispensed(buildModelWithType(value)), is(false));
+    }
+
     private static void assertApplicationIsNotGrantedForValue(String value) {
         Map<String, Object> caseData = buildCaseData(SERVICE_APPLICATION_GRANTED, value);
 
@@ -174,15 +193,18 @@ public class ConditionsTest {
 
     private static void assertApplicationIsNotDispensedForElement(String value) {
         assertThat(
-            isServiceApplicationDispensed(DivorceServiceApplication.builder().type(value).build()),
+            isServiceApplicationDispensed(buildModelWithType(value)),
             is(false)
         );
     }
 
     private static void assertApplicationIsNotDeemedForElement(String value) {
         assertThat(
-            isServiceApplicationDeemed(DivorceServiceApplication.builder().type(value).build()),
+            isServiceApplicationDeemed(buildModelWithType(value)),
             is(false)
         );
+    }
+    private static DivorceServiceApplication buildModelWithType(String type) {
+        return DivorceServiceApplication.builder().type(type).build();
     }
 }
