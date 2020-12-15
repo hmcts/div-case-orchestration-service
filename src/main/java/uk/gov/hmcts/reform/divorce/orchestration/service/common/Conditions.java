@@ -39,6 +39,10 @@ public class Conditions {
         return ApplicationServiceTypes.DEEMED.equalsIgnoreCase(serviceApplication.getType());
     }
 
+    public static boolean isServiceApplicationDeemedOrDispensed(DivorceServiceApplication serviceApplication) {
+        return isServiceApplicationDeemed(serviceApplication) || isServiceApplicationDispensed(serviceApplication);
+    }
+
     public static boolean isServiceApplicationBailiff(Map<String, Object> caseData) {
         return ApplicationServiceTypes.BAILIFF.equalsIgnoreCase((String) caseData.get(CcdFields.SERVICE_APPLICATION_TYPE));
     }

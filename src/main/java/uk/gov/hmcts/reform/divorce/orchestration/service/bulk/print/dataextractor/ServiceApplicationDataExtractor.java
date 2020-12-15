@@ -29,17 +29,16 @@ public class ServiceApplicationDataExtractor {
     }
 
     public static DivorceServiceApplication getLastServiceApplication(Map<String, Object> caseData) {
-        List list = Optional.ofNullable(caseData.get(CcdFields.SERVICE_APPLICATIONS))
+        List<Object> serviceApplications = Optional.ofNullable(caseData.get(CcdFields.SERVICE_APPLICATIONS))
             .map(List.class::cast)
-            .orElse(new ArrayList());
+            .orElse(new ArrayList<>());
 
-        if (list.isEmpty()) {
+        if (serviceApplications.isEmpty()) {
             return DivorceServiceApplication.builder().build();
         }
 
-        return new ObjectMapper()
-            .convertValue(
-                list.get(list.size() - 1),
+        return new ObjectMapper().convertValue(
+                serviceApplications.get(serviceApplications.size() - 1),
                 new TypeReference<CollectionMember<DivorceServiceApplication>>() {
                 })
             .getValue();
