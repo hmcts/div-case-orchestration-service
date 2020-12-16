@@ -20,7 +20,7 @@ public class UpdateDivorceCaseHearingDetailsWithinBulkTest {
         TaskContext context = new DefaultTaskContext();
         Map<String, Object> payload  = Collections.emptyMap();
 
-        List<ApplicationEvent> result = classToTest.getApplicationEvent(context, payload);
+        List<ApplicationEvent> result = classToTest.getApplicationEventsToPublish(context, payload);
         assertEquals(1, result.size());
     }
 }

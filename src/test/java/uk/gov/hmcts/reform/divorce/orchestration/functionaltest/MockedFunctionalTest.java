@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
 import java.util.List;
@@ -38,6 +37,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.elasticsearch.CMSElasticSearchSupport.buildCMSBooleanSearchSource;
 
 @ContextConfiguration(classes = OrchestrationServiceApplication.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -200,7 +200,7 @@ public abstract class MockedFunctionalTest {
                 .withBody(response)));
     }
 
-    protected void stubCaseMaintenanceSearchEndpoint(List<CaseDetails> casesToReturn, QueryBuilder... expectedQueryBuilders) {
+    protected void stubCaseMaintenanceSearchEndpoint(List<CaseDetails> casesToReturn, QueryBuilder query) {
         SearchResult searchResult = SearchResult.builder()
             .total(casesToReturn.size())
             .cases(casesToReturn)
@@ -208,8 +208,8 @@ public abstract class MockedFunctionalTest {
 
         MappingBuilder mappingBuilder = WireMock.post(CASE_MAINTENANCE_CLIENT_SEARCH_URL);
 
-        if (expectedQueryBuilders.length > 0) {
-            String expectedElasticSearchQuery = CMSElasticSearchSupport.buildCMSBooleanSearchSource(0, 50, expectedQueryBuilders);
+        if (query != null) {
+            String expectedElasticSearchQuery = buildCMSBooleanSearchSource(0, 50, query);
             mappingBuilder = mappingBuilder.withRequestBody(equalTo(expectedElasticSearchQuery));
         }
 
@@ -221,6 +221,10 @@ public abstract class MockedFunctionalTest {
         );
 
         maintenanceServiceServer.stubFor(mappingBuilder);
+    }
+
+    protected void stubCaseMaintenanceSearchEndpoint(List<CaseDetails> casesToReturn) {
+        stubCaseMaintenanceSearchEndpoint(casesToReturn, null);
     }
 
     public String stubDocumentGeneratorService(String templateName, Map<String, Object> templateValues, String documentTypeToReturn) {
