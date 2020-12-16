@@ -5,12 +5,10 @@ import org.apache.commons.lang3.tuple.Triple;
 import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Test;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.model.ccd.DivorceGeneralOrder;
 import uk.gov.hmcts.reform.divorce.model.ccd.Document;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceServiceApplication;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
+import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.time.Clock;
@@ -383,35 +381,6 @@ public class CcdUtilUTest {
         Map<String, Object> caseData = ImmutableMap.of(field, myList);
 
         List<CollectionMember<DivorceGeneralOrder>> result = ccdUtil.getListOfCollectionMembers(caseData, field);
-
-        assertThat(result.size(), is(1));
-        assertThat(result, is(myList));
-    }
-
-
-    @Test
-    public void givenNoField_whenGetListOfServiceApplications_shouldReturnAnEmptyArray() {
-        List<CollectionMember<DivorceServiceApplication>> result = ccdUtil.getListOfServiceApplications(emptyMap());
-
-        assertThat(result, is(empty()));
-    }
-
-    @Test
-    public void givenFieldWithAnEmptyArray_whenGetListOfServiceApplications_shouldReturnEmptyArray() {
-        final List<CollectionMember<DivorceServiceApplication>> myList = emptyList();
-
-        List<CollectionMember<DivorceServiceApplication>> result = ccdUtil
-            .getListOfServiceApplications(ImmutableMap.of(CcdFields.SERVICE_APPLICATIONS, myList));
-
-        assertThat(result, is(empty()));
-    }
-
-    @Test
-    public void givenFieldWithPopulatedArray_whenGetListOfServiceApplications_shouldReturnPopulatedArray() {
-        final List<CollectionMember<DivorceServiceApplication>> myList = asList(new CollectionMember<>());
-
-        List<CollectionMember<DivorceServiceApplication>> result = ccdUtil
-            .getListOfServiceApplications(ImmutableMap.of(CcdFields.SERVICE_APPLICATIONS, myList));
 
         assertThat(result.size(), is(1));
         assertThat(result, is(myList));

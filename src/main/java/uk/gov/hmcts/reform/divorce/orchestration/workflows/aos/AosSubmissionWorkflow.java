@@ -78,7 +78,6 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
     private final QueueAosSolicitorSubmitTask queueAosSolicitorSubmitTask;
     private TemplateConfigService templateConfigService;
 
-
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest, final String authToken) throws WorkflowException {
         final List<Task> tasks = new ArrayList<>();
         final Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
@@ -222,6 +221,7 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         } else if (isCoRespNamedAndNotReplied(caseDetails)) {
             template = EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED;
         }
+
         return template;
     }
 

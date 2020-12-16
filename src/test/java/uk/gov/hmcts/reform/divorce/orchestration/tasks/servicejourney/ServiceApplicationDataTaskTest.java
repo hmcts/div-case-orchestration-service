@@ -3,13 +3,11 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes;
-import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,7 +17,6 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ADDED_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_FAMILY_MAN_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_DECISION_DATE;
@@ -42,9 +39,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelp
 @RunWith(MockitoJUnitRunner.class)
 public class ServiceApplicationDataTaskTest {
 
-    @Mock
-    private CcdUtil ccdUtil;
-
     @InjectMocks
     private ServiceApplicationDataTask serviceApplicationDataTask;
 
@@ -52,8 +46,6 @@ public class ServiceApplicationDataTaskTest {
     public void shouldExecuteAndAddElementToNewCollection() {
         Map<String, Object> input = buildCaseData();
         int originalSize = input.size();
-
-        when(ccdUtil.getListOfServiceApplications(input)).thenReturn(new ArrayList<>());
 
         Map<String, Object> output = serviceApplicationDataTask.execute(context(), input);
 
@@ -68,8 +60,7 @@ public class ServiceApplicationDataTaskTest {
     public void shouldExecuteAndAddAnotherElementToExistingCollection() {
         Map<String, Object> input = buildCaseData();
         List<CollectionMember<DivorceServiceApplication>> memberList = new ArrayList<>(asList(buildCollectionMember()));
-
-        when(ccdUtil.getListOfServiceApplications(input)).thenReturn(memberList);
+        input.put(SERVICE_APPLICATIONS, memberList);
 
         Map<String, Object> output = serviceApplicationDataTask.execute(context(), input);
 

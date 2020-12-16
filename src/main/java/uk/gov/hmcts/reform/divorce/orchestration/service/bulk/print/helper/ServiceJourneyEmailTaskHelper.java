@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper;
 
 import com.google.common.collect.ImmutableMap;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
 import java.util.Map;
@@ -14,7 +16,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getRespondentFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ServiceJourneyEmailTaskHelper {
+
     public static Map<String, String> citizenTemplateVariables(Map<String, Object> caseData) {
         return ImmutableMap.of(
             NOTIFICATION_PET_NAME, getPetitionerFullName(caseData)

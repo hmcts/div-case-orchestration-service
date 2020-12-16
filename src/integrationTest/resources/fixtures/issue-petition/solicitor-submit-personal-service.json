@@ -1,28 +1,40 @@
 {
-    "D8StatementOfTruth": "Yes",
-    "FeeAccountReference": "1234",
-    "SolPaymentHowToPay": "feePayByAccount",
-    "SolServiceMethod": "personalService",
-    "SolStatementOfReconciliationCertify": "Yes",
-    "SolStatementOfReconciliationDiscussed": "Yes",
-    "SolStatementOfReconciliationFirm": "Best Sol LTD",
-    "SolStatementOfReconciliationName": "Sol name",
-    "SolicitorFeeAccountNumber": "PBA0077051",
-    "StatementOfReconciliationComments": null,
-    "solApplicationFeeOrderSummary": {
-        "Fees": [
-            {
-                "id": "f7c76501-f1c3-420e-a54e-82ca63603362",
-                "value": {
-                    "FeeCode": "FEE0002",
-                    "FeeAmount": "55000",
-                    "FeeVersion": "4",
-                    "FeeDescription": "Filing an application for a divorce, nullity or civil partnership dissolution – fees order 1.2."
-                }
-            }
-        ],
-        "PaymentTotal": "55000",
-        "PaymentReference": null
+  "D8StatementOfTruth": "Yes",
+  "FeeAccountReference": "1234",
+  "SolPaymentHowToPay": "feePayByAccount",
+  "SolServiceMethod": "personalService",
+  "SolStatementOfReconciliationCertify": "Yes",
+  "SolStatementOfReconciliationDiscussed": "Yes",
+  "SolStatementOfReconciliationFirm": "Best Sol LTD",
+  "SolStatementOfReconciliationName": "Sol name",
+  "SolicitorFeeAccountNumber": "PBA0077051",
+  "StatementOfReconciliationComments": null,
+  "solApplicationFeeOrderSummary": {
+    "Fees": [
+      {
+        "id": "f7c76501-f1c3-420e-a54e-82ca63603362",
+        "value": {
+          "FeeCode": "FEE0002",
+          "FeeAmount": "55000",
+          "FeeVersion": "4",
+          "FeeDescription": "Filing an application for a divorce, nullity or civil partnership dissolution – fees order 1.2."
+        }
+      }
+    ],
+    "PaymentTotal": "55000",
+    "PaymentReference": null
+  },
+  "solSignStatementofTruth": "Yes",
+  "PbaNumbers": {
+    "value": {
+      "code": "PBA0077051",
+      "label": "PBA0077051"
     },
-    "solSignStatementofTruth": "Yes"
+    "list_items": [
+      {
+        "code": "PBA0077051",
+        "label": "PBA0077051"
+      }
+    ]
+  }
 }

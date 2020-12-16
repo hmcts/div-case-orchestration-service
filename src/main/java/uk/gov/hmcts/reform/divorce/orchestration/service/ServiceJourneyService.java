@@ -16,4 +16,10 @@ public interface ServiceJourneyService {
 
     CcdCallbackResponse serviceDecisionRefusal(CaseDetails caseDetails, String authorisation)
         throws ServiceJourneyServiceException;
+
+    Map<String, Object> setupConfirmServicePaymentEvent(CaseDetails caseDetails)
+        throws ServiceJourneyServiceException;
+
+    Map<String, Object> confirmServicePaymentEvent(CaseDetails caseDetails)
+        throws ServiceJourneyServiceException;
 }

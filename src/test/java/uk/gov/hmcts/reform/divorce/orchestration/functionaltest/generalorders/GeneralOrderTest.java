@@ -7,11 +7,11 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.model.ccd.DivorceGeneralOrder;
 import uk.gov.hmcts.reform.divorce.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.GeneralOrder;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.JudgeTypeNotFoundException;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.IdamTestSupport;
@@ -23,7 +23,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.GeneralOrde
 import uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker;
 import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -255,7 +255,7 @@ public class GeneralOrderTest extends IdamTestSupport {
     }
 
     protected String formatDocumentFileName(String documentType) {
-        return documentType + DateUtils.formatDateFromLocalDate(LocalDate.now()) + ".pdf";
+        return documentType + DateUtils.formatDateTimeForDocument(LocalDateTime.now()) + ".pdf";
     }
 
     private Matcher<String> getAllJsonKeysThatShouldNotExistWhenSuccess() {

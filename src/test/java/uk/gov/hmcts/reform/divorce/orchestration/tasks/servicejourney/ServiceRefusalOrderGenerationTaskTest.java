@@ -1,11 +1,11 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney;
 
 import org.junit.Before;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.model.ccd.Document;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceApplicationRefusalOrder;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.docmosis.DocmosisTemplateVars;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BasePayloadSpecificDocumentGenerationTaskTest;
 import uk.gov.hmcts.reform.divorce.utils.DateUtils;
@@ -40,7 +40,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrintTestData.CTSC_CONTACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceApplicationTestUtil.getDocumentCollection;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithToken;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskTestHelper.formatWithCurrentDate;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskTestHelper.formatWithCurrentDateTime;
 
 public abstract class ServiceRefusalOrderGenerationTaskTest extends BasePayloadSpecificDocumentGenerationTaskTest {
 
@@ -85,7 +85,7 @@ public abstract class ServiceRefusalOrderGenerationTaskTest extends BasePayloadS
     }
 
     private String getFileName() {
-        return formatWithCurrentDate(getTask().getDocumentType());
+        return formatWithCurrentDateTime(getTask().getDocumentType());
     }
 
     private DocmosisTemplateVars buildServiceApplicationRefusalOrder() {

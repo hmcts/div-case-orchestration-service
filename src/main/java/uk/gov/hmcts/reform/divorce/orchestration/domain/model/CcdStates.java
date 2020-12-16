@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class CcdStates {
     public static final String SERVICE_APPLICATION_NOT_APPROVED = "ServiceApplicationNotApproved";
+    public static final String AWAITING_BAILIFF_SERVICE = "AwaitingBailiffService";
     public static final String AWAITING_PAYMENT = "AwaitingPayment";
     public static final String AWAITING_HWF_DECISION = "AwaitingHWFDecision";
     public static final String BO_WELSH_RESPONSE_AWAITING_REVIEW = "WelshResponseAwaitingReview";
@@ -28,8 +29,13 @@ public class CcdStates {
     public static final String WELSH_LA_DECISION = "WelshLADecision";
     public static final String AWAITING_ADMIN_CLARIFICATION = "AwaitingAdminClarification";
     public static final String DA_REQUESTED = "DARequested";
-    public static final String DA_OVERDUE = "DAOverdue";
     public static final String DIVORCE_GRANTED = "DivorceGranted";
     public static final String SUBMITTED = "Submitted";
     public static final String SOLICITOR_AWAITING_PAYMENT_CONFIRMATION = "solicitorAwaitingPaymentConfirmation";
+    public static final String AWAITING_GENERAL_REFERRAL_PAYMENT = "AwaitingGeneralReferralPayment";
+    public static final String AWAITING_GENERAL_CONSIDERATION = "AwaitingGeneralConsideration";
+    public static final String GENERAL_CONSIDERATION_COMPLETE = "GeneralConsiderationComplete";
+    public static final String AWAITING_ALTERNATIVE_SERVICE = "AwaitingAlternativeService";
+    public static final String AWAITING_PROCESS_SERVER_SERVICE = "AwaitingProcessServerService";
+    public static final String AWAITING_DWP_RESPONSE = "AwaitingDWPResponse";
 }

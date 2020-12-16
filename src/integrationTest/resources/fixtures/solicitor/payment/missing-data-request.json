@@ -1,0 +1,60 @@
+{
+  "event_id": "solicitorStatementOfTruthPaySubmit",
+  "case_details": {
+    "id": "replace_with_case_id",
+    "jurisdiction": "DIVORCE",
+    "state": "SOTAgreementPayAndSubmitRequired",
+    "case_type_id": "DIVORCE",
+    "security_classification": "PUBLIC",
+    "case_data": {
+      "D8InferredRespondentGender": "male",
+      "D8StatementOfTruth": "YES",
+      "D8RespondentLastName": "Jamed",
+      "D8PetitionerLastName": "Smith",
+      "D8ResidualJurisdictionEligible": "YES",
+      "D8PetitionerEmail": "simulate-delivered@notifications.service.gov.uk",
+      "D8DivorceUnit": "eastMidlands",
+      "D8MarriagePetitionerName": "John Doe",
+      "D8Cohort": "onlineSubmissionPrivateBeta",
+      "D8MarriageDate": "2001-02-02",
+      "D8caseReference": "LV17D80100",
+      "D8HelpWithFeesNeedHelp": "NO",
+      "D8DivorceWho": "husband",
+      "D8MarriageCanDivorce": "YES",
+      "D8RespondentFirstName": "Jane",
+      "D8PetitionerFirstName": "ČĆĐŁukasz John",
+      "D8MarriageRespondentName": "Jenny Benny",
+      "createdDate": "2020-10-25",
+      "solApplicationFeeOrderSummary": {
+        "PaymentReference": null,
+        "PaymentTotal": "55000",
+        "Fees": [
+          {
+            "value": {
+              "FeeDescription": "Filing an application for a divorce, nullity or civil partnership dissolution – fees order 1.2.",
+              "FeeVersion": "4",
+              "FeeAmount": "55000"
+            }
+          }
+        ]
+      },
+      "PbaNumbers": {
+        "value": {
+          "code": "PBA0077051",
+          "label": "PBA0077051"
+        },"list_items": []
+      },
+      "D8SolicitorReference" : "SolicitorReference",
+      "D8SelectedDivorceCentreSiteId" : "AA01",
+      "PetitionerSolicitorFirm" : "Solicitor",
+      "PetitionerSolicitorPhone" : "01234567890",
+      "PetitionerSolicitorName" : "Mister",
+      "PetitionerSolicitorEmail" : "mister@solicitor",
+      "SolicitorAgreeToReceiveEmails" : "YES",
+      "SolPaymentHowToPay" : "feePayByAccount",
+      "solSignStatementofTruth" : "YES",
+      "PetitionerSolicitorToEffectService" : "YES",
+      "SolClaimCostsDetails" : "NO"
+    }
+  }
+}

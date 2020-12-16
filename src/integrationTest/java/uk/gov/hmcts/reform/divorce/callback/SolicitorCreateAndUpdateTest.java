@@ -32,9 +32,9 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
     @Test
     public void givenCallbackRequest_whenSolicitorCreate_thenReturnUpdatedData() throws Exception {
         Response response = postWithDataAndValidateResponse(
-                serverUrl + solicitorCreatePath,
-                PAYLOAD_CONTEXT_PATH + "solicitor-request-data.json",
-                createSolicitorUser().getAuthToken()
+            serverUrl + solicitorCreatePath,
+            PAYLOAD_CONTEXT_PATH + "solicitor-request-data.json",
+            createSolicitorUser().getAuthToken()
         );
 
         assertEverythingIsFine(response);
@@ -43,9 +43,9 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
     @Test
     public void givenCallbackRequest_whenSolicitorUpdate_thenReturnUpdatedData() throws Exception {
         Response response = postWithDataAndValidateResponse(
-                serverUrl + solicitorUpdatePath,
-                PAYLOAD_CONTEXT_PATH + "solicitor-request-data.json",
-                createSolicitorUser().getAuthToken()
+            serverUrl + solicitorUpdatePath,
+            PAYLOAD_CONTEXT_PATH + "solicitor-request-data.json",
+            createSolicitorUser().getAuthToken()
         );
 
         assertEverythingIsFine(response);
@@ -59,8 +59,7 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
         assertNotNull(responseData.get(DIVORCE_CENTRE_SITEID_JSON_KEY));
     }
 
-    static Response postWithDataAndValidateResponse(
-            String url, String pathToFileWithData, String authToken) throws Exception {
+    static Response postWithDataAndValidateResponse(String url, String pathToFileWithData, String authToken) throws Exception {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
         headers.put(HttpHeaders.AUTHORIZATION, authToken);

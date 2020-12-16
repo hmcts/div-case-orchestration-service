@@ -10,23 +10,26 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.model.ccd.DocumentLink;
 import uk.gov.hmcts.reform.divorce.model.response.ValidationResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.AlternativeServiceService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralEmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralOrderService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralReferralService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPaymentTask;
@@ -52,6 +55,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.collection.IsIterableContainingInOrder.contains;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -79,6 +83,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.ccdRequestWithData;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CallbackControllerTest {
@@ -97,6 +102,12 @@ public class CallbackControllerTest {
 
     @Mock
     private GeneralEmailService generalEmailService;
+
+    @Mock
+    private GeneralReferralService generalReferralService;
+
+    @Mock
+    private AlternativeServiceService alternativeServiceService;
 
     @InjectMocks
     private CallbackController classUnderTest;
@@ -222,7 +233,7 @@ public class CallbackControllerTest {
     }
 
     @Test
-    public void whenProcessPbaPayment_AndPaymentTypeNotPBA_thenReturnCcdResponseSameState() throws Exception {
+    public void whenProcessPbaPayment_AndPaymentTypeNotPBA_thenReturnCcdResponseWithSolicitorAwaitingPaymentConfirmationState() throws Exception {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(SOLICITOR_HOW_TO_PAY_JSON_KEY, "feesHelpWith");
 
@@ -238,6 +249,7 @@ public class CallbackControllerTest {
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.processPbaPayment(AUTH_TOKEN, ccdCallbackRequest);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
+            .state(CcdStates.SOLICITOR_AWAITING_PAYMENT_CONFIRMATION)
             .data(caseData)
             .build();
 
@@ -423,7 +435,7 @@ public class CallbackControllerTest {
         assertEquals(expected, actual.getBody());
     }
 
-    @Test(expected = WorkflowException.class)
+    @Test
     public void shouldReturnOkResponse_WithErrors_whenConfirmServiceCalled_thenExceptionIsCaught() throws WorkflowException {
         final Map<String, Object> incomingPayload = new HashMap<>();
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
@@ -435,7 +447,10 @@ public class CallbackControllerTest {
         when(caseOrchestrationService.ccdCallbackConfirmPersonalService(incomingRequest, AUTH_TOKEN))
             .thenThrow(new WorkflowException(errorString));
 
-        classUnderTest.confirmPersonalService(AUTH_TOKEN, incomingRequest);
+        WorkflowException workflowException = assertThrows(WorkflowException.class,
+            () -> classUnderTest.confirmPersonalService(AUTH_TOKEN, incomingRequest));
+
+        assertThat(workflowException.getMessage(), is(errorString));
     }
 
     @Test
@@ -1355,16 +1370,19 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getErrors(), contains("Workflow error"));
     }
 
-    @Test(expected = WorkflowException.class)
+    @Test
     public void testSendAmendApplicationEmailException_returnsError_whenExecuted() throws WorkflowException {
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(DUMMY_CASE_DATA).build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
+        String errorMessage = "Workflow error";
         when(caseOrchestrationService
-            .sendAmendApplicationEmail(ccdCallbackRequest)).thenThrow(new WorkflowException("Workflow error"));
+            .sendAmendApplicationEmail(ccdCallbackRequest)).thenThrow(new WorkflowException(errorMessage));
 
-        classUnderTest.amendApplication(ccdCallbackRequest);
+        WorkflowException workflowException = assertThrows(WorkflowException.class, () -> classUnderTest.amendApplication(ccdCallbackRequest));
+
+        assertThat(workflowException.getMessage(), is(errorMessage));
     }
 
     @Test
@@ -1549,11 +1567,59 @@ public class CallbackControllerTest {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
         final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
-
-        when(caseOrchestrationService.setupConfirmServicePaymentEvent(ccdCallbackRequest)).thenReturn(caseData);
-
-        final ResponseEntity<CcdCallbackResponse> response = classUnderTest.setupConfirmServicePaymentEvent(ccdCallbackRequest);
         final CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+
+        when(serviceJourneyService.setupConfirmServicePaymentEvent(caseDetails)).thenReturn(caseData);
+
+        final ResponseEntity<CcdCallbackResponse> response = classUnderTest
+            .setupConfirmServicePaymentEvent(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody(), is(expectedResponse));
+    }
+
+    @Test
+    public void shouldReturnOK_SetupGeneralReferralPaymentEventIsCalled() throws CaseOrchestrationServiceException {
+        final Map<String, Object> caseData = Collections.emptyMap();
+        final CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+        final CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+
+        when(generalReferralService.setupGeneralReferralPaymentEvent(caseDetails)).thenReturn(caseData);
+
+        final ResponseEntity<CcdCallbackResponse> response = classUnderTest
+            .setupGeneralReferralPaymentEvent(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody(), is(expectedResponse));
+    }
+
+    @Test
+    public void shouldReturnOK_WhenGeneralReferralPaymentEventIsCalled() throws CaseOrchestrationServiceException {
+        final Map<String, Object> caseData = Collections.emptyMap();
+        final CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+        final CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+
+        when(generalReferralService.generalReferralPaymentEvent(caseDetails)).thenReturn(caseData);
+
+        final ResponseEntity<CcdCallbackResponse> response = classUnderTest.generalReferralPaymentEvent(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody(), is(expectedResponse));
+    }
+
+
+    @Test
+    public void shouldReturnOK_WhenConfirmServicePaymentEventIsCalled() throws CaseOrchestrationServiceException {
+        final Map<String, Object> caseData = Collections.emptyMap();
+        final CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+        final CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+
+        when(serviceJourneyService.confirmServicePaymentEvent(caseDetails)).thenReturn(caseData);
+
+        final ResponseEntity<CcdCallbackResponse> response = classUnderTest.confirmServicePaymentEvent(ccdCallbackRequest);
 
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody(), is(expectedResponse));
@@ -1579,5 +1645,116 @@ public class CallbackControllerTest {
 
         assertThat(ccdCallbackResponse.getBody().getData(), equalTo(TEST_PAYLOAD_TO_RETURN));
         verify(generalEmailService).createGeneralEmail(TEST_INCOMING_CASE_DETAILS);
+    }
+
+    @Test
+    public void shouldReturnOk_whenGeneralReferralServiceIsCalled() throws CaseOrchestrationServiceException {
+        when(generalReferralService.receiveReferral(any())).thenReturn(CcdCallbackResponse.builder().build());
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder().build())
+            .build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generalReferral(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        verify(generalReferralService).receiveReferral(any(CcdCallbackRequest.class));
+    }
+
+    @Test
+    public void shouldReturnOk_whenGeneralConsiderationIsCalled() throws CaseOrchestrationServiceException {
+        CaseDetails caseDetails = CaseDetails.builder().build();
+        when(generalReferralService.generalConsideration(caseDetails))
+            .thenReturn(new HashMap<>());
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generalConsideration(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        verify(generalReferralService).generalConsideration(caseDetails);
+    }
+
+    @Test
+    public void shouldReturnOk_whenConfirmAlternativeServiceIsCalled() throws CaseOrchestrationServiceException {
+        CaseDetails caseDetails = CaseDetails.builder().build();
+        when(alternativeServiceService.confirmAlternativeService(caseDetails))
+            .thenReturn(CaseDetails.builder().build());
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.confirmAlternativeService(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        verify(alternativeServiceService).confirmAlternativeService(caseDetails);
+    }
+
+    @Test
+    public void shouldReturnOk_whenReturnToStateBeforeGeneralReferralIsCalled() throws CaseOrchestrationServiceException {
+        Map<String, Object> caseData = ImmutableMap.of(
+            CcdFields.GENERAL_REFERRAL_PREVIOUS_CASE_STATE, "previousCaseState");
+        CcdCallbackRequest ccdCallbackRequest = ccdRequestWithData(caseData);
+        when(generalReferralService.returnToStateBeforeGeneralReferral(any()))
+            .thenReturn(CcdCallbackResponse.builder()
+                .state("previousCaseState")
+                .data(caseData)
+                .build());
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.returnToStateBeforeGeneralReferral(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getState(), is("previousCaseState"));
+        verify(generalReferralService).returnToStateBeforeGeneralReferral(ccdCallbackRequest.getCaseDetails());
+    }
+
+    public void shouldReturnOk_whenConfirmProcessServerServiceIsCalled() throws CaseOrchestrationServiceException {
+        when(alternativeServiceService.confirmProcessServerService(TEST_INCOMING_CASE_DETAILS))
+            .thenReturn(CaseDetails.builder().caseData(TEST_PAYLOAD_TO_RETURN)
+                .build());
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(TEST_INCOMING_CASE_DETAILS)
+            .build();
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.confirmProcessServerService(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getData(), is(TEST_PAYLOAD_TO_RETURN));
+        verify(alternativeServiceService).confirmProcessServerService(TEST_INCOMING_CASE_DETAILS);
+    }
+
+    @Test
+    public void shouldReturnOk_whenAosNotReceivedForProcessServerIsCalled() throws CaseOrchestrationServiceException {
+        CaseDetails caseDetails = CaseDetails.builder().build();
+        when(alternativeServiceService.aosNotReceivedForProcessServer(caseDetails))
+            .thenReturn(CaseDetails.builder().build());
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.aosNotReceivedForProcessServer(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        verify(alternativeServiceService).aosNotReceivedForProcessServer(caseDetails);
+    }
+
+    @Test
+    public void shouldReturnOk_whenAlternativeServiceConfirmedIsCalled() throws CaseOrchestrationServiceException {
+        CaseDetails caseDetails = CaseDetails.builder().build();
+        when(alternativeServiceService.alternativeServiceConfirmed(caseDetails))
+            .thenReturn(CaseDetails.builder().build());
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.alternativeServiceConfirmed(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        verify(alternativeServiceService).alternativeServiceConfirmed(caseDetails);
     }
 }

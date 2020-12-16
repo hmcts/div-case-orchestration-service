@@ -2,9 +2,9 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ServiceApplicationRefusalOrder;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.docmosis.DocmosisTemplateVars;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextracto
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BasePayloadSpecificDocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.S
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_FMT;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationRefusalReason;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
-import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateFromLocalDate;
+import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateTimeForDocument;
 
 @Component
 @Slf4j
@@ -55,6 +55,6 @@ public abstract class ServiceRefusalOrderGenerationTask extends BasePayloadSpeci
 
     @Override
     protected String getFileName() {
-        return format(DOCUMENT_FILENAME_FMT, getDocumentType(), formatDateFromLocalDate(LocalDate.now()));
+        return format(DOCUMENT_FILENAME_FMT, getDocumentType(), formatDateTimeForDocument(LocalDateTime.now()));
     }
 }

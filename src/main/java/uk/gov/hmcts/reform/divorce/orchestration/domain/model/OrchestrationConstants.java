@@ -9,7 +9,6 @@ import java.time.Period;
 public class OrchestrationConstants {
 
     public static final String LINE_SEPARATOR = System.lineSeparator();
-    public static final String SPACE_SEPARATOR = " ";
     public static final String EMPTY_STRING = "";
 
     // Authentication
@@ -86,7 +85,6 @@ public class OrchestrationConstants {
     public static final String YES_VALUE = "Yes";
     public static final String NO_VALUE = "No";
     public static final String ISSUE_DATE = "IssueDate";
-    public static final String CCD_DUE_DATE = "dueDate";
     public static final String D_8_PAYMENTS = "Payments";
     public static final String BULK_LISTING_CASE_ID_FIELD = "BulkListingCaseId";
     public static final String D_8_REASON_FOR_DIVORCE_DESERTION_DAIE = "D8ReasonForDivorceDesertionDate";

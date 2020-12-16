@@ -5,12 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.model.ccd.DivorceGeneralOrder;
 import uk.gov.hmcts.reform.divorce.model.ccd.Document;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceServiceApplication;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
+import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.mapper.CcdMappers;
 import uk.gov.hmcts.reform.divorce.utils.DateUtils;
@@ -184,13 +182,6 @@ public class CcdUtil {
     ) {
         return Optional.ofNullable(caseData.get(field))
             .map(i -> objectMapper.convertValue(i, new TypeReference<List<CollectionMember<DivorceGeneralOrder>>>() {
-            }))
-            .orElse(new ArrayList<>());
-    }
-
-    public List<CollectionMember<DivorceServiceApplication>> getListOfServiceApplications(Map<String, Object> caseData) {
-        return Optional.ofNullable(caseData.get(CcdFields.SERVICE_APPLICATIONS))
-            .map(i -> objectMapper.convertValue(i, new TypeReference<List<CollectionMember<DivorceServiceApplication>>>() {
             }))
             .orElse(new ArrayList<>());
     }

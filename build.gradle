@@ -21,10 +21,11 @@ plugins {
     id 'info.solidsoft.pitest' version '1.5.1'
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id 'jacoco'
-    id 'org.flywaydb.flyway' version '6.5.5'
+    id 'org.flywaydb.flyway' version '7.1.1'
     id 'org.owasp.dependencycheck' version '6.0.2'
     id 'org.sonarqube' version '3.0'
-    id 'org.springframework.boot' version '2.3.4.RELEASE'
+    id 'org.springframework.boot' version '2.3.5.RELEASE'
+    id 'au.com.dius.pact' version '4.1.11'
 }
 
 def versions = [
@@ -36,9 +37,9 @@ def versions = [
         commonsIo                    : '2.6',
         commonsLang3                 : '3.9',
         commonsMath3                 : '3.6.1',
-        divCommonLib                 : '1.1.28',
+        divCommonLib                 : '1.2.4',
         dumbster                     : '1.7.1',
-        elasticsearch                : '7.9.0',
+        elasticsearch                : '7.9.3',
         feignHttpClient              : '10.3.0',
         flyway                       : '6.5.5',
         googleAuth                   : '1.5.0',
@@ -61,7 +62,7 @@ def versions = [
         puppyCrawl                   : '8.29',
         reformHealth                 : '0.0.5',
         reformPropertiesVolume       : '0.0.4',
-        reformsJavaLogging           : '5.1.6',
+        reformsJavaLogging           : '5.1.7',
         sendLetterClient             : '2.2.0',
         serenity                     : '2.1.13',
         serenityCucumber             : '1.9.50',
@@ -70,9 +71,11 @@ def versions = [
         springfoxSwagger             : '2.9.2',
         springSecurityCrypto         : '5.2.4.RELEASE',
         springSecurityRsa            : '1.0.8.RELEASE',
-        tomcat                       : '9.0.37',
+        tomcat                       : '9.0.40',
         unirest                      : '1.4.9',
-        embeddedPostgres             : '1.5.5'
+        embeddedPostgres             : '1.5.5',
+        pact_version                 : '4.1.11',
+        httpComponents               : '4.5.13',
 ]
 
 allprojects {
@@ -161,10 +164,6 @@ allprojects {
                 entry 'tomcat-embed-websocket'
                 entry 'tomcat-embed-el'
             }
-            //CVE-2019-14900
-            dependencySet(group: 'org.hibernate', version: '5.4.18.Final') {
-                entry 'hibernate-core'
-            }
             //CVE-2017-18640
             dependency group: 'org.yaml',name: 'snakeyaml', version: '1.26'
         }
@@ -216,6 +215,14 @@ sourceSets {
         resources {
             srcDir('src/integrationTest/resources')
         }
+    }
+    contractTest {
+        java {
+            compileClasspath += main.output
+            runtimeClasspath += main.output
+            srcDir file('src/contractTest/java')
+        }
+        resources.srcDir file('src/contractTest/resources')
     }
 }
 
@@ -282,6 +289,8 @@ dependencies {
     implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: versions.serviceTokenGenerator
     implementation group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: versions.sendLetterClient
     implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: versions.hmctsNotify
+    implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: versions.httpComponents
+    implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.4.25.Final'
 
     implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign')
             {
@@ -366,6 +375,20 @@ dependencies {
                 exclude group: 'io.reactivex', module: 'rxnetty-contexts'
                 exclude group: 'io.reactivex', module: 'rxnetty-servo'
             }
+
+    contractTestCompile group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
+    contractTestCompile group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
+    contractTestRuntime group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
+    contractTestRuntime group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
+
+    contractTestCompile group: 'org.apache.httpcomponents', name: 'httpclient', version: versions.httpComponents
+    contractTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+    contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.3.2")
+    contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.3.2")
+    contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.3.2')
+
+    contractTestCompile sourceSets.main.runtimeClasspath
+    contractTestCompile sourceSets.test.runtimeClasspath
 }
 
 dependencies {
@@ -397,8 +420,39 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
         printf("Available processors:::::::::: " + Runtime.runtime.availableProcessors().intdiv(2).toString())
     }
 
+    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+    forkEvery = 10
+
+    exclude "uk/gov/hmcts/reform/divorce/callback/nightly/pipeline/**"
+    exclude "uk/gov/hmcts/reform/divorce/maintenance/nightly/pipeline/**"
+
+
     setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
     setClasspath(sourceSets.integrationTest.runtimeClasspath)
+
+    if (System.getenv('CHANGE_TITLE')?.startsWith('[FAST]')) {
+        useJUnit {
+            excludeCategories 'uk.gov.hmcts.reform.divorce.category.ExtendedTest'
+        }
+    }
+    finalizedBy aggregate
+}
+
+task nightlyFunctional(type: Test, description: 'Runs the Nightly Only Functional tests.', group: 'Verification') {
+    doFirst(){
+        printf("::::::::::  Running  nightlyFunctional ::::::::::")
+    }
+
+    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+    forkEvery = 10
+
+    include "uk/gov/hmcts/reform/divorce/callback/nightly/pipeline/**"
+    include "uk/gov/hmcts/reform/divorce/maintenance/nightly/pipeline/**"
+
+
+    setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)
+    setClasspath(sourceSets.integrationTest.runtimeClasspath)
+
     if (System.getenv('CHANGE_TITLE')?.startsWith('[FAST]')) {
         useJUnit {
             excludeCategories 'uk.gov.hmcts.reform.divorce.category.ExtendedTest'
@@ -491,5 +545,44 @@ task migratePostgresDatabase(type: org.flywaydb.gradle.task.FlywayMigrateTask) {
     baselineOnMigrate = true
     if (project.hasProperty("dburl")) {
         url = "jdbc:postgresql://${dburl}"
+    }
+}
+
+task contract(type: Test) {
+    group = 'Delivery pipeline'
+    description = 'Runs the consumer Pact tests'
+    useJUnitPlatform()
+    testClassesDirs = sourceSets.contractTest.output.classesDirs
+    classpath = sourceSets.contractTest.runtimeClasspath
+    include "uk/gov/hmcts/reform/divorce/orchestration/client/**"
+    systemProperty 'pact.rootDir', "pacts"
+    environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
+}
+
+task runAndPublishConsumerPactTests(type: Test){
+    logger.lifecycle("Runs pact Tests")
+    testClassesDirs = sourceSets.contractTest.output.classesDirs
+    classpath = sourceSets.contractTest.runtimeClasspath
+
+}
+
+runAndPublishConsumerPactTests.dependsOn contract
+
+runAndPublishConsumerPactTests.finalizedBy pactPublish
+
+project.ext {
+    pactVersion = getCheckedOutGitCommitHash()
+}
+
+def getCheckedOutGitCommitHash() {
+    'git rev-parse --verify --short HEAD'.execute().text.trim()
+}
+
+pact {
+    publish {
+        pactDirectory = 'pacts'
+        pactBrokerUrl = System.getenv("PACT_BROKER_FULL_URL") ?: 'http://localhost:80'
+        tags = [System.getenv("PACT_BRANCH_NAME") ?:'Dev']
+        version = project.pactVersion
     }
 }

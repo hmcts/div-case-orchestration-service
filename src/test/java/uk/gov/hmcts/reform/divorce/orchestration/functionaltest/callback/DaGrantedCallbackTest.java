@@ -9,13 +9,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.model.ccd.Document;
+import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CollectionMember;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
 import uk.gov.hmcts.reform.divorce.orchestration.service.BulkPrintService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
@@ -82,7 +82,7 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
 
     private static final String API_URL = "/handle-post-da-granted";
 
-    private static final String DECREE_ABSOLUTE_ID = "7d10126d-0e88-4f0e-b475-628b54a87ca6";
+    private static final String DECREE_ABSOLUTE_ID = "812f2709-7891-4f7e-835e-11a84a1fa008";
 
     private static final Map<String, Object> BASE_CASE_DATA = ImmutableMap.<String, Object>builder()
         .put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME)

@@ -1,13 +1,13 @@
 package uk.gov.hmcts.reform.divorce.orchestration.testutil;
 
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
+import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_FMT;
-import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateFromLocalDate;
+import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateTimeForDocument;
 
 public class TaskTestHelper {
 
@@ -24,8 +24,8 @@ public class TaskTestHelper {
         return createGeneratedDocument("http://" + randomId, "docType" + randomId, "filename" + randomId);
     }
 
-    public static String formatWithCurrentDate(String documentType) {
-        return format(DOCUMENT_FILENAME_FMT, documentType, formatDateFromLocalDate(LocalDate.now()));
+    public static String formatWithCurrentDateTime(String documentType) {
+        return format(DOCUMENT_FILENAME_FMT, documentType, formatDateTimeForDocument(LocalDateTime.now()));
     }
 
 }
