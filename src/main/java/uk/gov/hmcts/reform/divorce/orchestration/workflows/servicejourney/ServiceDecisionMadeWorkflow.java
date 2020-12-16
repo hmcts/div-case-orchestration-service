@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -24,7 +23,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getLastServiceApplication;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationType;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDeemed;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDispensed;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationGranted;
@@ -65,17 +64,16 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
     private Task<Map<String, Object>>[] getTasks(CaseDetails caseDetails) {
         Map<String, Object> caseData = caseDetails.getCaseData();
         String caseId = caseDetails.getCaseId();
-        DivorceServiceApplication lastServiceApplication = getLastServiceApplication(caseData);
 
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
         log.info("CaseID: {} Case state is {}.", caseId, caseDetails.getState());
 
-        if (isServiceApplicationGranted(lastServiceApplication)) {
+        if (isServiceApplicationGranted(caseData)) {
             log.info("CaseID: {} Service application is granted. No PDFs to generate. Emails might be sent.", caseId);
-            if (isServiceApplicationDeemed(lastServiceApplication)) {
+            if (isServiceApplicationDeemed(caseData)) {
                 tasks.add(getTaskForDeemedApproved(caseData, caseId));
-            } else if (isServiceApplicationDispensed(lastServiceApplication)) {
+            } else if (isServiceApplicationDispensed(caseData)) {
                 tasks.add(getTaskForDispensedApproved(caseData, caseId));
             } else {
                 log.info("CaseId: {} Application granted. NOT deemed/dispensed. No email will be sent.", caseId);
@@ -84,12 +82,12 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
             return tasks.toArray(new Task[] {});
         }
 
-        log.info("CaseID: {}, Service application type is {}.", caseId, lastServiceApplication.getType());
+        log.info("CaseID: {}, Service application type is {}.", caseId, getServiceApplicationType(caseData));
 
-        if (isServiceApplicationDeemed(lastServiceApplication)) {
+        if (isServiceApplicationDeemed(caseData)) {
             log.info("CaseID: {} Service application is not granted. No PDFs to generate. Emails might be sent.", caseId);
             tasks.add(getTaskForDeemedNotApproved(caseData, caseId));
-        } else if (isServiceApplicationDispensed(lastServiceApplication)) {
+        } else if (isServiceApplicationDispensed(caseData)) {
             tasks.add(getTaskForDispensedNotApproved(caseData, caseId));
         } else {
             log.warn("CaseId: {} Application not granted. NOT deemed/dispensed. No email will be sent.", caseId);
@@ -105,7 +103,6 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
         }
 
         log.info("CaseId: {} dispensed approved citizen email task adding to send email.", caseId);
-
         return dispensedApprovedPetitionerEmailTask;
     }
 

@@ -1,0 +1,1145 @@
+diff --git a/src/main/java/uk/gov/hmcts/reform/divorce/orchestration/service/bulk/print/dataextractor/ServiceApplicationDataExtractor.java b/src/main/java/uk/gov/hmcts/reform/divorce/orchestration/service/bulk/print/dataextractor/ServiceApplicationDataExtractor.java
+index 2cd7397e..8676fe58 100644
+--- a/src/main/java/uk/gov/hmcts/reform/divorce/orchestration/service/bulk/print/dataextractor/ServiceApplicationDataExtractor.java
++++ b/src/main/java/uk/gov/hmcts/reform/divorce/orchestration/service/bulk/print/dataextractor/ServiceApplicationDataExtractor.java
+@@ -1,17 +1,13 @@
+ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
+ 
+-import com.fasterxml.jackson.core.type.TypeReference;
+-import com.fasterxml.jackson.databind.ObjectMapper;
+ import lombok.AccessLevel;
+ import lombok.NoArgsConstructor;
+ import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
+ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
+ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceServiceApplication;
+ 
+-import java.util.ArrayList;
+ import java.util.List;
+ import java.util.Map;
+-import java.util.Optional;
+ 
+ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
+ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
+@@ -28,22 +24,6 @@ public class ServiceApplicationDataExtractor {
+         public static final String SERVICE_APPLICATION_PAYMENT = CcdFields.SERVICE_APPLICATION_PAYMENT;
+     }
+ 
+-    public static DivorceServiceApplication getLastServiceApplication(Map<String, Object> caseData) {
+-        List<Object> serviceApplications = Optional.ofNullable(caseData.get(CcdFields.SERVICE_APPLICATIONS))
+-            .map(List.class::cast)
+-            .orElse(new ArrayList<>());
+-
+-        if (serviceApplications.isEmpty()) {
+-            return DivorceServiceApplication.builder().build();
+-        }
+-
+-        return new ObjectMapper().convertValue(
+-                serviceApplications.get(serviceApplications.size() - 1),
+-                new TypeReference<CollectionMember<DivorceServiceApplication>>() {
+-                })
+-            .getValue();
+-    }
+-
+     public static String getServiceApplicationRefusalReason(Map<String, Object> caseData) {
+         return getMandatoryStringValue(caseData, CaseDataKeys.REFUSAL_REASON);
+     }
+diff --git a/src/main/java/uk/gov/hmcts/reform/divorce/orchestration/service/common/Conditions.java b/src/main/java/uk/gov/hmcts/reform/divorce/orchestration/service/common/Conditions.java
+index 91dbe501..bfb6e4f4 100644
+--- a/src/main/java/uk/gov/hmcts/reform/divorce/orchestration/service/common/Conditions.java
++++ b/src/main/java/uk/gov/hmcts/reform/divorce/orchestration/service/common/Conditions.java
+@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
+ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
+ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
+ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceServiceApplication;
+ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes;
+ 
+ import java.util.Map;
+@@ -19,30 +18,14 @@ public class Conditions {
+         return YES_VALUE.equalsIgnoreCase((String) caseData.get(CcdFields.SERVICE_APPLICATION_GRANTED));
+     }
+ 
+-    public static boolean isServiceApplicationGranted(DivorceServiceApplication serviceApplication) {
+-        return YES_VALUE.equalsIgnoreCase(serviceApplication.getApplicationGranted());
+-    }
+-
+     public static boolean isServiceApplicationDispensed(Map<String, Object> caseData) {
+         return ApplicationServiceTypes.DISPENSED.equalsIgnoreCase((String) caseData.get(CcdFields.SERVICE_APPLICATION_TYPE));
+     }
+ 
+-    public static boolean isServiceApplicationDispensed(DivorceServiceApplication serviceApplication) {
+-        return ApplicationServiceTypes.DISPENSED.equalsIgnoreCase(serviceApplication.getType());
+-    }
+-
+     public static boolean isServiceApplicationDeemed(Map<String, Object> caseData) {
+         return ApplicationServiceTypes.DEEMED.equalsIgnoreCase((String) caseData.get(CcdFields.SERVICE_APPLICATION_TYPE));
+     }
+ 
+-    public static boolean isServiceApplicationDeemed(DivorceServiceApplication serviceApplication) {
+-        return ApplicationServiceTypes.DEEMED.equalsIgnoreCase(serviceApplication.getType());
+-    }
+-
+-    public static boolean isServiceApplicationDeemedOrDispensed(DivorceServiceApplication serviceApplication) {
+-        return isServiceApplicationDeemed(serviceApplication) || isServiceApplicationDispensed(serviceApplication);
+-    }
+-
+     public static boolean isServiceApplicationBailiff(Map<String, Object> caseData) {
+         return ApplicationServiceTypes.BAILIFF.equalsIgnoreCase((String) caseData.get(CcdFields.SERVICE_APPLICATION_TYPE));
+     }
+diff --git a/src/main/java/uk/gov/hmcts/reform/divorce/orchestration/workflows/SolicitorDnFetchDocWorkflow.java b/src/main/java/uk/gov/hmcts/reform/divorce/orchestration/workflows/SolicitorDnFetchDocWorkflow.java
+index f774432f..f610226a 100644
+--- a/src/main/java/uk/gov/hmcts/reform/divorce/orchestration/workflows/SolicitorDnFetchDocWorkflow.java
++++ b/src/main/java/uk/gov/hmcts/reform/divorce/orchestration/workflows/SolicitorDnFetchDocWorkflow.java
+@@ -1,11 +1,9 @@
+ package uk.gov.hmcts.reform.divorce.orchestration.workflows;
+ 
+-import lombok.RequiredArgsConstructor;
+-import lombok.extern.slf4j.Slf4j;
+ import org.apache.commons.lang3.tuple.ImmutablePair;
++import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.stereotype.Component;
+ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceServiceApplication;
+ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
+ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+@@ -16,46 +14,36 @@ import java.util.Map;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_DRAFT_LINK_FIELD;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ANSWERS_LINK;
+-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getLastServiceApplication;
+-import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDeemedOrDispensed;
++import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDeemed;
++import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDispensed;
+ import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationGranted;
+ 
+ @Component
+-@RequiredArgsConstructor
+-@Slf4j
+ public class SolicitorDnFetchDocWorkflow extends DefaultWorkflow<Map<String, Object>> {
+ 
+     private final PopulateDocLink populateDocLink;
+ 
+-    public Map<String, Object> run(CaseDetails caseDetails, final String documentType, final String docLinkFieldName)
+-        throws WorkflowException {
+-
+-        final String caseId = caseDetails.getCaseId();
+-
+-        log.info("CaseID: {} Solicitor DN Fetch Document Workflow is going to be executed.", caseId);
++    @Autowired
++    public SolicitorDnFetchDocWorkflow(PopulateDocLink populateDocLink) {
++        this.populateDocLink = populateDocLink;
++    }
+ 
++    public Map<String, Object> run(CaseDetails caseDetails, final String documentType, final String docLinkFieldName) throws WorkflowException {
+         if (isRespondentAnswersRequestedButNotRequired(caseDetails.getCaseData(), docLinkFieldName)) {
+-            log.info("CaseID: {} respondent answers requested, but not required.", caseId);
+             return caseDetails.getCaseData();
+         }
+ 
+-        log.info("CaseID: {} populateDocLink task is going to be executed.", caseId);
+-
+-        return this.execute(
+-            new Task[] {populateDocLink},
+-            caseDetails.getCaseData(),
++        return this.execute(new Task[] {
++            populateDocLink
++        }, caseDetails.getCaseData(),
+             ImmutablePair.of(DOCUMENT_TYPE, documentType),
+             ImmutablePair.of(DOCUMENT_DRAFT_LINK_FIELD, docLinkFieldName));
+     }
+ 
+     private boolean isRespondentAnswersRequestedButNotRequired(Map<String, Object> caseData, String docLinkFieldName) {
+-        DivorceServiceApplication serviceApplication = getLastServiceApplication(caseData);
+-
+         boolean isRespondentAnswersRequested = RESP_ANSWERS_LINK.equals(docLinkFieldName);
+-
+-        boolean isValidServiceApplicationGranted = isServiceApplicationGranted(serviceApplication)
+-            && isServiceApplicationDeemedOrDispensed(serviceApplication);
+-
++        boolean isValidServiceApplicationGranted =
++            isServiceApplicationGranted(caseData) && (isServiceApplicationDeemed(caseData) || isServiceApplicationDispensed(caseData));
+         return isRespondentAnswersRequested && isValidServiceApplicationGranted;
+     }
+ }
+diff --git a/src/main/java/uk/gov/hmcts/reform/divorce/orchestration/workflows/servicejourney/ServiceDecisionMadeWorkflow.java b/src/main/java/uk/gov/hmcts/reform/divorce/orchestration/workflows/servicejourney/ServiceDecisionMadeWorkflow.java
+index 21991aa7..09e5a8a8 100644
+--- a/src/main/java/uk/gov/hmcts/reform/divorce/orchestration/workflows/servicejourney/ServiceDecisionMadeWorkflow.java
++++ b/src/main/java/uk/gov/hmcts/reform/divorce/orchestration/workflows/servicejourney/ServiceDecisionMadeWorkflow.java
+@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
+ import org.apache.commons.lang3.tuple.ImmutablePair;
+ import org.springframework.stereotype.Component;
+ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceServiceApplication;
+ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
+ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+@@ -24,7 +23,7 @@ import java.util.Map;
+ 
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getLastServiceApplication;
++import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationType;
+ import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDeemed;
+ import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDispensed;
+ import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationGranted;
+@@ -65,17 +64,16 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
+     private Task<Map<String, Object>>[] getTasks(CaseDetails caseDetails) {
+         Map<String, Object> caseData = caseDetails.getCaseData();
+         String caseId = caseDetails.getCaseId();
+-        DivorceServiceApplication lastServiceApplication = getLastServiceApplication(caseData);
+ 
+         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
+ 
+         log.info("CaseID: {} Case state is {}.", caseId, caseDetails.getState());
+ 
+-        if (isServiceApplicationGranted(lastServiceApplication)) {
++        if (isServiceApplicationGranted(caseData)) {
+             log.info("CaseID: {} Service application is granted. No PDFs to generate. Emails might be sent.", caseId);
+-            if (isServiceApplicationDeemed(lastServiceApplication)) {
++            if (isServiceApplicationDeemed(caseData)) {
+                 tasks.add(getTaskForDeemedApproved(caseData, caseId));
+-            } else if (isServiceApplicationDispensed(lastServiceApplication)) {
++            } else if (isServiceApplicationDispensed(caseData)) {
+                 tasks.add(getTaskForDispensedApproved(caseData, caseId));
+             } else {
+                 log.info("CaseId: {} Application granted. NOT deemed/dispensed. No email will be sent.", caseId);
+@@ -84,12 +82,12 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
+             return tasks.toArray(new Task[] {});
+         }
+ 
+-        log.info("CaseID: {}, Service application type is {}.", caseId, lastServiceApplication.getType());
++        log.info("CaseID: {}, Service application type is {}.", caseId, getServiceApplicationType(caseData));
+ 
+-        if (isServiceApplicationDeemed(lastServiceApplication)) {
++        if (isServiceApplicationDeemed(caseData)) {
+             log.info("CaseID: {} Service application is not granted. No PDFs to generate. Emails might be sent.", caseId);
+             tasks.add(getTaskForDeemedNotApproved(caseData, caseId));
+-        } else if (isServiceApplicationDispensed(lastServiceApplication)) {
++        } else if (isServiceApplicationDispensed(caseData)) {
+             tasks.add(getTaskForDispensedNotApproved(caseData, caseId));
+         } else {
+             log.warn("CaseId: {} Application not granted. NOT deemed/dispensed. No email will be sent.", caseId);
+@@ -105,7 +103,6 @@ public class ServiceDecisionMadeWorkflow extends DefaultWorkflow<Map<String, Obj
+         }
+ 
+         log.info("CaseId: {} dispensed approved citizen email task adding to send email.", caseId);
+-
+         return dispensedApprovedPetitionerEmailTask;
+     }
+ 
+diff --git a/src/test/java/uk/gov/hmcts/reform/divorce/orchestration/functionaltest/SolicitorDnFetchDocTest.java b/src/test/java/uk/gov/hmcts/reform/divorce/orchestration/functionaltest/SolicitorDnFetchDocWorkflowITest.java
+similarity index 65%
+rename from src/test/java/uk/gov/hmcts/reform/divorce/orchestration/functionaltest/SolicitorDnFetchDocTest.java
+rename to src/test/java/uk/gov/hmcts/reform/divorce/orchestration/functionaltest/SolicitorDnFetchDocWorkflowITest.java
+index 732fe44b..72728688 100644
+--- a/src/test/java/uk/gov/hmcts/reform/divorce/orchestration/functionaltest/SolicitorDnFetchDocTest.java
++++ b/src/test/java/uk/gov/hmcts/reform/divorce/orchestration/functionaltest/SolicitorDnFetchDocWorkflowITest.java
+@@ -1,6 +1,5 @@
+ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
+ 
+-import org.hamcrest.Matcher;
+ import org.junit.Test;
+ import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.http.MediaType;
+@@ -17,21 +16,20 @@ import java.util.Map;
+ import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+ import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
+ import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
+-import static java.lang.String.format;
+ import static org.hamcrest.Matchers.allOf;
+ import static org.hamcrest.Matchers.hasItem;
+-import static org.hamcrest.Matchers.hasSize;
+ import static org.hamcrest.Matchers.nullValue;
+ import static org.hamcrest.core.Is.is;
+ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
++import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_GRANTED;
++import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DEEMED;
+ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
+-import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnFetchDocWorkflowTest.buildCaseData;
+ 
+-public class SolicitorDnFetchDocTest extends MockedFunctionalTest {
++public class SolicitorDnFetchDocWorkflowITest extends MockedFunctionalTest {
+ 
+     private static final String API_URL = "/sol-dn-review-petition";
+     private static final String API_URL_RESP_ANSWERS = "/sol-dn-resp-answers-doc";
+@@ -45,28 +43,44 @@ public class SolicitorDnFetchDocTest extends MockedFunctionalTest {
+ 
+         final Map<String, Object> caseData = Collections.emptyMap();
+ 
+-        CcdCallbackRequest request = buildRequest(caseData);
++        final CaseDetails caseDetails =
++                CaseDetails.builder()
++                        .caseData(caseData)
++                        .build();
++
++        CcdCallbackRequest request = CcdCallbackRequest.builder()
++                .caseDetails(caseDetails)
++                .build();
+ 
+         webClient.perform(post(API_URL)
+-            .content(convertObjectToJsonString(request))
+-            .contentType(MediaType.APPLICATION_JSON)
+-            .accept(MediaType.APPLICATION_JSON))
+-            .andExpect(status().isOk())
+-            .andExpect(content().string(allOf(
+-                isJson(),
+-                hasJsonPath("$.data", is(nullValue())),
+-                hasJsonPath("$.errors",
+-                    hasItem("petition document not found")
+-                )
+-            )));
++                .content(convertObjectToJsonString(request))
++                .contentType(MediaType.APPLICATION_JSON)
++                .accept(MediaType.APPLICATION_JSON))
++                .andExpect(status().isOk())
++                .andExpect(content().string(allOf(
++                        isJson(),
++                        hasJsonPath("$.data", is(nullValue())),
++                        hasJsonPath("$.errors",
++                                hasItem("petition document not found")
++                        )
++                )));
+     }
+ 
+     @Test
+     public void givenValidServiceApplicationGranted_whenRequestingRespondentAnswers_thenResponseDoesNotSetRespondentAnswersDocumentLinkAndContainsNoErrors() throws Exception {
+ 
+-        final Map<String, Object> caseData = buildCaseData(DEEMED, YES_VALUE);
++        final Map<String, Object> caseData = new HashMap<>();
++        caseData.put(SERVICE_APPLICATION_TYPE, DEEMED);
++        caseData.put(SERVICE_APPLICATION_GRANTED, YES_VALUE);
+ 
+-        CcdCallbackRequest request = buildRequest(caseData);
++        final CaseDetails caseDetails =
++            CaseDetails.builder()
++                .caseData(caseData)
++                .build();
++
++        CcdCallbackRequest request = CcdCallbackRequest.builder()
++            .caseDetails(caseDetails)
++            .build();
+ 
+         webClient.perform(post(API_URL_RESP_ANSWERS)
+             .content(convertObjectToJsonString(request))
+@@ -75,8 +89,7 @@ public class SolicitorDnFetchDocTest extends MockedFunctionalTest {
+             .andExpect(status().isOk())
+             .andExpect(content().string(allOf(
+                 isJson(),
+-                hasJsonPath("$.data.ServiceApplications", hasSize(1)),
+-                assertServiceApplicationElement(DEEMED, YES_VALUE),
++                hasJsonPath("$.data", is(caseData)),
+                 hasNoJsonPath("$.errors")
+             )));
+     }
+@@ -86,11 +99,17 @@ public class SolicitorDnFetchDocTest extends MockedFunctionalTest {
+     public void givenCaseData_whenSolicitorDnJourneyBegins_thenSetPetitionUrlField() throws Exception {
+ 
+         final Map<String, Object> caseData = ObjectMapperTestUtil.getJsonFromResourceFile(
+-            "/jsonExamples/payloads/sol-dn-review-petition.json",
+-            Map.class
++                "/jsonExamples/payloads/sol-dn-review-petition.json",
++                Map.class
+         );
+ 
+-        CcdCallbackRequest request = buildRequest(caseData);
++        final CaseDetails caseDetails = CaseDetails.builder()
++                        .caseData(caseData)
++                        .build();
++
++        CcdCallbackRequest request = CcdCallbackRequest.builder()
++                .caseDetails(caseDetails)
++                .build();
+ 
+         webClient.perform(post(API_URL)
+             .content(convertObjectToJsonString(request))
+@@ -98,10 +117,11 @@ public class SolicitorDnFetchDocTest extends MockedFunctionalTest {
+             .accept(MediaType.APPLICATION_JSON))
+             .andExpect(status().isOk())
+             .andExpect(content().json(
+-                convertObjectToJsonString(CcdCallbackResponse.builder()
+-                    .data(buildExpectedDataMap())
+-                    .build()
+-                ))
++                    convertObjectToJsonString(CcdCallbackResponse.builder()
++                        .data(buildExpectedDataMap())
++                        .build()
++                    )
++                )
+             );
+     }
+ 
+@@ -110,24 +130,6 @@ public class SolicitorDnFetchDocTest extends MockedFunctionalTest {
+         expectedMiniPetitionLink.put("document_url", "https://localhost:8080/documents/1234");
+         expectedMiniPetitionLink.put("document_filename", "d8petition1513951627081724.pdf");
+         expectedMiniPetitionLink.put("document_binary_url", "https://localhost:8080/documents/1234/binary");
+-
+         return Collections.singletonMap(MINI_PETITION_LINK, expectedMiniPetitionLink);
+     }
+-
+-    private static Matcher<String> assertServiceApplicationElement(String applicationType, String granted) {
+-        String pattern = "$.data.ServiceApplications[0].value.%s";
+-
+-        return allOf(
+-            hasJsonPath(format(pattern, "Type"), is(applicationType)),
+-            hasJsonPath(format(pattern, "ApplicationGranted"), is(granted))
+-        );
+-    }
+-
+-    private CcdCallbackRequest buildRequest(Map<String, Object> caseData) {
+-        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+-
+-        return CcdCallbackRequest.builder()
+-            .caseDetails(caseDetails)
+-            .build();
+-    }
+ }
+diff --git a/src/test/java/uk/gov/hmcts/reform/divorce/orchestration/functionaltest/servicejourney/MakeServiceDecisionTest.java b/src/test/java/uk/gov/hmcts/reform/divorce/orchestration/functionaltest/servicejourney/MakeServiceDecisionTest.java
+index 20ca0adf..74282132 100644
+--- a/src/test/java/uk/gov/hmcts/reform/divorce/orchestration/functionaltest/servicejourney/MakeServiceDecisionTest.java
++++ b/src/test/java/uk/gov/hmcts/reform/divorce/orchestration/functionaltest/servicejourney/MakeServiceDecisionTest.java
+@@ -68,7 +68,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.S
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
+-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+ import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.servicejourney.ServiceDecisionMadeTest.buildRefusalRequest;
+ import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.servicejourney.ServiceDecisionMadeTest.buildServiceRefusalOrderCaseData;
+@@ -400,8 +399,6 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
+         );
+ 
+         caseData.put(SERVICE_APPLICATION_PAYMENT, TEST_SERVICE_APPLICATION_PAYMENT);
+-        caseData.put(SERVICE_APPLICATION_TYPE, serviceType);
+-        caseData.put(SERVICE_APPLICATION_GRANTED, NO_VALUE);
+         caseData.put(SERVICE_APPLICATIONS, new ArrayList<>(Arrays.asList(buildCollectionMember())));
+ 
+         return ccdCallbackRequest;
+@@ -415,7 +412,6 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
+         );
+         refusalOrderData.put(RECEIVED_SERVICE_ADDED_DATE, TEST_ADDED_DATE);
+         refusalOrderData.put(SERVICE_APPLICATION_PAYMENT, TEST_SERVICE_APPLICATION_PAYMENT);
+-        refusalOrderData.remove(SERVICE_APPLICATIONS);
+ 
+         CcdCallbackRequest ccdCallbackRequest = buildRefusalRequest(refusalOrderData);
+         ccdCallbackRequest.getCaseDetails().setState(SERVICE_APPLICATION_NOT_APPROVED);
+diff --git a/src/test/java/uk/gov/hmcts/reform/divorce/orchestration/functionaltest/servicejourney/ServiceDecisionMadeTest.java b/src/test/java/uk/gov/hmcts/reform/divorce/orchestration/functionaltest/servicejourney/ServiceDecisionMadeTest.java
+index f158b156..c3898096 100644
+--- a/src/test/java/uk/gov/hmcts/reform/divorce/orchestration/functionaltest/servicejourney/ServiceDecisionMadeTest.java
++++ b/src/test/java/uk/gov/hmcts/reform/divorce/orchestration/functionaltest/servicejourney/ServiceDecisionMadeTest.java
+@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.boot.test.mock.mockito.MockBean;
+ import org.springframework.http.MediaType;
+ import org.springframework.test.web.servlet.MockMvc;
++import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
+ import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
+ import uk.gov.hmcts.reform.divorce.model.ccd.Document;
+ import uk.gov.hmcts.reform.divorce.model.ccd.DocumentLink;
+@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
+ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
+ import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.IdamTestSupport;
++import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
+ 
+ import java.util.ArrayList;
+ import java.util.HashMap;
+@@ -22,7 +24,6 @@ import java.util.Map;
+ 
+ import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
+ import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
+-import static java.util.Arrays.asList;
+ import static org.hamcrest.Matchers.allOf;
+ import static org.mockito.ArgumentMatchers.any;
+ import static org.mockito.ArgumentMatchers.eq;
+@@ -46,7 +47,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
+ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_EMAIL;
+ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_NAME;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RECEIVED_SERVICE_APPLICATION_DATE;
+-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATIONS;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_DOCUMENTS;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_GRANTED;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_REFUSAL_REASON;
+@@ -69,7 +69,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
+ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
+ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
+ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerFullName;
+-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractorTest.buildCollectionMember;
+ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
+ import static uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceDecisionMadeWorkflowTest.petitionerRepresented;
+ 
+@@ -77,26 +76,30 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
+ 
+     private static final String API_URL = "/service-decision-made/final";
+ 
+-    private static final String CITIZEN_DEEMED_APPROVED_EMAIL_ID = "00f27db6-2678-4ccd-8cdd-44971b330ca4";
+     private static final String PET_SOL_DEEMED_APPROVED_EMAIL_ID = "b762cdc0-fa4d-4699-b60d-1532e912cc3e";
+-
++    private static final String DEEMED_APPROVED_EMAIL_ID = "00f27db6-2678-4ccd-8cdd-44971b330ca4";
+     private static final String CITIZEN_DEEMED_NOT_APPROVED_EMAIL_ID = "5140a51a-fcda-42e4-adf4-0b469a1b927a";
+-    private static final String SOL_DEEMED_NOT_APPROVED_EMAIL_ID = "919e3780-0776-4219-a30c-72e9d6999414";
+-
+-    private static final String CITIZEN_DISPENSED_APPROVED_EMAIL_ID = "cf03cea1-a155-4f20-a3a6-3ad8fad7742f";
++    private static final String SOLICITOR_DEEMED_NOT_APPROVED_EMAIL_ID = "919e3780-0776-4219-a30c-72e9d6999414";
++    private static final String DISPENSED_APPROVED_EMAIL_ID = "cf03cea1-a155-4f20-a3a6-3ad8fad7742f";
+     private static final String SOL_DISPENSED_APPROVED_EMAIL_ID = "2cb5e2c4-8090-4f7e-b0ae-574491cd8680";
+-
+-    private static final String CITIZEN_DISPENSED_NOT_APPROVED_EMAIL_ID = "e40d8623-e801-4de1-834a-7de101c9d857";
++    private static final String DISPENSED_NOT_APPROVED_EMAIL_ID = "e40d8623-e801-4de1-834a-7de101c9d857";
+     private static final String SOL_DISPENSED_NOT_APPROVED_EMAIL_ID = "d4de177b-b5b9-409c-95bc-cc8f85afd136";
++    private static final String CITIZEN_DISPENSED_NOT_APPROVED_EMAIL_ID = "e40d8623-e801-4de1-834a-7de101c9d857";
++
++    private CtscContactDetails ctscContactDetails;
+ 
+     @Autowired
+     private MockMvc webClient;
+ 
++    @Autowired
++    private CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService;
++
+     @MockBean
+     private EmailClient emailClient;
+ 
+     @Before
+     public void setup() {
++        ctscContactDetails = ctscContactDetailsDataProviderService.getCtscContactDetails();
+         documentGeneratorServiceServer.resetAll();
+     }
+ 
+@@ -113,7 +116,7 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
+             .andExpect(content().string(allOf(isJson(), hasNoJsonPath("$.errors"))));
+ 
+         verify(emailClient).sendEmail(
+-            eq(CITIZEN_DEEMED_APPROVED_EMAIL_ID),
++            eq(DEEMED_APPROVED_EMAIL_ID),
+             eq(TEST_PETITIONER_EMAIL),
+             eq(expectedCitizenEmailVars(caseData)),
+             any()
+@@ -153,7 +156,7 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
+             .andExpect(content().string(allOf(isJson(), hasNoJsonPath("$.errors"))));
+ 
+         verify(emailClient).sendEmail(
+-            eq(CITIZEN_DISPENSED_APPROVED_EMAIL_ID),
++            eq(DISPENSED_APPROVED_EMAIL_ID),
+             eq(TEST_PETITIONER_EMAIL),
+             eq(expectedCitizenEmailVars(caseData)),
+             any()
+@@ -253,7 +256,7 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
+             .andExpect(content().string(allOf(isJson(), hasNoJsonPath("$.errors"))));
+ 
+         verify(emailClient).sendEmail(
+-            eq(SOL_DEEMED_NOT_APPROVED_EMAIL_ID),
++            eq(SOLICITOR_DEEMED_NOT_APPROVED_EMAIL_ID),
+             eq(TEST_SOLICITOR_EMAIL),
+             eq(expectedSolicitorEmailVars()),
+             any()
+@@ -283,9 +286,10 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
+         caseData.put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
+         caseData.put(RESPONDENT_FIRST_NAME, TEST_RESPONDENT_FIRST_NAME);
+         caseData.put(RESPONDENT_LAST_NAME, TEST_RESPONDENT_LAST_NAME);
+-        caseData.put(RECEIVED_SERVICE_APPLICATION_DATE, TEST_RECEIVED_DATE);
+ 
+-        caseData.put(SERVICE_APPLICATIONS, asList(buildCollectionMember(isApplicationGranted, applicationType)));
++        caseData.put(RECEIVED_SERVICE_APPLICATION_DATE, TEST_RECEIVED_DATE);
++        caseData.put(SERVICE_APPLICATION_GRANTED, isApplicationGranted);
++        caseData.put(SERVICE_APPLICATION_TYPE, applicationType);
+ 
+         return caseData;
+     }
+@@ -312,7 +316,6 @@ public class ServiceDecisionMadeTest extends IdamTestSupport {
+ 
+         Map<String, Object> payload = ImmutableMap.of(
+             SERVICE_APPLICATION_GRANTED, NO_VALUE,
+-            SERVICE_APPLICATION_TYPE, serviceApplicationType,
+             SERVICE_REFUSAL_DRAFT, serviceRefusalDraft,
+             SERVICE_APPLICATION_DOCUMENTS, generatedDocumentInfoList,
+             SERVICE_APPLICATION_REFUSAL_REASON, TEST_MY_REASON
+diff --git a/src/test/java/uk/gov/hmcts/reform/divorce/orchestration/service/bulk/print/dataextractor/ServiceApplicationDataExtractorTest.java b/src/test/java/uk/gov/hmcts/reform/divorce/orchestration/service/bulk/print/dataextractor/ServiceApplicationDataExtractorTest.java
+index a701b5a9..147649d8 100644
+--- a/src/test/java/uk/gov/hmcts/reform/divorce/orchestration/service/bulk/print/dataextractor/ServiceApplicationDataExtractorTest.java
++++ b/src/test/java/uk/gov/hmcts/reform/divorce/orchestration/service/bulk/print/dataextractor/ServiceApplicationDataExtractorTest.java
+@@ -1,14 +1,13 @@
+ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
+ 
+ import com.google.common.collect.ImmutableMap;
+-import org.apache.logging.log4j.util.Strings;
++import org.hamcrest.core.Is;
+ import org.junit.Test;
+ import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
+ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
+ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceServiceApplication;
+ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
+ 
+-import java.util.ArrayList;
+ import java.util.HashMap;
+ import java.util.List;
+ import java.util.Map;
+@@ -19,23 +18,17 @@ import static java.util.Collections.emptyMap;
+ import static org.hamcrest.CoreMatchers.is;
+ import static org.hamcrest.MatcherAssert.assertThat;
+ import static org.hamcrest.collection.IsEmptyCollection.empty;
+-import static org.junit.Assert.assertNull;
+ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_MY_REASON;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_GRANTED;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_REFUSAL_REASON;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
+-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DEEMED;
+-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DISPENSED;
+-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.CaseDataKeys.REFUSAL_REASON;
+ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.CaseDataKeys.SERVICE_APPLICATION_PAYMENT;
+-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getLastServiceApplication;
+ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getListOfServiceApplications;
+ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationGranted;
+ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationPayment;
+ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationRefusalReason;
+-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationRefusalReasonOrEmpty;
+ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationType;
+ 
+ public class ServiceApplicationDataExtractorTest {
+@@ -86,7 +79,7 @@ public class ServiceApplicationDataExtractorTest {
+     public void givenNoField_whenGetListOfServiceApplications_shouldReturnAnEmptyArray() {
+         List<CollectionMember<DivorceServiceApplication>> result = getListOfServiceApplications(emptyMap());
+ 
+-        assertThat(result, is(empty()));
++        assertThat(result, Is.is(empty()));
+     }
+ 
+     @Test
+@@ -96,7 +89,7 @@ public class ServiceApplicationDataExtractorTest {
+         List<CollectionMember<DivorceServiceApplication>> result =
+             getListOfServiceApplications(ImmutableMap.of(CcdFields.SERVICE_APPLICATIONS, myList));
+ 
+-        assertThat(result, is(empty()));
++        assertThat(result, Is.is(empty()));
+     }
+ 
+     @Test
+@@ -106,83 +99,8 @@ public class ServiceApplicationDataExtractorTest {
+         List<CollectionMember<DivorceServiceApplication>> result =
+             getListOfServiceApplications(ImmutableMap.of(CcdFields.SERVICE_APPLICATIONS, myList));
+ 
+-        assertThat(result.size(), is(1));
+-        assertThat(result, is(myList));
+-    }
+-
+-    @Test
+-    public void givenNoField_whenGetServiceApplicationRefusalReasonOrEmpty_shouldReturnEmptyString() {
+-        assertThat(getServiceApplicationRefusalReasonOrEmpty(new HashMap<>()), is(Strings.EMPTY));
+-    }
+-
+-    @Test
+-    public void givenFieldPopulated_whenGetServiceApplicationRefusalReasonOrEmpty_shouldReturnValue() {
+-        String expectedValue = "value";
+-
+-        assertThat(
+-            getServiceApplicationRefusalReasonOrEmpty(ImmutableMap.of(REFUSAL_REASON, expectedValue)),
+-            is(expectedValue)
+-        );
+-    }
+-
+-    @Test
+-    public void getLastServiceApplicationShouldReturnEmptyWhenNoList() {
+-        DivorceServiceApplication result = getLastServiceApplication(new HashMap<>());
+-
+-        assertNull(result.getType());
+-    }
+-
+-    @Test
+-    public void getLastServiceApplicationShouldReturnEmptyWhenEmptyList() {
+-        DivorceServiceApplication result = getLastServiceApplication(
+-            ImmutableMap.of(CcdFields.SERVICE_APPLICATIONS, new ArrayList<>())
+-        );
+-
+-        assertNull(result.getType());
+-    }
+-
+-    @Test
+-    public void getLastServiceApplicationShouldReturnElementWhenOneElementOnList() {
+-        final List<CollectionMember<DivorceServiceApplication>> myList = new ArrayList<>();
+-
+-        myList.add(buildCollectionMember(YES_VALUE, DEEMED));
+-
+-        DivorceServiceApplication result = getLastServiceApplication(
+-            ImmutableMap.of(CcdFields.SERVICE_APPLICATIONS, myList)
+-        );
+-
+-        assertThat(result.getType(), is(DEEMED));
+-    }
+-
+-    @Test
+-    public void getLastServiceApplicationShouldReturnLastElementWhenManyElementsOnList() {
+-        final List<CollectionMember<DivorceServiceApplication>> myList = asList(
+-            buildCollectionMember(YES_VALUE, DEEMED),
+-            buildCollectionMember(YES_VALUE, DISPENSED),
+-            buildCollectionMember(NO_VALUE, DISPENSED),
+-            buildCollectionMember(NO_VALUE, DEEMED)
+-        );
+-
+-        DivorceServiceApplication result = getLastServiceApplication(
+-            ImmutableMap.of(CcdFields.SERVICE_APPLICATIONS, myList)
+-        );
+-
+-        assertThat(result.getApplicationGranted(), is(NO_VALUE));
+-        assertThat(result.getType(), is(DEEMED));
+-    }
+-
+-    public static CollectionMember<DivorceServiceApplication> buildCollectionMember(String granted, String type) {
+-        CollectionMember<DivorceServiceApplication> collectionMember = new CollectionMember<>();
+-        collectionMember.setValue(buildServiceApplication(granted, type));
+-
+-        return collectionMember;
+-    }
+-
+-    private static DivorceServiceApplication buildServiceApplication(String granted, String type) {
+-        return DivorceServiceApplication.builder()
+-            .applicationGranted(granted)
+-            .type(type)
+-            .build();
++        assertThat(result.size(), Is.is(1));
++        assertThat(result, Is.is(myList));
+     }
+ 
+     private static Map<String, Object> buildCaseDataWithField(String field, String value) {
+diff --git a/src/test/java/uk/gov/hmcts/reform/divorce/orchestration/service/common/ConditionsTest.java b/src/test/java/uk/gov/hmcts/reform/divorce/orchestration/service/common/ConditionsTest.java
+index 9ad826d5..01bb2f27 100644
+--- a/src/test/java/uk/gov/hmcts/reform/divorce/orchestration/service/common/ConditionsTest.java
++++ b/src/test/java/uk/gov/hmcts/reform/divorce/orchestration/service/common/ConditionsTest.java
+@@ -1,8 +1,8 @@
+ package uk.gov.hmcts.reform.divorce.orchestration.service.common;
+ 
++import com.google.common.collect.ImmutableMap;
+ import org.junit.Test;
+ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceServiceApplication;
+ 
+ import java.util.HashMap;
+ import java.util.Map;
+@@ -11,19 +11,11 @@ import static java.util.Arrays.asList;
+ import static org.hamcrest.MatcherAssert.assertThat;
+ import static org.hamcrest.Matchers.is;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_GRANTED;
+-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DA;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.BAILIFF;
+-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DEEMED;
+-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DISPENSED;
+ import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isAwaitingServiceConsideration;
+-import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationBailiff;
+-import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDeemed;
+-import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDeemedOrDispensed;
+-import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDispensed;
+ import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationGranted;
+ 
+ public class ConditionsTest {
+@@ -38,82 +30,6 @@ public class ConditionsTest {
+         asList(NO_VALUE, "", "no", "NO", null).forEach(ConditionsTest::assertApplicationIsNotGrantedForValue);
+     }
+ 
+-    @Test
+-    public void isServiceApplicationGrantedForElementShouldReturnTrue() {
+-        asList(YES_VALUE, "YES", "yes").forEach(ConditionsTest::assertApplicationIsGrantedForElement);
+-    }
+-
+-    @Test
+-    public void isServiceApplicationGrantedForElementShouldReturnFalse() {
+-        asList(NO_VALUE, "", "no", "NO", null).forEach(ConditionsTest::assertApplicationIsNotGrantedForElement);
+-    }
+-
+-    @Test
+-    public void isServiceApplicationDispensedForValueShouldReturnTrue() {
+-        assertThat(isServiceApplicationDispensed(buildCaseData(SERVICE_APPLICATION_TYPE, DISPENSED)), is(true));
+-    }
+-
+-    @Test
+-    public void isServiceApplicationDispensedForElementShouldReturnFalse() {
+-        asList(DEEMED, BAILIFF, "", null).forEach(ConditionsTest::assertApplicationIsNotDispensedForElement);
+-    }
+-
+-    @Test
+-    public void isServiceApplicationDispensedForElementShouldReturnTrue() {
+-        assertThat(
+-            isServiceApplicationDispensed(buildModelWithType(DISPENSED)),
+-            is(true)
+-        );
+-    }
+-
+-    @Test
+-    public void isServiceApplicationDispensedForValuesShouldReturnFalse() {
+-        asList(DEEMED, BAILIFF, "", null).forEach(ConditionsTest::assertApplicationIsNotDispensedForElement);
+-    }
+-
+-    @Test
+-    public void isServiceApplicationDeemedForValueShouldReturnTrue() {
+-        assertThat(isServiceApplicationDeemed(buildCaseData(SERVICE_APPLICATION_TYPE, DEEMED)), is(true));
+-    }
+-
+-    @Test
+-    public void isServiceApplicationDeemedForValuesShouldReturnFalse() {
+-        asList(DISPENSED, BAILIFF, "", null).forEach(ConditionsTest::assertApplicationIsNotDeemedForValue);
+-    }
+-
+-    @Test
+-    public void isServiceApplicationDeemedForElementShouldReturnTrue() {
+-        assertThat(
+-            isServiceApplicationDeemed(buildModelWithType(DEEMED)),
+-            is(true)
+-        );
+-    }
+-
+-    @Test
+-    public void isServiceApplicationDeemedForElementShouldReturnFalse() {
+-        asList(DISPENSED, BAILIFF, "", null).forEach(ConditionsTest::assertApplicationIsNotDeemedForElement);
+-    }
+-
+-    @Test
+-    public void isServiceApplicationBailiffForValueShouldReturnTrue() {
+-        asList(BAILIFF).forEach(ConditionsTest::assertApplicationIsBailiffForValue);
+-    }
+-
+-    @Test
+-    public void isServiceApplicationBailiffForValuesShouldReturnFalse() {
+-        asList(DEEMED, DISPENSED, "", null).forEach(ConditionsTest::assertApplicationIsNotBailiffForValue);
+-    }
+-
+-    @Test
+-    public void isServiceApplicationDeemedOrDispensedShouldReturnTrue() {
+-        asList(DEEMED, DISPENSED).forEach(ConditionsTest::assertApplicationIsDeemedOrDispensed);
+-    }
+-
+-    @Test
+-    public void isServiceApplicationDeemedOrDispensedShouldReturnFalse() {
+-        asList(BAILIFF, "", "other", null).forEach(ConditionsTest::assertApplicationIsNotDeemedOrDispensed);
+-    }
+-
+     @Test
+     public void isAwaitingServiceConsiderationShouldBeTrue() {
+         CaseDetails caseDetails = CaseDetails.builder()
+@@ -132,80 +48,24 @@ public class ConditionsTest {
+         assertThat(isAwaitingServiceConsideration(caseDetails), is(false));
+     }
+ 
+-    private static void assertApplicationIsNotDeemedForValue(String value) {
+-        Map<String, Object> caseData = buildCaseData(SERVICE_APPLICATION_TYPE, value);
+-
+-        assertThat(isServiceApplicationDeemed(caseData), is(false));
+-    }
+-
+-    private static void assertApplicationIsBailiffForValue(String value) {
+-        Map<String, Object> caseData = buildCaseData(SERVICE_APPLICATION_TYPE, value);
+-
+-        assertThat(isServiceApplicationBailiff(caseData), is(true));
+-    }
+-
+-    private static void assertApplicationIsNotBailiffForValue(String value) {
+-        Map<String, Object> caseData = buildCaseData(SERVICE_APPLICATION_TYPE, value);
+-
+-        assertThat(isServiceApplicationBailiff(caseData), is(false));
+-    }
+-
+-    private static void assertApplicationIsDeemedOrDispensed(String value) {
+-        assertThat(isServiceApplicationDeemedOrDispensed(buildModelWithType(value)), is(true));
+-    }
++    @Test
++    public void isServiceApplicationGrantedShouldBeTrue() {
++        Map<String, Object> caseData = ImmutableMap.of(SERVICE_APPLICATION_GRANTED, YES_VALUE);
+ 
+-    private static void assertApplicationIsNotDeemedOrDispensed(String value) {
+-        assertThat(isServiceApplicationDeemedOrDispensed(buildModelWithType(value)), is(false));
++        assertThat(isServiceApplicationGranted(caseData), is(true));
+     }
+ 
+-    private static void assertApplicationIsNotGrantedForValue(String value) {
+-        Map<String, Object> caseData = buildCaseData(SERVICE_APPLICATION_GRANTED, value);
++    private static void assertApplicationIsNotGrantedForValue(Object value) {
++        Map<String, Object> caseData = new HashMap<>();
++        caseData.put(SERVICE_APPLICATION_GRANTED, value);
+ 
+         assertThat(isServiceApplicationGranted(caseData), is(false));
+     }
+ 
+-    private static Map<String, Object> buildCaseData(String field, String value) {
++    private static void assertApplicationIsGrantedForValue(Object value) {
+         Map<String, Object> caseData = new HashMap<>();
+-        caseData.put(field, value);
+-
+-        return caseData;
+-    }
+-
+-    private static void assertApplicationIsNotGrantedForElement(String value) {
+-        assertThat(
+-            isServiceApplicationGranted(DivorceServiceApplication.builder().applicationGranted(value).build()),
+-            is(false)
+-        );
+-    }
+-
+-    private static void assertApplicationIsGrantedForElement(String value) {
+-        assertThat(
+-            isServiceApplicationGranted(DivorceServiceApplication.builder().applicationGranted(value).build()),
+-            is(true)
+-        );
+-    }
+-
+-    private static void assertApplicationIsGrantedForValue(String value) {
+-        Map<String, Object> caseData = buildCaseData(SERVICE_APPLICATION_GRANTED, value);
++        caseData.put(SERVICE_APPLICATION_GRANTED, value);
+ 
+         assertThat(isServiceApplicationGranted(caseData), is(true));
+     }
+-
+-    private static void assertApplicationIsNotDispensedForElement(String value) {
+-        assertThat(
+-            isServiceApplicationDispensed(buildModelWithType(value)),
+-            is(false)
+-        );
+-    }
+-
+-    private static void assertApplicationIsNotDeemedForElement(String value) {
+-        assertThat(
+-            isServiceApplicationDeemed(buildModelWithType(value)),
+-            is(false)
+-        );
+-    }
+-
+-    private static DivorceServiceApplication buildModelWithType(String type) {
+-        return DivorceServiceApplication.builder().type(type).build();
+-    }
+ }
+diff --git a/src/test/java/uk/gov/hmcts/reform/divorce/orchestration/workflows/SolicitorDnFetchDocWorkflowTest.java b/src/test/java/uk/gov/hmcts/reform/divorce/orchestration/workflows/SolicitorDnFetchDocWorkflowTest.java
+index dc39b2b4..07f29f1d 100644
+--- a/src/test/java/uk/gov/hmcts/reform/divorce/orchestration/workflows/SolicitorDnFetchDocWorkflowTest.java
++++ b/src/test/java/uk/gov/hmcts/reform/divorce/orchestration/workflows/SolicitorDnFetchDocWorkflowTest.java
+@@ -1,31 +1,27 @@
+ package uk.gov.hmcts.reform.divorce.orchestration.workflows;
+ 
+-import com.google.common.collect.ImmutableMap;
+ import org.junit.Before;
+ import org.junit.Test;
+ import org.junit.runner.RunWith;
+ import org.mockito.InjectMocks;
+ import org.mockito.Mock;
+ import org.mockito.junit.MockitoJUnitRunner;
+-import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
+ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceServiceApplication;
+-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
+ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+ import uk.gov.hmcts.reform.divorce.orchestration.tasks.PopulateDocLink;
+ 
+ import java.util.Collections;
++import java.util.HashMap;
+ import java.util.Map;
+-import java.util.Optional;
+ 
+-import static java.util.Arrays.asList;
+ import static org.hamcrest.MatcherAssert.assertThat;
+ import static org.hamcrest.Matchers.is;
+ import static org.mockito.Mockito.times;
+ import static org.mockito.Mockito.verify;
+ import static org.mockito.Mockito.when;
+-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATIONS;
++import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_GRANTED;
++import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_DRAFT_LINK_FIELD;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
+@@ -58,89 +54,86 @@ public class SolicitorDnFetchDocWorkflowTest {
+ 
+         Map<String, Object> caseData = Collections.emptyMap();
+ 
++        CaseDetails caseDetails = CaseDetails.builder()
++                .caseData(caseData)
++                .build();
++
+         when(populateDocLink.execute(taskContext, caseData)).thenReturn(caseData);
+ 
+-        executeWorkflow(caseData, MINI_PETITION_LINK);
++        assertThat(solicitorDnFetchDocWorkflow.run(caseDetails, DOCUMENT_TYPE_PETITION, MINI_PETITION_LINK), is(caseData));
+ 
+         verify(populateDocLink).execute(taskContext, caseData);
+     }
+ 
+     @Test
+-    public void runShouldReturnCaseDataAndNotExecuteTasksWhenServiceApplicationIsGrantedAndIsRequestingRespondentAnswers()
+-        throws Exception {
++    public void runShouldReturnCaseDataAndNotExecuteTasksWhenServiceApplicationIsGrantedAndIsRequestingRespondentAnswers() throws Exception {
+ 
+-        Map<String, Object> caseData = buildCaseData(DEEMED, YES_VALUE);
++        Map<String, Object> caseData = new HashMap<>();
++        caseData.put(SERVICE_APPLICATION_TYPE, DEEMED);
++        caseData.put(SERVICE_APPLICATION_GRANTED, YES_VALUE);
+         taskContext.setTransientObject(DOCUMENT_DRAFT_LINK_FIELD, RESP_ANSWERS_LINK);
+ 
+-        executeWorkflow(caseData, RESP_ANSWERS_LINK);
++        CaseDetails caseDetails = CaseDetails.builder()
++            .caseData(caseData)
++            .build();
++
++        assertThat(solicitorDnFetchDocWorkflow.run(caseDetails, DOCUMENT_TYPE_PETITION, RESP_ANSWERS_LINK), is(caseData));
+ 
+         verify(populateDocLink, times(0)).execute(taskContext, caseData);
+     }
+ 
+     @Test
+-    public void runShouldReturnCaseDataAndExecuteTasksWhenServiceApplicationIsGrantedAndIsNotRequestingRespondentAnswers()
+-        throws Exception {
++    public void runShouldReturnCaseDataAndExecuteTasksWhenServiceApplicationIsGrantedAndIsNotRequestingRespondentAnswers() throws Exception {
+ 
+-        Map<String, Object> caseData = buildCaseData(DEEMED, YES_VALUE);
++        Map<String, Object> caseData = new HashMap<>();
++        caseData.put(SERVICE_APPLICATION_TYPE, DEEMED);
++        caseData.put(SERVICE_APPLICATION_GRANTED, YES_VALUE);
++
++        CaseDetails caseDetails = CaseDetails.builder()
++            .caseData(caseData)
++            .build();
+ 
+         when(populateDocLink.execute(taskContext, caseData)).thenReturn(caseData);
+ 
+-        executeWorkflow(caseData, MINI_PETITION_LINK);
++        assertThat(solicitorDnFetchDocWorkflow.run(caseDetails, DOCUMENT_TYPE_PETITION, MINI_PETITION_LINK), is(caseData));
+ 
+         verify(populateDocLink).execute(taskContext, caseData);
+     }
+ 
+     @Test
+-    public void runShouldReturnCaseDataAndExecuteTasksWhenServiceApplicationIsNotGrantedAndIsRequestingRespondentAnswers()
+-        throws Exception {
++    public void runShouldReturnCaseDataAndExecuteTasksWhenServiceApplicationIsNotGrantedAndIsRequestingRespondentAnswers() throws Exception {
+ 
+-        Map<String, Object> caseData = buildCaseData(DEEMED, NO_VALUE);
++        Map<String, Object> caseData = new HashMap<>();
++        caseData.put(SERVICE_APPLICATION_TYPE, DEEMED);
++        caseData.put(SERVICE_APPLICATION_GRANTED, NO_VALUE);
+         taskContext.setTransientObject(DOCUMENT_DRAFT_LINK_FIELD, RESP_ANSWERS_LINK);
+ 
++        CaseDetails caseDetails = CaseDetails.builder()
++            .caseData(caseData)
++            .build();
++
+         when(populateDocLink.execute(taskContext, caseData)).thenReturn(caseData);
+ 
+-        executeWorkflow(caseData, RESP_ANSWERS_LINK);
++        assertThat(solicitorDnFetchDocWorkflow.run(caseDetails, DOCUMENT_TYPE_PETITION, RESP_ANSWERS_LINK), is(caseData));
+ 
+         verify(populateDocLink).execute(taskContext, caseData);
+     }
+ 
+     @Test
+-    public void runShouldReturnCaseDataAndExecuteTasksWhenServiceApplicationTypeIsNotDefinedAndIsRequestingRespondentAnswers()
+-        throws Exception {
++    public void runShouldReturnCaseDataAndExecuteTasksWhenServiceApplicationTypeIsNotDefinedAndIsRequestingRespondentAnswers() throws Exception {
+ 
+-        Map<String, Object> caseData = buildCaseData(null, YES_VALUE);
++        Map<String, Object> caseData = new HashMap<>();
++        caseData.put(SERVICE_APPLICATION_GRANTED, YES_VALUE);
+         taskContext.setTransientObject(DOCUMENT_DRAFT_LINK_FIELD, RESP_ANSWERS_LINK);
+ 
+-        when(populateDocLink.execute(taskContext, caseData)).thenReturn(caseData);
+-
+-        executeWorkflow(caseData, RESP_ANSWERS_LINK);
+-
+-        verify(populateDocLink).execute(taskContext, caseData);
+-    }
+-
+-    public static Map<String, Object> buildCaseData(String type, String granted) {
+-
+-        CollectionMember<DivorceServiceApplication> application = new CollectionMember<>();
+-        DivorceServiceApplication.DivorceServiceApplicationBuilder applicationBuilder = DivorceServiceApplication.builder();
+-
+-        Optional.ofNullable(type).ifPresent(applicationBuilder::type);
+-        application.setValue(applicationBuilder.applicationGranted(granted).build());
+-
+-        return ImmutableMap.of(
+-            SERVICE_APPLICATIONS, asList(application)
+-        );
+-    }
+-
+-    private void executeWorkflow(Map<String, Object> caseData, String respAnswersLink)
+-        throws WorkflowException {
+-
+         CaseDetails caseDetails = CaseDetails.builder()
+             .caseData(caseData)
+             .build();
+ 
+-        assertThat(
+-            solicitorDnFetchDocWorkflow.run(caseDetails, DOCUMENT_TYPE_PETITION, respAnswersLink),
+-            is(caseData)
+-        );
++        when(populateDocLink.execute(taskContext, caseData)).thenReturn(caseData);
++
++        assertThat(solicitorDnFetchDocWorkflow.run(caseDetails, DOCUMENT_TYPE_PETITION, RESP_ANSWERS_LINK), is(caseData));
++
++        verify(populateDocLink).execute(taskContext, caseData);
+     }
+-}
++}
+\ No newline at end of file
+diff --git a/src/test/java/uk/gov/hmcts/reform/divorce/orchestration/workflows/servicejourney/ServiceDecisionMadeWorkflowTest.java b/src/test/java/uk/gov/hmcts/reform/divorce/orchestration/workflows/servicejourney/ServiceDecisionMadeWorkflowTest.java
+index ddc08707..3d34b37c 100644
+--- a/src/test/java/uk/gov/hmcts/reform/divorce/orchestration/workflows/servicejourney/ServiceDecisionMadeWorkflowTest.java
++++ b/src/test/java/uk/gov/hmcts/reform/divorce/orchestration/workflows/servicejourney/ServiceDecisionMadeWorkflowTest.java
+@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.Dis
+ import java.util.HashMap;
+ import java.util.Map;
+ 
+-import static java.util.Arrays.asList;
+ import static org.hamcrest.MatcherAssert.assertThat;
+ import static org.hamcrest.Matchers.is;
+ import static org.hamcrest.Matchers.notNullValue;
+@@ -28,7 +27,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
+ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_EMAIL;
+ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_NAME;
+-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATIONS;
++import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_GRANTED;
++import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+@@ -37,7 +37,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DEEMED;
+ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DISPENSED;
+-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractorTest.buildCollectionMember;
+ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
+ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTaskWasCalled;
+ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
+@@ -246,18 +245,7 @@ public class ServiceDecisionMadeWorkflowTest {
+     @Test
+     public void whenApplicationIsGrantedAndUnknownTypeShouldNotExecuteAnyTask()
+         throws WorkflowException {
+-        runTestWithUnknownServiceApplicartionTypeToVerifyNoTaskIsExecutedForGranted(YES_VALUE);
+-    }
+-
+-    @Test
+-    public void whenApplicationIsNotGrantedAndUnknownTypeShouldNotExecuteAnyTask()
+-        throws WorkflowException {
+-        runTestWithUnknownServiceApplicartionTypeToVerifyNoTaskIsExecutedForGranted(NO_VALUE);
+-    }
+-
+-    private void runTestWithUnknownServiceApplicartionTypeToVerifyNoTaskIsExecutedForGranted(String granted)
+-        throws WorkflowException {
+-        Map<String, Object> caseData = buildCaseData("I don't exist", granted);
++        Map<String, Object> caseData = buildCaseData("I don't exist", YES_VALUE);
+         CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_DECREE_NISI);
+ 
+         executeWorkflow(caseDetails);
+@@ -275,7 +263,8 @@ public class ServiceDecisionMadeWorkflowTest {
+ 
+     private Map<String, Object> buildCaseData(String serviceApplicationType, String serviceApplicationGranted) {
+         return ImmutableMap.of(
+-            SERVICE_APPLICATIONS, asList(buildCollectionMember(serviceApplicationGranted, serviceApplicationType))
++            SERVICE_APPLICATION_TYPE, serviceApplicationType,
++            SERVICE_APPLICATION_GRANTED, serviceApplicationGranted
+         );
+     }
+ 
