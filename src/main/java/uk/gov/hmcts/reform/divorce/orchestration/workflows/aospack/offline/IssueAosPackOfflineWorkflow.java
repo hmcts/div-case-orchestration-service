@@ -140,7 +140,7 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
 
     private void updateCORespondentDocumentGenerationRequests(Map<String, Object> caseData,
                                                            List<DocumentGenerationRequest> documentGenerationRequestList) {
-        String templateId = getTemplateId(documentTemplateService,
+        String templateId = getConfiguredLanguageAppropriateTemplateId(documentTemplateService,
                 DocumentType.CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
                 caseData);
 
@@ -148,7 +148,7 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
                 CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE.getValue(),
                 CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME.getValue()));
 
-        templateId = getTemplateId(documentTemplateService,
+        templateId = getConfiguredLanguageAppropriateTemplateId(documentTemplateService,
                 DocumentType.AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID,
                 caseData);
 
@@ -159,7 +159,7 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
 
     private void updateRespondentDocumentGenerationRequests(String reasonForDivorce, Map<String, Object> caseData,
                                                                                     List<DocumentGenerationRequest> documentGenerationRequestList) {
-        String templateId = getTemplateId(documentTemplateService,
+        String templateId = getConfiguredLanguageAppropriateTemplateId(documentTemplateService,
                 DocumentType.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
                 caseData);
 

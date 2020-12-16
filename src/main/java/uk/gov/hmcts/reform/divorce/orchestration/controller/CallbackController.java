@@ -529,7 +529,7 @@ public class CallbackController {
         try {
             callbackResponseBuilder.data(
                 caseOrchestrationService.processSolDnDoc(
-                    ccdCallbackRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateName(),
+                    ccdCallbackRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateLogicalName(),
                     RESP_ANSWERS_LINK
                 )
             );
@@ -616,12 +616,15 @@ public class CallbackController {
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
 
         try {
-            callbackResponseBuilder.data(caseOrchestrationService
-                .handleDocumentGenerationCallback(ccdCallbackRequest, authorizationToken, templateId, documentType, filename));
+            //TODO - one usage - this generates COE and another document (passed by parameter from CCD) - ideally, this intelligence should be in the service, but the change might not be worth the effort.
+            Map<String, Object> payloadToReturn = caseOrchestrationService.handleDocumentGenerationCallback(
+                ccdCallbackRequest, authorizationToken, templateId, documentType, filename
+            );
+            callbackResponseBuilder.data(payloadToReturn);
             log.info("Generating document {} for case {}.", documentType, caseId);
         } catch (WorkflowException exception) {
             log.error("Document generation failed. Case id:  {}", caseId, exception);
-            callbackResponseBuilder.errors(asList(exception.getMessage()));
+            callbackResponseBuilder.errors(singletonList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
@@ -642,8 +645,7 @@ public class CallbackController {
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
 
         try {
-            callbackResponseBuilder.data(caseOrchestrationService
-                .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, authorizationToken));
+            callbackResponseBuilder.data(caseOrchestrationService.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, authorizationToken));//TODO - another usage
             log.info("Generated DN documents for Case ID: {}.", caseId);
         } catch (WorkflowException exception) {
             log.error("DN document generation failed for Case ID: {}", caseId, exception);

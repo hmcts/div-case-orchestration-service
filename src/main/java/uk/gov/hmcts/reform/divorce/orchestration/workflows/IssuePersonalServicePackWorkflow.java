@@ -38,7 +38,7 @@ public class IssuePersonalServicePackWorkflow extends DefaultWorkflow<Map<String
     public Map<String, Object> run(CcdCallbackRequest callbackRequest, String authToken) throws WorkflowException {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-        String templateId = getTemplateId(documentTemplateService,
+        String templateId = getConfiguredLanguageAppropriateTemplateId(documentTemplateService,
                 DocumentType.SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID,
                 caseDetails.getCaseData());
 

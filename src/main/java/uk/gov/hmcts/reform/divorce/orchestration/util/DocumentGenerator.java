@@ -19,8 +19,7 @@ public class DocumentGenerator implements Template {
 
     public DocumentGenerationRequest getDocumentGenerationRequest(DocumentTemplateService documentTemplateService,
                                                                   Map<String, Object> caseData) {
-        String templateId = getTemplateId(documentTemplateService, documentType,
-                caseData);
+        String templateId = getConfiguredLanguageAppropriateTemplateId(documentTemplateService, documentType, caseData);
         return new DocumentGenerationRequest(templateId, documentTypeForm.getValue(), documentFileName.getValue());
     }
 }

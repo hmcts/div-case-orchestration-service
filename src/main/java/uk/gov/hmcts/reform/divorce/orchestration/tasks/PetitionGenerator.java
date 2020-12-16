@@ -36,7 +36,7 @@ public class PetitionGenerator implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
-        final String templateId = getTemplateId(documentTemplateService, DocumentType.DIVORCE_MINI_PETITION,
+        final String templateId = getConfiguredLanguageAppropriateTemplateId(documentTemplateService, DocumentType.DIVORCE_MINI_PETITION,
                 caseData);
 
         GeneratedDocumentInfo miniPetition =

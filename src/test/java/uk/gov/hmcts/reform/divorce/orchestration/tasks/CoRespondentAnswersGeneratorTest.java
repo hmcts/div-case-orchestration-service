@@ -74,7 +74,7 @@ public class CoRespondentAnswersGeneratorTest {
         //given
         when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN))
                 .thenReturn(expectedRespondentAnswers);
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.CO_RESPONDENT_ANSWERS))
+        when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.ENGLISH, DocumentType.CO_RESPONDENT_ANSWERS))
                 .thenReturn(CO_RESPONDENT_ANSWERS_TEMPLATE_NAME);
 
         //when
@@ -108,7 +108,7 @@ public class CoRespondentAnswersGeneratorTest {
         //given
         when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN))
                 .thenThrow(FeignException.class);
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.CO_RESPONDENT_ANSWERS))
+        when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.ENGLISH, DocumentType.CO_RESPONDENT_ANSWERS))
                 .thenReturn(CO_RESPONDENT_ANSWERS_TEMPLATE_NAME);
 
         //when

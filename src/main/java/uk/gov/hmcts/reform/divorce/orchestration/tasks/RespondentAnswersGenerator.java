@@ -35,7 +35,7 @@ public class RespondentAnswersGenerator implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) {
         CaseDetails caseDataForDoc = CaseDetails.builder().caseData(payload).build();
-        String templateId = getTemplateId(documentTemplateService, DocumentType.RESPONDENT_ANSWERS,
+        String templateId = getConfiguredLanguageAppropriateTemplateId(documentTemplateService, DocumentType.RESPONDENT_ANSWERS,
                 payload);
         GeneratedDocumentInfo respondentAnswers =
             documentGeneratorClient.generatePDF(

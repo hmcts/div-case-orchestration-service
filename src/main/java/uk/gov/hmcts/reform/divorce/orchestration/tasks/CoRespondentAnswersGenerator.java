@@ -36,7 +36,7 @@ public class CoRespondentAnswersGenerator implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
         CaseDetails caseDataForDoc = CaseDetails.builder().caseData(payload).build();
-        final String templateId = getTemplateId(documentTemplateService, DocumentType.CO_RESPONDENT_ANSWERS,
+        final String templateId = getConfiguredLanguageAppropriateTemplateId(documentTemplateService, DocumentType.CO_RESPONDENT_ANSWERS,
                 payload);
 
         try {

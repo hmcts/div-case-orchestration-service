@@ -57,9 +57,9 @@ public class AosRespondentSubmittedITest extends MockedFunctionalTest {
             .caseData(caseDetailMap)
             .build();
 
-        stubDocumentGeneratorServiceBaseOnContextPath(DocumentType.RESPONDENT_ANSWERS.getTemplateName(),
+        stubDocumentGeneratorServiceBaseOnContextPath(DocumentType.RESPONDENT_ANSWERS.getTemplateLogicalName(),
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, fullCase),
-            DocumentType.RESPONDENT_ANSWERS.getTemplateName());
+            DocumentType.RESPONDENT_ANSWERS.getTemplateLogicalName());
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
             .eventId(EVENT_ID)

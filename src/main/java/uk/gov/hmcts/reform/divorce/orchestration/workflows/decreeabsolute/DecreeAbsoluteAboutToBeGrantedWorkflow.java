@@ -42,7 +42,7 @@ public class DecreeAbsoluteAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<
 
     public Map<String, Object> run(final CcdCallbackRequest ccdCallbackRequest, final String authToken) throws WorkflowException {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
-        final String templateId = getTemplateId(documentTemplateService, DocumentType.DECREE_ABSOLUTE_TEMPLATE_ID,
+        final String templateId = getConfiguredLanguageAppropriateTemplateId(documentTemplateService, DocumentType.DECREE_ABSOLUTE_TEMPLATE_ID,
                 caseDetails.getCaseData());
 
         return this.execute(

@@ -713,18 +713,18 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
 
-        if (Objects.nonNull(caseData.get(BULK_LISTING_CASE_ID_FIELD))) {
+        if (Objects.nonNull(caseData.get(BULK_LISTING_CASE_ID_FIELD))) {//TODO - can this information have changed since the document was first generated?
             LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
-            String templateId = documentTemplateService.getTemplateId(languagePreference, DocumentType.DECREE_NISI_TEMPLATE_ID);
-            caseData.putAll(documentGenerationWorkflow.run(ccdCallbackRequest, authToken,
-                templateId, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME));
+            String templateId = documentTemplateService.getConfiguredTemplateId(languagePreference, DocumentType.DECREE_NISI_TEMPLATE_ID);//TODO - I could have document type linked to enum (ccd document type)
+            caseData.putAll(documentGenerationWorkflow.run(ccdCallbackRequest, authToken, templateId, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME));//TODO - in this case, document type is not used to find the template id. it's still used as a document type
+            //TODO - this produces the decree nisi document we'll need
 
-            if (isPetitionerClaimingCosts(caseData)) {
-                templateId = documentTemplateService.getTemplateId(languagePreference, DocumentType.COSTS_ORDER_TEMPLATE_ID);
+            if (isPetitionerClaimingCosts(caseData)) {//TODO - can this information have changed since the document was first generated?
+                templateId = documentTemplateService.getConfiguredTemplateId(languagePreference, DocumentType.COSTS_ORDER_TEMPLATE_ID);
 
                 // DocumentType is clear enough to use as the file name
                 caseData.putAll(documentGenerationWorkflow.run(ccdCallbackRequest, authToken,
-                    templateId, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE));
+                    templateId, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE));//TODO - this generates the costs order - which we also need
             }
         }
 

@@ -47,11 +47,14 @@ public class DocumentGenerationWorkflow extends DefaultWorkflow<Map<String, Obje
         this.documentTemplateService = documentTemplateService;
     }
 
-    public Map<String, Object> run(final CcdCallbackRequest ccdCallbackRequest, final String authToken, final String templateId,
-                                   final String documentType, final String filename) throws WorkflowException {
+    public Map<String, Object> run(final CcdCallbackRequest ccdCallbackRequest,
+                                   final String authToken,
+                                   final String templateId,//TODO this is used in more than one place as well
+                                   final String documentType, //TODO - why do I need both the templateId and the documentType? - maybe this should be decided before the workflow is called - it would be easier to reuse
+                                   final String filename) throws WorkflowException {
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
         final String evalTemplateId = getTemplateId(templateId, documentType, caseData);
-        log.debug("For language {}, evaluated template id {}", getLanguagePreference(caseData),evalTemplateId);
+        log.debug("For language {}, evaluated template id {}", getLanguagePreference(caseData), evalTemplateId);
 
         return this.execute(
             new Task[] {setFormattedDnCourtDetails, documentGenerationTask, addNewDocumentsToCaseDataTask},
@@ -66,15 +69,17 @@ public class DocumentGenerationWorkflow extends DefaultWorkflow<Map<String, Obje
     }
 
     private String getTemplateId(String templateId, String documentType, Map<String, Object> caseData) {
-        Optional<DocumentType> optionalDocumentType = DocumentType.getEnum(documentType);
+        Optional<DocumentType> optionalDocumentType = DocumentType.getDocumentTypeByTemplateLogicalName(documentType);
 
         if (optionalDocumentType.isPresent()) {
             try {
-                return getTemplateId(documentTemplateService, optionalDocumentType.get(), caseData);
+                return getConfiguredLanguageAppropriateTemplateId(documentTemplateService, optionalDocumentType.get(), caseData);
             } catch (IllegalArgumentException exception) {
-                log.error("Missing template configuration in properties so returning as passed ",exception);
+                log.error("Missing template configuration in properties so returning as passed ", exception);//TODO - do we need this catch? reconsider this before getting rid of this code
             }
         }
+
         return templateId;
     }
+
 }

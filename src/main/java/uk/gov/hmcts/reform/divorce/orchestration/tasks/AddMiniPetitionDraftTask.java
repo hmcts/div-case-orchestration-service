@@ -40,7 +40,7 @@ public class AddMiniPetitionDraftTask implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(final TaskContext context, final Map<String, Object> caseData) {
         final CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
-        final String templateId = getTemplateId(documentTemplateService, DocumentType.DIVORCE_DRAFT_MINI_PETITION,
+        final String templateId = getConfiguredLanguageAppropriateTemplateId(documentTemplateService, DocumentType.DIVORCE_DRAFT_MINI_PETITION,
                 caseData);
         final GeneratedDocumentInfo generatedDocumentInfo =
             documentGeneratorClient.generateDraftPDF(

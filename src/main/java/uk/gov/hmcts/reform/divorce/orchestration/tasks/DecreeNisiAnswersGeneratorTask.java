@@ -35,7 +35,7 @@ public class DecreeNisiAnswersGeneratorTask implements Task<Map<String, Object>>
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
         CaseDetails caseDataForDoc = CaseDetails.builder().caseData(payload).build();
-        final String templateId = getTemplateId(documentTemplateService, DocumentType.DECREE_NISI_ANSWER_TEMPLATE_ID,
+        final String templateId = getConfiguredLanguageAppropriateTemplateId(documentTemplateService, DocumentType.DECREE_NISI_ANSWER_TEMPLATE_ID,
                 payload);
 
         try {
@@ -52,7 +52,7 @@ public class DecreeNisiAnswersGeneratorTask implements Task<Map<String, Object>>
             dnAnswers.setFileName(DOCUMENT_TYPE_DN_ANSWERS);
 
             final LinkedHashSet<GeneratedDocumentInfo> documentCollection =
-                context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new LinkedHashSet<>());
+                context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new LinkedHashSet<>());//TODO - if we need this, it might not be very re-usable. Confirm with Jeremy first
             documentCollection.add(dnAnswers);
         } catch (Exception e) {
             throw new TaskException("Unable to generate or store Decreenisi answers.", e);

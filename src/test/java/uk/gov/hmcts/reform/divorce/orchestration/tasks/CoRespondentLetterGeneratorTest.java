@@ -92,7 +92,7 @@ public class CoRespondentLetterGeneratorTest {
 
         //given
         when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(expectedCoRespondentInvitation);
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.CO_RESPONDENT_INVITATION))
+        when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.ENGLISH, DocumentType.CO_RESPONDENT_INVITATION))
                 .thenReturn(CO_RESPONDENT_INVITATION_TEMPLATE_NAME);
 
 

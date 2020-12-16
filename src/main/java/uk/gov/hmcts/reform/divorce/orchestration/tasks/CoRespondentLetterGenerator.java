@@ -46,7 +46,7 @@ public class CoRespondentLetterGenerator implements Task<Map<String, Object>> {
 
         final NumberFormat poundsOnlyFormat = new DecimalFormat("#");
         final String petitionIssueFee = poundsOnlyFormat.format(((FeeResponse) context.getTransientObject(PETITION_FEE_JSON_KEY)).getAmount());
-        final String templateId = getTemplateId(documentTemplateService, DocumentType.CO_RESPONDENT_INVITATION,
+        final String templateId = getConfiguredLanguageAppropriateTemplateId(documentTemplateService, DocumentType.CO_RESPONDENT_INVITATION,
                 caseData);
 
         GeneratedDocumentInfo coRespondentInvitation =

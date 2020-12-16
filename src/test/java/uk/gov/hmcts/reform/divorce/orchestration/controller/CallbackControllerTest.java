@@ -625,7 +625,7 @@ public class CallbackControllerTest {
             .build();
 
         when(caseOrchestrationService
-            .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateName(),
+            .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateLogicalName(),
                 OrchestrationConstants.RESP_ANSWERS_LINK)
         ).thenReturn(incomingPayload);
 
@@ -635,7 +635,7 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getData(), is(equalTo(incomingPayload)));
         assertThat(response.getBody().getErrors(), is(nullValue()));
         verify(caseOrchestrationService)
-            .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateName(), OrchestrationConstants.RESP_ANSWERS_LINK);
+            .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateLogicalName(), OrchestrationConstants.RESP_ANSWERS_LINK);
     }
 
     @Test
@@ -647,7 +647,7 @@ public class CallbackControllerTest {
             .build();
 
         when(caseOrchestrationService
-            .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateName(), OrchestrationConstants.RESP_ANSWERS_LINK)
+            .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateLogicalName(), OrchestrationConstants.RESP_ANSWERS_LINK)
         ).thenThrow(new CaseOrchestrationServiceException(new Exception("This is a test error message.")));
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.solDnRespAnswersDoc(incomingRequest);
@@ -656,7 +656,7 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getData(), is(nullValue()));
         assertThat(response.getBody().getErrors(), hasItem("This is a test error message."));
         verify(caseOrchestrationService)
-            .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateName(), OrchestrationConstants.RESP_ANSWERS_LINK);
+            .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateLogicalName(), OrchestrationConstants.RESP_ANSWERS_LINK);
     }
 
     @Test

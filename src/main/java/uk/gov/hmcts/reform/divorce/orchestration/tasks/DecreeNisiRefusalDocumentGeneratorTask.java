@@ -86,7 +86,7 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
         });
 
         if (REFUSAL_DECISION_MORE_INFO_VALUE.equalsIgnoreCase((String) caseData.get(REFUSAL_DECISION_CCD_FIELD))) {
-            String templateId = getTemplateId(documentTemplateService,
+            String templateId = getConfiguredLanguageAppropriateTemplateId(documentTemplateService,
                     DocumentType.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID,
                     caseData);
 
@@ -107,7 +107,7 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
             Map<String, Object> caseDataToSend = new HashMap<>(caseData);
             caseDataToSend.put(FEE_TO_PAY_JSON_KEY, amendFee.getFormattedFeeAmount());
 
-            String templateId = getTemplateId(documentTemplateService,
+            String templateId = getConfiguredLanguageAppropriateTemplateId(documentTemplateService,
                     DocumentType.DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID,
                     caseData);
 
