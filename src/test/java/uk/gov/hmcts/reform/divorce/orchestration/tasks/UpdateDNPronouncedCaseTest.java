@@ -50,7 +50,7 @@ public class UpdateDNPronouncedCaseTest {
         context.setTransientObject(SEARCH_RESULT_KEY, Collections.emptyList());
         Map<String, Object> payload = new HashMap<>();
 
-        assertEquals(Collections.emptyList(), classToTest.getApplicationEvent(context, payload));
+        assertEquals(Collections.emptyList(), classToTest.getApplicationEventsToPublish(context, payload));
     }
 
     @Test
@@ -60,7 +60,7 @@ public class UpdateDNPronouncedCaseTest {
         context.setTransientObject(SEARCH_RESULT_KEY, Arrays.asList(caseIds));
         Map<String, Object> payload = new HashMap<>();
 
-        List<ApplicationEvent> result = classToTest.getApplicationEvent(context, payload);
+        List<ApplicationEvent> result = classToTest.getApplicationEventsToPublish(context, payload);
 
         assertEquals(2, result.size());
     }

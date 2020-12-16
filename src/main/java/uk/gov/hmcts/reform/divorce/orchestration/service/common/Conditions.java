@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes;
 
 import java.util.Map;
@@ -18,12 +19,28 @@ public class Conditions {
         return YES_VALUE.equalsIgnoreCase((String) caseData.get(CcdFields.SERVICE_APPLICATION_GRANTED));
     }
 
+    public static boolean isServiceApplicationGranted(DivorceServiceApplication serviceApplication) {
+        return YES_VALUE.equalsIgnoreCase(serviceApplication.getApplicationGranted());
+    }
+
     public static boolean isServiceApplicationDispensed(Map<String, Object> caseData) {
         return ApplicationServiceTypes.DISPENSED.equalsIgnoreCase((String) caseData.get(CcdFields.SERVICE_APPLICATION_TYPE));
     }
 
+    public static boolean isServiceApplicationDispensed(DivorceServiceApplication serviceApplication) {
+        return ApplicationServiceTypes.DISPENSED.equalsIgnoreCase(serviceApplication.getType());
+    }
+
     public static boolean isServiceApplicationDeemed(Map<String, Object> caseData) {
         return ApplicationServiceTypes.DEEMED.equalsIgnoreCase((String) caseData.get(CcdFields.SERVICE_APPLICATION_TYPE));
+    }
+
+    public static boolean isServiceApplicationDeemed(DivorceServiceApplication serviceApplication) {
+        return ApplicationServiceTypes.DEEMED.equalsIgnoreCase(serviceApplication.getType());
+    }
+
+    public static boolean isServiceApplicationDeemedOrDispensed(DivorceServiceApplication serviceApplication) {
+        return isServiceApplicationDeemed(serviceApplication) || isServiceApplicationDispensed(serviceApplication);
     }
 
     public static boolean isServiceApplicationBailiff(Map<String, Object> caseData) {
