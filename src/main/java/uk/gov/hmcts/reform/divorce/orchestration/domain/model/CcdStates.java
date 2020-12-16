@@ -35,4 +35,7 @@ public class CcdStates {
     public static final String AWAITING_GENERAL_REFERRAL_PAYMENT = "AwaitingGeneralReferralPayment";
     public static final String AWAITING_GENERAL_CONSIDERATION = "AwaitingGeneralConsideration";
     public static final String GENERAL_CONSIDERATION_COMPLETE = "GeneralConsiderationComplete";
+    public static final String AWAITING_ALTERNATIVE_SERVICE = "AwaitingAlternativeService";
+    public static final String AWAITING_PROCESS_SERVER_SERVICE = "AwaitingProcessServerService";
+    public static final String AWAITING_DWP_RESPONSE = "AwaitingDWPResponse";
 }

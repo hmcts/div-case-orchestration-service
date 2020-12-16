@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import com.google.common.collect.ImmutableMap;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import java.util.Collections;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -78,42 +79,23 @@ public class UpdateRespondentDetailsUTest {
     }
 
     @Test
-    public void whenAosAwaiting_thenProceedAsExpected() throws TaskException {
-        final UserDetails payload = UserDetails.builder().build();
+    public void whenAosAwaiting_thenTriggerStartAosEvent() throws TaskException {
+        whenGivenState_thenTriggerStartAosEvent(AOS_AWAITING_STATE);
+    }
 
-        final UserDetails respondentDetails =
-            UserDetails.builder()
-                .id(TEST_USER_ID)
-                .email(TEST_EMAIL)
-                .build();
+    @Test
+    public void whenAwaitingAlternativeService_thenTriggerStartAosEvent() throws TaskException {
+        whenGivenState_thenTriggerStartAosEvent(CcdStates.AWAITING_ALTERNATIVE_SERVICE);
+    }
 
-        final Map<String, Object> caseData = Collections.singletonMap(D_8_DIVORCE_UNIT, TEST_COURT);
-        final CaseDetails caseDetails =
-            CaseDetails.builder()
-                .caseId(TEST_CASE_ID)
-                .state(AOS_AWAITING_STATE)
-                .caseData(caseData)
-                .build();
+    @Test
+    public void whenAwaitingProcessServerService_thenTriggerStartAosEvent() throws TaskException {
+        whenGivenState_thenTriggerStartAosEvent(CcdStates.AWAITING_PROCESS_SERVER_SERVICE);
+    }
 
-        final Map<String, Object> dataToUpdate =
-            ImmutableMap.of(
-                RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL
-            );
-
-        final TaskContext taskContext = new DefaultTaskContext();
-        taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
-        taskContext.setTransientObject(IS_RESPONDENT, true);
-        taskContext.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
-
-        when(idamClient.getUserDetails(BEARER_AUTH_TOKEN)).thenReturn(respondentDetails);
-        when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, START_AOS_EVENT_ID, dataToUpdate))
-            .thenReturn(null);
-
-        Assert.assertEquals(payload, classUnderTest.execute(taskContext, payload));
-
-        verify(idamClient).getUserDetails(BEARER_AUTH_TOKEN);
-        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, START_AOS_EVENT_ID, dataToUpdate);
+    @Test
+    public void whenAwaitingDWPResponse_thenTriggerStartAosEvent() throws TaskException {
+        whenGivenState_thenTriggerStartAosEvent(CcdStates.AWAITING_DWP_RESPONSE);
     }
 
     @Test
@@ -148,7 +130,7 @@ public class UpdateRespondentDetailsUTest {
 
         when(idamClient.getUserDetails(BEARER_AUTH_TOKEN)).thenReturn(respondentDetails);
 
-        Assert.assertEquals(payload, classUnderTest.execute(taskContext, payload));
+        assertEquals(payload, classUnderTest.execute(taskContext, payload));
 
         verify(idamClient).getUserDetails(BEARER_AUTH_TOKEN);
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID,
@@ -175,7 +157,7 @@ public class UpdateRespondentDetailsUTest {
             .thenReturn(respondentDetails);
 
         UserDetails result = classUnderTest.execute(taskContext, payload);
-        Assert.assertEquals(payload, result);
+        assertEquals(payload, result);
 
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AOS_START_FROM_OVERDUE, dataToUpdate);
     }
@@ -199,7 +181,7 @@ public class UpdateRespondentDetailsUTest {
         when(idamClient.getUserDetails(BEARER_AUTH_TOKEN)).thenReturn(respondentDetails);
 
         UserDetails result = classUnderTest.execute(taskContext, payload);
-        Assert.assertEquals(payload, result);
+        assertEquals(payload, result);
 
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AOS_START_FROM_REISSUE, dataToUpdate);
     }
@@ -230,7 +212,7 @@ public class UpdateRespondentDetailsUTest {
 
         when(idamClient.getUserDetails(BEARER_AUTH_TOKEN)).thenReturn(coRespondentDetails);
 
-        Assert.assertEquals(payload, classUnderTest.execute(taskContext, payload));
+        assertEquals(payload, classUnderTest.execute(taskContext, payload));
 
         final Map<String, Object> expectedDataToUpdate =
             ImmutableMap.of(
@@ -263,11 +245,48 @@ public class UpdateRespondentDetailsUTest {
             .thenReturn(respondentDetails);
 
         UserDetails result = classUnderTest.execute(taskContext, payload);
-        Assert.assertEquals(payload, result);
+        assertEquals(payload, result);
 
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED, dataToUpdate);
     }
 
+    private void whenGivenState_thenTriggerStartAosEvent(String state) throws TaskException {
+        final UserDetails payload = UserDetails.builder().build();
+
+        final UserDetails respondentDetails =
+            UserDetails.builder()
+                .id(TEST_USER_ID)
+                .email(TEST_EMAIL)
+                .build();
+
+        final Map<String, Object> caseData = Collections.singletonMap(D_8_DIVORCE_UNIT, TEST_COURT);
+        final CaseDetails caseDetails =
+            CaseDetails.builder()
+                .caseId(TEST_CASE_ID)
+                .state(state)
+                .caseData(caseData)
+                .build();
+
+        final Map<String, Object> dataToUpdate =
+            ImmutableMap.of(
+                RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL
+            );
+
+        final TaskContext taskContext = new DefaultTaskContext();
+        taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
+        taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
+        taskContext.setTransientObject(IS_RESPONDENT, true);
+        taskContext.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
+
+        when(idamClient.getUserDetails(BEARER_AUTH_TOKEN)).thenReturn(respondentDetails);
+        when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, START_AOS_EVENT_ID, dataToUpdate))
+            .thenReturn(null);
+
+        assertEquals(payload, classUnderTest.execute(taskContext, payload));
+
+        verify(idamClient).getUserDetails(BEARER_AUTH_TOKEN);
+        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, START_AOS_EVENT_ID, dataToUpdate);
+    }
 
     private UserDetails createTestUserDetails() {
         return UserDetails.builder()

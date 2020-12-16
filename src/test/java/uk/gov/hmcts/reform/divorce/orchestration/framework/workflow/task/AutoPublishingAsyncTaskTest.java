@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class AsyncTaskTest {
+public class AutoPublishingAsyncTaskTest {
 
     @Mock
     private ApplicationEventPublisher applicationEventPublisher;
@@ -31,7 +31,7 @@ public class AsyncTaskTest {
     private TaskContext mockContext;
 
     @Spy
-    private AsyncTask classToTest;
+    private AutoPublishingAsyncTask classToTest;
 
     @Before
     public void setup() {
@@ -44,7 +44,7 @@ public class AsyncTaskTest {
 
         ApplicationEvent applicationEvent = mock(ApplicationEvent.class);
 
-        when(classToTest.getApplicationEvent(mockContext, payload)) .thenReturn(Arrays.asList(applicationEvent, applicationEvent));
+        when(classToTest.getApplicationEventsToPublish(mockContext, payload)) .thenReturn(Arrays.asList(applicationEvent, applicationEvent));
         classToTest.execute(mockContext, payload);
 
         verify(applicationEventPublisher, times(2)).publishEvent(applicationEvent);
@@ -56,7 +56,7 @@ public class AsyncTaskTest {
 
         ApplicationEvent applicationEvent = mock(ApplicationEvent.class);
 
-        when(classToTest.getApplicationEvent(mockContext, payload)).thenReturn(Collections.emptyList());
+        when(classToTest.getApplicationEventsToPublish(mockContext, payload)).thenReturn(Collections.emptyList());
         classToTest.execute(mockContext, payload);
 
         verify(applicationEventPublisher, never()).publishEvent(applicationEvent);
@@ -67,7 +67,7 @@ public class AsyncTaskTest {
         Map<String, Object> payload = Collections.emptyMap();
 
         ApplicationEvent applicationEvent = mock(ApplicationEvent.class);
-        when(classToTest.getApplicationEvent(mockContext, payload)).thenThrow(new TaskException("Error executing task"));
+        when(classToTest.getApplicationEventsToPublish(mockContext, payload)).thenThrow(new TaskException("Error executing task"));
 
         classToTest.execute(mockContext, payload);
 

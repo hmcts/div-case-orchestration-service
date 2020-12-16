@@ -25,7 +25,7 @@ plugins {
     id 'org.owasp.dependencycheck' version '6.0.2'
     id 'org.sonarqube' version '3.0'
     id 'org.springframework.boot' version '2.3.5.RELEASE'
-    id 'au.com.dius.pact' version '4.1.0'
+    id 'au.com.dius.pact' version '4.1.11'
 }
 
 def versions = [
@@ -37,7 +37,7 @@ def versions = [
         commonsIo                    : '2.6',
         commonsLang3                 : '3.9',
         commonsMath3                 : '3.6.1',
-        divCommonLib                 : '1.2.1',
+        divCommonLib                 : '1.2.4',
         dumbster                     : '1.7.1',
         elasticsearch                : '7.9.3',
         feignHttpClient              : '10.3.0',
@@ -62,7 +62,7 @@ def versions = [
         puppyCrawl                   : '8.29',
         reformHealth                 : '0.0.5',
         reformPropertiesVolume       : '0.0.4',
-        reformsJavaLogging           : '5.1.6',
+        reformsJavaLogging           : '5.1.7',
         sendLetterClient             : '2.2.0',
         serenity                     : '2.1.13',
         serenityCucumber             : '1.9.50',
@@ -71,11 +71,11 @@ def versions = [
         springfoxSwagger             : '2.9.2',
         springSecurityCrypto         : '5.2.4.RELEASE',
         springSecurityRsa            : '1.0.8.RELEASE',
-        tomcat                       : '9.0.39',
+        tomcat                       : '9.0.40',
         unirest                      : '1.4.9',
         embeddedPostgres             : '1.5.5',
-        pact_version                 : '4.1.7'
-
+        pact_version                 : '4.1.11',
+        httpComponents               : '4.5.13',
 ]
 
 allprojects {
@@ -163,10 +163,6 @@ allprojects {
                 entry 'tomcat-embed-core'
                 entry 'tomcat-embed-websocket'
                 entry 'tomcat-embed-el'
-            }
-            //CVE-2019-14900
-            dependencySet(group: 'org.hibernate', version: '5.4.23.Final') {
-                entry 'hibernate-core'
             }
             //CVE-2017-18640
             dependency group: 'org.yaml',name: 'snakeyaml', version: '1.26'
@@ -293,6 +289,8 @@ dependencies {
     implementation group: 'uk.gov.hmcts.reform', name: 'service-auth-provider-client', version: versions.serviceTokenGenerator
     implementation group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: versions.sendLetterClient
     implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: versions.hmctsNotify
+    implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: versions.httpComponents
+    implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.4.25.Final'
 
     implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign')
             {
@@ -383,6 +381,7 @@ dependencies {
     contractTestRuntime group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
     contractTestRuntime group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
 
+    contractTestCompile group: 'org.apache.httpcomponents', name: 'httpclient', version: versions.httpComponents
     contractTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
     contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.3.2")
     contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.3.2")

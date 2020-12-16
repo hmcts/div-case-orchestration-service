@@ -28,7 +28,7 @@ public class AosInternalControllerTest {
     public void shouldCallRightServiceMethod() throws CaseOrchestrationServiceException {
         ResponseEntity<String> response = controller.markCasesForBeingMovedToAosOverdue(AUTH_TOKEN);
 
-        verify(aosService).markCasesToBeMovedToAosOverdue(AUTH_TOKEN);
+        verify(aosService).findCasesForWhichAosIsOverdue(AUTH_TOKEN);
         assertThat(response.getStatusCode(), is(HttpStatus.OK));
     }
 
