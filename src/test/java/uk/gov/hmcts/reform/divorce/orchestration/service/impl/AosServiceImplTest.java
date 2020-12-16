@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosNotReceivedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueEligibilityWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueForAlternativeServiceCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline.AosPackOfflineAnswersWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline.IssueAosPackOfflineWorkflow;
@@ -23,6 +24,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,6 +42,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INCOM
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PAYLOAD_TO_RETURN;
 import static uk.gov.hmcts.reform.divorce.orchestration.controller.util.CallbackControllerTestUtils.assertCaseOrchestrationServiceExceptionIsSetProperly;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_ALTERNATIVE_METHOD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_PROCESS_SERVER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
 
@@ -57,6 +61,9 @@ public class AosServiceImplTest {
 
     @Mock
     private AosOverdueWorkflow aosOverdueWorkflow;
+
+    @Mock
+    private AosOverdueForAlternativeServiceCaseWorkflow aosOverdueForAlternativeServiceCaseWorkflow;
 
     @Mock
     private AosNotReceivedWorkflow aosNotReceivedWorkflow;
@@ -118,6 +125,7 @@ public class AosServiceImplTest {
             () -> classUnderTest.issueAosPackOffline(AUTH_TOKEN, caseDetails, RESPONDENT)
         );
 
+        assertThat(exception.getCaseId().get(), is(TEST_CASE_ID));
         assertThat(exception.getCause(), is(instanceOf(WorkflowException.class)));
     }
 
@@ -154,7 +162,7 @@ public class AosServiceImplTest {
 
     @Test
     public void shouldCallAppropriateWorkflowWhenMarkingCasesToBeMovedToAosOverdue() throws WorkflowException, CaseOrchestrationServiceException {
-        classUnderTest.markCasesToBeMovedToAosOverdue(AUTH_TOKEN);
+        classUnderTest.findCasesForWhichAosIsOverdue(AUTH_TOKEN);
 
         verify(aosOverdueEligibilityWorkflow).run(AUTH_TOKEN);
     }
@@ -165,7 +173,7 @@ public class AosServiceImplTest {
 
         CaseOrchestrationServiceException exception = assertThrows(
             CaseOrchestrationServiceException.class,
-            () -> classUnderTest.markCasesToBeMovedToAosOverdue(AUTH_TOKEN)
+            () -> classUnderTest.findCasesForWhichAosIsOverdue(AUTH_TOKEN)
         );
         assertThat(exception.getCause(), is(instanceOf(WorkflowException.class)));
 
@@ -187,6 +195,7 @@ public class AosServiceImplTest {
             CaseOrchestrationServiceException.class,
             () -> classUnderTest.makeCaseAosOverdue(AUTH_TOKEN, TEST_CASE_ID)
         );
+        assertThat(exception.getCaseId().get(), is(TEST_CASE_ID));
         assertThat(exception.getCause(), is(instanceOf(WorkflowException.class)));
     }
 
@@ -211,4 +220,45 @@ public class AosServiceImplTest {
             assertCaseOrchestrationServiceExceptionIsSetProperly(exception);
         }
     }
+
+    @Test
+    public void shouldCallAppropriateWorkflowForMovingProcessServerCaseToAwaitingDecreeNisi()
+        throws WorkflowException, CaseOrchestrationServiceException {
+        classUnderTest.markAosNotReceivedForProcessServerCase(AUTH_TOKEN, TEST_CASE_ID);
+
+        verify(aosOverdueForAlternativeServiceCaseWorkflow).run(AUTH_TOKEN, TEST_CASE_ID, SERVED_BY_PROCESS_SERVER);
+    }
+
+    @Test
+    public void shouldThrowCaseOrchestrationWhenMovingProcessServerCaseToAwaitingDecreeNisiFails() throws WorkflowException {
+        doThrow(WorkflowException.class)
+            .when(aosOverdueForAlternativeServiceCaseWorkflow).run(AUTH_TOKEN, TEST_CASE_ID, SERVED_BY_PROCESS_SERVER);
+
+        CaseOrchestrationServiceException exception = assertThrows(CaseOrchestrationServiceException.class,
+            () -> classUnderTest.markAosNotReceivedForProcessServerCase(AUTH_TOKEN, TEST_CASE_ID));
+
+        assertThat(exception.getCaseId().get(), is(TEST_CASE_ID));
+        assertThat(exception.getCause(), isA(WorkflowException.class));
+    }
+
+    @Test
+    public void shouldCallAppropriateWorkflowForMovingAlternativeMethodCaseToAwaitingDecreeNisi()
+        throws WorkflowException, CaseOrchestrationServiceException {
+        classUnderTest.markAosNotReceivedForAlternativeMethodCase(AUTH_TOKEN, TEST_CASE_ID);
+
+        verify(aosOverdueForAlternativeServiceCaseWorkflow).run(AUTH_TOKEN, TEST_CASE_ID, SERVED_BY_ALTERNATIVE_METHOD);
+    }
+
+    @Test
+    public void shouldThrowCaseOrchestrationWhenMovingAlternativeMethodCaseToAwaitingDecreeNisiFails() throws WorkflowException {
+        doThrow(WorkflowException.class)
+            .when(aosOverdueForAlternativeServiceCaseWorkflow).run(AUTH_TOKEN, TEST_CASE_ID, SERVED_BY_ALTERNATIVE_METHOD);
+
+        CaseOrchestrationServiceException exception = assertThrows(CaseOrchestrationServiceException.class,
+            () -> classUnderTest.markAosNotReceivedForAlternativeMethodCase(AUTH_TOKEN, TEST_CASE_ID));
+
+        assertThat(exception.getCaseId().get(), is(TEST_CASE_ID));
+        assertThat(exception.getCause(), isA(WorkflowException.class));
+    }
+
 }

@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.emails.Dis
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -27,8 +28,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_GRANTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATIONS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
@@ -37,6 +37,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DEEMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DISPENSED;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractorTest.buildCollectionMember;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTaskWasCalled;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
@@ -245,7 +246,18 @@ public class ServiceDecisionMadeWorkflowTest {
     @Test
     public void whenApplicationIsGrantedAndUnknownTypeShouldNotExecuteAnyTask()
         throws WorkflowException {
-        Map<String, Object> caseData = buildCaseData("I don't exist", YES_VALUE);
+        runTestWithUnknownServiceApplicartionTypeToVerifyNoTaskIsExecutedForGranted(YES_VALUE);
+    }
+
+    @Test
+    public void whenApplicationIsNotGrantedAndUnknownTypeShouldNotExecuteAnyTask()
+        throws WorkflowException {
+        runTestWithUnknownServiceApplicartionTypeToVerifyNoTaskIsExecutedForGranted(NO_VALUE);
+    }
+
+    private void runTestWithUnknownServiceApplicartionTypeToVerifyNoTaskIsExecutedForGranted(String granted)
+        throws WorkflowException {
+        Map<String, Object> caseData = buildCaseData("I don't exist", granted);
         CaseDetails caseDetails = buildCaseDetails(caseData, AWAITING_DECREE_NISI);
 
         executeWorkflow(caseDetails);
@@ -263,8 +275,7 @@ public class ServiceDecisionMadeWorkflowTest {
 
     private Map<String, Object> buildCaseData(String serviceApplicationType, String serviceApplicationGranted) {
         return ImmutableMap.of(
-            SERVICE_APPLICATION_TYPE, serviceApplicationType,
-            SERVICE_APPLICATION_GRANTED, serviceApplicationGranted
+            SERVICE_APPLICATIONS, asList(buildCollectionMember(serviceApplicationGranted, serviceApplicationType))
         );
     }
 

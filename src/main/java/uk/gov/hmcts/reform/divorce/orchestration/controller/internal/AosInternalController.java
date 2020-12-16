@@ -20,7 +20,7 @@ public class AosInternalController {
     private final AosService aosService;
 
     @PostMapping(path = "/cases/aos/make-overdue")
-    @ApiOperation(value = "Moves eligible cases to AOSOverdue state")
+    @ApiOperation(value = "Identifies and adequately processes cases for which AOS is overdue")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Case set as AOS Overdue"),
         @ApiResponse(code = 400, message = "Bad Request"),
@@ -29,8 +29,8 @@ public class AosInternalController {
     public ResponseEntity<String> markCasesForBeingMovedToAosOverdue(@RequestHeader(value = "Authorization") String authorizationToken)
         throws CaseOrchestrationServiceException {
 
-        log.info("Will look for cases that are eligible to be moved to 'AOSOverdue' state");
-        aosService.markCasesToBeMovedToAosOverdue(authorizationToken);
+        log.info("Will look for cases for which AOS is overdue.");
+        aosService.findCasesForWhichAosIsOverdue(authorizationToken);
 
         return ResponseEntity.ok().build();
     }

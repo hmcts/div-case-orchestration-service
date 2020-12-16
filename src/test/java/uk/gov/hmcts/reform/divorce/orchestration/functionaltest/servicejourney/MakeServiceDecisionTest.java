@@ -68,6 +68,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.S
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.servicejourney.ServiceDecisionMadeTest.buildRefusalRequest;
 import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.servicejourney.ServiceDecisionMadeTest.buildServiceRefusalOrderCaseData;
@@ -399,6 +400,8 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
         );
 
         caseData.put(SERVICE_APPLICATION_PAYMENT, TEST_SERVICE_APPLICATION_PAYMENT);
+        caseData.put(SERVICE_APPLICATION_TYPE, serviceType);
+        caseData.put(SERVICE_APPLICATION_GRANTED, NO_VALUE);
         caseData.put(SERVICE_APPLICATIONS, new ArrayList<>(Arrays.asList(buildCollectionMember())));
 
         return ccdCallbackRequest;
@@ -412,6 +415,7 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
         );
         refusalOrderData.put(RECEIVED_SERVICE_ADDED_DATE, TEST_ADDED_DATE);
         refusalOrderData.put(SERVICE_APPLICATION_PAYMENT, TEST_SERVICE_APPLICATION_PAYMENT);
+        refusalOrderData.remove(SERVICE_APPLICATIONS);
 
         CcdCallbackRequest ccdCallbackRequest = buildRefusalRequest(refusalOrderData);
         ccdCallbackRequest.getCaseDetails().setState(SERVICE_APPLICATION_NOT_APPROVED);
