@@ -59,7 +59,7 @@ def versions = [
         lombok                       : '1.18.12',
         pitest                       : '1.4.10',
         postgresql                   : '42.2.13',
-        puppyCrawl                   : '8.38',
+        puppyCrawl                   : '8.29',
         reformHealth                 : '0.0.5',
         reformPropertiesVolume       : '0.0.4',
         reformsJavaLogging           : '5.1.7',
