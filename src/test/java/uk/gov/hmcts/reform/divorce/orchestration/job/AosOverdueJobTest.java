@@ -41,12 +41,12 @@ public class AosOverdueJobTest {
     public void shouldCallService() throws CaseOrchestrationServiceException, JobExecutionException {
         classUnderTest.execute(null);
 
-        verify(aosService).markCasesToBeMovedToAosOverdue(AUTH_TOKEN);
+        verify(aosService).findCasesForWhichAosIsOverdue(AUTH_TOKEN);
     }
 
     @Test
     public void shouldThrowJobExecutionException_WhenServiceFails() throws CaseOrchestrationServiceException {
-        doThrow(CaseOrchestrationServiceException.class).when(aosService).markCasesToBeMovedToAosOverdue(AUTH_TOKEN);
+        doThrow(CaseOrchestrationServiceException.class).when(aosService).findCasesForWhichAosIsOverdue(AUTH_TOKEN);
 
         JobExecutionException jobExecutionException = assertThrows(
             JobExecutionException.class,

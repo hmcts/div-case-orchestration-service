@@ -24,7 +24,7 @@ public class UpdateDivorceCaseWithinBulkUTest {
         TaskContext context = new DefaultTaskContext();
         Map<String, Object> payload  = Collections.emptyMap();
 
-        assertEquals(Collections.emptyList(), classToTest.getApplicationEvent(context, payload));
+        assertEquals(Collections.emptyList(), classToTest.getApplicationEventsToPublish(context, payload));
     }
 
     @Test
@@ -34,7 +34,7 @@ public class UpdateDivorceCaseWithinBulkUTest {
 
         Map<String, Object> payload  = ImmutableMap.of(BULK_CASE_LIST_KEY, Arrays.asList(caseData, caseData));
 
-        List<ApplicationEvent> result = classToTest.getApplicationEvent(context, payload);
+        List<ApplicationEvent> result = classToTest.getApplicationEventsToPublish(context, payload);
         assertEquals(2, result.size());
     }
 }

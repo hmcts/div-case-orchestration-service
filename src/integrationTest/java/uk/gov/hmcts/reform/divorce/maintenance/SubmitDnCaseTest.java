@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.divorce.maintenance;
 
 import io.restassured.response.Response;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.divorce.model.idam.UserDetails;
@@ -38,7 +37,7 @@ public class SubmitDnCaseTest extends CcdSubmissionSupport {
         assertEquals(AWAITING_LEGAL_ADVISOR_REFERRAL, cosResponse.path(CASE_STATE_JSON_KEY));
     }
 
-    @Ignore // Needs config to pass
+
     @Test
     public void whenSubmitDnWithAwaitingClarification_thenProceedAsExpected() throws Exception {
         updateCaseForCitizen(TEST_AOS_STARTED_EVENT_ID);

@@ -23,7 +23,7 @@ public class AosOverdueJob implements Job {
         log.info("Running {} job", this.getClass().getSimpleName());
 
         try {
-            aosService.markCasesToBeMovedToAosOverdue(authUtil.getCaseworkerToken());
+            aosService.findCasesForWhichAosIsOverdue(authUtil.getCaseworkerToken());
         } catch (CaseOrchestrationServiceException e) {
             JobExecutionException jobExecutionException = new JobExecutionException(e);
             log.error("Error when trying to run {}", this.getClass().getName(), jobExecutionException);

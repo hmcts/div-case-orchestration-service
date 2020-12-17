@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
 
 import java.util.Map;
 
+import static org.apache.commons.lang3.StringUtils.SPACE;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -19,7 +20,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMAIL_LABEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINE_SEPARATOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PHONE_LABEL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SPACE_SEPARATOR;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -86,10 +86,10 @@ public class CourtLookupServiceTest {
         assertEquals("divorcecase@justice.gov.uk", foundCourt.getEmail());
         assertEquals("0300 303 0642", foundCourt.getPhone());
 
-        String expectedContactDetails = CARE_OF_PREFIX + SPACE_SEPARATOR + foundCourt.getName() + LINE_SEPARATOR
+        String expectedContactDetails = CARE_OF_PREFIX + SPACE + foundCourt.getName() + LINE_SEPARATOR
             + foundCourt.getAddress() + LINE_SEPARATOR + LINE_SEPARATOR
-            + EMAIL_LABEL + SPACE_SEPARATOR + foundCourt.getEmail() + LINE_SEPARATOR
-            + PHONE_LABEL + SPACE_SEPARATOR + foundCourt.getPhone();
+            + EMAIL_LABEL + SPACE + foundCourt.getEmail() + LINE_SEPARATOR
+            + PHONE_LABEL + SPACE + foundCourt.getPhone();
         assertEquals(foundCourt.getFormattedContactDetails(), expectedContactDetails);
     }
 
