@@ -704,27 +704,27 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                                                                 final String templateId, final String documentType, final String filename)
         throws WorkflowException {
 
-        return documentGenerationWorkflow.run(ccdCallbackRequest, authToken, templateId, documentType, filename);
+        return documentGenerationWorkflow.run(ccdCallbackRequest.getCaseDetails(), authToken, templateId, documentType, filename);
     }
 
     @Override
     public Map<String, Object> handleDnPronouncementDocumentGeneration(final CcdCallbackRequest ccdCallbackRequest, final String authToken)
         throws WorkflowException {
 
-        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        Map<String, Object> caseData = caseDetails.getCaseData();
 
         if (Objects.nonNull(caseData.get(BULK_LISTING_CASE_ID_FIELD))) {//TODO - can this information have changed since the document was first generated?
             LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
             String templateId = documentTemplateService.getConfiguredTemplateId(languagePreference, DocumentType.DECREE_NISI_TEMPLATE_ID);//TODO - I could have document type linked to enum (ccd document type)
-            caseData.putAll(documentGenerationWorkflow.run(ccdCallbackRequest, authToken, templateId, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME));//TODO - in this case, document type is not used to find the template id. it's still used as a document type
+            caseData.putAll(documentGenerationWorkflow.run(caseDetails, authToken, templateId, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME));//TODO - in this case, document type is not used to find the template id. it's still used as a document type
             //TODO - this produces the decree nisi document we'll need
 
             if (isPetitionerClaimingCosts(caseData)) {//TODO - can this information have changed since the document was first generated?
                 templateId = documentTemplateService.getConfiguredTemplateId(languagePreference, DocumentType.COSTS_ORDER_TEMPLATE_ID);
 
                 // DocumentType is clear enough to use as the file name
-                caseData.putAll(documentGenerationWorkflow.run(ccdCallbackRequest, authToken,
-                    templateId, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE));//TODO - this generates the costs order - which we also need
+                caseData.putAll(documentGenerationWorkflow.run(caseDetails, authToken, templateId, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE));//TODO - this generates the costs order - which we also need
             }
         }
 
@@ -783,10 +783,11 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> editBulkCaseListingData(CcdCallbackRequest ccdCallbackRequest, String fileName,
                                                        String templateId, String documentType, String authToken) throws WorkflowException {
-        Map<String, Object> response = validateBulkCaseListingWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
-        String judgeName = (String) ccdCallbackRequest.getCaseDetails().getCaseData().get(PRONOUNCEMENT_JUDGE_CCD_FIELD);
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        Map<String, Object> response = validateBulkCaseListingWorkflow.run(caseDetails.getCaseData());
+        String judgeName = (String) caseDetails.getCaseData().get(PRONOUNCEMENT_JUDGE_CCD_FIELD);
         if (StringUtils.isNotEmpty(judgeName)) {
-            response = documentGenerationWorkflow.run(ccdCallbackRequest, authToken, templateId, documentType, fileName);
+            response = documentGenerationWorkflow.run(caseDetails, authToken, templateId, documentType, fileName);
         }
 
         return response;
