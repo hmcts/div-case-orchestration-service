@@ -29,7 +29,7 @@ public class AosOverdueJobQuartzTest extends QuartzTest {
 
     @Override
     protected ThrowingRunnable getBasicAssertion() {
-        return () -> verify(aosService).markCasesToBeMovedToAosOverdue(AUTH_TOKEN);
+        return () -> verify(aosService).findCasesForWhichAosIsOverdue(AUTH_TOKEN);
     }
 
     @Override

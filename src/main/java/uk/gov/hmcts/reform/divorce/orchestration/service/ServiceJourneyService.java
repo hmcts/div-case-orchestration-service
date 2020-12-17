@@ -19,4 +19,7 @@ public interface ServiceJourneyService {
 
     Map<String, Object> setupConfirmServicePaymentEvent(CaseDetails caseDetails)
         throws ServiceJourneyServiceException;
+
+    Map<String, Object> confirmServicePaymentEvent(CaseDetails caseDetails)
+        throws ServiceJourneyServiceException;
 }
