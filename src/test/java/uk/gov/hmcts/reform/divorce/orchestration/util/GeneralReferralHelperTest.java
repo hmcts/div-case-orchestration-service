@@ -1,9 +1,14 @@
 package uk.gov.hmcts.reform.divorce.orchestration.util;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
 
+import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
@@ -19,8 +24,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.G
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.GeneralReferralHelper.GENERAL_REFERRAL_WORKFLOW_STATES;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.GeneralReferralHelper.isGeneralReferralPaymentRequired;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.GeneralReferralHelper.isReasonGeneralApplicationReferral;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.GeneralReferralHelper.isStatePartOfGeneralReferralWorkflow;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.GeneralReferralHelper.isTypeOfAlternativeServiceApplication;
 
 public class GeneralReferralHelperTest {
@@ -109,9 +116,29 @@ public class GeneralReferralHelperTest {
         runEmptyOrNullAssertionsForGeneralReferralType(caseData);
     }
 
+    @Test
+    public void generalReferralWorkflowStatesListIsAsExpected() {
+        assertThat(GENERAL_REFERRAL_WORKFLOW_STATES, is(getExpectedGeneralReferralWorkflowStates()));
+    }
+
+    @ParameterizedTest
+    @MethodSource("getExpectedGeneralReferralWorkflowStates")
+    public void isStatePartOfGeneralReferralWorkflowShouldBeTrue(String state) {
+        assertThat(isStatePartOfGeneralReferralWorkflow(state), is(true));
+    }
+
+    @Test
+    public void isStatePartOfGeneralReferralWorkflowShouldBeFalse() {
+        assertThat(isStatePartOfGeneralReferralWorkflow("notGeneralReferralWorkflowState"), is(false));
+    }
+
+    @Test
+    public void isStatePartOfGeneralReferralWorkflowShouldBeFalseGivenNullValue() {
+        assertThat(isStatePartOfGeneralReferralWorkflow(null), is(false));
+    }
 
     private void runEmptyOrNullAssertionsForGeneralReferralFee(Map<String, Object> caseData) {
-        String expectedMessage = format("Could not evaluate value of mandatory property \"%s\"", GENERAL_REFERRAL_FEE);
+        String expectedMessage = getMissingPropertyErrorMessage(GENERAL_REFERRAL_FEE);
 
         InvalidDataForTaskException taskException =
             assertThrows(InvalidDataForTaskException.class, () -> isGeneralReferralPaymentRequired(caseData));
@@ -120,7 +147,7 @@ public class GeneralReferralHelperTest {
     }
 
     private void runEmptyOrNullAssertionsForGeneralReferralReason(Map<String, Object> caseData) {
-        String expectedMessage = format("Could not evaluate value of mandatory property \"%s\"", GENERAL_REFERRAL_REASON);
+        String expectedMessage = getMissingPropertyErrorMessage(GENERAL_REFERRAL_REASON);
 
         InvalidDataForTaskException taskException =
             assertThrows(InvalidDataForTaskException.class, () -> isReasonGeneralApplicationReferral(caseData));
@@ -129,11 +156,22 @@ public class GeneralReferralHelperTest {
     }
 
     private void runEmptyOrNullAssertionsForGeneralReferralType(Map<String, Object> caseData) {
-        String expectedMessage = format("Could not evaluate value of mandatory property \"%s\"", GENERAL_REFERRAL_TYPE);
+        String expectedMessage = getMissingPropertyErrorMessage(GENERAL_REFERRAL_TYPE);
 
         InvalidDataForTaskException taskException =
             assertThrows(InvalidDataForTaskException.class, () -> isTypeOfAlternativeServiceApplication(caseData));
 
         assertThat(taskException.getMessage(), containsString(expectedMessage));
+    }
+
+    private String getMissingPropertyErrorMessage(String missingField) {
+        return format("Could not evaluate value of mandatory property \"%s\"", missingField);
+    }
+
+    private static List<String> getExpectedGeneralReferralWorkflowStates() {
+        return ImmutableList.of(
+            CcdStates.AWAITING_GENERAL_REFERRAL_PAYMENT,
+            CcdStates.AWAITING_GENERAL_CONSIDERATION,
+            CcdStates.GENERAL_CONSIDERATION_COMPLETE);
     }
 }

@@ -10,7 +10,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.aos.MarkAosCasesAsOverdueTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.aos.MarkCasesAsAosOverdueTask;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -23,7 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class AosOverdueEligibilityWorkflowTest {
 
     @Mock
-    private MarkAosCasesAsOverdueTask markCasesToBeMovedToAosOverdue;
+    private MarkCasesAsAosOverdueTask markCasesToBeMovedToAosOverdue;
 
     @InjectMocks
     private AosOverdueEligibilityWorkflow aosOverdueEligibilityWorkflow;

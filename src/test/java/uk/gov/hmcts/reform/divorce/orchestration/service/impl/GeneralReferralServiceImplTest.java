@@ -1,16 +1,19 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.FurtherPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.GeneralConsiderationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.GeneralReferralWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalreferral.SetupGeneralReferralPaymentWorkflow;
@@ -23,6 +26,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -45,6 +49,9 @@ public class GeneralReferralServiceImplTest {
 
     @Mock
     private SetupGeneralReferralPaymentWorkflow setupGeneralReferralPaymentWorkflow;
+
+    @Mock
+    private FurtherPaymentWorkflow furtherPaymentWorkflow;
 
     @InjectMocks
     private GeneralReferralServiceImpl generalReferralService;
@@ -163,5 +170,49 @@ public class GeneralReferralServiceImplTest {
         );
 
         assertCaseOrchestrationServiceExceptionIsSetProperly(exception);
+    }
+
+    @Test
+    public void givenCaseData_whenReturnToStateBeforeGeneralReferral_thenReturnPayloadAndNewCaseState() throws Exception {
+        Map<String, Object> caseData = ImmutableMap.of(
+            CcdFields.GENERAL_REFERRAL_PREVIOUS_CASE_STATE, "previousCaseState");
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .build();
+
+        ccdCallbackResponse = generalReferralService.returnToStateBeforeGeneralReferral(caseDetails);
+
+        assertThat(ccdCallbackResponse.getState(), is("previousCaseState"));
+    }
+
+    @Test
+    public void givenMissingPreviousStateField_whenReturnToStateBeforeGeneralReferral_thenThrowException() {
+        CaseOrchestrationServiceException exception = assertThrows(
+            CaseOrchestrationServiceException.class,
+            () -> generalReferralService.returnToStateBeforeGeneralReferral(
+                CaseDetails.builder()
+                    .caseId(TEST_CASE_ID)
+                    .caseData(new HashMap<>())
+                    .build()
+            )
+        );
+
+        assertCaseOrchestrationServiceExceptionIsSetProperly(exception);
+    }
+
+    @Test
+    public void givenCaseData_whenGeneralReferralPaymentEvent_thenReturnPayload() throws Exception {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .build();
+
+        when(furtherPaymentWorkflow.run(eq(caseDetails), anyString())).thenReturn(new HashMap<>());
+
+        generalReferralService.generalReferralPaymentEvent(caseDetails);
+
+        verify(furtherPaymentWorkflow).run(eq(caseDetails), anyString());
     }
 }

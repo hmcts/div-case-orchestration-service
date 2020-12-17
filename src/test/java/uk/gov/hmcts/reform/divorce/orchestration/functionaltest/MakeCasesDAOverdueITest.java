@@ -39,7 +39,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport.buildDateForTodayMinusGivenPeriod;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.elasticsearch.CMSElasticSearchSupport.buildDateForTodayMinusGivenPeriod;
 
 @RunWith(SpringRunner.class)
 public class MakeCasesDAOverdueITest extends MockedFunctionalTest {
@@ -51,7 +51,7 @@ public class MakeCasesDAOverdueITest extends MockedFunctionalTest {
     private static final String DN_GRANTED_DATE = "2019-03-31";
     private static final String DN_GRANTED_DATA_REFERENCE = "data.DecreeNisiGrantedDate";
     private final List<CaseDetails> cases = new ArrayList<>();
-    private QueryBuilder[] queryBuilders;
+    private QueryBuilder query;
 
     @Autowired
     private MockMvc webClient;
@@ -85,17 +85,16 @@ public class MakeCasesDAOverdueITest extends MockedFunctionalTest {
         cases.add(caseDetails1);
         cases.add(caseDetails2);
 
-        queryBuilders = new QueryBuilder[] {
-            QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AWAITING_DA),
-            QueryBuilders.rangeQuery(DN_GRANTED_DATA_REFERENCE).lte(buildDateForTodayMinusGivenPeriod("1y"))
-        };
+        query = QueryBuilders.boolQuery()
+            .filter(QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AWAITING_DA))
+            .filter(QueryBuilders.rangeQuery(DN_GRANTED_DATA_REFERENCE).lte(buildDateForTodayMinusGivenPeriod("1y")));
     }
 
     @Test
     public void givenCaseIsInAwaitingDA_WhenMakeCaseOverdueForDAIsCalled_CaseMaintenanceServiceIsCalled() throws Exception {
         Map<String, Object> responseData = Collections.singletonMap(ID, TEST_CASE_ID);
         stubCaseMaintenanceUpdateEndpoint(responseData);
-        stubCaseMaintenanceSearchEndpoint(cases, queryBuilders);
+        stubCaseMaintenanceSearchEndpoint(cases, query);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -110,7 +109,7 @@ public class MakeCasesDAOverdueITest extends MockedFunctionalTest {
     @Test
     public void givenNoCasesInAwaitingDA_WhenMakeCaseOverdueForDAIsCalled_UpdateInCcdIsNotCalled() throws Exception {
         stubCaseMaintenanceUpdateEndpoint(emptyMap());
-        stubCaseMaintenanceSearchEndpoint(emptyList(), queryBuilders);
+        stubCaseMaintenanceSearchEndpoint(emptyList(), query);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)

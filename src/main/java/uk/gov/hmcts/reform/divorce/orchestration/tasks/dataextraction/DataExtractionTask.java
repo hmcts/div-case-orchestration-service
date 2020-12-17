@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.AsyncTask;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.AutoPublishingAsyncTask;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
 import java.time.LocalDate;
@@ -18,10 +18,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtract
 
 @Component
 @Slf4j
-public class DataExtractionTask extends AsyncTask<Map<String, Object>> {
+public class DataExtractionTask extends AutoPublishingAsyncTask<Map<String, Object>> {
 
     @Override
-    public List<ApplicationEvent> getApplicationEvent(TaskContext context, Map<String, Object> payload) {
+    public List<ApplicationEvent> getApplicationEventsToPublish(TaskContext context, Map<String, Object> payload) {
         LocalDate yesterday = LocalDate.now().minusDays(1);
         log.info("Request data extractions for {}", yesterday);
 
