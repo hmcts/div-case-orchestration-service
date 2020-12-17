@@ -9,7 +9,6 @@ import java.time.Period;
 public class OrchestrationConstants {
 
     public static final String LINE_SEPARATOR = System.lineSeparator();
-    public static final String SPACE_SEPARATOR = " ";
     public static final String EMPTY_STRING = "";
 
     // Authentication

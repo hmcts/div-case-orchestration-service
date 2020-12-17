@@ -28,7 +28,7 @@ public class DataExtractionTaskTest {
     public void givenDataExtraction_whenGetEvents_thenReturnCorrectNumberOfEvents() {
         TaskContext context = new DefaultTaskContext();
         Map<String, Object> payload = new HashMap<>();
-        List<ApplicationEvent> events = classUnderTest.getApplicationEvent(context, payload);
+        List<ApplicationEvent> events = classUnderTest.getApplicationEventsToPublish(context, payload);
 
         assertThat(events, hasSize(3));
         assertEventIsAsExpected((DataExtractionRequest) events.get(0), yesterday, AOS);

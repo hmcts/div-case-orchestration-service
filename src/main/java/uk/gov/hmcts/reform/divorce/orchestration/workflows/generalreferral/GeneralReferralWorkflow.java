@@ -9,10 +9,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalreferral.GeneralApplicationAddedDateTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalreferral.GeneralReferralSetPreviousCaseStateTask;
 
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 
 @Component
 @Slf4j
@@ -20,6 +22,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class GeneralReferralWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final GeneralApplicationAddedDateTask generalApplicationAddedDateTask;
+    private final GeneralReferralSetPreviousCaseStateTask generalReferralSetPreviousCaseStateTask;
 
     public Map<String, Object> run(CaseDetails caseDetails) throws WorkflowException {
 
@@ -29,10 +32,12 @@ public class GeneralReferralWorkflow extends DefaultWorkflow<Map<String, Object>
 
         return this.execute(
             new Task[] {
-                generalApplicationAddedDateTask
+                generalApplicationAddedDateTask,
+                generalReferralSetPreviousCaseStateTask
             },
             caseDetails.getCaseData(),
-            ImmutablePair.of(CASE_ID_JSON_KEY, caseId)
+            ImmutablePair.of(CASE_ID_JSON_KEY, caseId),
+            ImmutablePair.of(CASE_STATE_JSON_KEY, caseDetails.getState())
         );
     }
 }
