@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_COE;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CourtsOrderDocumentsUpdateServiceImplTest {
+public class CourtOrdersDocumentsUpdateServiceImplTest {
 
     private static final String COE_ENGLISH_TEMPLATE_ID = "FL-DIV-GNO-ENG-00020.docx";//TODO - this is actually being ignored
     private static final String COE_FILE_NAME = "certificateOfEntitlement";//TODO - are file names always the same per document type? if so, maybe this could be inferred from doc type
@@ -34,7 +34,7 @@ public class CourtsOrderDocumentsUpdateServiceImplTest {
     private DocumentGenerationWorkflow documentGenerationWorkflow;
 
     @InjectMocks
-    private CourtsOrderDocumentsUpdateServiceImpl classUnderTest;
+    private CourtOrdersDocumentsUpdateServiceImpl classUnderTest;
 
     private CaseDetails incomingCaseDetails;
 
