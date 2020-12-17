@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 import java.util.Map;
 
 public interface Template {
-    default String getConfiguredLanguageAppropriateTemplateId(DocumentTemplateService documentTemplateService,
+    default String getConfiguredLanguageAppropriateTemplateId(DocumentTemplateService documentTemplateService, //TODO - getConfiguredLanguageAppropriateTemplateId / getTemplateId
                                                               DocumentType documentType, Map<String, Object> caseData) {//TODO - could this return an Optional? instead of throwing an exceptions
         LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
         return documentTemplateService.getConfiguredTemplateId(languagePreference, documentType);

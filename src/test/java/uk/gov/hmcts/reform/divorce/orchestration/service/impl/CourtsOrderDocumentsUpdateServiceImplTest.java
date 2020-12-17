@@ -8,8 +8,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CourtsOrderDocumentsUpdateService;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DocumentGenerationWorkflow;
 
-import static org.mockito.Mockito.verify;
-
 @RunWith(MockitoJUnitRunner.class)
 public class CourtsOrderDocumentsUpdateServiceImplTest {
 
@@ -17,7 +15,7 @@ public class CourtsOrderDocumentsUpdateServiceImplTest {
     private DocumentGenerationWorkflow documentGenerationWorkflow;
 
     @InjectMocks
-    private CourtsOrderDocumentsUpdateService classUnderTest;
+    private CourtsOrderDocumentsUpdateServiceImpl classUnderTest;
 
     @Test
     public void shouldUpdateExistingCourtOrderDocuments() {

@@ -18,7 +18,7 @@ public class DocumentTemplateService {
     private final DocumentTemplates documentTemplates;
 
     public String getConfiguredTemplateId(LanguagePreference languagePreference, DocumentType documentType) {
-        String templateLogicalName = documentType.getTemplateLogicalName();
+        String templateLogicalName = documentType.getTemplateName();
         return Optional.ofNullable(documentTemplates.getTemplates().get(languagePreference).get(templateLogicalName))
             .orElseThrow(() -> new IllegalArgumentException(String.format(ERROR_MESSAGE, languagePreference.getCode(), templateLogicalName)));
     }

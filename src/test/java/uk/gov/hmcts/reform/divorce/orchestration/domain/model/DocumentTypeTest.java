@@ -12,13 +12,13 @@ public class DocumentTypeTest {
 
     @Test
     public void shouldRetrieveDocumentTypeByTemplateName() {
-        Optional<DocumentType> coe = DocumentType.getDocumentTypeByTemplateLogicalName("costsOrderTemplateId");
+        Optional<DocumentType> coe = DocumentType.getEnum("costsOrderTemplateId");
         assertThat("match", coe.get(), is(DocumentType.COSTS_ORDER_TEMPLATE_ID));
     }
 
     @Test
     public void testInvalid() {
-        Optional<DocumentType> unknown = DocumentType.getDocumentTypeByTemplateLogicalName("unknown");
+        Optional<DocumentType> unknown = DocumentType.getEnum("unknown");
         assertFalse("match not found", unknown.isPresent());
     }
 

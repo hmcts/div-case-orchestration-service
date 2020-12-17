@@ -32,15 +32,15 @@ public enum DocumentType {
     COE("coe"),
     CASE_LIST_FOR_PRONOUNCEMENT("caseListForPronouncement");
 
-    private final String templateLogicalName;
+    private final String templateName;//TODO - templateLogicalName / templateName
 
-    DocumentType(String templateLogicalName) {
-        this.templateLogicalName = templateLogicalName;
+    DocumentType(String templateName) {
+        this.templateName = templateName;
     }
 
-    public static Optional<DocumentType> getDocumentTypeByTemplateLogicalName(String templateLogicalName) {
+    public static Optional<DocumentType> getEnum(String value) {//TODO - getDocumentTypeByTemplateLogicalName? / getEnum
         return Arrays.stream(DocumentType.values())
-            .filter(enumValue -> enumValue.getTemplateLogicalName().equals(templateLogicalName)).findAny();
+            .filter(enumValue -> enumValue.getTemplateName().equals(value)).findAny();
     }
 
 }

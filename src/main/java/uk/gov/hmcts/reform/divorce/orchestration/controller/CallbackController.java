@@ -529,7 +529,7 @@ public class CallbackController {
         try {
             callbackResponseBuilder.data(
                 caseOrchestrationService.processSolDnDoc(
-                    ccdCallbackRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateLogicalName(),
+                    ccdCallbackRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateName(),
                     RESP_ANSWERS_LINK
                 )
             );

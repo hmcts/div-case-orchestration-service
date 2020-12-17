@@ -71,7 +71,7 @@ public class DocumentGenerationWorkflow extends DefaultWorkflow<Map<String, Obje
     }
 
     private String getTemplateId(String templateId, String documentType, Map<String, Object> caseData) {
-        Optional<DocumentType> optionalDocumentType = DocumentType.getDocumentTypeByTemplateLogicalName(documentType);
+        Optional<DocumentType> optionalDocumentType = DocumentType.getEnum(documentType);
 
         if (optionalDocumentType.isPresent()) {
             try {
