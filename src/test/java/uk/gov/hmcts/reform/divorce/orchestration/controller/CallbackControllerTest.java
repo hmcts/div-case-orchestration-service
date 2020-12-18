@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.AlternativeServiceServi
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.CourtOrderDocumentsUpdateService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralEmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralOrderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralReferralService;
@@ -108,6 +109,9 @@ public class CallbackControllerTest {
 
     @Mock
     private AlternativeServiceService alternativeServiceService;
+
+    @Mock
+    private CourtOrderDocumentsUpdateService courtOrderDocumentsUpdateService;
 
     @InjectMocks
     private CallbackController classUnderTest;
@@ -625,7 +629,7 @@ public class CallbackControllerTest {
             .build();
 
         when(caseOrchestrationService
-            .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateName(),
+            .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateLogicalName(),
                 OrchestrationConstants.RESP_ANSWERS_LINK)
         ).thenReturn(incomingPayload);
 
@@ -635,7 +639,7 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getData(), is(equalTo(incomingPayload)));
         assertThat(response.getBody().getErrors(), is(nullValue()));
         verify(caseOrchestrationService)
-            .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateName(), OrchestrationConstants.RESP_ANSWERS_LINK);
+            .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateLogicalName(), OrchestrationConstants.RESP_ANSWERS_LINK);
     }
 
     @Test
@@ -647,7 +651,7 @@ public class CallbackControllerTest {
             .build();
 
         when(caseOrchestrationService
-            .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateName(), OrchestrationConstants.RESP_ANSWERS_LINK)
+            .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateLogicalName(), OrchestrationConstants.RESP_ANSWERS_LINK)
         ).thenThrow(new CaseOrchestrationServiceException(new Exception("This is a test error message.")));
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.solDnRespAnswersDoc(incomingRequest);
@@ -656,7 +660,7 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getData(), is(nullValue()));
         assertThat(response.getBody().getErrors(), hasItem("This is a test error message."));
         verify(caseOrchestrationService)
-            .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateName(), OrchestrationConstants.RESP_ANSWERS_LINK);
+            .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateLogicalName(), OrchestrationConstants.RESP_ANSWERS_LINK);
     }
 
     @Test
@@ -1757,4 +1761,19 @@ public class CallbackControllerTest {
         assertThat(response.getStatusCode(), equalTo(OK));
         verify(alternativeServiceService).alternativeServiceConfirmed(caseDetails);
     }
+
+    @Test
+    public void shouldCallAdequateServiceWhenUpdatingCourtOrderDocuments() throws CaseOrchestrationServiceException {
+        when(courtOrderDocumentsUpdateService.updateExistingCourtOrderDocuments(AUTH_TOKEN, TEST_INCOMING_CASE_DETAILS))
+            .thenReturn(TEST_PAYLOAD_TO_RETURN);
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(TEST_INCOMING_CASE_DETAILS).build();
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.updateCourtOrderDocuments(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+        assertThat(response.getBody().getData(), is(TEST_PAYLOAD_TO_RETURN));
+        verify(courtOrderDocumentsUpdateService).updateExistingCourtOrderDocuments(AUTH_TOKEN, TEST_INCOMING_CASE_DETAILS);
+    }
+
 }

@@ -36,7 +36,7 @@ public class DecreeNisiAnswersGeneratorTask implements Task<Map<String, Object>>
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
         CaseDetails caseDataForDoc = CaseDetails.builder().caseData(payload).build();
         final String templateId = getTemplateId(documentTemplateService, DocumentType.DECREE_NISI_ANSWER_TEMPLATE_ID,
-                payload);
+            payload);
 
         try {
             GeneratedDocumentInfo dnAnswers =

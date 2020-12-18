@@ -84,7 +84,7 @@ public class RespondentLetterGeneratorTest {
 
         //given
         when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(expectedAosInvitation);
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.AOS_INVITATION))
+        when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.ENGLISH, DocumentType.AOS_INVITATION))
                 .thenReturn(RESPONDENT_INVITATION_TEMPLATE_NAME);
         //when
         respondentLetterGenerator.execute(context, payload);

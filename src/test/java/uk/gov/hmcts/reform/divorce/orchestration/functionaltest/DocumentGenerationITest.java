@@ -100,7 +100,7 @@ public class DocumentGenerationITest extends MockedFunctionalTest {
 
         final Map<String, Object> formattedCaseData = emptyMap();
 
-        stubDocumentGeneratorServiceBaseOnContextPath(templateId, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS), documentType);
+        stubDocumentGeneratorService(templateId, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS), documentType);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -131,7 +131,7 @@ public class DocumentGenerationITest extends MockedFunctionalTest {
 
         final Map<String, Object> formattedCaseData = emptyMap();
 
-        stubDocumentGeneratorServiceBaseOnContextPath(templateId,
+        stubDocumentGeneratorService(templateId,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, expectedDocumentCaseDetails), documentType);
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build();

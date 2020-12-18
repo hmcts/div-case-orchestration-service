@@ -71,7 +71,7 @@ public class AddMiniPetitionDraftTaskTest {
 
         //given
         when(documentGeneratorClient.generateDraftPDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(expectedDocument);
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DIVORCE_DRAFT_MINI_PETITION))
+        when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.ENGLISH, DocumentType.DIVORCE_DRAFT_MINI_PETITION))
                 .thenReturn(DRAFT_MINI_PETITION_TEMPLATE_NAME);
 
         //when
