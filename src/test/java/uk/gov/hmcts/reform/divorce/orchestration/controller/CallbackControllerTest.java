@@ -1767,7 +1767,7 @@ public class CallbackControllerTest {
     public void shouldCallAdequateServiceWhenUpdatingCourtOrderDocuments() throws CaseOrchestrationServiceException {
         when(courtOrderDocumentsUpdateService.updateExistingCourtOrderDocuments(AUTH_TOKEN, TEST_INCOMING_CASE_DETAILS)).thenReturn(TEST_PAYLOAD_TO_RETURN);
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.updateCourtOrderDocuments(CcdCallbackRequest.builder().token(AUTH_TOKEN).caseDetails(TEST_INCOMING_CASE_DETAILS).build());
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.updateCourtOrderDocuments(AUTH_TOKEN, CcdCallbackRequest.builder().caseDetails(TEST_INCOMING_CASE_DETAILS).build());
 
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getErrors(), is(nullValue()));

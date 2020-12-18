@@ -7,12 +7,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
+import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 
 import java.util.Map;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -37,6 +39,12 @@ public class CourtOrderDocumentsUpdateCallbackTest extends MockedFunctionalTest 
 
         Map<String, Object> incomingCaseData = getJsonFromResourceFile("/jsonExamples/payloads/updateCourtOrderDocuments.json", new TypeReference<>() {
         });
+//        assertThat(ObjectMapperTestUtil.convertObjectToJsonString(incomingCaseData), hasJsonPath("$.data.D8DocumentsGenerated", hasItem(
+//            allOf(
+//                hasJsonPath("$.value.DocumentType", is("coe")),
+//                hasJsonPath("$.value.url", is("c14bb265-4a24-4640-a737-e1b50a97e678"))
+//            )
+//        )));//"c14bb265-4a24-4640-a737-e1b50a97e678"
 
         String response = webClient.perform(post("/update-court-order-documents")
             .contentType(APPLICATION_JSON)
@@ -52,7 +60,7 @@ public class CourtOrderDocumentsUpdateCallbackTest extends MockedFunctionalTest 
 
         assertThat(response, isJson());//TODO - join assertions?
         assertThat(response, hasJsonPath("$.data.D8DocumentsGenerated", hasItem(
-            hasJsonPath("$.DocumentType", is("coe"))
+            hasJsonPath("$.value.DocumentType", is("coe"))
 //            hasJsonPath("$.DocumentType", is("coe"))//TODO - check more things about document to make sure it has replaced the existing one
         )));
 //        ObjectMapperTestUtil.getObjectMapperInstance().readT//TODO- transform into CcdCallbackResponse

@@ -159,26 +159,6 @@ public abstract class MockedFunctionalTest {
         return documentId;
     }
 
-    public String stubDocumentGeneratorServiceBaseOnContextPath(String templateName, String documentTypeToReturn) {
-        String documentId = UUID.randomUUID().toString();
-
-        final GeneratedDocumentInfo dgsResponse =
-            GeneratedDocumentInfo.builder()
-                .documentType(documentTypeToReturn)
-                .url(getDocumentStoreTestUrl(documentId))
-                .build();
-
-        documentGeneratorServiceServer.stubFor(WireMock.post(GENERATE_DOCUMENT_CONTEXT_PATH)
-            .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
-            .withRequestBody(matchingJsonPath("$.template", equalTo(templateName)))
-            .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                .withStatus(HttpStatus.OK.value())
-                .withBody(convertObjectToJsonString(dgsResponse))));
-
-        return documentId;
-    }
-
     protected String getDocumentStoreTestUrl(String documentId) {
         return documentStore.baseUrl() + "/documents/" + documentId;
     }
@@ -263,8 +243,28 @@ public abstract class MockedFunctionalTest {
                 .build();
 
         documentGeneratorServiceServer.stubFor(WireMock.post(GENERATE_DOCUMENT_CONTEXT_PATH)
-            .withRequestBody(matchingJsonPath("$.template", equalTo(templateName)))
             .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
+            .withRequestBody(matchingJsonPath("$.template", equalTo(templateName)))
+            .willReturn(aResponse()
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .withStatus(HttpStatus.OK.value())
+                .withBody(convertObjectToJsonString(dgsResponse))));
+
+        return documentId;
+    }
+
+    public String stubDocumentGeneratorServiceBaseOnContextPath(String templateName, String documentTypeToReturn) {//TODO - this method is the same as the one above. use only one
+        String documentId = UUID.randomUUID().toString();
+
+        final GeneratedDocumentInfo dgsResponse =
+            GeneratedDocumentInfo.builder()
+                .documentType(documentTypeToReturn)
+                .url(getDocumentStoreTestUrl(documentId))
+                .build();
+
+        documentGeneratorServiceServer.stubFor(WireMock.post(GENERATE_DOCUMENT_CONTEXT_PATH)
+            .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
+            .withRequestBody(matchingJsonPath("$.template", equalTo(templateName)))
             .willReturn(aResponse()
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withStatus(HttpStatus.OK.value())
