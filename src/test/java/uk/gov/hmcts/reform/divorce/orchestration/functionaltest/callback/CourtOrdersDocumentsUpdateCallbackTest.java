@@ -30,7 +30,7 @@ public class CourtOrdersDocumentsUpdateCallbackTest extends MockedFunctionalTest
         Map<String, Object> caseData = Map.of();
 
         String response = webClient.perform(
-            post("/updateCourt")
+            post("/update-court-order-documents")
                 .contentType(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .header(AUTHORIZATION, AUTH_TOKEN)
