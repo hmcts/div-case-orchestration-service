@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.callback;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
@@ -9,9 +10,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctional
 
 import java.util.Map;
 
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -19,31 +22,35 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
-public class CourtOrdersDocumentsUpdateCallbackTest extends MockedFunctionalTest {
+public class CourtOrderDocumentsUpdateCallbackTest extends MockedFunctionalTest {
 
     @Autowired
     private MockMvc webClient;
 
     @Test
     public void shouldUpdateExistingCourtOrderDocuments() throws Exception {
-        Map<String, Object> caseData = Map.of();
+        Map<String, Object> incomingCaseData = getJsonFromResourceFile("/jsonExamples/payloads/updateCourtOrderDocuments.json", new TypeReference<>() {
+        });
 
-        String response = webClient.perform(
-            post("/update-court-order-documents")
-                .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .header(AUTHORIZATION, AUTH_TOKEN)
-                .content(convertObjectToJsonString(
-                    CcdCallbackRequest.builder()
-                        .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build())
-                        .build()
-                ))
-        )
+        String response = webClient.perform(post("/update-court-order-documents")
+            .contentType(APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(
+                CcdCallbackRequest.builder()
+                    .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(incomingCaseData).build())
+                    .build()
+            )))
             .andExpect(status().isOk())
             .andReturn().getResponse().getContentAsString();
 
-        assertThat(response, is(notNullValue()));
+        assertThat(response, isJson());//TODO - join assertions?
+        assertThat(response, hasJsonPath("$.data.D8DocumentsGenerated", hasItem(
+            hasJsonPath("$.DocumentType", is("coe"))
+//            hasJsonPath("$.DocumentType", is("coe"))//TODO - check more things about document to make sure it has replaced the existing one
+        )));
 //        ObjectMapperTestUtil.getObjectMapperInstance().readT//TODO- transform into CcdCallbackResponse
         //TODO - assert return
     }

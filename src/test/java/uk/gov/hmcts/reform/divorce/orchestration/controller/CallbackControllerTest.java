@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.AlternativeServiceServi
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.CourtOrderDocumentsUpdateService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralEmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralOrderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralReferralService;
@@ -70,6 +71,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.DUMMY_CASE_DATA;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INCOMING_CASE_DETAILS;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INCOMING_PAYLOAD;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PAYLOAD_TO_RETURN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
@@ -108,6 +110,9 @@ public class CallbackControllerTest {
 
     @Mock
     private AlternativeServiceService alternativeServiceService;
+
+    @Mock
+    private CourtOrderDocumentsUpdateService courtOrderDocumentsUpdateService;
 
     @InjectMocks
     private CallbackController classUnderTest;
@@ -1757,4 +1762,17 @@ public class CallbackControllerTest {
         assertThat(response.getStatusCode(), equalTo(OK));
         verify(alternativeServiceService).alternativeServiceConfirmed(caseDetails);
     }
+
+    @Test
+    public void shouldCallAdequateServiceWhenUpdatingCourtOrderDocuments() throws CaseOrchestrationServiceException {
+        when(courtOrderDocumentsUpdateService.updateExistingCourtOrderDocuments(AUTH_TOKEN, TEST_INCOMING_CASE_DETAILS)).thenReturn(TEST_PAYLOAD_TO_RETURN);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.updateCourtOrderDocuments(CcdCallbackRequest.builder().token(AUTH_TOKEN).caseDetails(TEST_INCOMING_CASE_DETAILS).build());
+
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+        assertThat(response.getBody().getData(), is(TEST_PAYLOAD_TO_RETURN));
+        verify(courtOrderDocumentsUpdateService).updateExistingCourtOrderDocuments(AUTH_TOKEN, TEST_INCOMING_CASE_DETAILS);
+    }
+
 }

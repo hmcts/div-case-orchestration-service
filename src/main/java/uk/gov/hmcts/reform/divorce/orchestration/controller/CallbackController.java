@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.AlternativeServiceServi
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.CourtOrderDocumentsUpdateService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralEmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralOrderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralReferralService;
@@ -77,6 +78,7 @@ public class CallbackController {
     private final GeneralEmailService generalEmailService;
     private final GeneralReferralService generalReferralService;
     private final AlternativeServiceService alternativeServiceService;
+    private final CourtOrderDocumentsUpdateService courtOrderDocumentsUpdateService;
 
     @PostMapping(path = "/request-clarification-petitioner")
     @ApiOperation(value = "Trigger notification email to request clarification from Petitioner")
@@ -1426,12 +1428,16 @@ public class CallbackController {
         @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> updateCourtOrderDocuments(
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest)
-        throws CaseOrchestrationServiceException {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        Map<String, Object> returnedPayload = courtOrderDocumentsUpdateService.updateExistingCourtOrderDocuments(
+            ccdCallbackRequest.getToken(),
+            ccdCallbackRequest.getCaseDetails()
+        );
 
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
-                .data(Map.of())
+                .data(returnedPayload)
                 .build()
         );
     }
