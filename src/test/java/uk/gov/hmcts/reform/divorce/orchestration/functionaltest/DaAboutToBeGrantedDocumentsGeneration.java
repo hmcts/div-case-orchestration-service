@@ -102,7 +102,7 @@ public class DaAboutToBeGrantedDocumentsGeneration extends MockedFunctionalTest 
 
     @Test
     public void assertCallBackFromDaAboutToBeGrantedRequest() throws Exception {
-        stubDocumentGeneratorServiceBaseOnContextPath(DECREE_ABSOLUTE_TEMPLATE_ID,
+        stubDocumentGeneratorService(DECREE_ABSOLUTE_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS),
             DECREE_ABSOLUTE_DOCUMENT_TYPE);
         when(mockEmailService.sendEmail(anyString(), anyString(), anyMap(), anyString(), any())).thenReturn(null);

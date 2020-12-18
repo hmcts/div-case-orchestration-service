@@ -57,7 +57,7 @@ public class AosRespondentSubmittedITest extends MockedFunctionalTest {
             .caseData(caseDetailMap)
             .build();
 
-        stubDocumentGeneratorServiceBaseOnContextPath(DocumentType.RESPONDENT_ANSWERS.getTemplateName(),
+        stubDocumentGeneratorService(DocumentType.RESPONDENT_ANSWERS.getTemplateName(),
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, fullCase),
             DocumentType.RESPONDENT_ANSWERS.getTemplateName());
 

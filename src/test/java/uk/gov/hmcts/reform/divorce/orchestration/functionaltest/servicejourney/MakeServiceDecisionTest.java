@@ -338,7 +338,7 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
     private void stubDocument(
         Map<String, Object> caseData, String templateId, String documentType) {
 
-        stubDocumentGeneratorServiceBaseOnContextPath(
+        stubDocumentGeneratorService(
             templateId,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
                 ImmutableMap.of(
@@ -420,7 +420,7 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
         CcdCallbackRequest ccdCallbackRequest = buildRefusalRequest(refusalOrderData);
         ccdCallbackRequest.getCaseDetails().setState(SERVICE_APPLICATION_NOT_APPROVED);
 
-        stubDocumentGeneratorServiceBaseOnContextPath(
+        stubDocumentGeneratorService(
             templateId,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
                 ImmutableMap.of(
