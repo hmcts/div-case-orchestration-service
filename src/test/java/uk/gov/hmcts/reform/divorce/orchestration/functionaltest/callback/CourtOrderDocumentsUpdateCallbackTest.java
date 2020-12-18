@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 import java.util.Map;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
-import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.endsWith;
@@ -31,6 +30,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 
 public class CourtOrderDocumentsUpdateCallbackTest extends MockedFunctionalTest {
 
+    public static final String TEST_COE_INCOMING_DOCUMENT = "1234";
     @Autowired
     private MockMvc webClient;
 
@@ -41,12 +41,11 @@ public class CourtOrderDocumentsUpdateCallbackTest extends MockedFunctionalTest 
 
         Map<String, Object> incomingCaseData = getJsonFromResourceFile("/jsonExamples/payloads/updateCourtOrderDocuments.json", new TypeReference<>() {
         });
-        assertThat(ObjectMapperTestUtil.convertObjectToJsonString(incomingCaseData), hasJsonPath("$.D8DocumentsGenerated", hasItem(
-            allOf(
-                hasJsonPath("$.value.DocumentType", is("coe")),
-                hasJsonPath("$.value.DocumentLink.document_url", endsWith("/1234"))
-            )
-        )));//"c14bb265-4a24-4640-a737-e1b50a97e678"
+        //Check example contains the expected ids
+        assertThat(ObjectMapperTestUtil.convertObjectToJsonString(incomingCaseData), hasJsonPath("$.D8DocumentsGenerated", hasItem(allOf(
+            hasJsonPath("$.value.DocumentType", is("coe")),
+            hasJsonPath("$.value.DocumentLink.document_url", endsWith(TEST_COE_INCOMING_DOCUMENT))
+        ))));
 
         String response = webClient.perform(post("/update-court-order-documents")
             .contentType(APPLICATION_JSON)
@@ -60,14 +59,11 @@ public class CourtOrderDocumentsUpdateCallbackTest extends MockedFunctionalTest 
             .andExpect(status().isOk())
             .andReturn().getResponse().getContentAsString();
 
-        assertThat(response, isJson());//TODO - join assertions?
+        //Make sure document ids were replaced
         assertThat(response, hasJsonPath("$.data.D8DocumentsGenerated", hasItem(allOf(
             hasJsonPath("$.value.DocumentType", is("coe")),
-            hasJsonPath("$.value.DocumentLink.document_url", not(endsWith("/1234")))
-//            hasJsonPath("$.DocumentType", is("coe"))//TODO - check more things about document to make sure it has replaced the existing one
+            hasJsonPath("$.value.DocumentLink.document_url", not(endsWith("1234")))
         ))));
-//        ObjectMapperTestUtil.getObjectMapperInstance().readT//TODO- transform into CcdCallbackResponse
-        //TODO - assert return
     }
 
 }
