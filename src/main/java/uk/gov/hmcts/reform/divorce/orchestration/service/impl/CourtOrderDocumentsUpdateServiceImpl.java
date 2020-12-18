@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
@@ -13,6 +14,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_COE;
 
 @RequiredArgsConstructor
+@Service
 public class CourtOrderDocumentsUpdateServiceImpl implements CourtOrderDocumentsUpdateService {
 
     private static final String COE_ENGLISH_TEMPLATE = "FL-DIV-GNO-ENG-00020.docx";//TODO - this is unnecessary - it's also ignored

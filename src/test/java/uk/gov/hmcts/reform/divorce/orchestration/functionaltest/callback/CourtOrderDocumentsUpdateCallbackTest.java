@@ -21,6 +21,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_COE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
@@ -31,6 +32,9 @@ public class CourtOrderDocumentsUpdateCallbackTest extends MockedFunctionalTest 
 
     @Test
     public void shouldUpdateExistingCourtOrderDocuments() throws Exception {
+        stubDocumentGeneratorService("FL-DIV-GNO-ENG-00020.docx",//TODO - think of better way to store this value
+            DOCUMENT_TYPE_COE);
+
         Map<String, Object> incomingCaseData = getJsonFromResourceFile("/jsonExamples/payloads/updateCourtOrderDocuments.json", new TypeReference<>() {
         });
 
