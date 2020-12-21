@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.util;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.lang3.tuple.Triple;
 import org.hamcrest.core.Is;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;

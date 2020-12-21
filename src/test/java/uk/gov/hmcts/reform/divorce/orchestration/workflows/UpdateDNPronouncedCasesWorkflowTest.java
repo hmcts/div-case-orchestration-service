@@ -62,7 +62,7 @@ public class UpdateDNPronouncedCasesWorkflowTest {
 
         verify(searchDNPronouncedCasesTask, times(1)).execute(any(), any());
         verify(updateDNPronouncedCase, times(1)).execute(any(), any());
-        assertEquals(actualCasesProcessedCount, EXPECTED_CASES_PROCESSED_COUNT);
+        assertEquals(EXPECTED_CASES_PROCESSED_COUNT, actualCasesProcessedCount);
     }
 
     private int getSearchResult(TaskContext taskContext) {
