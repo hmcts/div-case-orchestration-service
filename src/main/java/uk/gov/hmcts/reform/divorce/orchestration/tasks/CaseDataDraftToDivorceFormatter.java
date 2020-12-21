@@ -9,10 +9,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.GeneralOrde
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_DRAFT_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.DraftHelper.isDraft;
 
 @Component
 @RequiredArgsConstructor
@@ -39,11 +38,4 @@ public class CaseDataDraftToDivorceFormatter implements Task<Map<String, Object>
 
         return caseDataToReturn;
     }
-
-    private boolean isDraft(Map<String, Object> caseData) {
-        return Optional.ofNullable(caseData.get(IS_DRAFT_KEY))
-            .map(Boolean.class::cast)
-            .orElse(false);
-    }
-
 }

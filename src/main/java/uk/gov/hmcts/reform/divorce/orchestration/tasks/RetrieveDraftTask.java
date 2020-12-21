@@ -8,12 +8,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_DRAFT_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.DraftHelper.isDraft;
 
 @Component
 @RequiredArgsConstructor
@@ -40,11 +39,5 @@ public class RetrieveDraftTask implements Task<Map<String, Object>> {
         }
 
         return caseData;
-    }
-
-    private Boolean isDraft(Map<String, Object> caseData) {
-        return Optional.ofNullable(caseData.get(IS_DRAFT_KEY))
-            .map(Boolean.class::cast)
-            .orElse(false);
     }
 }
