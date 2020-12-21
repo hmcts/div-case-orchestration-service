@@ -287,7 +287,7 @@ public class CcdUtilUTest {
 
     @Test
     public void givenCcdFormatDate_whenMapCCDDateToDivorceDate_thenReturnDateInPaymentFormat() {
-        assertEquals(ccdUtil.mapCCDDateToDivorceDate(CURRENT_DATE), PAYMENT_DATE);
+        assertEquals(PAYMENT_DATE, ccdUtil.mapCCDDateToDivorceDate(CURRENT_DATE));
     }
 
     @Test
