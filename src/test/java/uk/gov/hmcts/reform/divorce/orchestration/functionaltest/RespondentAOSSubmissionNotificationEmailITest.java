@@ -138,8 +138,10 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
 
     @Test
     public void testResponseHasValidationErrors_WhenItIsNotClearIfDivorceWillBeDefended() throws Exception {
-        runTestResponseWithValidErrors("/jsonExamples/payloads/unclearAcknowledgementOfService.json", String.format("%s field doesn't contain a valid value: null",
-            RESP_WILL_DEFEND_DIVORCE));
+        runTestResponseWithValidErrors(
+            "/jsonExamples/payloads/unclearAcknowledgementOfService.json",
+            String.format("%s field doesn't contain a valid value: null", RESP_WILL_DEFEND_DIVORCE)
+        );
     }
 
     @Test
@@ -150,14 +152,18 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
         );
     }
 
-    private void runTestResponseWithValidErrors(String s, String s2) throws Exception {
+    private void runTestResponseWithValidErrors(String filePath, String errorMsg) throws Exception {
         CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
-            s, CcdCallbackRequest.class);
+            filePath, CcdCallbackRequest.class
+        );
 
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.ENGLISH)))
-            .thenReturn(TEST_RELATIONSHIP_HUSBAND);
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.WELSH)))
-            .thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
+        when(templateConfigService.getRelationshipTermByGender(
+            eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.ENGLISH))
+        ).thenReturn(TEST_RELATIONSHIP_HUSBAND);
+
+        when(templateConfigService.getRelationshipTermByGender(
+            eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.WELSH))
+        ).thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
 
         webClient.perform(post(API_URL)
             .content(convertObjectToJsonString(ccdCallbackRequest))
@@ -168,7 +174,7 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
                 isJson(),
                 hasJsonPath("$.data", is(nullValue())),
                 hasJsonPath("$.errors",
-                    hasItem(s2))
+                    hasItem(errorMsg))
             )));
     }
 
