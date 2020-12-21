@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 @SpringBootTest(properties = {"feature-toggle.toggle.solicitor_dn_reject_and_amend=false"})
-public class GetPetitionIssueFeesTestFeatureSwitchedOff extends GetPetitionIssueFeesAbstractTest {
+public class GetPetitionIssueFeesTestFeatureSwitchedOffTest extends GetPetitionIssueFeesAbstractTest {
 
     @Test
     public void givenCaseData_whenGetPetitionIssueFee_thenReturnUpdatedResponseWithFees() throws Exception {
