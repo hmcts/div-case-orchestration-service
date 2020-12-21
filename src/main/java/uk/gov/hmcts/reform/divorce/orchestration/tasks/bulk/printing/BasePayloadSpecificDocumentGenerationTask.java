@@ -27,7 +27,7 @@ public abstract class BasePayloadSpecificDocumentGenerationTask implements Task<
     protected final PdfDocumentGenerationService pdfDocumentGenerationService;
     protected final CcdUtil ccdUtil;
 
-    public BasePayloadSpecificDocumentGenerationTask(
+    protected BasePayloadSpecificDocumentGenerationTask(
         CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
         PdfDocumentGenerationService pdfDocumentGenerationService,
         CcdUtil ccdUtil) {
@@ -82,5 +82,4 @@ public abstract class BasePayloadSpecificDocumentGenerationTask implements Task<
     public abstract String getTemplateId();
 
     public abstract String getDocumentType();
-
 }
