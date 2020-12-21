@@ -51,13 +51,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
-public class DaAboutToBeGrantedDocumentsGeneration extends MockedFunctionalTest {
+public class DaAboutToBeGrantedDocumentsGenerationTest extends MockedFunctionalTest {
 
     private static final String API_URL = "/da-about-to-be-granted";
-    private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
-    private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
     private static final String DECREE_ABSOLUTE_TEMPLATE_ID = "FL-DIV-GOR-ENG-00062.docx";
-
 
     private static final Map<String, Object> CASE_DATA = ImmutableMap.<String, Object>builder()
         .put(PRONOUNCEMENT_JUDGE_CCD_FIELD, TEST_PRONOUNCEMENT_JUDGE)
@@ -135,5 +132,4 @@ public class DaAboutToBeGrantedDocumentsGeneration extends MockedFunctionalTest 
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
     }
-
 }
