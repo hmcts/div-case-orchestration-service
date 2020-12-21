@@ -24,13 +24,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RetrieveDraftTest {
+public class RetrieveDraftTaskTest {
 
     @Mock
     private CaseMaintenanceClient caseMaintenanceClient;
 
     @InjectMocks
-    private RetrieveDraft target;
+    private RetrieveDraftTask target;
 
     @SuppressWarnings("unchecked")
     @Test

@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddCourtsToPayloadTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataDraftToDivorceFormatter;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseData;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetInconsistentPaymentInfo;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveDraft;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCaseIdAndStateOnSession;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdatePaymentMadeCase;
 
@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RequiredArgsConstructor
 public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final RetrieveDraft retrieveDraft;
+    private final RetrieveDraftTask retrieveDraftTask;
     private final CaseDataDraftToDivorceFormatter caseDataToDivorceFormatter;
     private final SetCaseIdAndStateOnSession setCaseIdAndStateOnSession;
     private final AddCourtsToPayloadTask addCourtsToPayloadTask;
@@ -39,7 +39,7 @@ public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> 
     public Map<String, Object> run(String authToken) throws WorkflowException {
         Map<String, Object> caseData = this.execute(
             new Task[] {
-                retrieveDraft
+                retrieveDraftTask
             },
             new HashMap<>(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken)
@@ -71,7 +71,7 @@ public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> 
     private List<Task> getPendingTasks(boolean paymentDataUpdated) {
         List<Task> pendingTasks = new ArrayList<>();
         if (paymentDataUpdated) {
-            pendingTasks.add(retrieveDraft);
+            pendingTasks.add(retrieveDraftTask);
         }
         pendingTasks.add(caseDataToDivorceFormatter);
         pendingTasks.add(setCaseIdAndStateOnSession);

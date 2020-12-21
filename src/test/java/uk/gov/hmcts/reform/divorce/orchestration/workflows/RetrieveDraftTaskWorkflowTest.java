@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddCourtsToPayloadTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataDraftToDivorceFormatter;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseData;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetInconsistentPaymentInfo;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveDraft;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCaseIdAndStateOnSession;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdatePaymentMadeCase;
 
@@ -31,10 +31,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RetrieveDraftWorkflowTest {
+public class RetrieveDraftTaskWorkflowTest {
 
     @Mock
-    private RetrieveDraft retrieveDraft;
+    private RetrieveDraftTask retrieveDraftTask;
 
     @Mock
     private CaseDataDraftToDivorceFormatter caseDataToDivorceFormatter;
@@ -67,7 +67,7 @@ public class RetrieveDraftWorkflowTest {
         ArgumentMatcher<TaskContext> contextWithAuthTokenMatcher =
             argument -> argument.getTransientObject(AUTH_TOKEN_JSON_KEY) != null;
 
-        when(retrieveDraft.execute(argThat(contextWithAuthTokenMatcher), eq(payload))).thenReturn(casePayload);
+        when(retrieveDraftTask.execute(argThat(contextWithAuthTokenMatcher), eq(payload))).thenReturn(casePayload);
         when(getInconsistentPaymentInfo.execute(argThat(contextWithAuthTokenMatcher),
             eq(casePayload))).thenAnswer(invocation ->  {
                 TaskContext context = invocation.getArgument(0);
@@ -84,7 +84,7 @@ public class RetrieveDraftWorkflowTest {
             eq(draftPayload))).thenReturn(draftPayload);
         assertEquals(draftPayload, target.run(AUTH_TOKEN));
 
-        verify(retrieveDraft).execute(argThat(contextWithAuthTokenMatcher),eq(payload));
+        verify(retrieveDraftTask).execute(argThat(contextWithAuthTokenMatcher),eq(payload));
         verify(getInconsistentPaymentInfo).execute(argThat(contextWithAuthTokenMatcher),eq(casePayload));
         verify(caseDataToDivorceFormatter).execute(argThat(contextWithAuthTokenMatcher),eq(casePayload));
         verify(setCaseIdAndStateOnSession).execute(argThat(contextWithAuthTokenMatcher),eq(draftPayload));
@@ -103,7 +103,7 @@ public class RetrieveDraftWorkflowTest {
         ArgumentMatcher<TaskContext> contextWithAuthTokenMatcher =
             argument -> argument.getTransientObject(AUTH_TOKEN_JSON_KEY) != null;
 
-        when(retrieveDraft.execute(argThat(contextWithAuthTokenMatcher), eq(payload))).thenReturn(casePayload);
+        when(retrieveDraftTask.execute(argThat(contextWithAuthTokenMatcher), eq(payload))).thenReturn(casePayload);
         when(getInconsistentPaymentInfo.execute(argThat(contextWithAuthTokenMatcher),
             eq(casePayload))).thenReturn(paymentPayload);
         when(formatDivorceSessionToCaseData.execute(argThat(contextWithAuthTokenMatcher),
@@ -119,7 +119,7 @@ public class RetrieveDraftWorkflowTest {
             eq(draftPayload))).thenReturn(draftPayload);
         assertEquals(draftPayload, target.run(AUTH_TOKEN));
 
-        verify(retrieveDraft, times(2)).execute(argThat(contextWithAuthTokenMatcher),eq(payload));
+        verify(retrieveDraftTask, times(2)).execute(argThat(contextWithAuthTokenMatcher),eq(payload));
         verify(getInconsistentPaymentInfo).execute(argThat(contextWithAuthTokenMatcher),eq(casePayload));
         verify(caseDataToDivorceFormatter).execute(argThat(contextWithAuthTokenMatcher),eq(casePayload));
         verify(setCaseIdAndStateOnSession).execute(argThat(contextWithAuthTokenMatcher),eq(draftPayload));

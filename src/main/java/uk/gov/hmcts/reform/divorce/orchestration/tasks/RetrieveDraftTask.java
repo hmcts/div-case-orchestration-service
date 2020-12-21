@@ -16,12 +16,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_DRAFT_KEY;
 
 @Component
-public class RetrieveDraft implements Task<Map<String, Object>> {
+public class RetrieveDraftTask implements Task<Map<String, Object>> {
 
     private final CaseMaintenanceClient caseMaintenanceClient;
 
     @Autowired
-    public RetrieveDraft(CaseMaintenanceClient caseMaintenanceClient) {
+    public RetrieveDraftTask(CaseMaintenanceClient caseMaintenanceClient) {
         this.caseMaintenanceClient = caseMaintenanceClient;
     }
 
@@ -34,7 +34,7 @@ public class RetrieveDraft implements Task<Map<String, Object>> {
 
         if (cmsContent != null && cmsContent.getCaseData() != null && !cmsContent.getCaseData().isEmpty()) {
             caseData = cmsContent.getCaseData();
-            Boolean isDraft = Optional.ofNullable(caseData.get(IS_DRAFT_KEY))
+            boolean isDraft = Optional.ofNullable(caseData.get(IS_DRAFT_KEY))
                 .map(Boolean.class::cast)
                 .orElse(false);
 
@@ -45,7 +45,7 @@ public class RetrieveDraft implements Task<Map<String, Object>> {
         } else {
             context.setTaskFailed(true);
         }
+
         return caseData;
     }
-
 }
