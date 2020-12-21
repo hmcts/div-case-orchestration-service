@@ -64,7 +64,7 @@ public class DecreeAbsoluteControllerTest {
             .thenThrow(new WorkflowException(TEST_MSG));
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.notifyRespondentOfDARequested(AUTH_TOKEN, ccdCallbackRequest);
-        assert (Objects.requireNonNull(response.getBody()).getErrors().contains(TEST_MSG));
+        assertTrue(Objects.requireNonNull(response.getBody()).getErrors().contains(TEST_MSG));
     }
 
     @Test
