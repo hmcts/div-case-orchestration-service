@@ -138,96 +138,54 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
 
     @Test
     public void testResponseHasValidationErrors_WhenItIsNotClearIfDivorceWillBeDefended() throws Exception {
-        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
-                "/jsonExamples/payloads/unclearAcknowledgementOfService.json", CcdCallbackRequest.class);
-
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.ENGLISH)))
-            .thenReturn(TEST_RELATIONSHIP_HUSBAND);
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.WELSH)))
-            .thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
-
-        webClient.perform(post(API_URL)
-                .content(convertObjectToJsonString(ccdCallbackRequest))
-                .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().string(allOf(
-                        isJson(),
-                        hasJsonPath("$.data", is(nullValue())),
-                        hasJsonPath("$.errors", hasItem(String.format("%s field doesn't contain a valid value: null",
-                            RESP_WILL_DEFEND_DIVORCE)))
-                )));
+        runTestResponseWithValidErrors("/jsonExamples/payloads/unclearAcknowledgementOfService.json", String.format("%s field doesn't contain a valid value: null",
+            RESP_WILL_DEFEND_DIVORCE));
     }
 
     @Test
     public void testResponseHasValidationErrors_WhenCaseIdIsMissing_ForDefendedDivorce() throws Exception {
-        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
-                "/jsonExamples/payloads/defendedDivorceAOSMissingCaseId.json", CcdCallbackRequest.class);
+        runTestResponseWithValidErrors(
+            "/jsonExamples/payloads/defendedDivorceAOSMissingCaseId.json",
+            "Could not evaluate value of mandatory property \"D8caseReference\""
+        );
+    }
 
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.ENGLISH)))
+    private void runTestResponseWithValidErrors(String s, String s2) throws Exception {
+        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
+            s, CcdCallbackRequest.class);
+
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.ENGLISH)))
             .thenReturn(TEST_RELATIONSHIP_HUSBAND);
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.WELSH)))
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.WELSH)))
             .thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
 
         webClient.perform(post(API_URL)
-                .content(convertObjectToJsonString(ccdCallbackRequest))
-                .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().string(allOf(
-                        isJson(),
-                        hasJsonPath("$.data", is(nullValue())),
-                        hasJsonPath("$.errors",
-                                hasItem("Could not evaluate value of mandatory property \"D8caseReference\""))
-                )));
+            .content(convertObjectToJsonString(ccdCallbackRequest))
+            .contentType(APPLICATION_JSON)
+            .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(
+                isJson(),
+                hasJsonPath("$.data", is(nullValue())),
+                hasJsonPath("$.errors",
+                    hasItem(s2))
+            )));
     }
 
     @Test
     public void testResponseHasValidationErrors_WhenFieldsAreMissing_ForDefendedDivorce() throws Exception {
-        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
-                "/jsonExamples/payloads/defendedDivorceAOSMissingFields.json", CcdCallbackRequest.class);
-
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.ENGLISH)))
-            .thenReturn(TEST_RELATIONSHIP_HUSBAND);
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.WELSH)))
-            .thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
-
-        webClient.perform(post(API_URL)
-                .content(convertObjectToJsonString(ccdCallbackRequest))
-                .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().string(allOf(
-                        isJson(),
-                        hasJsonPath("$.data", is(nullValue())),
-                        hasJsonPath("$.errors",
-                                hasItem("Could not evaluate value of mandatory property \"D8InferredPetitionerGender\"")
-                        )
-                )));
+        runTestResponseWithValidErrors(
+            "/jsonExamples/payloads/defendedDivorceAOSMissingFields.json",
+            "Could not evaluate value of mandatory property \"D8InferredPetitionerGender\""
+        );
     }
 
     @Test
     public void testResponseHasValidationErrors_WhenFieldsAreMissing_ForUndefendedDivorce() throws Exception {
-        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
-                "/jsonExamples/payloads/undefendedDivorceAOSMissingFields.json", CcdCallbackRequest.class);
-
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.ENGLISH)))
-            .thenReturn(TEST_RELATIONSHIP_HUSBAND);
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER),eq(LanguagePreference.WELSH)))
-            .thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
-
-        webClient.perform(post(API_URL)
-                .content(convertObjectToJsonString(ccdCallbackRequest))
-                .contentType(APPLICATION_JSON)
-                .accept(APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().string(allOf(
-                        isJson(),
-                        hasJsonPath("$.data", is(nullValue())),
-                        hasJsonPath("$.errors",
-                                hasItem("Could not evaluate value of mandatory property \"D8DivorceUnit\"")
-                        )
-                )));
+        runTestResponseWithValidErrors(
+            "/jsonExamples/payloads/undefendedDivorceAOSMissingFields.json",
+            "Could not evaluate value of mandatory property \"D8DivorceUnit\""
+        );
     }
 
     @Test
