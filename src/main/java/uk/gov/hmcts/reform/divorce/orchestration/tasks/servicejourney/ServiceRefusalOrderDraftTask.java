@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @Component
 public abstract class ServiceRefusalOrderDraftTask extends BasePayloadSpecificDocumentGenerationTask {
 
-    public ServiceRefusalOrderDraftTask(CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
+    protected ServiceRefusalOrderDraftTask(CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
                                         PdfDocumentGenerationService pdfDocumentGenerationService,
                                         CcdUtil ccdUtil) {
         super(ctscContactDetailsDataProviderService, pdfDocumentGenerationService, ccdUtil);
