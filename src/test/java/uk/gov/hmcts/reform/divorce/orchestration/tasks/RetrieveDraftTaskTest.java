@@ -84,25 +84,4 @@ public class RetrieveDraftTaskTest {
         assertEquals(TEST_CASE_ID, context.getTransientObject(CASE_ID_JSON_KEY));
         assertEquals(TEST_STATE, context.getTransientObject(CASE_STATE_JSON_KEY));
     }
-
-//    @SuppressWarnings("unchecked")
-//    @Test
-//    public void givenCaseExists_whenExecuteRetrieveTask_thenReturnUserPetitionFromCMSWithCaseDetails() {
-//        TaskContext context = contextWithToken();
-//
-//        Map<String, Object> payload = new HashMap<>();
-//        Map<String, Object> expectedResponse = ImmutableMap.of("field", "populated");
-//
-//        CaseDetails clientResponse = CaseDetails.builder()
-//            .caseData(expectedResponse)
-//            .caseId(TEST_CASE_ID)
-//            .state(TEST_STATE)
-//            .build();
-//
-//        when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN)).thenReturn(clientResponse);
-//
-//        assertEquals(expectedResponse, retrieveDraftTask.execute(context, payload));
-//        assertEquals(TEST_CASE_ID, context.getTransientObject(CASE_ID_JSON_KEY));
-//        assertEquals(TEST_STATE, context.getTransientObject(CASE_STATE_JSON_KEY));
-//    }
 }
