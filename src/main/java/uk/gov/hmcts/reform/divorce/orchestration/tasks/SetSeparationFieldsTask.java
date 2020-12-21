@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.Divor
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 
 @Component
-public class SetSeparationFields implements Task<Map<String, Object>> {
+public class SetSeparationFieldsTask implements Task<Map<String, Object>> {
 
     @Autowired
     private Clock clock;
@@ -42,22 +42,24 @@ public class SetSeparationFields implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
         String separationTimeTogetherPermitted = getSeparationTimeTogetherPermitted(caseData);
+
         if (StringUtils.isEmpty(separationTimeTogetherPermitted)) {
             context.setTaskFailed(true);
             context.setTransientObject(OrchestrationConstants.VALIDATION_ERROR_KEY, FACT_CANT_USE);
+
             return caseData;
         }
 
         String reasonForDivorce = getMandatoryPropertyValueAsString(caseData, D_8_REASON_FOR_DIVORCE);
         String sepReferenceDate = DateUtils.formatDateWithCustomerFacingFormat(getSeparationReferenceDate(caseData));
-        String mostRecentSeperationDate = getReasonForDivorceSeparationDate(caseData);
+        String mostRecentSeparationDate = getReasonForDivorceSeparationDate(caseData);
 
         if (StringUtils.equalsIgnoreCase(DESERTION.getValue(), reasonForDivorce)) {
             caseData.put(D_8_DESERTION_TIME_TOGETHER_PERMITTED, separationTimeTogetherPermitted);
         } else {
             caseData.put(D_8_SEP_TIME_TOGETHER_PERMITTED, separationTimeTogetherPermitted);
         }
-        caseData.put(D_8_REASON_FOR_DIVORCE_SEP_DATE, mostRecentSeperationDate);
+        caseData.put(D_8_REASON_FOR_DIVORCE_SEP_DATE, mostRecentSeparationDate);
         caseData.put(D_8_SEP_REF_DATE, sepReferenceDate);
 
         String sepYears = String.valueOf(getSepYears(caseData));
@@ -80,8 +82,7 @@ public class SetSeparationFields implements Task<Map<String, Object>> {
     private String getReasonForDivorceSeparationDate(Map<String, Object> caseData) throws TaskException {
         String reasonForDivorce = getMandatoryPropertyValueAsString(caseData, D_8_REASON_FOR_DIVORCE);
         if (StringUtils.equalsIgnoreCase(DESERTION.getValue(), reasonForDivorce)) {
-            String reasonForDivorceDesertionDate = getMandatoryPropertyValueAsString(caseData, D_8_REASON_FOR_DIVORCE_DESERTION_DAIE);
-            return reasonForDivorceDesertionDate;
+            return getMandatoryPropertyValueAsString(caseData, D_8_REASON_FOR_DIVORCE_DESERTION_DAIE);
         }
 
         String reasonForDivorceDecisionDate = getMandatoryPropertyValueAsString(caseData, D_8_MENTAL_SEP_DATE);

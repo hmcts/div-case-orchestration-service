@@ -39,13 +39,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.Divor
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SetSeparationFieldsTest {
+public class SetSeparationFieldsTaskTest {
 
     @Mock
     private Clock clock;
 
     @InjectMocks
-    private SetSeparationFields setSeparationFields;
+    private SetSeparationFieldsTask setSeparationFieldsTask;
 
     private Map<String, Object> testData;
     private TaskContext context;
@@ -71,7 +71,7 @@ public class SetSeparationFieldsTest {
 
         String pastDate5Yrs6Mnths = DateUtils.formatDateWithCustomerFacingFormat(LocalDate.now(clock).minusYears(5).minusMonths(6));
 
-        Map<String, Object> resultMap = setSeparationFields.execute(context, testData);
+        Map<String, Object> resultMap = setSeparationFieldsTask.execute(context, testData);
 
         assertThat(resultMap, allOf(
             hasEntry(is(D_8_SEP_TIME_TOGETHER_PERMITTED), is("6 months")),
@@ -91,9 +91,9 @@ public class SetSeparationFieldsTest {
         testData.put(D_8_MENTAL_SEP_DATE, pastDate5Yrs8Mnths);
         testData.put(D_8_PHYSICAL_SEP_DAIE, todayDate);
 
-        setSeparationFields.execute(context, testData);
+        setSeparationFieldsTask.execute(context, testData);
         assertThat(context.hasTaskFailed(), is(true));
-        assertThat(context.getTransientObject(VALIDATION_ERROR_KEY), is(SetSeparationFields.FACT_CANT_USE));
+        assertThat(context.getTransientObject(VALIDATION_ERROR_KEY), is(SetSeparationFieldsTask.FACT_CANT_USE));
     }
 
     @Test
@@ -108,7 +108,7 @@ public class SetSeparationFieldsTest {
 
         String pastDate2Yrs6Mnths = DateUtils.formatDateWithCustomerFacingFormat(LocalDate.now(clock).minusYears(2).minusMonths(6));
 
-        Map<String, Object> resultMap = setSeparationFields.execute(context, testData);
+        Map<String, Object> resultMap = setSeparationFieldsTask.execute(context, testData);
 
         assertThat(resultMap, allOf(
             hasEntry(is(D_8_SEP_TIME_TOGETHER_PERMITTED), is("6 months")),
@@ -128,7 +128,7 @@ public class SetSeparationFieldsTest {
         testData.put(D_8_REASON_FOR_DIVORCE, DESERTION.getValue());
         testData.put(D_8_REASON_FOR_DIVORCE_DESERTION_DAIE, pastDate2Yrs6MnthsPlus1day);
 
-        Map<String, Object> resultMap = setSeparationFields.execute(context, testData);
+        Map<String, Object> resultMap = setSeparationFieldsTask.execute(context, testData);
 
         assertThat(resultMap, allOf(
             hasEntry(is(D_8_DESERTION_TIME_TOGETHER_PERMITTED), is("25 weeks and 6 days")),
