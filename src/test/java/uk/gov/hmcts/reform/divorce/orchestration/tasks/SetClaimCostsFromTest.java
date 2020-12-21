@@ -20,7 +20,6 @@ public class SetClaimCostsFromTest {
     @InjectMocks
     private SetClaimCostsFrom setClaimCostsFrom;
 
-
     @Test
     public void testSetsClaimCostsFromToRespondent() {
         HashMap<String, Object> payload = new HashMap<>();
@@ -29,7 +28,7 @@ public class SetClaimCostsFromTest {
 
         List<Object> result = (List<Object>) payload.get(DIVORCE_COSTS_CLAIM_FROM_CCD_FIELD);
 
-        assertEquals(result.size(), 1);
+        assertEquals(1, result.size());
         assertEquals(EXPECTED_VALUE, result.get(0));
     }
 }

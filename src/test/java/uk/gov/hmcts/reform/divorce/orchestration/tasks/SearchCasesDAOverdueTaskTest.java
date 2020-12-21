@@ -70,9 +70,8 @@ public class SearchCasesDAOverdueTaskTest {
             any())
         ).thenReturn(Stream.empty());
 
-        final Map<String, Object> actualResult = classUnderTest.execute(contextBeingModified, Collections.emptyMap());
         assertEquals(expectedCaseIdsInTheContext, contextBeingModified.getTransientObject(SEARCH_RESULT_KEY));
-        assertEquals(actualResult, Collections.emptyMap());
+        assertEquals(Collections.emptyMap(), classUnderTest.execute(contextBeingModified, Collections.emptyMap()));
 
         verify(cmsElasticSearchSupport).searchCMSCases(eq(AUTH_TOKEN),
             eq(QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AWAITING_DA)),
@@ -104,7 +103,6 @@ public class SearchCasesDAOverdueTaskTest {
             any())
         ).thenReturn(buildCases(10));
 
-
         final Map<String, Object> actualResult = classUnderTest.execute(contextBeingModified, null);
         assertEquals(expectedCaseIdsInTheContext, contextBeingModified.getTransientObject(SEARCH_RESULT_KEY));
         assertNull(actualResult);
@@ -115,8 +113,10 @@ public class SearchCasesDAOverdueTaskTest {
     @Test
     public void execute_pageSize10_totalResults20() throws TaskException {
 
-        final List<String> expectedCaseIdsInTheContext = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11",
-            "12", "13", "14", "15", "16", "17", "18", "19", "20");
+        final List<String> expectedCaseIdsInTheContext = Arrays.asList(
+            "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11",
+            "12", "13", "14", "15", "16", "17", "18", "19", "20"
+        );
 
         when(cmsElasticSearchSupport.searchCMSCases(
             eq(AUTH_TOKEN),
@@ -157,5 +157,4 @@ public class SearchCasesDAOverdueTaskTest {
         }
         return streamBuilder.build();
     }
-
 }
