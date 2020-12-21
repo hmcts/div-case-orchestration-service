@@ -31,7 +31,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.TIME_OF_HEARING_CCD_FIELD;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SetCourtHearingDetailsFromBulkCaseTest {
+public class SetCourtHearingDetailsFromBulkCaseTaskTest {
 
     private static final String COURT_NAME = "Placeholder Court";
     private static final String COURT_HEARING_DATE_TIME = "2000-01-01T10:20:55.000";
@@ -39,7 +39,7 @@ public class SetCourtHearingDetailsFromBulkCaseTest {
     private static final String COURT_HEARING_TIME = "10:20";
 
     @InjectMocks
-    private SetCourtHearingDetailsFromBulkCase classUnderTest;
+    private SetCourtHearingDetailsFromBulkCaseTask classUnderTest;
 
     private TaskContext context;
 

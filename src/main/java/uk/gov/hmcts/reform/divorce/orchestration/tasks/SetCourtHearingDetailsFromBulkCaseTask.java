@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.TIME_OF_HEARING_CCD_FIELD;
 
 @Component
-public class SetCourtHearingDetailsFromBulkCase implements Task<Map<String,Object>> {
+public class SetCourtHearingDetailsFromBulkCaseTask implements Task<Map<String,Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
@@ -46,8 +46,9 @@ public class SetCourtHearingDetailsFromBulkCase implements Task<Map<String,Objec
         CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
         Map<String, Object> caseData = caseDetails.getCaseData();
 
-        List<CollectionMember> courtHearingCollection =
+        List<CollectionMember<Map<String, Object>>> courtHearingCollection =
                 (ArrayList) caseData.getOrDefault(DATETIME_OF_HEARING_CCD_FIELD, new ArrayList<>());
+
         courtHearingCollection.add(dateAndTimeOfHearingItem);
 
         payload.put(DATETIME_OF_HEARING_CCD_FIELD, courtHearingCollection);

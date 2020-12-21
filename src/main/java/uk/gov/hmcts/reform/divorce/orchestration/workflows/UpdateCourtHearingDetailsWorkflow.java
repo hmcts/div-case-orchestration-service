@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.RetryableBul
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithIdMapFlow;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCourtHearingDetailsFromBulkCase;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCourtHearingDetailsFromBulkCaseTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 
 import java.util.HashMap;
@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class UpdateCourtHearingDetailsWorkflow extends RetryableBulkCaseWorkflow {
 
     private final GetCaseWithIdMapFlow getCaseWithIdMapFlow;
-    private final SetCourtHearingDetailsFromBulkCase setCourtHearingDetailsFromBulkCase;
+    private final SetCourtHearingDetailsFromBulkCaseTask setCourtHearingDetailsFromBulkCaseTask;
     private final UpdateCaseInCCD updateCaseInCCD;
 
     public Map<String, Object> run(Map<String, Object> bulkCaseDetails,
@@ -34,7 +34,7 @@ public class UpdateCourtHearingDetailsWorkflow extends RetryableBulkCaseWorkflow
         return this.execute(
                 new Task[] {
                     getCaseWithIdMapFlow,
-                    setCourtHearingDetailsFromBulkCase,
+                    setCourtHearingDetailsFromBulkCaseTask,
                     updateCaseInCCD
                 },
                 new HashMap<>(),
