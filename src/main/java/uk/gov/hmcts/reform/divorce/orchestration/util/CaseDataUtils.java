@@ -199,7 +199,7 @@ public class CaseDataUtils {
 
     public static Map<String, Object> removeDocumentsByDocumentType(Map<String, Object> caseData, String... documentTypes) {
         List<?> generatedDocuments = Optional.ofNullable(caseData.get(D8DOCUMENTS_GENERATED))
-            .map(i -> (List<?>) i)
+            .map(List.class::cast)
             .orElse(new ArrayList<>());
 
         Map<String, Object> newCaseData = new HashMap<>(caseData);

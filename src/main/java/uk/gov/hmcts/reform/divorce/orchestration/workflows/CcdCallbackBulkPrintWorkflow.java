@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -39,13 +38,10 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
 
     private final CaseDataUtils caseDataUtils;
 
-    @Value("${feature-toggle.toggle.feature_resp_solicitor_details}")
-    private boolean featureToggleRespSolicitor;
-
     public Map<String, Object> run(final CcdCallbackRequest ccdCallbackRequest, final String authToken) throws WorkflowException {
         final CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
 
-        final List<Task> tasks = new ArrayList<>();
+        final List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
         tasks.add(serviceMethodValidationTask);
         tasks.add(fetchPrintDocsFromDmStore);
