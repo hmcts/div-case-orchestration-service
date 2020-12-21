@@ -39,7 +39,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.util.elasticsearch.CMSElasticSearchSupport.buildDateForTodayMinusGivenPeriod;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SearchDNPronouncedCasesTest {
+public class SearchDNPronouncedCasesTaskTest {
 
     private static final String DN_GRANTED_DATE = String.format("data.%s", DECREE_NISI_GRANTED_DATE_CCD_FIELD);
 
@@ -47,7 +47,7 @@ public class SearchDNPronouncedCasesTest {
     private CMSElasticSearchSupport mockCmsElasticSearchSupport;
 
     @InjectMocks
-    private SearchDNPronouncedCases classUnderTest;
+    private SearchDNPronouncedCasesTask classUnderTest;
 
     private static final String TWO_MINUTES = "2m";
     private final String timeSinceDNWasPronounced = TWO_MINUTES;

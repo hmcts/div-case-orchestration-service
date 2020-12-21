@@ -1,10 +1,10 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import feign.FeignException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -26,16 +26,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.elasticsearch.CMSEl
 
 @Component
 @Slf4j
-public class SearchDNPronouncedCases implements Task<Map<String, Object>> {
+@RequiredArgsConstructor
+public class SearchDNPronouncedCasesTask implements Task<Map<String, Object>> {
 
-    private static String DN_GRANTED_DATE = String.format("data.%s", DECREE_NISI_GRANTED_DATE_CCD_FIELD);
+    private static final String DN_GRANTED_DATE = String.format("data.%s", DECREE_NISI_GRANTED_DATE_CCD_FIELD);
 
     private final CMSElasticSearchSupport cmsElasticSearchSupport;
-
-    @Autowired
-    public SearchDNPronouncedCases(CMSElasticSearchSupport cmsElasticSearchSupport) {
-        this.cmsElasticSearchSupport = cmsElasticSearchSupport;
-    }
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
@@ -58,5 +54,4 @@ public class SearchDNPronouncedCases implements Task<Map<String, Object>> {
 
         return payload;
     }
-
 }

@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -16,14 +16,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_DRAFT_KEY;
 
 @Component
+@RequiredArgsConstructor
 public class RetrieveDraftTask implements Task<Map<String, Object>> {
 
     private final CaseMaintenanceClient caseMaintenanceClient;
-
-    @Autowired
-    public RetrieveDraftTask(CaseMaintenanceClient caseMaintenanceClient) {
-        this.caseMaintenanceClient = caseMaintenanceClient;
-    }
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> noPayLoad) {
@@ -34,11 +30,8 @@ public class RetrieveDraftTask implements Task<Map<String, Object>> {
 
         if (cmsContent != null && cmsContent.getCaseData() != null && !cmsContent.getCaseData().isEmpty()) {
             caseData = cmsContent.getCaseData();
-            boolean isDraft = Optional.ofNullable(caseData.get(IS_DRAFT_KEY))
-                .map(Boolean.class::cast)
-                .orElse(false);
 
-            if (!isDraft) {
+            if (!isDraft(caseData)) {
                 context.setTransientObject(CASE_ID_JSON_KEY, cmsContent.getCaseId());
                 context.setTransientObject(CASE_STATE_JSON_KEY, cmsContent.getState());
             }
@@ -47,5 +40,11 @@ public class RetrieveDraftTask implements Task<Map<String, Object>> {
         }
 
         return caseData;
+    }
+
+    private Boolean isDraft(Map<String, Object> caseData) {
+        return Optional.ofNullable(caseData.get(IS_DRAFT_KEY))
+            .map(Boolean.class::cast)
+            .orElse(false);
     }
 }
