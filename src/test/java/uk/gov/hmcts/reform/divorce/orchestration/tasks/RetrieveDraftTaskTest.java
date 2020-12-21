@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -10,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -22,6 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithToken;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RetrieveDraftTaskTest {
@@ -30,19 +33,19 @@ public class RetrieveDraftTaskTest {
     private CaseMaintenanceClient caseMaintenanceClient;
 
     @InjectMocks
-    private RetrieveDraftTask target;
+    private RetrieveDraftTask retrieveDraftTask;
 
     @SuppressWarnings("unchecked")
     @Test
     public void givenUserTokenWithoutDraft_whenExecuteRetrieveTask_thenReturnEmptyResponse() {
-        TaskContext context = new DefaultTaskContext();
-        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        Map<String, Object> payload  = mock(Map.class);
+        TaskContext context = contextWithToken();
+
+        Map<String, Object> payload = new HashMap<>();
 
         when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN))
-                .thenReturn(CaseDetails.builder().build());
+            .thenReturn(CaseDetails.builder().build());
 
-        assertNull(target.execute(context, payload));
+        assertNull(retrieveDraftTask.execute(context, payload));
     }
 
     @SuppressWarnings("unchecked")
@@ -50,45 +53,26 @@ public class RetrieveDraftTaskTest {
     public void givenUserToken_whenExecuteRetrieveTask_thenReturnUserPetitionFromCMS() {
         TaskContext context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        Map<String, Object> payload  = mock(Map.class);
-        Map<String, Object> expectedResponse  = mock(Map.class);
-        CaseDetails clientResponse  = CaseDetails.builder()
-                .caseData(expectedResponse)
-                .build();
+        Map<String, Object> payload = mock(Map.class);
+        Map<String, Object> expectedResponse = mock(Map.class);
+        CaseDetails clientResponse = CaseDetails.builder()
+            .caseData(expectedResponse)
+            .build();
 
         when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN)).thenReturn(clientResponse);
 
-        assertEquals(expectedResponse, target.execute(context, payload));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void givenUserTokenWithCase_whenExecuteRetrieveTask_thenReturnUserPetitionFromCMSWithCaseDetails() {
-        TaskContext context = new DefaultTaskContext();
-        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        Map<String, Object> payload  = mock(Map.class);
-        Map<String, Object> expectedResponse  = mock(Map.class);
-        CaseDetails clientResponse  = CaseDetails.builder()
-                .caseData(expectedResponse)
-                .caseId(TEST_CASE_ID)
-                .state(TEST_STATE)
-                .build();
-
-        when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN)).thenReturn(clientResponse);
-
-        assertEquals(expectedResponse, target.execute(context, payload));
-        assertEquals(TEST_CASE_ID, context.getTransientObject(CASE_ID_JSON_KEY));
-        assertEquals(TEST_STATE, context.getTransientObject(CASE_STATE_JSON_KEY));
+        assertEquals(expectedResponse, retrieveDraftTask.execute(context, payload));
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void givenCaseExists_whenExecuteRetrieveTask_thenReturnUserPetitionFromCMSWithCaseDetails() {
-        TaskContext context = new DefaultTaskContext();
-        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        Map<String, Object> payload  = mock(Map.class);
-        Map<String, Object> expectedResponse  = mock(Map.class);
-        CaseDetails clientResponse  = CaseDetails.builder()
+        TaskContext context = contextWithToken();
+
+        Map<String, Object> payload = new HashMap<>();
+        Map<String, Object> expectedResponse = ImmutableMap.of("field", "populated");
+
+        CaseDetails clientResponse = CaseDetails.builder()
             .caseData(expectedResponse)
             .caseId(TEST_CASE_ID)
             .state(TEST_STATE)
@@ -96,8 +80,29 @@ public class RetrieveDraftTaskTest {
 
         when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN)).thenReturn(clientResponse);
 
-        assertEquals(expectedResponse, target.execute(context, payload));
+        assertEquals(expectedResponse, retrieveDraftTask.execute(context, payload));
         assertEquals(TEST_CASE_ID, context.getTransientObject(CASE_ID_JSON_KEY));
         assertEquals(TEST_STATE, context.getTransientObject(CASE_STATE_JSON_KEY));
     }
+
+//    @SuppressWarnings("unchecked")
+//    @Test
+//    public void givenCaseExists_whenExecuteRetrieveTask_thenReturnUserPetitionFromCMSWithCaseDetails() {
+//        TaskContext context = contextWithToken();
+//
+//        Map<String, Object> payload = new HashMap<>();
+//        Map<String, Object> expectedResponse = ImmutableMap.of("field", "populated");
+//
+//        CaseDetails clientResponse = CaseDetails.builder()
+//            .caseData(expectedResponse)
+//            .caseId(TEST_CASE_ID)
+//            .state(TEST_STATE)
+//            .build();
+//
+//        when(caseMaintenanceClient.retrievePetition(AUTH_TOKEN)).thenReturn(clientResponse);
+//
+//        assertEquals(expectedResponse, retrieveDraftTask.execute(context, payload));
+//        assertEquals(TEST_CASE_ID, context.getTransientObject(CASE_ID_JSON_KEY));
+//        assertEquals(TEST_STATE, context.getTransientObject(CASE_STATE_JSON_KEY));
+//    }
 }
