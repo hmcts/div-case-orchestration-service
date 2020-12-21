@@ -78,7 +78,7 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
             .map(DocumentGenerationRequest::getDocumentType)
             .collect(Collectors.toList());
 
-        final List<Task> tasks = new ArrayList<>();
+        final List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
         log.warn("CaseId {}, documentGenerationRequestsList = {}", caseId, documentGenerationRequestsList);
         log.warn("CaseId {}, documentTypesToPrint = {}", caseId, documentTypesToPrint);

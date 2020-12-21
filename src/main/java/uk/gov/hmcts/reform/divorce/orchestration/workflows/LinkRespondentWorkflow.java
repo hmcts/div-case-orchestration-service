@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,25 +22,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class LinkRespondentWorkflow extends DefaultWorkflow<UserDetails> {
     private final GetCaseWithIdTask getCaseWithId;
     private final RetrievePinUserDetails retrievePinUserDetails;
     private final LinkRespondent linkRespondent;
     private final UpdateRespondentDetails updateRespondentDetails;
     private final UnlinkRespondent unlinkRespondent;
-
-    @Autowired
-    public LinkRespondentWorkflow(RetrievePinUserDetails retrievePinUserDetails,
-                                  LinkRespondent linkRespondent,
-                                  UpdateRespondentDetails updateRespondentDetails,
-                                  UnlinkRespondent unlinkRespondent,
-                                  GetCaseWithIdTask getCaseWithId) {
-        this.retrievePinUserDetails = retrievePinUserDetails;
-        this.linkRespondent = linkRespondent;
-        this.updateRespondentDetails = updateRespondentDetails;
-        this.unlinkRespondent = unlinkRespondent;
-        this.getCaseWithId = getCaseWithId;
-    }
 
     public UserDetails run(String authToken, String caseId, String pin) throws WorkflowException {
         final UserDetails userDetail = UserDetails.builder().build();

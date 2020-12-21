@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -24,6 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
+@RequiredArgsConstructor
 public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final SetSolicitorCourtDetailsTask setSolicitorCourtDetailsTask;
@@ -31,26 +32,15 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
     private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
     private final SetClaimCostsFrom setClaimCostsFrom;
 
-    @Autowired
-    public SolicitorCreateWorkflow(
-        SetSolicitorCourtDetailsTask setSolicitorCourtDetailsTask,
-        AddMiniPetitionDraftTask addMiniPetitionDraftTask,
-        AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask,
-        SetClaimCostsFrom setClaimCostsFrom) {
-        this.setSolicitorCourtDetailsTask = setSolicitorCourtDetailsTask;
-        this.addMiniPetitionDraftTask = addMiniPetitionDraftTask;
-        this.addNewDocumentsToCaseDataTask = addNewDocumentsToCaseDataTask;
-        this.setClaimCostsFrom = setClaimCostsFrom;
-    }
-
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
-        final List<Task> tasks = new ArrayList<>();
+        final List<Task<Map<String, Object>>> tasks = new ArrayList<>();
         if (isPetitionerClaimingCostsAndClaimCostsFromIsEmptyIn(caseDetails)) {
             tasks.add(setClaimCostsFrom);
         }
         tasks.add(setSolicitorCourtDetailsTask);
         tasks.add(addMiniPetitionDraftTask);
         tasks.add(addNewDocumentsToCaseDataTask);
+
         return this.execute(tasks.toArray(new Task[0]),
             caseDetails.getCaseData(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
@@ -62,6 +52,7 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
         Map<String, Object> caseData = caseDetails.getCaseData();
         boolean isPetitionerClaimingCosts = YES_VALUE.equalsIgnoreCase(String.valueOf(caseData.get(DIVORCE_COSTS_CLAIM_CCD_FIELD)));
         boolean claimCostsFromIsEmpty = StringUtils.isEmpty(caseData.get(DIVORCE_COSTS_CLAIM_FROM_CCD_FIELD));
+
         return isPetitionerClaimingCosts && claimCostsFromIsEmpty;
     }
 }

@@ -47,7 +47,7 @@ public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> 
         DefaultTaskContext mainContext = getContext();
         boolean paymentDataUpdated = updatePaymentEvent(caseData);
 
-        List<Task> pendingTasks = getPendingTasks(paymentDataUpdated);
+        List<Task<Map<String, Object>>> pendingTasks = getPendingTasks(paymentDataUpdated);
         return this.execute(
             pendingTasks.toArray(new Task[0]),
             mainContext,
@@ -68,14 +68,17 @@ public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> 
             ));
     }
 
-    private List<Task> getPendingTasks(boolean paymentDataUpdated) {
-        List<Task> pendingTasks = new ArrayList<>();
+    private List<Task<Map<String, Object>>> getPendingTasks(boolean paymentDataUpdated) {
+        List<Task<Map<String, Object>>> pendingTasks = new ArrayList<>();
+
         if (paymentDataUpdated) {
             pendingTasks.add(retrieveDraftTask);
         }
+
         pendingTasks.add(caseDataToDivorceFormatter);
         pendingTasks.add(setCaseIdAndStateOnSession);
         pendingTasks.add(addCourtsToPayloadTask);
+
         return pendingTasks;
     }
 

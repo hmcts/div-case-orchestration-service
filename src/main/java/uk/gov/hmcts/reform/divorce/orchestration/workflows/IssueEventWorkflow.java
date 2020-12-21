@@ -52,7 +52,7 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest,
                                    String authToken, boolean generateAosInvitation) throws WorkflowException {
 
-        List<Task> tasks = new ArrayList<>();
+        List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
         tasks.add(validateCaseDataTask);
         tasks.add(setIssueDate);

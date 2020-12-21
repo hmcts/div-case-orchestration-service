@@ -49,7 +49,7 @@ public class AosPackOfflineAnswersWorkflow extends DefaultWorkflow<Map<String, O
     }
 
     private Task[] getTasks(DivorceParty divorceParty) {
-        List<Task> tasks = new ArrayList<>();
+        List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
         tasks.add(formFieldValuesToCoreFieldsRelay);
 
