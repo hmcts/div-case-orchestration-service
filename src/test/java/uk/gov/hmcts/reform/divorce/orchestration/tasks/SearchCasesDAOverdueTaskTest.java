@@ -70,8 +70,9 @@ public class SearchCasesDAOverdueTaskTest {
             any())
         ).thenReturn(Stream.empty());
 
+        final Map<String, Object> actualResult = classUnderTest.execute(contextBeingModified, Collections.emptyMap());
         assertEquals(expectedCaseIdsInTheContext, contextBeingModified.getTransientObject(SEARCH_RESULT_KEY));
-        assertEquals(Collections.emptyMap(), classUnderTest.execute(contextBeingModified, Collections.emptyMap()));
+        assertEquals(Collections.emptyMap(), actualResult);
 
         verify(cmsElasticSearchSupport).searchCMSCases(eq(AUTH_TOKEN),
             eq(QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AWAITING_DA)),
