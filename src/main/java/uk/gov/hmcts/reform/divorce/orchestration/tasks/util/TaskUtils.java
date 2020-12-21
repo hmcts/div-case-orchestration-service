@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
@@ -15,6 +17,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil.parseDateUsingCcdFormat;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TaskUtils {
 
     public static String getMandatoryPropertyValueAsString(Map<String, Object> propertiesMap, String key)
