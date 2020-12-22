@@ -14,7 +14,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
-public class AuthenticateRespondentTest extends IntegrationTest {
+public class AuthenticateRespondentTaskTest extends IntegrationTest {
 
     @Value("${case.orchestration.authenticate-respondent.context-path}")
     private String contextPath;

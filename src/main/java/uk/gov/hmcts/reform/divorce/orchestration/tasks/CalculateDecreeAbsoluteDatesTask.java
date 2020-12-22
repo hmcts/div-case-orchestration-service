@@ -19,7 +19,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil.formatDateForCCD;
 
 @Component
-public class CalculateDecreeAbsoluteDates implements Task<Map<String, Object>> {
+public class CalculateDecreeAbsoluteDatesTask implements Task<Map<String, Object>> {
 
     private static final Period TIME_UNTIL_APPLICANT_CAN_APPLY_FOR_DA = ofWeeks(6).plusDays(1);
 

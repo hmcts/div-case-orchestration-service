@@ -56,10 +56,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.BulkCaseCreate.BULK_CASE_TITLE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.BulkCaseCreateTask.BULK_CASE_TITLE;
 
 @RunWith(MockitoJUnitRunner.class)
-public class BulkCaseCreateUTest {
+public class BulkCaseCreateTaskUTest {
 
     private static final String FAMILY_MAN_NUMBER = "fmNumber";
     private static final String CLAIM_COST_OPTION = "Yes";
@@ -77,7 +77,7 @@ public class BulkCaseCreateUTest {
     private CcdUtil ccdUtilMock;
 
     @InjectMocks
-    private BulkCaseCreate classToTest;
+    private BulkCaseCreateTask classToTest;
 
 
     @Before

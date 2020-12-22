@@ -14,21 +14,21 @@ import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.assertThrows;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_CCD_FIELD;
 
-public class CalculateDecreeAbsoluteDatesTest {
+public class CalculateDecreeAbsoluteDatesTaskTest {
 
     private static final String DATE_RESPONDENT_ELIGIBLE_FOR_DA = "DateRespondentEligibleForDA";
     private static final String DATE_CASE_NO_LONGER_ELIGIBLE_FOR_DA = "DateCaseNoLongerEligibleForDA";
 
-    private CalculateDecreeAbsoluteDates calculateDecreeAbsoluteDates;
+    private CalculateDecreeAbsoluteDatesTask calculateDecreeAbsoluteDatesTask;
 
     @Before
     public void setUp() {
-        calculateDecreeAbsoluteDates = new CalculateDecreeAbsoluteDates();
+        calculateDecreeAbsoluteDatesTask = new CalculateDecreeAbsoluteDatesTask();
     }
 
     @Test
     public void testDecreeAbsoluteDatesAreReturned() throws TaskException {
-        Map<String, ?> returnedPayload = calculateDecreeAbsoluteDates.execute(null, singletonMap(DECREE_NISI_GRANTED_DATE_CCD_FIELD, "2020-01-09"));
+        Map<String, ?> returnedPayload = calculateDecreeAbsoluteDatesTask.execute(null, singletonMap(DECREE_NISI_GRANTED_DATE_CCD_FIELD, "2020-01-09"));
 
         assertThat(returnedPayload, allOf(
             hasEntry(DECREE_NISI_GRANTED_DATE_CCD_FIELD, "2020-01-09"),
@@ -43,7 +43,7 @@ public class CalculateDecreeAbsoluteDatesTest {
 
         assertThrows(
             TaskException.class,
-            () -> calculateDecreeAbsoluteDates.execute(null, payload)
+            () -> calculateDecreeAbsoluteDatesTask.execute(null, payload)
         );
     }
 
@@ -53,7 +53,7 @@ public class CalculateDecreeAbsoluteDatesTest {
 
         assertThrows(
             TaskException.class,
-            () -> calculateDecreeAbsoluteDates.execute(null, payload)
+            () -> calculateDecreeAbsoluteDatesTask.execute(null, payload)
         );
     }
 }

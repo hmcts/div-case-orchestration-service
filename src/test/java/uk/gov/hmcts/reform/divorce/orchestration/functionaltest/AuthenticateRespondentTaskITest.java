@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN;
 
-public class AuthenticateRespondentITest extends IdamTestSupport {
+public class AuthenticateRespondentTaskITest extends IdamTestSupport {
     private static final String API_URL = "/authenticate-respondent";
 
     @Autowired

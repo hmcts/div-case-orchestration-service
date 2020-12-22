@@ -45,8 +45,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class BulkCaseCreate implements Task<Map<String, Object>> {
-    static final String BULK_CASE_TITLE = "Divorce bulk Case %s";
+public class BulkCaseCreateTask implements Task<Map<String, Object>> {
+
+    public static final String BULK_CASE_TITLE = "Divorce bulk Case %s";
 
     @Value("${bulk-action.min-cases:30}")
     private int minimunCasesToProcess;
@@ -58,11 +59,14 @@ public class BulkCaseCreate implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) {
         List<SearchResult> searchResultList = context.getTransientObject(SEARCH_RESULT_KEY);
+
         if (CollectionUtils.isEmpty(searchResultList)) {
             log.info("There is no cases to process");
             context.setTaskFailed(true);
+
             return Collections.emptyMap();
         }
+
         List<Object> errors = new ArrayList<>();
         List<Map<String, Object>> bulkCases = new ArrayList<>();
         searchResultList.forEach(searchResult -> {

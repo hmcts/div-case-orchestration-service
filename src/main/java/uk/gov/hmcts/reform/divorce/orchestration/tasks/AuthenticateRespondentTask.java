@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +14,12 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 
 @Component
-public class AuthenticateRespondent implements Task<Boolean> {
-    @Autowired
-    private IdamClient idamClient;
+@RequiredArgsConstructor
+public class AuthenticateRespondentTask implements Task<Boolean> {
 
-    @Autowired
-    private AuthUtil authUtil;
+    private final IdamClient idamClient;
+
+    private final AuthUtil authUtil;
 
     @Override
     public Boolean execute(TaskContext context, Boolean payload) {

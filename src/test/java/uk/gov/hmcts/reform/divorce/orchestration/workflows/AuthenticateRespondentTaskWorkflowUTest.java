@@ -8,16 +8,16 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.AuthenticateRespondent;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AuthenticateRespondentTask;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AuthenticateRespondentWorkflowUTest {
+public class AuthenticateRespondentTaskWorkflowUTest {
     private static final String AUTH_TOKEN = "authtoken";
 
     @Mock
-    private AuthenticateRespondent authenticateRespondent;
+    private AuthenticateRespondentTask authenticateRespondentTask;
 
     @InjectMocks
     private AuthenticateRespondentWorkflow classUnderTest;
@@ -34,10 +34,10 @@ public class AuthenticateRespondentWorkflowUTest {
     public void whenRun_thenProceedAsExpected() throws Exception {
         final boolean expected = true;
 
-        Mockito.when(authenticateRespondent.execute(defaultTaskContext, null)).thenReturn(expected);
+        Mockito.when(authenticateRespondentTask.execute(defaultTaskContext, null)).thenReturn(expected);
 
         classUnderTest.run(AUTH_TOKEN);
 
-        Mockito.verify(authenticateRespondent).execute(defaultTaskContext, null);
+        Mockito.verify(authenticateRespondentTask).execute(defaultTaskContext, null);
     }
 }
