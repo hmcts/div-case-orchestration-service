@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -18,7 +17,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class AuthenticateRespondentTask implements Task<Boolean> {
 
     private final IdamClient idamClient;
-
     private final AuthUtil authUtil;
 
     @Override
