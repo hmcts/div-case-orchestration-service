@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddPetitionerSolicitorRole;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddPetitionerSolicitorRoleTask;
 
 import java.util.Map;
 
@@ -24,10 +24,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PetitionerSolicitorRoleWorkflowUTest {
+public class PetitionerSolicitorRoleWorkflowTest {
 
     @Mock
-    private AddPetitionerSolicitorRole addPetitionerSolicitorRole;
+    private AddPetitionerSolicitorRoleTask addPetitionerSolicitorRoleTask;
 
     @InjectMocks
     private PetitionerSolicitorRoleWorkflow classToTest;
@@ -44,7 +44,7 @@ public class PetitionerSolicitorRoleWorkflowUTest {
                 .build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
-        when(addPetitionerSolicitorRole.execute(any(),
+        when(addPetitionerSolicitorRoleTask.execute(any(),
             eq(caseDetails.getCaseData()))).thenReturn(caseDetails.getCaseData());
         Map<String, Object> response = classToTest.run(ccdCallbackRequest, TestConstants.TEST_TOKEN);
 

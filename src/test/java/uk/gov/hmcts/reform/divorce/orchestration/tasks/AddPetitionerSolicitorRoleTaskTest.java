@@ -20,12 +20,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AddPetitionerSolicitorRoleUTest {
+public class AddPetitionerSolicitorRoleTaskTest {
     @Mock
     private CaseMaintenanceClient caseMaintenanceClient;
 
     @InjectMocks
-    private AddPetitionerSolicitorRole classUnderTest;
+    private AddPetitionerSolicitorRoleTask classUnderTest;
 
     @Test
     public void givenCaseExists_whenAddingPetSolicitorRole_thenReturnExpectedOutput() throws TaskException {

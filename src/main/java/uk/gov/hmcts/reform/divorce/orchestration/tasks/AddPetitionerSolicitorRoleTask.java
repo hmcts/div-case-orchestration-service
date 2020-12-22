@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import feign.FeignException;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -16,19 +16,17 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 @Slf4j
-public class AddPetitionerSolicitorRole implements Task<Map<String, Object>> {
+@AllArgsConstructor
+public class AddPetitionerSolicitorRoleTask implements Task<Map<String, Object>> {
 
-    private CaseMaintenanceClient caseMaintenanceClient;
-
-    @Autowired
-    public AddPetitionerSolicitorRole(CaseMaintenanceClient caseMaintenanceClient) {
-        this.caseMaintenanceClient = caseMaintenanceClient;
-    }
+    private final CaseMaintenanceClient caseMaintenanceClient;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
         String authToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY);
         String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
+
+        log.info("CaseID: {} Role [PETSOLICITOR] is going to be set", caseId);
 
         try {
             caseMaintenanceClient.addPetitionerSolicitorRole(authToken, caseId);
@@ -39,6 +37,7 @@ public class AddPetitionerSolicitorRole implements Task<Map<String, Object>> {
             context.setTransientObject("AddPetitionerSolicitorRole_Error",
                 "Problem setting the [PETSOLICITOR] role to the case");
         }
+
         return payload;
     }
 }
