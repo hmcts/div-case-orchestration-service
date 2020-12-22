@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddCourtsToPayloadTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataDraftToDivorceFormatter;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataDraftToDivorceFormatterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseData;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetInconsistentPaymentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveDraftTask;
@@ -37,7 +37,7 @@ public class RetrieveDraftTaskWorkflowTest {
     private RetrieveDraftTask retrieveDraftTask;
 
     @Mock
-    private CaseDataDraftToDivorceFormatter caseDataToDivorceFormatter;
+    private CaseDataDraftToDivorceFormatterTask caseDataToDivorceFormatter;
 
     @Mock
     private SetCaseIdAndStateOnSession setCaseIdAndStateOnSession;

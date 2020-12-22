@@ -42,7 +42,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class CoRespondentLetterGeneratorTest {
+public class CoRespondentLetterGeneratorTestTask {
     @Mock
     private DocumentGeneratorClient documentGeneratorClient;
 
@@ -50,7 +50,7 @@ public class CoRespondentLetterGeneratorTest {
     private DocumentTemplateService documentTemplateService;
 
     @InjectMocks
-    private CoRespondentLetterGenerator coRespondentLetterGenerator;
+    private CoRespondentLetterGeneratorTask coRespondentLetterGeneratorTask;
 
     public static final String CO_RESPONDENT_INVITATION_TEMPLATE_NAME = "co-respondentinvitation";
 
@@ -97,7 +97,7 @@ public class CoRespondentLetterGeneratorTest {
 
 
         //when
-        coRespondentLetterGenerator.execute(context, payload);
+        coRespondentLetterGeneratorTask.execute(context, payload);
 
         final LinkedHashSet<GeneratedDocumentInfo> documentCollection =
             context.getTransientObject(DOCUMENT_COLLECTION);

@@ -29,7 +29,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class CoRespondentPinGeneratorTest {
+public class CoRespondentPinGeneratorTaskTest {
 
     @Mock
     private IdamClient idamClient;
@@ -38,7 +38,7 @@ public class CoRespondentPinGeneratorTest {
     private AuthUtil authUtil;
 
     @InjectMocks
-    private CoRespondentPinGenerator coRespondentPinGenerator;
+    private CoRespondentPinGeneratorTask coRespondentPinGeneratorTask;
 
     private Map<String, Object> caseData;
     private TaskContext context;
@@ -63,7 +63,7 @@ public class CoRespondentPinGeneratorTest {
             .thenReturn(BEARER_AUTH_TOKEN);
 
         //when
-        Map<String, Object> response = coRespondentPinGenerator.execute(context, caseData);
+        Map<String, Object> response = coRespondentPinGeneratorTask.execute(context, caseData);
 
         //then
         assertThat(response, is(notNullValue()));

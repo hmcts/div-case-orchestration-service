@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -17,17 +17,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 
 @Component
-public class CoRespondentPinGenerator implements Task<Map<String, Object>> {
+@RequiredArgsConstructor
+public class CoRespondentPinGeneratorTask implements Task<Map<String, Object>> {
 
     private final IdamClient idamClient;
-
     private final AuthUtil authUtil;
-
-    @Autowired
-    public CoRespondentPinGenerator(IdamClient idamClient, AuthUtil authUtil) {
-        this.idamClient = idamClient;
-        this.authUtil = authUtil;
-    }
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {

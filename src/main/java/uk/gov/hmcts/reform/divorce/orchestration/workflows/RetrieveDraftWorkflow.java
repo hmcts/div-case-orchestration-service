@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddCourtsToPayloadTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataDraftToDivorceFormatter;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataDraftToDivorceFormatterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseData;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetInconsistentPaymentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveDraftTask;
@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final RetrieveDraftTask retrieveDraftTask;
-    private final CaseDataDraftToDivorceFormatter caseDataToDivorceFormatter;
+    private final CaseDataDraftToDivorceFormatterTask caseDataToDivorceFormatter;
     private final SetCaseIdAndStateOnSession setCaseIdAndStateOnSession;
     private final AddCourtsToPayloadTask addCourtsToPayloadTask;
 

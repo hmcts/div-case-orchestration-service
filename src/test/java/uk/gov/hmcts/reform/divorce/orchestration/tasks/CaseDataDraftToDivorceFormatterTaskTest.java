@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithToken;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CaseDataDraftToDivorceFormatterTest {
+public class CaseDataDraftToDivorceFormatterTaskTest {
 
     @Mock
     private CaseFormatterClient caseFormatterClient;
@@ -33,7 +33,7 @@ public class CaseDataDraftToDivorceFormatterTest {
     private GeneralOrdersFilterTask generalOrdersFilterTask;
 
     @InjectMocks
-    private CaseDataDraftToDivorceFormatter classUnderTest;
+    private CaseDataDraftToDivorceFormatterTask classUnderTest;
 
     private Map<String, Object> caseData;
     private TaskContext taskContext;

@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import com.google.common.collect.ImmutableMap;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
@@ -30,15 +30,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_FEE_FOR_LETTER;
 
 @Component
-public class CoRespondentLetterGenerator implements Task<Map<String, Object>> {
+@RequiredArgsConstructor
+public class CoRespondentLetterGeneratorTask implements Task<Map<String, Object>> {
     private final DocumentGeneratorClient documentGeneratorClient;
     private final DocumentTemplateService documentTemplateService;
-
-    @Autowired
-    public CoRespondentLetterGenerator(DocumentGeneratorClient documentGeneratorClient, DocumentTemplateService documentTemplateService) {
-        this.documentGeneratorClient = documentGeneratorClient;
-        this.documentTemplateService = documentTemplateService;
-    }
 
     @Override
     public Map<String, Object> execute(final TaskContext context, final Map<String, Object> caseData) {
@@ -46,8 +41,11 @@ public class CoRespondentLetterGenerator implements Task<Map<String, Object>> {
 
         final NumberFormat poundsOnlyFormat = new DecimalFormat("#");
         final String petitionIssueFee = poundsOnlyFormat.format(((FeeResponse) context.getTransientObject(PETITION_FEE_JSON_KEY)).getAmount());
-        final String templateId = getTemplateId(documentTemplateService, DocumentType.CO_RESPONDENT_INVITATION,
-                caseData);
+        final String templateId = getTemplateId(
+            documentTemplateService,
+            DocumentType.CO_RESPONDENT_INVITATION,
+            caseData
+        );
 
         GeneratedDocumentInfo coRespondentInvitation =
             documentGeneratorClient.generatePDF(
@@ -63,11 +61,13 @@ public class CoRespondentLetterGenerator implements Task<Map<String, Object>> {
             );
 
         coRespondentInvitation.setDocumentType(DOCUMENT_TYPE_CO_RESPONDENT_INVITATION);
-        coRespondentInvitation.setFileName(String.format(CO_RESPONDENT_INVITATION_FILE_NAME_FORMAT,
-                caseDetails.getCaseId()));
+        coRespondentInvitation.setFileName(
+            String.format(CO_RESPONDENT_INVITATION_FILE_NAME_FORMAT,
+                caseDetails.getCaseId())
+        );
 
-        final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION,
-            new LinkedHashSet<>());
+        final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context
+            .computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new LinkedHashSet<>());
         documentCollection.add(coRespondentInvitation);
 
         return caseData;

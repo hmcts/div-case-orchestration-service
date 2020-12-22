@@ -35,7 +35,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 
 @RunWith(MockitoJUnitRunner.class)
-public class CoRespondentAnswersGeneratorTest {
+public class CoRespondentAnswersGeneratorTaskTest {
     @Mock
     private DocumentGeneratorClient documentGeneratorClient;
 
@@ -43,7 +43,7 @@ public class CoRespondentAnswersGeneratorTest {
     private DocumentTemplateService documentTemplateService;
 
     @InjectMocks
-    private CoRespondentAnswersGenerator coRespondentAnswersGenerator;
+    private CoRespondentAnswersGeneratorTask coRespondentAnswersGeneratorTask;
 
     public static final String CO_RESPONDENT_ANSWERS_TEMPLATE_NAME = "co-respondent-answers";
 
@@ -78,7 +78,7 @@ public class CoRespondentAnswersGeneratorTest {
                 .thenReturn(CO_RESPONDENT_ANSWERS_TEMPLATE_NAME);
 
         //when
-        coRespondentAnswersGenerator.execute(context, payload);
+        coRespondentAnswersGeneratorTask.execute(context, payload);
 
         final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context.getTransientObject(DOCUMENT_COLLECTION);
 
@@ -112,6 +112,6 @@ public class CoRespondentAnswersGeneratorTest {
                 .thenReturn(CO_RESPONDENT_ANSWERS_TEMPLATE_NAME);
 
         //when
-        coRespondentAnswersGenerator.execute(context, payload);
+        coRespondentAnswersGeneratorTask.execute(context, payload);
     }
 }

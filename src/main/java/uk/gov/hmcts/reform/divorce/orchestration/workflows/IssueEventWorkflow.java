@@ -11,8 +11,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentLetterGenerator;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentPinGenerator;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentLetterGeneratorTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentPinGeneratorTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetPetitionIssueFeeTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetCoRespondentLinkingFields;
@@ -40,9 +40,9 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
     private final ValidateCaseDataTask validateCaseDataTask;
     private final PetitionGenerator petitionGenerator;
     private final RespondentPinGenerator respondentPinGenerator;
-    private final CoRespondentPinGenerator coRespondentPinGenerator;
+    private final CoRespondentPinGeneratorTask coRespondentPinGeneratorTask;
     private final RespondentLetterGenerator respondentLetterGenerator;
-    private final CoRespondentLetterGenerator coRespondentLetterGenerator;
+    private final CoRespondentLetterGeneratorTask coRespondentLetterGeneratorTask;
     private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
     private final GetPetitionIssueFeeTask getPetitionIssueFeeTask;
     private final ResetRespondentLinkingFields resetRespondentLinkingFields;
@@ -70,8 +70,8 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
                     + " co-respondent letter", caseDetails.getCaseId());
 
                 tasks.add(getPetitionIssueFeeTask);
-                tasks.add(coRespondentPinGenerator);
-                tasks.add(coRespondentLetterGenerator);
+                tasks.add(coRespondentPinGeneratorTask);
+                tasks.add(coRespondentLetterGeneratorTask);
             }
         }
 

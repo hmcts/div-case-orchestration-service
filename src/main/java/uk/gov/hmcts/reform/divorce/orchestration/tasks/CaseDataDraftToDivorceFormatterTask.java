@@ -15,7 +15,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.DraftHelper.i
 
 @Component
 @RequiredArgsConstructor
-public class CaseDataDraftToDivorceFormatter implements Task<Map<String, Object>> {
+public class CaseDataDraftToDivorceFormatterTask implements Task<Map<String, Object>> {
 
     private final GeneralOrdersFilterTask generalOrdersFilterTask;
 

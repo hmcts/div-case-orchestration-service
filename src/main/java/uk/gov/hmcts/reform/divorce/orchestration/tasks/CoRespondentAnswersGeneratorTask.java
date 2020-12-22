@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import com.google.common.collect.ImmutableMap;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
@@ -23,37 +23,35 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS;
 
 @Component
-public class CoRespondentAnswersGenerator implements Task<Map<String, Object>> {
+@RequiredArgsConstructor
+public class CoRespondentAnswersGeneratorTask implements Task<Map<String, Object>> {
     private final DocumentGeneratorClient documentGeneratorClient;
     private final DocumentTemplateService documentTemplateService;
-
-    @Autowired
-    public CoRespondentAnswersGenerator(DocumentGeneratorClient documentGeneratorClient, DocumentTemplateService documentTemplateService) {
-        this.documentGeneratorClient = documentGeneratorClient;
-        this.documentTemplateService = documentTemplateService;
-    }
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
         CaseDetails caseDataForDoc = CaseDetails.builder().caseData(payload).build();
-        final String templateId = getTemplateId(documentTemplateService, DocumentType.CO_RESPONDENT_ANSWERS,
-                payload);
+        final String templateId = getTemplateId(
+            documentTemplateService,
+            DocumentType.CO_RESPONDENT_ANSWERS,
+            payload
+        );
 
         try {
             GeneratedDocumentInfo coRespondentAnswers =
-                    documentGeneratorClient.generatePDF(
-                            GenerateDocumentRequest.builder()
-                                    .template(templateId)
-                                    .values(ImmutableMap.of(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDataForDoc))
-                                    .build(),
-                            context.getTransientObject(AUTH_TOKEN_JSON_KEY)
-                    );
+                documentGeneratorClient.generatePDF(
+                    GenerateDocumentRequest.builder()
+                        .template(templateId)
+                        .values(ImmutableMap.of(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDataForDoc))
+                        .build(),
+                    context.getTransientObject(AUTH_TOKEN_JSON_KEY)
+                );
 
             coRespondentAnswers.setDocumentType(DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS);
             coRespondentAnswers.setFileName(DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS);
 
             final HashSet<GeneratedDocumentInfo> documentCollection =
-                    context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new LinkedHashSet<>());
+                context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new LinkedHashSet<>());
             documentCollection.add(coRespondentAnswers);
         } catch (Exception e) {
             throw new TaskException("Unable to generate or store Co-Respondent answers.", e);

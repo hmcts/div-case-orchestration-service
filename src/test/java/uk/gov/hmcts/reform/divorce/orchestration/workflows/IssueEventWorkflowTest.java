@@ -13,8 +13,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentLetterGenerator;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentPinGenerator;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentLetterGeneratorTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentPinGeneratorTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetPetitionIssueFeeTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetCoRespondentLinkingFields;
@@ -58,13 +58,13 @@ public class IssueEventWorkflowTest {
     private RespondentLetterGenerator respondentLetterGenerator;
 
     @Mock
-    private CoRespondentLetterGenerator coRespondentLetterGenerator;
+    private CoRespondentLetterGeneratorTask coRespondentLetterGeneratorTask;
 
     @Mock
     private RespondentPinGenerator respondentPinGenerator;
 
     @Mock
-    private CoRespondentPinGenerator coRespondentPinGenerator;
+    private CoRespondentPinGeneratorTask coRespondentPinGeneratorTask;
 
     @Mock
     private AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
@@ -123,8 +123,8 @@ public class IssueEventWorkflowTest {
         when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
         when(getPetitionIssueFeeTask.execute(context, payload)).thenReturn(payload);
-        when(coRespondentPinGenerator.execute(context, payload)).thenReturn(payload);
-        when(coRespondentLetterGenerator.execute(context, payload)).thenReturn(payload);
+        when(coRespondentPinGeneratorTask.execute(context, payload)).thenReturn(payload);
+        when(coRespondentLetterGeneratorTask.execute(context, payload)).thenReturn(payload);
         when(addNewDocumentsToCaseDataTask.execute(context, payload)).thenReturn(payload);
         when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
         when(resetCoRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
@@ -159,8 +159,8 @@ public class IssueEventWorkflowTest {
         assertThat(response, is(payload));
 
         verifyNoInteractions(getPetitionIssueFeeTask);
-        verifyNoInteractions(coRespondentPinGenerator);
-        verifyNoInteractions(coRespondentLetterGenerator);
+        verifyNoInteractions(coRespondentPinGeneratorTask);
+        verifyNoInteractions(coRespondentLetterGeneratorTask);
     }
 
     @Test
@@ -185,8 +185,8 @@ public class IssueEventWorkflowTest {
         assertThat(response, is(payload));
 
         verifyNoInteractions(getPetitionIssueFeeTask);
-        verifyNoInteractions(coRespondentPinGenerator);
-        verifyNoInteractions(coRespondentLetterGenerator);
+        verifyNoInteractions(coRespondentPinGeneratorTask);
+        verifyNoInteractions(coRespondentLetterGeneratorTask);
     }
 
     @Test
@@ -206,9 +206,9 @@ public class IssueEventWorkflowTest {
 
         verifyNoInteractions(respondentPinGenerator);
         verifyNoInteractions(getPetitionIssueFeeTask);
-        verifyNoInteractions(coRespondentPinGenerator);
+        verifyNoInteractions(coRespondentPinGeneratorTask);
         verifyNoInteractions(respondentLetterGenerator);
-        verifyNoInteractions(coRespondentLetterGenerator);
+        verifyNoInteractions(coRespondentLetterGeneratorTask);
     }
 
     @Test
@@ -228,9 +228,9 @@ public class IssueEventWorkflowTest {
 
         verifyNoInteractions(respondentPinGenerator);
         verifyNoInteractions(getPetitionIssueFeeTask);
-        verifyNoInteractions(coRespondentPinGenerator);
+        verifyNoInteractions(coRespondentPinGeneratorTask);
         verifyNoInteractions(respondentLetterGenerator);
-        verifyNoInteractions(coRespondentLetterGenerator);
+        verifyNoInteractions(coRespondentLetterGeneratorTask);
     }
 
 }

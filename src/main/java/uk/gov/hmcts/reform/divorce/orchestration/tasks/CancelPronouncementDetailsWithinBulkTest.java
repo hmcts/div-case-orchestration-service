@@ -16,7 +16,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 
 @Component
-public class CancelPronouncementDetailsWithinBulk extends AutoPublishingAsyncTask<Map<String, Object>> {
+public class CancelPronouncementDetailsWithinBulkTest extends AutoPublishingAsyncTask<Map<String, Object>> {
 
     @Override
     public List<ApplicationEvent> getApplicationEventsToPublish(TaskContext context, Map<String, Object> bulkCaseData) {
