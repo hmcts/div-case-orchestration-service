@@ -9,7 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseIdFromCaseLink;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseIdFromCaseLinkTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 
 import java.util.Collections;
@@ -34,14 +34,14 @@ public class LinkBulkCaseWorkflowUTest {
     private UpdateCaseInCCD updateCaseInCCD;
 
     @Mock
-    private GetCaseIdFromCaseLink getCaseIDFromCaseLink;
+    private GetCaseIdFromCaseLinkTask getCaseIDFromCaseLinkTask;
 
     @Test
     public void whenGetCase_thenProcessAsExpected() throws WorkflowException {
         Map<String, Object>  data = Collections.emptyMap();
 
         final Task[] tasks = new Task[]{
-            getCaseIDFromCaseLink,
+            getCaseIDFromCaseLinkTask,
             updateCaseInCCD
         };
 

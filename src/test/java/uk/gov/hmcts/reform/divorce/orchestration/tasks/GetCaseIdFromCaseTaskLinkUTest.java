@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class GetCaseIdFromCaseTaskLinkUTest {
 
     @InjectMocks
-    private GetCaseIdFromCaseLink classToTest;
+    private GetCaseIdFromCaseLinkTask classToTest;
 
     @Test(expected = TaskException.class)
     public void givenCaseLinkWithoutCaseReference_thenThrowTaskException() throws TaskException {
