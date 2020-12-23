@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddCourtsToPayloadTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataToDivorceFormatterTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCase;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.GeneralOrdersFilterTask;
 
 import java.util.Map;
@@ -36,10 +36,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mo
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GetCaseWorkflowTest {
+public class GetCaseTaskWorkflowTest {
 
     @Mock
-    private GetCase getCase;
+    private GetCaseTask getCaseTask;
 
     @Mock
     private GeneralOrdersFilterTask generalOrdersFilterTask;
@@ -59,7 +59,7 @@ public class GetCaseWorkflowTest {
     @Test
     public void whenGetCase_thenProcessAsExpected() throws WorkflowException, TaskException {
         Map<String, Object> payloadToReturn = TEST_PAYLOAD_TO_RETURN;
-        when(getCase.execute(any(), isNull()))
+        when(getCaseTask.execute(any(), isNull()))
             .thenAnswer(invocation -> {
                 TaskContext taskContext = invocation.getArgument(0, TaskContext.class);
 
@@ -78,7 +78,7 @@ public class GetCaseWorkflowTest {
         assertThat(classUnderTest.getCaseState(), is(TEST_STATE));
         assertThat(classUnderTest.getCourt(), is(TEST_COURT));
 
-        verify(getCase).execute(taskContextArgumentCaptor.capture(), isNull());
+        verify(getCaseTask).execute(taskContextArgumentCaptor.capture(), isNull());
         TaskContext originatingTaskContext = taskContextArgumentCaptor.getValue();
         assertThat(originatingTaskContext.getTransientObject(AUTH_TOKEN_JSON_KEY), is(AUTH_TOKEN));
         verifyTasksCalledInOrder(payloadToReturn, generalOrdersFilterTask, caseDataToDivorceFormatterTask, addCourtsToPayloadTask);

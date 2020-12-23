@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.service.TemplateConfigService;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotification;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotificationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.QueueAosSolicitorSubmitTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForDefendedDivorceEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForUndefendedDivorceEmail;
@@ -67,7 +67,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentation
 @Slf4j
 public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final GenericEmailNotification emailNotificationTask;
+    private final GenericEmailNotificationTask emailNotificationTask;
 
     private final SendRespondentSubmissionNotificationForDefendedDivorceEmail
         sendRespondentSubmissionNotificationForDefendedDivorceEmailTask;

@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GetCaseWithIdWorkflowTest {
+public class GetCaseTaskWithIdWorkflowTest {
     @Mock
     private GetCaseWithIdTask getCaseWithId;
 

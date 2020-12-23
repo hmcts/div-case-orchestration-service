@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -18,14 +18,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.T
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.COURT_KEY;
 
 @Component
-public class GetCase implements Task<Map<String, Object>> {
+@RequiredArgsConstructor
+public class GetCaseTask implements Task<Map<String, Object>> {
 
     private final CaseMaintenanceClient caseMaintenanceClient;
-
-    @Autowired
-    public GetCase(CaseMaintenanceClient caseMaintenanceClient) {
-        this.caseMaintenanceClient = caseMaintenanceClient;
-    }
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
@@ -42,5 +38,4 @@ public class GetCase implements Task<Map<String, Object>> {
 
         return caseData;
     }
-
 }

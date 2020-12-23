@@ -18,7 +18,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GetCaseIdFromCaseLinkUTest {
+public class GetCaseIdFromCaseTaskLinkUTest {
 
     @InjectMocks
     private GetCaseIdFromCaseLink classToTest;

@@ -35,7 +35,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GetCaseWithIdMapFlowTest {
+public class GetCaseTaskWithIdMapFlowTest {
 
     @Mock
     private CaseMaintenanceClient caseMaintenanceClient;

@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GenericEmailNotificationTaskUTest {
+public class GenericEmailNotificationTaskTaskUTest {
 
     private static final String GENERIC_SUBMISSION_NOTIFICATION_EMAIL_DESCRIPTION = "submission notification";
 
@@ -35,7 +35,7 @@ public class GenericEmailNotificationTaskUTest {
     private EmailService emailService;
 
     @InjectMocks
-    private GenericEmailNotification genericEmailNotification;
+    private GenericEmailNotificationTask genericEmailNotificationTask;
 
     @SuppressWarnings("unchecked")
     @Test
@@ -48,7 +48,7 @@ public class GenericEmailNotificationTaskUTest {
         context.setTransientObject(NOTIFICATION_TEMPLATE_VARS, vars);
 
         Map<String, Object>  data = mock(Map.class);
-        Map<String, Object> taskResponse = genericEmailNotification.execute(context, data);
+        Map<String, Object> taskResponse = genericEmailNotificationTask.execute(context, data);
 
         verify(emailService, times(1))
                 .sendEmailAndReturnExceptionIfFails(TEST_USER_EMAIL,
@@ -78,7 +78,7 @@ public class GenericEmailNotificationTaskUTest {
                     GENERIC_SUBMISSION_NOTIFICATION_EMAIL_DESCRIPTION,
                     LanguagePreference.ENGLISH);
 
-        Map<String, Object> taskResponse = genericEmailNotification.execute(context, data);
+        Map<String, Object> taskResponse = genericEmailNotificationTask.execute(context, data);
 
         assertEquals(taskResponse, data);
         assertNotNull(context.getTransientObject(EMAIL_ERROR_KEY));

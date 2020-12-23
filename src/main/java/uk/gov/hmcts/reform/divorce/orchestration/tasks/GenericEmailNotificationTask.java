@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
@@ -21,18 +21,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 @Slf4j
-public class GenericEmailNotification implements Task<Map<String, Object>> {
+@RequiredArgsConstructor
+public class GenericEmailNotificationTask implements Task<Map<String, Object>> {
 
     private final EmailService emailService;
 
-    @Autowired
-    public GenericEmailNotification(EmailService emailService) {
-        this.emailService = emailService;
-    }
-
     @Override
-    public Map<String, Object> execute(TaskContext context,
-                                       Map<String, Object> data) {
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> data) {
         String emailAddress = context.getTransientObject(NOTIFICATION_EMAIL);
         EmailTemplateNames template = context.getTransientObject(NOTIFICATION_TEMPLATE);
         Map<String, String> templateVars = context.getTransientObject(NOTIFICATION_TEMPLATE_VARS);
@@ -43,7 +38,6 @@ public class GenericEmailNotification implements Task<Map<String, Object>> {
         } catch (NotificationClientException e) {
             log.warn("Error sending email for case ID: " + context.getTransientObject(CASE_ID_JSON_KEY), e);
             context.setTransientObject(OrchestrationConstants.EMAIL_ERROR_KEY, e.getMessage());
-            return data;
         }
 
         return data;
