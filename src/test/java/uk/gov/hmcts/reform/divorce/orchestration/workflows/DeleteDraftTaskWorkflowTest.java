@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.DeleteDraft;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.DeleteDraftTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,10 +24,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @RunWith(MockitoJUnitRunner.class)
 
-public class DeleteDraftWorkflowTest {
+public class DeleteDraftTaskWorkflowTest {
 
     @Mock
-    private DeleteDraft deleteDraft;
+    private DeleteDraftTask deleteDraftTask;
 
     @InjectMocks
     private DeleteDraftWorkflow target;
@@ -39,11 +39,11 @@ public class DeleteDraftWorkflowTest {
         ArgumentMatcher<TaskContext> contextWithAuthTokenMatcher =
             argument -> argument.getTransientObject(AUTH_TOKEN_JSON_KEY) != null;
 
-        when(deleteDraft.execute(argThat(contextWithAuthTokenMatcher),
+        when(deleteDraftTask.execute(argThat(contextWithAuthTokenMatcher),
                 eq(payload))).thenReturn(draftPayload);
 
         assertEquals(draftPayload, target.run(AUTH_TOKEN));
 
-        verify(deleteDraft).execute(argThat(contextWithAuthTokenMatcher), eq(payload));
+        verify(deleteDraftTask).execute(argThat(contextWithAuthTokenMatcher), eq(payload));
     }
 }

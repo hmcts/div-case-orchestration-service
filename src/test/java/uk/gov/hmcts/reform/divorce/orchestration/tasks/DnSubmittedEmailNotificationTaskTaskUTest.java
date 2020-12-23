@@ -53,7 +53,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DnSubmittedEmailNotificationTaskUTest {
+public class DnSubmittedEmailNotificationTaskTaskUTest {
 
     @Mock
     private EmailService emailService;

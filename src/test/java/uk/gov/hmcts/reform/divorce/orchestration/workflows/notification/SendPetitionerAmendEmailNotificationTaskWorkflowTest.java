@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mo
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SendPetitionerAmendEmailNotificationWorkflowTest {
+public class SendPetitionerAmendEmailNotificationTaskWorkflowTest {
 
     @Mock
     private GetAmendPetitionFeeTask getAmendPetitionFeeTask;

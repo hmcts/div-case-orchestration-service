@@ -23,13 +23,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SEND_EMAIL;
 
 @RunWith(MockitoJUnitRunner.class)
-public class EmailNotificationTest {
+public class EmailNotificationTaskTest {
 
     @Mock
     private EmailService emailService;
 
     @InjectMocks
-    private EmailNotification target;
+    private EmailNotificationTask target;
 
     @Test
     public void givenSendEmailTrue_whenExecuteEmailNotificationTask_thenSendSaveDraftConfirmationEmailIsCalled() {
