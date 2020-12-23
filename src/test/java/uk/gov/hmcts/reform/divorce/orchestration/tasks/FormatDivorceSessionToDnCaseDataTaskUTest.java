@@ -27,13 +27,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FORMATTER_DIVORCE_SESSION_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class FormatDivorceSessionToDnCaseDataUTest {
+public class FormatDivorceSessionToDnCaseDataTaskUTest {
 
     @Mock
     private CaseFormatterClient caseFormatterClient;
 
     @InjectMocks
-    private FormatDivorceSessionToDnCaseData classUnderTest;
+    private FormatDivorceSessionToDnCaseDataTask classUnderTest;
 
     @SuppressWarnings("unchecked")
     @Test

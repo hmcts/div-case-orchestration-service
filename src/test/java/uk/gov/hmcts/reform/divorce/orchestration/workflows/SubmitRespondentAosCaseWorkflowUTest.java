@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToAosCaseData;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToAosCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitRespondentAosCase;
 
 import java.util.Map;
@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RunWith(MockitoJUnitRunner.class)
 public class SubmitRespondentAosCaseWorkflowUTest {
     @Mock
-    private FormatDivorceSessionToAosCaseData formatDivorceSessionToAosCaseData;
+    private FormatDivorceSessionToAosCaseDataTask formatDivorceSessionToAosCaseDataTask;
 
     @Mock
     private SubmitRespondentAosCase submitRespondentAosCase;
@@ -42,7 +42,7 @@ public class SubmitRespondentAosCaseWorkflowUTest {
         final ImmutablePair<String, Object> caseIdPair = new ImmutablePair<>(CASE_ID_JSON_KEY, TEST_CASE_ID);
 
         final Task[] tasks = new Task[]{
-            formatDivorceSessionToAosCaseData,
+            formatDivorceSessionToAosCaseDataTask,
             submitRespondentAosCase
         };
 

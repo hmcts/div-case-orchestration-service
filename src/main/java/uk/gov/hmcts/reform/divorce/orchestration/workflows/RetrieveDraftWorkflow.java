@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddCourtsToPayloadTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataDraftToDivorceFormatterTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseData;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetInconsistentPaymentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCaseIdAndStateOnSession;
@@ -34,7 +34,7 @@ public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> 
 
     private final GetInconsistentPaymentInfo getPaymentOnSession;
     private final UpdatePaymentMadeCase paymentMadeEvent;
-    private final FormatDivorceSessionToCaseData formatDivorceSessionToCaseData;
+    private final FormatDivorceSessionToCaseDataTask formatDivorceSessionToCaseDataTask;
 
     public Map<String, Object> run(String authToken) throws WorkflowException {
         Map<String, Object> caseData = this.execute(
@@ -60,7 +60,7 @@ public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> 
             this.execute(
                 new Task[] {
                     getPaymentOnSession,
-                    formatDivorceSessionToCaseData,
+                    formatDivorceSessionToCaseDataTask,
                     paymentMadeEvent
                 },
                 new DefaultTaskContext(getContext()),

@@ -18,19 +18,19 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INCOM
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PAYLOAD_TO_RETURN;
 
 @RunWith(MockitoJUnitRunner.class)
-public class FormatDivorceSessionToCaseDataTest {
+public class FormatDivorceSessionToCaseDataTaskTest {
 
     @Mock
     private DataMapTransformer dataMapTransformer;
 
     @InjectMocks
-    private FormatDivorceSessionToCaseData formatDivorceSessionToCaseData;
+    private FormatDivorceSessionToCaseDataTask formatDivorceSessionToCaseDataTask;
 
     @Test
     public void shouldCallCaseFormatterClientTransformToCCDFormat() {
         when(dataMapTransformer.transformDivorceCaseDataToCourtCaseData(any())).thenReturn(TEST_PAYLOAD_TO_RETURN);
 
-        Map<String, Object> returnedCoreCaseData = formatDivorceSessionToCaseData.execute(null, TEST_INCOMING_PAYLOAD);
+        Map<String, Object> returnedCoreCaseData = formatDivorceSessionToCaseDataTask.execute(null, TEST_INCOMING_PAYLOAD);
 
         assertThat(returnedCoreCaseData, is(TEST_PAYLOAD_TO_RETURN));
         verify(dataMapTransformer).transformDivorceCaseDataToCourtCaseData(TEST_INCOMING_PAYLOAD);

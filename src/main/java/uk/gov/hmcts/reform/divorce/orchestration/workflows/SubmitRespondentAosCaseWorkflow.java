@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToAosCaseData;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToAosCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitRespondentAosCase;
 
 import java.util.Map;
@@ -17,21 +17,21 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class SubmitRespondentAosCaseWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final FormatDivorceSessionToAosCaseData formatDivorceSessionToAosCaseData;
+    private final FormatDivorceSessionToAosCaseDataTask formatDivorceSessionToAosCaseDataTask;
 
     private final SubmitRespondentAosCase submitRespondentAosCase;
 
     @Autowired
-    public SubmitRespondentAosCaseWorkflow(final FormatDivorceSessionToAosCaseData formatDivorceSessionToAosCaseData,
+    public SubmitRespondentAosCaseWorkflow(final FormatDivorceSessionToAosCaseDataTask formatDivorceSessionToAosCaseDataTask,
                                            final SubmitRespondentAosCase submitRespondentAosCase) {
-        this.formatDivorceSessionToAosCaseData = formatDivorceSessionToAosCaseData;
+        this.formatDivorceSessionToAosCaseDataTask = formatDivorceSessionToAosCaseDataTask;
         this.submitRespondentAosCase = submitRespondentAosCase;
     }
 
     public Map<String, Object> run(Map<String, Object> payload, String authToken, String caseId) throws WorkflowException {
         return this.execute(
             new Task[] {
-                formatDivorceSessionToAosCaseData,
+                formatDivorceSessionToAosCaseDataTask,
                 submitRespondentAosCase
             },
             payload,

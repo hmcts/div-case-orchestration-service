@@ -10,7 +10,7 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
-public class FormatDivorceSessionToCaseData implements Task<Map<String, Object>> {
+public class FormatDivorceSessionToCaseDataTask implements Task<Map<String, Object>> {
 
     private final DataMapTransformer dataMapTransformer;
 
