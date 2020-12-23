@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -13,15 +13,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NEW_AMENDED_PETITION_DRAFT_KEY;
 
 @Component
-public class CreateAmendPetitionDraft implements Task<Map<String, Object>> {
+@RequiredArgsConstructor
+public class CreateAmendPetitionDraftTask implements Task<Map<String, Object>> {
 
     private final CaseMaintenanceClient caseMaintenanceClient;
-
-    @Autowired
-    public CreateAmendPetitionDraft(CaseMaintenanceClient caseMaintenanceClient) {
-        this.caseMaintenanceClient = caseMaintenanceClient;
-    }
-
 
     @Override
     public Map<String, Object> execute(TaskContext context,
@@ -30,6 +25,7 @@ public class CreateAmendPetitionDraft implements Task<Map<String, Object>> {
             .amendPetition(context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString());
 
         context.setTransientObject(NEW_AMENDED_PETITION_DRAFT_KEY, amendDraft);
+
         // return empty as next step (update case state AmendPetition) needs no data (empty)
         return new HashMap<>();
     }

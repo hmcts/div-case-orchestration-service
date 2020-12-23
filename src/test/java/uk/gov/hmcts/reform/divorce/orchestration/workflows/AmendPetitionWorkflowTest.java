@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddCourtsToPayloadTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CreateAmendPetitionDraft;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CreateAmendPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 
 import java.util.Arrays;
@@ -33,7 +33,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class AmendPetitionWorkflowTest {
 
     @Mock
-    private CreateAmendPetitionDraft amendPetitionDraft;
+    private CreateAmendPetitionDraftTask amendPetitionDraft;
 
     @Mock
     private UpdateCaseInCCD updateCaseInCCD;
