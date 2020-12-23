@@ -20,13 +20,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PAYLO
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CaseDataToDivorceFormatterUTest {
+public class CaseDataToDivorceFormatterTaskUTest {
 
     @Mock
     private CaseFormatterClient caseFormatterClient;
 
     @InjectMocks
-    private CaseDataToDivorceFormatter classUnderTest;
+    private CaseDataToDivorceFormatterTask classUnderTest;
 
     @Test
     public void whenFormatData_thenReturnExpectedData() {

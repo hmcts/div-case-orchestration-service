@@ -12,7 +12,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 @RequiredArgsConstructor
-public class CaseDataToDivorceFormatter implements Task<Map<String, Object>> {
+public class CaseDataToDivorceFormatterTask implements Task<Map<String, Object>> {
     private final CaseFormatterClient caseFormatterClient;
 
     @Override

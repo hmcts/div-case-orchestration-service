@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddCourtsToPayloadTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataToDivorceFormatter;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataToDivorceFormatterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveAosCase;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.GeneralOrdersFilterTask;
 
@@ -45,7 +45,7 @@ public class RetrieveAosCaseWorkflowUTest {
     private GeneralOrdersFilterTask generalOrdersFilterTask;
 
     @Mock
-    private CaseDataToDivorceFormatter caseDataToDivorceFormatter;
+    private CaseDataToDivorceFormatterTask caseDataToDivorceFormatterTask;
 
     @Mock
     private AddCourtsToPayloadTask addCourtsToPayloadTask;
@@ -69,7 +69,7 @@ public class RetrieveAosCaseWorkflowUTest {
 
                 return fetchedCaseData;
             });
-        mockTasksExecution(fetchedCaseData, generalOrdersFilterTask, caseDataToDivorceFormatter, addCourtsToPayloadTask);
+        mockTasksExecution(fetchedCaseData, generalOrdersFilterTask, caseDataToDivorceFormatterTask, addCourtsToPayloadTask);
 
         Map<String, Object> returnedCaseData = classUnderTest.run(AUTH_TOKEN);
 
@@ -81,7 +81,7 @@ public class RetrieveAosCaseWorkflowUTest {
         verify(retrieveAosCase).execute(taskContextArgumentCaptor.capture(), isNull());
         TaskContext originatingTaskContext = taskContextArgumentCaptor.getValue();
         assertThat(originatingTaskContext.getTransientObject(AUTH_TOKEN_JSON_KEY), is(AUTH_TOKEN));
-        verifyTasksCalledInOrder(fetchedCaseData, generalOrdersFilterTask, caseDataToDivorceFormatter, addCourtsToPayloadTask);
+        verifyTasksCalledInOrder(fetchedCaseData, generalOrdersFilterTask, caseDataToDivorceFormatterTask, addCourtsToPayloadTask);
     }
 
 }

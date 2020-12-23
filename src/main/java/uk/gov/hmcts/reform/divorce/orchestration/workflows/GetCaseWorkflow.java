@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddCourtsToPayloadTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataToDivorceFormatter;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataToDivorceFormatterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCase;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.GeneralOrdersFilterTask;
 
@@ -24,7 +24,7 @@ public class GetCaseWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final GetCase getCase;
     private final GeneralOrdersFilterTask generalOrdersFilterTask;
-    private final CaseDataToDivorceFormatter caseDataToDivorceFormatter;
+    private final CaseDataToDivorceFormatterTask caseDataToDivorceFormatterTask;
     private final AddCourtsToPayloadTask addCourtsToPayloadTask;
 
     public Map<String, Object> run(String authToken) throws WorkflowException {
@@ -32,7 +32,7 @@ public class GetCaseWorkflow extends DefaultWorkflow<Map<String, Object>> {
             new Task[] {
                 getCase,
                 generalOrdersFilterTask,
-                caseDataToDivorceFormatter,
+                caseDataToDivorceFormatterTask,
                 addCourtsToPayloadTask
             },
             null,
