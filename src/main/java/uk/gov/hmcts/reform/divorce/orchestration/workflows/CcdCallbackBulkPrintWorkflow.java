@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AosPackDueDateSetterTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStoreTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ServiceMethodValidationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoRespondentAosPackPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.RespondentAosPackPrinterTask;
@@ -31,7 +31,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final ServiceMethodValidationTask serviceMethodValidationTask;
-    private final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
+    private final FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask;
     private final RespondentAosPackPrinterTask respondentAosPackPrinterTask;
     private final CoRespondentAosPackPrinterTask coRespondentAosPackPrinterTask;
     private final AosPackDueDateSetterTask aosPackDueDateSetterTask;
@@ -44,7 +44,7 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
         final List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
         tasks.add(serviceMethodValidationTask);
-        tasks.add(fetchPrintDocsFromDmStore);
+        tasks.add(fetchPrintDocsFromDmStoreTask);
         tasks.add(respondentAosPackPrinterTask);
         if (caseDataUtils.isAdulteryCaseWithNamedCoRespondent(caseDetails.getCaseData())) {
             tasks.add(coRespondentAosPackPrinterTask);

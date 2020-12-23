@@ -24,7 +24,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AosPackDueDateSetterTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStoreTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MarkJourneyAsOffline;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MultipleDocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
@@ -117,7 +117,7 @@ public class IssueAosPackOfflineWorkflowTest {
     private AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     @Mock
-    private FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
+    private FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask;
 
     @Mock
     private BulkPrinterTask bulkPrinterTask;
@@ -149,7 +149,7 @@ public class IssueAosPackOfflineWorkflowTest {
         payload.put("testKey", "testValue");
         when(documentsGenerationTask.execute(any(), any())).thenReturn(singletonMap("returnedKey1", "returnedValue1"));
         when(addNewDocumentsToCaseDataTask.execute(any(), any())).thenReturn(singletonMap("returnedKey2", "returnedValue2"));
-        when(fetchPrintDocsFromDmStore.execute(any(), any())).thenReturn(singletonMap("returnedKey3", "returnedValue3"));
+        when(fetchPrintDocsFromDmStoreTask.execute(any(), any())).thenReturn(singletonMap("returnedKey3", "returnedValue3"));
         when(bulkPrinterTask.execute(any(), any())).thenReturn(singletonMap("returnedKey4", "returnedValue4"));
         when(markJourneyAsOffline.execute(any(), any())).thenReturn(singletonMap("returnedKey5", "returnedValue5"));
         when(aosPackDueDateSetterTask.execute(any(), any())).thenReturn(singletonMap("returnedKey6", "returnedValue6"));
@@ -414,7 +414,7 @@ public class IssueAosPackOfflineWorkflowTest {
             Matchers.<String, Object>hasEntry("returnedKey1", "returnedValue1")
         )));
 
-        verify(fetchPrintDocsFromDmStore).execute(any(), argThat(allOf(
+        verify(fetchPrintDocsFromDmStoreTask).execute(any(), argThat(allOf(
             Matchers.<String, Object>hasEntry("returnedKey2", "returnedValue2")
         )));
 

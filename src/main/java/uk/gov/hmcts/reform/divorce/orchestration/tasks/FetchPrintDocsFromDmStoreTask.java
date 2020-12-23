@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.rest.RestRequest;
 import org.springframework.http.HttpEntity;
@@ -29,27 +30,19 @@ import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENTS_GENERATED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_AUTHORIZATION_HEADER;
 
 @Component
 @Slf4j
-public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
+@RequiredArgsConstructor
+public class FetchPrintDocsFromDmStoreTask implements Task<Map<String, Object>> {
 
     private static final String CASEWORKER_DIVORCE = "caseworker-divorce";
-
     private static final String USER_ROLES = "user-roles";
 
-    private static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
-
-    private AuthTokenGenerator authTokenGenerator;
-
+    private final AuthTokenGenerator authTokenGenerator;
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
-
-    public FetchPrintDocsFromDmStore(AuthTokenGenerator authTokenGenerator, RestTemplate restTemplate, ObjectMapper objectMapper) {
-        this.authTokenGenerator = authTokenGenerator;
-        this.restTemplate = restTemplate;
-        this.objectMapper = objectMapper;
-    }
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
@@ -57,6 +50,7 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
         Map<String, GeneratedDocumentInfo> generatedDocumentInfoList = extractGeneratedDocumentList(caseData);
         populateDocumentBytes(context, generatedDocumentInfoList);
         context.setTransientObject(DOCUMENTS_GENERATED, generatedDocumentInfoList);
+
         return caseData;
     }
 
@@ -89,7 +83,7 @@ public class FetchPrintDocsFromDmStore implements Task<Map<String, Object>> {
         CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
         for (GeneratedDocumentInfo generatedDocumentInfo : generatedDocumentsInfo.values()) {
             HttpHeaders headers = new HttpHeaders();
-            headers.set(SERVICE_AUTHORIZATION, authTokenGenerator.generate());
+            headers.set(SERVICE_AUTHORIZATION_HEADER, authTokenGenerator.generate());
             headers.set(USER_ROLES, CASEWORKER_DIVORCE);
             HttpEntity<RestRequest> httpEntity = new HttpEntity<>(headers);
 
