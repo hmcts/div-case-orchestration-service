@@ -44,7 +44,7 @@ public class GetCaseTaskWithIdMapFlowTest {
     private AuthUtil authUtil;
 
     @InjectMocks
-    private GetCaseWithIdMapFlow classUnderTest;
+    private GetCaseWithIdMapFlowTask classUnderTest;
 
     @Test
     public void givenNoCaseExists_whenGetCase_thenThrowTaskException() throws TaskException {

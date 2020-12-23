@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -16,16 +16,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @Component
-public class GetCaseWithIdMapFlow implements Task<Map<String, Object>> {
+@RequiredArgsConstructor
+public class GetCaseWithIdMapFlowTask implements Task<Map<String, Object>> {
+
     private final CaseMaintenanceClient caseMaintenanceClient;
-
     private final AuthUtil authUtil;
-
-    @Autowired
-    public GetCaseWithIdMapFlow(CaseMaintenanceClient caseMaintenanceClient, AuthUtil authUtil) {
-        this.caseMaintenanceClient = caseMaintenanceClient;
-        this.authUtil = authUtil;
-    }
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {

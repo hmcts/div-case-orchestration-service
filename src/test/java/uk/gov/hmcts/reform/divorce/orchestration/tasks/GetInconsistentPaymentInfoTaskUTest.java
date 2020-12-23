@@ -60,7 +60,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SUCCESS_STATUS;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GetInconsistentPaymentInfoUTest {
+public class GetInconsistentPaymentInfoTaskUTest {
 
     private static final String PAYMENT_EXTERNAL_REFERENCE = "06kd1v30vm45hqvggphdjqbeqa";
     private static final String PAYMENT_REFERENCE = "RC-1547-0733-1813-9545";
@@ -72,7 +72,7 @@ public class GetInconsistentPaymentInfoUTest {
     private static final String PAYLOADS_PAYMENT_FROM_PAYMENT_JSON = "/jsonExamples/payloads/paymentSystemPaid.json";
 
     @InjectMocks
-    private GetInconsistentPaymentInfo target;
+    private GetInconsistentPaymentInfoTask target;
 
     @Mock
     private PaymentClient paymentClientMock;

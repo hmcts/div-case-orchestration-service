@@ -50,7 +50,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class GetInconsistentPaymentInfo implements Task<Map<String, Object>> {
+public class GetInconsistentPaymentInfoTask implements Task<Map<String, Object>> {
 
     private final PaymentClient paymentClient;
     private final AuthTokenGenerator serviceAuthGenerator;

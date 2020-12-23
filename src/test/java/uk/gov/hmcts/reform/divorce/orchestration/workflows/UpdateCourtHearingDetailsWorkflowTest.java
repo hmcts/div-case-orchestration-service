@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithIdMapFlow;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithIdMapFlowTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCourtHearingDetailsFromBulkCaseTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 
@@ -30,7 +30,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class UpdateCourtHearingDetailsWorkflowTest {
 
     @Mock
-    private GetCaseWithIdMapFlow getCaseWithIdMapFlow;
+    private GetCaseWithIdMapFlowTask getCaseWithIdMapFlowTask;
 
     @Mock
     private SetCourtHearingDetailsFromBulkCaseTask setCourtHearingDetailsFromBulkCaseTask;
@@ -44,7 +44,7 @@ public class UpdateCourtHearingDetailsWorkflowTest {
     @Test
     public void setCourtHearingDetailsFromBulkCase_thenProceedAsExpected() throws WorkflowException {
         final Task[] tasks = new Task[] {
-            getCaseWithIdMapFlow,
+            getCaseWithIdMapFlowTask,
             setCourtHearingDetailsFromBulkCaseTask,
             updateCaseInCCD
         };

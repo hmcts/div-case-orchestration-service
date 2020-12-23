@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.RetryableBulkCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithIdMapFlow;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithIdMapFlowTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCourtHearingDetailsFromBulkCaseTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 
@@ -23,7 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @AllArgsConstructor
 public class UpdateCourtHearingDetailsWorkflow extends RetryableBulkCaseWorkflow {
 
-    private final GetCaseWithIdMapFlow getCaseWithIdMapFlow;
+    private final GetCaseWithIdMapFlowTask getCaseWithIdMapFlowTask;
     private final SetCourtHearingDetailsFromBulkCaseTask setCourtHearingDetailsFromBulkCaseTask;
     private final UpdateCaseInCCD updateCaseInCCD;
 
@@ -33,7 +33,7 @@ public class UpdateCourtHearingDetailsWorkflow extends RetryableBulkCaseWorkflow
 
         return this.execute(
                 new Task[] {
-                    getCaseWithIdMapFlow,
+                    getCaseWithIdMapFlowTask,
                     setCourtHearingDetailsFromBulkCaseTask,
                     updateCaseInCCD
                 },
