@@ -18,7 +18,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.T
 public class MarkJourneyAsOffline implements Task<Map<String, Object>> {
 
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> payload)  {
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) {
         DivorceParty divorceParty = context.getTransientObject(DIVORCE_PARTY);
 
         if (RESPONDENT.equals(divorceParty)) {

@@ -34,8 +34,8 @@ public class LinkRespondentTask implements Task<UserDetails> {
     private String getLetterHolderId(TaskContext context) {
         boolean isRespondent = context.getTransientObject(IS_RESPONDENT);
 
-        return isRespondent ?
-            context.getTransientObject(RESPONDENT_LETTER_HOLDER_ID) :
-            context.getTransientObject(CO_RESPONDENT_LETTER_HOLDER_ID);
+        return isRespondent
+            ? context.getTransientObject(RESPONDENT_LETTER_HOLDER_ID)
+            : context.getTransientObject(CO_RESPONDENT_LETTER_HOLDER_ID);
     }
 }
