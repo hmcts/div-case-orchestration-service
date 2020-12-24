@@ -42,9 +42,9 @@ public class LinkRespondentTaskTest {
     }
 
     private void runTestForCaseRole(boolean isRespondent) {
-        String letterHolderId;
-        UserDetails userDetails = UserDetails.builder().build();
-        TaskContext taskContext = contextWithToken();
+        final String letterHolderId;
+        final UserDetails userDetails = UserDetails.builder().build();
+        final TaskContext taskContext = contextWithToken();
 
         if (isRespondent) {
             letterHolderId = RESPONDENT_LETTER_HOLDER_ID;
