@@ -21,7 +21,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetCoRespondentLinkingF
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetRespondentLinkingFields;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetIssueDate;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetIssueDateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
@@ -46,7 +46,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class IssueEventWorkflowTest {
 
     @Mock
-    private SetIssueDate setIssueDate;
+    private SetIssueDateTask setIssueDateTask;
 
     @Mock
     private ValidateCaseDataTask validateCaseDataTask;
@@ -118,7 +118,7 @@ public class IssueEventWorkflowTest {
 
         //Given
         when(validateCaseDataTask.execute(context, payload)).thenReturn(payload);
-        when(setIssueDate.execute(context, payload)).thenReturn(payload);
+        when(setIssueDateTask.execute(context, payload)).thenReturn(payload);
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
@@ -143,7 +143,7 @@ public class IssueEventWorkflowTest {
 
         //Given
         when(validateCaseDataTask.execute(context, payload)).thenReturn(payload);
-        when(setIssueDate.execute(context, payload)).thenReturn(payload);
+        when(setIssueDateTask.execute(context, payload)).thenReturn(payload);
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
@@ -169,7 +169,7 @@ public class IssueEventWorkflowTest {
 
         //Given
         when(validateCaseDataTask.execute(context, payload)).thenReturn(payload);
-        when(setIssueDate.execute(context, payload)).thenReturn(payload);
+        when(setIssueDateTask.execute(context, payload)).thenReturn(payload);
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
         when(respondentLetterGenerator.execute(context, payload)).thenReturn(payload);
@@ -193,7 +193,7 @@ public class IssueEventWorkflowTest {
     public void givenGenerateAosInvitationIsTrueAndIsNotServiceCentre_whenRun_thenProceedAsExpected() throws WorkflowException {
         //Given
         when(validateCaseDataTask.execute(context, payload)).thenReturn(payload);
-        when(setIssueDate.execute(context, payload)).thenReturn(payload);
+        when(setIssueDateTask.execute(context, payload)).thenReturn(payload);
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(addNewDocumentsToCaseDataTask.execute(context, payload)).thenReturn(payload);
         when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
@@ -215,7 +215,7 @@ public class IssueEventWorkflowTest {
     public void givenGenerateAosInvitationIsFalse_whenRun_thenProceedAsExpected() throws WorkflowException {
         //Given
         when(validateCaseDataTask.execute(context, payload)).thenReturn(payload);
-        when(setIssueDate.execute(context, payload)).thenReturn(payload);
+        when(setIssueDateTask.execute(context, payload)).thenReturn(payload);
         when(petitionGenerator.execute(context, payload)).thenReturn(payload);
         when(addNewDocumentsToCaseDataTask.execute(context, payload)).thenReturn(payload);
         when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);

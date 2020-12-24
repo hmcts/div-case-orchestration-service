@@ -11,7 +11,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ISSUE_DATE;
 
 @Component
-public class SetIssueDate implements Task<Map<String, Object>> {
+public class SetIssueDateTask implements Task<Map<String, Object>> {
 
     @Autowired
     private CcdUtil ccdUtil;

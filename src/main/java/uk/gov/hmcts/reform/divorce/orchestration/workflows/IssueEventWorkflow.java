@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetCoRespondentLinkingF
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetRespondentLinkingFields;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetIssueDate;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetIssueDateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
@@ -36,7 +36,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RequiredArgsConstructor
 public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final SetIssueDate setIssueDate;
+    private final SetIssueDateTask setIssueDateTask;
     private final ValidateCaseDataTask validateCaseDataTask;
     private final PetitionGenerator petitionGenerator;
     private final RespondentPinGenerator respondentPinGenerator;
@@ -55,7 +55,7 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
         tasks.add(validateCaseDataTask);
-        tasks.add(setIssueDate);
+        tasks.add(setIssueDateTask);
         tasks.add(petitionGenerator);
 
         final CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();

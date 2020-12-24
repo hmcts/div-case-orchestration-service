@@ -15,12 +15,12 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ISSUE_DATE;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SetIssueDateTest {
+public class SetIssueDateTaskTest {
 
     private static final String EXPECTED_DATE = "2019-05-11";
 
     @InjectMocks
-    private SetIssueDate setIssueDate;
+    private SetIssueDateTask setIssueDateTask;
 
     @Mock
     private CcdUtil ccdUtil;
@@ -34,7 +34,7 @@ public class SetIssueDateTest {
     public void testGenerateIssueDateSetsDateToNow() {
         HashMap<String, Object> payload = new HashMap<>();
 
-        setIssueDate.execute(null, payload);
+        setIssueDateTask.execute(null, payload);
 
         assertEquals(EXPECTED_DATE, payload.get(ISSUE_DATE));
     }
