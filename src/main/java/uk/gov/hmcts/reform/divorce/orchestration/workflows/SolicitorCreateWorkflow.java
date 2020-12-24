@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetClaimCostsFrom;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetClaimCostsFromTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
 
 import java.util.ArrayList;
@@ -30,12 +30,12 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
     private final SetSolicitorCourtDetailsTask setSolicitorCourtDetailsTask;
     private final AddMiniPetitionDraftTask addMiniPetitionDraftTask;
     private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
-    private final SetClaimCostsFrom setClaimCostsFrom;
+    private final SetClaimCostsFromTask setClaimCostsFromTask;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
         final List<Task<Map<String, Object>>> tasks = new ArrayList<>();
         if (isPetitionerClaimingCostsAndClaimCostsFromIsEmptyIn(caseDetails)) {
-            tasks.add(setClaimCostsFrom);
+            tasks.add(setClaimCostsFromTask);
         }
         tasks.add(setSolicitorCourtDetailsTask);
         tasks.add(addMiniPetitionDraftTask);

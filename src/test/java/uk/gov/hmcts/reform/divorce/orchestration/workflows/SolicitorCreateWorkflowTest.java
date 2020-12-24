@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetClaimCostsFrom;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetClaimCostsFromTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
 
 import java.util.Collections;
@@ -42,7 +42,7 @@ public class SolicitorCreateWorkflowTest {
     SetSolicitorCourtDetailsTask setSolicitorCourtDetailsTask;
 
     @Mock
-    SetClaimCostsFrom setClaimCostsFrom;
+    SetClaimCostsFromTask setClaimCostsFromTask;
 
     @InjectMocks
     SolicitorCreateWorkflow solicitorCreateWorkflow;
@@ -80,15 +80,15 @@ public class SolicitorCreateWorkflowTest {
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
 
-        when(setClaimCostsFrom.execute(any(), eq(payload))).thenReturn(payload);
+        when(setClaimCostsFromTask.execute(any(), eq(payload))).thenReturn(payload);
         when(setSolicitorCourtDetailsTask.execute(any(), eq(payload))).thenReturn(payload);
         when(addMiniPetitionDraftTask.execute(any(), eq(payload))).thenReturn(payload);
 
         assertEquals(Collections.emptyMap(), solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN));
 
-        InOrder inOrder = inOrder(setClaimCostsFrom, setSolicitorCourtDetailsTask, addMiniPetitionDraftTask, addNewDocumentsToCaseDataTask);
+        InOrder inOrder = inOrder(setClaimCostsFromTask, setSolicitorCourtDetailsTask, addMiniPetitionDraftTask, addNewDocumentsToCaseDataTask);
 
-        inOrder.verify(setClaimCostsFrom).execute(context, payload);
+        inOrder.verify(setClaimCostsFromTask).execute(context, payload);
         inOrder.verify(setSolicitorCourtDetailsTask).execute(context, payload);
         inOrder.verify(addMiniPetitionDraftTask).execute(context, payload);
         inOrder.verify(addNewDocumentsToCaseDataTask).execute(context, payload);

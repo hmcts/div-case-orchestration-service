@@ -13,18 +13,18 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_FROM_CCD_FIELD;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SetClaimCostsFromTest {
+public class SetClaimCostsFromTaskTest {
 
     private static final String EXPECTED_VALUE = DIVORCE_COSTS_CLAIM_FROM_CCD_CODE_FOR_RESPONDENT;
 
     @InjectMocks
-    private SetClaimCostsFrom setClaimCostsFrom;
+    private SetClaimCostsFromTask setClaimCostsFromTask;
 
     @Test
     public void testSetsClaimCostsFromToRespondent() {
         HashMap<String, Object> payload = new HashMap<>();
 
-        setClaimCostsFrom.execute(null, payload);
+        setClaimCostsFromTask.execute(null, payload);
 
         List<Object> result = (List<Object>) payload.get(DIVORCE_COSTS_CLAIM_FROM_CCD_FIELD);
 
