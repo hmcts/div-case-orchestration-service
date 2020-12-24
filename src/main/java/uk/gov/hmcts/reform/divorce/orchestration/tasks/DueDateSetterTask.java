@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generics.DateFieldSetupTask;
 import uk.gov.hmcts.reform.divorce.utils.DateUtils;
@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
-@Service
+@Component
 public abstract class DueDateSetterTask extends DateFieldSetupTask {
 
     protected abstract Integer getDueDateOffsetInDays();
