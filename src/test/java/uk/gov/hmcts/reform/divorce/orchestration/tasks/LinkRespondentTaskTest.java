@@ -17,34 +17,53 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithToken;
 
 @RunWith(MockitoJUnitRunner.class)
-public class LinkRespondentUTest {
+public class LinkRespondentTaskTest {
+
+    private static boolean RESPONDENT = true;
+    private static boolean CO_RESPONDENT = false;
 
     @Mock
     private CaseMaintenanceClient caseMaintenanceClient;
 
     @InjectMocks
-    private LinkRespondent classUnderTest;
+    private LinkRespondentTask classUnderTest;
 
     @Test
-    public void whenExecute_thenProceedAsExpected() {
-        final UserDetails userDetails = UserDetails.builder().build();
-        final TaskContext taskContext = new DefaultTaskContext();
+    public void givenLetterHolderIsRespondent_whenExecute_thenProceedAsExpected() {
+        runTestForCaseRole(RESPONDENT);
+    }
 
-        taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
-        taskContext.setTransientObject(RESPONDENT_LETTER_HOLDER_ID, RESPONDENT_LETTER_HOLDER_ID);
-        taskContext.setTransientObject(IS_RESPONDENT, true);
+    @Test
+    public void givenLetterHolderIsCoRespondent_whenExecute_thenProceedAsExpected() {
+        runTestForCaseRole(CO_RESPONDENT);
+    }
 
-        doNothing().when(caseMaintenanceClient).linkRespondent(AUTH_TOKEN, TEST_CASE_ID, RESPONDENT_LETTER_HOLDER_ID);
+    private void runTestForCaseRole(boolean isRespondent) {
+        String letterHolderId;
+        UserDetails userDetails = UserDetails.builder().build();
+        TaskContext taskContext = contextWithToken();
+
+        if (isRespondent) {
+            letterHolderId = RESPONDENT_LETTER_HOLDER_ID;
+            taskContext.setTransientObject(RESPONDENT_LETTER_HOLDER_ID, letterHolderId);
+        } else {
+            letterHolderId = CO_RESPONDENT_LETTER_HOLDER_ID;
+            taskContext.setTransientObject(CO_RESPONDENT_LETTER_HOLDER_ID, letterHolderId);
+        }
+        taskContext.setTransientObject(IS_RESPONDENT, isRespondent);
+
+        doNothing().when(caseMaintenanceClient).linkRespondent(AUTH_TOKEN, TEST_CASE_ID, letterHolderId);
 
         UserDetails actual = classUnderTest.execute(taskContext, userDetails);
 
         assertEquals(userDetails, actual);
 
-        verify(caseMaintenanceClient).linkRespondent(AUTH_TOKEN, TEST_CASE_ID, RESPONDENT_LETTER_HOLDER_ID);
+        verify(caseMaintenanceClient).linkRespondent(AUTH_TOKEN, TEST_CASE_ID, letterHolderId);
     }
 }

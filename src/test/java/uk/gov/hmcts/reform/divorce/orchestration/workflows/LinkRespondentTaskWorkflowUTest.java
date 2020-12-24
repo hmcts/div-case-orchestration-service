@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithIdTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.LinkRespondent;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.LinkRespondentTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrievePinUserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UnlinkRespondent;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateRespondentDetails;
@@ -29,13 +29,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UPDATE_RESPONDENT_DATA_ERROR_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class LinkRespondentWorkflowUTest {
+public class LinkRespondentTaskWorkflowUTest {
     @Mock
     private GetCaseWithIdTask getCaseWithId;
     @Mock
     private RetrievePinUserDetails retrievePinUserDetails;
     @Mock
-    private LinkRespondent linkRespondent;
+    private LinkRespondentTask linkRespondentTask;
     @Mock
     private UpdateRespondentDetails updateRespondentDetails;
     @Mock
@@ -50,7 +50,7 @@ public class LinkRespondentWorkflowUTest {
 
         when(getCaseWithId.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(retrievePinUserDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
-        when(linkRespondent.execute(any(), eq(userDetails))).thenReturn(userDetails);
+        when(linkRespondentTask.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(updateRespondentDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
 
         UserDetails actual = classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN);
@@ -58,7 +58,7 @@ public class LinkRespondentWorkflowUTest {
         assertEquals(userDetails, actual);
         verify(getCaseWithId, times(1)).execute(classUnderTest.getContext(), userDetails);
         verify(retrievePinUserDetails, times(1)).execute(classUnderTest.getContext(), userDetails);
-        verify(linkRespondent, times(1)).execute(classUnderTest.getContext(), userDetails);
+        verify(linkRespondentTask, times(1)).execute(classUnderTest.getContext(), userDetails);
         verify(updateRespondentDetails, times(1)).execute(classUnderTest.getContext(), userDetails);
         verify(unlinkRespondent, never()).execute(any(), any());
     }
@@ -69,7 +69,7 @@ public class LinkRespondentWorkflowUTest {
 
         when(getCaseWithId.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(retrievePinUserDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
-        when(linkRespondent.execute(any(), eq(userDetails))).thenReturn(userDetails);
+        when(linkRespondentTask.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(updateRespondentDetails.execute(any(), eq(userDetails))).thenAnswer(invocation -> {
             TaskContext context = invocation.getArgument(0);
             context.setTransientObject(UPDATE_RESPONDENT_DATA_ERROR_KEY, userDetails);
@@ -92,7 +92,7 @@ public class LinkRespondentWorkflowUTest {
 
         when(getCaseWithId.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(retrievePinUserDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
-        when(linkRespondent.execute(any(), eq(userDetails))).thenThrow(new RuntimeException("Error"));
+        when(linkRespondentTask.execute(any(), eq(userDetails))).thenThrow(new RuntimeException("Error"));
 
         try {
             classUnderTest.run(TEST_TOKEN, TEST_CASE_ID, TEST_PIN);
@@ -103,7 +103,7 @@ public class LinkRespondentWorkflowUTest {
 
         verify(getCaseWithId, times(1)).execute(classUnderTest.getContext(), userDetails);
         verify(retrievePinUserDetails, times(1)).execute(classUnderTest.getContext(), userDetails);
-        verify(linkRespondent, times(1)).execute(classUnderTest.getContext(), userDetails);
+        verify(linkRespondentTask, times(1)).execute(classUnderTest.getContext(), userDetails);
         verify(updateRespondentDetails, never()).execute(any(), any());
         verify(unlinkRespondent, never()).execute(any(), any());
     }

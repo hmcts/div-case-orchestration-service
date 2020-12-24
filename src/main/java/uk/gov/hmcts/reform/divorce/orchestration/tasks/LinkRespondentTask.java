@@ -15,15 +15,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 @RequiredArgsConstructor
-public class LinkRespondent implements Task<UserDetails> {
+public class LinkRespondentTask implements Task<UserDetails> {
     private final CaseMaintenanceClient caseMaintenanceClient;
 
     @Override
     public UserDetails execute(TaskContext context, UserDetails payLoad) {
-        boolean isRespondent = context.getTransientObject(IS_RESPONDENT);
-
-        String letterId = isRespondent ? context.getTransientObject(RESPONDENT_LETTER_HOLDER_ID) :
-            context.getTransientObject(CO_RESPONDENT_LETTER_HOLDER_ID);
+        String letterId = getLetterHolderId(context);
 
         caseMaintenanceClient.linkRespondent(
             context.getTransientObject(AUTH_TOKEN_JSON_KEY),
@@ -32,5 +29,13 @@ public class LinkRespondent implements Task<UserDetails> {
         );
 
         return payLoad;
+    }
+
+    private String getLetterHolderId(TaskContext context) {
+        boolean isRespondent = context.getTransientObject(IS_RESPONDENT);
+
+        return isRespondent ?
+            context.getTransientObject(RESPONDENT_LETTER_HOLDER_ID) :
+            context.getTransientObject(CO_RESPONDENT_LETTER_HOLDER_ID);
     }
 }

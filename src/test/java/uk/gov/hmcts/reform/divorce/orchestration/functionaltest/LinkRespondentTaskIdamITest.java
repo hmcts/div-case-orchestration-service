@@ -57,7 +57,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
-public class LinkRespondentIdamITest extends IdamTestSupport {
+public class LinkRespondentTaskIdamITest extends IdamTestSupport {
     private static final String RETRIEVE_AOS_CASE_CONTEXT_PATH = "/casemaintenance/version/1/retrieveAosCase";
     private static final String RETRIEVE_CASE_CONTEXT_PATH = "/casemaintenance/version/1/case/" + TEST_CASE_ID;
     private static final String API_URL = "/link-respondent/" + TEST_CASE_ID + "/" + TEST_PIN;

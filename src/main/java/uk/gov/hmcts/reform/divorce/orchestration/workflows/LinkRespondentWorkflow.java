@@ -8,7 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithIdTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.LinkRespondent;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.LinkRespondentTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrievePinUserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UnlinkRespondent;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateRespondentDetails;
@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class LinkRespondentWorkflow extends DefaultWorkflow<UserDetails> {
     private final GetCaseWithIdTask getCaseWithId;
     private final RetrievePinUserDetails retrievePinUserDetails;
-    private final LinkRespondent linkRespondent;
+    private final LinkRespondentTask linkRespondentTask;
     private final UpdateRespondentDetails updateRespondentDetails;
     private final UnlinkRespondent unlinkRespondent;
 
@@ -37,7 +37,7 @@ public class LinkRespondentWorkflow extends DefaultWorkflow<UserDetails> {
                 new Task[] {
                     getCaseWithId,
                     retrievePinUserDetails,
-                    linkRespondent,
+                    linkRespondentTask,
                     updateRespondentDetails
                 },
                 userDetail,
