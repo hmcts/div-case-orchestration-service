@@ -45,6 +45,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.T
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.BULK_PRINT_LETTER_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.DOCUMENT_TYPES_TO_PRINT;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.template.TemplateUtils.getTemplateId;
 
 @Component
 @AllArgsConstructor

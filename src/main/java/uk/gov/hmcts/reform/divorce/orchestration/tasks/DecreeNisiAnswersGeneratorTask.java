@@ -20,6 +20,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_DN_ANSWERS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.template.TemplateUtils.getTemplateId;
 
 @Component
 public class DecreeNisiAnswersGeneratorTask implements Task<Map<String, Object>> {

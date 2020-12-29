@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetFormattedDnCourtDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.util.template.TemplateUtils;
 
 import java.util.Map;
 import java.util.Optional;
@@ -51,7 +52,7 @@ public class DocumentGenerationWorkflow extends DefaultWorkflow<Map<String, Obje
                                    final String documentType, final String filename) throws WorkflowException {
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
         final String evalTemplateId = getTemplateId(templateId, documentType, caseData);
-        log.debug("For language {}, evaluated template id {}", getLanguagePreference(caseData),evalTemplateId);
+        log.debug("For language {}, evaluated template id {}", getLanguagePreference(caseData), evalTemplateId);
 
         return this.execute(
             new Task[] {setFormattedDnCourtDetails, documentGenerationTask, addNewDocumentsToCaseDataTask},
@@ -70,11 +71,12 @@ public class DocumentGenerationWorkflow extends DefaultWorkflow<Map<String, Obje
 
         if (optionalDocumentType.isPresent()) {
             try {
-                return getTemplateId(documentTemplateService, optionalDocumentType.get(), caseData);
+                return TemplateUtils.getTemplateId(documentTemplateService, optionalDocumentType.get(), caseData);
             } catch (IllegalArgumentException exception) {
-                log.error("Missing template configuration in properties so returning as passed ",exception);
+                log.error("Missing template configuration in properties so returning as passed ", exception);
             }
         }
         return templateId;
     }
+
 }
