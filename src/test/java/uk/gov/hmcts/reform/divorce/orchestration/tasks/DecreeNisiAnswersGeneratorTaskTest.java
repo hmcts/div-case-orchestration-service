@@ -72,11 +72,8 @@ public class DecreeNisiAnswersGeneratorTaskTest {
                 .build();
 
         //given
-        when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN))
-            .thenReturn(expectedDNAnswers);
-
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_ANSWER_TEMPLATE_ID))
-                .thenReturn(DN_ANSWERS_TEMPLATE_ID);
+        when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(expectedDNAnswers);
+        when(documentTemplateService.getTemplateId(payload, DocumentType.DECREE_NISI_ANSWER_TEMPLATE_ID)).thenReturn(DN_ANSWERS_TEMPLATE_ID);
 
         //when
         decreeNisiAnswersGenerator.execute(context, payload);
@@ -106,8 +103,8 @@ public class DecreeNisiAnswersGeneratorTaskTest {
                 .values(ImmutableMap.of(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
                 .build();
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_ANSWER_TEMPLATE_ID))
-                .thenReturn(DN_ANSWERS_TEMPLATE_ID);
+        when(documentTemplateService.getTemplateId(payload, DocumentType.DECREE_NISI_ANSWER_TEMPLATE_ID))
+            .thenReturn(DN_ANSWERS_TEMPLATE_ID);
 
         when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN))
             .thenThrow(FeignException.class);

@@ -53,29 +53,27 @@ public class CoRespondentAnswersGeneratorTest {
         final Map<String, Object> payload = new HashMap<>();
 
         final CaseDetails caseDetails = CaseDetails.builder()
-                .caseData(payload)
-                .build();
+            .caseData(payload)
+            .build();
 
         final TaskContext context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
 
         final GenerateDocumentRequest generateDocumentRequest =
-                GenerateDocumentRequest.builder()
-                        .template(CO_RESPONDENT_ANSWERS_TEMPLATE_NAME)
-                        .values(ImmutableMap.of(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
-                        .build();
+            GenerateDocumentRequest.builder()
+                .template(CO_RESPONDENT_ANSWERS_TEMPLATE_NAME)
+                .values(ImmutableMap.of(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
+                .build();
 
         final GeneratedDocumentInfo expectedRespondentAnswers =
-                GeneratedDocumentInfo.builder()
-                        .documentType(DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS)
-                        .fileName(DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS)
-                        .build();
+            GeneratedDocumentInfo.builder()
+                .documentType(DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS)
+                .fileName(DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS)
+                .build();
 
         //given
-        when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN))
-                .thenReturn(expectedRespondentAnswers);
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.CO_RESPONDENT_ANSWERS))
-                .thenReturn(CO_RESPONDENT_ANSWERS_TEMPLATE_NAME);
+        when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(expectedRespondentAnswers);
+        when(documentTemplateService.getTemplateId(payload, DocumentType.CO_RESPONDENT_ANSWERS)).thenReturn(CO_RESPONDENT_ANSWERS_TEMPLATE_NAME);
 
         //when
         coRespondentAnswersGenerator.execute(context, payload);
@@ -93,25 +91,24 @@ public class CoRespondentAnswersGeneratorTest {
         final Map<String, Object> payload = new HashMap<>();
 
         final CaseDetails caseDetails = CaseDetails.builder()
-                .caseData(payload)
-                .build();
+            .caseData(payload)
+            .build();
 
         final TaskContext context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
 
         final GenerateDocumentRequest generateDocumentRequest =
-                GenerateDocumentRequest.builder()
-                        .template(CO_RESPONDENT_ANSWERS_TEMPLATE_NAME)
-                        .values(ImmutableMap.of(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
-                        .build();
+            GenerateDocumentRequest.builder()
+                .template(CO_RESPONDENT_ANSWERS_TEMPLATE_NAME)
+                .values(ImmutableMap.of(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
+                .build();
 
         //given
-        when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN))
-                .thenThrow(FeignException.class);
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.CO_RESPONDENT_ANSWERS))
-                .thenReturn(CO_RESPONDENT_ANSWERS_TEMPLATE_NAME);
+        when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN)).thenThrow(FeignException.class);
+        when(documentTemplateService.getTemplateId(payload, DocumentType.CO_RESPONDENT_ANSWERS)).thenReturn(CO_RESPONDENT_ANSWERS_TEMPLATE_NAME);
 
         //when
         coRespondentAnswersGenerator.execute(context, payload);
     }
+
 }

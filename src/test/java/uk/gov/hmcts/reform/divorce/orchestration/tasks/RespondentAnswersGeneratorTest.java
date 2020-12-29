@@ -68,11 +68,8 @@ public class RespondentAnswersGeneratorTest {
                 .build();
 
         //given
-        when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN))
-            .thenReturn(expectedRespondentAnswers);
-
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.RESPONDENT_ANSWERS))
-                .thenReturn(DOCUMENT_TYPE_RESPONDENT_ANSWERS);
+        when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(expectedRespondentAnswers);
+        when(documentTemplateService.getTemplateId(payload, DocumentType.RESPONDENT_ANSWERS)).thenReturn(DOCUMENT_TYPE_RESPONDENT_ANSWERS);
 
         //when
         respondentAnswersGenerator.execute(context, payload);
@@ -83,4 +80,5 @@ public class RespondentAnswersGeneratorTest {
 
         verify(documentGeneratorClient).generatePDF(generateDocumentRequest, AUTH_TOKEN);
     }
+
 }

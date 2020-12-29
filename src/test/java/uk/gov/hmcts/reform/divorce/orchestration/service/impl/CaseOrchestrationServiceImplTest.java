@@ -1040,7 +1040,7 @@ public class CaseOrchestrationServiceImplTest {
             CaseDetails.builder().caseData(caseData).build())
             .build();
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
+        when(documentTemplateService.getTemplateId(caseData, DocumentType.DECREE_NISI_TEMPLATE_ID))
             .thenReturn(DECREE_NISI_TEMPLATE_ID);
 
         classUnderTest
@@ -1065,7 +1065,7 @@ public class CaseOrchestrationServiceImplTest {
             CaseDetails.builder().caseData(caseData).build())
             .build();
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
+        when(documentTemplateService.getTemplateId(caseData, DocumentType.DECREE_NISI_TEMPLATE_ID))
             .thenReturn(DECREE_NISI_TEMPLATE_ID);
 
         classUnderTest
@@ -1090,10 +1090,10 @@ public class CaseOrchestrationServiceImplTest {
             CaseDetails.builder().caseData(caseData).build())
             .build();
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
+        when(documentTemplateService.getTemplateId(caseData, DocumentType.DECREE_NISI_TEMPLATE_ID))
             .thenReturn(DECREE_NISI_TEMPLATE_ID);
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.COSTS_ORDER_TEMPLATE_ID))
+        when(documentTemplateService.getTemplateId(caseData, DocumentType.COSTS_ORDER_TEMPLATE_ID))
             .thenReturn(COSTS_ORDER_TEMPLATE_ID);
 
         classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
@@ -1116,9 +1116,9 @@ public class CaseOrchestrationServiceImplTest {
             CaseDetails.builder().caseData(caseData).build())
             .build();
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.COSTS_ORDER_TEMPLATE_ID))
+        when(documentTemplateService.getTemplateId(caseData, DocumentType.COSTS_ORDER_TEMPLATE_ID))
             .thenReturn(COSTS_ORDER_TEMPLATE_ID);
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
+        when(documentTemplateService.getTemplateId(caseData, DocumentType.DECREE_NISI_TEMPLATE_ID))
             .thenReturn(DECREE_NISI_TEMPLATE_ID);
 
         classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
@@ -1141,10 +1141,10 @@ public class CaseOrchestrationServiceImplTest {
             CaseDetails.builder().caseData(caseData).build())
             .build();
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
+        when(documentTemplateService.getTemplateId(caseData, DocumentType.DECREE_NISI_TEMPLATE_ID))
             .thenReturn(DECREE_NISI_TEMPLATE_ID);
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.COSTS_ORDER_TEMPLATE_ID))
+        when(documentTemplateService.getTemplateId(caseData, DocumentType.COSTS_ORDER_TEMPLATE_ID))
             .thenReturn(COSTS_ORDER_TEMPLATE_ID);
 
         classUnderTest
@@ -1180,7 +1180,7 @@ public class CaseOrchestrationServiceImplTest {
             CaseDetails.builder().caseData(caseData).build())
             .build();
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.COSTS_ORDER_TEMPLATE_ID))
+        when(documentTemplateService.getTemplateId(caseData, DocumentType.COSTS_ORDER_TEMPLATE_ID))
             .thenReturn(COSTS_ORDER_TEMPLATE_ID);
 
         when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN,
@@ -1374,10 +1374,10 @@ public class CaseOrchestrationServiceImplTest {
             CaseDetails.builder().caseData(caseData).build())
             .build();
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
+        when(documentTemplateService.getTemplateId(caseData, DocumentType.DECREE_NISI_TEMPLATE_ID))
             .thenReturn(DECREE_NISI_TEMPLATE_ID);
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.COSTS_ORDER_TEMPLATE_ID))
+        when(documentTemplateService.getTemplateId(caseData, DocumentType.COSTS_ORDER_TEMPLATE_ID))
             .thenReturn(COSTS_ORDER_TEMPLATE_ID);
 
         when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN,

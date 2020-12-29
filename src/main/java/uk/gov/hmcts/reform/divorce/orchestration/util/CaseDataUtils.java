@@ -187,7 +187,7 @@ public class CaseDataUtils {
             .orElse(Boolean.FALSE));
     }
 
-    public static LanguagePreference getLanguagePreference(Map<String, Object> caseData) {
+    public static LanguagePreference getLanguagePreference(Map<String, Object> caseData) {//TODO - this can probably be easier
         return Optional.ofNullable(caseData)
             .map(data -> data.get(LANGUAGE_PREFERENCE_WELSH))
             .filter(Objects::nonNull)

@@ -67,14 +67,13 @@ public class PetitionGeneratorTest {
 
         final GenerateDocumentRequest generateDocumentRequest =
             GenerateDocumentRequest.builder()
-                    .template(MINI_PETITION_TEMPLATE_NAME)
-                    .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
-                    .build();
+                .template(MINI_PETITION_TEMPLATE_NAME)
+                .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
+                .build();
 
         //given
         when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(expectedPetition);
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
-                DocumentType.DIVORCE_MINI_PETITION)).thenReturn(MINI_PETITION_TEMPLATE_NAME);
+        when(documentTemplateService.getTemplateId(payload, DocumentType.DIVORCE_MINI_PETITION)).thenReturn(MINI_PETITION_TEMPLATE_NAME);
         //when
         petitionGenerator.execute(context, payload);
 

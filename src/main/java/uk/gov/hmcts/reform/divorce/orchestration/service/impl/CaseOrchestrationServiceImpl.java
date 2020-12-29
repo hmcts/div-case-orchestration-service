@@ -714,13 +714,12 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
 
         if (Objects.nonNull(caseData.get(BULK_LISTING_CASE_ID_FIELD))) {
-            LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
-            String templateId = documentTemplateService.getTemplateId(languagePreference, DocumentType.DECREE_NISI_TEMPLATE_ID);
+            String templateId = documentTemplateService.getTemplateId(caseData, DocumentType.DECREE_NISI_TEMPLATE_ID);
             caseData.putAll(documentGenerationWorkflow.run(ccdCallbackRequest, authToken,
                 templateId, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME));
 
             if (isPetitionerClaimingCosts(caseData)) {
-                templateId = documentTemplateService.getTemplateId(languagePreference, DocumentType.COSTS_ORDER_TEMPLATE_ID);
+                templateId = documentTemplateService.getTemplateId(caseData, DocumentType.COSTS_ORDER_TEMPLATE_ID);
 
                 // DocumentType is clear enough to use as the file name
                 caseData.putAll(documentGenerationWorkflow.run(ccdCallbackRequest, authToken,

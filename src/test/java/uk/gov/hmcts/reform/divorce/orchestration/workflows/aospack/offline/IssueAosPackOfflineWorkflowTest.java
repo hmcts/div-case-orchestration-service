@@ -14,7 +14,6 @@ import uk.gov.hmcts.reform.divorce.model.parties.DivorceParty;
 import uk.gov.hmcts.reform.divorce.orchestration.config.IssueAosPackOfflineDocuments;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentGenerationRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts;
@@ -199,10 +198,10 @@ public class IssueAosPackOfflineWorkflowTest {
     public void testTasksAreCalledWithTheCorrectParams_ForRespondent_ForTwoYearSeparation() throws WorkflowException, TaskException {
         caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS.getValue());
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
+        when(documentTemplateService.getTemplateId(caseDetails.getCaseData(),
                 DocumentType.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID))
                 .thenReturn(RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID);
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
+        when(documentTemplateService.getTemplateId(caseDetails.getCaseData(),
                 DocumentType.AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID))
                 .thenReturn(RESPONDENT_TWO_YEAR_SEPARATION_AOS_OFFLINE_FORM_TEMPLATE_ID);
 
@@ -226,13 +225,13 @@ public class IssueAosPackOfflineWorkflowTest {
     }
 
     @Test
-    public void testTasksAreCalledWithTheCorrectParams_ForRespondent_ForFiveYearSeparation() throws WorkflowException, TaskException {
+    public void testTasksAreCalledWithTheCorrectParams_ForRespondent_ForFiveYearSeparation() throws WorkflowException, TaskException {//TODO - these tests are quite repetitive - maybe I can refactor them
         caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, SEPARATION_FIVE_YEARS.getValue());
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
+        when(documentTemplateService.getTemplateId(caseDetails.getCaseData(),
                 DocumentType.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID))
                 .thenReturn(RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID);
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
+        when(documentTemplateService.getTemplateId(caseDetails.getCaseData(),
                 DocumentType.AOS_OFFLINE_FIVE_YEAR_SEPARATION_TEMPLATE_ID))
                 .thenReturn(RESPONDENT_FIVE_YEAR_SEPARATION_FORM_TEMPLATE_ID);
 
@@ -259,10 +258,10 @@ public class IssueAosPackOfflineWorkflowTest {
     public void testTasksAreCalledWithTheCorrectParams_ForRespondent_ForDesertion() throws WorkflowException, TaskException {
         caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, DESERTION.getValue());
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
+        when(documentTemplateService.getTemplateId(caseDetails.getCaseData(),
                 DocumentType.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID))
                 .thenReturn(RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID);
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
+        when(documentTemplateService.getTemplateId(caseDetails.getCaseData(),
                 DocumentType.AOS_OFFLINE_UNREASONABLE_BEHAVIOUR_AND_DESERTION_TEMPLATE_ID))
                 .thenReturn(RESPONDENT_BEHAVIOUR_DESERTION_FORM_TEMPLATE_ID);
 
@@ -290,10 +289,10 @@ public class IssueAosPackOfflineWorkflowTest {
     public void testTasksAreCalledWithTheCorrectParams_ForRespondent_ForUnreasonableBehaviour() throws WorkflowException, TaskException {
         caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, UNREASONABLE_BEHAVIOUR.getValue());
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
+        when(documentTemplateService.getTemplateId(caseDetails.getCaseData(),
                 DocumentType.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID))
                 .thenReturn(RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID);
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
+        when(documentTemplateService.getTemplateId(caseDetails.getCaseData(),
                 DocumentType.AOS_OFFLINE_UNREASONABLE_BEHAVIOUR_AND_DESERTION_TEMPLATE_ID))
                 .thenReturn(RESPONDENT_BEHAVIOUR_DESERTION_FORM_TEMPLATE_ID);
 
@@ -320,10 +319,10 @@ public class IssueAosPackOfflineWorkflowTest {
     public void testTasksAreCalledWithTheCorrectParams_ForRespondent_ForAdultery() throws WorkflowException, TaskException {
         caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue());
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
+        when(documentTemplateService.getTemplateId(caseDetails.getCaseData(),
                 DocumentType.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID))
                 .thenReturn(RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID);
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
+        when(documentTemplateService.getTemplateId(caseDetails.getCaseData(),
                 DocumentType.AOS_OFFLINE_ADULTERY_RESPONDENT_TEMPLATE_ID))
                 .thenReturn(RESPONDENT_ADULTERY_FORM_TEMPLATE_ID);
 
@@ -361,10 +360,10 @@ public class IssueAosPackOfflineWorkflowTest {
     public void testTasksAreCalledWithTheCorrectParams_ForCoRespondent_ForAdultery() throws WorkflowException, TaskException {
         caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue());
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
+        when(documentTemplateService.getTemplateId(caseDetails.getCaseData(),
                 DocumentType.CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID))
                 .thenReturn(CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID);
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
+        when(documentTemplateService.getTemplateId(caseDetails.getCaseData(),
                 DocumentType.AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID))
                 .thenReturn(CO_RESPONDENT_ADULTERY_FORM_TEMPLATE_ID);
 
