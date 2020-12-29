@@ -8,9 +8,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 import java.util.Map;
 
 public interface Template {
+
     default String getTemplateId(DocumentTemplateService documentTemplateService,
                                  DocumentType documentType, Map<String, Object> caseData) {
         LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
         return documentTemplateService.getTemplateId(languagePreference, documentType);
     }
+
 }

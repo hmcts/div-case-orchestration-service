@@ -17,10 +17,10 @@ public class DocumentGenerator implements Template {
     private AOSPackOfflineConstants documentTypeForm;
     private AOSPackOfflineConstants documentFileName;
 
-    public DocumentGenerationRequest getDocumentGenerationRequest(DocumentTemplateService documentTemplateService,
-                                                                  Map<String, Object> caseData) {
+    public DocumentGenerationRequest getDocumentGenerationRequest(DocumentTemplateService documentTemplateService, Map<String, Object> caseData) {
         String templateId = getTemplateId(documentTemplateService, documentType,
-                caseData);
+            caseData);
         return new DocumentGenerationRequest(templateId, documentTypeForm.getValue(), documentFileName.getValue());
     }
+
 }
