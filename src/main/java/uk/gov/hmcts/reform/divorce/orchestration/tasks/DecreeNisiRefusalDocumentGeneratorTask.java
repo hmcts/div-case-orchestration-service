@@ -47,7 +47,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_FEE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.template.TemplateUtils.getTemplateId;
 
 @Component
 @AllArgsConstructor
@@ -80,19 +79,17 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
 
             Map<String, Object> document = (Map<String, Object>) collectionMember.get(VALUE_KEY);
             document.put(DOCUMENT_TYPE_JSON_KEY, DOCUMENT_TYPE_OTHER);
-            document.put(DOCUMENT_FILENAME_JSON_KEY,newFileName);
+            document.put(DOCUMENT_FILENAME_JSON_KEY, newFileName);
 
             Map<String, Object> documentLink = (Map<String, Object>) document.get(DOCUMENT_LINK_JSON_KEY);
             documentLink.put(DOCUMENT_LINK_FILENAME_JSON_KEY, newFileName.concat(DOCUMENT_EXTENSION));
         });
 
         if (REFUSAL_DECISION_MORE_INFO_VALUE.equalsIgnoreCase((String) caseData.get(REFUSAL_DECISION_CCD_FIELD))) {
-            String templateId = getTemplateId(documentTemplateService,
-                    DocumentType.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID,
-                    caseData);
+            String templateId = documentTemplateService.getTemplateId(caseData, DocumentType.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID);
 
             GeneratedDocumentInfo generatedDocumentInfo = generatePdfDocument(
-                    templateId,
+                templateId,
                 DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE,
                 DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME,
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY),
@@ -108,12 +105,10 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
             Map<String, Object> caseDataToSend = new HashMap<>(caseData);
             caseDataToSend.put(FEE_TO_PAY_JSON_KEY, amendFee.getFormattedFeeAmount());
 
-            String templateId = getTemplateId(documentTemplateService,
-                    DocumentType.DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID,
-                    caseData);
+            String templateId = documentTemplateService.getTemplateId(caseData, DocumentType.DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID);
 
             GeneratedDocumentInfo generatedDocumentInfo = generatePdfDocument(
-                    templateId,
+                templateId,
                 DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE,
                 DECREE_NISI_REFUSAL_REJECTION_DOCUMENT_NAME,
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY),

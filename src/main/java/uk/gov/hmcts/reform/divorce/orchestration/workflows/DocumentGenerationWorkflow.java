@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetFormattedDnCourtDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.util.template.TemplateUtils;
 
 import java.util.Map;
 import java.util.Optional;
@@ -71,7 +70,7 @@ public class DocumentGenerationWorkflow extends DefaultWorkflow<Map<String, Obje
 
         if (optionalDocumentType.isPresent()) {
             try {
-                return TemplateUtils.getTemplateId(documentTemplateService, optionalDocumentType.get(), caseData);
+                return documentTemplateService.getTemplateId(caseData, optionalDocumentType.get());
             } catch (IllegalArgumentException exception) {
                 log.error("Missing template configuration in properties so returning as passed ", exception);
             }

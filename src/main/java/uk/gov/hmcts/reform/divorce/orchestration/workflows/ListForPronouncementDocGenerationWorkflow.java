@@ -27,7 +27,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.template.TemplateUtils.getTemplateId;
 
 @Component
 @RequiredArgsConstructor
@@ -52,9 +51,7 @@ public class ListForPronouncementDocGenerationWorkflow extends DefaultWorkflow<M
         Map<String, Object> caseData = caseDetails.getCaseData();
 
         String judgeName = (String) caseData.get(PRONOUNCEMENT_JUDGE_CCD_FIELD);
-        final String templateId = getTemplateId(documentTemplateService,
-                DocumentType.BULK_LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID,
-                caseData);
+        final String templateId = documentTemplateService.getTemplateId(caseData, DocumentType.BULK_LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID);
 
         List<Task> taskList = new ArrayList<>();
         taskList.add(syncBulkCaseListTask);

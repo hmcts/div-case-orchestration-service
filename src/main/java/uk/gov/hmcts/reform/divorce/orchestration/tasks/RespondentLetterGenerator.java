@@ -23,7 +23,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_INVITATION_FILE_NAME_FORMAT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.template.TemplateUtils.getTemplateId;
 
 @Component
 public class RespondentLetterGenerator implements Task<Map<String, Object>> {
@@ -39,8 +38,7 @@ public class RespondentLetterGenerator implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
-        String templateId = getTemplateId(documentTemplateService, DocumentType.AOS_INVITATION,
-                caseData);
+        String templateId = documentTemplateService.getTemplateId(caseData, DocumentType.AOS_INVITATION);
 
         GeneratedDocumentInfo aosInvitation =
             documentGeneratorClient.generatePDF(
@@ -56,7 +54,7 @@ public class RespondentLetterGenerator implements Task<Map<String, Object>> {
 
         aosInvitation.setDocumentType(DOCUMENT_TYPE_RESPONDENT_INVITATION);
         aosInvitation.setFileName(String.format(RESPONDENT_INVITATION_FILE_NAME_FORMAT,
-                caseDetails.getCaseId()));
+            caseDetails.getCaseId()));
 
         final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context.computeTransientObjectIfAbsent(DOCUMENT_COLLECTION,
             new LinkedHashSet<>());

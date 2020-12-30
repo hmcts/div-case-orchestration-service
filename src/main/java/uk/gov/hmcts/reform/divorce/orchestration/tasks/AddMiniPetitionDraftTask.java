@@ -21,7 +21,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_FMT;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.template.TemplateUtils.getTemplateId;
 
 @Component
 public class AddMiniPetitionDraftTask implements Task<Map<String, Object>> {
@@ -41,8 +40,7 @@ public class AddMiniPetitionDraftTask implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(final TaskContext context, final Map<String, Object> caseData) {
         final CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
-        final String templateId = getTemplateId(documentTemplateService, DocumentType.DIVORCE_DRAFT_MINI_PETITION,
-                caseData);
+        final String templateId = documentTemplateService.getTemplateId(caseData, DocumentType.DIVORCE_DRAFT_MINI_PETITION);
         final GeneratedDocumentInfo generatedDocumentInfo =
             documentGeneratorClient.generateDraftPDF(
                 GenerateDocumentRequest.builder()
@@ -56,7 +54,7 @@ public class AddMiniPetitionDraftTask implements Task<Map<String, Object>> {
         generatedDocumentInfo.setFileName(format(DOCUMENT_FILENAME_FMT, DOCUMENT_NAME, caseDetails.getCaseId()));
 
         final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context
-                .computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new LinkedHashSet<>());
+            .computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new LinkedHashSet<>());
 
         documentCollection.add(generatedDocumentInfo);
 

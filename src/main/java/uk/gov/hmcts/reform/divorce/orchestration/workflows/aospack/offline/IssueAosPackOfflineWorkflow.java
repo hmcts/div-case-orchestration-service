@@ -45,7 +45,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.T
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.BULK_PRINT_LETTER_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.DOCUMENT_TYPES_TO_PRINT;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.template.TemplateUtils.getTemplateId;
 
 @Component
 @AllArgsConstructor
@@ -140,40 +139,32 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
     }
 
     private void updateCORespondentDocumentGenerationRequests(Map<String, Object> caseData,
-                                                           List<DocumentGenerationRequest> documentGenerationRequestList) {
-        String templateId = getTemplateId(documentTemplateService,
-                DocumentType.CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
-                caseData);
-
+                                                              List<DocumentGenerationRequest> documentGenerationRequestList) {
+        String templateId = documentTemplateService.getTemplateId(caseData, DocumentType.CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID);
         documentGenerationRequestList.add(new DocumentGenerationRequest(templateId,
-                CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE.getValue(),
-                CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME.getValue()));
+            CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE.getValue(),
+            CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME.getValue()));
 
-        templateId = getTemplateId(documentTemplateService,
-                DocumentType.AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID,
-                caseData);
-
+        templateId = documentTemplateService.getTemplateId(caseData, DocumentType.AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID);
         documentGenerationRequestList.add(new DocumentGenerationRequest(templateId,
             AOS_OFFLINE_ADULTERY_CO_RESPONDENT_DOCUMENT_TYPE.getValue(),
             AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME.getValue()));
     }
 
     private void updateRespondentDocumentGenerationRequests(String reasonForDivorce, Map<String, Object> caseData,
-                                                                                    List<DocumentGenerationRequest> documentGenerationRequestList) {
-        String templateId = getTemplateId(documentTemplateService,
-                DocumentType.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
-                caseData);
+                                                            List<DocumentGenerationRequest> documentGenerationRequestList) {
+        String templateId = documentTemplateService.getTemplateId(caseData, DocumentType.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID);
 
         documentGenerationRequestList.add(new DocumentGenerationRequest(templateId,
-                RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE.getValue(),
-                RESPONDENT_AOS_INVITATION_LETTER_FILENAME.getValue()));
+            RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE.getValue(),
+            RESPONDENT_AOS_INVITATION_LETTER_FILENAME.getValue()));
 
         log.debug("reasonForDivorce is {}", reasonForDivorce);
         DivorceFacts divorceFact = DivorceFacts.getDivorceFact(reasonForDivorce);
 
         documentGenerationRequestList.add(Optional.ofNullable(
-                issueAosPackOfflineDocuments.getIssueAosPackOffLine().get(divorceFact))
-                .map(documentGen -> documentGen.getDocumentGenerationRequest(documentTemplateService, caseData))
-                .orElseThrow(() -> new IllegalArgumentException(String.format(ERROR_MESSAGE, reasonForDivorce))));
+            issueAosPackOfflineDocuments.getIssueAosPackOffLine().get(divorceFact))
+            .map(documentGen -> documentGen.getDocumentGenerationRequest(documentTemplateService, caseData))
+            .orElseThrow(() -> new IllegalArgumentException(String.format(ERROR_MESSAGE, reasonForDivorce))));
     }
 }

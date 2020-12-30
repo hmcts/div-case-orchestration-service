@@ -21,7 +21,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_COLLECTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_FILE_NAME_FORMAT;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.template.TemplateUtils.getTemplateId;
 
 @Component
 public class PetitionGenerator implements Task<Map<String, Object>> {
@@ -37,18 +36,17 @@ public class PetitionGenerator implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
-        final String templateId = getTemplateId(documentTemplateService, DocumentType.DIVORCE_MINI_PETITION,
-                caseData);
+        final String templateId = documentTemplateService.getTemplateId(caseData, DocumentType.DIVORCE_MINI_PETITION);
 
         GeneratedDocumentInfo miniPetition =
-                documentGeneratorClient.generatePDF(
-                        GenerateDocumentRequest.builder()
-                                .template(templateId)
-                                .values(Collections.singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
-                                        caseDetails))
-                                .build(),
-                    context.getTransientObject(AUTH_TOKEN_JSON_KEY)
-                );
+            documentGeneratorClient.generatePDF(
+                GenerateDocumentRequest.builder()
+                    .template(templateId)
+                    .values(Collections.singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
+                        caseDetails))
+                    .build(),
+                context.getTransientObject(AUTH_TOKEN_JSON_KEY)
+            );
 
         miniPetition.setDocumentType(DOCUMENT_TYPE_PETITION);
         miniPetition.setFileName(String.format(MINI_PETITION_FILE_NAME_FORMAT, caseDetails.getCaseId()));

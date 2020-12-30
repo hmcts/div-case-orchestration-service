@@ -9,11 +9,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.util.template.TemplateUtils.getTemplateId;
-
 @Setter
 @EqualsAndHashCode
-public class DocumentGenerator {//TODO - revisit this
+public class DocumentGenerator {//TODO - revisit this - why is this needed?
 
     private DocumentType documentType;
     private AOSPackOfflineConstants documentTypeForm;
@@ -21,7 +19,7 @@ public class DocumentGenerator {//TODO - revisit this
 
     //TODO - this and template could probably be the same class???
     public DocumentGenerationRequest getDocumentGenerationRequest(DocumentTemplateService documentTemplateService, Map<String, Object> caseData) {
-        String templateId = getTemplateId(documentTemplateService, documentType, caseData);
+        String templateId = documentTemplateService.getTemplateId(caseData, documentType);//TODO - do I still need this? maybe in different way?
         return new DocumentGenerationRequest(templateId, documentTypeForm.getValue(), documentFileName.getValue());
     }
 

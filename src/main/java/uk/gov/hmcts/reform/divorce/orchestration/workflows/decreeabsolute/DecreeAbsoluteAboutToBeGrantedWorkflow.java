@@ -24,7 +24,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.template.TemplateUtils.getTemplateId;
 
 @Component
 public class DecreeAbsoluteAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<String, Object>> {
@@ -43,8 +42,7 @@ public class DecreeAbsoluteAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<
 
     public Map<String, Object> run(final CcdCallbackRequest ccdCallbackRequest, final String authToken) throws WorkflowException {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
-        final String templateId = getTemplateId(documentTemplateService, DocumentType.DECREE_ABSOLUTE_TEMPLATE_ID,
-                caseDetails.getCaseData());
+        final String templateId = documentTemplateService.getTemplateId(caseDetails.getCaseData(), DocumentType.DECREE_ABSOLUTE_TEMPLATE_ID);
 
         return this.execute(
             new Task[] {
