@@ -19,7 +19,7 @@ public class DocumentTemplateService {
     private static final String ERROR_MESSAGE = "No template found for languagePreference %s and template name %s";
     private final DocumentTemplates documentTemplates;
 
-    public String getTemplateId(Map<String, Object> caseData, DocumentType documentType) {//TODO - reconsider name and parameters
+    public String getTemplateId(Map<String, Object> caseData, DocumentType documentType) {
         LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
 
         return Optional.ofNullable(documentTemplates.getTemplates().get(languagePreference).get(documentType.getTemplateName()))
