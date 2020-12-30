@@ -47,8 +47,11 @@ public class DocumentGenerationWorkflow extends DefaultWorkflow<Map<String, Obje
         this.documentTemplateService = documentTemplateService;
     }
 
-    public Map<String, Object> run(final CcdCallbackRequest ccdCallbackRequest, final String authToken, final String templateId,
-                                   final String documentType, final String filename) throws WorkflowException {
+    public Map<String, Object> run(final CcdCallbackRequest ccdCallbackRequest,
+                                   final String authToken,
+                                   final String templateId,//TODO this is used in more than one place as well
+                                   final String documentType, //TODO - why do I need both the templateId and the documentType? - maybe this should be decided before the workflow is called - it would be easier to reuse
+                                   final String filename) throws WorkflowException {
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
         final String evalTemplateId = getTemplateId(templateId, documentType, caseData);
         log.debug("For language {}, evaluated template id {}", getLanguagePreference(caseData), evalTemplateId);
@@ -65,7 +68,7 @@ public class DocumentGenerationWorkflow extends DefaultWorkflow<Map<String, Obje
 
     }
 
-    private String getTemplateId(String templateId, String documentType, Map<String, Object> caseData) {
+    private String getTemplateId(String templateId, String documentType, Map<String, Object> caseData) {//TODO - do we need this? service could return optional (if it makes sense)
         Optional<DocumentType> optionalDocumentType = DocumentType.getEnum(documentType);
 
         if (optionalDocumentType.isPresent()) {

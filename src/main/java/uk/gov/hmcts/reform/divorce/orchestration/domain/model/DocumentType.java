@@ -7,6 +7,7 @@ import java.util.Optional;
 
 @Getter
 public enum DocumentType {
+
     DIVORCE_MINI_PETITION("divorceMiniPetition"),
     DIVORCE_DRAFT_MINI_PETITION("divorceDraftMiniPetition"),
     AOS_INVITATION("aosInvitation"),
@@ -30,18 +31,16 @@ public enum DocumentType {
     RESPONDENT_ANSWERS("respondentAnswers"),
     COE("coe"),
     CASE_LIST_FOR_PRONOUNCEMENT("caseListForPronouncement");
-    
 
-    private final String templateName;
+    private final String templateName;//TODO - templateLogicalName / templateName
 
     DocumentType(String templateName) {
         this.templateName = templateName;
     }
 
-    public static Optional<DocumentType> getEnum(String value) {
+    public static Optional<DocumentType> getEnum(String value) {//TODO - getDocumentTypeByTemplateLogicalName? / getEnum
         return Arrays.stream(DocumentType.values())
             .filter(enumValue -> enumValue.getTemplateName().equals(value)).findAny();
     }
 
 }
-

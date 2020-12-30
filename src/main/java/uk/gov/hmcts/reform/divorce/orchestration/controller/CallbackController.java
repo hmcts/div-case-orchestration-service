@@ -616,6 +616,7 @@ public class CallbackController {
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
 
         try {
+            //TODO - one usage - this generates COE and another document (passed by parameter from CCD) - ideally, this intelligence should be in the service, but the change might not be worth the effort.
             callbackResponseBuilder.data(caseOrchestrationService
                 .handleDocumentGenerationCallback(ccdCallbackRequest, authorizationToken, templateId, documentType, filename));
             log.info("Generating document {} for case {}.", documentType, caseId);
@@ -643,7 +644,7 @@ public class CallbackController {
 
         try {
             callbackResponseBuilder.data(caseOrchestrationService
-                .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, authorizationToken));
+                .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, authorizationToken));//TODO - another usage
             log.info("Generated DN documents for Case ID: {}.", caseId);
         } catch (WorkflowException exception) {
             log.error("DN document generation failed for Case ID: {}", caseId, exception);

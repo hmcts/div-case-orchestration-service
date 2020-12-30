@@ -19,13 +19,11 @@ public class DocumentTemplateService {
     private static final String ERROR_MESSAGE = "No template found for languagePreference %s and template name %s";
     private final DocumentTemplates documentTemplates;
 
-    public String getTemplateId(Map<String, Object> caseData, DocumentType documentType) {
+    public String getTemplateId(Map<String, Object> caseData, DocumentType documentType) {//TODO - could this return an Optional? instead of throwing an exceptions
         LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
-
-        return Optional.ofNullable(documentTemplates.getTemplates().get(languagePreference).get(documentType.getTemplateName()))
-            .orElseThrow(
-                () -> new IllegalArgumentException(String.format(ERROR_MESSAGE, languagePreference.getCode(), documentType.getTemplateName()))
-            );
+        String templateLogicalName = documentType.getTemplateName();
+        return Optional.ofNullable(documentTemplates.getTemplates().get(languagePreference).get(templateLogicalName))
+            .orElseThrow(() -> new IllegalArgumentException(String.format(ERROR_MESSAGE, languagePreference.getCode(), templateLogicalName)));
     }
 
 }
