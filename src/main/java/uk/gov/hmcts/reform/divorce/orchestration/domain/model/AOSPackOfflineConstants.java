@@ -3,7 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.domain.model;
 import lombok.Getter;
 
 @Getter
-public enum AOSPackOfflineConstants {//TODO - this already contains some template info
+public enum AOSPackOfflineConstants {//TODO - this already contains some template info - next PR
 
     RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE("aosinvitationletter-offline-resp"),
     RESPONDENT_AOS_INVITATION_LETTER_FILENAME("aos-invitation-letter-offline-respondent"),

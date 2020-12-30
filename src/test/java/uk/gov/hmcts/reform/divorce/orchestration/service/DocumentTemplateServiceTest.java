@@ -67,7 +67,7 @@ public class DocumentTemplateServiceTest {
         IllegalArgumentException illegalArgumentException = assertThrows(
             IllegalArgumentException.class,
             () -> service.getTemplateId(englishPreferenceCaseData, DIVORCE_MINI_PETITION)
-        );//TODO - this test will probably no longer make sense once the template configuration is in Java
+        );//TODO - this test will probably no longer make sense once the template configuration is in Java - next PR
         assertThat(illegalArgumentException.getMessage(), is("No template found for languagePreference "
             + "english and template name divorceMiniPetition"));
     }

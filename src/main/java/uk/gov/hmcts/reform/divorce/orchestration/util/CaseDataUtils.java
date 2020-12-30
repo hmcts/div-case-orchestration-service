@@ -187,14 +187,14 @@ public class CaseDataUtils {
             .orElse(Boolean.FALSE));
     }
 
-    public static LanguagePreference getLanguagePreference(Map<String, Object> caseData) {//TODO - this can probably be easier
-        return Optional.ofNullable(caseData)
+    public static LanguagePreference getLanguagePreference(Map<String, Object> caseData) {
+        boolean preferredLanguageIsWelsh = Optional.ofNullable(caseData)
             .map(data -> data.get(LANGUAGE_PREFERENCE_WELSH))
-            .filter(Objects::nonNull)
             .map(String.class::cast)
-            .filter(YES_VALUE::equalsIgnoreCase)
-            .map(languagePreferenceWelsh -> LanguagePreference.WELSH)
-            .orElse(LanguagePreference.ENGLISH);
+            .map(YES_VALUE::equalsIgnoreCase)
+            .orElse(false);
+
+        return preferredLanguageIsWelsh ? LanguagePreference.WELSH : LanguagePreference.ENGLISH;
     }
 
     public static Map<String, Object> removeDocumentsByDocumentType(Map<String, Object> caseData, String... documentTypes) {
