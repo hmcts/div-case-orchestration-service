@@ -8,7 +8,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
@@ -71,8 +70,7 @@ public class AddMiniPetitionDraftTaskTest {
 
         //given
         when(documentGeneratorClient.generateDraftPDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(expectedDocument);
-        when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.ENGLISH, DocumentType.DIVORCE_DRAFT_MINI_PETITION))
-                .thenReturn(DRAFT_MINI_PETITION_TEMPLATE_NAME);
+        when(documentTemplateService.getTemplateId(payload, DocumentType.DIVORCE_DRAFT_MINI_PETITION)).thenReturn(DRAFT_MINI_PETITION_TEMPLATE_NAME);
 
         //when
         addMiniPetitionDraftTask.execute(context, payload);

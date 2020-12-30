@@ -73,7 +73,7 @@ public class DocumentGenerationWorkflow extends DefaultWorkflow<Map<String, Obje
 
         if (optionalDocumentType.isPresent()) {
             try {
-                return getTemplateId(documentTemplateService, optionalDocumentType.get(), caseData);
+                return documentTemplateService.getTemplateId(caseData, optionalDocumentType.get());
             } catch (IllegalArgumentException exception) {
                 log.error("Missing template configuration in properties so returning as passed ", exception);
             }

@@ -7,7 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
@@ -114,13 +113,12 @@ public class DocumentGenerationWorkflowTest {
         when(setFormattedDnCourtDetails.execute(context, payload)).thenReturn(payload);
         when(documentGenerationTask.execute(context, payload)).thenReturn(payload);
         when(addNewDocumentsToCaseDataTask.execute(context, payload)).thenReturn(payload);
-        when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.WELSH, DocumentType.COE))
-            .thenReturn(COE_WELSH_TEMPLATE_ID);
+        when(documentTemplateService.getTemplateId(payload, DocumentType.COE)).thenReturn(COE_WELSH_TEMPLATE_ID);
 
         documentGenerationWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN, "a", "coe", "c");
 
         final InOrder inOrder = inOrder(documentTemplateService, setFormattedDnCourtDetails, documentGenerationTask, addNewDocumentsToCaseDataTask);
-        inOrder.verify(documentTemplateService).getConfiguredTemplateId(same(LanguagePreference.WELSH), same(DocumentType.COE));
+        inOrder.verify(documentTemplateService).getTemplateId(same(payload), same(DocumentType.COE));
         inOrder.verify(setFormattedDnCourtDetails).execute(context, payload);
         inOrder.verify(documentGenerationTask).execute(context, payload);
         inOrder.verify(addNewDocumentsToCaseDataTask).execute(context, payload);
@@ -149,13 +147,13 @@ public class DocumentGenerationWorkflowTest {
         when(setFormattedDnCourtDetails.execute(context, payload)).thenReturn(payload);
         when(documentGenerationTask.execute(context, payload)).thenReturn(payload);
         when(addNewDocumentsToCaseDataTask.execute(context, payload)).thenReturn(payload);
-        when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.WELSH, DocumentType.COE))
+        when(documentTemplateService.getTemplateId(payload, DocumentType.COE))
             .thenThrow(new IllegalArgumentException("No template found"));
 
         documentGenerationWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN, "a", "coe", "c");
 
         final InOrder inOrder = inOrder(documentTemplateService, setFormattedDnCourtDetails, documentGenerationTask, addNewDocumentsToCaseDataTask);
-        inOrder.verify(documentTemplateService).getConfiguredTemplateId(same(LanguagePreference.WELSH), same(DocumentType.COE));
+        inOrder.verify(documentTemplateService).getTemplateId(same(payload), same(DocumentType.COE));
         inOrder.verify(setFormattedDnCourtDetails).execute(context, payload);
         inOrder.verify(documentGenerationTask).execute(context, payload);
         inOrder.verify(addNewDocumentsToCaseDataTask).execute(context, payload);

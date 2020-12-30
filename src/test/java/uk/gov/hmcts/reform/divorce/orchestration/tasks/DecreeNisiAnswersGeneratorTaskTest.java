@@ -10,7 +10,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
@@ -72,11 +71,8 @@ public class DecreeNisiAnswersGeneratorTaskTest {
                 .build();
 
         //given
-        when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN))
-            .thenReturn(expectedDNAnswers);
-
-        when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_ANSWER_TEMPLATE_ID))
-                .thenReturn(DN_ANSWERS_TEMPLATE_ID);
+        when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(expectedDNAnswers);
+        when(documentTemplateService.getTemplateId(payload, DocumentType.DECREE_NISI_ANSWER_TEMPLATE_ID)).thenReturn(DN_ANSWERS_TEMPLATE_ID);
 
         //when
         decreeNisiAnswersGenerator.execute(context, payload);
@@ -106,8 +102,8 @@ public class DecreeNisiAnswersGeneratorTaskTest {
                 .values(ImmutableMap.of(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
                 .build();
 
-        when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_ANSWER_TEMPLATE_ID))
-                .thenReturn(DN_ANSWERS_TEMPLATE_ID);
+        when(documentTemplateService.getTemplateId(payload, DocumentType.DECREE_NISI_ANSWER_TEMPLATE_ID))
+            .thenReturn(DN_ANSWERS_TEMPLATE_ID);
 
         when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN))
             .thenThrow(FeignException.class);

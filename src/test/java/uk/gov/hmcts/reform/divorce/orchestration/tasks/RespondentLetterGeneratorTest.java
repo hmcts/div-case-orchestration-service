@@ -9,7 +9,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
@@ -84,7 +83,7 @@ public class RespondentLetterGeneratorTest {
 
         //given
         when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(expectedAosInvitation);
-        when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.ENGLISH, DocumentType.AOS_INVITATION))
+        when(documentTemplateService.getTemplateId(payload, DocumentType.AOS_INVITATION))
                 .thenReturn(RESPONDENT_INVITATION_TEMPLATE_NAME);
         //when
         respondentLetterGenerator.execute(context, payload);

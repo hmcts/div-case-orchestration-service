@@ -7,7 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
@@ -62,13 +61,12 @@ public class IssuePersonalServicePackWorkflowTest {
         //given
         Map<String, Object> caseData = Collections.singletonMap("key", "value");
         CaseDetails caseDetails = CaseDetails.builder()
-                .caseId(TEST_CASE_ID)
-                .caseData(caseData)
-                .build();
+            .caseId(TEST_CASE_ID)
+            .caseData(caseData)
+            .build();
 
-        when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.ENGLISH,
-                DocumentType.SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID))
-                .thenReturn(SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID);
+        when(documentTemplateService.getTemplateId(caseData, DocumentType.SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID))
+            .thenReturn(SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID);
 
         DefaultTaskContext context = new DefaultTaskContext();
         context.setTransientObjects(new HashMap<String, Object>() {
@@ -83,8 +81,8 @@ public class IssuePersonalServicePackWorkflowTest {
         });
 
         CcdCallbackRequest request = CcdCallbackRequest.builder()
-                .caseDetails(caseDetails)
-                .build();
+            .caseDetails(caseDetails)
+            .build();
 
         //when
         when(personalServiceValidationTask.execute(context, caseData)).thenReturn(caseData);
@@ -95,8 +93,8 @@ public class IssuePersonalServicePackWorkflowTest {
         //then
         assertThat(response, is(caseData));
         InOrder inOrder = inOrder(
-                personalServiceValidationTask,
-                documentGenerationTask,
+            personalServiceValidationTask,
+            documentGenerationTask,
             addNewDocumentsToCaseDataTask
         );
         inOrder.verify(personalServiceValidationTask).execute(context, caseData);
