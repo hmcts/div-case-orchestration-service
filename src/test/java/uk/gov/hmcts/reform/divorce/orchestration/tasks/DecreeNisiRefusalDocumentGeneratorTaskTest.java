@@ -94,7 +94,7 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
             .fileName(DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME + TEST_CASE_ID)
             .build();
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
+        when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.ENGLISH,
                 DocumentType.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID))
                 .thenReturn(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID);
 
@@ -159,7 +159,7 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
                 caseDetails), eq(AUTH_TOKEN))
         ).thenReturn(expectedDocument);
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
+        when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.ENGLISH,
                 DocumentType.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID))
                 .thenReturn(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID);
 
@@ -228,7 +228,7 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
             .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID, expectedCaseDetails), eq(AUTH_TOKEN))
         ).thenReturn(expectedDocument);
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
+        when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.ENGLISH,
                 DocumentType.DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID))
                 .thenReturn(DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID);
 

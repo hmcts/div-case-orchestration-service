@@ -328,7 +328,7 @@ public class CcdUtilUTest {
 
     @Test
     public void givenNoField_whenGetCollectionMembersOrEmptyList_shouldReturnAnEmptyArray() {
-        List<CollectionMember<Document>> result = ccdUtil.getCollectionMembersOrEmptyList(emptyMap(), "you can't find me");
+        List<CollectionMember<Document>> result = ccdUtil.getCollectionMembersOrEmptyList(getObjectMapperInstance(), emptyMap(), "you can't find me");
 
         assertThat(result, is(empty()));
     }
@@ -339,7 +339,7 @@ public class CcdUtilUTest {
         final List<CollectionMember<Document>> myList = emptyList();
         Map<String, Object> caseData = ImmutableMap.of(field, myList);
 
-        List<CollectionMember<Document>> result = ccdUtil.getCollectionMembersOrEmptyList(caseData, field);
+        List<CollectionMember<Document>> result = ccdUtil.getCollectionMembersOrEmptyList(getObjectMapperInstance(), caseData, field);
 
         assertThat(result, is(empty()));
     }
@@ -350,7 +350,7 @@ public class CcdUtilUTest {
         final List<CollectionMember<Document>> myList = asList(new CollectionMember<>());
         Map<String, Object> caseData = ImmutableMap.of(field, myList);
 
-        List<CollectionMember<Document>> result = ccdUtil.getCollectionMembersOrEmptyList(caseData, field);
+        List<CollectionMember<Document>> result = ccdUtil.getCollectionMembersOrEmptyList(getObjectMapperInstance(), caseData, field);
 
         assertThat(result.size(), is(1));
         assertThat(result, is(myList));

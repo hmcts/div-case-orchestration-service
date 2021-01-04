@@ -66,7 +66,7 @@ public class IssuePersonalServicePackWorkflowTest {
                 .caseData(caseData)
                 .build();
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
+        when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.ENGLISH,
                 DocumentType.SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID))
                 .thenReturn(SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID);
 
