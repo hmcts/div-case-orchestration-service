@@ -18,7 +18,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_MENTAL_SEP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PHYSICAL_SEP_DAIE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_DESERTION_DAIE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_DESERTION_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_SEP_REF_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_SEP_TIME_TOGETHER_PERMITTED;
@@ -82,7 +82,7 @@ public class SetSeparationFieldsTask implements Task<Map<String, Object>> {
     private String getReasonForDivorceSeparationDate(Map<String, Object> caseData) throws TaskException {
         String reasonForDivorce = getMandatoryPropertyValueAsString(caseData, D_8_REASON_FOR_DIVORCE);
         if (StringUtils.equalsIgnoreCase(DESERTION.getValue(), reasonForDivorce)) {
-            return getMandatoryPropertyValueAsString(caseData, D_8_REASON_FOR_DIVORCE_DESERTION_DAIE);
+            return getMandatoryPropertyValueAsString(caseData, D_8_REASON_FOR_DIVORCE_DESERTION_DATE);
         }
 
         String reasonForDivorceDecisionDate = getMandatoryPropertyValueAsString(caseData, D_8_MENTAL_SEP_DATE);

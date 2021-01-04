@@ -87,7 +87,7 @@ public class OrchestrationConstants {
     public static final String ISSUE_DATE = "IssueDate";
     public static final String D_8_PAYMENTS = "Payments";
     public static final String BULK_LISTING_CASE_ID_FIELD = "BulkListingCaseId";
-    public static final String D_8_REASON_FOR_DIVORCE_DESERTION_DAIE = "D8ReasonForDivorceDesertionDate";
+    public static final String D_8_REASON_FOR_DIVORCE_DESERTION_DATE = "D8ReasonForDivorceDesertionDate";
     public static final String D_8_REASON_FOR_DIVORCE_SEP_DATE = "D8ReasonForDivorceSeperationDate";
     public static final String D_8_MENTAL_SEP_DATE = "D8MentalSeparationDate";
     public static final String D_8_PHYSICAL_SEP_DAIE = "D8PhysicalSeparationDate";

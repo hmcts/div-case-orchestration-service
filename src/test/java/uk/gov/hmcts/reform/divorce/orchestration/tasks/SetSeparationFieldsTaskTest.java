@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_MENTAL_SEP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PHYSICAL_SEP_DAIE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_DESERTION_DAIE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_DESERTION_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE_SEP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_SEP_REF_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_SEP_TIME_TOGETHER_PERMITTED;
@@ -126,7 +126,7 @@ public class SetSeparationFieldsTaskTest {
             LocalDate.now(clock).minusYears(2).minusMonths(6).plusDays(1)
         );
         testData.put(D_8_REASON_FOR_DIVORCE, DESERTION.getValue());
-        testData.put(D_8_REASON_FOR_DIVORCE_DESERTION_DAIE, pastDate2Yrs6MnthsPlus1day);
+        testData.put(D_8_REASON_FOR_DIVORCE_DESERTION_DATE, pastDate2Yrs6MnthsPlus1day);
 
         Map<String, Object> resultMap = setSeparationFieldsTask.execute(context, testData);
 
