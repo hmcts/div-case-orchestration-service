@@ -80,7 +80,7 @@ public class DocumentGenerationWorkflowTest {
         when(documentGenerationTask.execute(context, payload)).thenReturn(payload);
         when(addNewDocumentsToCaseDataTask.execute(context, payload)).thenReturn(payload);
 
-        final Map<String, Object> result = documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c");
+        final Map<String, Object> result = documentGenerationWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN, "a", "b", "c");
 
         assertThat(result, is(payload));
 
@@ -114,20 +114,20 @@ public class DocumentGenerationWorkflowTest {
         when(setFormattedDnCourtDetails.execute(context, payload)).thenReturn(payload);
         when(documentGenerationTask.execute(context, payload)).thenReturn(payload);
         when(addNewDocumentsToCaseDataTask.execute(context, payload)).thenReturn(payload);
-        when(documentTemplateService.getTemplateId(LanguagePreference.WELSH, DocumentType.COE))
+        when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.WELSH, DocumentType.COE))
             .thenReturn(COE_WELSH_TEMPLATE_ID);
 
-        documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN, "a", "coe", "c");
+        documentGenerationWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN, "a", "coe", "c");
 
         final InOrder inOrder = inOrder(documentTemplateService, setFormattedDnCourtDetails, documentGenerationTask, addNewDocumentsToCaseDataTask);
-        inOrder.verify(documentTemplateService).getTemplateId(same(LanguagePreference.WELSH), same(DocumentType.COE));
+        inOrder.verify(documentTemplateService).getConfiguredTemplateId(same(LanguagePreference.WELSH), same(DocumentType.COE));
         inOrder.verify(setFormattedDnCourtDetails).execute(context, payload);
         inOrder.verify(documentGenerationTask).execute(context, payload);
         inOrder.verify(addNewDocumentsToCaseDataTask).execute(context, payload);
     }
 
     @Test
-    public void testToContinueWithProvidedTempateId() throws WorkflowException {
+    public void testToContinueWithProvidedTemplateId() throws WorkflowException {
         final TaskContext context = new DefaultTaskContext();
         final Map<String, Object> payload = new HashMap<>();
         payload.put(LANGUAGE_PREFERENCE_WELSH, YES_VALUE);
@@ -149,13 +149,13 @@ public class DocumentGenerationWorkflowTest {
         when(setFormattedDnCourtDetails.execute(context, payload)).thenReturn(payload);
         when(documentGenerationTask.execute(context, payload)).thenReturn(payload);
         when(addNewDocumentsToCaseDataTask.execute(context, payload)).thenReturn(payload);
-        when(documentTemplateService.getTemplateId(LanguagePreference.WELSH, DocumentType.COE))
+        when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.WELSH, DocumentType.COE))
             .thenThrow(new IllegalArgumentException("No template found"));
 
-        documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN, "a", "coe", "c");
+        documentGenerationWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN, "a", "coe", "c");
 
         final InOrder inOrder = inOrder(documentTemplateService, setFormattedDnCourtDetails, documentGenerationTask, addNewDocumentsToCaseDataTask);
-        inOrder.verify(documentTemplateService).getTemplateId(same(LanguagePreference.WELSH), same(DocumentType.COE));
+        inOrder.verify(documentTemplateService).getConfiguredTemplateId(same(LanguagePreference.WELSH), same(DocumentType.COE));
         inOrder.verify(setFormattedDnCourtDetails).execute(context, payload);
         inOrder.verify(documentGenerationTask).execute(context, payload);
         inOrder.verify(addNewDocumentsToCaseDataTask).execute(context, payload);

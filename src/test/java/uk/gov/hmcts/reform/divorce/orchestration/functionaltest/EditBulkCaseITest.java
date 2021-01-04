@@ -71,7 +71,7 @@ public class EditBulkCaseITest extends MockedFunctionalTest {
         caseData.put("hearingDate", "2000-01-01T10:20:55.000");
         caseData.put("PronouncementJudge", "Judge");
 
-        stubDocumentGeneratorServiceBaseOnContextPath(templateId, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails), documentType);
+        stubDocumentGeneratorService(templateId, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails), documentType);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)

@@ -5,7 +5,7 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -47,17 +47,20 @@ public class DocumentGenerationWorkflow extends DefaultWorkflow<Map<String, Obje
         this.documentTemplateService = documentTemplateService;
     }
 
-    public Map<String, Object> run(final CcdCallbackRequest ccdCallbackRequest, final String authToken, final String templateId,
-                                   final String documentType, final String filename) throws WorkflowException {
-        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+    public Map<String, Object> run(final CaseDetails caseDetails,
+                                   final String authToken,
+                                   final String templateId,
+                                   final String documentType,
+                                   final String filename) throws WorkflowException {
+        Map<String, Object> caseData = caseDetails.getCaseData();
         final String evalTemplateId = getTemplateId(templateId, documentType, caseData);
-        log.debug("For language {}, evaluated template id {}", getLanguagePreference(caseData),evalTemplateId);
+        log.debug("For language {}, evaluated template id {}", getLanguagePreference(caseData), evalTemplateId);
 
         return this.execute(
             new Task[] {setFormattedDnCourtDetails, documentGenerationTask, addNewDocumentsToCaseDataTask},
             caseData,
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
-            ImmutablePair.of(CASE_DETAILS_JSON_KEY, ccdCallbackRequest.getCaseDetails()),
+            ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
             ImmutablePair.of(DOCUMENT_TYPE, documentType),
             ImmutablePair.of(DOCUMENT_TEMPLATE_ID, evalTemplateId),
             ImmutablePair.of(DOCUMENT_FILENAME, filename)
@@ -66,15 +69,17 @@ public class DocumentGenerationWorkflow extends DefaultWorkflow<Map<String, Obje
     }
 
     private String getTemplateId(String templateId, String documentType, Map<String, Object> caseData) {
-        Optional<DocumentType> optionalDocumentType = DocumentType.getEnum(documentType);
+        Optional<DocumentType> optionalDocumentType = DocumentType.getDocumentTypeByTemplateLogicalName(documentType);
 
         if (optionalDocumentType.isPresent()) {
             try {
                 return getTemplateId(documentTemplateService, optionalDocumentType.get(), caseData);
             } catch (IllegalArgumentException exception) {
-                log.error("Missing template configuration in properties so returning as passed ",exception);
+                log.error("Missing template configuration in properties so returning as passed ", exception);
             }
         }
+
         return templateId;
     }
+
 }

@@ -66,7 +66,7 @@ public class RespondentSolicitorNominatedITest extends IdamTestSupport {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         caseDetails.getCaseData().put(RESPONDENT_LETTER_HOLDER_ID, TEST_LETTER_HOLDER_ID_CODE);
 
-        String documentId = stubDocumentGeneratorServiceBaseOnContextPath(RESPONDENT_INVITATION_TEMPLATE_NAME,
+        String documentId = stubDocumentGeneratorService(RESPONDENT_INVITATION_TEMPLATE_NAME,
             ImmutableMap.of(
                 DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails,
                 ACCESS_CODE, TEST_PIN_CODE

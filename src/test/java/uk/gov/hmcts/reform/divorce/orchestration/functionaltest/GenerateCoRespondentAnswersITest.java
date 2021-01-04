@@ -52,7 +52,7 @@ public class GenerateCoRespondentAnswersITest extends MockedFunctionalTest {
                 .build())
             .build();
 
-        stubDocumentGeneratorServiceBaseOnContextPath(CO_RESPONDENT_ANSWERS_TEMPLATE_NAME,
+        stubDocumentGeneratorService(CO_RESPONDENT_ANSWERS_TEMPLATE_NAME,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequest.getCaseDetails()),
             DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS);
 

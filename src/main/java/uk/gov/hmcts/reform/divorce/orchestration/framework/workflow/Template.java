@@ -11,6 +11,6 @@ public interface Template {
     default String getTemplateId(DocumentTemplateService documentTemplateService,
                                  DocumentType documentType, Map<String, Object> caseData) {
         LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
-        return documentTemplateService.getTemplateId(languagePreference, documentType);
+        return documentTemplateService.getConfiguredTemplateId(languagePreference, documentType);
     }
 }
