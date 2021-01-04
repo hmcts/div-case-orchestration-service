@@ -147,11 +147,4 @@
         <packageUrl regex="true">^pkg:maven/junit/junit@.*$</packageUrl>
         <vulnerabilityName>CVE-2020-15250</vulnerabilityName>
     </suppress>
-    <suppress>
-        <notes><![CDATA[
-  file name: guava-28.2-jre.jar
-  ]]></notes>
-        <packageUrl regex="true">^pkg:maven/com\.google\.guava/guava@.*$</packageUrl>
-        <cve>CVE-2020-8908</cve>
-    </suppress>
 </suppressions>
