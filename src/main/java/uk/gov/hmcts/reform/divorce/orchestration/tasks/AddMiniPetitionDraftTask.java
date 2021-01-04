@@ -40,8 +40,7 @@ public class AddMiniPetitionDraftTask implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(final TaskContext context, final Map<String, Object> caseData) {
         final CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
-        final String templateId = getTemplateId(documentTemplateService, DocumentType.DIVORCE_DRAFT_MINI_PETITION,
-                caseData);
+        final String templateId = documentTemplateService.getTemplateId(caseData, DocumentType.DIVORCE_DRAFT_MINI_PETITION);
         final GeneratedDocumentInfo generatedDocumentInfo =
             documentGeneratorClient.generateDraftPDF(
                 GenerateDocumentRequest.builder()
@@ -55,7 +54,7 @@ public class AddMiniPetitionDraftTask implements Task<Map<String, Object>> {
         generatedDocumentInfo.setFileName(format(DOCUMENT_FILENAME_FMT, DOCUMENT_NAME, caseDetails.getCaseId()));
 
         final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context
-                .computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new LinkedHashSet<>());
+            .computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new LinkedHashSet<>());
 
         documentCollection.add(generatedDocumentInfo);
 

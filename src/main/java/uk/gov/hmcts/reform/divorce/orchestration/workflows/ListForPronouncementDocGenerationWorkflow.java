@@ -51,9 +51,7 @@ public class ListForPronouncementDocGenerationWorkflow extends DefaultWorkflow<M
         Map<String, Object> caseData = caseDetails.getCaseData();
 
         String judgeName = (String) caseData.get(PRONOUNCEMENT_JUDGE_CCD_FIELD);
-        final String templateId = getTemplateId(documentTemplateService,
-                DocumentType.BULK_LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID,
-                caseData);
+        final String templateId = documentTemplateService.getTemplateId(caseData, DocumentType.BULK_LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID);
 
         List<Task<Map<String, Object>>> taskList = new ArrayList<>();
         taskList.add(syncBulkCaseListTask);
