@@ -26,6 +26,7 @@ public class MarkJourneyAsOffline implements Task<Map<String, Object>> {
         } else if (CO_RESPONDENT.equals(divorceParty)) {
             payload.put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE);
         }
+
         return payload;
     }
 }
