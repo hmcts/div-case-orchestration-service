@@ -20,8 +20,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETIT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FULL_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_TEMPLATE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference.ENGLISH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.RESPONDENTS_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
@@ -59,7 +60,7 @@ public class DaGrantedCitizenLetterGenerationTaskTest extends BasePayloadSpecifi
         runCommonVerifications(caseData,
             returnedCaseData,
             DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_DOCUMENT_TYPE,
-            DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_TEMPLATE_ID.getValue(),
+            DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER.getTemplateByLanguage(ENGLISH),
             expectedDocmosisTemplateVars);
     }
 

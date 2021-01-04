@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.COE_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.AOSPackOfflineConstants.COE_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 
 @Component
@@ -26,7 +26,7 @@ public class CoERespondentSolicitorLetterGenerationTask extends BasePayloadSpeci
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FileMetadata {
         public static final String TEMPLATE_ID = "FL-DIV-GNO-ENG-00370.docx";
-        public static final String DOCUMENT_TYPE = COE_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE.getValue();
+        public static final String DOCUMENT_TYPE = COE_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE;
     }
 
     public CoERespondentSolicitorLetterGenerationTask(
