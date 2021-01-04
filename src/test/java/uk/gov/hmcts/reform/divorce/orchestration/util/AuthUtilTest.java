@@ -18,7 +18,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN_C
 import static uk.gov.hmcts.reform.idam.client.IdamClient.BEARER_AUTH_TYPE;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AuthUtilUTest {
+public class AuthUtilTest {
 
     @Mock
     IdamClient idamClient;

@@ -47,7 +47,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHel
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getObjectMapperInstance;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskTestHelper.createGeneratedDocument;
 
-public class CcdUtilUTest {
+public class CcdUtilTest {
 
     private static final String CURRENT_DATE = "2018-01-01";
     private static final String PAYMENT_DATE = "01012018";

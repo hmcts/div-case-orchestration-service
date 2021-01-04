@@ -44,7 +44,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_PIN;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RetrievePinUserDetailsUTest {
+public class RetrievePinUserDetailsTest {
 
     @Mock
     private IdamClient idamClient;
