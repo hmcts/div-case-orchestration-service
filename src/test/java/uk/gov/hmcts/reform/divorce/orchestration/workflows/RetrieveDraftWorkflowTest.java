@@ -31,7 +31,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RetrieveDraftTaskWorkflowTest {
+public class RetrieveDraftWorkflowTest {
 
     @Mock
     private RetrieveDraftTask retrieveDraftTask;
