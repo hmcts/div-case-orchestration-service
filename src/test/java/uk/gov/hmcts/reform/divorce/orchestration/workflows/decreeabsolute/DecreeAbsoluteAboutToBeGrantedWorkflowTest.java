@@ -69,7 +69,7 @@ public class DecreeAbsoluteAboutToBeGrantedWorkflowTest {
             .caseData(payload)
             .build();
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_ABSOLUTE_TEMPLATE_ID))
+        when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_ABSOLUTE_TEMPLATE_ID))
                 .thenReturn(DECREE_ABSOLUTE_TEMPLATE_ID);
 
         final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();

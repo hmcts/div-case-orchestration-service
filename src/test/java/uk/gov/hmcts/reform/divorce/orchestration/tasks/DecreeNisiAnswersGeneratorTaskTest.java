@@ -75,7 +75,7 @@ public class DecreeNisiAnswersGeneratorTaskTest {
         when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN))
             .thenReturn(expectedDNAnswers);
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_ANSWER_TEMPLATE_ID))
+        when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_ANSWER_TEMPLATE_ID))
                 .thenReturn(DN_ANSWERS_TEMPLATE_ID);
 
         //when
@@ -106,7 +106,7 @@ public class DecreeNisiAnswersGeneratorTaskTest {
                 .values(ImmutableMap.of(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
                 .build();
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_ANSWER_TEMPLATE_ID))
+        when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_ANSWER_TEMPLATE_ID))
                 .thenReturn(DN_ANSWERS_TEMPLATE_ID);
 
         when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN))

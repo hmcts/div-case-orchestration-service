@@ -73,7 +73,7 @@ public class PetitionGeneratorTest {
 
         //given
         when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(expectedPetition);
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
+        when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.ENGLISH,
                 DocumentType.DIVORCE_MINI_PETITION)).thenReturn(MINI_PETITION_TEMPLATE_NAME);
         //when
         petitionGenerator.execute(context, payload);
