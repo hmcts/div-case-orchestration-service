@@ -16,14 +16,19 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 
 @Component
-public class CancelPronouncementDetailsWithinBulkTest extends AutoPublishingAsyncTask<Map<String, Object>> {
+public class CancelPronouncementDetailsWithinBulkTask extends AutoPublishingAsyncTask<Map<String, Object>> {
 
     @Override
-    public List<ApplicationEvent> getApplicationEventsToPublish(TaskContext context, Map<String, Object> bulkCaseData) {
+    public List<ApplicationEvent> getApplicationEventsToPublish(
+        TaskContext context, Map<String, Object> bulkCaseData
+    ) {
         String bulkCaseId = context.getTransientObject(CASE_ID_JSON_KEY);
 
-        return Collections.singletonList(new BulkCaseCancelPronouncementEvent(context,
-            ImmutableMap.of(ID, bulkCaseId,
-                CCD_CASE_DATA_FIELD, bulkCaseData)));
+        return Collections.singletonList(
+            new BulkCaseCancelPronouncementEvent(
+                context,
+                ImmutableMap.of(ID, bulkCaseId, CCD_CASE_DATA_FIELD, bulkCaseData)
+            )
+        );
     }
 }
