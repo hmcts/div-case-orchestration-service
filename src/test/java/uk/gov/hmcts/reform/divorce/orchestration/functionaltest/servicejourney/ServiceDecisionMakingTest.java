@@ -150,7 +150,7 @@ public class ServiceDecisionMakingTest extends IdamTestSupport {
         CcdCallbackRequest ccdCallbackRequest = buildRefusalRequest(refusalOrderData);
         ccdCallbackRequest.getCaseDetails().setState(AWAITING_SERVICE_CONSIDERATION);
 
-        stubDocumentGeneratorServiceBaseOnContextPath(
+        stubDocumentGeneratorService(
             templateId,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
                 ImmutableMap.of(
