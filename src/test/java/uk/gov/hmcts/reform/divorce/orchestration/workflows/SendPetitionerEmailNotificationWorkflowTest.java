@@ -29,7 +29,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.ve
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksWereNeverCalled;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SendPetitionerEmailNotificationTaskWorkflowTest {
+public class SendPetitionerEmailNotificationWorkflowTest {
 
     @Mock
     private SendPetitionerUpdateNotificationsEmailTask sendPetitionerUpdateNotificationsEmailTask;
