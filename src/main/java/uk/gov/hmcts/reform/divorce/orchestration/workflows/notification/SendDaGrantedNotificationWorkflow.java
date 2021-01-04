@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStoreTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaGrantedNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DaGrantedCitizenLetterGenerationTask;
@@ -38,7 +38,7 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
 
     private final DaGrantedCitizenLetterGenerationTask daGrantedCitizenLetterGenerationTask;
     private final DaGrantedSolicitorLetterGenerationTask daGrantedSolicitorLetterGenerationTask;
-    private final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
+    private final FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask;
     private final BulkPrinterTask bulkPrinterTask;
 
     private final FeatureToggleService featureToggleService;
@@ -84,7 +84,7 @@ public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<Strin
                 } else {
                     tasks.add(daGrantedCitizenLetterGenerationTask);
                 }
-                tasks.add(fetchPrintDocsFromDmStore);
+                tasks.add(fetchPrintDocsFromDmStoreTask);
                 tasks.add(bulkPrinterTask);
             }
         }

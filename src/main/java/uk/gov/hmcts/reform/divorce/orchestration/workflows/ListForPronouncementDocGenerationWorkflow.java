@@ -55,7 +55,7 @@ public class ListForPronouncementDocGenerationWorkflow extends DefaultWorkflow<M
                 DocumentType.BULK_LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID,
                 caseData);
 
-        List<Task> taskList = new ArrayList<>();
+        List<Task<Map<String, Object>>> taskList = new ArrayList<>();
         taskList.add(syncBulkCaseListTask);
         // Existing Judge name means Pronouncement List has already been generated and should be regenerated.
         if (StringUtils.isNotBlank(judgeName)) {

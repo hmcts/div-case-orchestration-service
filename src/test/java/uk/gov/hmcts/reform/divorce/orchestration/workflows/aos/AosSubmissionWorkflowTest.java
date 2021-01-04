@@ -19,7 +19,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.TemplateConfigService;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotification;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotificationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.QueueAosSolicitorSubmitTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForDefendedDivorceEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForUndefendedDivorceEmail;
@@ -109,7 +109,7 @@ public class AosSubmissionWorkflowTest {
     private QueueAosSolicitorSubmitTask queueAosSolicitorSubmitTask;
 
     @Mock
-    private GenericEmailNotification emailNotificationTask;
+    private GenericEmailNotificationTask emailNotificationTask;
 
     @Captor
     private ArgumentCaptor<TaskContext> taskContextArgumentCaptor;

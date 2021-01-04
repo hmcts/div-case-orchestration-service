@@ -63,7 +63,6 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
     private static final String DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00088.docx";
     private static final String DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00098.docx";
 
-
     @Mock
     private DocumentGeneratorClient documentGeneratorClient;
 
@@ -229,7 +228,6 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
             .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID, expectedCaseDetails), eq(AUTH_TOKEN))
         ).thenReturn(expectedDocument);
 
-
         when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.ENGLISH,
                 DocumentType.DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID))
                 .thenReturn(DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID);
@@ -263,7 +261,7 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
 
         final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context.getTransientObject(DOCUMENT_COLLECTION);
 
-        assertEquals(documentCollection.size(), 0);
+        assertEquals(0, documentCollection.size());
 
         verify(documentGeneratorClient, never())
             .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID,

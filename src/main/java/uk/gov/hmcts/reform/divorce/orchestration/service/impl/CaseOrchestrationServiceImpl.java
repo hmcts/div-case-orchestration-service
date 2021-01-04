@@ -484,7 +484,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         } else {
             log.error("Clarification submitted notification for  CASE ID: {} failed. ", caseId);
             List<String> errors = sendClarificationSubmittedNotificationWorkflow.errors().values().stream()
-                .map(x -> (String) x)
+                .map(String.class::cast)
                 .collect(Collectors.toList());
             return CcdCallbackResponse.builder()
                 .errors(errors)
@@ -507,7 +507,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         } else {
             log.error("Callback to assign [PETSOLICITOR] role with CASE ID: {} failed. ", caseId);
             List<String> errors = petitionerSolicitorRoleWorkflow.errors().values().stream()
-                .map(x -> (String) x)
+                .map(String.class::cast)
                 .collect(Collectors.toList());
             return CcdCallbackResponse.builder()
                 .errors(errors)
