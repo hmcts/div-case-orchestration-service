@@ -41,11 +41,7 @@ public class CoRespondentLetterGeneratorTask implements Task<Map<String, Object>
 
         final NumberFormat poundsOnlyFormat = new DecimalFormat("#");
         final String petitionIssueFee = poundsOnlyFormat.format(((FeeResponse) context.getTransientObject(PETITION_FEE_JSON_KEY)).getAmount());
-        final String templateId = getTemplateId(
-            documentTemplateService,
-            DocumentType.CO_RESPONDENT_INVITATION,
-            caseData
-        );
+        final String templateId = documentTemplateService.getTemplateId(caseData, DocumentType.CO_RESPONDENT_INVITATION);
 
         GeneratedDocumentInfo coRespondentInvitation =
             documentGeneratorClient.generatePDF(
@@ -61,10 +57,8 @@ public class CoRespondentLetterGeneratorTask implements Task<Map<String, Object>
             );
 
         coRespondentInvitation.setDocumentType(DOCUMENT_TYPE_CO_RESPONDENT_INVITATION);
-        coRespondentInvitation.setFileName(
-            String.format(CO_RESPONDENT_INVITATION_FILE_NAME_FORMAT,
-                caseDetails.getCaseId())
-        );
+        coRespondentInvitation.setFileName(String.format(CO_RESPONDENT_INVITATION_FILE_NAME_FORMAT,
+            caseDetails.getCaseId()));
 
         final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context
             .computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new LinkedHashSet<>());

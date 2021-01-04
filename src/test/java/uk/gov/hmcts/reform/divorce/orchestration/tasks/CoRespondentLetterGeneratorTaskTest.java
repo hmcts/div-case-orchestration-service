@@ -10,7 +10,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
@@ -92,7 +91,7 @@ public class CoRespondentLetterGeneratorTaskTest {
 
         //given
         when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(expectedCoRespondentInvitation);
-        when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.ENGLISH, DocumentType.CO_RESPONDENT_INVITATION))
+        when(documentTemplateService.getTemplateId(payload, DocumentType.CO_RESPONDENT_INVITATION))
                 .thenReturn(CO_RESPONDENT_INVITATION_TEMPLATE_NAME);
 
 

@@ -8,7 +8,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
@@ -94,7 +93,7 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
             .fileName(DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME + TEST_CASE_ID)
             .build();
 
-        when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.ENGLISH,
+        when(documentTemplateService.getTemplateId(payload,
                 DocumentType.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID))
                 .thenReturn(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID);
 
@@ -159,7 +158,7 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
                 caseDetails), eq(AUTH_TOKEN))
         ).thenReturn(expectedDocument);
 
-        when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.ENGLISH,
+        when(documentTemplateService.getTemplateId(payload,
                 DocumentType.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID))
                 .thenReturn(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID);
 
@@ -228,7 +227,7 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
             .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID, expectedCaseDetails), eq(AUTH_TOKEN))
         ).thenReturn(expectedDocument);
 
-        when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.ENGLISH,
+        when(documentTemplateService.getTemplateId(payload,
                 DocumentType.DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID))
                 .thenReturn(DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID);
 

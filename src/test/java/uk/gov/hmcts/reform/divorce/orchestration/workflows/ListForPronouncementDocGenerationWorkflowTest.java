@@ -7,7 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
@@ -90,7 +89,7 @@ public class ListForPronouncementDocGenerationWorkflowTest {
         when(documentGenerationTask.execute(context, payload)).thenReturn(payload);
         when(addNewDocumentsToCaseDataTask.execute(context, payload)).thenReturn(payload);
         when(removePronouncementDetailsTask.execute(context, payload)).thenReturn(payload);
-        when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.ENGLISH, DocumentType.BULK_LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID))
+        when(documentTemplateService.getTemplateId(payload, DocumentType.BULK_LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID))
                 .thenReturn(LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID);
 
         final Map<String, Object> result = classToTest.run(ccdCallbackRequest, AUTH_TOKEN);
@@ -110,7 +109,7 @@ public class ListForPronouncementDocGenerationWorkflowTest {
         inOrder.verify(documentGenerationTask).execute(context, payload);
         inOrder.verify(addNewDocumentsToCaseDataTask).execute(context, payload);
         inOrder.verify(removePronouncementDetailsTask).execute(context, payload);
-        verify(documentTemplateService).getConfiguredTemplateId(eq(LanguagePreference.ENGLISH),
+        verify(documentTemplateService).getTemplateId(eq(payload),
                 eq(DocumentType.BULK_LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID));
     }
 
@@ -128,7 +127,7 @@ public class ListForPronouncementDocGenerationWorkflowTest {
 
         when(syncBulkCaseListTask.execute(context, payload)).thenReturn(payload);
         when(removePronouncementDetailsTask.execute(context, payload)).thenReturn(payload);
-        when(documentTemplateService.getConfiguredTemplateId(LanguagePreference.ENGLISH, DocumentType.BULK_LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID))
+        when(documentTemplateService.getTemplateId(payload, DocumentType.BULK_LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID))
                 .thenReturn(LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID);
 
         final Map<String, Object> result = classToTest.run(ccdCallbackRequest, AUTH_TOKEN);
@@ -140,7 +139,7 @@ public class ListForPronouncementDocGenerationWorkflowTest {
         verify(documentGenerationTask, never()).execute(context, payload);
         verify(addNewDocumentsToCaseDataTask, never()).execute(context, payload);
         verify(removePronouncementDetailsTask, times(1)).execute(context, payload);
-        verify(documentTemplateService).getConfiguredTemplateId(eq(LanguagePreference.ENGLISH),
+        verify(documentTemplateService).getTemplateId(eq(payload),
                 eq(DocumentType.BULK_LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID));
     }
 

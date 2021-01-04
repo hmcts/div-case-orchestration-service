@@ -38,9 +38,9 @@ public enum DocumentType {
         this.templateLogicalName = templateLogicalName;
     }
 
-    public static Optional<DocumentType> getDocumentTypeByTemplateLogicalName(String value) {
+    public static Optional<DocumentType> getDocumentTypeByTemplateLogicalName(String templateLogicalName) {
         return Arrays.stream(DocumentType.values())
-            .filter(enumValue -> enumValue.getTemplateLogicalName().equals(value)).findAny();
+            .filter(enumValue -> enumValue.getTemplateLogicalName().equals(templateLogicalName)).findAny();
     }
 
 }
