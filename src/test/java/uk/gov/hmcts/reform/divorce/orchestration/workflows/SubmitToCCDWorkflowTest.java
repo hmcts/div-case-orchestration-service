@@ -9,9 +9,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CourtAllocationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.DeleteDraft;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.DeleteDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DuplicateCaseValidationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseData;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitCaseToCCD;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseDataTask;
 
@@ -39,7 +39,7 @@ public class SubmitToCCDWorkflowTest {
     private CourtAllocationTask courtAllocationTask;
 
     @Mock
-    private FormatDivorceSessionToCaseData formatDivorceSessionToCaseData;
+    private FormatDivorceSessionToCaseDataTask formatDivorceSessionToCaseDataTask;
 
     @Mock
     private ValidateCaseDataTask validateCaseDataTask;
@@ -48,7 +48,7 @@ public class SubmitToCCDWorkflowTest {
     private SubmitCaseToCCD submitCaseToCCD;
 
     @Mock
-    private DeleteDraft deleteDraft;
+    private DeleteDraftTask deleteDraftTask;
 
     @Mock
     private DuplicateCaseValidationTask duplicateCaseValidationTask;
@@ -74,10 +74,10 @@ public class SubmitToCCDWorkflowTest {
             return incomingPayload;
         });
         when(duplicateCaseValidationTask.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
-        when(formatDivorceSessionToCaseData.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
+        when(formatDivorceSessionToCaseDataTask.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
         when(validateCaseDataTask.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
         when(submitCaseToCCD.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
-        when(deleteDraft.execute(any(), eq(incomingPayload))).thenReturn(singletonMap("Hello", "World"));
+        when(deleteDraftTask.execute(any(), eq(incomingPayload))).thenReturn(singletonMap("Hello", "World"));
 
         Map<String, Object> actual = submitToCCDWorkflow.run(incomingPayload, AUTH_TOKEN);
 
@@ -85,10 +85,10 @@ public class SubmitToCCDWorkflowTest {
         assertThat(actual, hasEntry(equalTo(ALLOCATED_COURT_KEY), equalTo(testCourt)));
         verify(duplicateCaseValidationTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
         verify(courtAllocationTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
-        verify(formatDivorceSessionToCaseData).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
+        verify(formatDivorceSessionToCaseDataTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
         verify(validateCaseDataTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
         verify(submitCaseToCCD).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
-        verify(deleteDraft).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
+        verify(deleteDraftTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
     }
 
     private static ArgumentMatcher<TaskContext> isContextContainingCourtInfo() {

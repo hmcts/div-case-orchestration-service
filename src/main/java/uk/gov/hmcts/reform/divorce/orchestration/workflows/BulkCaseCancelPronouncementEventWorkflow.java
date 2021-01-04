@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CancelPronouncementDetailsWithinBulk;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CancelPronouncementDetailsWithinBulkTask;
 
 import java.util.Map;
 
@@ -18,7 +18,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RequiredArgsConstructor
 public class BulkCaseCancelPronouncementEventWorkflow  extends DefaultWorkflow<Map<String, Object>> {
 
-    private final CancelPronouncementDetailsWithinBulk cancelPronouncementDetailsWithinBulk;
+    private final CancelPronouncementDetailsWithinBulkTask cancelPronouncementDetailsWithinBulkTask;
 
     public Map<String, Object> run(CcdCallbackRequest callbackRequest, String authToken) throws WorkflowException {
 
@@ -26,7 +26,7 @@ public class BulkCaseCancelPronouncementEventWorkflow  extends DefaultWorkflow<M
 
         return this.execute(
             new Task[] {
-                cancelPronouncementDetailsWithinBulk
+                cancelPronouncementDetailsWithinBulkTask
             },
             caseData,
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),

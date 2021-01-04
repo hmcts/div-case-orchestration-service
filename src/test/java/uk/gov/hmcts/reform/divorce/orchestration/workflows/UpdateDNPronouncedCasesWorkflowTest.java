@@ -8,7 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SearchDNPronouncedCases;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SearchDNPronouncedCasesTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateDNPronouncedCase;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -30,7 +30,7 @@ public class UpdateDNPronouncedCasesWorkflowTest {
     private static final int EXPECTED_CASES_PROCESSED_COUNT = 10;
 
     @Mock
-    private SearchDNPronouncedCases searchDNPronouncedCases;
+    private SearchDNPronouncedCasesTask searchDNPronouncedCasesTask;
 
     @Mock
     private UpdateDNPronouncedCase updateDNPronouncedCase;
@@ -40,7 +40,7 @@ public class UpdateDNPronouncedCasesWorkflowTest {
 
     @Test
     public void execute_taskExceptionThrownInAnyTask_workflowExceptionThrown() throws TaskException, WorkflowException {
-        when(searchDNPronouncedCases.execute(any(), any())).thenThrow(new TaskException("a WorfklowException message"));
+        when(searchDNPronouncedCasesTask.execute(any(), any())).thenThrow(new TaskException("a WorfklowException message"));
 
         WorkflowException workflowException = assertThrows(
             WorkflowException.class,
@@ -49,7 +49,7 @@ public class UpdateDNPronouncedCasesWorkflowTest {
 
         assertThat(workflowException.getMessage(), is("a WorfklowException message"));
 
-        verify(searchDNPronouncedCases, times(1)).execute(any(), any());
+        verify(searchDNPronouncedCasesTask, times(1)).execute(any(), any());
         verify(updateDNPronouncedCase, times(0)).execute(any(), any());
     }
 
@@ -60,9 +60,9 @@ public class UpdateDNPronouncedCasesWorkflowTest {
 
         int actualCasesProcessedCount = classUnderTest.run(AUTH_TOKEN);
 
-        verify(searchDNPronouncedCases, times(1)).execute(any(), any());
+        verify(searchDNPronouncedCasesTask, times(1)).execute(any(), any());
         verify(updateDNPronouncedCase, times(1)).execute(any(), any());
-        assertEquals(actualCasesProcessedCount, EXPECTED_CASES_PROCESSED_COUNT);
+        assertEquals(EXPECTED_CASES_PROCESSED_COUNT, actualCasesProcessedCount);
     }
 
     private int getSearchResult(TaskContext taskContext) {
@@ -81,7 +81,7 @@ public class UpdateDNPronouncedCasesWorkflowTest {
         doAnswer(args -> {
             setSearchResult(args.getArgument(0), EXPECTED_CASES_PROCESSED_COUNT);
             return null;
-        }).when(searchDNPronouncedCases).execute(any(), any());
+        }).when(searchDNPronouncedCasesTask).execute(any(), any());
     }
 
     private void whenUpdateTaskGetCasesCountAndPutInContext() throws TaskException {

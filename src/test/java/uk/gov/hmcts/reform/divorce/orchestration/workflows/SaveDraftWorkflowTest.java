@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.EmailNotification;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.EmailNotificationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SaveToDraftStore;
 
 import java.util.Collections;
@@ -36,7 +36,7 @@ public class SaveDraftWorkflowTest {
     @Mock
     private SaveToDraftStore saveToDraftStore;
     @Mock
-    private EmailNotification emailNotification;
+    private EmailNotificationTask emailNotificationTask;
     @InjectMocks
     private SaveDraftWorkflow target;
 
@@ -54,14 +54,14 @@ public class SaveDraftWorkflowTest {
 
         when(saveToDraftStore.execute(argThat(CONTEXT_WITH_AUTH_TOKEN_AND_EMAIL_MATCHER), eq(payload)))
                 .thenReturn(draftSavedPayload);
-        when(emailNotification.execute(argThat(CONTEXT_WITH_AUTH_TOKEN_AND_EMAIL_MATCHER), eq(draftSavedPayload)))
+        when(emailNotificationTask.execute(argThat(CONTEXT_WITH_AUTH_TOKEN_AND_EMAIL_MATCHER), eq(draftSavedPayload)))
                 .thenReturn(emailNotificationPayload);
 
         assertEquals(emailNotificationPayload, target.run(payload, AUTH_TOKEN, Boolean.TRUE.toString()));
 
         verify(saveToDraftStore).execute(argThat(CONTEXT_WITH_AUTH_TOKEN_AND_EMAIL_MATCHER),
                 eq(payload));
-        verify(emailNotification).execute(argThat(CONTEXT_WITH_AUTH_TOKEN_AND_EMAIL_MATCHER), eq(draftSavedPayload));
+        verify(emailNotificationTask).execute(argThat(CONTEXT_WITH_AUTH_TOKEN_AND_EMAIL_MATCHER), eq(draftSavedPayload));
     }
 
     @SuppressWarnings("unchecked")
@@ -79,6 +79,6 @@ public class SaveDraftWorkflowTest {
         target.run(payload, AUTH_TOKEN, Boolean.TRUE.toString());
 
         verify(saveToDraftStore).execute(argThat(CONTEXT_WITH_AUTH_TOKEN_AND_EMAIL_MATCHER), eq(payload));
-        verify(emailNotification, never()).execute(any(TaskContext.class), any());
+        verify(emailNotificationTask, never()).execute(any(TaskContext.class), any());
     }
 }
