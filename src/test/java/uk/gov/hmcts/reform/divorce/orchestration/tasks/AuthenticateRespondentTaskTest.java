@@ -21,7 +21,7 @@ import static org.junit.Assert.assertTrue;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AuthenticateRespondentTaskUTest {
+public class AuthenticateRespondentTaskTest {
     private static final String AUTH_TOKEN = "some token";
     private static final String BEARER_AUTH_TOKEN = "Bearer some token";
     private static final Boolean PAYLOAD = false;

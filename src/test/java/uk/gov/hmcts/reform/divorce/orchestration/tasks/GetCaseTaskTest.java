@@ -32,7 +32,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.T
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.COURT_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GetCaseTaskUTest {
+public class GetCaseTaskTest {
 
     @Mock
     private CaseMaintenanceClient caseMaintenanceClient;

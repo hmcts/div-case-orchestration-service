@@ -59,7 +59,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.BulkCaseCreateTask.BULK_CASE_TITLE;
 
 @RunWith(MockitoJUnitRunner.class)
-public class BulkCaseCreateTaskUTest {
+public class BulkCaseCreateTaskTest {
 
     private static final String FAMILY_MAN_NUMBER = "fmNumber";
     private static final String CLAIM_COST_OPTION = "Yes";
