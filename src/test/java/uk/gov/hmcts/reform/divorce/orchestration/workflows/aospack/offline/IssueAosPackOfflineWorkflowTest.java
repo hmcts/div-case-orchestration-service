@@ -25,7 +25,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AosPackDueDateSetterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStoreTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.MarkJourneyAsOffline;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.MarkJourneyAsOfflineTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MultipleDocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.DocumentGenerator;
@@ -126,7 +126,7 @@ public class IssueAosPackOfflineWorkflowTest {
     private AosPackDueDateSetterTask aosPackDueDateSetterTask;
 
     @Mock
-    private MarkJourneyAsOffline markJourneyAsOffline;
+    private MarkJourneyAsOfflineTask markJourneyAsOfflineTask;
 
     @Mock
     private DocumentTemplateService documentTemplateService;
@@ -151,7 +151,7 @@ public class IssueAosPackOfflineWorkflowTest {
         when(addNewDocumentsToCaseDataTask.execute(any(), any())).thenReturn(singletonMap("returnedKey2", "returnedValue2"));
         when(fetchPrintDocsFromDmStoreTask.execute(any(), any())).thenReturn(singletonMap("returnedKey3", "returnedValue3"));
         when(bulkPrinterTask.execute(any(), any())).thenReturn(singletonMap("returnedKey4", "returnedValue4"));
-        when(markJourneyAsOffline.execute(any(), any())).thenReturn(singletonMap("returnedKey5", "returnedValue5"));
+        when(markJourneyAsOfflineTask.execute(any(), any())).thenReturn(singletonMap("returnedKey5", "returnedValue5"));
         when(aosPackDueDateSetterTask.execute(any(), any())).thenReturn(singletonMap("returnedKey6", "returnedValue6"));
 
         ImmutableMap<DivorceFacts, DocumentGenerator> issueAosPackOffLine = ImmutableMap.of(
@@ -422,7 +422,7 @@ public class IssueAosPackOfflineWorkflowTest {
             Matchers.<String, Object>hasEntry("returnedKey3", "returnedValue3")
         )));
 
-        verify(markJourneyAsOffline).execute(taskContextArgumentCaptor.capture(), argThat(allOf(
+        verify(markJourneyAsOfflineTask).execute(taskContextArgumentCaptor.capture(), argThat(allOf(
                 Matchers.<String, Object>hasEntry("returnedKey4", "returnedValue4")
         )));
     }

@@ -36,7 +36,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mo
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GetCaseTaskWorkflowTest {
+public class GetCaseWorkflowTest {
 
     @Mock
     private GetCaseTask getCaseTask;

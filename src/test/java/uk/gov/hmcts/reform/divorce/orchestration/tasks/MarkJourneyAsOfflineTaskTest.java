@@ -22,10 +22,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.DIVORCE_PARTY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class MarkJourneyAsOfflineTest {
+public class MarkJourneyAsOfflineTaskTest {
 
     @InjectMocks
-    private MarkJourneyAsOffline markJourneyAsOffline;
+    private MarkJourneyAsOfflineTask markJourneyAsOfflineTask;
 
     private Map<String, Object> testData;
     private TaskContext context;
@@ -40,7 +40,7 @@ public class MarkJourneyAsOfflineTest {
     public void whenExecute_thenRespContactMethodIsDigitalIsSetToNo_forRespondent() {
         context.setTransientObject(DIVORCE_PARTY, RESPONDENT);
 
-        Map<String, Object> returnedPayload = markJourneyAsOffline.execute(context, testData);
+        Map<String, Object> returnedPayload = markJourneyAsOfflineTask.execute(context, testData);
         assertThat(returnedPayload, allOf(
                 hasEntry(RESP_IS_USING_DIGITAL_CHANNEL, NO_VALUE)
         ));
@@ -50,7 +50,7 @@ public class MarkJourneyAsOfflineTest {
     public void whenExecute_thenCoRespContactMethodIsDigitalIsSetToNo_forCoRespondent() {
         context.setTransientObject(DIVORCE_PARTY, CO_RESPONDENT);
 
-        Map<String, Object> returnedPayload = markJourneyAsOffline.execute(context, testData);
+        Map<String, Object> returnedPayload = markJourneyAsOfflineTask.execute(context, testData);
         assertThat(returnedPayload, allOf(
                 hasEntry(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE)
         ));

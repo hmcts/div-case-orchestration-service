@@ -15,7 +15,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.DIVORCE_PARTY;
 
 @Component
-public class MarkJourneyAsOffline implements Task<Map<String, Object>> {
+public class MarkJourneyAsOfflineTask implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) {
