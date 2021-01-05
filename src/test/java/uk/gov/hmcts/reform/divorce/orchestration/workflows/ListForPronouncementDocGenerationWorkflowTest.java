@@ -6,14 +6,12 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetFormattedDnCourtDetails;
@@ -25,7 +23,6 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -65,11 +62,6 @@ public class ListForPronouncementDocGenerationWorkflowTest {
     @Mock
     private UpdateDivorceCaseRemovePronouncementDetailsWithinBulkTask removePronouncementDetailsTask;
 
-    @Mock
-    private DocumentTemplateService documentTemplateService;
-
-
-
     @Test
     public void callsTheRequiredTasksInOrder() throws TaskException, WorkflowException {
         final Map<String, Object> payload = new HashMap<>();
@@ -89,8 +81,6 @@ public class ListForPronouncementDocGenerationWorkflowTest {
         when(documentGenerationTask.execute(context, payload)).thenReturn(payload);
         when(addNewDocumentsToCaseDataTask.execute(context, payload)).thenReturn(payload);
         when(removePronouncementDetailsTask.execute(context, payload)).thenReturn(payload);
-        when(documentTemplateService.getTemplateId(payload, DocumentType.BULK_LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID))
-                .thenReturn(LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID);
 
         final Map<String, Object> result = classToTest.run(ccdCallbackRequest, AUTH_TOKEN);
 
@@ -109,8 +99,6 @@ public class ListForPronouncementDocGenerationWorkflowTest {
         inOrder.verify(documentGenerationTask).execute(context, payload);
         inOrder.verify(addNewDocumentsToCaseDataTask).execute(context, payload);
         inOrder.verify(removePronouncementDetailsTask).execute(context, payload);
-        verify(documentTemplateService).getTemplateId(eq(payload),
-                eq(DocumentType.BULK_LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID));
     }
 
     @Test
@@ -127,8 +115,6 @@ public class ListForPronouncementDocGenerationWorkflowTest {
 
         when(syncBulkCaseListTask.execute(context, payload)).thenReturn(payload);
         when(removePronouncementDetailsTask.execute(context, payload)).thenReturn(payload);
-        when(documentTemplateService.getTemplateId(payload, DocumentType.BULK_LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID))
-                .thenReturn(LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID);
 
         final Map<String, Object> result = classToTest.run(ccdCallbackRequest, AUTH_TOKEN);
 
@@ -139,8 +125,6 @@ public class ListForPronouncementDocGenerationWorkflowTest {
         verify(documentGenerationTask, never()).execute(context, payload);
         verify(addNewDocumentsToCaseDataTask, never()).execute(context, payload);
         verify(removePronouncementDetailsTask, times(1)).execute(context, payload);
-        verify(documentTemplateService).getTemplateId(eq(payload),
-                eq(DocumentType.BULK_LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID));
     }
 
     private TaskContext getTaskContext(final CaseDetails caseDetails) {

@@ -9,13 +9,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -37,9 +35,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class CoRespondentAnswersGeneratorTaskTest {
     @Mock
     private DocumentGeneratorClient documentGeneratorClient;
-
-    @Mock
-    private DocumentTemplateService documentTemplateService;
 
     @InjectMocks
     private CoRespondentAnswersGeneratorTask coRespondentAnswersGeneratorTask;
@@ -72,7 +67,6 @@ public class CoRespondentAnswersGeneratorTaskTest {
 
         //given
         when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(expectedRespondentAnswers);
-        when(documentTemplateService.getTemplateId(payload, DocumentType.CO_RESPONDENT_ANSWERS)).thenReturn(CO_RESPONDENT_ANSWERS_TEMPLATE_NAME);
 
         //when
         coRespondentAnswersGeneratorTask.execute(context, payload);
@@ -104,7 +98,6 @@ public class CoRespondentAnswersGeneratorTaskTest {
 
         //given
         when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN)).thenThrow(FeignException.class);
-        when(documentTemplateService.getTemplateId(payload, DocumentType.CO_RESPONDENT_ANSWERS)).thenReturn(CO_RESPONDENT_ANSWERS_TEMPLATE_NAME);
 
         //when
         coRespondentAnswersGeneratorTask.execute(context, payload);

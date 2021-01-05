@@ -4,13 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentTypeHelper;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetFormattedDnCourtDetails;
@@ -44,14 +44,13 @@ public class ListForPronouncementDocGenerationWorkflow extends DefaultWorkflow<M
     private final SyncBulkCaseListTask syncBulkCaseListTask;
 
     private final UpdateDivorceCaseRemovePronouncementDetailsWithinBulkTask removePronouncementDetailsTask;
-    private final DocumentTemplateService documentTemplateService;
 
     public Map<String, Object> run(final CcdCallbackRequest ccdCallbackRequest, final String authToken) throws WorkflowException {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         Map<String, Object> caseData = caseDetails.getCaseData();
 
         String judgeName = (String) caseData.get(PRONOUNCEMENT_JUDGE_CCD_FIELD);
-        final String templateId = documentTemplateService.getTemplateId(caseData, DocumentType.BULK_LIST_FOR_PRONOUNCEMENT_TEMPLATE_ID);
+        final String templateId = DocumentTypeHelper.getLanguageAppropriateTemplate(caseData, DocumentType.BULK_LIST_FOR_PRONOUNCEMENT);
 
         List<Task<Map<String, Object>>> taskList = new ArrayList<>();
         taskList.add(syncBulkCaseListTask);

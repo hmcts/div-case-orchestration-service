@@ -4,13 +4,13 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentTypeHelper;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.ArrayList;
@@ -55,7 +55,6 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
     private static final String VALUE_KEY = "value";
 
     private final DocumentGeneratorClient documentGeneratorClient;
-    private final DocumentTemplateService documentTemplateService;
     private final CcdUtil ccdUtil;
 
     @Override
@@ -86,7 +85,7 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
         });
 
         if (REFUSAL_DECISION_MORE_INFO_VALUE.equalsIgnoreCase((String) caseData.get(REFUSAL_DECISION_CCD_FIELD))) {
-            String templateId = documentTemplateService.getTemplateId(caseData, DocumentType.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID);
+            String templateId = DocumentTypeHelper.getLanguageAppropriateTemplate(caseData, DocumentType.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION);
 
             GeneratedDocumentInfo generatedDocumentInfo = generatePdfDocument(
                 templateId,
@@ -105,7 +104,7 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
             Map<String, Object> caseDataToSend = new HashMap<>(caseData);
             caseDataToSend.put(FEE_TO_PAY_JSON_KEY, amendFee.getFormattedFeeAmount());
 
-            String templateId = documentTemplateService.getTemplateId(caseData, DocumentType.DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID);
+            String templateId = DocumentTypeHelper.getLanguageAppropriateTemplate(caseData, DocumentType.DECREE_NISI_REFUSAL_ORDER_REJECTION);
 
             GeneratedDocumentInfo generatedDocumentInfo = generatePdfDocument(
                 templateId,

@@ -5,13 +5,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentTypeHelper;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -33,7 +33,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RequiredArgsConstructor
 public class CoRespondentLetterGeneratorTask implements Task<Map<String, Object>> {
     private final DocumentGeneratorClient documentGeneratorClient;
-    private final DocumentTemplateService documentTemplateService;
 
     @Override
     public Map<String, Object> execute(final TaskContext context, final Map<String, Object> caseData) {
@@ -41,7 +40,7 @@ public class CoRespondentLetterGeneratorTask implements Task<Map<String, Object>
 
         final NumberFormat poundsOnlyFormat = new DecimalFormat("#");
         final String petitionIssueFee = poundsOnlyFormat.format(((FeeResponse) context.getTransientObject(PETITION_FEE_JSON_KEY)).getAmount());
-        final String templateId = documentTemplateService.getTemplateId(caseData, DocumentType.CO_RESPONDENT_INVITATION);
+        final String templateId = DocumentTypeHelper.getLanguageAppropriateTemplate(caseData, DocumentType.CO_RESPONDENT_INVITATION);
 
         GeneratedDocumentInfo coRespondentInvitation =
             documentGeneratorClient.generatePDF(

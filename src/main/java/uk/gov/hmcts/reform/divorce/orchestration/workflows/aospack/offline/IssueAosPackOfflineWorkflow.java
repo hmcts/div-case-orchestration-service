@@ -5,15 +5,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.model.parties.DivorceParty;
-import uk.gov.hmcts.reform.divorce.orchestration.config.IssueAosPackOfflineDocuments;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.AosPackOfflineDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentTypeHelper;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentGenerationRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AosPackDueDateSetterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStoreTask;
@@ -24,25 +24,24 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinter
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.RESPONDENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.AOS_OFFLINE_ADULTERY_CO_RESPONDENT_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.RESPONDENT_AOS_INVITATION_LETTER_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_GENERATION_REQUESTS_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.DIVORCE_PARTY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.AOSPackOfflineConstants.AOS_OFFLINE_ADULTERY_CO_RESPONDENT_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.AOSPackOfflineConstants.AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.AOSPackOfflineConstants.CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.AOSPackOfflineConstants.CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.AOSPackOfflineConstants.RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.AOSPackOfflineConstants.RESPONDENT_AOS_INVITATION_LETTER_FILENAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.BULK_PRINT_LETTER_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.DOCUMENT_TYPES_TO_PRINT;
 
@@ -62,8 +61,6 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
     private final BulkPrinterTask bulkPrinterTask;
     private final MarkJourneyAsOfflineTask markJourneyAsOfflineTask;
     private final AosPackDueDateSetterTask aosPackDueDateSetterTask;
-    private final DocumentTemplateService documentTemplateService;
-    private final IssueAosPackOfflineDocuments issueAosPackOfflineDocuments;
 
     public Map<String, Object> run(String authToken, CaseDetails caseDetails, DivorceParty divorceParty)
         throws WorkflowException {
@@ -140,31 +137,32 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
 
     private void updateCORespondentDocumentGenerationRequests(Map<String, Object> caseData,
                                                               List<DocumentGenerationRequest> documentGenerationRequestList) {
-        String templateId = documentTemplateService.getTemplateId(caseData, DocumentType.CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID);
+        String templateId = DocumentTypeHelper.getLanguageAppropriateTemplate(caseData, DocumentType.CO_RESPONDENT_AOS_INVITATION_LETTER);
         documentGenerationRequestList.add(new DocumentGenerationRequest(templateId,
-            CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE.getValue(),
-            CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME.getValue()));
+            CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE,
+            CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME));
 
-        templateId = documentTemplateService.getTemplateId(caseData, DocumentType.AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID);
+        templateId = DocumentTypeHelper.getLanguageAppropriateTemplate(caseData, DocumentType.AOS_OFFLINE_ADULTERY_CO_RESPONDENT);
         documentGenerationRequestList.add(new DocumentGenerationRequest(templateId,
-            AOS_OFFLINE_ADULTERY_CO_RESPONDENT_DOCUMENT_TYPE.getValue(),
-            AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME.getValue()));
+            AOS_OFFLINE_ADULTERY_CO_RESPONDENT_DOCUMENT_TYPE,
+            AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME));
     }
 
     private void updateRespondentDocumentGenerationRequests(String reasonForDivorce, Map<String, Object> caseData,
                                                             List<DocumentGenerationRequest> documentGenerationRequestList) {
-        String templateId = documentTemplateService.getTemplateId(caseData, DocumentType.RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID);
+        String templateId = DocumentTypeHelper.getLanguageAppropriateTemplate(caseData, DocumentType.RESPONDENT_AOS_INVITATION_LETTER);
 
         documentGenerationRequestList.add(new DocumentGenerationRequest(templateId,
-            RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE.getValue(),
-            RESPONDENT_AOS_INVITATION_LETTER_FILENAME.getValue()));
+            RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE,
+            RESPONDENT_AOS_INVITATION_LETTER_FILENAME));
 
         log.debug("reasonForDivorce is {}", reasonForDivorce);
-        DivorceFacts divorceFact = DivorceFacts.getDivorceFact(reasonForDivorce);
-
-        documentGenerationRequestList.add(Optional.ofNullable(
-            issueAosPackOfflineDocuments.getIssueAosPackOffLine().get(divorceFact))
-            .map(documentGen -> documentGen.getDocumentGenerationRequest(documentTemplateService, caseData))
-            .orElseThrow(() -> new IllegalArgumentException(String.format(ERROR_MESSAGE, reasonForDivorce))));
+        DivorceFact divorceFact = DivorceFact.getDivorceFact(reasonForDivorce);
+        documentGenerationRequestList.add(
+            AosPackOfflineDocuments.getDocumentGenerationInfoByDivorceFact(divorceFact)
+                .map(documentGenerationInfo -> documentGenerationInfo.buildDocumentGenerationRequest(caseData))
+                .orElseThrow(() -> new IllegalArgumentException(String.format(ERROR_MESSAGE, reasonForDivorce)))
+        );
     }
+
 }

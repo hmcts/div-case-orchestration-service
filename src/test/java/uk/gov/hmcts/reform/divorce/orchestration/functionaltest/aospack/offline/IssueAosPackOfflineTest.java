@@ -38,18 +38,18 @@ import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.CO_RESPONDE
 import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.AOS_OFFLINE_ADULTERY_CO_RESPONDENT_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.RESPONDENT_AOS_INVITATION_LETTER_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.AOSPackOfflineConstants.AOS_OFFLINE_ADULTERY_CO_RESPONDENT_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.AOSPackOfflineConstants.AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.AOSPackOfflineConstants.AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.AOSPackOfflineConstants.AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.AOSPackOfflineConstants.CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.AOSPackOfflineConstants.CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.AOSPackOfflineConstants.RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.AOSPackOfflineConstants.RESPONDENT_AOS_INVITATION_LETTER_FILENAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.SEPARATION_TWO_YEARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
@@ -95,15 +95,15 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
 
         String invitationLetterDocumentId = stubDocumentGeneratorService(RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
-            RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE.getValue()
+            RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE
         );
-        String invitationLetterFilename = RESPONDENT_AOS_INVITATION_LETTER_FILENAME.getValue() + caseDetails.getCaseId();
+        String invitationLetterFilename = RESPONDENT_AOS_INVITATION_LETTER_FILENAME + caseDetails.getCaseId();
 
         String formDocumentId = stubDocumentGeneratorService(AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
-            AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE.getValue()
+            AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE
         );
-        String formFilename = AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME.getValue() + caseDetails.getCaseId();
+        String formFilename = AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME + caseDetails.getCaseId();
 
         stubDMStore(invitationLetterDocumentId, FIRST_FILE_BYTES);
         stubDMStore(formDocumentId, SECOND_FILE_BYTES);
@@ -145,15 +145,15 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
 
         String invitationLetterDocumentId = stubDocumentGeneratorService(CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
-            CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE.getValue()
+            CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE
         );
-        String invitationLetterFilename = CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME.getValue() + caseDetails.getCaseId();
+        String invitationLetterFilename = CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME + caseDetails.getCaseId();
 
         String formDocumentId = stubDocumentGeneratorService(AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
-            AOS_OFFLINE_ADULTERY_CO_RESPONDENT_DOCUMENT_TYPE.getValue()
+            AOS_OFFLINE_ADULTERY_CO_RESPONDENT_DOCUMENT_TYPE
         );
-        String formFilename = AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME.getValue()  + caseDetails.getCaseId();
+        String formFilename = AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME  + caseDetails.getCaseId();
 
         stubDMStore(invitationLetterDocumentId, FIRST_FILE_BYTES);
         stubDMStore(formDocumentId, SECOND_FILE_BYTES);
@@ -209,12 +209,12 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
 
         String invitationLetterDocumentId = stubDocumentGeneratorService(RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
-            RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE.getValue()
+            RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE
         );
 
         String formDocumentId = stubDocumentGeneratorService(AOS_OFFLINE_TWO_YEAR_SEPARATION_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
-            AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE.getValue()
+            AOS_OFFLINE_TWO_YEAR_SEPARATION_DOCUMENT_TYPE
         );
 
         stubDMStore(invitationLetterDocumentId, FIRST_FILE_BYTES);
@@ -241,12 +241,12 @@ public class IssueAosPackOfflineTest extends MockedFunctionalTest {
 
         String invitationLetterDocumentId = stubDocumentGeneratorService(CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
-            CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE.getValue()
+            CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE
         );
 
         String formDocumentId = stubDocumentGeneratorService(AOS_OFFLINE_ADULTERY_CO_RESPONDENT_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
-            AOS_OFFLINE_ADULTERY_CO_RESPONDENT_DOCUMENT_TYPE.getValue()
+            AOS_OFFLINE_ADULTERY_CO_RESPONDENT_DOCUMENT_TYPE
         );
 
         stubDMStore(invitationLetterDocumentId, FIRST_FILE_BYTES);
