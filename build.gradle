@@ -370,8 +370,10 @@ dependencies {
                 exclude group: 'io.reactivex', module: 'rxnetty-servo'
             }
 
+    contractTestCompile group: 'com.google.guava', name: 'guava', version: versions.guava
     contractTestCompile group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
     contractTestCompile group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
+    contractTestRuntime group: 'com.google.guava', name: 'guava', version: versions.guava
     contractTestRuntime group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
     contractTestRuntime group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
 

@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AosPackDueDateSetterTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStoreTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetRespondentLinkingFields;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
@@ -31,7 +31,7 @@ public class RespondentSolicitorNominatedWorkflow extends DefaultWorkflow<Map<St
     private final RespondentPinGenerator respondentPinGenerator;
     private final RespondentLetterGenerator respondentLetterGenerator;
     private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
-    private final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
+    private final FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask;
     private final RespondentAosPackPrinterTask respondentAosPackPrinterTask;
     private final AosPackDueDateSetterTask aosPackDueDateSetterTask;
     private final ResetRespondentLinkingFields resetRespondentLinkingFields;
@@ -40,14 +40,14 @@ public class RespondentSolicitorNominatedWorkflow extends DefaultWorkflow<Map<St
     public RespondentSolicitorNominatedWorkflow(RespondentPinGenerator respondentPinGenerator,
                                                 RespondentLetterGenerator respondentLetterGenerator,
                                                 AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask,
-                                                FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore,
+                                                FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask,
                                                 RespondentAosPackPrinterTask respondentAosPackPrinterTask,
                                                 AosPackDueDateSetterTask aosPackDueDateSetterTask,
                                                 ResetRespondentLinkingFields resetRespondentLinkingFields) {
         this.respondentPinGenerator = respondentPinGenerator;
         this.respondentLetterGenerator = respondentLetterGenerator;
         this.addNewDocumentsToCaseDataTask = addNewDocumentsToCaseDataTask;
-        this.fetchPrintDocsFromDmStore = fetchPrintDocsFromDmStore;
+        this.fetchPrintDocsFromDmStoreTask = fetchPrintDocsFromDmStoreTask;
         this.respondentAosPackPrinterTask = respondentAosPackPrinterTask;
         this.aosPackDueDateSetterTask = aosPackDueDateSetterTask;
         this.resetRespondentLinkingFields = resetRespondentLinkingFields;
@@ -60,7 +60,7 @@ public class RespondentSolicitorNominatedWorkflow extends DefaultWorkflow<Map<St
         tasks.add(respondentPinGenerator);
         tasks.add(respondentLetterGenerator);
         tasks.add(addNewDocumentsToCaseDataTask);
-        tasks.add(fetchPrintDocsFromDmStore);
+        tasks.add(fetchPrintDocsFromDmStoreTask);
         tasks.add(respondentAosPackPrinterTask);
         tasks.add(aosPackDueDateSetterTask);
         tasks.add(resetRespondentLinkingFields);

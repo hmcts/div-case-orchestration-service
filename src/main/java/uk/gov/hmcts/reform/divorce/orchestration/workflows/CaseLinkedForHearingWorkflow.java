@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStoreTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerCoENotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentCoENotificationEmailTask;
@@ -48,7 +48,7 @@ public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Ob
     private final CoERespondentSolicitorLetterGenerationTask coERespondentSolicitorLetterGenerationTask;
     private final CoECoRespondentCoverLetterGenerationTask coECoRespondentCoverLetterGenerationTask;
 
-    private final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
+    private final FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask;
     private final MultiBulkPrinterTask multiBulkPrinterTask;
 
     private final FeatureToggleService featureToggleService;
@@ -101,7 +101,7 @@ public class CaseLinkedForHearingWorkflow extends DefaultWorkflow<Map<String, Ob
         if (oneOrMorePartyUsesPaperUpdates) {
             if (isPaperUpdateEnabled()) {
                 log.info("Features.PAPER_UPDATE = on. Add tasks to send documents to bulk print");
-                tasks.add(fetchPrintDocsFromDmStore);
+                tasks.add(fetchPrintDocsFromDmStoreTask);
                 tasks.add(multiBulkPrinterTask);
             } else {
                 log.info("Features.PAPER_UPDATE = off. Nothing will be sent to bulk print. Defaulting to email.");

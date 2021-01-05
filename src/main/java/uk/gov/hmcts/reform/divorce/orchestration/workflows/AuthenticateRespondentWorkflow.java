@@ -6,23 +6,23 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.AuthenticateRespondent;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AuthenticateRespondentTask;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 
 @Component
 public class AuthenticateRespondentWorkflow extends DefaultWorkflow<Boolean> {
-    private final AuthenticateRespondent authenticateRespondent;
+    private final AuthenticateRespondentTask authenticateRespondentTask;
 
     @Autowired
-    public AuthenticateRespondentWorkflow(AuthenticateRespondent authenticateRespondent) {
-        this.authenticateRespondent = authenticateRespondent;
+    public AuthenticateRespondentWorkflow(AuthenticateRespondentTask authenticateRespondentTask) {
+        this.authenticateRespondentTask = authenticateRespondentTask;
     }
 
     public Boolean run(String authToken) throws WorkflowException {
         return this.execute(
             new Task[] {
-                authenticateRespondent,
+                authenticateRespondentTask,
             },
             null,
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken)

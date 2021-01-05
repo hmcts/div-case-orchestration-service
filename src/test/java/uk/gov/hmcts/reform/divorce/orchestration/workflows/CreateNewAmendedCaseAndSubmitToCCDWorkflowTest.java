@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CopyPetitionerSolicitorDetailsTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CreateAmendPetitionDraftForRefusalFromCaseIdTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseData;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetAmendedCaseIdTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SolicitorSubmitCaseToCCDTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseDataTask;
@@ -45,7 +45,7 @@ public class CreateNewAmendedCaseAndSubmitToCCDWorkflowTest {
     private CreateAmendPetitionDraftForRefusalFromCaseIdTask createAmendPetitionDraftForRefusalFromCaseIdTask;
 
     @Mock
-    private FormatDivorceSessionToCaseData formatDivorceSessionToCaseData;
+    private FormatDivorceSessionToCaseDataTask formatDivorceSessionToCaseDataTask;
 
     @Mock
     private CopyPetitionerSolicitorDetailsTask copyPetitionerSolicitorDetailsTask;
@@ -90,7 +90,7 @@ public class CreateNewAmendedCaseAndSubmitToCCDWorkflowTest {
         Map<String, Object> newCCDCaseData = ImmutableMap.of(D_8_CASE_REFERENCE, TEST_CASE_FAMILY_MAN_ID);
         Map<String, Object> newSubmitedCCDCaseData = ImmutableMap.of(ID, newCaseId);
         when(createAmendPetitionDraftForRefusalFromCaseIdTask.execute(context, testData)).thenReturn(newDivorceCaseData);
-        when(formatDivorceSessionToCaseData.execute(context, newDivorceCaseData)).thenReturn(newCCDCaseData);
+        when(formatDivorceSessionToCaseDataTask.execute(context, newDivorceCaseData)).thenReturn(newCCDCaseData);
         when(copyPetitionerSolicitorDetailsTask.execute(context, newCCDCaseData)).thenReturn(newCCDCaseData);
         when(validateCaseDataTask.execute(context, newCCDCaseData)).thenReturn(newCCDCaseData);
         when(solicitorSubmitCaseToCCDTask.execute(context, newCCDCaseData)).thenReturn(newSubmitedCCDCaseData);
@@ -99,11 +99,11 @@ public class CreateNewAmendedCaseAndSubmitToCCDWorkflowTest {
         assertEquals(testData, createNewAmendedCaseAndSubmitToCCDWorkflow.run(caseDetails, AUTH_TOKEN));
 
         InOrder inOrder =
-            inOrder(createAmendPetitionDraftForRefusalFromCaseIdTask, formatDivorceSessionToCaseData,
+            inOrder(createAmendPetitionDraftForRefusalFromCaseIdTask, formatDivorceSessionToCaseDataTask,
                 copyPetitionerSolicitorDetailsTask, validateCaseDataTask, solicitorSubmitCaseToCCDTask, setAmendedCaseIdTask);
 
         inOrder.verify(createAmendPetitionDraftForRefusalFromCaseIdTask).execute(context, testData);
-        inOrder.verify(formatDivorceSessionToCaseData).execute(context, newDivorceCaseData);
+        inOrder.verify(formatDivorceSessionToCaseDataTask).execute(context, newDivorceCaseData);
         inOrder.verify(copyPetitionerSolicitorDetailsTask).execute(context, newCCDCaseData);
         inOrder.verify(validateCaseDataTask).execute(context, newCCDCaseData);
         inOrder.verify(solicitorSubmitCaseToCCDTask).execute(context, newCCDCaseData);
