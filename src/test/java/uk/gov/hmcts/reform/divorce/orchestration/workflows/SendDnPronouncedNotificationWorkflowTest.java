@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStoreTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentGenericUpdateNotificationEmailTask;
@@ -77,7 +77,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
     private DnGrantedRespondentSolicitorCoverLetterGenerationTask dnGrantedRespondentSolicitorCoverLetterGenerationTask;
 
     @Mock
-    private FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
+    private FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask;
 
     @Mock
     private MultiBulkPrinterTask multiBulkPrinterTask;
@@ -165,7 +165,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
             caseData,
             sendPetitionerGenericUpdateNotificationEmailTask,
             dnGrantedRespondentSolicitorCoverLetterGenerationTask,
-            fetchPrintDocsFromDmStore,
+            fetchPrintDocsFromDmStoreTask,
             multiBulkPrinterTask
         );
 
@@ -175,7 +175,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
             caseData,
             sendPetitionerGenericUpdateNotificationEmailTask,
             dnGrantedRespondentSolicitorCoverLetterGenerationTask,
-            fetchPrintDocsFromDmStore,
+            fetchPrintDocsFromDmStoreTask,
             multiBulkPrinterTask
         );
         verifyTaskWasNeverCalled(sendRespondentGenericUpdateNotificationEmailTask);
@@ -215,7 +215,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
             sendPetitionerGenericUpdateNotificationEmailTask,
             sendRespondentGenericUpdateNotificationEmailTask,
             costOrderCoRespondentCoverLetterGenerationTask,
-            fetchPrintDocsFromDmStore,
+            fetchPrintDocsFromDmStoreTask,
             multiBulkPrinterTask
         );
 
@@ -226,7 +226,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
             sendPetitionerGenericUpdateNotificationEmailTask,
             sendRespondentGenericUpdateNotificationEmailTask,
             costOrderCoRespondentCoverLetterGenerationTask,
-            fetchPrintDocsFromDmStore,
+            fetchPrintDocsFromDmStoreTask,
             multiBulkPrinterTask
         );
     }
@@ -304,7 +304,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
             sendPetitionerGenericUpdateNotificationEmailTask,
             dnGrantedRespondentCoverLetterGenerationTask,
             costOrderCoRespondentCoverLetterGenerationTask,
-            fetchPrintDocsFromDmStore,
+            fetchPrintDocsFromDmStoreTask,
             multiBulkPrinterTask
         );
 
@@ -315,7 +315,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
             sendPetitionerGenericUpdateNotificationEmailTask,
             dnGrantedRespondentCoverLetterGenerationTask,
             costOrderCoRespondentCoverLetterGenerationTask,
-            fetchPrintDocsFromDmStore,
+            fetchPrintDocsFromDmStoreTask,
             multiBulkPrinterTask
         );
         verifyTaskWasNeverCalled(sendRespondentGenericUpdateNotificationEmailTask);
@@ -342,7 +342,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
             sendPetitionerGenericUpdateNotificationEmailTask,
             dnGrantedRespondentSolicitorCoverLetterGenerationTask,
             costOrderCoRespondentSolicitorCoverLetterGenerationTask,
-            fetchPrintDocsFromDmStore,
+            fetchPrintDocsFromDmStoreTask,
             multiBulkPrinterTask
         );
 
@@ -353,7 +353,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
             sendPetitionerGenericUpdateNotificationEmailTask,
             dnGrantedRespondentSolicitorCoverLetterGenerationTask,
             costOrderCoRespondentSolicitorCoverLetterGenerationTask,
-            fetchPrintDocsFromDmStore,
+            fetchPrintDocsFromDmStoreTask,
             multiBulkPrinterTask
         );
         verifyTaskWasNeverCalled(sendRespondentGenericUpdateNotificationEmailTask);
@@ -399,7 +399,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
             sendPetitionerGenericUpdateNotificationEmailTask,
             sendRespondentGenericUpdateNotificationEmailTask,
             costOrderCoRespondentCoverLetterGenerationTask,
-            fetchPrintDocsFromDmStore,
+            fetchPrintDocsFromDmStoreTask,
             multiBulkPrinterTask
         );
 
@@ -410,7 +410,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
             sendPetitionerGenericUpdateNotificationEmailTask,
             sendRespondentGenericUpdateNotificationEmailTask,
             costOrderCoRespondentCoverLetterGenerationTask,
-            fetchPrintDocsFromDmStore,
+            fetchPrintDocsFromDmStoreTask,
             multiBulkPrinterTask
         );
         verifyTaskWasNeverCalled(costOrderCoRespondentSolicitorCoverLetterGenerationTask);
@@ -430,7 +430,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
             sendPetitionerGenericUpdateNotificationEmailTask,
             sendRespondentGenericUpdateNotificationEmailTask,
             costOrderCoRespondentSolicitorCoverLetterGenerationTask,
-            fetchPrintDocsFromDmStore,
+            fetchPrintDocsFromDmStoreTask,
             multiBulkPrinterTask
         );
 
@@ -444,7 +444,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
             sendPetitionerGenericUpdateNotificationEmailTask,
             sendRespondentGenericUpdateNotificationEmailTask,
             costOrderCoRespondentSolicitorCoverLetterGenerationTask,
-            fetchPrintDocsFromDmStore,
+            fetchPrintDocsFromDmStoreTask,
             multiBulkPrinterTask
         );
         verifyTaskWasNeverCalled(costOrderCoRespondentCoverLetterGenerationTask);
@@ -523,7 +523,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
         verifyTaskWasNeverCalled(costOrderCoRespondentCoverLetterGenerationTask);
         verifyTaskWasNeverCalled(dnGrantedRespondentSolicitorCoverLetterGenerationTask);
         verifyTaskWasNeverCalled(dnGrantedRespondentCoverLetterGenerationTask);
-        verifyTaskWasNeverCalled(fetchPrintDocsFromDmStore);
+        verifyTaskWasNeverCalled(fetchPrintDocsFromDmStoreTask);
         verifyTaskWasNeverCalled(multiBulkPrinterTask);
     }
 }

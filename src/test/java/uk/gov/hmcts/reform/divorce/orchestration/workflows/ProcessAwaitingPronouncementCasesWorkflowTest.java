@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.BulkCaseCreate;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.BulkCaseCreateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SearchAwaitingPronouncementCases;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateDivorceCaseWithinBulk;
 
@@ -28,7 +28,7 @@ public class ProcessAwaitingPronouncementCasesWorkflowTest {
     private SearchAwaitingPronouncementCases searchAwaitingPronouncementCasesMock;
 
     @Mock
-    private BulkCaseCreate createBulkCaseMock;
+    private BulkCaseCreateTask createBulkCaseMock;
 
     @Mock
     private UpdateDivorceCaseWithinBulk updateDivorceCaseWithinBulkMock;
