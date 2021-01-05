@@ -9,13 +9,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -44,9 +42,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class CoRespondentLetterGeneratorTaskTest {
     @Mock
     private DocumentGeneratorClient documentGeneratorClient;
-
-    @Mock
-    private DocumentTemplateService documentTemplateService;
 
     @InjectMocks
     private CoRespondentLetterGeneratorTask coRespondentLetterGeneratorTask;
@@ -91,9 +86,6 @@ public class CoRespondentLetterGeneratorTaskTest {
 
         //given
         when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(expectedCoRespondentInvitation);
-        when(documentTemplateService.getTemplateId(payload, DocumentType.CO_RESPONDENT_INVITATION))
-                .thenReturn(CO_RESPONDENT_INVITATION_TEMPLATE_NAME);
-
 
         //when
         coRespondentLetterGeneratorTask.execute(context, payload);

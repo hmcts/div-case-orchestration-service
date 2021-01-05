@@ -11,7 +11,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.model.payment.Payment;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -20,7 +19,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Fee;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionForRefusalWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
@@ -324,9 +322,6 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private SendPetitionerAmendEmailNotificationWorkflow sendPetitionerAmendEmailNotificationWorkflow;
-
-    @Mock
-    private DocumentTemplateService documentTemplateService;
 
     @Mock
     private WelshContinueWorkflow welshContinueWorkflow;
@@ -1039,9 +1034,6 @@ public class CaseOrchestrationServiceImplTest {
             CaseDetails.builder().caseData(caseData).build())
             .build();
 
-        when(documentTemplateService.getTemplateId(caseData, DocumentType.DECREE_NISI_TEMPLATE_ID))
-            .thenReturn(DECREE_NISI_TEMPLATE_ID);
-
         classUnderTest
             .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
@@ -1063,9 +1055,6 @@ public class CaseOrchestrationServiceImplTest {
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
             CaseDetails.builder().caseData(caseData).build())
             .build();
-
-        when(documentTemplateService.getTemplateId(caseData, DocumentType.DECREE_NISI_TEMPLATE_ID))
-            .thenReturn(DECREE_NISI_TEMPLATE_ID);
 
         classUnderTest
             .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
@@ -1089,12 +1078,6 @@ public class CaseOrchestrationServiceImplTest {
             CaseDetails.builder().caseData(caseData).build())
             .build();
 
-        when(documentTemplateService.getTemplateId(caseData, DocumentType.DECREE_NISI_TEMPLATE_ID))
-            .thenReturn(DECREE_NISI_TEMPLATE_ID);
-
-        when(documentTemplateService.getTemplateId(caseData, DocumentType.COSTS_ORDER_TEMPLATE_ID))
-            .thenReturn(COSTS_ORDER_TEMPLATE_ID);
-
         classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
         verify(documentGenerationWorkflow, times(1)).run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN,
@@ -1115,11 +1098,6 @@ public class CaseOrchestrationServiceImplTest {
             CaseDetails.builder().caseData(caseData).build())
             .build();
 
-        when(documentTemplateService.getTemplateId(caseData, DocumentType.COSTS_ORDER_TEMPLATE_ID))
-            .thenReturn(COSTS_ORDER_TEMPLATE_ID);
-        when(documentTemplateService.getTemplateId(caseData, DocumentType.DECREE_NISI_TEMPLATE_ID))
-            .thenReturn(DECREE_NISI_TEMPLATE_ID);
-
         classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
         verify(documentGenerationWorkflow, times(1)).run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN,
@@ -1139,12 +1117,6 @@ public class CaseOrchestrationServiceImplTest {
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
             CaseDetails.builder().caseData(caseData).build())
             .build();
-
-        when(documentTemplateService.getTemplateId(caseData, DocumentType.DECREE_NISI_TEMPLATE_ID))
-            .thenReturn(DECREE_NISI_TEMPLATE_ID);
-
-        when(documentTemplateService.getTemplateId(caseData, DocumentType.COSTS_ORDER_TEMPLATE_ID))
-            .thenReturn(COSTS_ORDER_TEMPLATE_ID);
 
         classUnderTest
             .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
@@ -1178,9 +1150,6 @@ public class CaseOrchestrationServiceImplTest {
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
             CaseDetails.builder().caseData(caseData).build())
             .build();
-
-        when(documentTemplateService.getTemplateId(caseData, DocumentType.COSTS_ORDER_TEMPLATE_ID))
-            .thenReturn(COSTS_ORDER_TEMPLATE_ID);
 
         when(documentGenerationWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN,
             COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE))
@@ -1372,12 +1341,6 @@ public class CaseOrchestrationServiceImplTest {
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
             CaseDetails.builder().caseData(caseData).build())
             .build();
-
-        when(documentTemplateService.getTemplateId(caseData, DocumentType.DECREE_NISI_TEMPLATE_ID))
-            .thenReturn(DECREE_NISI_TEMPLATE_ID);
-
-        when(documentTemplateService.getTemplateId(caseData, DocumentType.COSTS_ORDER_TEMPLATE_ID))
-            .thenReturn(COSTS_ORDER_TEMPLATE_ID);
 
         when(documentGenerationWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN,
             DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME))

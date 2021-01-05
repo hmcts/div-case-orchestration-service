@@ -7,12 +7,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.ArrayList;
@@ -56,7 +54,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.MultipleDocumentGenerationTaskTest.matchesDocumentInputParameters;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DecreeNisiRefusalDocumentGeneratorTaskTest {
+public class DecreeNisiRefusalDocumentGenerationInfoTaskTest {
 
     private static final String FIXED_DATE = "2010-10-10";
     private static final String DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00088.docx";
@@ -64,9 +62,6 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
 
     @Mock
     private DocumentGeneratorClient documentGeneratorClient;
-
-    @Mock
-    private DocumentTemplateService documentTemplateService;
 
     @Mock
     private CcdUtil ccdUtil;
@@ -92,10 +87,6 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
             .documentType(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE)
             .fileName(DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME + TEST_CASE_ID)
             .build();
-
-        when(documentTemplateService.getTemplateId(payload,
-                DocumentType.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID))
-                .thenReturn(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID);
 
         //given
         when(documentGeneratorClient
@@ -157,11 +148,6 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
             .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID,
                 caseDetails), eq(AUTH_TOKEN))
         ).thenReturn(expectedDocument);
-
-        when(documentTemplateService.getTemplateId(payload,
-                DocumentType.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID))
-                .thenReturn(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID);
-
 
         //when
         decreeNisiRefusalDocumentGeneratorTask.execute(context, payload);
@@ -227,9 +213,6 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
             .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID, expectedCaseDetails), eq(AUTH_TOKEN))
         ).thenReturn(expectedDocument);
 
-        when(documentTemplateService.getTemplateId(payload,
-                DocumentType.DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID))
-                .thenReturn(DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID);
 
         //when
         decreeNisiRefusalDocumentGeneratorTask.execute(context, payload);

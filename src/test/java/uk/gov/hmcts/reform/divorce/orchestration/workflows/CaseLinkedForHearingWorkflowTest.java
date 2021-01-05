@@ -48,7 +48,6 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.COE_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
@@ -58,6 +57,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.AOSPackOfflineConstants.COE_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocumentAsMap;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -114,7 +114,7 @@ public class CaseLinkedForHearingWorkflowTest {
             .thenReturn(CoERespondentCoverLetterGenerationTask.FileMetadata.DOCUMENT_TYPE);
         when(coERespondentSolicitorLetterGenerationTask.execute(isNotNull(), eq(payload))).thenReturn(payload);
         when(coERespondentSolicitorLetterGenerationTask.getDocumentType())
-            .thenReturn(COE_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE.getValue());
+            .thenReturn(COE_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE);
         when(coECoRespondentCoverLetterGenerationTask.execute(notNull(), eq(payload))).thenReturn(payload);
         when(coECoRespondentCoverLetterGenerationTask.getDocumentType())
             .thenReturn(CoECoRespondentCoverLetterGenerationTask.FileMetadata.DOCUMENT_TYPE);

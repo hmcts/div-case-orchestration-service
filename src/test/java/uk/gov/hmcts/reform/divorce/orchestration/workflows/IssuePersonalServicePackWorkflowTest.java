@@ -6,13 +6,11 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PersonalServiceValidationTask;
@@ -48,9 +46,6 @@ public class IssuePersonalServicePackWorkflowTest {
     @Mock
     AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
-    @Mock
-    private DocumentTemplateService documentTemplateService;
-
     @InjectMocks
     IssuePersonalServicePackWorkflow issuePersonalServicePackWorkflow;
 
@@ -65,11 +60,8 @@ public class IssuePersonalServicePackWorkflowTest {
             .caseData(caseData)
             .build();
 
-        when(documentTemplateService.getTemplateId(caseData, DocumentType.SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID))
-            .thenReturn(SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID);
-
         DefaultTaskContext context = new DefaultTaskContext();
-        context.setTransientObjects(new HashMap<String, Object>() {
+        context.setTransientObjects(new HashMap<>() {
             {
                 put(AUTH_TOKEN_JSON_KEY, TEST_TOKEN);
                 put(CASE_ID_JSON_KEY, TEST_CASE_ID);
