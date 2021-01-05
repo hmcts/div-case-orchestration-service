@@ -23,7 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @Slf4j
 public abstract class ServiceDecisionOrderGenerationTask extends BasePayloadSpecificDocumentGenerationTask {
 
-    public ServiceDecisionOrderGenerationTask(
+    protected ServiceDecisionOrderGenerationTask(
         CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
         PdfDocumentGenerationService pdfDocumentGenerationService,
         CcdUtil ccdUtil) {

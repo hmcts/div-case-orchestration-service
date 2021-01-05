@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
@@ -62,7 +63,7 @@ public class DecreeAbsoluteControllerTest {
             .thenThrow(new WorkflowException(TEST_MSG));
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.notifyRespondentOfDARequested(AUTH_TOKEN, ccdCallbackRequest);
-        assert (Objects.requireNonNull(response.getBody()).getErrors().contains(TEST_MSG));
+        assertTrue(Objects.requireNonNull(response.getBody()).getErrors().contains(TEST_MSG));
     }
 
     @Test

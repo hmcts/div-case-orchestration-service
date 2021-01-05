@@ -4,12 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentTypeHelper;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -29,19 +29,16 @@ public class AddMiniPetitionDraftTask implements Task<Map<String, Object>> {
     public static final String DOCUMENT_NAME = "draft-mini-petition-";
 
     private final DocumentGeneratorClient documentGeneratorClient;
-    private final DocumentTemplateService documentTemplateService;
 
     @Autowired
-    public AddMiniPetitionDraftTask(final DocumentGeneratorClient documentGeneratorClient, final DocumentTemplateService documentTemplateService) {
+    public AddMiniPetitionDraftTask(final DocumentGeneratorClient documentGeneratorClient) {
         this.documentGeneratorClient = documentGeneratorClient;
-        this.documentTemplateService = documentTemplateService;
     }
 
     @Override
     public Map<String, Object> execute(final TaskContext context, final Map<String, Object> caseData) {
         final CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
-        final String templateId = getTemplateId(documentTemplateService, DocumentType.DIVORCE_DRAFT_MINI_PETITION,
-                caseData);
+        final String templateId = DocumentTypeHelper.getLanguageAppropriateTemplate(caseData, DocumentType.DIVORCE_DRAFT_MINI_PETITION);
         final GeneratedDocumentInfo generatedDocumentInfo =
             documentGeneratorClient.generateDraftPDF(
                 GenerateDocumentRequest.builder()
@@ -55,7 +52,7 @@ public class AddMiniPetitionDraftTask implements Task<Map<String, Object>> {
         generatedDocumentInfo.setFileName(format(DOCUMENT_FILENAME_FMT, DOCUMENT_NAME, caseDetails.getCaseId()));
 
         final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context
-                .computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new LinkedHashSet<>());
+            .computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new LinkedHashSet<>());
 
         documentCollection.add(generatedDocumentInfo);
 

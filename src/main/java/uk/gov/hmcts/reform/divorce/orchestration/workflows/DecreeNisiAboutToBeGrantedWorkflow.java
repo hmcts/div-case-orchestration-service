@@ -55,7 +55,7 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
     private final PopulateDocLink populateDocLink;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
-        List<Task> tasksToRun = new ArrayList<>();
+        List<Task<Map<String, Object>>> tasksToRun = new ArrayList<>();
         Map<String, Object> caseData = caseDetails.getCaseData();
 
         tasksToRun.add(setDNDecisionStateTask);
