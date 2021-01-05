@@ -3,13 +3,12 @@ package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentTypeHelper;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PersonalServiceValidationTask;
@@ -24,6 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_PERSONAL_SERVICE_LETTER_FILENAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.SOLICITOR_PERSONAL_SERVICE_LETTER;
 
 
 @Component
@@ -33,17 +33,14 @@ public class IssuePersonalServicePackWorkflow extends DefaultWorkflow<Map<String
     private final PersonalServiceValidationTask personalServiceValidationTask;
     private final DocumentGenerationTask documentGenerationTask;
     private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
-    private final DocumentTemplateService documentTemplateService;
 
     public Map<String, Object> run(CcdCallbackRequest callbackRequest, String authToken) throws WorkflowException {
         CaseDetails caseDetails = callbackRequest.getCaseDetails();
 
-        String templateId = getTemplateId(documentTemplateService,
-                DocumentType.SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID,
-                caseDetails.getCaseData());
+        String templateId = DocumentTypeHelper.getLanguageAppropriateTemplate(caseDetails.getCaseData(), SOLICITOR_PERSONAL_SERVICE_LETTER);
 
         return this.execute(
-            new Task[]{
+            new Task[] {
                 personalServiceValidationTask,
                 documentGenerationTask,
                 addNewDocumentsToCaseDataTask

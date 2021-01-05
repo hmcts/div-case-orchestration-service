@@ -19,8 +19,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.AOS_OVERDUE_COVER_LETTER_TEMPLATE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference.ENGLISH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_OVERDUE_COVER_LETTER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.AOS_OVERDUE_COVER_LETTER;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService.wrapDocmosisTemplateVarsForDgs;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
@@ -49,7 +50,7 @@ public class AosNotReceivedPreparationForSubmissionTest extends MockedFunctional
                     .build()
             )
             .build();
-        stubDocumentGeneratorService(AOS_OVERDUE_COVER_LETTER_TEMPLATE_ID.getValue(),
+        stubDocumentGeneratorService(AOS_OVERDUE_COVER_LETTER.getTemplateByLanguage(ENGLISH),
             wrapDocmosisTemplateVarsForDgs(expectedDocmosisTemplate),
             AOS_OVERDUE_COVER_LETTER_DOCUMENT_TYPE);
 

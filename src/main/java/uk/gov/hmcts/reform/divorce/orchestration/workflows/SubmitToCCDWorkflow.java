@@ -9,9 +9,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CourtAllocationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.DeleteDraft;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.DeleteDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DuplicateCaseValidationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseData;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitCaseToCCD;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseDataTask;
 
@@ -35,7 +35,7 @@ public class SubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
     private CourtAllocationTask courtAllocationTask;
 
     @Autowired
-    private FormatDivorceSessionToCaseData formatDivorceSessionToCaseData;
+    private FormatDivorceSessionToCaseDataTask formatDivorceSessionToCaseDataTask;
 
     @Autowired
     private ValidateCaseDataTask validateCaseDataTask;
@@ -44,17 +44,17 @@ public class SubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
     private SubmitCaseToCCD submitCaseToCCD;
 
     @Autowired
-    private DeleteDraft deleteDraft;
+    private DeleteDraftTask deleteDraftTask;
 
     public Map<String, Object> run(Map<String, Object> payload, String authToken) throws WorkflowException {
         Map<String, Object> returnFromExecution = this.execute(
             new Task[]{
                 duplicateCaseValidationTask,
                 courtAllocationTask,
-                formatDivorceSessionToCaseData,
+                formatDivorceSessionToCaseDataTask,
                 validateCaseDataTask,
                 submitCaseToCCD,
-                deleteDraft
+                deleteDraftTask
             },
             payload,
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken)

@@ -27,7 +27,7 @@ import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateTimeForDocum
 @Slf4j
 public abstract class ServiceRefusalOrderGenerationTask extends BasePayloadSpecificDocumentGenerationTask {
 
-    public ServiceRefusalOrderGenerationTask(
+    protected ServiceRefusalOrderGenerationTask(
         CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
         PdfDocumentGenerationService pdfDocumentGenerationService,
         CcdUtil ccdUtil) {

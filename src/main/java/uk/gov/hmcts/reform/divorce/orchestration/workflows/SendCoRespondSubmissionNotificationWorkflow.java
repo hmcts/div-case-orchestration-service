@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotification;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotificationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerCoRespondentRespondedNotificationEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.TaskCommons;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
@@ -43,7 +43,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class SendCoRespondSubmissionNotificationWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     @Autowired
-    private final GenericEmailNotification emailTask;
+    private final GenericEmailNotificationTask emailTask;
 
     @Autowired
     private final SendPetitionerCoRespondentRespondedNotificationEmail petitionerEmailTask;

@@ -7,13 +7,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -37,9 +34,6 @@ public class AddMiniPetitionDraftTaskTest {
 
     @Mock
     private DocumentGeneratorClient documentGeneratorClient;
-
-    @Mock
-    private DocumentTemplateService documentTemplateService;
 
     @InjectMocks
     private AddMiniPetitionDraftTask addMiniPetitionDraftTask;
@@ -71,8 +65,6 @@ public class AddMiniPetitionDraftTaskTest {
 
         //given
         when(documentGeneratorClient.generateDraftPDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(expectedDocument);
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DIVORCE_DRAFT_MINI_PETITION))
-                .thenReturn(DRAFT_MINI_PETITION_TEMPLATE_NAME);
 
         //when
         addMiniPetitionDraftTask.execute(context, payload);

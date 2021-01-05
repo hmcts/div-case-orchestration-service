@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SearchDNPronouncedCases;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SearchDNPronouncedCasesTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateDNPronouncedCase;
 
 import java.util.Map;
@@ -22,22 +22,22 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Slf4j
 public class UpdateDNPronouncedCasesWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final SearchDNPronouncedCases searchDNPronouncedCases;
+    private final SearchDNPronouncedCasesTask searchDNPronouncedCasesTask;
     private final UpdateDNPronouncedCase updateDNPronouncedCase;
 
     @Value("${case.event.awaiting-da-period:43d}")
     private String awaitingDAPeriod;
 
     @Autowired
-    public UpdateDNPronouncedCasesWorkflow(SearchDNPronouncedCases searchDNPronouncedCases, UpdateDNPronouncedCase updateDNPronouncedCase) {
-        this.searchDNPronouncedCases = searchDNPronouncedCases;
+    public UpdateDNPronouncedCasesWorkflow(SearchDNPronouncedCasesTask searchDNPronouncedCasesTask, UpdateDNPronouncedCase updateDNPronouncedCase) {
+        this.searchDNPronouncedCasesTask = searchDNPronouncedCasesTask;
         this.updateDNPronouncedCase = updateDNPronouncedCase;
     }
 
     public int run(String authToken) throws WorkflowException {
         this.execute(
             new Task[] {
-                searchDNPronouncedCases,
+                searchDNPronouncedCasesTask,
                 updateDNPronouncedCase
             },
             null,

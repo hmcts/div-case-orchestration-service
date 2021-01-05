@@ -22,6 +22,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @RunWith(MockitoJUnitRunner.class)
 public class GetCaseWithIdWorkflowTest {
+
     @Mock
     private GetCaseWithIdTask getCaseWithId;
 
