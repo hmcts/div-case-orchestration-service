@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStoreTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentGenericUpdateNotificationEmailTask;
@@ -57,7 +57,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
     private final DnGrantedRespondentCoverLetterGenerationTask dnGrantedRespondentCoverLetterGenerationTask;
     private final DnGrantedRespondentSolicitorCoverLetterGenerationTask dnGrantedRespondentSolicitorCoverLetterGenerationTask;
 
-    private final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
+    private final FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask;
     private final MultiBulkPrinterTask multiBulkPrinterTask;
 
     private final FeatureToggleService featureToggleService;
@@ -187,7 +187,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
 
         if ((coRespondentExists && !coRespondentDigital) || !respondentDigital) {
             log.info("CaseID: {} - Adding task to send to bulk print", caseId);
-            tasks.add(fetchPrintDocsFromDmStore);
+            tasks.add(fetchPrintDocsFromDmStoreTask);
             tasks.add(multiBulkPrinterTask);
         }
 

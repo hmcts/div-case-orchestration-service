@@ -7,13 +7,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -40,9 +37,6 @@ public class PetitionGeneratorTest {
     @Mock
     private DocumentGeneratorClient documentGeneratorClient;
 
-    @Mock
-    private DocumentTemplateService documentTemplateService;
-
     @InjectMocks
     private PetitionGenerator petitionGenerator;
     private static final String MINI_PETITION_TEMPLATE_NAME = "divorceminipetition";
@@ -67,14 +61,13 @@ public class PetitionGeneratorTest {
 
         final GenerateDocumentRequest generateDocumentRequest =
             GenerateDocumentRequest.builder()
-                    .template(MINI_PETITION_TEMPLATE_NAME)
-                    .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
-                    .build();
+                .template(MINI_PETITION_TEMPLATE_NAME)
+                .values(singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
+                .build();
 
         //given
         when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(expectedPetition);
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
-                DocumentType.DIVORCE_MINI_PETITION)).thenReturn(MINI_PETITION_TEMPLATE_NAME);
+
         //when
         petitionGenerator.execute(context, payload);
 

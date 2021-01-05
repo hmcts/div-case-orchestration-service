@@ -25,7 +25,7 @@ public class AmendPetitionTest {
     private CaseMaintenanceClient caseMaintenanceClient;
 
     @InjectMocks
-    private CreateAmendPetitionDraft target;
+    private CreateAmendPetitionDraftTask target;
 
     @Test
     public void givenUserTokenWithoutCase_whenExecuteAmendPetition_thenReturnEmpty() {

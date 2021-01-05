@@ -8,7 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CancelPronouncementDetailsWithinBulk;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CancelPronouncementDetailsWithinBulkTask;
 
 import java.util.Collections;
 import java.util.Map;
@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 public class BulkCaseCancelPronouncementEventWorkflowTest {
 
     @Mock
-    private CancelPronouncementDetailsWithinBulk cancelPronouncementDetailsWithinBulk;
+    private CancelPronouncementDetailsWithinBulkTask cancelPronouncementDetailsWithinBulkTask;
 
     @InjectMocks
     private BulkCaseCancelPronouncementEventWorkflow classToTest;
@@ -42,7 +42,7 @@ public class BulkCaseCancelPronouncementEventWorkflowTest {
 
         Map<String, Object> expected = Collections.emptyMap();
 
-        when(cancelPronouncementDetailsWithinBulk.execute(any(TaskContext.class), eq(DUMMY_CASE_DATA))).thenReturn(expected);
+        when(cancelPronouncementDetailsWithinBulkTask.execute(any(TaskContext.class), eq(DUMMY_CASE_DATA))).thenReturn(expected);
 
         Map<String, Object> actual = classToTest.run(callbackRequest, AUTH_TOKEN);
 

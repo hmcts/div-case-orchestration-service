@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.service.TemplateConfigService;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotification;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotificationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.QueueAosSolicitorSubmitTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForDefendedDivorceEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForUndefendedDivorceEmail;
@@ -58,8 +58,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.CCD_CASE_DATA;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.SEPARATION_TWO_YEARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
 
 @Component
@@ -67,7 +67,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentation
 @Slf4j
 public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final GenericEmailNotification emailNotificationTask;
+    private final GenericEmailNotificationTask emailNotificationTask;
 
     private final SendRespondentSubmissionNotificationForDefendedDivorceEmail
         sendRespondentSubmissionNotificationForDefendedDivorceEmailTask;
@@ -76,10 +76,10 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         sendRespondentSubmissionNotificationForUndefendedDivorceEmailTask;
 
     private final QueueAosSolicitorSubmitTask queueAosSolicitorSubmitTask;
-    private TemplateConfigService templateConfigService;
+    private final TemplateConfigService templateConfigService;
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest, final String authToken) throws WorkflowException {
-        final List<Task> tasks = new ArrayList<>();
+        final List<Task<Map<String, Object>>> tasks = new ArrayList<>();
         final Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
         final String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         final String caseState = ccdCallbackRequest.getCaseDetails().getState();
@@ -109,7 +109,8 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         }
     }
 
-    private GenericEmailContext processAosSubmissionTasks(CcdCallbackRequest ccdCallbackRequest, List<Task> tasks) throws WorkflowException {
+    private GenericEmailContext processAosSubmissionTasks(
+        CcdCallbackRequest ccdCallbackRequest, List<Task<Map<String, Object>>> tasks) throws WorkflowException {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         Map<String, Object> caseData = caseDetails.getCaseData();
 

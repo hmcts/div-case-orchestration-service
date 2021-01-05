@@ -8,10 +8,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddCourtsToPayloadTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataDraftToDivorceFormatter;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseData;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetInconsistentPaymentInfo;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveDraft;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataDraftToDivorceFormatterTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetInconsistentPaymentInfoTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCaseIdAndStateOnSession;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdatePaymentMadeCase;
 
@@ -27,19 +27,19 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RequiredArgsConstructor
 public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final RetrieveDraft retrieveDraft;
-    private final CaseDataDraftToDivorceFormatter caseDataToDivorceFormatter;
+    private final RetrieveDraftTask retrieveDraftTask;
+    private final CaseDataDraftToDivorceFormatterTask caseDataToDivorceFormatter;
     private final SetCaseIdAndStateOnSession setCaseIdAndStateOnSession;
     private final AddCourtsToPayloadTask addCourtsToPayloadTask;
 
-    private final GetInconsistentPaymentInfo getPaymentOnSession;
+    private final GetInconsistentPaymentInfoTask getPaymentOnSession;
     private final UpdatePaymentMadeCase paymentMadeEvent;
-    private final FormatDivorceSessionToCaseData formatDivorceSessionToCaseData;
+    private final FormatDivorceSessionToCaseDataTask formatDivorceSessionToCaseDataTask;
 
     public Map<String, Object> run(String authToken) throws WorkflowException {
         Map<String, Object> caseData = this.execute(
             new Task[] {
-                retrieveDraft
+                retrieveDraftTask
             },
             new HashMap<>(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken)
@@ -47,7 +47,7 @@ public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> 
         DefaultTaskContext mainContext = getContext();
         boolean paymentDataUpdated = updatePaymentEvent(caseData);
 
-        List<Task> pendingTasks = getPendingTasks(paymentDataUpdated);
+        List<Task<Map<String, Object>>> pendingTasks = getPendingTasks(paymentDataUpdated);
         return this.execute(
             pendingTasks.toArray(new Task[0]),
             mainContext,
@@ -60,7 +60,7 @@ public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> 
             this.execute(
                 new Task[] {
                     getPaymentOnSession,
-                    formatDivorceSessionToCaseData,
+                    formatDivorceSessionToCaseDataTask,
                     paymentMadeEvent
                 },
                 new DefaultTaskContext(getContext()),
@@ -68,14 +68,17 @@ public class RetrieveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> 
             ));
     }
 
-    private List<Task> getPendingTasks(boolean paymentDataUpdated) {
-        List<Task> pendingTasks = new ArrayList<>();
+    private List<Task<Map<String, Object>>> getPendingTasks(boolean paymentDataUpdated) {
+        List<Task<Map<String, Object>>> pendingTasks = new ArrayList<>();
+
         if (paymentDataUpdated) {
-            pendingTasks.add(retrieveDraft);
+            pendingTasks.add(retrieveDraftTask);
         }
+
         pendingTasks.add(caseDataToDivorceFormatter);
         pendingTasks.add(setCaseIdAndStateOnSession);
         pendingTasks.add(addCourtsToPayloadTask);
+
         return pendingTasks;
     }
 

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.RetryableBulkCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseIdFromCaseLink;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseIdFromCaseLinkTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 
 import java.util.Map;
@@ -22,7 +22,7 @@ public class LinkBulkCaseWorkflow  extends RetryableBulkCaseWorkflow {
     static final String LINK_BULK_CASE_EVENT = "linkBulkCaseReference";
 
     private final UpdateCaseInCCD updateCaseInCCD;
-    private final GetCaseIdFromCaseLink getCaseIDFromCaseLink;
+    private final GetCaseIdFromCaseLinkTask getCaseIDFromCaseLinkTask;
 
     public Map<String, Object> run(Map<String, Object> bulkCaseData,
                                    String caseId,
@@ -30,7 +30,7 @@ public class LinkBulkCaseWorkflow  extends RetryableBulkCaseWorkflow {
 
         return this.execute(
             new Task[] {
-                getCaseIDFromCaseLink,
+                getCaseIDFromCaseLinkTask,
                 updateCaseInCCD
             },
             bulkCaseData,

@@ -18,15 +18,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.divorce.model.parties.DivorceParty;
 import uk.gov.hmcts.reform.divorce.model.response.ValidationResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AlternativeServiceService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.CourtOrderDocumentsUpdateService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralEmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralOrderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralReferralService;
@@ -77,6 +78,7 @@ public class CallbackController {
     private final GeneralEmailService generalEmailService;
     private final GeneralReferralService generalReferralService;
     private final AlternativeServiceService alternativeServiceService;
+    private final CourtOrderDocumentsUpdateService courtOrderDocumentsUpdateService;
 
     @PostMapping(path = "/request-clarification-petitioner")
     @ApiOperation(value = "Trigger notification email to request clarification from Petitioner")
@@ -529,7 +531,7 @@ public class CallbackController {
         try {
             callbackResponseBuilder.data(
                 caseOrchestrationService.processSolDnDoc(
-                    ccdCallbackRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateName(),
+                    ccdCallbackRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateLogicalName(),
                     RESP_ANSWERS_LINK
                 )
             );
@@ -616,12 +618,14 @@ public class CallbackController {
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
 
         try {
-            callbackResponseBuilder.data(caseOrchestrationService
-                .handleDocumentGenerationCallback(ccdCallbackRequest, authorizationToken, templateId, documentType, filename));
+            Map<String, Object> payloadToReturn = caseOrchestrationService.handleDocumentGenerationCallback(
+                ccdCallbackRequest, authorizationToken, templateId, documentType, filename
+            );
+            callbackResponseBuilder.data(payloadToReturn);
             log.info("Generating document {} for case {}.", documentType, caseId);
         } catch (WorkflowException exception) {
             log.error("Document generation failed. Case id:  {}", caseId, exception);
-            callbackResponseBuilder.errors(asList(exception.getMessage()));
+            callbackResponseBuilder.errors(singletonList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
@@ -642,8 +646,7 @@ public class CallbackController {
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
 
         try {
-            callbackResponseBuilder.data(caseOrchestrationService
-                .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, authorizationToken));
+            callbackResponseBuilder.data(caseOrchestrationService.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, authorizationToken));
             log.info("Generated DN documents for Case ID: {}.", caseId);
         } catch (WorkflowException exception) {
             log.error("DN document generation failed for Case ID: {}", caseId, exception);
@@ -1414,6 +1417,28 @@ public class CallbackController {
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
                 .data(alternativeServiceService.alternativeServiceConfirmed(ccdCallbackRequest.getCaseDetails()).getCaseData())
+                .build()
+        );
+    }
+
+    @PostMapping(path = "/update-court-order-documents", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback for generating new versions of existing court order documents")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> updateCourtOrderDocuments(
+        @RequestHeader(value = AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        Map<String, Object> returnedPayload = courtOrderDocumentsUpdateService.updateExistingCourtOrderDocuments(
+            authorizationToken,
+            ccdCallbackRequest.getCaseDetails()
+        );
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(returnedPayload)
                 .build()
         );
     }
