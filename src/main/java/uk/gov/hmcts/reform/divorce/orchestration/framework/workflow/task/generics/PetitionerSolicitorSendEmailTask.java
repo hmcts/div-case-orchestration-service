@@ -9,7 +9,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ServiceJourneyEmailTaskHelper.solicitorTemplateVariables;
 
 public abstract class PetitionerSolicitorSendEmailTask extends SendEmailTask {
-    public PetitionerSolicitorSendEmailTask(EmailService emailService) {
+    protected PetitionerSolicitorSendEmailTask(EmailService emailService) {
         super(emailService);
     }
 

@@ -62,7 +62,7 @@ public class ValidationBulkScanITest {
     }
 
     @Test
-    @Ignore
+    @Ignore("Covered in integration tests. Failing for some reason. Not on prod")
     public void shouldReturnForbiddenStatusWhenInvalidToken() throws Exception {
         mockMvc.perform(
             post("/forms/{form-type}/validate-ocr", D8_FORM)
@@ -73,7 +73,7 @@ public class ValidationBulkScanITest {
     }
 
     @Test
-    @Ignore
+    @Ignore("Covered in integration tests. Failing for some reason. Not on prod")
     public void shouldReturnUnauthorizedStatusWhenNoAuthServiceHeader() throws Exception {
         mockMvc.perform(
             post("/forms/{form-type}/validate-ocr", D8_FORM)
@@ -84,7 +84,7 @@ public class ValidationBulkScanITest {
     }
 
     @Test
-    @Ignore
+    @Ignore("Covered in integration tests. Failing for some reason. Not on prod")
     public void shouldReturnSuccessResponseForValidationEndpoint() throws Exception {
         mockMvc.perform(
             post("/forms/{form-type}/validate-ocr", D8_FORM)
@@ -103,7 +103,7 @@ public class ValidationBulkScanITest {
     }
 
     @Test
-    @Ignore
+    @Ignore("Covered in integration tests. Failing for some reason. Not on prod")
     public void shouldReturnFailureResponseForValidationEndpoint() throws Exception {
         String formToValidate = loadResourceAsString("jsonExamples/payloads/bulk/scan/d8/validation/incompleteForm.json");
 
@@ -136,7 +136,7 @@ public class ValidationBulkScanITest {
     }
 
     @Test
-    @Ignore
+    @Ignore("Covered in integration tests. Failing for some reason. Not on prod")
     public void shouldReturnWarningResponseForValidationEndpoint() throws Exception {
         String formToValidate = loadResourceAsString("jsonExamples/payloads/bulk/scan/d8/validation/warningsD8Form.json");
 
@@ -165,7 +165,7 @@ public class ValidationBulkScanITest {
     }
 
     @Test
-    @Ignore
+    @Ignore("Covered in integration tests. Failing for some reason. Not on prod")
     public void shouldReturnResourceNotFoundResponseForUnsupportedFormType() throws Exception {
         mockMvc.perform(
             post("/forms/{form-type}/validate-ocr", "unsupportedFormType")

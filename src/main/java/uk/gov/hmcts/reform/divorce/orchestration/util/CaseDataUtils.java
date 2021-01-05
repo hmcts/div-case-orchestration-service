@@ -52,7 +52,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.TYPE_COSTS_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.SolicitorDataExtractor.getPaymentMethod;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsObject;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
@@ -188,18 +188,18 @@ public class CaseDataUtils {
     }
 
     public static LanguagePreference getLanguagePreference(Map<String, Object> caseData) {
-        return Optional.ofNullable(caseData)
+        boolean preferredLanguageIsWelsh = Optional.ofNullable(caseData)
             .map(data -> data.get(LANGUAGE_PREFERENCE_WELSH))
-            .filter(Objects::nonNull)
             .map(String.class::cast)
-            .filter(YES_VALUE::equalsIgnoreCase)
-            .map(languagePreferenceWelsh -> LanguagePreference.WELSH)
-            .orElse(LanguagePreference.ENGLISH);
+            .map(YES_VALUE::equalsIgnoreCase)
+            .orElse(false);
+
+        return preferredLanguageIsWelsh ? LanguagePreference.WELSH : LanguagePreference.ENGLISH;
     }
 
     public static Map<String, Object> removeDocumentsByDocumentType(Map<String, Object> caseData, String... documentTypes) {
         List<?> generatedDocuments = Optional.ofNullable(caseData.get(D8DOCUMENTS_GENERATED))
-            .map(i -> (List<?>) i)
+            .map(List.class::cast)
             .orElse(new ArrayList<>());
 
         Map<String, Object> newCaseData = new HashMap<>(caseData);
