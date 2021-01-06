@@ -6,9 +6,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
 
 import java.util.HashMap;
@@ -57,9 +57,9 @@ public class AosRespondentSubmittedITest extends MockedFunctionalTest {
             .caseData(caseDetailMap)
             .build();
 
-        stubDocumentGeneratorServiceBaseOnContextPath(DocumentType.RESPONDENT_ANSWERS.getTemplateName(),
+        stubDocumentGeneratorService(DocumentType.RESPONDENT_ANSWERS.getTemplateLogicalName(),
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, fullCase),
-            DocumentType.RESPONDENT_ANSWERS.getTemplateName());
+            DocumentType.RESPONDENT_ANSWERS.getTemplateLogicalName());
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
             .eventId(EVENT_ID)

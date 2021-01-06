@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSeparationFields;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSeparationFieldsTask;
 
 import java.util.Collections;
 import java.util.Map;
@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class SeparationFieldsWorkflowTest {
 
     @Mock
-    SetSeparationFields setSeparationFields;
+    SetSeparationFieldsTask setSeparationFieldsTask;
 
     @InjectMocks
     SeparationFieldsWorkflow separationFieldsWorkflow;
@@ -41,10 +41,10 @@ public class SeparationFieldsWorkflowTest {
     @Test
     public void runShouldExecuteTasksAndReturnPayload() throws Exception {
         Map<String, Object> resultData = Collections.singletonMap(D_8_REASON_FOR_DIVORCE_SEP_DATE, FIXED_DATE);
-        when(setSeparationFields.execute(context, testData)).thenReturn(resultData);
+        when(setSeparationFieldsTask.execute(context, testData)).thenReturn(resultData);
 
         assertEquals(resultData, separationFieldsWorkflow.run(testData));
 
-        verify(setSeparationFields).execute(context, testData);
+        verify(setSeparationFieldsTask).execute(context, testData);
     }
 }

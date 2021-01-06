@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddPetitionerSolicitorRole;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddPetitionerSolicitorRoleTask;
 
 import java.util.Map;
 
@@ -18,11 +18,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class PetitionerSolicitorRoleWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
 
-    private AddPetitionerSolicitorRole addPetitionerSolicitorRole;
+    private AddPetitionerSolicitorRoleTask addPetitionerSolicitorRoleTask;
 
     @Autowired
-    public PetitionerSolicitorRoleWorkflow(AddPetitionerSolicitorRole addPetitionerSolicitorRole) {
-        this.addPetitionerSolicitorRole = addPetitionerSolicitorRole;
+    public PetitionerSolicitorRoleWorkflow(AddPetitionerSolicitorRoleTask addPetitionerSolicitorRoleTask) {
+        this.addPetitionerSolicitorRoleTask = addPetitionerSolicitorRoleTask;
     }
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest,
@@ -32,7 +32,7 @@ public class PetitionerSolicitorRoleWorkflow extends DefaultWorkflow<Map<String,
 
         return this.execute(
                 new Task[] {
-                    addPetitionerSolicitorRole
+                    addPetitionerSolicitorRoleTask
                 },
                 ccdCallbackRequest.getCaseDetails().getCaseData(),
                 ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),

@@ -60,7 +60,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ISSUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_FEE_FOR_LETTER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_LETTER_HOLDER_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class PetitionIssuedITest extends IdamTestSupport {
@@ -145,7 +145,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
         final Map<String, Object> formattedCaseData = emptyMap();
 
-        stubDocumentGeneratorServiceBaseOnContextPath(MINI_PETITION_TEMPLATE_NAME,
+        stubDocumentGeneratorService(MINI_PETITION_TEMPLATE_NAME,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS), DOCUMENT_TYPE_PETITION);
         when(validationService.validate(any())).thenReturn(VALIDATION_RESPONSE);
 
@@ -162,7 +162,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
     public void givenGenerateAOSInvitationIsFalse_whenPetitionIssued_thenReturnCaseExpectedChanges() throws Exception {
         final Map<String, Object> formattedCaseData = emptyMap();
 
-        stubDocumentGeneratorServiceBaseOnContextPath(MINI_PETITION_TEMPLATE_NAME,
+        stubDocumentGeneratorService(MINI_PETITION_TEMPLATE_NAME,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS), DOCUMENT_TYPE_PETITION);
         when(validationService.validate(any())).thenReturn(VALIDATION_RESPONSE);
 
@@ -190,7 +190,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
         stubSignIn();
         stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
-        stubDocumentGeneratorServiceBaseOnContextPath(MINI_PETITION_TEMPLATE_NAME,
+        stubDocumentGeneratorService(MINI_PETITION_TEMPLATE_NAME,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS), DOCUMENT_TYPE_PETITION);
         when(validationService.validate(any())).thenReturn(VALIDATION_RESPONSE);
 
@@ -221,10 +221,10 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
         stubSignIn();
         stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
-        stubDocumentGeneratorServiceBaseOnContextPath(MINI_PETITION_TEMPLATE_NAME,
+        stubDocumentGeneratorService(MINI_PETITION_TEMPLATE_NAME,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequestWithServiceCentre.getCaseDetails()),
             DOCUMENT_TYPE_RESPONDENT_INVITATION);
-        stubDocumentGeneratorServiceBaseOnContextPath(RESPONDENT_INVITATION_TEMPLATE_NAME,
+        stubDocumentGeneratorService(RESPONDENT_INVITATION_TEMPLATE_NAME,
             ImmutableMap.of(
                 DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequestWithServiceCentre.getCaseDetails(),
                 ACCESS_CODE, TEST_PIN_CODE
@@ -262,9 +262,9 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
         stubSignIn();
         stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
-        stubDocumentGeneratorServiceBaseOnContextPath(MINI_PETITION_TEMPLATE_NAME, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
+        stubDocumentGeneratorService(MINI_PETITION_TEMPLATE_NAME, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
             ccdCallbackRequestWithServiceCentre.getCaseDetails()), DOCUMENT_TYPE_PETITION);
-        stubDocumentGeneratorServiceBaseOnContextPath(RESPONDENT_INVITATION_TEMPLATE_NAME,
+        stubDocumentGeneratorService(RESPONDENT_INVITATION_TEMPLATE_NAME,
             ImmutableMap.of(
                 DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequestWithServiceCentre.getCaseDetails(),
                 ACCESS_CODE, TEST_PIN_CODE),
@@ -276,7 +276,7 @@ public class PetitionIssuedITest extends IdamTestSupport {
 
         stubGetFeeFromFeesAndPayments(HttpStatus.OK, feeResponse);
 
-        stubDocumentGeneratorServiceBaseOnContextPath(CO_RESPONDENT_INVITATION_TEMPLATE_NAME,
+        stubDocumentGeneratorService(CO_RESPONDENT_INVITATION_TEMPLATE_NAME,
             ImmutableMap.of(
                 DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequestWithServiceCentre.getCaseDetails(),
                 ACCESS_CODE, TEST_PIN_CODE,

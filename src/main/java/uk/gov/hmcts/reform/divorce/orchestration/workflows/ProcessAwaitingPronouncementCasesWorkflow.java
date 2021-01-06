@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.BulkCaseCreate;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.BulkCaseCreateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SearchAwaitingPronouncementCases;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateDivorceCaseWithinBulk;
 
@@ -19,7 +19,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class ProcessAwaitingPronouncementCasesWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final SearchAwaitingPronouncementCases searchAwaitingPronouncementCases;
-    private final BulkCaseCreate createBulkCase;
+    private final BulkCaseCreateTask createBulkCase;
     private final UpdateDivorceCaseWithinBulk updateDivorceCaseWithinBulk;
 
     public Map<String, Object> run(String authToken) throws WorkflowException {

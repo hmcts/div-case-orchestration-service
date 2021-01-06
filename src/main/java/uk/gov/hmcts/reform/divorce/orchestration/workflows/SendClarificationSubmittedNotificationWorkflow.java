@@ -23,7 +23,7 @@ public class SendClarificationSubmittedNotificationWorkflow extends DefaultWorkf
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
-        List<Task> tasks = new ArrayList<>();
+        List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
         tasks.add(sendPetitionerNotificationEmail);
 

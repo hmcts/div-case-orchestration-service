@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStoreTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaGrantedNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DaGrantedCitizenLetterGenerationTask;
@@ -58,7 +58,7 @@ public class SendDaGrantedNotificationWorkflowTest {
     private DaGrantedSolicitorLetterGenerationTask daGrantedSolicitorLetterGenerationTask;
 
     @Mock
-    private FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
+    private FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask;
 
     @Mock
     private BulkPrinterTask bulkPrinterTask;
@@ -82,7 +82,7 @@ public class SendDaGrantedNotificationWorkflowTest {
         verify(sendDaGrantedNotificationEmailTask, times(1)).execute(any(TaskContext.class), eq(casePayload));
 
         verify(daGrantedCitizenLetterGenerationTask, never()).execute(any(TaskContext.class), eq(casePayload));
-        verify(fetchPrintDocsFromDmStore, never()).execute(any(TaskContext.class), eq(casePayload));
+        verify(fetchPrintDocsFromDmStoreTask, never()).execute(any(TaskContext.class), eq(casePayload));
         verify(bulkPrinterTask, never()).execute(any(TaskContext.class), eq(casePayload));
     }
 
@@ -92,7 +92,7 @@ public class SendDaGrantedNotificationWorkflowTest {
 
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
         when(daGrantedCitizenLetterGenerationTask.execute(isNotNull(), eq(incomingCaseData))).thenReturn(incomingCaseData);
-        when(fetchPrintDocsFromDmStore.execute(isNotNull(), eq(incomingCaseData))).thenReturn(incomingCaseData);
+        when(fetchPrintDocsFromDmStoreTask.execute(isNotNull(), eq(incomingCaseData))).thenReturn(incomingCaseData);
         when(bulkPrinterTask.execute(isNotNull(), eq(incomingCaseData))).thenReturn(incomingCaseData);
 
         Map<String, Object> returnedCaseData = sendDaGrantedNotificationWorkflow.run(buildCaseDetails(incomingCaseData), AUTH_TOKEN);
@@ -100,11 +100,11 @@ public class SendDaGrantedNotificationWorkflowTest {
         assertEquals(incomingCaseData, returnedCaseData);
         InOrder inOrder = inOrder(
             daGrantedCitizenLetterGenerationTask,
-            fetchPrintDocsFromDmStore,
+            fetchPrintDocsFromDmStoreTask,
             bulkPrinterTask
         );
         inOrder.verify(daGrantedCitizenLetterGenerationTask).execute(any(TaskContext.class), eq(incomingCaseData));
-        inOrder.verify(fetchPrintDocsFromDmStore).execute(any(TaskContext.class), eq(incomingCaseData));
+        inOrder.verify(fetchPrintDocsFromDmStoreTask).execute(any(TaskContext.class), eq(incomingCaseData));
         inOrder.verify(bulkPrinterTask).execute(any(TaskContext.class), eq(incomingCaseData));
         verify(sendDaGrantedNotificationEmailTask, never()).execute(any(TaskContext.class), eq(incomingCaseData));
     }
@@ -118,7 +118,7 @@ public class SendDaGrantedNotificationWorkflowTest {
 
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
         when(daGrantedSolicitorLetterGenerationTask.execute(isNotNull(), eq(incomingCaseData))).thenReturn(incomingCaseData);
-        when(fetchPrintDocsFromDmStore.execute(isNotNull(), eq(incomingCaseData))).thenReturn(incomingCaseData);
+        when(fetchPrintDocsFromDmStoreTask.execute(isNotNull(), eq(incomingCaseData))).thenReturn(incomingCaseData);
         when(bulkPrinterTask.execute(isNotNull(), eq(incomingCaseData))).thenReturn(incomingCaseData);
 
         Map<String, Object> returnedCaseData = sendDaGrantedNotificationWorkflow.run(buildCaseDetails(incomingCaseData), AUTH_TOKEN);
@@ -126,11 +126,11 @@ public class SendDaGrantedNotificationWorkflowTest {
         assertEquals(incomingCaseData, returnedCaseData);
         InOrder inOrder = inOrder(
             daGrantedSolicitorLetterGenerationTask,
-            fetchPrintDocsFromDmStore,
+            fetchPrintDocsFromDmStoreTask,
             bulkPrinterTask
         );
         inOrder.verify(daGrantedSolicitorLetterGenerationTask).execute(any(TaskContext.class), eq(incomingCaseData));
-        inOrder.verify(fetchPrintDocsFromDmStore).execute(any(TaskContext.class), eq(incomingCaseData));
+        inOrder.verify(fetchPrintDocsFromDmStoreTask).execute(any(TaskContext.class), eq(incomingCaseData));
         inOrder.verify(bulkPrinterTask).execute(any(TaskContext.class), eq(incomingCaseData));
         verify(sendDaGrantedNotificationEmailTask, never()).execute(any(TaskContext.class), eq(incomingCaseData));
     }
@@ -150,7 +150,7 @@ public class SendDaGrantedNotificationWorkflowTest {
         when(daGrantedSolicitorLetterGenerationTask.getDocumentType()).thenReturn(DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER_DOCUMENT_TYPE);
 
         when(daGrantedCitizenLetterGenerationTask.execute(isNotNull(), eq(incomingCaseData))).thenReturn(incomingCaseData);
-        when(fetchPrintDocsFromDmStore.execute(isNotNull(), eq(incomingCaseData))).thenReturn(incomingCaseData);
+        when(fetchPrintDocsFromDmStoreTask.execute(isNotNull(), eq(incomingCaseData))).thenReturn(incomingCaseData);
         when(bulkPrinterTask.execute(isNotNull(), eq(incomingCaseData))).thenReturn(incomingCaseData);
 
         Map<String, Object> returnedCaseData = sendDaGrantedNotificationWorkflow.run(buildCaseDetails(incomingCaseData), AUTH_TOKEN);
@@ -158,11 +158,11 @@ public class SendDaGrantedNotificationWorkflowTest {
         assertThat(returnedCaseData.get(D8DOCUMENTS_GENERATED), is(nullValue()));
         InOrder inOrder = inOrder(
             daGrantedCitizenLetterGenerationTask,
-            fetchPrintDocsFromDmStore,
+            fetchPrintDocsFromDmStoreTask,
             bulkPrinterTask
         );
         inOrder.verify(daGrantedCitizenLetterGenerationTask).execute(any(TaskContext.class), eq(incomingCaseData));
-        inOrder.verify(fetchPrintDocsFromDmStore).execute(any(TaskContext.class), eq(incomingCaseData));
+        inOrder.verify(fetchPrintDocsFromDmStoreTask).execute(any(TaskContext.class), eq(incomingCaseData));
         inOrder.verify(bulkPrinterTask).execute(any(TaskContext.class), eq(incomingCaseData));
         verify(sendDaGrantedNotificationEmailTask, never()).execute(any(TaskContext.class), eq(incomingCaseData));
     }
@@ -178,7 +178,7 @@ public class SendDaGrantedNotificationWorkflowTest {
         assertEquals(casePayload, result);
 
         verify(daGrantedCitizenLetterGenerationTask, never()).execute(any(TaskContext.class), eq(casePayload));
-        verify(fetchPrintDocsFromDmStore, never()).execute(any(TaskContext.class), eq(casePayload));
+        verify(fetchPrintDocsFromDmStoreTask, never()).execute(any(TaskContext.class), eq(casePayload));
         verify(bulkPrinterTask, never()).execute(any(TaskContext.class), eq(casePayload));
 
         verify(sendDaGrantedNotificationEmailTask, never()).execute(any(TaskContext.class), eq(casePayload));

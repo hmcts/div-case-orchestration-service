@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddCourtsToPayloadTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CreateAmendPetitionDraft;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CreateAmendPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 
 import java.util.HashMap;
@@ -23,7 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RequiredArgsConstructor
 public class AmendPetitionWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final CreateAmendPetitionDraft amendPetitionDraft;
+    private final CreateAmendPetitionDraftTask amendPetitionDraft;
     private final UpdateCaseInCCD updateCaseInCCD;
     private final AddCourtsToPayloadTask addCourtsToPayloadTask;
 

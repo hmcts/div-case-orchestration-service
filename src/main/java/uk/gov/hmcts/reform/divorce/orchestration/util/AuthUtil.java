@@ -11,8 +11,6 @@ import uk.gov.hmcts.reform.idam.client.IdamClient;
 public class AuthUtil {
 
     private static final String BEARER = "Bearer ";
-    private static final String AUTHORIZATION_CODE = "authorization_code";
-    private static final String CODE = "code";
 
     @Value("${idam.client.redirect_uri}")
     private String authRedirectUrl;

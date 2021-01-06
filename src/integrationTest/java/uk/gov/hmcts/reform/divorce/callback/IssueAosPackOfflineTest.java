@@ -17,13 +17,13 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.RESPONDENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.AOSPackOfflineConstants.RESPONDENT_AOS_INVITATION_LETTER_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.AOSPackOfflineConstants.AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.AOSPackOfflineConstants.AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.AOSPackOfflineConstants.CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.AOSPackOfflineConstants.RESPONDENT_AOS_INVITATION_LETTER_FILENAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.SEPARATION_TWO_YEARS;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
 
 public class IssueAosPackOfflineTest extends IntegrationTest {
@@ -50,9 +50,9 @@ public class IssueAosPackOfflineTest extends IntegrationTest {
             hasJsonPath("$.data.D8DocumentsGenerated", allOf(
                 hasSize(2),
                 hasJsonPath("[0].value.DocumentFileName",
-                        is(RESPONDENT_AOS_INVITATION_LETTER_FILENAME.getValue() + testCaseId)),
+                        is(RESPONDENT_AOS_INVITATION_LETTER_FILENAME + testCaseId)),
                 hasJsonPath("[1].value.DocumentFileName",
-                        is(AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME.getValue() + testCaseId))
+                        is(AOS_OFFLINE_TWO_YEAR_SEPARATION_FILENAME + testCaseId))
             )));
     }
 
@@ -73,9 +73,9 @@ public class IssueAosPackOfflineTest extends IntegrationTest {
             hasJsonPath("$.data.D8DocumentsGenerated", allOf(
                 hasSize(2),
                 hasJsonPath("[0].value.DocumentFileName",
-                        is(CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME.getValue() + testCaseId)),
+                        is(CO_RESPONDENT_AOS_INVITATION_LETTER_FILENAME + testCaseId)),
                 hasJsonPath("[1].value.DocumentFileName",
-                        is(AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME.getValue() + testCaseId))
+                        is(AOS_OFFLINE_ADULTERY_CO_RESPONDENT_FILENAME + testCaseId))
             )));
     }
 
