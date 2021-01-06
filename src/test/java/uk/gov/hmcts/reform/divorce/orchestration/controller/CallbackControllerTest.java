@@ -744,42 +744,94 @@ public class CallbackControllerTest {
 
     @Test
     public void whenGenerateDocument_thenExecuteService() throws Exception {
-        Map<String, Object> payload = singletonMap("testKey", "testValue");
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .caseData(payload)
-                .build())
+            .caseDetails(TEST_INCOMING_CASE_DETAILS)
             .build();
 
-        when(caseOrchestrationService
-            .handleDocumentGenerationCallback(incomingRequest, AUTH_TOKEN, "a", "b", "c")).thenReturn(payload);
+        when(caseOrchestrationService.handleDocumentGenerationCallback(eq(incomingRequest), eq(AUTH_TOKEN), any(), any(), any()))
+            .thenReturn(TEST_INCOMING_CASE_DETAILS.getCaseData());
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateDocument(AUTH_TOKEN, "a", "b", "c",
-            incomingRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateDocument(AUTH_TOKEN, "a", "b", "c", incomingRequest);
 
+        verify(caseOrchestrationService).handleDocumentGenerationCallback(incomingRequest, AUTH_TOKEN, "a", "b", "c");
         assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody().getData(), is(TEST_INCOMING_CASE_DETAILS.getCaseData()));
     }
 
     @Test
-    public void givenWorkflowException_whenGenerateDocuments_thenReturnErrors() throws WorkflowException {
-        Map<String, Object> payload = singletonMap("testKey", "testValue");
+    public void whenGenerateDocument_whenPreparingToPrintForPronouncement() throws Exception {
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .caseData(payload)
-                .build())
+            .caseDetails(TEST_INCOMING_CASE_DETAILS)
             .build();
 
-        String errorString = "foo";
+        when(caseOrchestrationService.handleDocumentGenerationCallback(eq(incomingRequest), eq(AUTH_TOKEN), any(), any(), any()))
+            .thenReturn(TEST_INCOMING_CASE_DETAILS.getCaseData());
 
-        when(caseOrchestrationService
-            .handleDocumentGenerationCallback(incomingRequest, AUTH_TOKEN, "a", "b", "c"))
-            .thenThrow(new WorkflowException(errorString));
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.prepareToPrintForPronouncement(AUTH_TOKEN, incomingRequest);
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateDocument(AUTH_TOKEN, "a", "b", "c",
-            incomingRequest);
-
+        verify(caseOrchestrationService).handleDocumentGenerationCallback(
+            incomingRequest, AUTH_TOKEN, "FL-DIV-GNO-ENG-00059.docx", "caseListForPronouncement", "caseListForPronouncement");
         assertThat(response.getStatusCode(), is(OK));
-        assertThat(response.getBody().getErrors(), contains(errorString));
+        assertThat(response.getBody().getData(), is(TEST_INCOMING_CASE_DETAILS.getCaseData()));
+    }
+
+    @Test
+    public void whenGenerateDocument_whenUpdateBulkCaseHearingDetails() throws Exception {
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+            .caseDetails(TEST_INCOMING_CASE_DETAILS)
+            .build();
+
+        when(caseOrchestrationService.handleDocumentGenerationCallback(eq(incomingRequest), eq(AUTH_TOKEN), any(), any(), any()))
+            .thenReturn(TEST_INCOMING_CASE_DETAILS.getCaseData());
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.updateBulkCaseHearingDetails(AUTH_TOKEN, incomingRequest);
+
+        verify(caseOrchestrationService).handleDocumentGenerationCallback(
+            incomingRequest, AUTH_TOKEN, "FL-DIV-GNO-ENG-00020.docx", "coe", "certificateOfEntitlement");
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody().getData(), is(TEST_INCOMING_CASE_DETAILS.getCaseData()));
+    }
+
+    @Test
+    public void givenWorkflowException_whenGenerateDocuments_thenReturnErrors() throws CaseOrchestrationServiceException {
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+            .caseDetails(TEST_INCOMING_CASE_DETAILS)
+            .build();
+        CaseOrchestrationServiceException expectedException = new CaseOrchestrationServiceException("foo");
+        when(caseOrchestrationService.handleDocumentGenerationCallback(eq(incomingRequest), eq(AUTH_TOKEN), any(), any(), any()))
+            .thenThrow(expectedException);
+
+        CaseOrchestrationServiceException actualException = assertThrows(CaseOrchestrationServiceException.class,
+            () -> classUnderTest.generateDocument(AUTH_TOKEN, "a", "b", "c", incomingRequest));
+        assertThat(actualException, is(expectedException));
+    }
+
+    @Test
+    public void givenWorkflowException_whenPreparingToPrintForPronouncement_thenReturnErrors() throws CaseOrchestrationServiceException {
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+            .caseDetails(TEST_INCOMING_CASE_DETAILS)
+            .build();
+        CaseOrchestrationServiceException expectedException = new CaseOrchestrationServiceException("foo");
+        when(caseOrchestrationService.handleDocumentGenerationCallback(eq(incomingRequest), eq(AUTH_TOKEN), any(), any(), any()))
+            .thenThrow(expectedException);
+
+        CaseOrchestrationServiceException actualException = assertThrows(CaseOrchestrationServiceException.class,
+            () -> classUnderTest.prepareToPrintForPronouncement(AUTH_TOKEN, incomingRequest));
+        assertThat(actualException, is(expectedException));
+    }
+
+    @Test
+    public void givenWorkflowException_whenUpdateBulkCaseHearingDetails_thenReturnErrors() throws CaseOrchestrationServiceException {
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+            .caseDetails(TEST_INCOMING_CASE_DETAILS)
+            .build();
+        CaseOrchestrationServiceException expectedException = new CaseOrchestrationServiceException("foo");
+        when(caseOrchestrationService.handleDocumentGenerationCallback(eq(incomingRequest), eq(AUTH_TOKEN), any(), any(), any()))
+            .thenThrow(expectedException);
+
+        CaseOrchestrationServiceException actualException = assertThrows(CaseOrchestrationServiceException.class,
+            () -> classUnderTest.updateBulkCaseHearingDetails(AUTH_TOKEN, incomingRequest));
+        assertThat(actualException, is(expectedException));
     }
 
     @Test
