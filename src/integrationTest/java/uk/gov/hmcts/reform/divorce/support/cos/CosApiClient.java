@@ -148,12 +148,27 @@ public interface CosApiClient {
 
     @ApiOperation("Handle callback to generate documents with provided parameters")
     @PostMapping(value = "/generate-document")
+    @Deprecated
     Map<String, Object> generateDocument(
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestBody CcdCallbackRequest ccdCallbackRequest,
         @RequestParam(name = "templateId") String templateId,
         @RequestParam(name = "documentType") String documentType,
         @RequestParam(name = "filename") String filename
+    );
+
+    @ApiOperation("Prepare case data before printing for pronouncement")
+    @PostMapping(value = "/prepare-to-print-for-pronouncement")
+    Map<String, Object> prepareToPrintForPronouncement(
+        @RequestHeader(AUTHORIZATION) String authorisation,
+        @RequestBody CcdCallbackRequest ccdCallbackRequest
+    );
+
+    @ApiOperation("Prepare case data before updating bulk case hearing details")
+    @PostMapping(value = "/update-bulk-case-hearing-details")
+    Map<String, Object> updateBulkCaseHearingDetails(
+        @RequestHeader(AUTHORIZATION) String authorisation,
+        @RequestBody CcdCallbackRequest ccdCallbackRequest
     );
 
     @ApiOperation("Handle callback to generate DN Pronouncement Documents")

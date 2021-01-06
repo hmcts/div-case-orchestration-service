@@ -991,12 +991,10 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void shouldCallTheRightWorkflow_ForDocumentGeneration() throws WorkflowException {
-        when(documentGenerationWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN, "a", "b", "c"))
-            .thenReturn(requestPayload);
+    public void shouldCallTheRightWorkflow_ForDocumentGeneration() throws WorkflowException, CaseOrchestrationServiceException {
+        when(documentGenerationWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN, "a", "b", "c")).thenReturn(requestPayload);
 
-        final Map<String, Object> result = classUnderTest
-            .handleDocumentGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c");
+        final Map<String, Object> result = classUnderTest.handleDocumentGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c");
 
         assertThat(result, is(requestPayload));
     }
@@ -1128,14 +1126,16 @@ public class CaseOrchestrationServiceImplTest {
         verifyNoMoreInteractions(documentGenerationWorkflow);
     }
 
-    @Test(expected = WorkflowException.class)
-    public void shouldThrowException_ForDocumentGeneration_WhenWorkflowExceptionIsCaught()
-        throws WorkflowException {
-
+    @Test
+    public void shouldThrowException_ForDocumentGeneration_WhenWorkflowExceptionIsCaught() throws WorkflowException {
+        WorkflowException workflowException = new WorkflowException("This operation threw an exception");
         when(documentGenerationWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN, "a", "b", "c"))
-            .thenThrow(new WorkflowException("This operation threw an exception"));
+            .thenThrow(workflowException);
 
-        classUnderTest.handleDocumentGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c");
+        CaseOrchestrationServiceException caseOrchestrationServiceException = assertThrows(CaseOrchestrationServiceException.class,
+            () -> classUnderTest.handleDocumentGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c"));
+        assertThat(caseOrchestrationServiceException.getCaseId().get(), is(TEST_CASE_ID));
+        assertThat(caseOrchestrationServiceException.getCause(), is(workflowException));
     }
 
     @Test(expected = WorkflowException.class)
