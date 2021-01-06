@@ -695,11 +695,17 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> handleDocumentGenerationCallback(final CcdCallbackRequest ccdCallbackRequest, final String authToken,
-                                                                final String templateId, final String documentType, final String filename)
-        throws WorkflowException {
-
-        return documentGenerationWorkflow.run(ccdCallbackRequest.getCaseDetails(), authToken, templateId, documentType, filename);
+    public Map<String, Object> handleDocumentGenerationCallback(final CcdCallbackRequest ccdCallbackRequest,
+                                                                final String authToken,
+                                                                final String templateId,
+                                                                final String documentType,
+                                                                final String filename) throws CaseOrchestrationServiceException {
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        try {
+            return documentGenerationWorkflow.run(caseDetails, authToken, templateId, documentType, filename);
+        } catch (WorkflowException workflowException) {
+            throw new CaseOrchestrationServiceException(workflowException, caseDetails.getCaseId());
+        }
     }
 
     @Override

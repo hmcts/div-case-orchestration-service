@@ -34,7 +34,6 @@ public class DocumentGenerationWorkflow extends DefaultWorkflow<Map<String, Obje
 
     private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
-
     @Autowired
     public DocumentGenerationWorkflow(final SetFormattedDnCourtDetails setFormattedDnCourtDetails,
                                       final DocumentGenerationTask documentGenerationTask,
