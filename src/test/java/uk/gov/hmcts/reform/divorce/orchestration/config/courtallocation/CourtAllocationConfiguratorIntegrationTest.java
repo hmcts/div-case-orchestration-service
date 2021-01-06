@@ -19,11 +19,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Cour
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum.SERVICE_CENTER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum.SOUTHWEST;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum.WESTMIDLANDS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.DESERTION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_FIVE_YEARS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.UNREASONABLE_BEHAVIOUR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.DESERTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.SEPARATION_FIVE_YEARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.SEPARATION_TWO_YEARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.UNREASONABLE_BEHAVIOUR;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)

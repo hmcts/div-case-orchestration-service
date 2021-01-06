@@ -1,0 +1,19 @@
+{
+  "D8DocumentsGenerated": [
+    {
+      "id": null,
+      "value": {
+        "DocumentLink": {
+          "document_url": "https://localhost:8080/documents/1234",
+          "document_filename": "certificateOfEntitlement.pdf",
+          "document_binary_url": "https://localhost:8080/documents/1234/binary"
+        },
+        "DocumentType": "coe",
+        "DocumentComment": null,
+        "DocumentFileName": "certificateOfEntitlement",
+        "DocumentDateAdded": null,
+        "DocumentEmailContent": null
+      }
+    }
+  ]
+}

@@ -40,7 +40,6 @@ public class CcdUtil {
     private final ObjectMapper objectMapper;
     private final LocalDateToWelshStringConverter localDateToWelshStringConverter;
 
-
     public String getCurrentDateCcdFormat() {
         return LocalDate.now(clock).format(DateUtils.Formatters.CCD_DATE);
     }
@@ -126,8 +125,7 @@ public class CcdUtil {
                 .collect(Collectors.toSet());
 
             List<CollectionMember<Document>> documentsGenerated = getCollectionMembersOrEmptyList(
-                existingCaseData, D8DOCUMENTS_GENERATED
-            );
+                objectMapper, existingCaseData, D8DOCUMENTS_GENERATED);
 
             List<CollectionMember<Document>> resultDocuments = new ArrayList<>();
 
@@ -161,7 +159,7 @@ public class CcdUtil {
 
         CollectionMember<Document> documentCollectionMemberToAdd = CcdMappers.mapDocumentInfoToCcdDocument(document);
 
-        List<CollectionMember<Document>> allDocuments = getCollectionMembersOrEmptyList(caseData, field);
+        List<CollectionMember<Document>> allDocuments = getCollectionMembersOrEmptyList(objectMapper, caseData, field);
         allDocuments.add(documentCollectionMemberToAdd);
 
         Map<String, Object> copiedMap = new HashMap<>(caseData);
@@ -170,7 +168,9 @@ public class CcdUtil {
         return copiedMap;
     }
 
-    public List<CollectionMember<Document>> getCollectionMembersOrEmptyList(Map<String, Object> caseData, String field) {
+    public static List<CollectionMember<Document>> getCollectionMembersOrEmptyList(ObjectMapper objectMapper,
+                                                                                   Map<String, Object> caseData,
+                                                                                   String field) {
         return Optional.ofNullable(caseData.get(field))
             .map(i -> objectMapper.convertValue(i, new TypeReference<List<CollectionMember<Document>>>() {
             }))

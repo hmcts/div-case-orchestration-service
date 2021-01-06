@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.EmailNotification;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.EmailNotificationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SaveToDraftStore;
 
 import java.util.Map;
@@ -21,13 +21,13 @@ public class SaveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
 
     private final SaveToDraftStore saveToDraftStore;
-    private final EmailNotification emailNotification;
+    private final EmailNotificationTask emailNotificationTask;
 
     @Autowired
     public SaveDraftWorkflow(SaveToDraftStore saveToDraftStore,
-                             EmailNotification emailNotification) {
+                             EmailNotificationTask emailNotificationTask) {
         this.saveToDraftStore = saveToDraftStore;
-        this.emailNotification = emailNotification;
+        this.emailNotificationTask = emailNotificationTask;
     }
 
     public Map<String, Object> run(Map<String, Object> payLoad,
@@ -36,7 +36,7 @@ public class SaveDraftWorkflow extends DefaultWorkflow<Map<String, Object>> {
         return this.execute(
                 new Task[]{
                     saveToDraftStore,
-                    emailNotification
+                    emailNotificationTask
                 },
                 payLoad,
                 ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),

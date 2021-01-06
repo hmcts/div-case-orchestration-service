@@ -105,7 +105,7 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
 
     @Test
     public void happyPathWithCostsOrder() throws Exception {
-        String firstDocumentId = stubDocumentGeneratorServiceBaseOnContextPath(DECREE_NISI_TEMPLATE_ID,
+        String firstDocumentId = stubDocumentGeneratorService(DECREE_NISI_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS),
             DECREE_NISI_DOCUMENT_TYPE);
 
@@ -116,7 +116,7 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
                     DECREE_NISI_DOCUMENT_TYPE,
                     DECREE_NISI_FILENAME + TEST_CASE_ID)
             )).build();
-        stubDocumentGeneratorServiceBaseOnContextPath(COSTS_ORDER_TEMPLATE_ID, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
+        stubDocumentGeneratorService(COSTS_ORDER_TEMPLATE_ID, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
             CaseDetails.builder()
                 .caseData(caseDataWithFirstDocumentAdded)
                 .caseId(TEST_CASE_ID)
@@ -149,7 +149,7 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
             .caseDetails(caseDetails)
             .build();
 
-        stubDocumentGeneratorServiceBaseOnContextPath(DECREE_NISI_TEMPLATE_ID,
+        stubDocumentGeneratorService(DECREE_NISI_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails), DECREE_NISI_DOCUMENT_TYPE);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
@@ -181,7 +181,7 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
             .caseDetails(caseDetails)
             .build();
 
-        stubDocumentGeneratorServiceBaseOnContextPath(DECREE_NISI_TEMPLATE_ID,
+        stubDocumentGeneratorService(DECREE_NISI_TEMPLATE_ID,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails), DECREE_NISI_DOCUMENT_TYPE);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();

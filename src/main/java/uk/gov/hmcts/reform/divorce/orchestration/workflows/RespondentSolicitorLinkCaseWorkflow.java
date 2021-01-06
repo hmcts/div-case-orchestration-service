@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetCaseWithIdTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.LinkRespondent;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.LinkRespondentTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrievePinUserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorLinkedField;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateExistingSolicitorLink;
@@ -35,7 +35,7 @@ public class RespondentSolicitorLinkCaseWorkflow extends DefaultWorkflow<UserDet
     private final GetCaseWithIdTask getCaseWithId;
     private final ValidateExistingSolicitorLink validateExistingSolicitorLink;
     private final RetrievePinUserDetails retrievePinUserDetails;
-    private final LinkRespondent linkRespondent;
+    private final LinkRespondentTask linkRespondentTask;
     private final SetSolicitorLinkedField setSolicitorLinkedField;
 
     public UserDetails run(CaseDetails caseDetails, String authToken) throws WorkflowException {
@@ -50,7 +50,7 @@ public class RespondentSolicitorLinkCaseWorkflow extends DefaultWorkflow<UserDet
                     getCaseWithId,
                     validateExistingSolicitorLink,
                     retrievePinUserDetails,
-                    linkRespondent,
+                    linkRespondentTask,
                     setSolicitorLinkedField
                 },
                 userDetails,
