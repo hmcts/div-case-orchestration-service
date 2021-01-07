@@ -10,5 +10,8 @@
   "10021_X-Content-Type-Options Header Missing_http://div-cos-aat.service.core-compute-aat.internal/aos-not-received-for-process-server_POST": "ignore",
   "10021_X-Content-Type-Options Header Missing_http://div-cos-aat.service.core-compute-aat.internal/calculate-separation-fields_POST": "ignore",
   "10021_X-Content-Type-Options Header Missing_http://div-cos-aat.service.core-compute-aat.internal/bulk/case_POST": "ignore",
-  "10021_X-Content-Type-Options Header Missing_http://div-cos-aat.service.core-compute-aat.internal/bulk/schedule/listing_POST": "ignore"
+  "10021_X-Content-Type-Options Header Missing_http://div-cos-aat.service.core-compute-aat.internal/bulk/schedule/listing_POST": "ignore",
+  "10010_Cookie No HttpOnly Flag_http://div-cos-aat.service.core-compute-aat.internal/v2/api-docs_GET": "ignore",
+  "10023_Information Disclosure - Debug Error Messages_http://div-cos-aat.service.core-compute-aat.internal/v2/api-docs_GET": "ignore",
+  "90033_Loosely Scoped Cookie_http://div-cos-aat.service.core-compute-aat.internal/v2/api-docs_GET": "ignore"
 }
