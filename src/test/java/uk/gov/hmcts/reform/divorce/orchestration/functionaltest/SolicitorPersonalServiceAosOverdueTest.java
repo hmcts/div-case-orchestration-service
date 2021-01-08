@@ -140,7 +140,9 @@ public class SolicitorPersonalServiceAosOverdueTest extends MockedFunctionalTest
             .caseDetails(caseDetails)
             .build();
 
-        maintenanceServiceServer.stubFor(WireMock.request(POST.name(),urlEqualTo("/casemaintenance/version/1/updateCase/test.case.id/"))
+        maintenanceServiceServer.stubFor(WireMock.request(POST.name(),urlEqualTo(
+            "/casemaintenance/version/1/updateCase/test.case.id/migratePersonalAos"
+        ))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
