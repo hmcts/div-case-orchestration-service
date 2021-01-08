@@ -162,6 +162,7 @@ public class OrchestrationConstants {
     public static final String SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID = "solAosReceivedNoAdConStarted";
     public static final String LINK_RESPONDENT_GENERIC_EVENT_ID = "linkRespondent";
     public static final String START_AOS_EVENT_ID = "startAos";
+    public static final String MIGRATE_PERSONAL_AOS_EVENT_ID = "migratePersonalAos";
     public static final String PAYMENT_MADE_EVENT = "paymentMade";
     public static final String MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER_EVENT_ID = "MakeEligibleForDA_Petitioner";
     public static final String MAKE_CASE_DA_OVERDUE_EVENT_ID = "DecreeAbsoluteOverdue";
