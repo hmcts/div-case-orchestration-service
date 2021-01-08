@@ -91,6 +91,8 @@ allprojects {
 
     group = 'uk.gov.hmcts.reform.divorce'
     version = '0.0.1'
+    sourceCompatibility = 11
+    targetCompatibility = 11
 
     checkstyle.toolVersion = '8.34'
     checkstyle.configFile = new File(rootDir, "checkstyle.xml")
