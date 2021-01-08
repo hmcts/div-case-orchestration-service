@@ -3,7 +3,7 @@ java:
     aadIdentityName: divorce
     ingressHost: "div-cos-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
     environment:
-        CASE_MAINTENANCE_SERVICE_API_BASEURL: "http://div-cms-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
+        CASE_MAINTENANCE_SERVICE_API_BASEURL: "http://div-cms-pr-392.service.core-compute-preview.internal"
         PAYMENT_API_BASEURL: "http://payment-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
         PRD_API_BASEURL : "http://rd-professional-api-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
         SEND_LETTER_SERIVCE_BASEURL: "http://rpe-send-letter-service-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal"
