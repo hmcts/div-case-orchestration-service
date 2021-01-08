@@ -12,8 +12,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MIGRATE_PERSONAL_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PERSONAL_SERVICE_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_SERVICE_METHOD_CCD_FIELD;
 
@@ -35,7 +35,7 @@ public class MigrateCaseToPersonalServiceTask implements Task<Map<String, Object
             payload = caseMaintenanceClient.updateCase(
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY),
                 context.getTransientObject(CASE_ID_JSON_KEY),
-                context.getTransientObject(CASE_EVENT_ID_JSON_KEY),
+                MIGRATE_PERSONAL_AOS_EVENT_ID,
                 payload
             );
             log.info("CMC update case completed. Updated {} to value: {}",
