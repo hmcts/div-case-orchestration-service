@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.CopyServiceApplicationDataToRetainTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceOrderGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceRefusalOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderTask;
@@ -37,6 +38,7 @@ public class MakeServiceDecisionWorkflow extends DefaultWorkflow<Map<String, Obj
     private final DeemedServiceOrderGenerationTask deemedServiceOrderGenerationTask;
     private final DeemedServiceRefusalOrderTask deemedServiceRefusalOrderTask;
     private final DispensedServiceRefusalOrderTask dispensedServiceRefusalOrderTask;
+    private final CopyServiceApplicationDataToRetainTask copyServiceApplicationDataToRetainTask;
     private final ServiceApplicationDataTask serviceApplicationDataTask;
     private final ServiceRefusalDraftRemovalTask serviceRefusalDraftRemovalTask;
     private final ServiceApplicationRemovalTask serviceApplicationRemovalTask;
@@ -77,6 +79,8 @@ public class MakeServiceDecisionWorkflow extends DefaultWorkflow<Map<String, Obj
             tasks.add(serviceRefusalDraftRemovalTask);
         }
 
+        log.info("CaseID: {}, Adding task to move service application temp data to retain to new fields.", caseId);
+        tasks.add(copyServiceApplicationDataToRetainTask);
         log.info("CaseID: {}, Adding task to move all service application temp data to collection.", caseId);
         tasks.add(serviceApplicationDataTask);
         log.info("CaseID: {}, Adding task to remove all service application temp data from case data.", caseId);
