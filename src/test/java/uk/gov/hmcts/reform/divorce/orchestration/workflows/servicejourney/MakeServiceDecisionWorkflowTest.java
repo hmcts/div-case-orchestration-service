@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.CopyServiceApplicationDataToRetainTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceOrderGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceRefusalOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderTask;
@@ -49,6 +50,9 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
 
     @Mock
     private ServiceRefusalDraftRemovalTask serviceRefusalDraftRemovalTask;
+
+    @Mock
+    private CopyServiceApplicationDataToRetainTask copyServiceApplicationDataToRetainTask;
 
     @Mock
     private ServiceApplicationDataTask serviceApplicationDataTask;
@@ -92,6 +96,7 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
             caseData,
             makeServiceDecisionDateTask,
             orderToDispenseGenerationTask,
+            copyServiceApplicationDataToRetainTask,
             serviceApplicationDataTask,
             serviceApplicationRemovalTask
         );
@@ -113,6 +118,7 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
             makeServiceDecisionDateTask,
             deemedServiceRefusalOrderTask,
             serviceRefusalDraftRemovalTask,
+            copyServiceApplicationDataToRetainTask,
             serviceApplicationDataTask,
             serviceApplicationRemovalTask
         );
@@ -124,6 +130,7 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
             makeServiceDecisionDateTask,
             deemedServiceRefusalOrderTask,
             serviceRefusalDraftRemovalTask,
+            copyServiceApplicationDataToRetainTask,
             serviceApplicationDataTask,
             serviceApplicationRemovalTask
         );
@@ -141,6 +148,7 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
             makeServiceDecisionDateTask,
             dispensedServiceRefusalOrderTask,
             serviceRefusalDraftRemovalTask,
+            copyServiceApplicationDataToRetainTask,
             serviceApplicationDataTask,
             serviceApplicationRemovalTask
         );
@@ -152,6 +160,7 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
             makeServiceDecisionDateTask,
             dispensedServiceRefusalOrderTask,
             serviceRefusalDraftRemovalTask,
+            copyServiceApplicationDataToRetainTask,
             serviceApplicationDataTask,
             serviceApplicationRemovalTask
         );
@@ -168,6 +177,7 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
             caseData,
             makeServiceDecisionDateTask,
             deemedServiceOrderGenerationTask,
+            copyServiceApplicationDataToRetainTask,
             serviceApplicationDataTask,
             serviceApplicationRemovalTask
         );
@@ -178,6 +188,7 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
             caseData,
             makeServiceDecisionDateTask,
             deemedServiceOrderGenerationTask,
+            copyServiceApplicationDataToRetainTask,
             serviceApplicationDataTask,
             serviceApplicationRemovalTask
         );
@@ -189,6 +200,7 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
         mockTasksExecution(caseData,
             makeServiceDecisionDateTask,
             serviceRefusalDraftRemovalTask,
+            copyServiceApplicationDataToRetainTask,
             serviceApplicationDataTask,
             serviceApplicationRemovalTask
         );
@@ -199,6 +211,7 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
             caseData,
             makeServiceDecisionDateTask,
             serviceRefusalDraftRemovalTask,
+            copyServiceApplicationDataToRetainTask,
             serviceApplicationDataTask,
             serviceApplicationRemovalTask
         );
@@ -215,6 +228,7 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
         throws WorkflowException {
         mockTasksExecution(caseData,
             makeServiceDecisionDateTask,
+            copyServiceApplicationDataToRetainTask,
             serviceApplicationDataTask,
             serviceApplicationRemovalTask
         );
@@ -224,6 +238,7 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
         verifyTasksCalledInOrder(
             caseData,
             makeServiceDecisionDateTask,
+            copyServiceApplicationDataToRetainTask,
             serviceApplicationDataTask,
             serviceApplicationRemovalTask
         );
