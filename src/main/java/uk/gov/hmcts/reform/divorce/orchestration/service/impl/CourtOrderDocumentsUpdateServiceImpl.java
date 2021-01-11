@@ -15,9 +15,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocmosisTemplates.COE_ENGLISH_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_COE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COE;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil.getCollectionMembersOrEmptyList;
 
 @RequiredArgsConstructor
@@ -40,7 +40,6 @@ public class CourtOrderDocumentsUpdateServiceImpl implements CourtOrderDocuments
             .map(CollectionMember::getValue)
             .map(Document::getDocumentType)
             .anyMatch(DOCUMENT_TYPE_COE::equals);
-
         if (coeDocumentExists) {
             updateCertificateOfEntitlement(authToken, caseDetails, caseId, caseData);
         }
@@ -51,8 +50,8 @@ public class CourtOrderDocumentsUpdateServiceImpl implements CourtOrderDocuments
     private void updateCertificateOfEntitlement(String authToken, CaseDetails caseDetails, String caseId, Map<String, Object> caseData)
         throws CaseOrchestrationServiceException {
         try {
-            Map<String, Object> returnedPayload = documentGenerationWorkflow.run(caseDetails, authToken,
-                COE_ENGLISH_TEMPLATE_ID, DOCUMENT_TYPE_COE, CERTIFICATE_OF_ENTITLEMENT_FILE_NAME);
+            Map<String, Object> returnedPayload =
+                documentGenerationWorkflow.run(caseDetails, authToken, DOCUMENT_TYPE_COE, COE, CERTIFICATE_OF_ENTITLEMENT_FILE_NAME);
             caseData.putAll(returnedPayload);
         } catch (WorkflowException exception) {
             throw new CaseOrchestrationServiceException(exception, caseId);
