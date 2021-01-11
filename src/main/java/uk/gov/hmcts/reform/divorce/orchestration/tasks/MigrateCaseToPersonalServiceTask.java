@@ -38,8 +38,8 @@ public class MigrateCaseToPersonalServiceTask implements Task<Map<String, Object
                 MIGRATE_PERSONAL_AOS_EVENT_ID,
                 payload
             );
-            log.info("CMC update case completed. Updated {} to value: {}",
-                SOL_SERVICE_METHOD_CCD_FIELD, payload.get(SOL_SERVICE_METHOD_CCD_FIELD));
+            log.info("Service method migration completed - Case ID: {}",
+                caseId);
         } catch (FeignException exception) {
             throw new TaskException("Case update failed", exception);
         }
