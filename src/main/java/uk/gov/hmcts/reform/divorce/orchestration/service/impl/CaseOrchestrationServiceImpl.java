@@ -10,8 +10,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConst
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentTypeHelper;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
@@ -103,6 +101,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COSTS_ORDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isPetitionerClaimingCosts;
 
 @Slf4j
@@ -702,7 +702,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                                                                 final String filename) throws CaseOrchestrationServiceException {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         try {
-            return documentGenerationWorkflow.run(caseDetails, authToken, templateId, documentType, filename);
+            return documentGenerationWorkflow.run(caseDetails, authToken, documentType, templateId, documentType, filename);
         } catch (WorkflowException workflowException) {
             throw new CaseOrchestrationServiceException(workflowException, caseDetails.getCaseId());
         }
@@ -716,16 +716,13 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         Map<String, Object> caseData = caseDetails.getCaseData();
 
         if (Objects.nonNull(caseData.get(BULK_LISTING_CASE_ID_FIELD))) {
-            String templateId = DocumentTypeHelper.getLanguageAppropriateTemplate(caseData, DocumentType.DECREE_NISI);
-            caseData.putAll(documentGenerationWorkflow.run(ccdCallbackRequest.getCaseDetails(), authToken,
-                templateId, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME));
+            caseData.putAll(
+                documentGenerationWorkflow.run(caseDetails, authToken, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME));
 
             if (isPetitionerClaimingCosts(caseData)) {
-                templateId = DocumentTypeHelper.getLanguageAppropriateTemplate(caseData, DocumentType.COSTS_ORDER);
-
                 // DocumentType is clear enough to use as the file name
-                caseData.putAll(documentGenerationWorkflow.run(caseDetails, authToken,
-                    templateId, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE));
+                caseData.putAll(
+                    documentGenerationWorkflow.run(caseDetails, authToken, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE));
             }
         }
 
@@ -788,7 +785,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         Map<String, Object> response = validateBulkCaseListingWorkflow.run(caseDetails.getCaseData());
         String judgeName = (String) caseDetails.getCaseData().get(PRONOUNCEMENT_JUDGE_CCD_FIELD);
         if (StringUtils.isNotEmpty(judgeName)) {
-            response = documentGenerationWorkflow.run(caseDetails, authToken, templateId, documentType, fileName);
+            response = documentGenerationWorkflow.run(caseDetails, authToken, documentType, templateId, documentType, fileName);
         }
 
         return response;
