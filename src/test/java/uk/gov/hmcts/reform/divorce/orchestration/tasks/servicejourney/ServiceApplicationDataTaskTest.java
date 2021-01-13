@@ -27,6 +27,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RECEI
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_APPLICATION_PAYMENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.LAST_SERVICE_APPLICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATIONS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.CASE_REFERENCE;
@@ -52,7 +53,8 @@ public class ServiceApplicationDataTaskTest {
         List<CollectionMember<DivorceServiceApplication>> collectionMembers = (List) output.get(SERVICE_APPLICATIONS);
         DivorceServiceApplication serviceApplication = collectionMembers.get(0).getValue();
 
-        assertThat(output.size(), is(originalSize + 1));
+        assertLastServiceApplicationIsPersisted(output);
+        assertThat(output.size(), is(originalSize + 2));
         assertServiceApplicationIsCorrect(serviceApplication);
     }
 
@@ -70,6 +72,12 @@ public class ServiceApplicationDataTaskTest {
 
         DivorceServiceApplication serviceApplication = collectionMembers.get(1).getValue();
 
+        assertLastServiceApplicationIsPersisted(output);
+        assertServiceApplicationIsCorrect(serviceApplication);
+    }
+
+    private void assertLastServiceApplicationIsPersisted(Map<String, Object> caseData) {
+        DivorceServiceApplication serviceApplication = (DivorceServiceApplication) caseData.get(LAST_SERVICE_APPLICATION);
         assertServiceApplicationIsCorrect(serviceApplication);
     }
 
