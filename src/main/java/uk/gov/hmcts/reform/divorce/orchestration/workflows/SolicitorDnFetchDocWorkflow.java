@@ -27,8 +27,7 @@ public class SolicitorDnFetchDocWorkflow extends DefaultWorkflow<Map<String, Obj
 
     private final PopulateDocLink populateDocLink;
 
-    public Map<String, Object> run(CaseDetails caseDetails, final String documentType, final String docLinkFieldName)
-        throws WorkflowException {
+    public Map<String, Object> run(CaseDetails caseDetails, final String ccdDocumentType, final String docLinkFieldName) throws WorkflowException {
 
         final String caseId = caseDetails.getCaseId();
 
@@ -44,7 +43,7 @@ public class SolicitorDnFetchDocWorkflow extends DefaultWorkflow<Map<String, Obj
         return this.execute(
             new Task[] {populateDocLink},
             caseDetails.getCaseData(),
-            ImmutablePair.of(DOCUMENT_TYPE, documentType),
+            ImmutablePair.of(DOCUMENT_TYPE, ccdDocumentType),
             ImmutablePair.of(DOCUMENT_DRAFT_LINK_FIELD, docLinkFieldName));
     }
 
