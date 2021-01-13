@@ -18,6 +18,7 @@ public class CcdFields {
     public static final String SERVICE_APPLICATIONS = "ServiceApplications";
     public static final String SERVICE_APPLICATION_DOCUMENTS = "ServiceApplicationDocuments";
     public static final String SERVICE_APPLICATION_REFUSAL_REASON = "ServiceApplicationRefusalReason";
+    public static final String LAST_SERVICE_APPLICATION = "LastServiceApplication";
     public static final String HELP_WITH_FEES_REF_NUMBER = "D8HelpWithFeesReferenceNumber";
 
     public static final String JUDGE_TYPE = "JudgeType";
