@@ -645,10 +645,10 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> processSolDnDoc(CcdCallbackRequest ccdCallbackRequest, final String documentType, final String docLinkFieldName)
+    public Map<String, Object> processSolDnDoc(CcdCallbackRequest ccdCallbackRequest, final String ccdDocumentType, final String docLinkFieldName)
         throws CaseOrchestrationServiceException {
         try {
-            return solicitorDnFetchDocWorkflow.run(ccdCallbackRequest.getCaseDetails(), documentType, docLinkFieldName);
+            return solicitorDnFetchDocWorkflow.run(ccdCallbackRequest.getCaseDetails(), ccdDocumentType, docLinkFieldName);
         } catch (WorkflowException e) {
             throw new CaseOrchestrationServiceException(e);
         }
