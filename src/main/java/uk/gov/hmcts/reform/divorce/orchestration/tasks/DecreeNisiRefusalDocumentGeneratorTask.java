@@ -126,7 +126,7 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
         context.setTransientObject(DOCUMENT_TYPE, documentType);
     }
 
-    private GeneratedDocumentInfo generatePdfDocument(String templateId, String documentType, String documentName,
+    private GeneratedDocumentInfo generatePdfDocument(String templateId, String ccdDocumentType, String fileNamePattern,
                                                       String authToken, CaseDetails caseDetails) {
         final GeneratedDocumentInfo generatedDocumentInfo =
             documentGeneratorClient.generatePDF(
@@ -137,8 +137,8 @@ public class DecreeNisiRefusalDocumentGeneratorTask implements Task<Map<String, 
                 authToken
             );
 
-        generatedDocumentInfo.setDocumentType(documentType);
-        generatedDocumentInfo.setFileName(format(DOCUMENT_FILENAME_FMT, documentName, caseDetails.getCaseId()));
+        generatedDocumentInfo.setDocumentType(ccdDocumentType);
+        generatedDocumentInfo.setFileName(format(DOCUMENT_FILENAME_FMT, fileNamePattern, caseDetails.getCaseId()));
 
         return generatedDocumentInfo;
     }

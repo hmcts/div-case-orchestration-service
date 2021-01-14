@@ -19,7 +19,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
-import static org.assertj.core.util.Sets.newLinkedHashSet;
+import static com.jayway.jsonassert.impl.matcher.IsCollectionWithSize.hasSize;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
@@ -54,11 +54,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.MultipleDocumentGenerationTaskTest.matchesDocumentInputParameters;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DecreeNisiRefusalDocumentGenerationInfoTaskTest {
+public class DecreeNisiRefusalDocumentGeneratorTaskTest {
 
     private static final String FIXED_DATE = "2010-10-10";
     private static final String DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00088.docx";
     private static final String DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00098.docx";
+    private static final String TEST_RETURNED_FILE_NAME = "filename.pdf";
 
     @Mock
     private DocumentGeneratorClient documentGeneratorClient;
@@ -83,15 +84,13 @@ public class DecreeNisiRefusalDocumentGenerationInfoTaskTest {
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
 
+        //given
         final GeneratedDocumentInfo expectedDocument = GeneratedDocumentInfo.builder()
             .documentType(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE)
-            .fileName(DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME + TEST_CASE_ID)
+            .fileName(TEST_RETURNED_FILE_NAME)
             .build();
-
-        //given
-        when(documentGeneratorClient
-            .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID,
-                caseDetails), eq(AUTH_TOKEN))
+        when(documentGeneratorClient.generatePDF(
+            matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID, caseDetails), eq(AUTH_TOKEN))
         ).thenReturn(expectedDocument);
 
         //when
@@ -99,8 +98,11 @@ public class DecreeNisiRefusalDocumentGenerationInfoTaskTest {
 
         final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context.getTransientObject(DOCUMENT_COLLECTION);
 
-        assertThat(documentCollection, is(newLinkedHashSet(expectedDocument)));
-
+        assertThat(documentCollection, hasSize(1));
+        documentCollection.forEach(document -> {
+            assertThat(document.getDocumentType(), is(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE));
+            assertThat(document.getFileName(), is(DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME + TEST_CASE_ID));
+        });
         verify(documentGeneratorClient)
             .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID,
                 caseDetails), eq(AUTH_TOKEN));
@@ -138,12 +140,11 @@ public class DecreeNisiRefusalDocumentGenerationInfoTaskTest {
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
 
+        //given
         final GeneratedDocumentInfo expectedDocument = GeneratedDocumentInfo.builder()
             .documentType(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE)
-            .fileName(DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME + TEST_CASE_ID)
+            .fileName(TEST_RETURNED_FILE_NAME)
             .build();
-
-        //given
         when(documentGeneratorClient
             .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID,
                 caseDetails), eq(AUTH_TOKEN))
@@ -154,7 +155,11 @@ public class DecreeNisiRefusalDocumentGenerationInfoTaskTest {
 
         final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context.getTransientObject(DOCUMENT_COLLECTION);
 
-        assertThat(documentCollection, is(newLinkedHashSet(expectedDocument)));
+        assertThat(documentCollection, hasSize(1));
+        documentCollection.forEach(doc -> {
+            assertThat(doc.getDocumentType(), is(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE));
+            assertThat(doc.getFileName(), is(DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME + TEST_CASE_ID));
+        });
 
         List<Map<String, Object>> currentGeneratedDocs =
             (List<Map<String, Object>>) caseDetails.getCaseData().get(D8DOCUMENTS_GENERATED);
@@ -171,7 +176,6 @@ public class DecreeNisiRefusalDocumentGenerationInfoTaskTest {
                 }
             })
         );
-
         verify(documentGeneratorClient)
             .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID,
                 caseDetails), eq(AUTH_TOKEN));
@@ -195,11 +199,6 @@ public class DecreeNisiRefusalDocumentGenerationInfoTaskTest {
         context.setTransientObject(PETITION_FEE_JSON_KEY, amendFee);
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
 
-        final GeneratedDocumentInfo expectedDocument = GeneratedDocumentInfo.builder()
-            .documentType(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE)
-            .fileName(DECREE_NISI_REFUSAL_REJECTION_DOCUMENT_NAME + TEST_CASE_ID)
-            .build();
-
         final Map<String, Object> expectedPayload = new HashMap<>(payload);
         expectedPayload.put(FEE_TO_PAY_JSON_KEY, amendFee.getFormattedFeeAmount());
 
@@ -209,18 +208,24 @@ public class DecreeNisiRefusalDocumentGenerationInfoTaskTest {
             .build();
 
         //given
+        final GeneratedDocumentInfo expectedDocument = GeneratedDocumentInfo.builder()
+            .documentType(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE)
+            .fileName(TEST_RETURNED_FILE_NAME)
+            .build();
         when(documentGeneratorClient
             .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID, expectedCaseDetails), eq(AUTH_TOKEN))
         ).thenReturn(expectedDocument);
-
 
         //when
         decreeNisiRefusalDocumentGeneratorTask.execute(context, payload);
 
         final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context.getTransientObject(DOCUMENT_COLLECTION);
 
-        assertThat(documentCollection, is(newLinkedHashSet(expectedDocument)));
-
+        assertThat(documentCollection, hasSize(1));
+        documentCollection.forEach(doc -> {
+            assertThat(doc.getDocumentType(), is(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE));
+            assertThat(doc.getFileName(), is(DECREE_NISI_REFUSAL_REJECTION_DOCUMENT_NAME + TEST_CASE_ID));
+        });
         verify(documentGeneratorClient)
             .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID, expectedCaseDetails), eq(AUTH_TOKEN));
     }
