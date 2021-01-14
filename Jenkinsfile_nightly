@@ -3,10 +3,7 @@
 properties([
         pipelineTriggers([cron('15 01 * * *')]),
         parameters([
-                string(name: 'URL_TO_TEST', defaultValue: 'http://div-cos-aat.service.core-compute-aat.internal', description: 'The URL you want to run these tests against'),
-                string(name: 'SecurityRules',
-                        defaultValue: 'https://raw.githubusercontent.com/hmcts/security-test-rules/master/conf/security-rules.conf',
-                        description: 'The URL you want to run these tests against'),
+                string(name: 'URL_TO_TEST', defaultValue: 'http://div-cos-aat.service.core-compute-aat.internal', description: 'The URL you want to run these tests against')
         ])
 ])
 
@@ -40,7 +37,7 @@ withNightlyPipeline(type, product, component) {
     env.TEST_URL = params.URL_TO_TEST
 
     loadVaultSecrets(secrets)
-    env.Rules = params.SecurityRules
+
     println("### Set test_environment.. ###")
     env.test_environment = 'aat'
     after('DependencyCheckNightly') {
@@ -59,5 +56,4 @@ withNightlyPipeline(type, product, component) {
 
      enableFullFunctionalTest()
      enableMutationTest()
-     enableSecurityScan()
 }
