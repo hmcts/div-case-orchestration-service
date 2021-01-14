@@ -30,6 +30,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INCOMING_CASE_DETAILS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_COE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocument;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getObjectMapperInstance;
 
@@ -58,7 +59,7 @@ public class CourtOrderDocumentsUpdateServiceImplTest {
 
     @Test
     public void shouldUpdateExistingCourtOrderDocuments() throws WorkflowException, CaseOrchestrationServiceException {
-        when(documentGenerationWorkflow.run(incomingCaseDetails, AUTH_TOKEN, COE_ENGLISH_TEMPLATE_ID, DOCUMENT_TYPE_COE, COE_FILE_NAME))
+        when(documentGenerationWorkflow.run(incomingCaseDetails, AUTH_TOKEN, DOCUMENT_TYPE_COE, COE, COE_FILE_NAME))
             .thenReturn(
                 Map.of(D8DOCUMENTS_GENERATED, List.of(
                     createCollectionMemberDocument("newUrl", DOCUMENT_TYPE_COE, COE_FILE_NAME)
@@ -74,7 +75,7 @@ public class CourtOrderDocumentsUpdateServiceImplTest {
         assertThat(updatedCertificateOfEntitlement.getValue().getDocumentLink().getDocumentUrl(), is("newUrl"));
 
         //Certificate of Entitlement
-        verify(documentGenerationWorkflow).run(incomingCaseDetails, AUTH_TOKEN, COE_ENGLISH_TEMPLATE_ID, DOCUMENT_TYPE_COE, COE_FILE_NAME);
+        verify(documentGenerationWorkflow).run(incomingCaseDetails, AUTH_TOKEN, DOCUMENT_TYPE_COE, COE, COE_FILE_NAME);
     }
 
     @Test
@@ -83,12 +84,12 @@ public class CourtOrderDocumentsUpdateServiceImplTest {
 
         assertThat(returnedPayload, equalTo(TEST_INCOMING_CASE_DETAILS.getCaseData()));
 
-        verify(documentGenerationWorkflow, never()).run(any(), any(), any(), any(), any());
+        verify(documentGenerationWorkflow, never()).run(any(), any(), any(), any(), any(), any());
     }
 
     @Test
     public void shouldThrowCaseOrchestrationExceptionIfCertificateOfEntitlementGenerationFails() throws WorkflowException {
-        when(documentGenerationWorkflow.run(incomingCaseDetails, AUTH_TOKEN, COE_ENGLISH_TEMPLATE_ID, DOCUMENT_TYPE_COE, COE_FILE_NAME))
+        when(documentGenerationWorkflow.run(incomingCaseDetails, AUTH_TOKEN, DOCUMENT_TYPE_COE, COE, COE_FILE_NAME))
             .thenThrow(WorkflowException.class);
 
         CaseOrchestrationServiceException serviceException = assertThrows(

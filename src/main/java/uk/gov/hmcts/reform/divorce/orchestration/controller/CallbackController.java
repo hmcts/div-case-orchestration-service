@@ -600,6 +600,15 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
+    /**
+     * Generate given document and attach it to the Divorce case.
+     *
+     * @deprecated Please don't use this endpoint.
+     *      It's not desirable that document generation information be contained in CCD. Instead it should be known by COS.
+     *      Also, having values outside of COS makes re-using the code harder and less safe.
+     *      Please create an endpoint for your specific need.
+     */
+    @Deprecated(since = "We had to re-generate documents whose input information was contained in CCD (making reusability unsafe).")
     @PostMapping(path = "/generate-document", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Generate given document and attach it to the Divorce case")
     @ApiResponses(value = {
@@ -611,24 +620,48 @@ public class CallbackController {
         @RequestParam(value = "templateId") @ApiParam("templateId") String templateId,
         @RequestParam(value = "documentType") @ApiParam("documentType") String documentType,
         @RequestParam(value = "filename") @ApiParam("filename") String filename,
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
-        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        log.warn("The /generate-document endpoint was called with templateId [{}], documentType [{}] and filename [{}].",
+            templateId,
+            documentType,
+            filename);
 
-        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+        return generateNewDocumentAndAddToCaseData(authorizationToken, ccdCallbackRequest, templateId, documentType, filename);
+    }
 
-        try {
-            Map<String, Object> payloadToReturn = caseOrchestrationService.handleDocumentGenerationCallback(
-                ccdCallbackRequest, authorizationToken, templateId, documentType, filename
-            );
-            callbackResponseBuilder.data(payloadToReturn);
-            log.info("Generating document {} for case {}.", documentType, caseId);
-        } catch (WorkflowException exception) {
-            log.error("Document generation failed. Case id:  {}", caseId, exception);
-            callbackResponseBuilder.errors(singletonList(exception.getMessage()));
-        }
+    @PostMapping(path = "/prepare-to-print-for-pronouncement", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Prepare case data before printing for pronouncement")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Document has been attached to the case", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 500, message = "Internal Server Error")})
+    public ResponseEntity<CcdCallbackResponse> prepareToPrintForPronouncement(
+        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
-        return ResponseEntity.ok(callbackResponseBuilder.build());
+        String templateId = "FL-DIV-GNO-ENG-00059.docx";
+        String documentType = "caseListForPronouncement";
+        String filename = "caseListForPronouncement";
+
+        return generateNewDocumentAndAddToCaseData(authorizationToken, ccdCallbackRequest, templateId, documentType, filename);
+    }
+
+    @PostMapping(path = "/update-bulk-case-hearing-details", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Prepare case data before updating bulk case hearing details")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Document has been attached to the case", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 500, message = "Internal Server Error")})
+    public ResponseEntity<CcdCallbackResponse> updateBulkCaseHearingDetails(
+        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        String templateId = "FL-DIV-GNO-ENG-00020.docx";
+        String documentType = "coe";
+        String filename = "certificateOfEntitlement";
+
+        return generateNewDocumentAndAddToCaseData(authorizationToken, ccdCallbackRequest, templateId, documentType, filename);
     }
 
     @PostMapping(path = "/generate-dn-pronouncement-documents", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
@@ -1458,4 +1491,23 @@ public class CallbackController {
         ValidationResponse validationResponse = (ValidationResponse) response.get(VALIDATION_ERROR_KEY);
         return validationResponse.getErrors();
     }
+
+    private ResponseEntity<CcdCallbackResponse> generateNewDocumentAndAddToCaseData(String authorizationToken,
+                                                                                    CcdCallbackRequest ccdCallbackRequest,
+                                                                                    String templateId,
+                                                                                    String documentType,
+                                                                                    String filename) throws CaseOrchestrationServiceException {
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+
+        Map<String, Object> payloadToReturn = caseOrchestrationService.handleDocumentGenerationCallback(
+            ccdCallbackRequest, authorizationToken, templateId, documentType, filename
+        );
+        callbackResponseBuilder.data(payloadToReturn);
+        log.info("Generating document {} for case {}.", documentType, caseId);
+
+        return ResponseEntity.ok(callbackResponseBuilder.build());
+    }
+
 }
