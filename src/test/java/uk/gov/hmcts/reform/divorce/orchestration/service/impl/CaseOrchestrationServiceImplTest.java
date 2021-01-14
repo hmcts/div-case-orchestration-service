@@ -11,8 +11,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.model.payment.Payment;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -21,7 +19,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Fee;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionForRefusalWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
@@ -151,6 +148,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.ALLOCATED_COURT_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COSTS_ORDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DECREE_NISI;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseOrchestrationServiceImplTest {
@@ -327,9 +326,6 @@ public class CaseOrchestrationServiceImplTest {
     private SendPetitionerAmendEmailNotificationWorkflow sendPetitionerAmendEmailNotificationWorkflow;
 
     @Mock
-    private DocumentTemplateService documentTemplateService;
-
-    @Mock
     private WelshContinueWorkflow welshContinueWorkflow;
 
     @Mock
@@ -349,10 +345,6 @@ public class CaseOrchestrationServiceImplTest {
     private Map<String, Object> requestPayload;
 
     private Map<String, Object> expectedPayload;
-
-    private static final String COSTS_ORDER_TEMPLATE_ID = "FL-DIV-DEC-ENG-00060.docx";
-
-    private static final String DECREE_NISI_TEMPLATE_ID = "FL-DIV-GNO-ENG-00021.docx";
 
     @Before
     public void setUp() {
@@ -997,12 +989,10 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void shouldCallTheRightWorkflow_ForDocumentGeneration() throws WorkflowException {
-        when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c"))
-            .thenReturn(requestPayload);
+    public void shouldCallTheRightWorkflow_ForDocumentGeneration() throws WorkflowException, CaseOrchestrationServiceException {
+        when(documentGenerationWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN, "b", "a", "b", "c")).thenReturn(requestPayload);
 
-        final Map<String, Object> result = classUnderTest
-            .handleDocumentGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c");
+        final Map<String, Object> result = classUnderTest.handleDocumentGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c");
 
         assertThat(result, is(requestPayload));
     }
@@ -1036,20 +1026,13 @@ public class CaseOrchestrationServiceImplTest {
         caseData.put(BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build());
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "No");
 
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
-            CaseDetails.builder().caseData(caseData).build())
-            .build();
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
-            .thenReturn(DECREE_NISI_TEMPLATE_ID);
+        classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
-        classUnderTest
-            .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
-
-        verify(documentGenerationWorkflow, times(1)).run(ccdCallbackRequest, AUTH_TOKEN,
-            DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME);
-        verify(documentGenerationWorkflow, never()).run(ccdCallbackRequest, AUTH_TOKEN,
-            COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE);
+        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME);
+        verify(documentGenerationWorkflow, never()).run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE);
         verifyNoMoreInteractions(documentGenerationWorkflow);
     }
 
@@ -1061,20 +1044,13 @@ public class CaseOrchestrationServiceImplTest {
         caseData.put(DN_COSTS_OPTIONS_CCD_FIELD, DN_COSTS_ENDCLAIM_VALUE);
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
 
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
-            CaseDetails.builder().caseData(caseData).build())
-            .build();
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
-            .thenReturn(DECREE_NISI_TEMPLATE_ID);
+        classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
-        classUnderTest
-            .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
-
-        verify(documentGenerationWorkflow, times(1)).run(ccdCallbackRequest, AUTH_TOKEN,
-            DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME);
-        verify(documentGenerationWorkflow, never()).run(ccdCallbackRequest, AUTH_TOKEN,
-            COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE);
+        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME);
+        verify(documentGenerationWorkflow, never()).run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE);
         verifyNoMoreInteractions(documentGenerationWorkflow);
     }
 
@@ -1086,22 +1062,13 @@ public class CaseOrchestrationServiceImplTest {
         caseData.put(DN_COSTS_OPTIONS_CCD_FIELD, "Continue");
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
 
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
-            CaseDetails.builder().caseData(caseData).build())
-            .build();
-
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
-            .thenReturn(DECREE_NISI_TEMPLATE_ID);
-
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.COSTS_ORDER_TEMPLATE_ID))
-            .thenReturn(COSTS_ORDER_TEMPLATE_ID);
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
         classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
-        verify(documentGenerationWorkflow, times(1)).run(ccdCallbackRequest, AUTH_TOKEN,
-            DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME);
-        verify(documentGenerationWorkflow, times(1)).run(ccdCallbackRequest, AUTH_TOKEN,
-            COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE);
+        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME);
+        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE);
         verifyNoMoreInteractions(documentGenerationWorkflow);
     }
 
@@ -1112,21 +1079,13 @@ public class CaseOrchestrationServiceImplTest {
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, NO_VALUE);
 
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
-            CaseDetails.builder().caseData(caseData).build())
-            .build();
-
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.COSTS_ORDER_TEMPLATE_ID))
-            .thenReturn(COSTS_ORDER_TEMPLATE_ID);
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
-            .thenReturn(DECREE_NISI_TEMPLATE_ID);
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
         classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
-        verify(documentGenerationWorkflow, times(1)).run(ccdCallbackRequest, AUTH_TOKEN,
-            DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME);
-        verify(documentGenerationWorkflow, times(1)).run(ccdCallbackRequest, AUTH_TOKEN,
-            COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE);
+        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME);
+        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE);
         verifyNoMoreInteractions(documentGenerationWorkflow);
     }
 
@@ -1137,54 +1096,40 @@ public class CaseOrchestrationServiceImplTest {
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
 
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
-            CaseDetails.builder().caseData(caseData).build())
-            .build();
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
-            .thenReturn(DECREE_NISI_TEMPLATE_ID);
+        classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.COSTS_ORDER_TEMPLATE_ID))
-            .thenReturn(COSTS_ORDER_TEMPLATE_ID);
-
-        classUnderTest
-            .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
-
-        verify(documentGenerationWorkflow, times(1)).run(ccdCallbackRequest, AUTH_TOKEN,
-            DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME);
-        verify(documentGenerationWorkflow, times(1)).run(ccdCallbackRequest, AUTH_TOKEN,
-            COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE);
+        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME);
+        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE);
         verifyNoMoreInteractions(documentGenerationWorkflow);
     }
 
-    @Test(expected = WorkflowException.class)
-    public void shouldThrowException_ForDocumentGeneration_WhenWorkflowExceptionIsCaught()
-        throws WorkflowException {
+    @Test
+    public void shouldThrowException_ForDocumentGeneration_WhenWorkflowExceptionIsCaught() throws WorkflowException {
+        WorkflowException workflowException = new WorkflowException("This operation threw an exception");
+        when(documentGenerationWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN, "b", "a", "b", "c"))
+            .thenThrow(workflowException);
 
-        when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c"))
-            .thenThrow(new WorkflowException("This operation threw an exception"));
-
-        classUnderTest.handleDocumentGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c");
+        CaseOrchestrationServiceException caseOrchestrationServiceException = assertThrows(CaseOrchestrationServiceException.class,
+            () -> classUnderTest.handleDocumentGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c"));
+        assertThat(caseOrchestrationServiceException.getCaseId().get(), is(TEST_CASE_ID));
+        assertThat(caseOrchestrationServiceException.getCause(), is(workflowException));
     }
 
     @Test(expected = WorkflowException.class)
-    public void shouldThrowException_ForDnPronouncedDocumentsGeneration_WhenWorkflowExceptionIsCaught()
-        throws WorkflowException {
+    public void shouldThrowException_ForDnPronouncedDocumentsGeneration_WhenWorkflowExceptionIsCaught() throws WorkflowException {
 
         Map<String, Object> caseData = new HashMap<String, Object>();
         caseData.put(BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build());
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
 
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
-            CaseDetails.builder().caseData(caseData).build())
-            .build();
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.COSTS_ORDER_TEMPLATE_ID))
-            .thenReturn(COSTS_ORDER_TEMPLATE_ID);
-
-        when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN,
-            COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE))
+        when(documentGenerationWorkflow.run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE))
             .thenThrow(new WorkflowException("This operation threw an exception"));
 
         classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
@@ -1370,26 +1315,15 @@ public class CaseOrchestrationServiceImplTest {
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
         caseData.put(LANGUAGE_PREFERENCE_WELSH, "No");
 
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
-            CaseDetails.builder().caseData(caseData).build())
-            .build();
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_TEMPLATE_ID))
-            .thenReturn(DECREE_NISI_TEMPLATE_ID);
-
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.COSTS_ORDER_TEMPLATE_ID))
-            .thenReturn(COSTS_ORDER_TEMPLATE_ID);
-
-        when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN,
-            DECREE_NISI_TEMPLATE_ID, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME))
+        when(documentGenerationWorkflow.run(caseDetails, AUTH_TOKEN, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME))
             .thenReturn(caseData);
-
-        when(documentGenerationWorkflow.run(ccdCallbackRequest, AUTH_TOKEN,
-            COSTS_ORDER_TEMPLATE_ID, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE))
+        when(documentGenerationWorkflow.run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE))
             .thenReturn(requestPayload);
 
-        final Map<String, Object> result = classUnderTest
-            .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
+        final Map<String, Object> result = classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
         Map<String, Object> expectedResult = new HashMap<>();
         expectedResult.put(BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build());
@@ -1499,11 +1433,12 @@ public class CaseOrchestrationServiceImplTest {
     @Test
     public void givenBulkCaseWithoutJudge_whenEditBulkCase_thenReturnCaseWithoutDocument() throws Exception {
         when(validateBulkCaseListingWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData())).thenReturn(expectedPayload);
+
         Map<String, Object> returnedPayload = classUnderTest.editBulkCaseListingData(ccdCallbackRequest, FILE_NAME,
             TEMPLATE_ID, DOCUMENT_TYPE, AUTH_TOKEN);
 
         assertThat(returnedPayload, equalTo(expectedPayload));
-        verify(documentGenerationWorkflow, never()).run(any(), any(), any(), any(), any());
+        verify(documentGenerationWorkflow, never()).run(any(), any(), any(), any(), any(), any());
     }
 
     @Test
@@ -1520,15 +1455,15 @@ public class CaseOrchestrationServiceImplTest {
             .build();
 
         when(validateBulkCaseListingWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData())).thenReturn(expectedPayload);
-        when((documentGenerationWorkflow).run(ccdCallbackRequest, AUTH_TOKEN, TEMPLATE_ID, DOCUMENT_TYPE, FILE_NAME))
+        when((documentGenerationWorkflow).run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN, DOCUMENT_TYPE, TEMPLATE_ID, DOCUMENT_TYPE, FILE_NAME))
             .thenReturn(expectedPayload);
 
         Map<String, Object> returnedPayload = classUnderTest
             .editBulkCaseListingData(ccdCallbackRequest, FILE_NAME, TEMPLATE_ID, DOCUMENT_TYPE, AUTH_TOKEN);
 
         assertThat(returnedPayload, equalTo(expectedPayload));
-        verify(documentGenerationWorkflow, times(1))
-            .run(ccdCallbackRequest, AUTH_TOKEN, TEMPLATE_ID, DOCUMENT_TYPE, FILE_NAME);
+        verify(documentGenerationWorkflow)
+            .run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN, DOCUMENT_TYPE, TEMPLATE_ID, DOCUMENT_TYPE, FILE_NAME);
     }
 
     @Test

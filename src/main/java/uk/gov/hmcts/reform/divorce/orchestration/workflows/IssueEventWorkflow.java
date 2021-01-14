@@ -11,15 +11,15 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentLetterGenerator;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentPinGenerator;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentLetterGeneratorTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentPinGeneratorTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetPetitionIssueFeeTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetCoRespondentLinkingFields;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetRespondentLinkingFields;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetIssueDate;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetIssueDateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
@@ -36,13 +36,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RequiredArgsConstructor
 public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final SetIssueDate setIssueDate;
+    private final SetIssueDateTask setIssueDateTask;
     private final ValidateCaseDataTask validateCaseDataTask;
     private final PetitionGenerator petitionGenerator;
     private final RespondentPinGenerator respondentPinGenerator;
-    private final CoRespondentPinGenerator coRespondentPinGenerator;
+    private final CoRespondentPinGeneratorTask coRespondentPinGeneratorTask;
     private final RespondentLetterGenerator respondentLetterGenerator;
-    private final CoRespondentLetterGenerator coRespondentLetterGenerator;
+    private final CoRespondentLetterGeneratorTask coRespondentLetterGeneratorTask;
     private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
     private final GetPetitionIssueFeeTask getPetitionIssueFeeTask;
     private final ResetRespondentLinkingFields resetRespondentLinkingFields;
@@ -52,10 +52,10 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest,
                                    String authToken, boolean generateAosInvitation) throws WorkflowException {
 
-        List<Task> tasks = new ArrayList<>();
+        List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
         tasks.add(validateCaseDataTask);
-        tasks.add(setIssueDate);
+        tasks.add(setIssueDateTask);
         tasks.add(petitionGenerator);
 
         final CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
@@ -70,8 +70,8 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
                     + " co-respondent letter", caseDetails.getCaseId());
 
                 tasks.add(getPetitionIssueFeeTask);
-                tasks.add(coRespondentPinGenerator);
-                tasks.add(coRespondentLetterGenerator);
+                tasks.add(coRespondentPinGeneratorTask);
+                tasks.add(coRespondentLetterGeneratorTask);
             }
         }
 
