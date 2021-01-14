@@ -98,7 +98,7 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> coRespondentAnswerReceived(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
-    Map<String, Object> processSolDnDoc(CcdCallbackRequest ccdCallbackRequest, String documentType, String docLinkFieldName)
+    Map<String, Object> processSolDnDoc(CcdCallbackRequest ccdCallbackRequest, String ccdDocumentType, String docLinkFieldName)
         throws CaseOrchestrationServiceException;
 
     Map<String, Object> generateCoRespondentAnswers(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
@@ -106,7 +106,7 @@ public interface CaseOrchestrationService {
     Map<String, Object> generateBulkCaseForListing() throws WorkflowException;
 
     Map<String, Object> handleDocumentGenerationCallback(CcdCallbackRequest ccdCallbackRequest, String authToken, String templateId,
-                                                         String documentType, String filename) throws WorkflowException;
+                                                         String documentType, String filename) throws CaseOrchestrationServiceException;
 
     Map<String, Object> processAosSolicitorNominated(CcdCallbackRequest ccdCallbackRequest,
                                                      String authToken) throws CaseOrchestrationServiceException;
