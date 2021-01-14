@@ -11,7 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CalculateDecreeAbsoluteDates;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CalculateDecreeAbsoluteDatesTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDaRequestedDetailsTask;
 
 import java.util.Map;
@@ -32,7 +32,7 @@ public class ApplicantDecreeAbsoluteEligibilityWorkflowTest {
     private Map<String, Object> incomingPayload;
 
     @Mock
-    private CalculateDecreeAbsoluteDates calculateDecreeAbsoluteDates;
+    private CalculateDecreeAbsoluteDatesTask calculateDecreeAbsoluteDatesTask;
 
     @Mock
     private SetDaRequestedDetailsTask setDaRequestedDetailsTask;
@@ -51,14 +51,14 @@ public class ApplicantDecreeAbsoluteEligibilityWorkflowTest {
     @Test
     public void testTasksAreCalledAccordingly() throws TaskException, WorkflowException {
         Map<String, Object> outputMapFromFirstTask = singletonMap("outputKeyTask1", "outputValueTask1");
-        when(calculateDecreeAbsoluteDates.execute(any(), eq(incomingPayload))).thenReturn(outputMapFromFirstTask);
+        when(calculateDecreeAbsoluteDatesTask.execute(any(), eq(incomingPayload))).thenReturn(outputMapFromFirstTask);
         when(setDaRequestedDetailsTask.execute(any(),eq(outputMapFromFirstTask)))
                 .thenReturn(singletonMap("keyReturnedFromTask", "valueReturnedFromTask"));
 
         Map<String, Object> returnedPayload = workflow.run("testCaseId", incomingPayload);
 
         assertThat(returnedPayload, hasEntry("keyReturnedFromTask", "valueReturnedFromTask"));
-        verify(calculateDecreeAbsoluteDates).execute(any(), eq(incomingPayload));
+        verify(calculateDecreeAbsoluteDatesTask).execute(any(), eq(incomingPayload));
         verify(setDaRequestedDetailsTask).execute(taskContextArgumentCaptor.capture(), eq(outputMapFromFirstTask));
         TaskContext taskContext = taskContextArgumentCaptor.getValue();
         assertThat(taskContext.getTransientObject(CASE_ID_JSON_KEY), equalTo("testCaseId"));

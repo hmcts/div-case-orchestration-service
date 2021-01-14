@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.DeleteDraft;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.DeleteDraftTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,17 +16,17 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class DeleteDraftWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final DeleteDraft deleteDraft;
+    private final DeleteDraftTask deleteDraftTask;
 
     @Autowired
-    public DeleteDraftWorkflow(DeleteDraft deleteDraft) {
-        this.deleteDraft = deleteDraft;
+    public DeleteDraftWorkflow(DeleteDraftTask deleteDraftTask) {
+        this.deleteDraftTask = deleteDraftTask;
     }
 
     public Map<String, Object> run(String authToken) throws WorkflowException {
         return this.execute(
             new Task[]{
-                deleteDraft
+                deleteDraftTask
             },
             new HashMap<>(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken)

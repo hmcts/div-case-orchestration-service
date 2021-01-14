@@ -208,7 +208,7 @@ public class GeneralOrderTest extends IdamTestSupport {
 
         GeneralOrder generalOrder = buildPopulatedTemplateModel(caseDataBeforeGeneratingPdf);
 
-        stubDocumentGeneratorServiceBaseOnContextPath(
+        stubDocumentGeneratorService(
             templateId,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
                 ImmutableMap.of(

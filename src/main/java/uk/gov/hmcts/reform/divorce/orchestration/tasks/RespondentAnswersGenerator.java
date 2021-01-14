@@ -5,12 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentTypeHelper;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -23,20 +23,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class RespondentAnswersGenerator implements Task<Map<String, Object>> {
     private final DocumentGeneratorClient documentGeneratorClient;
-    private final DocumentTemplateService documentTemplateService;
 
     @Autowired
-    public RespondentAnswersGenerator(DocumentGeneratorClient documentGeneratorClient,
-                                      DocumentTemplateService documentTemplateService) {
+    public RespondentAnswersGenerator(DocumentGeneratorClient documentGeneratorClient) {
         this.documentGeneratorClient = documentGeneratorClient;
-        this.documentTemplateService = documentTemplateService;
     }
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) {
         CaseDetails caseDataForDoc = CaseDetails.builder().caseData(payload).build();
-        String templateId = getTemplateId(documentTemplateService, DocumentType.RESPONDENT_ANSWERS,
-                payload);
+        String templateId = DocumentTypeHelper.getLanguageAppropriateTemplate(payload, DocumentType.RESPONDENT_ANSWERS);
         GeneratedDocumentInfo respondentAnswers =
             documentGeneratorClient.generatePDF(
                 GenerateDocumentRequest.builder()

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
+import org.hamcrest.Matcher;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -10,8 +11,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import java.util.HashMap;
 import java.util.Map;
 
-import static java.util.Collections.emptyMap;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static java.util.Collections.singletonMap;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -24,6 +30,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class DocumentGenerationITest extends MockedFunctionalTest {
+
     private static final String API_URL = "/generate-document";
 
     private static final Map<String, Object> CASE_DATA = new HashMap<>();
@@ -36,6 +43,10 @@ public class DocumentGenerationITest extends MockedFunctionalTest {
     private static final CcdCallbackRequest CCD_CALLBACK_REQUEST = CcdCallbackRequest.builder()
         .caseDetails(CASE_DETAILS)
         .build();
+
+    private static final String TEST_TEMPLATE_ID = "a";
+    private static final String TEST_DOCUMENT_TYPE = "b";
+    private static final String TEST_FILENAME = "c";
 
     @Autowired
     private MockMvc webClient;
@@ -64,11 +75,10 @@ public class DocumentGenerationITest extends MockedFunctionalTest {
             .content(convertObjectToJsonString(CCD_CALLBACK_REQUEST))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
-            .param("documentType", "a")
-            .param("filename", "b"))
+            .param("documentType", TEST_DOCUMENT_TYPE)
+            .param("filename", TEST_FILENAME))
             .andExpect(status().isBadRequest());
     }
-
 
     @Test
     public void givenDocumentTypeIsNull_whenEndpointInvoked_thenReturnBadRequest() throws Exception {
@@ -76,11 +86,10 @@ public class DocumentGenerationITest extends MockedFunctionalTest {
             .content(convertObjectToJsonString(CCD_CALLBACK_REQUEST))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
-            .param("templateId", "a")
-            .param("filename", "b"))
+            .param("templateId", TEST_TEMPLATE_ID)
+            .param("filename", TEST_FILENAME))
             .andExpect(status().isBadRequest());
     }
-
 
     @Test
     public void givenFilenameIsNull_whenEndpointInvoked_thenReturnBadRequest() throws Exception {
@@ -88,37 +97,31 @@ public class DocumentGenerationITest extends MockedFunctionalTest {
             .content(convertObjectToJsonString(CCD_CALLBACK_REQUEST))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON)
-            .param("templateId", "a")
-            .param("documentType", "b"))
+            .param("templateId", TEST_TEMPLATE_ID)
+            .param("documentType", TEST_DOCUMENT_TYPE))
             .andExpect(status().isBadRequest());
     }
 
     @Test
     public void happyPath() throws Exception {
-        final String templateId = "a";
-        final String documentType = "b";
-
-        final Map<String, Object> formattedCaseData = emptyMap();
-
-        stubDocumentGeneratorServiceBaseOnContextPath(templateId, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS), documentType);
+        stubDocumentGeneratorService(TEST_TEMPLATE_ID, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS), TEST_DOCUMENT_TYPE);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .content(convertObjectToJsonString(CCD_CALLBACK_REQUEST))
-            .param("templateId", "a")
-            .param("documentType", "b")
-            .param("filename", "c")
+            .param("templateId", TEST_TEMPLATE_ID)
+            .param("documentType", TEST_DOCUMENT_TYPE)
+            .param("filename", TEST_FILENAME)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().json(convertObjectToJsonString(formattedCaseData)));
+            .andExpect(content().string(hasJsonPath("$.data.D8DocumentsGenerated", hasSize(1))))
+            .andExpect(content().string(hasJsonPath("$.data.D8DocumentsGenerated", hasItemMatchingExpectedValues(TEST_DOCUMENT_TYPE, TEST_FILENAME))))
+            .andExpect(content().string(hasJsonPath("$.errors", is(nullValue()))));
     }
 
     @Test
     public void happyPathWithDnCourt() throws Exception {
-        final String templateId = "a";
-        final String documentType = "b";
-
         // Data matching application properties.
         Map<String, Object> formattedDocumentCaseData = new HashMap<>();
         formattedDocumentCaseData.put(COURT_NAME_CCD_FIELD, "Liverpool Civil and Family Court Hearing Centre");
@@ -129,10 +132,7 @@ public class DocumentGenerationITest extends MockedFunctionalTest {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(COURT_NAME_CCD_FIELD, "liverpool");
 
-        final Map<String, Object> formattedCaseData = emptyMap();
-
-        stubDocumentGeneratorServiceBaseOnContextPath(templateId,
-            singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, expectedDocumentCaseDetails), documentType);
+        stubDocumentGeneratorService(TEST_TEMPLATE_ID, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, expectedDocumentCaseDetails), TEST_DOCUMENT_TYPE);
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build();
 
@@ -141,13 +141,25 @@ public class DocumentGenerationITest extends MockedFunctionalTest {
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .content(convertObjectToJsonString(ccdCallbackRequest))
-            .param("templateId", "a")
-            .param("documentType", "b")
-            .param("filename", "c")
+            .param("templateId", TEST_TEMPLATE_ID)
+            .param("documentType", TEST_DOCUMENT_TYPE)
+            .param("filename", TEST_FILENAME)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(content().json(convertObjectToJsonString(formattedCaseData)));
+            .andExpect(content().string(hasJsonPath("$.data.CourtName", is("liverpool"))))
+            .andExpect(content().string(hasJsonPath("$.data.D8DocumentsGenerated", hasSize(1))))
+            .andExpect(content().string(hasJsonPath("$.data.D8DocumentsGenerated", hasItemMatchingExpectedValues(TEST_DOCUMENT_TYPE, TEST_FILENAME))))
+            .andExpect(content().string(hasJsonPath("$.errors", is(nullValue()))));
+    }
+
+    public static Matcher<Iterable<? super Object>> hasItemMatchingExpectedValues(String expectedDocumentType, String expectedFileNamePrefix) {
+        return hasItem(
+            hasJsonPath("value", allOf(
+                hasJsonPath("DocumentType", is(expectedDocumentType)),
+                hasJsonPath("DocumentLink.document_filename", is(expectedFileNamePrefix + TEST_CASE_ID + ".pdf"))
+            ))
+        );
     }
 
 }

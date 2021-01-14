@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToAosCaseData;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToAosCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitCoRespondentAosCase;
 
 import java.util.Map;
@@ -16,21 +16,21 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class SubmitCoRespondentAosWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final FormatDivorceSessionToAosCaseData formatDivorceSessionToAosCaseData;
+    private final FormatDivorceSessionToAosCaseDataTask formatDivorceSessionToAosCaseDataTask;
 
     private final SubmitCoRespondentAosCase submitCoRespondentAosCaseTask;
 
     @Autowired
-    public SubmitCoRespondentAosWorkflow(final FormatDivorceSessionToAosCaseData formatDivorceSessionToAosCaseData,
+    public SubmitCoRespondentAosWorkflow(final FormatDivorceSessionToAosCaseDataTask formatDivorceSessionToAosCaseDataTask,
                                          final SubmitCoRespondentAosCase submitCoRespondentAosCaseTask) {
-        this.formatDivorceSessionToAosCaseData = formatDivorceSessionToAosCaseData;
+        this.formatDivorceSessionToAosCaseDataTask = formatDivorceSessionToAosCaseDataTask;
         this.submitCoRespondentAosCaseTask = submitCoRespondentAosCaseTask;
     }
 
     public Map<String, Object> run(final Map<String, Object> divorceSession, final String authToken) throws WorkflowException {
         return this.execute(
             new Task[] {
-                formatDivorceSessionToAosCaseData,
+                formatDivorceSessionToAosCaseDataTask,
                 submitCoRespondentAosCaseTask
             },
             divorceSession,

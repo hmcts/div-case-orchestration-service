@@ -84,7 +84,7 @@ public class AosOverdueTest extends RetrieveCaseSupport {
             .then()
             .statusCode(HttpStatus.SC_OK);
 
-        await().pollInterval(fibonacci(SECONDS)).atMost(120, SECONDS).untilAsserted(() -> {
+        await().pollInterval(fibonacci(SECONDS)).atMost(480, SECONDS).untilAsserted(() -> {
             assertCaseIsInExpectedState(aosAwaitingCaseId, AOS_OVERDUE);
             assertCaseIsInExpectedState(aosStartedCaseId, AOS_STARTED);
             assertCaseIsInExpectedState(servedByProcessServerCaseId, AWAITING_DECREE_NISI);

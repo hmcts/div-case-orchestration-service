@@ -6,14 +6,11 @@ import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PersonalServiceValidationTask;
@@ -49,9 +46,6 @@ public class IssuePersonalServicePackWorkflowTest {
     @Mock
     AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
-    @Mock
-    private DocumentTemplateService documentTemplateService;
-
     @InjectMocks
     IssuePersonalServicePackWorkflow issuePersonalServicePackWorkflow;
 
@@ -62,16 +56,12 @@ public class IssuePersonalServicePackWorkflowTest {
         //given
         Map<String, Object> caseData = Collections.singletonMap("key", "value");
         CaseDetails caseDetails = CaseDetails.builder()
-                .caseId(TEST_CASE_ID)
-                .caseData(caseData)
-                .build();
-
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH,
-                DocumentType.SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID))
-                .thenReturn(SOLICITOR_PERSONAL_SERVICE_LETTER_TEMPLATE_ID);
+            .caseId(TEST_CASE_ID)
+            .caseData(caseData)
+            .build();
 
         DefaultTaskContext context = new DefaultTaskContext();
-        context.setTransientObjects(new HashMap<String, Object>() {
+        context.setTransientObjects(new HashMap<>() {
             {
                 put(AUTH_TOKEN_JSON_KEY, TEST_TOKEN);
                 put(CASE_ID_JSON_KEY, TEST_CASE_ID);
@@ -83,8 +73,8 @@ public class IssuePersonalServicePackWorkflowTest {
         });
 
         CcdCallbackRequest request = CcdCallbackRequest.builder()
-                .caseDetails(caseDetails)
-                .build();
+            .caseDetails(caseDetails)
+            .build();
 
         //when
         when(personalServiceValidationTask.execute(context, caseData)).thenReturn(caseData);
@@ -95,8 +85,8 @@ public class IssuePersonalServicePackWorkflowTest {
         //then
         assertThat(response, is(caseData));
         InOrder inOrder = inOrder(
-                personalServiceValidationTask,
-                documentGenerationTask,
+            personalServiceValidationTask,
+            documentGenerationTask,
             addNewDocumentsToCaseDataTask
         );
         inOrder.verify(personalServiceValidationTask).execute(context, caseData);
