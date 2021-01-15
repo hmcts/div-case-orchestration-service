@@ -50,8 +50,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.workflows.GeneralEmailWo
 
 public class AddresseeDataExtractorTest {
 
-    public static final String PETITIONERS_CORRESPONDENCE_ADDRESS = "456 Petitioner Str\nPetitionville\nPetitionshire\nPE4 J0N";
-    public static final String PETITIONERS_HOME_ADDRESS = "789 Petitioner Str\nPetitionville\nPetitionshire\nPE4 J2N";
+    public static final String PETITIONERS_CORRESPONDENCE_ADDRESS = "456 Petitioner Correspondence Str\nPetitionville\nPetitionshire\nPE4 J0N";
+    public static final String PETITIONERS_HOME_ADDRESS = "789 Petitioner Home Str\nPetitionville\nPetitionshire\nPE4 J2N";
     public static final String RESPONDENTS_ADDRESS = "123 Respondent Str\nRespondent\ncounty\nRE5 P0N";
     public static final String RESPONDENT_SOLICITORS_ADDRESS = "321 Resp Solicitor\ntown\ncounty\npostcode";
     public static final String RESPONDENT_SOLICITOR_REF = "SolRef4567";
