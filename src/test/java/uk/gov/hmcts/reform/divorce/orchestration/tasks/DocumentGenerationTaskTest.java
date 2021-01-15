@@ -22,6 +22,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
@@ -70,7 +71,7 @@ public class DocumentGenerationTaskTest {
             .documentType(TEST_DOCUMENT_TYPE)
             .fileName("filename.pdf")
             .build();
-        when(documentGeneratorClient.generatePDF(matchesDocumentInputParameters(TEST_DOCUMENT_TEMPLATE_ID, caseDetails), eq(AUTH_TOKEN)))
+        when(documentGeneratorClient.generatePDF(argThat(matchesDocumentInputParameters(TEST_DOCUMENT_TEMPLATE_ID, caseDetails)), eq(AUTH_TOKEN)))
             .thenReturn(documentToReturn);
 
         //when
@@ -84,7 +85,7 @@ public class DocumentGenerationTaskTest {
             assertThat(doc.getFileName(), is(TEST_DOCUMENT_FILE_NAME + TEST_CASE_ID));
         });
 
-        verify(documentGeneratorClient).generatePDF(matchesDocumentInputParameters(TEST_DOCUMENT_TEMPLATE_ID, caseDetails), eq(AUTH_TOKEN));
+        verify(documentGeneratorClient).generatePDF(argThat(matchesDocumentInputParameters(TEST_DOCUMENT_TEMPLATE_ID, caseDetails)), eq(AUTH_TOKEN));
     }
 
     @Test
@@ -120,8 +121,8 @@ public class DocumentGenerationTaskTest {
             .documentType(TEST_DOCUMENT_TYPE)
             .fileName("filename.pdf")
             .build();
-        when(documentGeneratorClient.generatePDF(matchesDocumentInputParameters(TEST_DOCUMENT_TEMPLATE_ID, dnCourtCaseDetails), eq(AUTH_TOKEN)))
-            .thenReturn(documentToReturn);
+        when(documentGeneratorClient.generatePDF(
+            argThat(matchesDocumentInputParameters(TEST_DOCUMENT_TEMPLATE_ID, dnCourtCaseDetails)), eq(AUTH_TOKEN))).thenReturn(documentToReturn);
 
         //when
         documentGenerationTask.execute(context, payload);
@@ -134,7 +135,8 @@ public class DocumentGenerationTaskTest {
             assertThat(doc.getFileName(), is(TEST_DOCUMENT_FILE_NAME + TEST_CASE_ID));
         });
 
-        verify(documentGeneratorClient).generatePDF(matchesDocumentInputParameters(TEST_DOCUMENT_TEMPLATE_ID, dnCourtCaseDetails), eq(AUTH_TOKEN));
+        verify(documentGeneratorClient).generatePDF(
+            argThat(matchesDocumentInputParameters(TEST_DOCUMENT_TEMPLATE_ID, dnCourtCaseDetails)), eq(AUTH_TOKEN));
     }
 
 }

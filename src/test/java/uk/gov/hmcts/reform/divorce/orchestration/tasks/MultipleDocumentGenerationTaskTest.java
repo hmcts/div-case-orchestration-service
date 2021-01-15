@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import com.google.common.collect.ImmutableMap;
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
@@ -115,10 +116,10 @@ public class MultipleDocumentGenerationTaskTest {
             .build();
 
         //given
-        when(mockDocumentGeneratorClient.generatePDF(matchesDocumentInputParameters(FIRST_DOCUMENT_TEMPLATE_ID, caseDetails), eq(AUTH_TOKEN)))
-            .thenReturn(firstExpectedDocument);
-        when(mockDocumentGeneratorClient.generatePDF(matchesDocumentInputParameters(SECOND_DOCUMENT_TEMPLATE_ID, caseDetails), eq(AUTH_TOKEN)))
-            .thenReturn(secondExpectedDocument);
+        when(mockDocumentGeneratorClient.generatePDF(
+            argThat(matchesDocumentInputParameters(FIRST_DOCUMENT_TEMPLATE_ID, caseDetails)), eq(AUTH_TOKEN))).thenReturn(firstExpectedDocument);
+        when(mockDocumentGeneratorClient.generatePDF(
+            argThat(matchesDocumentInputParameters(SECOND_DOCUMENT_TEMPLATE_ID, caseDetails)), eq(AUTH_TOKEN))).thenReturn(secondExpectedDocument);
 
         //when
         Map<String, Object> returnedPayload = classUnderTest.execute(taskContext, payload);
@@ -129,8 +130,10 @@ public class MultipleDocumentGenerationTaskTest {
         assertThat(documentCollection, hasSize(2));
         assertThat(documentCollection, hasItems(firstExpectedDocument, secondExpectedDocument));
 
-        verify(mockDocumentGeneratorClient).generatePDF(matchesDocumentInputParameters(FIRST_DOCUMENT_TEMPLATE_ID, caseDetails), eq(AUTH_TOKEN));
-        verify(mockDocumentGeneratorClient).generatePDF(matchesDocumentInputParameters(SECOND_DOCUMENT_TEMPLATE_ID, caseDetails), eq(AUTH_TOKEN));
+        verify(mockDocumentGeneratorClient).generatePDF(
+            argThat(matchesDocumentInputParameters(FIRST_DOCUMENT_TEMPLATE_ID, caseDetails)), eq(AUTH_TOKEN));
+        verify(mockDocumentGeneratorClient).generatePDF(
+            argThat(matchesDocumentInputParameters(SECOND_DOCUMENT_TEMPLATE_ID, caseDetails)), eq(AUTH_TOKEN));
     }
 
     @Test
@@ -149,10 +152,10 @@ public class MultipleDocumentGenerationTaskTest {
             .build();
 
         //given
-        when(mockDocumentGeneratorClient.generatePDF(matchesDocumentInputParameters(FIRST_DOCUMENT_TEMPLATE_ID, dnCaseDetails), eq(AUTH_TOKEN)))
-            .thenReturn(firstExpectedDocument);
-        when(mockDocumentGeneratorClient.generatePDF(matchesDocumentInputParameters(SECOND_DOCUMENT_TEMPLATE_ID, dnCaseDetails), eq(AUTH_TOKEN)))
-            .thenReturn(secondExpectedDocument);
+        when(mockDocumentGeneratorClient.generatePDF(
+            argThat(matchesDocumentInputParameters(FIRST_DOCUMENT_TEMPLATE_ID, dnCaseDetails)), eq(AUTH_TOKEN))).thenReturn(firstExpectedDocument);
+        when(mockDocumentGeneratorClient.generatePDF(
+            argThat(matchesDocumentInputParameters(SECOND_DOCUMENT_TEMPLATE_ID, dnCaseDetails)), eq(AUTH_TOKEN))).thenReturn(secondExpectedDocument);
 
         //when
         Map<String, Object> returnedPayload = classUnderTest.execute(taskContext, payload);
@@ -163,8 +166,10 @@ public class MultipleDocumentGenerationTaskTest {
         assertThat(documentCollection, hasSize(2));
         assertThat(documentCollection, hasItems(firstExpectedDocument, secondExpectedDocument));
 
-        verify(mockDocumentGeneratorClient).generatePDF(matchesDocumentInputParameters(FIRST_DOCUMENT_TEMPLATE_ID, dnCaseDetails), eq(AUTH_TOKEN));
-        verify(mockDocumentGeneratorClient).generatePDF(matchesDocumentInputParameters(SECOND_DOCUMENT_TEMPLATE_ID, dnCaseDetails), eq(AUTH_TOKEN));
+        verify(mockDocumentGeneratorClient).generatePDF(
+            argThat(matchesDocumentInputParameters(FIRST_DOCUMENT_TEMPLATE_ID, dnCaseDetails)), eq(AUTH_TOKEN));
+        verify(mockDocumentGeneratorClient).generatePDF(
+            argThat(matchesDocumentInputParameters(SECOND_DOCUMENT_TEMPLATE_ID, dnCaseDetails)), eq(AUTH_TOKEN));
     }
 
     @Test
@@ -188,13 +193,13 @@ public class MultipleDocumentGenerationTaskTest {
         assertThat(exception.getMessage(), is("Could not find a list of document generation requests"));
     }
 
-    protected static GenerateDocumentRequest matchesDocumentInputParameters(String documentTemplateId, CaseDetails caseDetails) {
-        return argThat(allOf(
+    protected static Matcher<GenerateDocumentRequest> matchesDocumentInputParameters(String documentTemplateId, CaseDetails caseDetails) {
+        return allOf(
             hasProperty("template", is(documentTemplateId)),
             hasProperty("values",
                 hasEntry(equalTo(DOCUMENT_CASE_DETAILS_JSON_KEY), hasProperty("caseData", equalTo(caseDetails.getCaseData())))
             )
-        ));
+        );
     }
 
 }

@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline;
 
-import org.hamcrest.Matchers;
+import org.hamcrest.collection.IsMapContaining;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +33,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -313,25 +313,25 @@ public class IssueAosPackOfflineWorkflowTest {
 
     private void verifyTasksAreCalledInOrder() {
         verify(addNewDocumentsToCaseDataTask).execute(any(), argThat(allOf(
-            Matchers.<String, Object>hasEntry("returnedKey1", "returnedValue1")
+            IsMapContaining.<String, Object>hasEntry("returnedKey1", "returnedValue1")
         )));
 
         verify(fetchPrintDocsFromDmStoreTask).execute(any(), argThat(allOf(
-            Matchers.<String, Object>hasEntry("returnedKey2", "returnedValue2")
+            IsMapContaining.<String, Object>hasEntry("returnedKey2", "returnedValue2")
         )));
 
         verify(bulkPrinterTask).execute(taskContextArgumentCaptor.capture(), argThat(allOf(
-            Matchers.<String, Object>hasEntry("returnedKey3", "returnedValue3")
+            IsMapContaining.<String, Object>hasEntry("returnedKey3", "returnedValue3")
         )));
 
         verify(markJourneyAsOfflineTask).execute(taskContextArgumentCaptor.capture(), argThat(allOf(
-                Matchers.<String, Object>hasEntry("returnedKey4", "returnedValue4")
+            IsMapContaining.<String, Object>hasEntry("returnedKey4", "returnedValue4")
         )));
     }
 
     private void verifyModifyDueDateIsCalled() {
         verify(aosPackDueDateSetterTask).execute(any(), argThat(allOf(
-                Matchers.<String, Object>hasEntry("returnedKey5", "returnedValue5")
+            IsMapContaining.<String, Object>hasEntry("returnedKey5", "returnedValue5")
         )));
     }
 
