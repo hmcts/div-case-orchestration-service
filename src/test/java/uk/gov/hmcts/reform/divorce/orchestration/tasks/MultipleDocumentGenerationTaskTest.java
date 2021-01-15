@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableMap;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatcher;
+import org.mockito.internal.hamcrest.HamcrestArgumentMatcher;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -193,13 +195,13 @@ public class MultipleDocumentGenerationTaskTest {
         assertThat(exception.getMessage(), is("Could not find a list of document generation requests"));
     }
 
-    protected static Matcher<GenerateDocumentRequest> matchesDocumentInputParameters(String documentTemplateId, CaseDetails caseDetails) {
-        return allOf(
+    protected static ArgumentMatcher<GenerateDocumentRequest> matchesDocumentInputParameters(String documentTemplateId, CaseDetails caseDetails) {
+        return new HamcrestArgumentMatcher<>(allOf(
             hasProperty("template", is(documentTemplateId)),
             hasProperty("values",
                 hasEntry(equalTo(DOCUMENT_CASE_DETAILS_JSON_KEY), hasProperty("caseData", equalTo(caseDetails.getCaseData())))
             )
-        );
+        ));
     }
 
 }
