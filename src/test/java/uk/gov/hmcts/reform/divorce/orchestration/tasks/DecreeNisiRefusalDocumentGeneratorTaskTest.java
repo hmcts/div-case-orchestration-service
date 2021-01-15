@@ -23,6 +23,7 @@ import static com.jayway.jsonassert.impl.matcher.IsCollectionWithSize.hasSize;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -90,7 +91,7 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
             .fileName(TEST_RETURNED_FILE_NAME)
             .build();
         when(documentGeneratorClient.generatePDF(
-            matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID, caseDetails), eq(AUTH_TOKEN))
+            argThat(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID, caseDetails)), eq(AUTH_TOKEN))
         ).thenReturn(expectedDocument);
 
         //when
@@ -104,8 +105,8 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
             assertThat(document.getFileName(), is(DECREE_NISI_REFUSAL_CLARIFICATION_DOCUMENT_NAME + TEST_CASE_ID));
         });
         verify(documentGeneratorClient)
-            .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID,
-                caseDetails), eq(AUTH_TOKEN));
+            .generatePDF(argThat(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID,
+                caseDetails)), eq(AUTH_TOKEN));
     }
 
     @Test
@@ -146,8 +147,8 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
             .fileName(TEST_RETURNED_FILE_NAME)
             .build();
         when(documentGeneratorClient
-            .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID,
-                caseDetails), eq(AUTH_TOKEN))
+            .generatePDF(argThat(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID,
+                caseDetails)), eq(AUTH_TOKEN))
         ).thenReturn(expectedDocument);
 
         //when
@@ -172,13 +173,13 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
             is(new HashMap<String, Object>() {
                 {
                     put(DOCUMENT_LINK_FILENAME_JSON_KEY,
-                            DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD + FIXED_DATE + DOCUMENT_EXTENSION);
+                        DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD + FIXED_DATE + DOCUMENT_EXTENSION);
                 }
             })
         );
         verify(documentGeneratorClient)
-            .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID,
-                caseDetails), eq(AUTH_TOKEN));
+            .generatePDF(argThat(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID,
+                caseDetails)), eq(AUTH_TOKEN));
     }
 
     @Test
@@ -212,9 +213,9 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
             .documentType(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE)
             .fileName(TEST_RETURNED_FILE_NAME)
             .build();
-        when(documentGeneratorClient
-            .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID, expectedCaseDetails), eq(AUTH_TOKEN))
-        ).thenReturn(expectedDocument);
+        when(documentGeneratorClient.generatePDF(
+            argThat(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID, expectedCaseDetails)), eq(AUTH_TOKEN)
+        )).thenReturn(expectedDocument);
 
         //when
         decreeNisiRefusalDocumentGeneratorTask.execute(context, payload);
@@ -226,8 +227,8 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
             assertThat(doc.getDocumentType(), is(DECREE_NISI_REFUSAL_ORDER_DOCUMENT_TYPE));
             assertThat(doc.getFileName(), is(DECREE_NISI_REFUSAL_REJECTION_DOCUMENT_NAME + TEST_CASE_ID));
         });
-        verify(documentGeneratorClient)
-            .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID, expectedCaseDetails), eq(AUTH_TOKEN));
+        verify(documentGeneratorClient).generatePDF(
+            argThat(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID, expectedCaseDetails)), eq(AUTH_TOKEN));
     }
 
     @Test
@@ -251,7 +252,6 @@ public class DecreeNisiRefusalDocumentGeneratorTaskTest {
         assertEquals(0, documentCollection.size());
 
         verify(documentGeneratorClient, never())
-            .generatePDF(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID,
-                caseDetails), eq(AUTH_TOKEN));
+            .generatePDF(argThat(matchesDocumentInputParameters(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID, caseDetails)), eq(AUTH_TOKEN));
     }
 }
