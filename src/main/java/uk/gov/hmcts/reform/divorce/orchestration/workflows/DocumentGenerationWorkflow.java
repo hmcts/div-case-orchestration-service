@@ -15,14 +15,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.DocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetFormattedDnCourtDetails;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getLanguagePreference;
 
 @Slf4j
 @Component
@@ -45,37 +43,57 @@ public class DocumentGenerationWorkflow extends DefaultWorkflow<Map<String, Obje
 
     public Map<String, Object> run(final CaseDetails caseDetails,
                                    final String authToken,
-                                   final String templateId,
+                                   final String ccdDocumentType,
+                                   final String defaultTemplate,
                                    final String templateLogicalName,
-                                   final String filename) throws WorkflowException {
-        Map<String, Object> caseData = caseDetails.getCaseData();
-        final String evalTemplateId = getTemplateId(templateId, templateLogicalName, caseData);
-        log.debug("For language {}, evaluated template id {}", getLanguagePreference(caseData), evalTemplateId);
+                                   final String fileName) throws WorkflowException {
 
-        return this.execute(
-            new Task[] {setFormattedDnCourtDetails, documentGenerationTask, addNewDocumentsToCaseDataTask},
-            caseData,
-            ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
-            ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
-            ImmutablePair.of(DOCUMENT_TYPE, templateLogicalName),
-            ImmutablePair.of(DOCUMENT_TEMPLATE_ID, evalTemplateId),
-            ImmutablePair.of(DOCUMENT_FILENAME, filename)
-        );
+        String template = deduceTemplateFromLogicalName(templateLogicalName, caseDetails, defaultTemplate);
 
+        return executeTasks(caseDetails, authToken, ccdDocumentType, template, fileName);
     }
 
-    private String getTemplateId(String templateId, String templateLogicalName, Map<String, Object> caseData) {
-        Optional<DocumentType> optionalDocumentType = DocumentType.getDocumentTypeByTemplateLogicalName(templateLogicalName);
+    public Map<String, Object> run(final CaseDetails caseDetails,
+                                   final String authToken,
+                                   final String ccdDocumentType,
+                                   final DocumentType documentType,
+                                   final String fileName) throws WorkflowException {
 
-        if (optionalDocumentType.isPresent()) {
-            try {
-                return DocumentTypeHelper.getLanguageAppropriateTemplate(caseData, optionalDocumentType.get());
-            } catch (IllegalArgumentException exception) {
-                log.error("Missing template configuration in properties so returning as passed ", exception);
-            }
-        }
+        String template = getLanguageAppropriateTemplate(caseDetails, documentType);
 
-        return templateId;
+        return executeTasks(caseDetails, authToken, ccdDocumentType, template, fileName);
+    }
+
+    private String getLanguageAppropriateTemplate(CaseDetails caseDetails, DocumentType documentType) {
+        return DocumentTypeHelper.getLanguageAppropriateTemplate(caseDetails.getCaseData(), documentType);
+    }
+
+    private String deduceTemplateFromLogicalName(String templateLogicalName, CaseDetails caseDetails, String defaultTemplate) {
+        return DocumentType.getDocumentTypeByTemplateLogicalName(templateLogicalName)
+            .map(documentType -> {
+                log.info("Found registered document type for {}", templateLogicalName);
+                return getLanguageAppropriateTemplate(caseDetails, documentType);
+            }).orElseGet(() -> {
+                log.warn("Did not find registered document type for {}. Returning the given defaultTemplate [{}]",
+                    templateLogicalName, defaultTemplate);
+                return defaultTemplate;
+            });
+    }
+
+    private Map<String, Object> executeTasks(final CaseDetails caseDetails,
+                                             final String authToken,
+                                             final String ccdDocumentType,
+                                             final String template,
+                                             final String fileName) throws WorkflowException {
+        return this.execute(
+            new Task[] {setFormattedDnCourtDetails, documentGenerationTask, addNewDocumentsToCaseDataTask},
+            caseDetails.getCaseData(),
+            ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
+            ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
+            ImmutablePair.of(DOCUMENT_TYPE, ccdDocumentType),
+            ImmutablePair.of(DOCUMENT_TEMPLATE_ID, template),
+            ImmutablePair.of(DOCUMENT_FILENAME, fileName)
+        );
     }
 
 }

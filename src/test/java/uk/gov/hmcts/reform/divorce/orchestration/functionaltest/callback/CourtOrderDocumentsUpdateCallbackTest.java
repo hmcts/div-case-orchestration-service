@@ -24,8 +24,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocmosisTemplates.COE_ENGLISH_TEMPLATE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference.ENGLISH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_COE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
@@ -38,7 +39,7 @@ public class CourtOrderDocumentsUpdateCallbackTest extends MockedFunctionalTest 
 
     @Test
     public void shouldUpdateExistingCourtOrderDocuments() throws Exception {
-        stubDocumentGeneratorService(COE_ENGLISH_TEMPLATE_ID, DOCUMENT_TYPE_COE);
+        stubDocumentGeneratorService(COE.getTemplateByLanguage(ENGLISH), DOCUMENT_TYPE_COE);
 
         Map<String, Object> caseData = loadAndValidateTestCaseData();
 
