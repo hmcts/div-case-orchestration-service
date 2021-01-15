@@ -10,7 +10,22 @@
         },
         "DocumentType": "coe",
         "DocumentComment": null,
-        "DocumentFileName": "certificateOfEntitlement",
+        "DocumentFileName": "certificateOfEntitlement.pdf",
+        "DocumentDateAdded": null,
+        "DocumentEmailContent": null
+      }
+    },
+    {
+      "id": null,
+      "value": {
+        "DocumentLink": {
+          "document_url": "https://localhost:8080/documents/2345",
+          "document_filename": "costsOrder.pdf",
+          "document_binary_url": "https://localhost:8080/documents/2345/binary"
+        },
+        "DocumentType": "costsOrder",
+        "DocumentComment": null,
+        "DocumentFileName": "costsOrder.pdf",
         "DocumentDateAdded": null,
         "DocumentEmailContent": null
       }

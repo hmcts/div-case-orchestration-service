@@ -307,6 +307,7 @@ public class OrchestrationConstants {
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE = "personalService";
     public static final String FEE_TO_PAY_JSON_KEY = "FeeToPay";
     public static final String AOS_OVERDUE_COVER_LETTER_DOCUMENT_TYPE = "aosOverdueCoverLetter";
+    public static final String CERTIFICATE_OF_ENTITLEMENT_FILENAME_PREFIX = "certificateOfEntitlement";
 
     public static final String DOCUMENT_TYPE_COE = "coe";
     public static final String DOCUMENT_TYPE_OTHER = "other";

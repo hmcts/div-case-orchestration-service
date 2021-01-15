@@ -47,6 +47,7 @@ import static java.util.Collections.singletonList;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_PRINT_ERROR_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CERTIFICATE_OF_ENTITLEMENT_FILENAME_PREFIX;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_ANSWERS_LINK;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
@@ -659,7 +660,7 @@ public class CallbackController {
 
         String templateId = "FL-DIV-GNO-ENG-00020.docx";
         String documentType = "coe";
-        String filename = "certificateOfEntitlement";
+        String filename = CERTIFICATE_OF_ENTITLEMENT_FILENAME_PREFIX;
 
         return generateNewDocumentAndAddToCaseData(authorizationToken, ccdCallbackRequest, templateId, documentType, filename);
     }

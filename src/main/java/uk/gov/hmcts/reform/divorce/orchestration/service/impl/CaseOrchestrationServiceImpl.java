@@ -729,8 +729,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> handleGrantDACallback(final CcdCallbackRequest ccdCallbackRequest, String authToken)
-        throws WorkflowException {
+    public Map<String, Object> handleGrantDACallback(final CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
 
         return decreeAbsoluteAboutToBeGrantedWorkflow.run(ccdCallbackRequest, authToken);
     }
