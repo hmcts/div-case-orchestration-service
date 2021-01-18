@@ -3,8 +3,10 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextract
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.bsp.common.model.document.Addressee;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.InvalidDataForTaskException;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getCoRespondentFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getCoRespondentSolicitorFullName;
@@ -18,7 +20,8 @@ public class AddresseeDataExtractor {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class CaseDataKeys {
-        public static final String PETITIONER_ADDRESS = "D8DerivedPetitionerCorrespondenceAddr";
+        public static final String PETITIONER_CORRESPONDENCE_ADDRESS = "D8DerivedPetitionerCorrespondenceAddr";
+        public static final String PETITIONER_HOME_ADDRESS = "D8DerivedPetitionerHomeAddress";
         public static final String RESPONDENT_ADDRESS = "D8DerivedRespondentCorrespondenceAddr";
         public static final String RESPONDENT_SOLICITOR_ADDRESS = "D8DerivedRespondentSolicitorAddr";
         public static final String CO_RESPONDENT_ADDRESS = "D8DerivedReasonForDivorceAdultery3rdAddr";
@@ -61,7 +64,10 @@ public class AddresseeDataExtractor {
     }
 
     private static String getPetitionerFormattedAddress(Map<String, Object> caseData) {
-        return getMandatoryStringValue(caseData, CaseDataKeys.PETITIONER_ADDRESS);
+        return Optional.ofNullable(caseData.get(CaseDataKeys.PETITIONER_CORRESPONDENCE_ADDRESS))
+            .or(() -> Optional.ofNullable(caseData.get(CaseDataKeys.PETITIONER_HOME_ADDRESS)))
+            .map(String.class::cast)
+            .orElseThrow(() -> new InvalidDataForTaskException("No address was found for petitioner"));
     }
 
     private static String getRespondentFormattedAddress(Map<String, Object> caseData) {
