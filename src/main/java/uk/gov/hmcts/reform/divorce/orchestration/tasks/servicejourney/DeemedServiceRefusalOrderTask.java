@@ -7,12 +7,15 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentG
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference.ENGLISH;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DEEMED_SERVICE_REFUSED;
+
 @Component
 public class DeemedServiceRefusalOrderTask extends ServiceRefusalOrderGenerationTask {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FileMetadata {
-        public static final String TEMPLATE_ID = "FL-DIV-GNO-ENG-00533.docx";
+        public static final String TEMPLATE_ID = DEEMED_SERVICE_REFUSED.getTemplateByLanguage(ENGLISH);
         public static final String DOCUMENT_TYPE = "deemedServiceRefused";
     }
 
