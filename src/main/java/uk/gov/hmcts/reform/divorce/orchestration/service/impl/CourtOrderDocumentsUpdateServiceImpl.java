@@ -18,9 +18,15 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CERTIFICATE_OF_ENTITLEMENT_FILENAME_PREFIX;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_FILENAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_COE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COSTS_ORDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DECREE_ABSOLUTE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil.getCollectionMembersOrEmptyList;
 
 @RequiredArgsConstructor
@@ -43,6 +49,14 @@ public class CourtOrderDocumentsUpdateServiceImpl implements CourtOrderDocuments
             updateCostsOrder(authToken, caseDetails);
         }
 
+        if (isDocumentPresent(generatedDocuments, DECREE_NISI_DOCUMENT_TYPE)) {
+            updateDecreeNisi(authToken, caseDetails);
+        }
+
+        if (isDocumentPresent(generatedDocuments, DECREE_ABSOLUTE_DOCUMENT_TYPE)) {
+            updateDecreeAbsolute(authToken, caseDetails);
+        }
+
         return caseDetails.getCaseData();
     }
 
@@ -59,6 +73,14 @@ public class CourtOrderDocumentsUpdateServiceImpl implements CourtOrderDocuments
 
     private void updateCostsOrder(String authToken, CaseDetails caseDetails) throws CaseOrchestrationServiceException {
         generateDocument(authToken, caseDetails, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE);
+    }
+
+    private void updateDecreeNisi(String authToken, CaseDetails caseDetails) throws CaseOrchestrationServiceException {
+        generateDocument(authToken, caseDetails, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME);
+    }
+
+    private void updateDecreeAbsolute(String authToken, CaseDetails caseDetails) throws CaseOrchestrationServiceException {
+        generateDocument(authToken, caseDetails, DECREE_ABSOLUTE_DOCUMENT_TYPE, DECREE_ABSOLUTE, DECREE_ABSOLUTE_FILENAME);
     }
 
     private void generateDocument(String authToken,
