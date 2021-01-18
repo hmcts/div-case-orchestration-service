@@ -451,8 +451,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> sendPetitionerGenericUpdateNotificationEmail(
-        CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+    public Map<String, Object> sendPetitionerGenericUpdateNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return sendPetitionerEmailNotificationWorkflow.run(ccdCallbackRequest);
     }
 

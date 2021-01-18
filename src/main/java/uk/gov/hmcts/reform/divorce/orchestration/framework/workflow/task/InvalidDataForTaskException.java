@@ -9,4 +9,8 @@ public class InvalidDataForTaskException extends TaskException {
         super(cause);
     }
 
+    public InvalidDataForTaskException(String message) {
+        super(message);
+    }
+
 }
