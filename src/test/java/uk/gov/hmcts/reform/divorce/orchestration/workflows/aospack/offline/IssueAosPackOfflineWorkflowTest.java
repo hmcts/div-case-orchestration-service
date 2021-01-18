@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline;
 
-import org.hamcrest.Matchers;
+import org.hamcrest.collection.IsMapContaining;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,6 +8,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.internal.hamcrest.HamcrestArgumentMatcher;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.model.parties.DivorceParty;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -33,13 +34,13 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
@@ -312,27 +313,27 @@ public class IssueAosPackOfflineWorkflowTest {
     }
 
     private void verifyTasksAreCalledInOrder() {
-        verify(addNewDocumentsToCaseDataTask).execute(any(), argThat(allOf(
-            Matchers.<String, Object>hasEntry("returnedKey1", "returnedValue1")
-        )));
+        verify(addNewDocumentsToCaseDataTask).execute(any(), argThat(new HamcrestArgumentMatcher<>(allOf(
+            IsMapContaining.<String, Object>hasEntry("returnedKey1", "returnedValue1")
+        ))));
 
-        verify(fetchPrintDocsFromDmStoreTask).execute(any(), argThat(allOf(
-            Matchers.<String, Object>hasEntry("returnedKey2", "returnedValue2")
-        )));
+        verify(fetchPrintDocsFromDmStoreTask).execute(any(), argThat(new HamcrestArgumentMatcher<>(allOf(
+            IsMapContaining.<String, Object>hasEntry("returnedKey2", "returnedValue2")
+        ))));
 
-        verify(bulkPrinterTask).execute(taskContextArgumentCaptor.capture(), argThat(allOf(
-            Matchers.<String, Object>hasEntry("returnedKey3", "returnedValue3")
-        )));
+        verify(bulkPrinterTask).execute(taskContextArgumentCaptor.capture(), argThat(new HamcrestArgumentMatcher<>(allOf(
+            IsMapContaining.<String, Object>hasEntry("returnedKey3", "returnedValue3")
+        ))));
 
-        verify(markJourneyAsOfflineTask).execute(taskContextArgumentCaptor.capture(), argThat(allOf(
-                Matchers.<String, Object>hasEntry("returnedKey4", "returnedValue4")
-        )));
+        verify(markJourneyAsOfflineTask).execute(taskContextArgumentCaptor.capture(), argThat(new HamcrestArgumentMatcher<>(allOf(
+            IsMapContaining.<String, Object>hasEntry("returnedKey4", "returnedValue4")
+        ))));
     }
 
     private void verifyModifyDueDateIsCalled() {
-        verify(aosPackDueDateSetterTask).execute(any(), argThat(allOf(
-                Matchers.<String, Object>hasEntry("returnedKey5", "returnedValue5")
-        )));
+        verify(aosPackDueDateSetterTask).execute(any(), argThat(new HamcrestArgumentMatcher<>(allOf(
+            IsMapContaining.<String, Object>hasEntry("returnedKey5", "returnedValue5")
+        ))));
     }
 
     private void verifyModifyDueDateIsNotCalled() {
