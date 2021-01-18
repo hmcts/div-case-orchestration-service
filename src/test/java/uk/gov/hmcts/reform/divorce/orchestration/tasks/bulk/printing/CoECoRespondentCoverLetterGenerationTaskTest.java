@@ -86,8 +86,8 @@ public class CoECoRespondentCoverLetterGenerationTaskTest extends BasePayloadSpe
         runCommonVerifications(
             caseData,
             returnedCaseData,
-            coECoRespondentCoverLetterGenerationTask.getDocumentType(),
-            coECoRespondentCoverLetterGenerationTask.getTemplateId(),
+            "coeCoRespondentLetter",
+            "FL-DIV-GNO-ENG-00449.docx",
             expectedDocmosisTemplateVars
         );
     }
@@ -115,8 +115,8 @@ public class CoECoRespondentCoverLetterGenerationTaskTest extends BasePayloadSpe
         runCommonVerifications(
             caseData,
             returnedCaseData,
-            coECoRespondentCoverLetterGenerationTask.getDocumentType(),
-            coECoRespondentCoverLetterGenerationTask.getTemplateId(),
+            "coeCoRespondentLetter",
+            "FL-DIV-GNO-ENG-00449.docx",
             expectedDocmosisTemplateVars
         );
     }
