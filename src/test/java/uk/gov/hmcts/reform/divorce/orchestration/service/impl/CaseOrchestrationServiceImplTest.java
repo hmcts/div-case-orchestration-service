@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConst
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Fee;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
@@ -989,10 +990,19 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void shouldCallTheRightWorkflow_ForDocumentGeneration() throws WorkflowException, CaseOrchestrationServiceException {
+    public void shouldCallTheRightWorkflow_ForDocumentGeneration_WithTemplateId() throws WorkflowException, CaseOrchestrationServiceException {
         when(documentGenerationWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN, "b", "a", "b", "c")).thenReturn(requestPayload);
 
         final Map<String, Object> result = classUnderTest.handleDocumentGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c");
+
+        assertThat(result, is(requestPayload));
+    }
+
+    @Test
+    public void shouldCallTheRightWorkflow_ForDocumentGeneration_WithDocumentType() throws WorkflowException, CaseOrchestrationServiceException {
+        when(documentGenerationWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN, "b", COSTS_ORDER, "c")).thenReturn(requestPayload);
+
+        final Map<String, Object> result = classUnderTest.handleDocumentGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, COSTS_ORDER, "b", "c");
 
         assertThat(result, is(requestPayload));
     }
@@ -1114,6 +1124,17 @@ public class CaseOrchestrationServiceImplTest {
 
         CaseOrchestrationServiceException caseOrchestrationServiceException = assertThrows(CaseOrchestrationServiceException.class,
             () -> classUnderTest.handleDocumentGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, "a", "b", "c"));
+        assertThat(caseOrchestrationServiceException.getCaseId().get(), is(TEST_CASE_ID));
+        assertThat(caseOrchestrationServiceException.getCause(), is(workflowException));
+    }
+
+    @Test
+    public void shouldThrowException_ForDocumentGenerationWithDocumentType_WhenWorkflowExceptionIsCaught() throws WorkflowException {
+        WorkflowException workflowException = new WorkflowException("This operation threw an exception");
+        when(documentGenerationWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN, "b", COSTS_ORDER, "c")).thenThrow(workflowException);
+
+        CaseOrchestrationServiceException caseOrchestrationServiceException = assertThrows(CaseOrchestrationServiceException.class,
+            () -> classUnderTest.handleDocumentGenerationCallback(ccdCallbackRequest, AUTH_TOKEN, COSTS_ORDER, "b", "c"));
         assertThat(caseOrchestrationServiceException.getCaseId().get(), is(TEST_CASE_ID));
         assertThat(caseOrchestrationServiceException.getCause(), is(workflowException));
     }
