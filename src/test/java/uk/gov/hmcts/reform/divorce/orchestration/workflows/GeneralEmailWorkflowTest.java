@@ -201,7 +201,7 @@ public class GeneralEmailWorkflowTest {
     private Map<String, Object> getPartyData(GeneralEmailTaskHelper.Party party) {
         switch (party) {
             case PETITIONER:
-                return AddresseeDataExtractorTest.buildCaseDataWithPetitioner();
+                return AddresseeDataExtractorTest.buildCaseDataWithPetitionerCorrespondenceAddressButNoHomeAddress();
             case PETITIONER_SOLICITOR:
                 return AddresseeDataExtractorTest.buildCaseDataWithPetitionerSolicitor();
             case RESPONDENT:
