@@ -108,6 +108,11 @@ public class BulkCaseController {
         @RequestParam(value = "filename") @ApiParam("filename") String filename,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
+        log.warn("The /bulk/edit/listing endpoint was called with templateId [{}], documentType [{}] and filename [{}].",
+            templateId,
+            documentType,
+            filename);
+
         CcdCallbackResponse.CcdCallbackResponseBuilder ccdCallbackResponseBuilder = CcdCallbackResponse.builder();
 
         try {
