@@ -19,7 +19,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETIT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.AOSPackOfflineConstants.COE_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.RESPONDENT_SOLICITORS_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.RESPONDENT_SOLICITORS_EXPECTED_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.RESPONDENT_SOLICITOR_REF;
@@ -69,8 +68,8 @@ public class CoERespondentSolicitorLetterGenerationTaskTest extends BasePayloadS
             .build();
         runCommonVerifications(caseData,
             returnedCaseData,
-            COE_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE,
-            CoERespondentSolicitorLetterGenerationTask.FileMetadata.TEMPLATE_ID,
+            "coeRespondentSolicitorLetter",
+            "FL-DIV-GNO-ENG-00370.docx",
             expectedTemplateVars);
     }
 

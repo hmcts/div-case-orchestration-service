@@ -53,8 +53,8 @@ public class DnGrantedRespondentSolicitorCoverLetterGenerationTaskTest extends B
         runCommonVerifications(
             caseData,
             returnedCaseData,
-            DnGrantedRespondentSolicitorCoverLetterGenerationTask.FileMetadata.DOCUMENT_TYPE,
-            DnGrantedRespondentSolicitorCoverLetterGenerationTask.FileMetadata.TEMPLATE_ID,
+            "dnGrantedCoverLetterRespondentSolicitor",
+            "FL-DIV-GNO-ENG-00356.docx",
             getTemplateModel()
         );
     }
