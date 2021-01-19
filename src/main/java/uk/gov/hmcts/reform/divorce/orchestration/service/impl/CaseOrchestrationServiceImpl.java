@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConst
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
@@ -697,11 +698,25 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     public Map<String, Object> handleDocumentGenerationCallback(final CcdCallbackRequest ccdCallbackRequest,
                                                                 final String authToken,
                                                                 final String templateId,
-                                                                final String documentType,
+                                                                final String ccdDocumentType,
                                                                 final String filename) throws CaseOrchestrationServiceException {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         try {
-            return documentGenerationWorkflow.run(caseDetails, authToken, documentType, templateId, documentType, filename);
+            return documentGenerationWorkflow.run(caseDetails, authToken, ccdDocumentType, templateId, ccdDocumentType, filename);
+        } catch (WorkflowException workflowException) {
+            throw new CaseOrchestrationServiceException(workflowException, caseDetails.getCaseId());
+        }
+    }
+
+    @Override
+    public Map<String, Object> handleDocumentGenerationCallback(final CcdCallbackRequest ccdCallbackRequest,
+                                                                final String authToken,
+                                                                final DocumentType documentType,
+                                                                final String ccdDocumentType,
+                                                                final String filename) throws CaseOrchestrationServiceException {
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        try {
+            return documentGenerationWorkflow.run(caseDetails, authToken, ccdDocumentType, documentType, filename);
         } catch (WorkflowException workflowException) {
             throw new CaseOrchestrationServiceException(workflowException, caseDetails.getCaseId());
         }

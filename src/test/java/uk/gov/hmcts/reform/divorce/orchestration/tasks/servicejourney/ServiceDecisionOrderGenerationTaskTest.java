@@ -61,8 +61,8 @@ public abstract class ServiceDecisionOrderGenerationTaskTest extends BasePayload
 
         runVerifications(
             returnedCaseData,
-            getTask().getDocumentType(),
-            getTask().getTemplateId(),
+            getExpectedDocumentType(),
+            getExpectedTemplateId(),
             buildServiceApplicationDecisionOrder()
         );
 
@@ -74,6 +74,10 @@ public abstract class ServiceDecisionOrderGenerationTaskTest extends BasePayload
         verifyDocumentAddedToCaseData(returnedCaseData, expectedDocumentType);
         verifyPdfDocumentGenerationCallIsCorrect(expectedTemplateId, expectedDocmosisTemplateVars);
     }
+
+    protected abstract String getExpectedDocumentType();
+
+    protected abstract String getExpectedTemplateId();
 
     private void verifyDocumentAddedToCaseData(Map<String, Object> returnedCaseData, String expectedDocumentType) {
         String expectedServiceFileName = getFileName();

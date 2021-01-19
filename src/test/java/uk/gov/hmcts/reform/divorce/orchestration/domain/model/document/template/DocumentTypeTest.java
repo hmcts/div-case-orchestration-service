@@ -19,7 +19,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.te
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.BULK_LIST_FOR_PRONOUNCEMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.CASE_LIST_FOR_PRONOUNCEMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COE_CO_RESPONDENT_LETTER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COE_RESPONDENT_LETTER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COE_RESPONDENT_SOLICITOR_LETTER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COSTS_ORDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COST_ORDER_CO_RESPONDENT_LETTER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COST_ORDER_CO_RESPONDENT_SOLICITOR_LETTER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.CO_RESPONDENT_ANSWERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.CO_RESPONDENT_AOS_INVITATION_LETTER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.CO_RESPONDENT_INVITATION;
@@ -30,8 +35,15 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.te
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DECREE_NISI_ANSWER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DECREE_NISI_REFUSAL_ORDER_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DECREE_NISI_REFUSAL_ORDER_REJECTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DEEMED_AS_SERVED_GRANTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DEEMED_SERVICE_REFUSED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DISPENSE_WITH_SERVICE_GRANTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DISPENSE_WITH_SERVICE_REFUSED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DIVORCE_DRAFT_MINI_PETITION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DIVORCE_MINI_PETITION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DN_GRANTED_COVER_LETTER_RESPONDENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DN_GRANTED_COVER_LETTER_RESPONDENT_SOLICITOR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.GENERAL_ORDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.RESPONDENT_ANSWERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.RESPONDENT_AOS_INVITATION_LETTER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.SOLICITOR_PERSONAL_SERVICE_LETTER;
@@ -68,6 +80,18 @@ public class DocumentTypeTest {
         assertDocumentTypeTemplates(DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER, "FL-DIV-GOR-ENG-00355.docx", "FL-DIV-GOR-ENG-00355.docx");
         assertDocumentTypeTemplates(DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER, "FL-DIV-GOR-ENG-00353.docx", "FL-DIV-GOR-ENG-00353.docx");
         assertDocumentTypeTemplates(AOS_OVERDUE_COVER_LETTER, "FL-DIV-LET-ENG-00537.odt", "FL-DIV-LET-ENG-00537.odt");
+        assertDocumentTypeTemplates(COE_CO_RESPONDENT_LETTER, "FL-DIV-GNO-ENG-00449.docx", "FL-DIV-GNO-ENG-00449.docx");
+        assertDocumentTypeTemplates(COE_RESPONDENT_LETTER, "FL-DIV-LET-ENG-00360.docx", "FL-DIV-LET-ENG-00360.docx");
+        assertDocumentTypeTemplates(COE_RESPONDENT_SOLICITOR_LETTER, "FL-DIV-GNO-ENG-00370.docx", "FL-DIV-GNO-ENG-00370.docx");
+        assertDocumentTypeTemplates(COST_ORDER_CO_RESPONDENT_LETTER, "FL-DIV-LET-ENG-00358A.docx", "FL-DIV-LET-ENG-00358A.docx");
+        assertDocumentTypeTemplates(COST_ORDER_CO_RESPONDENT_SOLICITOR_LETTER, "FL-DIV-GNO-ENG-00423.docx", "FL-DIV-GNO-ENG-00423.docx");
+        assertDocumentTypeTemplates(DN_GRANTED_COVER_LETTER_RESPONDENT, "FL-DIV-LET-ENG-00357.docx", "FL-DIV-LET-ENG-00357.docx");
+        assertDocumentTypeTemplates(DN_GRANTED_COVER_LETTER_RESPONDENT_SOLICITOR, "FL-DIV-GNO-ENG-00356.docx", "FL-DIV-GNO-ENG-00356.docx");
+        assertDocumentTypeTemplates(GENERAL_ORDER, "FL-DIV-GOR-ENG-00572.docx", "FL-DIV-GOR-ENG-00572.docx");
+        assertDocumentTypeTemplates(DEEMED_AS_SERVED_GRANTED, "FL-DIV-DEC-ENG-00534.docx", "FL-DIV-DEC-ENG-00534.docx");
+        assertDocumentTypeTemplates(DEEMED_SERVICE_REFUSED, "FL-DIV-GNO-ENG-00533.docx", "FL-DIV-GNO-ENG-00533.docx");
+        assertDocumentTypeTemplates(DISPENSE_WITH_SERVICE_REFUSED, "FL-DIV-GNO-ENG-00535.docx", "FL-DIV-GNO-ENG-00535.docx");
+        assertDocumentTypeTemplates(DISPENSE_WITH_SERVICE_GRANTED, "FL-DIV-DEC-ENG-00531.docx", "FL-DIV-DEC-ENG-00531.docx");
     }
 
     private void assertDocumentTypeTemplates(DocumentType documentType, String expectedEnglishTemplate, String expectedWelshTemplate) {

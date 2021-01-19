@@ -30,7 +30,9 @@ import java.util.Map;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_ORDERS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference.ENGLISH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME_FMT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.GENERAL_ORDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateTimeForDocument;
 
@@ -40,7 +42,7 @@ public class GeneralOrderGenerationTask extends BasePayloadSpecificDocumentGener
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FileMetadata {
-        public static final String TEMPLATE_ID = "FL-DIV-GOR-ENG-00572.docx";
+        public static final String TEMPLATE_ID = GENERAL_ORDER.getTemplateByLanguage(ENGLISH);
         public static final String DOCUMENT_TYPE = "generalOrder";
     }
 
