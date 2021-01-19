@@ -149,7 +149,10 @@ public interface CaseOrchestrationService {
     Map<String, Object> updateBulkCaseAcceptedCases(CaseDetails caseDetails, String authToken) throws WorkflowException;
 
     Map<String, Object> editBulkCaseListingData(CcdCallbackRequest ccdCallbackRequest, String fileName,
-                                                String templateId, String documentType, String authToken) throws WorkflowException;
+                                                String templateId, String ccdDocumentType, String authToken) throws WorkflowException;
+
+    Map<String, Object> editBulkCaseListingData(CcdCallbackRequest ccdCallbackRequest, String fileName,
+                                                DocumentType documentType, String ccdDocumentType, String authToken) throws WorkflowException;
 
     Map<String, Object> removeBulkListed(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 

@@ -792,13 +792,27 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
+    @Deprecated
     public Map<String, Object> editBulkCaseListingData(CcdCallbackRequest ccdCallbackRequest, String fileName,
-                                                       String templateId, String documentType, String authToken) throws WorkflowException {
+                                                       String templateId, String ccdDocumentType, String authToken) throws WorkflowException {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         Map<String, Object> response = validateBulkCaseListingWorkflow.run(caseDetails.getCaseData());
         String judgeName = (String) caseDetails.getCaseData().get(PRONOUNCEMENT_JUDGE_CCD_FIELD);
         if (StringUtils.isNotEmpty(judgeName)) {
-            response = documentGenerationWorkflow.run(caseDetails, authToken, documentType, templateId, documentType, fileName);
+            response = documentGenerationWorkflow.run(caseDetails, authToken, ccdDocumentType, templateId, ccdDocumentType, fileName);
+        }
+
+        return response;
+    }
+
+    @Override
+    public Map<String, Object> editBulkCaseListingData(CcdCallbackRequest ccdCallbackRequest, String fileName,
+                                                       DocumentType documentType, String ccdDocumentType, String authToken) throws WorkflowException {
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        Map<String, Object> response = validateBulkCaseListingWorkflow.run(caseDetails.getCaseData());
+        String judgeName = (String) caseDetails.getCaseData().get(PRONOUNCEMENT_JUDGE_CCD_FIELD);
+        if (StringUtils.isNotEmpty(judgeName)) {
+            response = documentGenerationWorkflow.run(caseDetails, authToken, ccdDocumentType, documentType, fileName);
         }
 
         return response;
