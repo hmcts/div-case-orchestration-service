@@ -39,7 +39,7 @@ def versions = [
         commonsMath3                 : '3.6.1',
         divCommonLib                 : '1.2.5',
         dumbster                     : '1.7.1',
-        elasticsearch                : '7.9.3',
+        elasticsearch                : '7.10.2',
         feignHttpClient              : '10.3.0',
         flyway                       : '6.5.5',
         googleAuth                   : '1.5.0',
@@ -111,7 +111,7 @@ allprojects {
 
     repositories {
         maven { url "https://dl.bintray.com/hmcts/hmcts-maven" }
-        maven { url 'https://repo.spring.io/libs-milestone' }
+//        maven { url 'https://repo.spring.io/libs-milestone' }
         mavenCentral()
         jcenter()
     }
