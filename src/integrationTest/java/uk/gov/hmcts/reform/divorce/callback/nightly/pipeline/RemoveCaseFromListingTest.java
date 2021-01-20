@@ -29,6 +29,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseCon
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CREATE_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.LISTED_EVENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_LIST_FOR_PRONOUNCEMENT_FILE_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
 
@@ -74,7 +75,7 @@ public class RemoveCaseFromListingTest extends CcdSubmissionSupport {
 
         assertThat(
             jsonResponse,
-            hasJsonPath("$.case_data.D8DocumentsGenerated[0].value.DocumentFileName", is("caseListForPronouncement" + bulkCaseId))
+            hasJsonPath("$.case_data.D8DocumentsGenerated[0].value.DocumentFileName", is(CASE_LIST_FOR_PRONOUNCEMENT_FILE_NAME + bulkCaseId))
         );
 
         assertThat(

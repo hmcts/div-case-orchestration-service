@@ -23,6 +23,8 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_LIST_FOR_PRONOUNCEMENT_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_LIST_FOR_PRONOUNCEMENT_FILE_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
@@ -31,9 +33,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 @RequiredArgsConstructor
 public class ListForPronouncementDocGenerationWorkflow extends DefaultWorkflow<Map<String, Object>> {
-
-    private static final String LIST_FOR_PRONOUNCEMENT_DOCUMENT_TYPE = "caseListForPronouncement";
-    private static final String LIST_FOR_PRONOUNCEMENT_FILE_NAME = "caseListForPronouncement";
 
     private final SetFormattedDnCourtDetails setFormattedDnCourtDetails;
 
@@ -68,9 +67,9 @@ public class ListForPronouncementDocGenerationWorkflow extends DefaultWorkflow<M
             ccdCallbackRequest.getCaseDetails().getCaseData(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, ccdCallbackRequest.getCaseDetails()),
-            ImmutablePair.of(DOCUMENT_TYPE, LIST_FOR_PRONOUNCEMENT_DOCUMENT_TYPE),
+            ImmutablePair.of(DOCUMENT_TYPE, CASE_LIST_FOR_PRONOUNCEMENT_DOCUMENT_TYPE),
             ImmutablePair.of(DOCUMENT_TEMPLATE_ID, templateId),
-            ImmutablePair.of(DOCUMENT_FILENAME, LIST_FOR_PRONOUNCEMENT_FILE_NAME)
+            ImmutablePair.of(DOCUMENT_FILENAME, CASE_LIST_FOR_PRONOUNCEMENT_FILE_NAME)
         );
     }
 }

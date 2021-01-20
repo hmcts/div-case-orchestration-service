@@ -47,6 +47,8 @@ import static java.util.Collections.singletonList;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_PRINT_ERROR_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_LIST_FOR_PRONOUNCEMENT_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_LIST_FOR_PRONOUNCEMENT_FILE_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CERTIFICATE_OF_ENTITLEMENT_FILENAME_PREFIX;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_ANSWERS_LINK;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS;
@@ -643,10 +645,11 @@ public class CallbackController {
         @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
-        String ccdDocumentType = "caseListForPronouncement";
-        String filename = "caseListForPronouncement";
-
-        return generateNewDocumentAndAddToCaseData(authorizationToken, ccdCallbackRequest, CASE_LIST_FOR_PRONOUNCEMENT, ccdDocumentType, filename);
+        return generateNewDocumentAndAddToCaseData(authorizationToken,
+            ccdCallbackRequest,
+            CASE_LIST_FOR_PRONOUNCEMENT,
+            CASE_LIST_FOR_PRONOUNCEMENT_DOCUMENT_TYPE,
+            CASE_LIST_FOR_PRONOUNCEMENT_FILE_NAME);
     }
 
     @PostMapping(path = "/update-bulk-case-hearing-details", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
