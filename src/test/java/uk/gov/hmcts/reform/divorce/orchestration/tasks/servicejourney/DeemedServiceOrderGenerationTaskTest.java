@@ -21,9 +21,20 @@ public class DeemedServiceOrderGenerationTaskTest extends ServiceDecisionOrderGe
         return deemedServiceOrderGenerationTask;
     }
 
+    @Override
+    protected String getExpectedDocumentType() {
+        return "deemedAsServedGranted";
+    }
+
+    @Override
+    protected String getExpectedTemplateId() {
+        return "FL-DIV-DEC-ENG-00534.docx";
+    }
+
     @Test
     public void testExecuteShouldGenerateAFile() throws TaskException {
         Map<String, Object> returnedCaseData = executeShouldGenerateAFile();
         assertNotNull(returnedCaseData);
     }
+
 }

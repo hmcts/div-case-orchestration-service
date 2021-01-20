@@ -18,13 +18,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PRONOUNCEMENT_JUDGE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_HEARING_DATE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference.ENGLISH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.CASE_LIST_FOR_PRONOUNCEMENT;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
 
 public class EditBulkCaseListingTest extends IntegrationTest {
 
     private static final String DOCUMENT_TYPE = "caseListForPronouncement";
-    private static final String TEMPLATE_ID = "FL-DIV-GNO-ENG-00059.docx";
+    private static final String TEMPLATE_ID = CASE_LIST_FOR_PRONOUNCEMENT.getTemplateByLanguage(ENGLISH);
     private static final String FILE_NAME = "caseListForPronouncement";
 
     @Autowired

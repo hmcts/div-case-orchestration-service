@@ -10,7 +10,52 @@
         },
         "DocumentType": "coe",
         "DocumentComment": null,
-        "DocumentFileName": "certificateOfEntitlement",
+        "DocumentFileName": "certificateOfEntitlement.pdf",
+        "DocumentDateAdded": null,
+        "DocumentEmailContent": null
+      }
+    },
+    {
+      "id": null,
+      "value": {
+        "DocumentLink": {
+          "document_url": "https://localhost:8080/documents/2345",
+          "document_filename": "costsOrder.pdf",
+          "document_binary_url": "https://localhost:8080/documents/2345/binary"
+        },
+        "DocumentType": "costsOrder",
+        "DocumentComment": null,
+        "DocumentFileName": "costsOrder.pdf",
+        "DocumentDateAdded": null,
+        "DocumentEmailContent": null
+      }
+    },
+    {
+      "id": null,
+      "value": {
+        "DocumentLink": {
+          "document_url": "https://localhost:8080/documents/3456",
+          "document_filename": "dnGranted.pdf",
+          "document_binary_url": "https://localhost:8080/documents/3456/binary"
+        },
+        "DocumentType": "dnGranted",
+        "DocumentComment": null,
+        "DocumentFileName": "dnGranted.pdf",
+        "DocumentDateAdded": null,
+        "DocumentEmailContent": null
+      }
+    },
+    {
+      "id": null,
+      "value": {
+        "DocumentLink": {
+          "document_url": "https://localhost:8080/documents/4567",
+          "document_filename": "daGranted.pdf",
+          "document_binary_url": "https://localhost:8080/documents/4567/binary"
+        },
+        "DocumentType": "daGranted",
+        "DocumentComment": null,
+        "DocumentFileName": "daGranted.pdf",
         "DocumentDateAdded": null,
         "DocumentEmailContent": null
       }

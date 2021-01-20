@@ -4,6 +4,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -106,7 +107,10 @@ public interface CaseOrchestrationService {
     Map<String, Object> generateBulkCaseForListing() throws WorkflowException;
 
     Map<String, Object> handleDocumentGenerationCallback(CcdCallbackRequest ccdCallbackRequest, String authToken, String templateId,
-                                                         String documentType, String filename) throws CaseOrchestrationServiceException;
+                                                         String ccdDocumentType, String filename) throws CaseOrchestrationServiceException;
+
+    Map<String, Object> handleDocumentGenerationCallback(CcdCallbackRequest ccdCallbackRequest, String authToken, DocumentType documentType,
+                                                         String ccdDocumentType, String filename) throws CaseOrchestrationServiceException;
 
     Map<String, Object> processAosSolicitorNominated(CcdCallbackRequest ccdCallbackRequest,
                                                      String authToken) throws CaseOrchestrationServiceException;

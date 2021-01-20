@@ -42,7 +42,19 @@ public enum DocumentType {
     //No Welsh translation yet
     DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER("daGrantedCitizenLetter", "FL-DIV-GOR-ENG-00355.docx", "FL-DIV-GOR-ENG-00355.docx"),
     DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER("daGrantedSolicitorLetter", "FL-DIV-GOR-ENG-00353.docx", "FL-DIV-GOR-ENG-00353.docx"),
-    AOS_OVERDUE_COVER_LETTER("aosOverdueCoverLetter", "FL-DIV-LET-ENG-00537.odt", "FL-DIV-LET-ENG-00537.odt");
+    AOS_OVERDUE_COVER_LETTER("aosOverdueCoverLetter", "FL-DIV-LET-ENG-00537.odt", "FL-DIV-LET-ENG-00537.odt"),
+    COE_CO_RESPONDENT_LETTER("coe_co_respondent_letter", "FL-DIV-GNO-ENG-00449.docx", "FL-DIV-GNO-ENG-00449.docx"),
+    COE_RESPONDENT_LETTER("coe_respondent_letter", "FL-DIV-LET-ENG-00360.docx", "FL-DIV-LET-ENG-00360.docx"),
+    COE_RESPONDENT_SOLICITOR_LETTER("coe_respondent_solicitor_letter", "FL-DIV-GNO-ENG-00370.docx", "FL-DIV-GNO-ENG-00370.docx"),
+    COST_ORDER_CO_RESPONDENT_LETTER("cost_order_co_respondent_letter", "FL-DIV-LET-ENG-00358A.docx", "FL-DIV-LET-ENG-00358A.docx"),
+    COST_ORDER_CO_RESPONDENT_SOLICITOR_LETTER("cost_order_co_respondent_solicitor_letter", "FL-DIV-GNO-ENG-00423.docx", "FL-DIV-GNO-ENG-00423.docx"),
+    DN_GRANTED_COVER_LETTER_RESPONDENT("dn_granted_cover_letter_respondent", "FL-DIV-LET-ENG-00357.docx", "FL-DIV-LET-ENG-00357.docx"),
+    DN_GRANTED_COVER_LETTER_RESPONDENT_SOLICITOR("dn_granted_cover_letter_respondent_sol", "FL-DIV-GNO-ENG-00356.docx", "FL-DIV-GNO-ENG-00356.docx"),
+    GENERAL_ORDER("general_order", "FL-DIV-GOR-ENG-00572.docx", "FL-DIV-GOR-ENG-00572.docx"),
+    DEEMED_AS_SERVED_GRANTED("deemed_as_served_granted", "FL-DIV-DEC-ENG-00534.docx", "FL-DIV-DEC-ENG-00534.docx"),
+    DEEMED_SERVICE_REFUSED("deemed_service_refused", "FL-DIV-GNO-ENG-00533.docx", "FL-DIV-GNO-ENG-00533.docx"),
+    DISPENSE_WITH_SERVICE_REFUSED("dispense_with_service_refused", "FL-DIV-GNO-ENG-00535.docx", "FL-DIV-GNO-ENG-00535.docx"),
+    DISPENSE_WITH_SERVICE_GRANTED("dispense_with_service_granted", "FL-DIV-DEC-ENG-00531.docx", "FL-DIV-DEC-ENG-00531.docx");
 
     @Getter
     private final String templateLogicalName;
