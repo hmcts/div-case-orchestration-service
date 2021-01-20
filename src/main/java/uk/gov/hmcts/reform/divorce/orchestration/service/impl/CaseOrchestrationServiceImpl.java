@@ -694,7 +694,13 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         return result;
     }
 
+    /**
+     * Service called for generating document based on String parameters.
+     *
+     * @deprecated Please prefer the implementation that takes a <code>DocumentType</code> instead of a String with templateId.
+     */
     @Override
+    @Deprecated(forRemoval = true)
     public Map<String, Object> handleDocumentGenerationCallback(final CcdCallbackRequest ccdCallbackRequest,
                                                                 final String authToken,
                                                                 final String templateId,
@@ -791,8 +797,13 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         return validateBulkCaseListingWorkflow.run(caseData);
     }
 
+    /**
+     * Service called just before editing bulk case listing.
+     *
+     * @deprecated Please prefer the implementation that takes a <code>DocumentType</code> instead of a String with templateId.
+     */
     @Override
-    @Deprecated
+    @Deprecated(forRemoval = true)
     public Map<String, Object> editBulkCaseListingData(CcdCallbackRequest ccdCallbackRequest, String fileName,
                                                        String templateId, String ccdDocumentType, String authToken) throws WorkflowException {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
