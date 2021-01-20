@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +16,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @SuppressWarnings("squid:S1118")
 @Component
+@Slf4j
 public class AuthUtil {
 
     private final AuthTokenValidator authTokenValidator;
@@ -88,6 +90,7 @@ public class AuthUtil {
             throw new AuthenticationError("Provided S2S token is missing or invalid");
         }
         String bearerAuthToken = getBearerToken(authHeader);
+        log.info("S2S token found in the request");
 
         return authTokenValidator.getServiceName(bearerAuthToken);
     }
