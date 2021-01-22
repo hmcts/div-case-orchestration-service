@@ -3,10 +3,10 @@ package uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.StandardisedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceRefusalOrderDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderDraftTask;
@@ -26,27 +26,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Condition
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class ServiceDecisionMakingWorkflow extends DefaultWorkflow<Map<String, Object>> {
+public class ServiceDecisionMakingWorkflow extends StandardisedWorkflow {
 
     private final DeemedServiceRefusalOrderDraftTask deemedServiceRefusalOrderDraftTask;
     private final DispensedServiceRefusalOrderDraftTask dispensedServiceRefusalOrderDraftTask;
 
-    public Map<String, Object> run(CaseDetails caseDetails, String authorisation)
-        throws WorkflowException {
-        String caseId = caseDetails.getCaseId();
-        Map<String, Object> caseData = caseDetails.getCaseData();
-
-        log.info("CaseID: {} ServiceDecisionMaking workflow is going to be executed.", caseId);
-
-        return this.execute(
-            getTasks(caseDetails),
-            caseData,
-            ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authorisation),
-            ImmutablePair.of(CASE_ID_JSON_KEY, caseId)
-        );
-    }
-
-    private Task<Map<String, Object>>[] getTasks(CaseDetails caseDetails) {
+    @Override
+    protected Task<Map<String, Object>>[] getTasksToExecute(CaseDetails caseDetails) {
         Map<String, Object> caseData = caseDetails.getCaseData();
         String caseId = caseDetails.getCaseId();
 
@@ -71,4 +57,15 @@ public class ServiceDecisionMakingWorkflow extends DefaultWorkflow<Map<String, O
 
         return tasks.toArray(new Task[] {});
     }
+
+    @Override
+    protected Pair<String, Object>[] prepareContextVariables(CaseDetails caseDetails, String authToken) {
+        String caseId = caseDetails.getCaseId();
+
+        return new Pair[] {
+            ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
+            ImmutablePair.of(CASE_ID_JSON_KEY, caseId)
+        };
+    }
+
 }
