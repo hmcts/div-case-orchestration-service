@@ -489,9 +489,10 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     @Override
     public CcdCallbackResponse setOrderSummaryAssignRole(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
-        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
-        Map<String, Object> updatedCase = setOrderSummaryWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
-        ccdCallbackRequest.getCaseDetails().setCaseData(updatedCase);
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        String caseId = caseDetails.getCaseId();
+        Map<String, Object> updatedCase = setOrderSummaryWorkflow.run(caseDetails, authToken);
+        caseDetails.setCaseData(updatedCase);
         Map<String, Object> solicitorPayload = petitionerSolicitorRoleWorkflow.run(ccdCallbackRequest, authToken);
 
         if (petitionerSolicitorRoleWorkflow.errors().isEmpty()) {

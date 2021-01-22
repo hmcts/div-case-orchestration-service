@@ -342,7 +342,7 @@ public class CaseOrchestrationServiceImplTest {
     private AuthUtil authUtil;
 
     private CcdCallbackRequest ccdCallbackRequest;
-
+    private CaseDetails caseDetails;
     private Map<String, Object> requestPayload;
 
     private Map<String, Object> expectedPayload;
@@ -350,13 +350,14 @@ public class CaseOrchestrationServiceImplTest {
     @Before
     public void setUp() {
         requestPayload = singletonMap("requestPayloadKey", "requestPayloadValue");
+        caseDetails = CaseDetails.builder()
+            .caseData(requestPayload)
+            .caseId(TEST_CASE_ID)
+            .state(TEST_STATE)
+            .build();
         ccdCallbackRequest = CcdCallbackRequest.builder()
             .caseDetails(
-                CaseDetails.builder()
-                    .caseData(requestPayload)
-                    .caseId(TEST_CASE_ID)
-                    .state(TEST_STATE)
-                    .build())
+                caseDetails)
             .eventId(TEST_EVENT_ID)
             .token(TEST_TOKEN)
             .build();
@@ -741,8 +742,7 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void givenCaseData_whenSetOrderSummary_thenReturnPayload() throws Exception {
-        when(setOrderSummaryWorkflow.run(requestPayload))
-            .thenReturn(requestPayload);
+        when(setOrderSummaryWorkflow.run(eq(caseDetails), any())).thenReturn(requestPayload);
         when(petitionerSolicitorRoleWorkflow.run(ccdCallbackRequest, AUTH_TOKEN))
             .thenReturn(requestPayload);
 
@@ -750,7 +750,7 @@ public class CaseOrchestrationServiceImplTest {
 
         assertEquals(requestPayload, actual.getData());
 
-        verify(setOrderSummaryWorkflow).run(requestPayload);
+        verify(setOrderSummaryWorkflow).run(eq(caseDetails), any());
     }
 
     @Test

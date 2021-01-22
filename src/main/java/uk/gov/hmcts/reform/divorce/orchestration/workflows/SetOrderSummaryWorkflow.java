@@ -1,9 +1,10 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.StandardisedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetAmendPetitionFeeTask;
@@ -16,10 +17,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features.SO
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_CCD_KEY;
 
 @Component
-public class SetOrderSummaryWorkflow extends DefaultWorkflow<Map<String, Object>> {
+public class SetOrderSummaryWorkflow extends StandardisedWorkflow {
 
-    private final Task<?>[] issueTasks;
-    private final Task<?>[] amendmentTasks;
+    private final Task<Map<String, Object>>[] issueTasks;
+    private final Task<Map<String, Object>>[] amendmentTasks;
 
     private final FeatureToggleService featureToggleService;
 
@@ -28,21 +29,28 @@ public class SetOrderSummaryWorkflow extends DefaultWorkflow<Map<String, Object>
                                    GetAmendPetitionFeeTask getAmendPetitionFeeTask,
                                    SetOrderSummary setOrderSummary,
                                    FeatureToggleService featureToggleService) {
-        issueTasks = new Task<?>[] {getPetitionIssueFeeTask, setOrderSummary};
-        amendmentTasks = new Task<?>[] {getAmendPetitionFeeTask, setOrderSummary};
+        issueTasks = new Task[] {getPetitionIssueFeeTask, setOrderSummary};
+        amendmentTasks = new Task[] {getAmendPetitionFeeTask, setOrderSummary};
         this.featureToggleService = featureToggleService;
     }
 
-    public Map<String, Object> run(Map<String, Object> payload) throws WorkflowException {
-        Task<?>[] tasks;
+    @Override
+    protected Task<Map<String, Object>>[] getTasksToExecute(CaseDetails caseDetails) {
+        Task<Map<String, Object>>[] tasks;
 
-        if (featureToggleService.isFeatureEnabled(SOLICITOR_DN_REJECT_AND_AMEND) && payload.containsKey(PREVIOUS_CASE_ID_CCD_KEY)) {
+        Map<String, Object> caseData = caseDetails.getCaseData();
+        if (featureToggleService.isFeatureEnabled(SOLICITOR_DN_REJECT_AND_AMEND) && caseData.containsKey(PREVIOUS_CASE_ID_CCD_KEY)) {
             tasks = amendmentTasks;
         } else {
             tasks = issueTasks;
         }
 
-        return this.execute(tasks, payload);
+        return tasks;
+    }
+
+    @Override
+    protected Pair<String, Object>[] prepareContextVariables(CaseDetails caseDetails, String authToken) {
+        return new Pair[0];
     }
 
 }

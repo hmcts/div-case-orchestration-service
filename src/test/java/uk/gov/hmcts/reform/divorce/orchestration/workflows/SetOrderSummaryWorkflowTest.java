@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.model.ccd.CaseLink;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
@@ -53,6 +54,7 @@ public class SetOrderSummaryWorkflowTest {
     @InjectMocks
     private SetOrderSummaryWorkflow setOrderSummaryWorkflow;
 
+    private CaseDetails testCaseDetails;
     private Map<String, Object> testData;
     private TaskContext context;
     private Map<String, Object> expectedCaseData;
@@ -60,6 +62,7 @@ public class SetOrderSummaryWorkflowTest {
     @Before
     public void setup() throws TaskException {
         testData = new HashMap<>();
+        testCaseDetails = CaseDetails.builder().caseData(testData).build();
         context = new DefaultTaskContext();
 
         FeeResponse feeResponse = FeeResponse.builder()
@@ -81,7 +84,7 @@ public class SetOrderSummaryWorkflowTest {
     public void runGetPetitionIssueFees_WhenCaseIsNotAmendment_AndFeatureIsSwitchedOn() throws Exception {
         when(featureToggleService.isFeatureEnabled(SOLICITOR_DN_REJECT_AND_AMEND)).thenReturn(true);
 
-        Map<String, Object> returnedCaseData = setOrderSummaryWorkflow.run(testData);
+        Map<String, Object> returnedCaseData = setOrderSummaryWorkflow.run(testCaseDetails, null);
 
         assertThat(returnedCaseData, equalTo(expectedCaseData));
         verifyTasksCalledInOrder(testData, getPetitionIssueFeeTask, setOrderSummary);
@@ -93,7 +96,7 @@ public class SetOrderSummaryWorkflowTest {
         when(featureToggleService.isFeatureEnabled(SOLICITOR_DN_REJECT_AND_AMEND)).thenReturn(true);
         testData.put(PREVIOUS_CASE_ID_CCD_KEY, CaseLink.builder().caseReference("1234567890123456").build());
 
-        Map<String, Object> returnedCaseData = setOrderSummaryWorkflow.run(testData);
+        Map<String, Object> returnedCaseData = setOrderSummaryWorkflow.run(testCaseDetails, null);
 
         assertThat(returnedCaseData, equalTo(expectedCaseData));
         verifyTasksCalledInOrder(testData, getAmendPetitionFeeTask, setOrderSummary);
@@ -104,7 +107,7 @@ public class SetOrderSummaryWorkflowTest {
     public void runGetPetitionIssueFees_WhenCaseIsNotAmendment_AndFeatureIsSwitchedOff() throws Exception {
         when(featureToggleService.isFeatureEnabled(SOLICITOR_DN_REJECT_AND_AMEND)).thenReturn(false);
 
-        Map<String, Object> returnedCaseData = setOrderSummaryWorkflow.run(testData);
+        Map<String, Object> returnedCaseData = setOrderSummaryWorkflow.run(testCaseDetails, null);
 
         assertThat(returnedCaseData, equalTo(expectedCaseData));
         verifyTasksCalledInOrder(testData, getPetitionIssueFeeTask, setOrderSummary);
@@ -116,7 +119,7 @@ public class SetOrderSummaryWorkflowTest {
         when(featureToggleService.isFeatureEnabled(SOLICITOR_DN_REJECT_AND_AMEND)).thenReturn(false);
         testData.put(PREVIOUS_CASE_ID_CCD_KEY, CaseLink.builder().caseReference("1234567890123456").build());
 
-        Map<String, Object> returnedCaseData = setOrderSummaryWorkflow.run(testData);
+        Map<String, Object> returnedCaseData = setOrderSummaryWorkflow.run(testCaseDetails, null);
 
         assertThat(returnedCaseData, equalTo(expectedCaseData));
         verifyTasksCalledInOrder(testData, getPetitionIssueFeeTask, setOrderSummary);
