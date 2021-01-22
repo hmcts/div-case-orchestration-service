@@ -28,9 +28,11 @@ public class MigrateCaseToPersonalServiceTask implements Task<Map<String, Object
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
         final String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
 
-
+        // TODO remove debug logging before merge
         log.info("Updating service to personalService - Case ID: {}", caseId);
+        log.info("DEBUG - payload before update = \n {}" , payload);
         payload.replace(SOL_SERVICE_METHOD_CCD_FIELD, PERSONAL_SERVICE_VALUE);
+        log.info("DEBUG - payload after update = \n {}" , payload);
         try {
             payload = caseMaintenanceClient.updateCase(
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY),
@@ -38,6 +40,7 @@ public class MigrateCaseToPersonalServiceTask implements Task<Map<String, Object
                 MIGRATE_PERSONAL_AOS_EVENT_ID,
                 payload
             );
+            log.info("DEBUG - payload after CMC call = \n {}" , payload);
             log.info("Service method migration completed - Case ID: {}",
                 caseId);
         } catch (FeignException exception) {
