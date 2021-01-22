@@ -1,37 +1,40 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@TestPropertySource(properties = {
+    "FEATURE_SHARE_A_CASE=true",
+    "FEATURE_PAPER_UPDATE=true"
+})
 public class FeatureToggleServiceImplTest {
 
-    private final FeatureToggleServiceImpl classToTest = new FeatureToggleServiceImpl();
-
-
-    @Before
-    public void setup() {
-        Map<String, String> toggles = new HashMap<>();
-        toggles.put(Features.DN_REFUSAL.getName(), "true");
-        toggles.put(Features.RESPONDENT_SOLICITOR_DETAILS.getName(), "false");
-
-        ReflectionTestUtils.setField(classToTest, "toggle", toggles);
-    }
+    @Autowired
+    private FeatureToggleServiceImpl classUnderTest;
 
     @Test
-    public void givenToggleEnabled_thenReturnTrue() {
-        assertThat(classToTest.isFeatureEnabled(Features.DN_REFUSAL), is(true));
+    public void shouldReturnAdequateValues() {
+        //Not registered in application.yml (default value will be false)
+        assertThat(classUnderTest.isFeatureEnabled(Features.SOLICITOR_DN_REJECT_AND_AMEND), is(false));
+        assertThat(classUnderTest.isFeatureEnabled(Features.PAY_BY_ACCOUNT), is(false));
+
+        //Default values
+        assertThat(classUnderTest.isFeatureEnabled(Features.RESPONDENT_SOLICITOR_DETAILS), is(true));
+        assertThat(classUnderTest.isFeatureEnabled(Features.DN_REFUSAL), is(true));
+
+        //Modified values
+        assertThat(classUnderTest.isFeatureEnabled(Features.PAPER_UPDATE), is(true));
+        assertThat(classUnderTest.isFeatureEnabled(Features.SHARE_A_CASE), is(true));
     }
 
-    @Test
-    public void givenToggleFalse_thenReturnFalse() {
-        assertThat(classToTest.isFeatureEnabled(Features.RESPONDENT_SOLICITOR_DETAILS), is(false));
-    }
 }
