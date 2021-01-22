@@ -15,4 +15,5 @@ public enum Features {
     SHARE_A_CASE("share_a_case");
 
     private final String name;
+
 }
