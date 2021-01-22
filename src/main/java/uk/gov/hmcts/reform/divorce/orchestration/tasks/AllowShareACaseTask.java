@@ -28,7 +28,7 @@ public class AllowShareACaseTask implements Task<Map<String, Object>> {
         final CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
         final String caseId = caseDetails.getCaseId();
 
-        log.info("Assigning case access for Case ID: {}", caseId);
+        log.info("CaseId: {}, Assigning case access", caseId);
         ccdDataStoreService.removeCreatorRole(caseDetails, authToken);
         assignCaseAccessService.assignCaseAccess(caseDetails, authToken);
 
