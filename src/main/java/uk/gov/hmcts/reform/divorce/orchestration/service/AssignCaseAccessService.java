@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.divorce.orchestration.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.gov.hmcts.reform.bsp.common.model.shared.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.AssignCaseAccessRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.util.mapper.AssignCaseAccessRequestMapper;
 
 @Service
@@ -19,7 +19,8 @@ public class AssignCaseAccessService {
 
     public void assignCaseAccess(CaseDetails caseDetails, String authorisationToken) {
         String userId = idamService.getIdamUserId(authorisationToken);
-        AssignCaseAccessRequest assignCaseAccessRequest = assignCaseAccessRequestMapper.mapToAssignCaseAccessRequest(caseDetails, userId);
+        AssignCaseAccessRequest assignCaseAccessRequest = assignCaseAccessRequestMapper
+            .mapToAssignCaseAccessRequest(caseDetails, userId);
 
         restService.restApiPostCall(
             authorisationToken,
