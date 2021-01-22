@@ -151,6 +151,17 @@ feature-toggle:
 send-letter:
   url: ${SEND_LETTER_SERIVCE_BASEURL:http://localhost:4021}
 
+aca:
+  api:
+    baseurl:${ACA_SERVICE_API_BASEURL:http://localhost:4454}
+    caseAssignmentsUrl=${aca.api.baseurl}/case-assignments
+
+ccd:
+  data-store:
+    api:
+      baseurl=${CCD_DATA_STORE_API_BASEURL:http://localhost:4452}
+      removeCaseRolesUrl=${ccd.data-store.api.baseurl}/case-users
+
 bulk-print:
   dueDate: 30
 

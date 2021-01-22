@@ -2,14 +2,14 @@ package uk.gov.hmcts.reform.divorce.orchestration.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseUser;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.RemoveUserRolesRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 
 import java.util.Collections;
 
-@Service
+@Component
 @Slf4j
 @RequiredArgsConstructor
 public class RemoveUserRolesRequestMapper {
@@ -28,4 +28,3 @@ public class RemoveUserRolesRequestMapper {
             ).build();
     }
 }
-
