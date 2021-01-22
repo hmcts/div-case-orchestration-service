@@ -7,12 +7,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.RemoveUserRolesReq
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CREATOR_USER_ROLE;
-
 @Component
 @Slf4j
 @RequiredArgsConstructor
 public class CcdDataStoreService {
+
+    private static final String CREATOR_USER_ROLE = "[CREATOR]";
 
     private final CcdDataStoreServiceConfiguration ccdDataStoreServiceConfiguration;
     private final RemoveUserRolesRequestMapper removeUserRolesRequestMapper;

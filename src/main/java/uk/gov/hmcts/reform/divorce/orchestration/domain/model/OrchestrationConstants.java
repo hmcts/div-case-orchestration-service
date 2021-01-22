@@ -354,15 +354,6 @@ public class OrchestrationConstants {
     public static final String PETITIONER_SOLICITOR_DERIVED_ADDRESS = "DerivedPetitionerSolicitorAddr";
     public static final String PETITIONER_SOLICITOR_AGREES_EMAIL_CONTACT = "SolicitorAgreeToReceiveEmails";
 
-    //organisation policy
-    public static final String ORGANISATION_POLICY_APPLICANT = "PetitionerOrganisationPolicy";
-    public static final String ORGANISATION_POLICY_ROLE = "OrgPolicyCaseAssignedRole";
-    public static final String ORGANISATION_POLICY_REF = "OrgPolicyReference";
-    public static final String ORGANISATION_POLICY_ORGANISATION = "Organisation";
-    public static final String ORGANISATION_POLICY_ORGANISATION_ID = "OrganisationID";
-    public static final String APP_SOLICITOR_POLICY = "[PETSOLICITOR]";
-    public static final String CREATOR_USER_ROLE = "[CREATOR]";
-
     // Payment
     public static final String PAYMENT = "payment";
     public static final String EXISTING_PAYMENTS = "existingPayments";
