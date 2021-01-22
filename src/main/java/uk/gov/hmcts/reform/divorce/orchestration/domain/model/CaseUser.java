@@ -6,13 +6,13 @@ import lombok.Getter;
 
 @Builder
 @Getter
-public class AssignCaseAccessRequest {
+public class CaseUser {
     @JsonProperty("case_id")
     private String caseId;
 
-    @JsonProperty("assignee_id")
-    private String assigneeId;
+    @JsonProperty("user_id")
+    private String userId;
 
-    @JsonProperty("case_type_id")
-    private String caseTypeId;
+    @JsonProperty("case_role")
+    private String caseRole;
 }
