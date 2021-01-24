@@ -14,7 +14,6 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
@@ -42,13 +41,13 @@ public class AllowShareACaseTaskTest {
         assertThat(result, is(input));
         verify(assignCaseAccessService)
             .assignCaseAccess(
-                eq(context.getTransientObject(CASE_DETAILS_JSON_KEY)),
-                eq(context.getTransientObject(AUTH_TOKEN_JSON_KEY))
+                context.getTransientObject(CASE_DETAILS_JSON_KEY),
+                context.getTransientObject(AUTH_TOKEN_JSON_KEY)
             );
         verify(ccdDataStoreService)
             .removeCreatorRole(
-                eq(context.getTransientObject(CASE_DETAILS_JSON_KEY)),
-                eq(context.getTransientObject(AUTH_TOKEN_JSON_KEY))
+                context.getTransientObject(CASE_DETAILS_JSON_KEY),
+                context.getTransientObject(AUTH_TOKEN_JSON_KEY)
             );
     }
 }
