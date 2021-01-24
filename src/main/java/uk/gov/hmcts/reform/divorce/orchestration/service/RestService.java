@@ -37,7 +37,7 @@ public class RestService {
         restApiCall(url, buildAuthRequestWithBody(userAuthToken, body), HttpMethod.DELETE);
     }
 
-    private Map restApiCall(String url, HttpEntity<Object> request, HttpMethod httpMethod) {
+    private Map<String, Object> restApiCall(String url, HttpEntity<Object> request, HttpMethod httpMethod) {
         URI uri = buildUri(url);
 
         log.info("Making {} request to uri : {}, request : {}", httpMethod, uri, request);
@@ -47,7 +47,8 @@ public class RestService {
                 uri,
                 httpMethod,
                 request,
-                Map.class);
+                Map.class
+            );
 
             log.info("Received REST {} response: {} ", httpMethod, response);
 
@@ -68,6 +69,7 @@ public class RestService {
         headers.add(AUTHORIZATION_HEADER, userAuthToken);
         headers.add(SERVICE_AUTHORIZATION_HEADER, authTokenGenerator.generate());
         headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+
         return headers;
     }
 
