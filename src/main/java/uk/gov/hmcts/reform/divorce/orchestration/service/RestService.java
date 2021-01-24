@@ -42,22 +42,16 @@ public class RestService {
 
         log.info("Making {} request to uri : {}, request : {}", httpMethod, uri, request);
 
-        try {
-            ResponseEntity<Map> response = restTemplate.exchange(
-                uri,
-                httpMethod,
-                request,
-                Map.class
-            );
+        ResponseEntity<Map> response = restTemplate.exchange(
+            uri,
+            httpMethod,
+            request,
+            Map.class
+        );
 
-            log.info("Received REST {} response: {} ", httpMethod, response);
+        log.info("Received REST {} response: {} ", httpMethod, response);
 
-            return response.getBody();
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-
-        return null;
+        return response.getBody();
     }
 
     private HttpEntity<Object> buildAuthRequestWithBody(String userAuthToken, Object body) {
@@ -73,7 +67,7 @@ public class RestService {
         return headers;
     }
 
-    private URI buildUri(String url) {
+    protected static URI buildUri(String url) {
         return fromHttpUrl(url).build().toUri();
     }
 }
