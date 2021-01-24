@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.Collections;
 
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -45,21 +44,19 @@ public class CcdDataStoreServiceTest {
         ccdDataStoreService.removeCreatorRole(CaseDetails.builder().caseId(TEST_CASE_ID).build(), AUTH_TOKEN);
 
         verify(restService).restApiDeleteCall(
-            eq(AUTH_TOKEN),
-            eq(TEST_URL),
-            eq(
-                RemoveUserRolesRequest
-                    .builder()
-                    .caseUsers(
-                        Collections.singletonList(
-                            CaseUser.builder()
-                                .caseId(TEST_CASE_ID)
-                                .userId(TEST_USER_ID)
-                                .caseRole(CREATOR_CASE_ROLE)
-                                .build()
-                        )
-                    ).build()
-            )
+            AUTH_TOKEN,
+            TEST_URL,
+            RemoveUserRolesRequest
+                .builder()
+                .caseUsers(
+                    Collections.singletonList(
+                        CaseUser.builder()
+                            .caseId(TEST_CASE_ID)
+                            .userId(TEST_USER_ID)
+                            .caseRole(CREATOR_CASE_ROLE)
+                            .build()
+                    )
+                ).build()
         );
     }
 }
