@@ -142,6 +142,7 @@ public class RetrievePbaNumbersITest extends MockedFunctionalTest {
                 .withBody(convertObjectToJsonString(response))));
     }
 
+    //
     private void stubIdamUserDetailsEndpoint(HttpStatus status, String authHeader, String message) {
         idamServer.stubFor(get(IDAM_USER_DETAILS_URL)
             .withHeader(AUTHORIZATION, new EqualToPattern(authHeader))
