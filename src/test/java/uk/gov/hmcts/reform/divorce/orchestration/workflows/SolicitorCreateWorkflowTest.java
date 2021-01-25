@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetClaimCostsFromTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetNewLegalConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
@@ -52,6 +53,9 @@ public class SolicitorCreateWorkflowTest {
     @Mock
     SetRespondentSolicitorOrganisationPolicyReferenceTask setRespondentSolicitorOrganisationPolicyReferenceTask;
 
+    @Mock
+    SetNewLegalConnectionPolicyTask setNewLegalConnectionPolicyTask;
+
     @InjectMocks
     SolicitorCreateWorkflow solicitorCreateWorkflow;
 
@@ -70,6 +74,7 @@ public class SolicitorCreateWorkflowTest {
             setSolicitorCourtDetailsTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
+            setNewLegalConnectionPolicyTask,
             setPetitionerSolicitorOrganisationPolicyReferenceTask,
             setRespondentSolicitorOrganisationPolicyReferenceTask
         );
@@ -82,6 +87,7 @@ public class SolicitorCreateWorkflowTest {
             setSolicitorCourtDetailsTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
+            setNewLegalConnectionPolicyTask,
             setPetitionerSolicitorOrganisationPolicyReferenceTask,
             setRespondentSolicitorOrganisationPolicyReferenceTask
         );
@@ -101,7 +107,8 @@ public class SolicitorCreateWorkflowTest {
             setClaimCostsFromTask,
             setSolicitorCourtDetailsTask,
             addMiniPetitionDraftTask,
-            addNewDocumentsToCaseDataTask
+            addNewDocumentsToCaseDataTask,
+            setNewLegalConnectionPolicyTask
         );
 
         assertThat(solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN), is(caseDetails.getCaseData()));
@@ -111,7 +118,8 @@ public class SolicitorCreateWorkflowTest {
             setClaimCostsFromTask,
             setSolicitorCourtDetailsTask,
             addMiniPetitionDraftTask,
-            addNewDocumentsToCaseDataTask
+            addNewDocumentsToCaseDataTask,
+            setNewLegalConnectionPolicyTask
         );
 
         verifyTasksWereNeverCalled(setPetitionerSolicitorOrganisationPolicyReferenceTask);
