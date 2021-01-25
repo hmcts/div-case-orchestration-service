@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetClaimCostsFromTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetNewLegalConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
 
 import java.util.Collections;
@@ -44,6 +45,9 @@ public class SolicitorCreateWorkflowTest {
     @Mock
     SetClaimCostsFromTask setClaimCostsFromTask;
 
+    @Mock
+    SetNewLegalConnectionPolicyTask setNewLegalConnectionPolicyTask;
+
     @InjectMocks
     SolicitorCreateWorkflow solicitorCreateWorkflow;
 
@@ -62,11 +66,13 @@ public class SolicitorCreateWorkflowTest {
 
         assertEquals(payload, solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN));
 
-        InOrder inOrder = inOrder(setSolicitorCourtDetailsTask, addMiniPetitionDraftTask, addNewDocumentsToCaseDataTask);
+        InOrder inOrder = inOrder(setSolicitorCourtDetailsTask, addMiniPetitionDraftTask, addNewDocumentsToCaseDataTask,
+            setNewLegalConnectionPolicyTask);
 
         inOrder.verify(setSolicitorCourtDetailsTask).execute(context, payload);
         inOrder.verify(addMiniPetitionDraftTask).execute(context, payload);
         inOrder.verify(addNewDocumentsToCaseDataTask).execute(context, payload);
+        inOrder.verify(setNewLegalConnectionPolicyTask).execute(context, payload);
     }
 
     @Test

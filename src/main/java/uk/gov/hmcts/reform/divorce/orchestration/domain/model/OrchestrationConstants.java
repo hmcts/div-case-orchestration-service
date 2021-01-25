@@ -410,4 +410,7 @@ public class OrchestrationConstants {
     // Bulk Scan
     public static final String CASE_TYPE_ID = "DIVORCE";
 
+    // New legal connection policy
+    public static final String NEW_LEGAL_CONNECTION_POLICY = "NewLegalConnectionPolicy";
+
 }
