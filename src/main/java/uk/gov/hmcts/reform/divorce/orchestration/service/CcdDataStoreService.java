@@ -3,6 +3,8 @@ package uk.gov.hmcts.reform.divorce.orchestration.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.divorce.orchestration.client.CaseRoleClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseUser;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.RemoveUserRolesRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -17,9 +19,9 @@ public class CcdDataStoreService {
 
     public static final String CREATOR_CASE_ROLE = "[CREATOR]";
 
-    private final CcdDataStoreServiceConfiguration ccdDataStoreServiceConfiguration;
+    private final AuthTokenGenerator authTokenGenerator;
     private final IdamClient idamClient;
-    private final RestService restService;
+    private final CaseRoleClient caseRoleClient;
 
     public void removeCreatorRole(CaseDetails caseDetails, String authorisationToken) {
         removeRole(caseDetails, authorisationToken, CREATOR_CASE_ROLE);
@@ -28,20 +30,25 @@ public class CcdDataStoreService {
     private void removeRole(CaseDetails caseDetails, String authorisationToken, String caseRole) {
         String userId = idamClient.getUserDetails(authorisationToken).getId();
 
-        restService.restApiDeleteCall(
+        caseRoleClient.removeCaseRoles(
             authorisationToken,
-            ccdDataStoreServiceConfiguration.getRemoveCaseRolesUrl(),
-            RemoveUserRolesRequest
-                .builder()
-                .caseUsers(
-                    Collections.singletonList(
-                        CaseUser.builder()
-                            .caseId(caseDetails.getCaseId())
-                            .userId(userId)
-                            .caseRole(caseRole)
-                            .build()
-                    )
-                ).build()
+            authTokenGenerator.generate(),
+            buildRemoveUserRolesRequest(caseDetails, caseRole, userId)
         );
+    }
+
+    private RemoveUserRolesRequest buildRemoveUserRolesRequest(
+        CaseDetails caseDetails, String caseRole, String userId) {
+        return RemoveUserRolesRequest
+            .builder()
+            .caseUsers(
+                Collections.singletonList(
+                    CaseUser.builder()
+                        .caseId(caseDetails.getCaseId())
+                        .userId(userId)
+                        .caseRole(caseRole)
+                        .build()
+                )
+            ).build();
     }
 }

@@ -159,15 +159,12 @@ send-letter:
 
 aca:
   api:
-    baseurl:${ACA_SERVICE_API_BASEURL:http://localhost:4454}
-    caseAssignmentsUrl=${aca.api.baseurl}/case-assignments
+    url: ${ACA_SERVICE_API_BASEURL:http://localhost:4454}
 
 ccd:
   data-store:
     api:
-      baseurl=${CCD_DATA_STORE_API_BASEURL:http://localhost:4452}
-      removeCaseRolesUrl=${ccd.data-store.api.baseurl}/case-users
-
+      url: ${CCD_DATA_STORE_API_BASEURL:http://localhost:4452}
 
 bulk-print:
   dueDate: 30

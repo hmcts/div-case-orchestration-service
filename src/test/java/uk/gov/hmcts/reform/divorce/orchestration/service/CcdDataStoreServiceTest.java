@@ -5,6 +5,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.divorce.orchestration.client.CaseRoleClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseUser;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.RemoveUserRolesRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -17,7 +19,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_URL;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.CcdDataStoreService.CREATOR_CASE_ROLE;
 
@@ -25,27 +27,27 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.CcdDataStoreServ
 public class CcdDataStoreServiceTest {
 
     @Mock
-    private CcdDataStoreServiceConfiguration ccdDataStoreServiceConfiguration;
+    private AuthTokenGenerator authTokenGenerator;
 
     @Mock
     private IdamClient idamClient;
 
     @Mock
-    private RestService restService;
+    private CaseRoleClient caseRoleClient;
 
     @InjectMocks
     private CcdDataStoreService ccdDataStoreService;
 
     @Test
-    public void test() {
+    public void removeCreatorRoleCallsApi() {
         when(idamClient.getUserDetails(AUTH_TOKEN)).thenReturn(UserDetails.builder().id(TEST_USER_ID).build());
-        when(ccdDataStoreServiceConfiguration.getRemoveCaseRolesUrl()).thenReturn(TEST_URL);
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_TOKEN);
 
         ccdDataStoreService.removeCreatorRole(CaseDetails.builder().caseId(TEST_CASE_ID).build(), AUTH_TOKEN);
 
-        verify(restService).restApiDeleteCall(
+        verify(caseRoleClient).removeCaseRoles(
             AUTH_TOKEN,
-            TEST_URL,
+            TEST_SERVICE_TOKEN,
             RemoveUserRolesRequest
                 .builder()
                 .caseUsers(
