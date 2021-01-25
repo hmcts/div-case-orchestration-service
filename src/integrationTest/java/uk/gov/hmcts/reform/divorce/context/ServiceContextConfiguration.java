@@ -29,6 +29,7 @@ import uk.gov.hmcts.reform.authorisation.ServiceAuthorisationApi;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.authorisation.generators.ServiceAuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
+import uk.gov.hmcts.reform.divorce.orchestration.client.AssignCaseAccessClient;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.support.CcdClientSupport;
 import uk.gov.hmcts.reform.divorce.support.IdamUtils;
@@ -129,6 +130,17 @@ public class ServiceContextConfiguration {
             .decoder(feignDecoder())
             .contract(new SpringMvcContract())
             .target(CoreCaseDataApi.class, coreCaseDataApiUrl);
+    }
+
+    @Bean
+    public AssignCaseAccessClient getAssignCaseAccessClient(
+        @Value("${aca.api.url}") final String assignCaseAccessApiUrl) {
+        return Feign.builder()
+            .requestInterceptor(requestInterceptor())
+            .encoder(new JacksonEncoder())
+            .decoder(feignDecoder())
+            .contract(new SpringMvcContract())
+            .target(AssignCaseAccessClient.class, assignCaseAccessApiUrl);
     }
 
     @Bean
