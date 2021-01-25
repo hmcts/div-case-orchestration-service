@@ -126,4 +126,11 @@
         <packageUrl regex="true">^pkg:maven/org\.hibernate/hibernate\-core@.*$</packageUrl>
         <cve>CVE-2019-14900</cve>
     </suppress>
+    <suppress>
+        <notes><![CDATA[
+   file name: junit-4.13.jar
+   ]]></notes>
+        <packageUrl regex="true">^pkg:maven/junit/junit@.*$</packageUrl>
+        <vulnerabilityName>CVE-2020-15250</vulnerabilityName>
+    </suppress>
 </suppressions>
