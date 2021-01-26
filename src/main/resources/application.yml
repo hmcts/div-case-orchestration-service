@@ -156,7 +156,7 @@ send-letter:
 
 aca:
   api:
-    url:${ACA_SERVICE_API_BASEURL:http://localhost:4454}
+    url: ${ACA_SERVICE_API_BASEURL:http://localhost:4454}
 
 ccd:
   data-store:
