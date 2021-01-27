@@ -36,15 +36,14 @@ public class SolicitorDnFetchDocWorkflow extends DefaultWorkflow<Map<String, Obj
 
         log.info("CaseID: {} Solicitor DN Fetch Document Workflow is going to be executed.", caseId);
 
-        if (isRespondentAnswersRequestedNotRequired(docLinkFieldName)) {
+        if (isRespondentAnswersRequested(docLinkFieldName)) {
 
             if (isValidServiceApplicationGranted(caseData) || isAlternativeService(caseData)) {
                 log.info("CaseID: {} Respondent answers requested, but not required.", caseId);
                 return caseData;
+            } else {
+                log.info("CaseID: {} Proceeding to populateDocLink", caseId);
             }
-
-        } else {
-            log.info("CaseID: {} Respondent answers not requested. Proceeding to populateDocLink", caseId);
         }
 
         log.info("CaseID: {} populateDocLink task is going to be executed.", caseId);
@@ -56,7 +55,7 @@ public class SolicitorDnFetchDocWorkflow extends DefaultWorkflow<Map<String, Obj
             ImmutablePair.of(DOCUMENT_DRAFT_LINK_FIELD, docLinkFieldName));
     }
 
-    private boolean isRespondentAnswersRequestedNotRequired(String docLinkFieldName) {
+    private boolean isRespondentAnswersRequested(String docLinkFieldName) {
         return RESP_ANSWERS_LINK.equals(docLinkFieldName);
     }
 
