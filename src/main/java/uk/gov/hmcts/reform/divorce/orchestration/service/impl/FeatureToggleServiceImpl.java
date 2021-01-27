@@ -27,4 +27,5 @@ public class FeatureToggleServiceImpl implements FeatureToggleService {
             .map(Boolean::parseBoolean)
             .orElse(false);
     }
+
 }

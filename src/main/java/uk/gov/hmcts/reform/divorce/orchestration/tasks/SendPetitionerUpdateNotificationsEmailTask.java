@@ -80,7 +80,15 @@ public class SendPetitionerUpdateNotificationsEmailTask implements Task<Map<Stri
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
 
-        String eventId = context.getTransientObject(CASE_EVENT_ID_JSON_KEY);
+        final String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
+        final String eventId = context.getTransientObject(CASE_EVENT_ID_JSON_KEY);
+
+        log.info(
+            "CaseId: {} SendPetitionerUpdateNotificationsEmailTask is going to be executed for event {}",
+            caseId,
+            eventId
+        );
+
         String petEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
         String petSolEmail = (String) caseData.get(PETITIONER_SOLICITOR_EMAIL);
 
@@ -110,7 +118,8 @@ public class SendPetitionerUpdateNotificationsEmailTask implements Task<Map<Stri
         } else if (StringUtils.isNotBlank(petEmail)) {
             String relationship = getMandatoryPropertyValueAsString(caseData, D_8_DIVORCED_WHO);
             String welshRelationship =
-                    templateConfig.getTemplate().get(TEMPLATE_RELATION).get(LanguagePreference.WELSH).get(relationship);
+                templateConfig.getTemplate().get(TEMPLATE_RELATION)
+                    .get(LanguagePreference.WELSH).get(relationship);
             templateVars.put(NOTIFICATION_EMAIL, petEmail);
             templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, petitionerFirstName);
             templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, petitionerLastName);
@@ -129,20 +138,36 @@ public class SendPetitionerUpdateNotificationsEmailTask implements Task<Map<Stri
     }
 
     private void sendSolicitorEmail(String petSolicitorEmail, String eventId, Map<String, String> templateVars,
-                                    LanguagePreference  languagePreference) throws NotificationClientException {
+                                    LanguagePreference languagePreference) throws NotificationClientException {
+        final String caseId = templateVars.get(NOTIFICATION_CCD_REFERENCE_KEY);
+
+        log.info("CaseId: {} email is going to be send to pet solicitor", caseId);
+
         if (StringUtils.equalsIgnoreCase(eventId, RESP_ANSWER_RECVD_EVENT)) {
+            log.info(
+                "CaseId: {} event = {}, sending {}",
+                caseId,
+                RESP_ANSWER_RECVD_EVENT,
+                EmailTemplateNames.SOL_APPLICANT_AOS_RECEIVED.name()
+            );
             emailService.sendEmailAndReturnExceptionIfFails(petSolicitorEmail,
                 EmailTemplateNames.SOL_APPLICANT_AOS_RECEIVED.name(),
                 templateVars,
                 SOL_APPLICANT_AOS_RECEIVED_EMAIL_DESC,
                 languagePreference);
         } else if (isAosOverdueEvent(eventId)) {
+            log.info(
+                "CaseId: {} AOS overdue, sending {}",
+                caseId,
+                EmailTemplateNames.SOL_APPLICANT_RESP_NOT_RESPONDED.name()
+            );
             emailService.sendEmailAndReturnExceptionIfFails(petSolicitorEmail,
                 EmailTemplateNames.SOL_APPLICANT_RESP_NOT_RESPONDED.name(),
                 templateVars,
                 SOL_APPLICANT_AOS_NOT_RECEIVED_EMAIL_DESC,
                 languagePreference);
         } else {
+            log.info("CaseId: {} generic email is going to be sent to solicitor", caseId);
             emailService.sendEmailAndReturnExceptionIfFails(
                 petSolicitorEmail,
                 EmailTemplateNames.SOL_GENERAL_CASE_UPDATE.name(),
@@ -154,16 +179,28 @@ public class SendPetitionerUpdateNotificationsEmailTask implements Task<Map<Stri
 
     private void sendPetitionerEmail(Map<String, Object> caseData, String petitionerEmail,
                                      String eventId, Map<String, String> templateVars,
-                                     LanguagePreference  languagePreference) throws NotificationClientException {
+                                     LanguagePreference languagePreference) throws NotificationClientException {
+        final String caseRef = templateVars.get(NOTIFICATION_CCD_REFERENCE_KEY);
+
+        log.info("CaseRef: {} email is going to be send to petitioner", caseRef);
+
         if (isAosOverdueEvent(eventId)) {
+            log.info(
+                "CaseRef: {} event = {}, email {}",
+                caseRef,
+                eventId,
+                EmailTemplateNames.PETITIONER_RESP_NOT_RESPONDED.name()
+            );
             emailService.sendEmailAndReturnExceptionIfFails(petitionerEmail,
                 EmailTemplateNames.PETITIONER_RESP_NOT_RESPONDED.name(),
                 templateVars,
                 APPLICANT_AOS_NOT_RECEIVED_EMAIL_DESC,
                 languagePreference);
         } else if (StringUtils.equalsIgnoreCase(eventId, RESP_ANSWER_RECVD_EVENT)) {
+            log.info("CaseRef: {} event = {}, AosAnswerRecvdPet", caseRef, eventId);
             sendAosAnswerRecvdPetEmail(caseData, petitionerEmail, templateVars, languagePreference);
         } else {
+            log.info("CaseRef: {} generic email is going to be sent to petitioner", caseRef);
             emailService.sendEmailAndReturnExceptionIfFails(
                 petitionerEmail,
                 EmailTemplateNames.GENERIC_UPDATE.name(),
@@ -174,26 +211,32 @@ public class SendPetitionerUpdateNotificationsEmailTask implements Task<Map<Stri
 
     private void sendAosAnswerRecvdPetEmail(Map<String, Object> caseData, String petitionerEmail,
                                             Map<String, String> templateVars,
-                                            LanguagePreference  languagePreference) throws NotificationClientException {
+                                            LanguagePreference languagePreference)
+        throws NotificationClientException {
+        final String caseRef = templateVars.get(NOTIFICATION_CCD_REFERENCE_KEY);
+
         if (isAdulteryAndNoConsent(caseData)) {
             if (isCoRespNamedAndNotReplied(caseData)) {
+                log.info("CaseRef: {} adultery, co-resp not replied", caseRef);
                 emailService.sendEmailAndReturnExceptionIfFails(petitionerEmail,
                     EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED.name(),
                     templateVars, AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED_EMAIL_DESC,
                     languagePreference);
             } else {
+                log.info("CaseRef: {} adultery, co-resp replied or not named", caseRef);
                 emailService.sendEmailAndReturnExceptionIfFails(petitionerEmail,
                     EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY.name(),
                     templateVars, AOS_RECEIVED_NO_ADMIT_ADULTERY_EMAIL_DESC,
                     languagePreference);
             }
         } else if (isSep2YrAndNoConsent(caseData)) {
+            log.info("CaseRef: {} email = Sep2YrAndNoConsent", caseRef);
             emailService.sendEmailAndReturnExceptionIfFails(petitionerEmail,
                 EmailTemplateNames.AOS_RECEIVED_NO_CONSENT_2_YEARS.name(),
                 templateVars, AOS_RECEIVED_NO_CONSENT_2_YEARS_EMAIL_DESC,
                 languagePreference);
-
         } else {
+            log.info("CaseRef: {} generic email for AosAnswerRecvd is going to be sent to petitioner", caseRef);
             emailService.sendEmailAndReturnExceptionIfFails(
                 petitionerEmail,
                 EmailTemplateNames.GENERIC_UPDATE.name(),
@@ -206,7 +249,7 @@ public class SendPetitionerUpdateNotificationsEmailTask implements Task<Map<Stri
         String reasonForDivorce = getFieldAsStringOrNull(caseData, D_8_REASON_FOR_DIVORCE);
         String respAdmitOrConsentToFact = getFieldAsStringOrNull(caseData, RESP_ADMIT_OR_CONSENT_TO_FACT);
         return StringUtils.equalsIgnoreCase(ADULTERY.getValue(), reasonForDivorce) && StringUtils.equalsIgnoreCase(NO_VALUE,
-                respAdmitOrConsentToFact);
+            respAdmitOrConsentToFact);
     }
 
     private boolean isAosOverdueEvent(String eventId) {

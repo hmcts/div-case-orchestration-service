@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
@@ -19,6 +20,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class SendPetitionerEmailNotificationWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final SendPetitionerUpdateNotificationsEmailTask sendPetitionerUpdateNotificationsEmailTask;
@@ -27,20 +29,32 @@ public class SendPetitionerEmailNotificationWorkflow extends DefaultWorkflow<Map
     private final FeatureToggleService featureToggleService;
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        final String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        final String eventId = ccdCallbackRequest.getEventId();
+
+        log.info(
+            "CaseId: {} send petitioner email task is going to be executed for event {}",
+            caseId,
+            eventId
+        );
+
         return this.execute(
-            getTasks(ccdCallbackRequest.getEventId()),
+            getTasks(caseId, eventId),
             ccdCallbackRequest.getCaseDetails().getCaseData(),
-            ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, ccdCallbackRequest.getEventId()),
-            ImmutablePair.of(CASE_ID_JSON_KEY, ccdCallbackRequest.getCaseDetails().getCaseId())
+            ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, eventId),
+            ImmutablePair.of(CASE_ID_JSON_KEY, caseId)
         );
     }
 
-    private Task<Map<String, Object>>[] getTasks(String eventId) {
+    private Task<Map<String, Object>>[] getTasks(String caseId, String eventId) {
         if (isSolicitorDnRejectedEnabled() && SendNoticeOfProceedingsEmailTask.isEventSupported(eventId)) {
+            log.info("CaseId: {} adding sendNoticeOfProceedingsEmailTask", caseId);
             return new Task[] {
                 sendNoticeOfProceedingsEmailTask
             };
         }
+
+        log.info("CaseId: {} adding sendPetitionerUpdateNotificationsEmailTask", caseId);
 
         return new Task[] {
             sendPetitionerUpdateNotificationsEmailTask
