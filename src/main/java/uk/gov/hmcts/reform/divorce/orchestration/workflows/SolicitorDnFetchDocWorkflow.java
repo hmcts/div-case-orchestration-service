@@ -38,11 +38,11 @@ public class SolicitorDnFetchDocWorkflow extends DefaultWorkflow<Map<String, Obj
 
         if (isRespondentAnswersRequested(docLinkFieldName)) {
 
-            if (isValidServiceApplicationGranted(caseData) || isAlternativeService(caseData)) {
+            if (isRespondentAnswersNotRequired(caseData)) {
                 log.info("CaseID: {} Respondent answers requested, but not required.", caseId);
                 return caseData;
             } else {
-                log.info("CaseID: {} Proceeding to populateDocLink", caseId);
+                log.info("CaseID: {} Respondent answers required, proceeding to populateDocLink", caseId);
             }
         }
 
@@ -57,6 +57,10 @@ public class SolicitorDnFetchDocWorkflow extends DefaultWorkflow<Map<String, Obj
 
     private boolean isRespondentAnswersRequested(String docLinkFieldName) {
         return RESP_ANSWERS_LINK.equals(docLinkFieldName);
+    }
+
+    private boolean isRespondentAnswersNotRequired(Map<String, Object> caseData) {
+        return isValidServiceApplicationGranted(caseData) || isAlternativeService(caseData);
     }
 
     private boolean isValidServiceApplicationGranted(Map<String, Object> caseData) {
