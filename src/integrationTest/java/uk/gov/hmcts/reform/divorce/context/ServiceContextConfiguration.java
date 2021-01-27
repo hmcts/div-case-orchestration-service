@@ -31,6 +31,7 @@ import uk.gov.hmcts.reform.authorisation.generators.ServiceAuthTokenGenerator;
 import uk.gov.hmcts.reform.ccd.client.CoreCaseDataApi;
 import uk.gov.hmcts.reform.divorce.orchestration.client.AssignCaseAccessClient;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
+import uk.gov.hmcts.reform.divorce.orchestration.client.CaseRoleClient;
 import uk.gov.hmcts.reform.divorce.support.CcdClientSupport;
 import uk.gov.hmcts.reform.divorce.support.IdamUtils;
 import uk.gov.hmcts.reform.divorce.support.cms.CmsClientSupport;
@@ -141,6 +142,17 @@ public class ServiceContextConfiguration {
             .decoder(feignDecoder())
             .contract(new SpringMvcContract())
             .target(AssignCaseAccessClient.class, assignCaseAccessApiUrl);
+    }
+
+    @Bean
+    public CaseRoleClient getCaseRoleClient(
+        @Value("${ccd.data-store.api.url}") final String caseRoleClientUrl) {
+        return Feign.builder()
+            .requestInterceptor(requestInterceptor())
+            .encoder(new JacksonEncoder())
+            .decoder(feignDecoder())
+            .contract(new SpringMvcContract())
+            .target(CaseRoleClient.class, caseRoleClientUrl);
     }
 
     @Bean

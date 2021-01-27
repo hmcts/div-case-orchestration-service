@@ -30,11 +30,15 @@ public class CcdDataStoreService {
     private void removeRole(CaseDetails caseDetails, String authorisationToken, String caseRole) {
         String userId = idamClient.getUserDetails(authorisationToken).getId();
 
+        log.info("CaseId: {} removing case role {} from user {}", caseDetails.getCaseId(), caseRole, userId);
+
         caseRoleClient.removeCaseRoles(
             authorisationToken,
             authTokenGenerator.generate(),
             buildRemoveUserRolesRequest(caseDetails, caseRole, userId)
         );
+
+        log.info("CaseId: {} removed case role {} from user {}", caseDetails.getCaseId(), caseRole, userId);
     }
 
     private RemoveUserRolesRequest buildRemoveUserRolesRequest(
