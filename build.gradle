@@ -111,6 +111,7 @@ allprojects {
 
     repositories {
         maven { url "https://dl.bintray.com/hmcts/hmcts-maven" }
+        maven { url 'https://repo.spring.io/milestone' }
         mavenCentral()
         jcenter()
     }
