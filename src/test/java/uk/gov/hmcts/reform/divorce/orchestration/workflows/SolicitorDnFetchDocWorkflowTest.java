@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PopulateDocLinkTask;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -162,10 +161,10 @@ public class SolicitorDnFetchDocWorkflowTest {
 
     @Test
     public void shouldExecuteTasksWhenNotValidAlternativeServiceAndRespondentAnswersIsRequested() throws WorkflowException {
-        Map<String, Object> caseData = new HashMap<>() {{
-            put(CcdFields.SERVED_BY_PROCESS_SERVER, NO_VALUE);
-            put(CcdFields.SERVED_BY_ALTERNATIVE_METHOD, NO_VALUE);
-        }};
+        Map<String, Object> caseData = ImmutableMap.of(
+            CcdFields.SERVED_BY_PROCESS_SERVER, NO_VALUE,
+            CcdFields.SERVED_BY_ALTERNATIVE_METHOD, NO_VALUE
+        );
         taskContext.setTransientObject(DOCUMENT_DRAFT_LINK_FIELD, RESP_ANSWERS_LINK);
 
         when(populateDocLinkTask.execute(taskContext, caseData)).thenReturn(caseData);
@@ -189,18 +188,17 @@ public class SolicitorDnFetchDocWorkflowTest {
     }
 
     public static Map<String, Object> buildServedByProcessServerCaseData() {
-        return new HashMap<>() {{
-            put(CcdFields.SERVED_BY_PROCESS_SERVER, YES_VALUE);
-            put(CcdFields.SERVED_BY_ALTERNATIVE_METHOD, NO_VALUE);
-        }};
-
+        return ImmutableMap.of(
+            CcdFields.SERVED_BY_PROCESS_SERVER, YES_VALUE,
+            CcdFields.SERVED_BY_ALTERNATIVE_METHOD, NO_VALUE
+        );
     }
 
     public static Map<String, Object> buildServedByAlternativeMethodCaseData() {
-        return new HashMap<>() {{
-            put(CcdFields.SERVED_BY_ALTERNATIVE_METHOD, YES_VALUE);
-            put(CcdFields.SERVED_BY_PROCESS_SERVER, NO_VALUE);
-        }};
+        return ImmutableMap.of(
+            CcdFields.SERVED_BY_ALTERNATIVE_METHOD, YES_VALUE,
+            CcdFields.SERVED_BY_PROCESS_SERVER, NO_VALUE
+        );
     }
 
     private void executeWorkflow(Map<String, Object> caseData, String respAnswersLink)
