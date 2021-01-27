@@ -75,7 +75,7 @@ public class SolicitorDnFetchDocWorkflowTest {
 
         executeWorkflow(caseData, RESP_ANSWERS_LINK);
 
-        verify(populateDocLinkTask, times(0)).execute(taskContext, caseData);
+        verify(populateDocLinkTask).execute(taskContext, caseData);
     }
 
     @Test
@@ -126,7 +126,7 @@ public class SolicitorDnFetchDocWorkflowTest {
 
         executeWorkflow(caseData, RESP_ANSWERS_LINK);
 
-        verify(populateDocLinkTask, times(0)).execute(taskContext, caseData);
+        verify(populateDocLinkTask).execute(taskContext, caseData);
     }
 
     @Test
@@ -146,7 +146,7 @@ public class SolicitorDnFetchDocWorkflowTest {
 
         executeWorkflow(caseData, RESP_ANSWERS_LINK);
 
-        verify(populateDocLinkTask, times(0)).execute(taskContext, caseData);
+        verify(populateDocLinkTask).execute(taskContext, caseData);
     }
 
     @Test
