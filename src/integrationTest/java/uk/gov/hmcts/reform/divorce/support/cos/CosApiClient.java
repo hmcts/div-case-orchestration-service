@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.divorce.support.cos;
 
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,6 +24,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRes
 
 import java.util.Map;
 
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -267,4 +270,8 @@ public interface CosApiClient {
         @RequestHeader(SERVICE_AUTHORIZATION_HEADER) String s2sAuthToken,
         @RequestBody BulkScanCaseUpdateRequest request
     );
+
+    @ApiOperation("Populates Respondent Answers doc for solicitor DN journey")
+    @PostMapping(value = "/sol-dn-resp-answers-doc")
+    CcdCallbackResponse solDnRespAnswersDoc(@RequestBody CcdCallbackRequest ccdCallbackRequest);
 }

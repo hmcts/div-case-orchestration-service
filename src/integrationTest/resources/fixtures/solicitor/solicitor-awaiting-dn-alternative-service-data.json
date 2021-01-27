@@ -1,0 +1,183 @@
+{
+  "id": 1609860385272729,
+  "case_details": {
+    "case_data": {
+      "ServedByAlternativeMethod": "Yes",
+      "ServedByProcessServer": "No",
+      "PetitionerSolicitorEmail": "sol123@mailinator.com",
+      "D8DerivedRespondentHomeAddress": "Peri Peri\n77 High Street\nYiewsley",
+      "D8DerivedPetitionerHomeAddress": "Golden Curry\n81 High Street\nYiewsley",
+      "dueDate": "2021-01-20",
+      "D8DivorceCostsClaim": "No",
+      "SolServiceMethod": "courtService",
+      "D8InferredRespondentGender": "male",
+      "ReceivedAosFromCoRespDate": null,
+      "GeneralReferrals": [
+        {
+          "id": "4a25e7b3-29dd-4cc7-94fa-847ccc07c14a",
+          "value": {
+            "GeneralReferralFee": "No",
+            "GeneralReferralType": "alternativeServiceApplication",
+            "GeneralReferralReason": "generalApplicationReferral",
+            "GeneralApplicationFrom": "petitioner",
+            "GeneralReferralDetails": "jksfhgkjshg",
+            "GeneralReferralDecision": "approve",
+            "AlternativeServiceMedium": "text",
+            "GeneralReferralPaymentType": null,
+            "GeneralApplicationAddedDate": "2021-01-24",
+            "GeneralReferralDecisionDate": "2021-01-24",
+            "GeneralReferralDecisionReason": "dfgdgdf",
+            "GeneralApplicationReferralDate": "2021-01-20"
+          }
+        }
+      ],
+      "solSignStatementofTruth": "Yes",
+      "SolStatementOfReconciliationName": "Mrs Solicitor",
+      "LanguagePreferenceWelsh": "No",
+      "SolStatementOfReconciliationFirm": "Lineker's LLP",
+      "D8RespondentLastName": "Something",
+      "D8PetitionerNameDifferentToMarriageCert": "No",
+      "D8JurisdictionConnection": [
+        "G",
+        "F",
+        "E"
+      ],
+      "SolStatementOfReconciliationCertify": "Yes",
+      "D8SelectedDivorceCentreSiteId": "AA07",
+      "D8PetitionerLastName": "Something",
+      "BulkListingCaseId": {
+        "CaseReference": ""
+      },
+      "ReceivedAOSfromRespDate": null,
+      "D8SolicitorReference": "REF1234",
+      "D8PetitionerPhoneNumber": null,
+      "D8StatementOfTruth": "Yes",
+      "D8DocumentsGenerated": [
+        {
+          "id": "a391e726-fdb1-4e44-accd-f8119b80f275",
+          "value": {
+            "DocumentLink": {
+              "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/71e8c631-2119-4843-87f0-3ff840645bec",
+              "document_filename": "d8petition1611519062904634.pdf",
+              "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/71e8c631-2119-4843-87f0-3ff840645bec/binary"
+            },
+            "DocumentType": "petition",
+            "DocumentComment": null,
+            "DocumentFileName": "d8petition1611519062904634",
+            "DocumentDateAdded": null,
+            "DocumentEmailContent": null
+          }
+        },
+        {
+          "id": "4ecaa119-d304-40d9-80b3-95d412434467",
+          "value": {
+            "DocumentLink": {
+              "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/0ddd77f8-b360-4c75-84c6-efc3aff8649d",
+              "document_filename": "aosinvitation1611519062904634.pdf",
+              "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/0ddd77f8-b360-4c75-84c6-efc3aff8649d/binary"
+            },
+            "DocumentType": "aos",
+            "DocumentComment": null,
+            "DocumentFileName": "aosinvitation1611519062904634",
+            "DocumentDateAdded": null,
+            "DocumentEmailContent": null
+          }
+        }
+      ],
+      "PetitionerSolicitorFirm": "Wilson LLP",
+      "ReceivedAOSfromResp": null,
+      "ReceivedAosFromCoResp": null,
+      "SolStatementOfReconciliationDiscussed": "Yes",
+      "SolicitorAgreeToReceiveEmails": "Yes",
+      "D8PetitionerEmail": null,
+      "D8ReasonForDivorceBehaviourDetails": "Details of behaviour",
+      "D8HelpWithFeesReferenceNumber": "HWF-123-456",
+      "CoRespLinkedToCase": null,
+      "D8DivorceUnit": "serviceCentre",
+      "D8DerivedRespondentCorrespondenceAddr": "Peri Peri\n77 High Street\nYiewsley",
+      "D8MarriagePetitionerName": "Sarah Something",
+      "PetitionerSolicitorPhone": "07736285111",
+      "D8MarriageIsSameSexCouple": "No",
+      "PreviousCaseId": {
+        "CaseReference": ""
+      },
+      "D8FinancialOrder": "No",
+      "D8RespondentNameAsOnMarriageCertificate": "No",
+      "D8MarriageDate": "2010-01-01",
+      "D8caseReference": "LV18D81234",
+      "D8DivorceWho": "husband",
+      "CoRespLinkedToCaseDate": null,
+      "SolPaymentHowToPay": "feesHelpWith",
+      "StatementOfReconciliationComments": null,
+      "D8RespondentFirstName": "Brian's",
+      "D8DocumentsUploaded": [
+        {
+          "id": "42e4a88a-db51-4292-b961-57c69eb4abe3",
+          "value": {
+            "DocumentLink": {
+              "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/8265fa84-a2a8-4368-b426-e76e36a5b934",
+              "document_filename": "download.jpeg",
+              "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/8265fa84-a2a8-4368-b426-e76e36a5b934/binary"
+            },
+            "DocumentType": null,
+            "DocumentComment": null,
+            "DocumentFileName": null,
+            "DocumentDateAdded": null,
+            "DocumentEmailContent": null
+          }
+        },
+        {
+          "id": "f71eef54-e4c7-4c77-928c-809fa63f228c",
+          "value": {
+            "DocumentType": null,
+            "DocumentComment": null,
+            "DocumentFileName": null,
+            "DocumentDateAdded": null,
+            "DocumentEmailContent": null
+          }
+        }
+      ],
+      "PetitionerOrganisationPolicy": {
+        "Organisation": {
+          "OrganisationID": "OHTS6A4",
+          "OrganisationName": "AutoTestwqh4d63tc2"
+        },
+        "OrgPolicyCaseAssignedRole": "[PETSOLICITOR]"
+      },
+      "SolUrgentCaseSupportingInformation": null,
+      "SolUrgentCase": "Yes",
+      "CoRespEmailAddress": null,
+      "DerivedPetitionerSolicitorAddr": "4 Station Road\n\nWhittlesford",
+      "PetitionerSolicitorName": "Solicitor Firm A",
+      "IssueDate": "2021-01-24",
+      "D8MarriedInUk": "Yes",
+      "D8PetitionerFirstName": "Sarah",
+      "D8MarriageRespondentName": "Bob Something",
+      "D8PetitionerContactDetailsConfidential": "share",
+      "StateBeforeGeneralReferral": "AosAwaiting",
+      "D8DerivedRespondentSolicitorAddr": null,
+      "D8DerivedReasonForDivorceAdultery3rdAddr": null,
+      "D8LegalProceedings": "No",
+      "createdDate": "2021-01-24",
+      "D8MarriagePlaceOfMarriage": "Bigglesworth",
+      "D8ReasonForDivorce": "unreasonable-behaviour",
+      "solApplicationFeeInPounds": "550",
+      "solApplicationFeeOrderSummary": {
+        "Fees": [
+          {
+            "id": "b9190ed3-59a5-48de-82af-6888b35ceb5c",
+            "value": {
+              "FeeCode": "FEE0002",
+              "FeeAmount": "55000",
+              "FeeVersion": "4",
+              "FeeDescription": "Filing an application for a divorce, nullity or civil partnership dissolution – fees order 1.2."
+            }
+          }
+        ],
+        "PaymentTotal": "55000",
+        "PaymentReference": null
+      },
+      "D8InferredPetitionerGender": "female"
+    }
+  }
+}

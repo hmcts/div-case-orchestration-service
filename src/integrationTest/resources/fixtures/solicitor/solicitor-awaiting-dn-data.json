@@ -1,0 +1,146 @@
+{
+  "id": 1609860385272729,
+  "state": "AwaitingDecreeNisi",
+  "case_details": {
+    "case_data": {
+      "PetitionerSolicitorEmail": "faizan.kiro@auweek.net",
+      "D8DerivedRespondentHomeAddress": null,
+      "D8DerivedPetitionerHomeAddress": "Home address",
+      "dueDate": "2021-02-04",
+      "D8DivorceCostsClaim": "No",
+      "SolServiceMethod": "courtService",
+      "D8InferredRespondentGender": "male",
+      "ReceivedAosFromCoRespDate": null,
+      "solSignStatementofTruth": "Yes",
+      "SolStatementOfReconciliationName": "Sol Icitor",
+      "LanguagePreferenceWelsh": "No",
+      "SolStatementOfReconciliationFirm": "Firm Name",
+      "D8RespondentLastName": "Pondent",
+      "D8PetitionerNameDifferentToMarriageCert": "No",
+      "D8JurisdictionConnection": [
+        "F"
+      ],
+      "SolStatementOfReconciliationCertify": "Yes",
+      "D8SelectedDivorceCentreSiteId": "AA07",
+      "D8PetitionerLastName": "Initioner",
+      "ReceivedAOSfromRespDate": "2021-01-05",
+      "D8SolicitorReference": "12345",
+      "RespStatementOfTruth": "Yes",
+      "D8PetitionerPhoneNumber": null,
+      "D8ReasonForDivorceSeperationDate": "2010-01-23",
+      "D8StatementOfTruth": "Yes",
+      "D8DocumentsGenerated": [
+        {
+          "id": "ec8297fe-2203-44bb-8a24-200225385f93",
+          "value": {
+            "DocumentLink": {
+              "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/3654cbdd-2477-494d-97fc-b6bff9ca126c",
+              "document_filename": "d8petition1609860385272729.pdf",
+              "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/3654cbdd-2477-494d-97fc-b6bff9ca126c/binary"
+            },
+            "DocumentType": "petition",
+            "DocumentComment": null,
+            "DocumentFileName": "d8petition1609860385272729",
+            "DocumentDateAdded": null,
+            "DocumentEmailContent": null
+          }
+        },
+        {
+          "id": "3e832926-4f0d-441e-8aa2-5c118040d804",
+          "value": {
+            "DocumentLink": {
+              "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/25fd1f66-142e-4c11-9b36-1c396d497e73",
+              "document_filename": "aosinvitation1609860385272729.pdf",
+              "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/25fd1f66-142e-4c11-9b36-1c396d497e73/binary"
+            },
+            "DocumentType": "aos",
+            "DocumentComment": null,
+            "DocumentFileName": "aosinvitation1609860385272729",
+            "DocumentDateAdded": null,
+            "DocumentEmailContent": null
+          }
+        },
+        {
+          "id": "3784165c-d246-4044-81e4-b9689ba8027b",
+          "value": {
+            "DocumentLink": {
+              "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/9def4dd1-81e4-415f-9a5a-2058f9cd0404",
+              "document_filename": "respondentAnswers.pdf",
+              "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/9def4dd1-81e4-415f-9a5a-2058f9cd0404/binary"
+            },
+            "DocumentType": "respondentAnswers",
+            "DocumentComment": null,
+            "DocumentFileName": "respondentAnswers",
+            "DocumentDateAdded": null,
+            "DocumentEmailContent": null
+          }
+        }
+      ],
+      "PetitionerSolicitorFirm": "Firm Name",
+      "SepYears": "2",
+      "ReceivedAOSfromResp": "Yes",
+      "ReceivedAosFromCoResp": null,
+      "RespConfirmReadPetition": "Yes",
+      "SolStatementOfReconciliationDiscussed": "Yes",
+      "SolicitorAgreeToReceiveEmails": "Yes",
+      "D8PetitionerEmail": null,
+      "D8HelpWithFeesReferenceNumber": "123456",
+      "CoRespLinkedToCase": null,
+      "D8DivorceUnit": "serviceCentre",
+      "D8SeparationTimeTogetherPermitted": null,
+      "D8DerivedRespondentCorrespondenceAddr": "Res service address",
+      "D8MarriagePetitionerName": "Pet Itioner",
+      "PetitionerSolicitorPhone": "123456321",
+      "D8MarriageIsSameSexCouple": "No",
+      "D8ReasonForDivorceDesertionAgreed": "Yes",
+      "D8FinancialOrder": "No",
+      "D8RespondentNameAsOnMarriageCertificate": "No",
+      "D8MarriageDate": "1998-01-23",
+      "D8caseReference": "LV17D80100",
+      "D8DivorceWho": "husband",
+      "CoRespLinkedToCaseDate": null,
+      "D8ReasonForDivorceDesertionDetails": "Details",
+      "SolPaymentHowToPay": "feesHelpWith",
+      "StatementOfReconciliationComments": null,
+      "D8RespondentFirstName": "Res",
+      "D8DocumentsUploaded": [],
+      "RespJurisdictionAgree": "Yes",
+      "CoRespEmailAddress": null,
+      "D8DesertionTimeTogetherPermitted": "6 months",
+      "D8ReasonForDivorceDesertionDate": "2010-01-23",
+      "DerivedPetitionerSolicitorAddr": "Address",
+      "PetitionerSolicitorName": "Pet Sol",
+      "D8LivedApartSinceDesertion": "Yes",
+      "IssueDate": "2021-01-05",
+      "D8MarriedInUk": "Yes",
+      "D8PetitionerFirstName": "Pet",
+      "D8MarriageRespondentName": "Res Pondent",
+      "D8PetitionerContactDetailsConfidential": "share",
+      "D8LegalProceedings": "No",
+      "createdDate": "2021-01-05",
+      "D8MarriagePlaceOfMarriage": "Place",
+      "RespLegalProceedingsExist": "No",
+      "D8ReasonForDivorce": "desertion",
+      "D8SeparationReferenceDate": "5 July 2018",
+      "RespWillDefendDivorce": "No",
+      "solApplicationFeeInPounds": "550",
+      "solApplicationFeeOrderSummary": {
+        "Fees": [
+          {
+            "id": "0e45d528-be56-4595-a2b5-ebe58645c8b2",
+            "value": {
+              "FeeCode": "FEE0002",
+              "FeeAmount": "55000",
+              "FeeVersion": "4",
+              "FeeDescription": "Filing an application for a divorce, nullity or civil partnership dissolution – fees order 1.2."
+            }
+          }
+        ],
+        "PaymentTotal": "55000",
+        "PaymentReference": null
+      },
+      "D8InferredPetitionerGender": "female",
+      "RespondentPcqId": "a5bed8fe-760f-4b0e-99fd-06b2a5274594"
+    }
+  }
+}
