@@ -23,11 +23,15 @@ public class AssignCaseAccessService {
     public void assignCaseAccess(CaseDetails caseDetails, String authorisationToken) {
         String userId = idamClient.getUserDetails(authorisationToken).getId();
 
+        log.info("CaseId: {} assigning case access to user {}", caseDetails.getCaseId(), userId);
+
         assignCaseAccessClient.assignCaseAccess(
             authorisationToken,
             authTokenGenerator.generate(),
             buildAssignCaseAccessRequest(caseDetails, userId)
         );
+
+        log.info("CaseId: {} assigned case access to user {}", caseDetails.getCaseId(), userId);
     }
 
     private AssignCaseAccessRequest buildAssignCaseAccessRequest(CaseDetails caseDetails, String userId) {

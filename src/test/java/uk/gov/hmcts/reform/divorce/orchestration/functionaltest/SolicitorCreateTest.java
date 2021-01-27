@@ -81,6 +81,5 @@ public class SolicitorCreateTest extends IdamTestSupport {
             .eventId(CREATE_EVENT)
             .caseDetails(fullCase)
             .build();
-
     }
 }

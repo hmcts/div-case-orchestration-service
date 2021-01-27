@@ -18,7 +18,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
@@ -63,8 +64,7 @@ public class SolicitorCreateWorkflowTest {
             addNewDocumentsToCaseDataTask
         );
 
-
-        assertEquals(payload, solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN));
+        assertThat(solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN), is(payload));
 
         verifyTasksCalledInOrder(
             payload,
@@ -88,7 +88,7 @@ public class SolicitorCreateWorkflowTest {
             allowShareACaseTask
         );
 
-        assertEquals(caseDetails.getCaseData(), solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN));
+        assertThat(solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN), is(caseDetails.getCaseData()));
 
         verifyTasksCalledInOrder(
             caseDetails.getCaseData(),
@@ -114,7 +114,7 @@ public class SolicitorCreateWorkflowTest {
             addNewDocumentsToCaseDataTask
         );
 
-        assertEquals(caseDetails.getCaseData(), solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN));
+        assertThat(solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN), is(caseDetails.getCaseData()));
 
         verifyTasksCalledInOrder(
             caseDetails.getCaseData(),
