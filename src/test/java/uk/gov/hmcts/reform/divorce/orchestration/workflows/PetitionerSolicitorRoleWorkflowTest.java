@@ -6,18 +6,14 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddPetitionerSolicitorRoleTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.AllowShareACaseTask;
 
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_REFERENCE;
@@ -34,12 +30,6 @@ public class PetitionerSolicitorRoleWorkflowTest {
 
     @Mock
     private AddPetitionerSolicitorRoleTask addPetitionerSolicitorRoleTask;
-
-    @Mock
-    private AllowShareACaseTask allowShareACaseTask;
-
-    @Mock
-    private FeatureToggleService featureToggleService;
 
     @InjectMocks
     private PetitionerSolicitorRoleWorkflow classToTest;
@@ -59,25 +49,6 @@ public class PetitionerSolicitorRoleWorkflowTest {
         verifyTasksCalledInOrder(
             caseData,
             addPetitionerSolicitorRoleTask
-        );
-    }
-
-    @Test
-    public void givenCaseSubmitted_whenShareACaseIsOn_thenCallAllTasks() throws Exception {
-        when(featureToggleService.isFeatureEnabled(Features.SHARE_A_CASE)).thenReturn(true);
-
-        mockTasksExecution(
-            caseData,
-            addPetitionerSolicitorRoleTask,
-            allowShareACaseTask
-        );
-
-        assertThat(classToTest.run(request, AUTH_TOKEN), is(caseData));
-
-        verifyTasksCalledInOrder(
-            caseData,
-            addPetitionerSolicitorRoleTask,
-            allowShareACaseTask
         );
     }
 

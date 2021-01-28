@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -21,7 +20,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CREATE_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CREATED_DATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_CENTRE_SITEID_JSON_KEY;
@@ -48,11 +46,6 @@ public class SolicitorCreateTest extends IdamTestSupport {
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequest.getCaseDetails()),
             AddMiniPetitionDraftTask.DOCUMENT_TYPE
         );
-
-        stubUserDetailsEndpoint(HttpStatus.OK, AUTH_TOKEN, USER_DETAILS_PIN_USER_JSON);
-        stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
-        stubRemoveCaseRoleServerEndpoint(AUTH_TOKEN, TEST_SERVICE_AUTH_TOKEN);
-        stubAssignCaseAccessServerEndpoint(AUTH_TOKEN, TEST_SERVICE_AUTH_TOKEN);
 
         webClient.perform(post(API_URL_CREATE)
             .header(AUTHORIZATION, AUTH_TOKEN)
