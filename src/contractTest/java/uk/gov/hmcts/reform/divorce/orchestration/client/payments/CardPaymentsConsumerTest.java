@@ -33,20 +33,19 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @PactTestFor(providerName = "payment_cardPayment", port = "8891")
 @PactFolder("pacts")
-@SpringBootTest({
+@SpringBootTest( {
     "payment.service.api.baseurl : localhost:8891"
 })
 public class CardPaymentsConsumerTest {
 
-
     public static final String SOME_AUTHORIZATION_TOKEN = "Bearer UserAuthToken";
     public static final String SOME_SERVICE_AUTHORIZATION_TOKEN = "ServiceToken";
-    private static final String TOKEN = "someToken";
 
     @Autowired
     private PaymentClient paymentClient;
+
     @Autowired
-    ObjectMapper objectMapper;
+    private ObjectMapper objectMapper;
 
     public static final String PAYMENT_REFERENCE = "654321ABC";
     public static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
@@ -57,13 +56,12 @@ public class CardPaymentsConsumerTest {
     }
 
     @After
-    void teardown() {
+    public void teardown() {
         Executor.closeIdleConnections();
     }
 
     @Pact(provider = "payment_cardPayment", consumer = "divorce_caseOrchestratorService")
     RequestResponsePact getPaymentsByReference(PactDslWithProvider builder) {
-        // @formatter:off
         return builder
             .given("A payment reference exists")
             .uponReceiving("a request for information for that payment reference")
