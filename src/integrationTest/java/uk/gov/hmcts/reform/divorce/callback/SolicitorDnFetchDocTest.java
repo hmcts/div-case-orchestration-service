@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.callback;
 
-import io.vavr.collection.Array;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
@@ -28,7 +27,7 @@ public class SolicitorDnFetchDocTest extends IntegrationTest {
     private CosApiClient cosApiClient;
 
     @Test
-    public void givenValidCaseDataWhenDraftDN_ThenReturnWithRespondentAnswersDocumentLink() {
+    public void givenDraftDN_ThenReturnWithRespondentAnswersDocumentLink() {
         CcdCallbackRequest ccdCallbackRequest = ResourceLoader.loadJsonToObject(AWAITING_DN_CASE, CcdCallbackRequest.class);
         CcdCallbackResponse ccdCallbackResponse = cosApiClient.solDnRespAnswersDoc(ccdCallbackRequest);
 
@@ -41,7 +40,7 @@ public class SolicitorDnFetchDocTest extends IntegrationTest {
     }
 
     @Test
-    public void givenValidCaseDataWithNoRespondentAnswerWhenDraftDN_ThenReturnWithError() {
+    public void givenRespondentAnswersInDraftDN_ThenReturnWithError() {
         CcdCallbackRequest ccdCallbackRequest = ResourceLoader.loadJsonToObject(AWAITING_DN_CASE, CcdCallbackRequest.class);
         ccdCallbackRequest.getCaseDetails().getCaseData().put("D8DocumentsGenerated", Collections.emptyList());
 
@@ -56,7 +55,7 @@ public class SolicitorDnFetchDocTest extends IntegrationTest {
     }
 
     @Test
-    public void givenValidCaseDataWhenDraftDN_AlternativeService_ThenReturnWithoutRespondentAnswersDocumentLink() {
+    public void givenDraftDN_AlternativeService_ThenReturnWithoutRespondentAnswersDocumentLink() {
         CcdCallbackRequest ccdCallbackRequest = ResourceLoader.loadJsonToObject(AWAITING_DN_ALTERNATIVE_SERVICE_CASE, CcdCallbackRequest.class);
         CcdCallbackResponse ccdCallbackResponse = cosApiClient.solDnRespAnswersDoc(ccdCallbackRequest);
 
