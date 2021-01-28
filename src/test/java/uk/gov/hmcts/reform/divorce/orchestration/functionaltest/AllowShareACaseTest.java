@@ -27,7 +27,7 @@ public class AllowShareACaseTest extends IdamTestSupport {
 
     @Test
     public void shouldCallAllApis() throws Exception {
-        CcdCallbackRequest ccdCallbackRequest = buildRequest();
+        final CcdCallbackRequest ccdCallbackRequest = buildRequest();
 
         stubUserDetailsEndpoint(HttpStatus.OK, AUTH_TOKEN, USER_DETAILS_PIN_USER_JSON);
         stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
