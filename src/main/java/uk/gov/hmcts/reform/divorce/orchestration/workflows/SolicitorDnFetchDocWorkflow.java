@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceService
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.PopulateDocLink;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.PopulateDocLinkTask;
 
 import java.util.Map;
 
@@ -19,42 +19,69 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getLastServiceApplication;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDeemedOrDispensed;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationGranted;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.alternativeservice.AlternativeServiceHelper.isServedByAlternativeMethod;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.alternativeservice.AlternativeServiceHelper.isServedByProcessServer;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class SolicitorDnFetchDocWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final PopulateDocLink populateDocLink;
+    private final PopulateDocLinkTask populateDocLinkTask;
 
     public Map<String, Object> run(CaseDetails caseDetails, final String ccdDocumentType, final String docLinkFieldName) throws WorkflowException {
 
         final String caseId = caseDetails.getCaseId();
+        Map<String, Object> caseData = caseDetails.getCaseData();
 
         log.info("CaseID: {} Solicitor DN Fetch Document Workflow is going to be executed.", caseId);
 
-        if (isRespondentAnswersRequestedButNotRequired(caseDetails.getCaseData(), docLinkFieldName)) {
-            log.info("CaseID: {} respondent answers requested, but not required.", caseId);
-            return caseDetails.getCaseData();
+        if (isRespondentAnswersRequested(docLinkFieldName)) {
+
+            if (isRespondentAnswersNotRequired(caseData)) {
+                log.info("CaseID: {} Respondent answers requested, but not required.", caseId);
+                return caseData;
+            } else {
+                log.info("CaseID: {} Respondent answers required, proceeding to populateDocLink", caseId);
+            }
         }
 
         log.info("CaseID: {} populateDocLink task is going to be executed.", caseId);
 
         return this.execute(
-            new Task[] {populateDocLink},
-            caseDetails.getCaseData(),
+            new Task[] {populateDocLinkTask},
+            caseData,
             ImmutablePair.of(DOCUMENT_TYPE, ccdDocumentType),
             ImmutablePair.of(DOCUMENT_DRAFT_LINK_FIELD, docLinkFieldName));
     }
 
-    private boolean isRespondentAnswersRequestedButNotRequired(Map<String, Object> caseData, String docLinkFieldName) {
+    private boolean isRespondentAnswersRequested(String docLinkFieldName) {
+        return RESP_ANSWERS_LINK.equals(docLinkFieldName);
+    }
+
+    private boolean isRespondentAnswersNotRequired(Map<String, Object> caseData) {
+        return isValidServiceApplicationGranted(caseData) || isAlternativeService(caseData);
+    }
+
+    private boolean isValidServiceApplicationGranted(Map<String, Object> caseData) {
         DivorceServiceApplication serviceApplication = getLastServiceApplication(caseData);
 
-        boolean isRespondentAnswersRequested = RESP_ANSWERS_LINK.equals(docLinkFieldName);
-
-        boolean isValidServiceApplicationGranted = isServiceApplicationGranted(serviceApplication)
+        return isServiceApplicationGranted(serviceApplication)
             && isServiceApplicationDeemedOrDispensed(serviceApplication);
+    }
 
-        return isRespondentAnswersRequested && isValidServiceApplicationGranted;
+    private boolean isAlternativeService(Map<String, Object> caseData) {
+        return isValidServedByProcessServer(caseData)
+            || isValidServedByAlternativeMethod(caseData);
+    }
+
+    private boolean isValidServedByProcessServer(Map<String, Object> caseData) {
+        return isServedByProcessServer(caseData)
+            && !isServedByAlternativeMethod(caseData);
+    }
+
+    private boolean isValidServedByAlternativeMethod(Map<String, Object> caseData) {
+        return isServedByAlternativeMethod(caseData)
+            && !isServedByProcessServer(caseData);
     }
 }

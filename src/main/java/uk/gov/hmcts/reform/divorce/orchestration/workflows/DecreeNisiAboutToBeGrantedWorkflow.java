@@ -14,7 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseData
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DecreeNisiRefusalDocumentGeneratorTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DefineWhoPaysCostsOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetAmendPetitionFeeTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.PopulateDocLink;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.PopulateDocLinkTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDNDecisionStateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateDNDecisionTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
@@ -52,7 +52,7 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
 
     private final FeatureToggleService featureToggleService;
 
-    private final PopulateDocLink populateDocLink;
+    private final PopulateDocLinkTask populateDocLinkTask;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
         List<Task<Map<String, Object>>> tasksToRun = new ArrayList<>();
@@ -80,7 +80,7 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
             tasksToRun.add(getAmendPetitionFeeTask);
             tasksToRun.add(decreeNisiRefusalDocumentGeneratorTask);
             tasksToRun.add(addNewDocumentsToCaseDataTask);
-            tasksToRun.add(populateDocLink);
+            tasksToRun.add(populateDocLinkTask);
         }
 
         Map<String, Object> payloadToReturn = this.execute(
