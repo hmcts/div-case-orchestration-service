@@ -61,14 +61,13 @@ public class CreditAccountPaymentsConsumerTest {
 
     public static final String SOME_AUTHORIZATION_TOKEN = "Bearer UserAuthToken";
     public static final String SOME_SERVICE_AUTHORIZATION_TOKEN = "ServiceToken";
+    public static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
 
     @Autowired
     private PaymentClient paymentClient;
 
     @Autowired
-    ObjectMapper objectMapper;
-
-    public static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
+    private ObjectMapper objectMapper;
 
     @BeforeEach
     public void setUpEachTest() throws InterruptedException {
