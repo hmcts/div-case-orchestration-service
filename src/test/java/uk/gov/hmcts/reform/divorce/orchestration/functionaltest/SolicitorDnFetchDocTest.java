@@ -29,7 +29,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DEEMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
-import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnFetchDocWorkflowTest.buildCaseData;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnFetchDocWorkflowTest.buildServedByAlternativeMethodCaseData;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnFetchDocWorkflowTest.buildServedByProcessServerCaseData;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnFetchDocWorkflowTest.buildServiceApplicationCaseData;
 
 public class SolicitorDnFetchDocTest extends MockedFunctionalTest {
 
@@ -64,7 +66,7 @@ public class SolicitorDnFetchDocTest extends MockedFunctionalTest {
     @Test
     public void givenValidServiceApplicationGranted_whenRequestingRespondentAnswers_thenResponseDoesNotSetRespondentAnswersDocumentLinkAndContainsNoErrors() throws Exception {
 
-        final Map<String, Object> caseData = buildCaseData(DEEMED, YES_VALUE);
+        final Map<String, Object> caseData = buildServiceApplicationCaseData(DEEMED, YES_VALUE);
 
         CcdCallbackRequest request = buildRequest(caseData);
 
@@ -77,6 +79,42 @@ public class SolicitorDnFetchDocTest extends MockedFunctionalTest {
                 isJson(),
                 hasJsonPath("$.data.ServiceApplications", hasSize(1)),
                 assertServiceApplicationElement(DEEMED, YES_VALUE),
+                hasNoJsonPath("$.errors")
+            )));
+    }
+
+    @Test
+    public void givenValidServedByProcessServer_thenResponseIsWithoutRespondentAnswersDocumentLink() throws Exception {
+        CcdCallbackRequest request = buildRequest(
+            buildServedByProcessServerCaseData()
+        );
+
+        webClient.perform(post(API_URL_RESP_ANSWERS)
+            .content(convertObjectToJsonString(request))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(
+                isJson(),
+                hasJsonPath("$.data.ServedByProcessServer", is("Yes")),
+                hasNoJsonPath("$.errors")
+            )));
+    }
+
+    @Test
+    public void givenValidServedByAlternativeMethod_thenResponseIsWithoutRespondentAnswersDocumentLink() throws Exception {
+        CcdCallbackRequest request = buildRequest(
+            buildServedByAlternativeMethodCaseData()
+        );
+
+        webClient.perform(post(API_URL_RESP_ANSWERS)
+            .content(convertObjectToJsonString(request))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(
+                isJson(),
+                hasJsonPath("$.data.ServedByAlternativeMethod", is("Yes")),
                 hasNoJsonPath("$.errors")
             )));
     }

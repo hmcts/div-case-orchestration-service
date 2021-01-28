@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 @RequiredArgsConstructor
-public class PopulateDocLink implements Task<Map<String, Object>> {
+public class PopulateDocLinkTask implements Task<Map<String, Object>> {
 
     private final ObjectMapper objectMapper;
 
