@@ -20,15 +20,15 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_LINK;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getObjectMapperInstance;
 
-public class PopulateDocLinkTest {
+public class PopulateDocLinkTaskTest {
 
-    private PopulateDocLink populateDocLink;
+    private PopulateDocLinkTask populateDocLinkTask;
 
     private TaskContext taskContext;
 
     @Before
     public void setup() {
-        populateDocLink = new PopulateDocLink(getObjectMapperInstance());
+        populateDocLinkTask = new PopulateDocLinkTask(getObjectMapperInstance());
 
         taskContext = new DefaultTaskContext();
         taskContext.setTransientObject(DOCUMENT_TYPE, DOCUMENT_TYPE_PETITION);
@@ -39,7 +39,7 @@ public class PopulateDocLinkTest {
     public void throwsTaskExceptionIfMiniPetitionIsNotPresent() throws TaskException {
         Map<String, Object> payload =  Collections.singletonMap("D8DocumentsGenerated", new ArrayList<>());
 
-        populateDocLink.execute(taskContext, payload);
+        populateDocLinkTask.execute(taskContext, payload);
     }
 
     @SuppressWarnings("unchecked")
@@ -47,7 +47,7 @@ public class PopulateDocLinkTest {
     public void testExecuteSetsMiniPetitionUrl() throws Exception {
         Map<String, Object> payload = ObjectMapperTestUtil.getJsonFromResourceFile("/jsonExamples/payloads/sol-dn-review-petition.json", Map.class);
 
-        Map<String, Object> result = populateDocLink.execute(taskContext, payload);
+        Map<String, Object> result = populateDocLinkTask.execute(taskContext, payload);
 
         assertThat(result, is(payload));
 
