@@ -33,7 +33,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @PactTestFor(providerName = "payment_cardPayment", port = "8891")
 @PactFolder("pacts")
-@SpringBootTest( {
+@SpringBootTest({
     "payment.service.api.baseurl : localhost:8891"
 })
 public class CardPaymentsConsumerTest {
