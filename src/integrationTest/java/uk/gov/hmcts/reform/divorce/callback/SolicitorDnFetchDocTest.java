@@ -10,13 +10,12 @@ import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 
 import java.util.Collections;
 
-import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.withJsonPath;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.withoutJsonPath;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
 
@@ -25,7 +24,6 @@ public class SolicitorDnFetchDocTest extends IntegrationTest {
     private static final String AWAITING_DN_CASE = "fixtures/solicitor/solicitor-awaiting-dn-data.json";
     private static final String AWAITING_DN_ALTERNATIVE_SERVICE_CASE = "fixtures/solicitor/solicitor-awaiting-dn-alternative-service-data.json";
     private static final String AWAITING_DN_SERVICE_APPLICATION_CASE = "fixtures/solicitor/solicitor-awaiting-dn-service-application-data.json";
-    private final String END_STATE = "AwaitingDecreeNisi";
 
     @Autowired
     private CosApiClient cosApiClient;
@@ -38,7 +36,7 @@ public class SolicitorDnFetchDocTest extends IntegrationTest {
         assertThat(getCallbackResponseAsString(ccdCallbackResponse),
             isJson(
                 allOf(
-                    hasNoJsonPath("$.data.respondentanswerslink"),
+                    withJsonPath("$.data.respondentanswerslink"),
                     withJsonPath("$.errors", nullValue())
                 )
             )
@@ -55,7 +53,7 @@ public class SolicitorDnFetchDocTest extends IntegrationTest {
         assertThat(getCallbackResponseAsString(ccdCallbackResponse),
             isJson(
                 allOf(
-                    hasNoJsonPath("$.data.respondentanswerslink"),
+                    withoutJsonPath("$.data.respondentanswerslink"),
                     withJsonPath("$.errors", hasSize(1)))
             ));
     }
@@ -68,7 +66,7 @@ public class SolicitorDnFetchDocTest extends IntegrationTest {
         assertThat(getCallbackResponseAsString(ccdCallbackResponse),
             isJson(
                 allOf(
-                    hasNoJsonPath("$.data.respondentanswerslink"),
+                    withoutJsonPath("$.data.respondentanswerslink"),
                     withJsonPath("$.errors", nullValue()))
             ));
     }
@@ -81,7 +79,7 @@ public class SolicitorDnFetchDocTest extends IntegrationTest {
         assertThat(getCallbackResponseAsString(ccdCallbackResponse),
             isJson(
                 allOf(
-                    hasNoJsonPath("$.data.respondentanswerslink"),
+                    withoutJsonPath("$.data.respondentanswerslink"),
                     withJsonPath("$.errors", nullValue()))
             ));
     }

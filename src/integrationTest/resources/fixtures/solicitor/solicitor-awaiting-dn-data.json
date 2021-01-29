@@ -1,7 +1,7 @@
 {
-  "id": 1609860385272729,
-  "state": "AwaitingDecreeNisi",
   "case_details": {
+    "id": 1609860385272729,
+    "state": "AwaitingDecreeNisi",
     "case_data": {
       "PetitionerSolicitorEmail": "faizan.kiro@auweek.net",
       "D8DerivedRespondentHomeAddress": null,

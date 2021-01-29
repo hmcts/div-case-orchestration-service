@@ -1,7 +1,7 @@
 {
-  "id": 1609860385272729,
-  "state": "AwaitingDecreeNisi",
   "case_details": {
+    "id": 1609860385272729,
+    "state": "AwaitingDecreeNisi",
     "case_data": {
       "ServedByAlternativeMethod": "Yes",
       "ServedByProcessServer": "No",
