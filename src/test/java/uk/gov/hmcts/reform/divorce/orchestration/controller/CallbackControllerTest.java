@@ -81,7 +81,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_PAY_BY_ACCOUNT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NEW_LEGAL_CONNECTION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -1829,61 +1828,5 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getErrors(), is(nullValue()));
         assertThat(response.getBody().getData(), is(TEST_PAYLOAD_TO_RETURN));
         verify(courtOrderDocumentsUpdateService).updateExistingCourtOrderDocuments(AUTH_TOKEN, TEST_INCOMING_CASE_DETAILS);
-    }
-
-    @Test
-    public void testSolicitorDefaultValues_WelshLanguage_No() {
-
-        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(new HashMap<>()).build();
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
-
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorDefaultValue(TEST_TOKEN, ccdCallbackRequest);
-
-        assertThat(response.getStatusCode(), equalTo(OK));
-        assertThat(response.getBody().getData().get(LANGUAGE_PREFERENCE_WELSH), is(NO_VALUE));
-        assertThat(response.getBody().getErrors(), is(nullValue()));
-    }
-
-    @Test
-    public void testSolicitorDefaultValues_WelshLanguage_Yes() {
-
-        Map<String, Object> caseData = new HashMap<>();
-        caseData.put(LANGUAGE_PREFERENCE_WELSH, YES_VALUE);
-        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build();
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
-
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorDefaultValue(TEST_TOKEN, ccdCallbackRequest);
-
-        assertThat(response.getStatusCode(), equalTo(OK));
-        assertThat(response.getBody().getData().get(LANGUAGE_PREFERENCE_WELSH), is(YES_VALUE));
-        assertThat(response.getBody().getErrors(), is(nullValue()));
-    }
-
-    @Test
-    public void testSolicitorDefaultValues_LegalConnectionPolicy_Yes() {
-
-        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(new HashMap<>()).build();
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
-
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorDefaultValue(TEST_TOKEN, ccdCallbackRequest);
-
-        assertThat(response.getStatusCode(), equalTo(OK));
-        assertThat(response.getBody().getData().get(NEW_LEGAL_CONNECTION_POLICY), is(YES_VALUE));
-        assertThat(response.getBody().getErrors(), is(nullValue()));
-    }
-
-    @Test
-    public void testSolicitorDefaultValues_LegalConnectionPolicy_No() {
-
-        Map<String, Object> caseData = new HashMap<>();
-        caseData.put(NEW_LEGAL_CONNECTION_POLICY, NO_VALUE);
-        CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build();
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
-
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorDefaultValue(TEST_TOKEN, ccdCallbackRequest);
-
-        assertThat(response.getStatusCode(), equalTo(OK));
-        assertThat(response.getBody().getData().get(NEW_LEGAL_CONNECTION_POLICY), is(NO_VALUE));
-        assertThat(response.getBody().getErrors(), is(nullValue()));
     }
 }
