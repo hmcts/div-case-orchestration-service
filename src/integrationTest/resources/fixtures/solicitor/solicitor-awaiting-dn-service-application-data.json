@@ -1,0 +1,223 @@
+{
+  "id": 1573769237118448,
+  "state": "AwaitingDecreeNisi",
+  "case_details": {
+    "case_data": {
+    "DocumentsServed": "dff",
+    "PetitionerSolicitorEmail": "ccdsolicitorcreatecase@pettyfrance.com",
+    "D8DerivedRespondentHomeAddress": "300 Central London, Lagos W2 3MU",
+    "D8DerivedPetitionerHomeAddress": "300 Central London, W2 3MU",
+    "D8DivorceCostsClaim": "No",
+    "OnWhomServed": "dfdf",
+    "SolServiceMethod": "personalService",
+    "LastServiceApplication": {
+      "Type": "dispensed",
+      "Payment": "helpWithFees",
+      "AddedDate": "2021-01-12",
+      "DecisionDate": "2021-01-12",
+      "ReceivedDate": "2019-05-10",
+      "RefusalReason": "",
+      "ApplicationGranted": "Yes"
+    },
+    "D8InferredRespondentGender": "female",
+    "D8RespondentCorrespondenceSendToSol": "No",
+    "ReceivedAosFromCoRespDate": null,
+    "ServiceApplications": [
+      {
+        "id": "cd63cb95-2123-440f-a3b4-6a72fd70b292",
+        "value": {
+          "Type": "dispensed",
+          "Payment": "helpWithFees",
+          "AddedDate": "2021-01-12",
+          "DecisionDate": "2021-01-12",
+          "ReceivedDate": "2019-05-10",
+          "RefusalReason": "",
+          "ApplicationGranted": "Yes"
+        }
+      }
+    ],
+    "D8ReasonForDivorceAdulteryWishToName": "No",
+    "solSignStatementofTruth": "Yes",
+    "SolStatementOfReconciliationName": "Mrs Solicitor",
+    "BeingThe": "solicitor",
+    "SolStatementOfReconciliationFirm": "Lineker's LLP",
+    "D8RespondentLastName": "St Patrick",
+    "D8PetitionerNameDifferentToMarriageCert": "No",
+    "D8JurisdictionConnection": [
+      "A"
+    ],
+    "SolStatementOfReconciliationCertify": "Yes",
+    "D8SelectedDivorceCentreSiteId": "AA07",
+    "D8PetitionerLastName": "St Patrick",
+    "ServiceSOTName": "efdf",
+    "ReceivedAOSfromRespDate": null,
+    "D8SolicitorReference": "AWS11234",
+    "D8PetitionerPhoneNumber": "01789029090",
+    "D8StatementOfTruth": "Yes",
+    "D8DocumentsGenerated": [
+      {
+        "id": "90975eb8-ff8d-44fb-a05c-e114e58592d9",
+        "value": {
+          "DocumentLink": {
+            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/12a3aa16-0231-4cfa-b3e1-c3e68677b560",
+            "document_filename": "d8petition1573769237118448.pdf",
+            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/12a3aa16-0231-4cfa-b3e1-c3e68677b560/binary"
+          },
+          "DocumentType": "petition",
+          "DocumentComment": null,
+          "DocumentFileName": "d8petition1573769237118448",
+          "DocumentDateAdded": null,
+          "DocumentEmailContent": null
+        }
+      },
+      {
+        "id": "f57b2201-5a36-4247-82a5-38ff6de1a731",
+        "value": {
+          "DocumentLink": {
+            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/d2c0e620-57ad-418b-b7e6-a22f00feffe0",
+            "document_filename": "aosinvitation1573769237118448.pdf",
+            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/d2c0e620-57ad-418b-b7e6-a22f00feffe0/binary"
+          },
+          "DocumentType": "aos",
+          "DocumentComment": null,
+          "DocumentFileName": "aosinvitation1573769237118448",
+          "DocumentDateAdded": null,
+          "DocumentEmailContent": null
+        }
+      },
+      {
+        "id": "12f87b23-d64f-401d-9c37-4385dd223810",
+        "value": {
+          "DocumentLink": {
+            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/d4998891-3952-4588-9f8d-fa8daaf85d9b",
+            "document_filename": "solicitor-personal-service-1573769237118448.pdf",
+            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/d4998891-3952-4588-9f8d-fa8daaf85d9b/binary"
+          },
+          "DocumentType": "personalService",
+          "DocumentComment": null,
+          "DocumentFileName": "solicitor-personal-service-1573769237118448",
+          "DocumentDateAdded": null,
+          "DocumentEmailContent": null
+        }
+      }
+    ],
+    "PetitionerSolicitorFirm": "ELEMU GETON",
+    "ReceivedAOSfromResp": null,
+    "ReceivedAosFromCoResp": null,
+    "generalApplicationWithoutNoticeFeeSummary": {
+      "Fees": [
+        {
+          "id": "ba97391d-dd7f-4d7c-b49f-f027eda18e25",
+          "value": {
+            "FeeCode": "FEE0228",
+            "FeeAmount": "5000",
+            "FeeVersion": "1",
+            "FeeDescription": "Application (without notice)"
+          }
+        }
+      ],
+      "PaymentTotal": "5000",
+      "PaymentReference": null
+    },
+    "DateOfService": "2020-10-06",
+    "SolStatementOfReconciliationDiscussed": "Yes",
+    "SolicitorAgreeToReceiveEmails": "Yes",
+    "D8ReasonForDivorceAdulteryAnyInfo2ndHand": "No",
+    "D8PetitionerEmail": "JamesStPatrick@power.com",
+    "D8HelpWithFeesReferenceNumber": "123456",
+    "CoRespLinkedToCase": null,
+    "HelpWithFeesReferenceNumber": null,
+    "D8DivorceUnit": "serviceCentre",
+    "ServiceAddress": "dfddf",
+    "D8DerivedRespondentCorrespondenceAddr": "007 Peter Pan Road , E14 5RT",
+    "D8MarriagePetitionerName": "James St Patrick",
+    "PetitionerSolicitorPhone": "07712345679",
+    "D8MarriageIsSameSexCouple": "No",
+    "HowServed": "other",
+    "D8FinancialOrder": "No",
+    "D8ReasonForDivorceAdulteryDetails": "My wife and her boyfriends beat me up everytime but I dont cry",
+    "D8RespondentNameAsOnMarriageCertificate": "No",
+    "D8MarriageDate": "2011-04-09",
+    "D8caseReference": "LV18D81234",
+    "D8DivorceWho": "wife",
+    "CoRespLinkedToCaseDate": null,
+    "FurtherHWFReferenceNumbers": [
+      {
+        "id": "bba1fabc-a441-4720-95d9-0008dbb5cfae",
+        "value": {
+          "Reference": "hwf-123-123"
+        }
+      }
+    ],
+    "SolPaymentHowToPay": "feesHelpWith",
+    "StatementOfReconciliationComments": null,
+    "ServiceLocation": "principalOfficeOfCorporation",
+    "D8RespondentFirstName": "Tasha",
+    "D8DocumentsUploaded": [
+      {
+        "id": "5da05b75-4126-4ca8-88dd-3e5d280ae30b",
+        "value": {
+          "DocumentLink": {
+            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/c52f1550-8ba2-4a0c-99c8-1d1726fba781",
+            "document_filename": "fileupload.txt",
+            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/c52f1550-8ba2-4a0c-99c8-1d1726fba781/binary"
+          },
+          "DocumentType": null,
+          "DocumentComment": null,
+          "DocumentFileName": null,
+          "DocumentDateAdded": null,
+          "DocumentEmailContent": null
+        }
+      }
+    ],
+    "ServiceApplicationDocuments": [
+      {
+        "id": "d9a1a391-6337-486c-9777-f44fef253872",
+        "value": {
+          "DocumentLink": {
+            "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/2f5cdbff-9218-43ce-868d-d96ea33ea9eb",
+            "document_filename": "dispenseWithServiceGranted.pdf",
+            "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/2f5cdbff-9218-43ce-868d-d96ea33ea9eb/binary"
+          },
+          "DocumentType": "dispenseWithServiceGranted",
+          "DocumentComment": null,
+          "DocumentFileName": "dispenseWithServiceGranted",
+          "DocumentDateAdded": null,
+          "DocumentEmailContent": null
+        }
+      }
+    ],
+    "CoRespEmailAddress": null,
+    "ServiceSOTFirm": "dfdf",
+    "DerivedPetitionerSolicitorAddr": "100 Reede Road, RM10 8DU",
+    "PetitionerSolicitorName": "PAPA AJASCO",
+    "IssueDate": "2020-10-06",
+    "D8MarriedInUk": "Yes",
+    "D8PetitionerFirstName": "James",
+    "D8MarriageRespondentName": "Tasha St Patrick",
+    "D8PetitionerContactDetailsConfidential": "share",
+    "D8LegalProceedings": "No",
+    "createdDate": "2019-11-14",
+    "ServiceDetails": "dfdfdf",
+    "D8MarriagePlaceOfMarriage": "United Kingdom",
+    "D8ReasonForDivorce": "adultery",
+    "solApplicationFeeInPounds": "550",
+    "solApplicationFeeOrderSummary": {
+      "Fees": [
+        {
+          "id": "c95f00dd-e48c-45a7-bb03-bf58089b3da7",
+          "value": {
+            "FeeCode": "FEE0002",
+            "FeeAmount": "55000",
+            "FeeVersion": "4",
+            "FeeDescription": "Filing an application for a divorce, nullity or civil partnership dissolution – fees order 1.2."
+          }
+        }
+      ],
+      "PaymentTotal": "55000",
+      "PaymentReference": null
+    },
+    "D8InferredPetitionerGender": "male"
+  }
+  }
+}

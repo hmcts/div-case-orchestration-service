@@ -16,12 +16,16 @@ import static com.jayway.jsonpath.matchers.JsonPathMatchers.withJsonPath;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
 
 public class SolicitorDnFetchDocTest extends IntegrationTest {
 
     private static final String AWAITING_DN_CASE = "fixtures/solicitor/solicitor-awaiting-dn-data.json";
-    private static final String AWAITING_DN_ALTERNATIVE_SERVICE_CASE = "fixtures/solicitor/solicitor-awaiting-dn-alternative-data.json";
+    private static final String AWAITING_DN_ALTERNATIVE_SERVICE_CASE = "fixtures/solicitor/solicitor-awaiting-dn-alternative-service-data.json";
+    private static final String AWAITING_DN_SERVICE_APPLICATION_CASE = "fixtures/solicitor/solicitor-awaiting-dn-service-application-data.json";
+    private final String END_STATE = "AwaitingDecreeNisi";
 
     @Autowired
     private CosApiClient cosApiClient;
@@ -31,12 +35,14 @@ public class SolicitorDnFetchDocTest extends IntegrationTest {
         CcdCallbackRequest ccdCallbackRequest = ResourceLoader.loadJsonToObject(AWAITING_DN_CASE, CcdCallbackRequest.class);
         CcdCallbackResponse ccdCallbackResponse = cosApiClient.solDnRespAnswersDoc(ccdCallbackRequest);
 
-        assertThat(ccdCallbackResponse.getData(),
+        assertThat(getCallbackResponseAsString(ccdCallbackResponse),
             isJson(
                 allOf(
-                    withJsonPath("$.data.respondentanswerslink"),
-                    withJsonPath("$.errors", nullValue()))
-            ));
+                    hasNoJsonPath("$.data.respondentanswerslink"),
+                    withJsonPath("$.errors", nullValue())
+                )
+            )
+        );
     }
 
     @Test
@@ -46,10 +52,10 @@ public class SolicitorDnFetchDocTest extends IntegrationTest {
 
         CcdCallbackResponse ccdCallbackResponse = cosApiClient.solDnRespAnswersDoc(ccdCallbackRequest);
 
-        assertThat(ccdCallbackResponse.getData(),
+        assertThat(getCallbackResponseAsString(ccdCallbackResponse),
             isJson(
                 allOf(
-                    withJsonPath("$.data.respondentanswerslink"),
+                    hasNoJsonPath("$.data.respondentanswerslink"),
                     withJsonPath("$.errors", hasSize(1)))
             ));
     }
@@ -59,11 +65,28 @@ public class SolicitorDnFetchDocTest extends IntegrationTest {
         CcdCallbackRequest ccdCallbackRequest = ResourceLoader.loadJsonToObject(AWAITING_DN_ALTERNATIVE_SERVICE_CASE, CcdCallbackRequest.class);
         CcdCallbackResponse ccdCallbackResponse = cosApiClient.solDnRespAnswersDoc(ccdCallbackRequest);
 
-        assertThat(ccdCallbackResponse.getData(),
+        assertThat(getCallbackResponseAsString(ccdCallbackResponse),
             isJson(
                 allOf(
                     hasNoJsonPath("$.data.respondentanswerslink"),
                     withJsonPath("$.errors", nullValue()))
             ));
+    }
+
+    @Test
+    public void givenDraftDN_ServiceApplicationGranted_ThenReturnWithoutRespondentAnswersDocumentLink() {
+        CcdCallbackRequest ccdCallbackRequest = ResourceLoader.loadJsonToObject(AWAITING_DN_SERVICE_APPLICATION_CASE, CcdCallbackRequest.class);
+        CcdCallbackResponse ccdCallbackResponse = cosApiClient.solDnRespAnswersDoc(ccdCallbackRequest);
+
+        assertThat(getCallbackResponseAsString(ccdCallbackResponse),
+            isJson(
+                allOf(
+                    hasNoJsonPath("$.data.respondentanswerslink"),
+                    withJsonPath("$.errors", nullValue()))
+            ));
+    }
+
+    private String getCallbackResponseAsString(CcdCallbackResponse ccdCallbackResponse) {
+        return objectToJson(ccdCallbackResponse);
     }
 }

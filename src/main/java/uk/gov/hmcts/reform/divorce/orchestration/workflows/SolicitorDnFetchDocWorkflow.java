@@ -71,17 +71,7 @@ public class SolicitorDnFetchDocWorkflow extends DefaultWorkflow<Map<String, Obj
     }
 
     private boolean isAlternativeService(Map<String, Object> caseData) {
-        return isValidServedByProcessServer(caseData)
-            || isValidServedByAlternativeMethod(caseData);
-    }
-
-    private boolean isValidServedByProcessServer(Map<String, Object> caseData) {
         return isServedByProcessServer(caseData)
-            && !isServedByAlternativeMethod(caseData);
-    }
-
-    private boolean isValidServedByAlternativeMethod(Map<String, Object> caseData) {
-        return isServedByAlternativeMethod(caseData)
-            && !isServedByProcessServer(caseData);
+            || isServedByAlternativeMethod(caseData);
     }
 }

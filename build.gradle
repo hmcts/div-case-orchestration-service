@@ -8,7 +8,7 @@ buildscript {
         mavenCentral()
         jcenter()
         maven { url "https://dl.bintray.com/hmcts/hmcts-maven" }
-        maven { url 'https://repo.spring.io/libs-milestone' }
+        maven { url "https://repo.spring.io/libs-milestone" }
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
