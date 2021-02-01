@@ -42,9 +42,6 @@ public class GetPetitionIssueFeesTest extends IntegrationTest {
     @Value("${case.orchestration.solicitor.petition-issue-fees.context-path}")
     private String petitionIssueFeesContextPath;
 
-    @Value("${case.orchestration.solicitor.allow-share-a-case.context-path}")
-    private String allowShareACaseContextPath;
-
     @Autowired
     protected CcdClientSupport ccdClientSupport;
 
@@ -101,13 +98,6 @@ public class GetPetitionIssueFeesTest extends IntegrationTest {
             hasEntry(SOL_APPLICATION_FEE_IN_POUNDS_JSON_KEY, orderSummary.getPaymentTotalInPounds()),
             hasEntry(SOL_APPLICATION_FEE_IN_POUNDS_JSON_KEY, AMEND_CASE_FEE_IN_POUNDS)
         ));
-    }
-
-    @Test
-    public void callAacAndCcdToRemoveCreatorCaseRoleAndAssignAccessToCase() {
-        Response response = prepareAndCallCosEndpoint(caseDetails,serverUrl + allowShareACaseContextPath);
-
-        assertThat(response.getStatusCode(), is(HttpStatus.OK.value()));
     }
 
     private Map<String, Object> getRequestHeaders() {

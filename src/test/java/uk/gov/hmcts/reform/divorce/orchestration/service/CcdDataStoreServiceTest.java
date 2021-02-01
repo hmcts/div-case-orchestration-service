@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -8,16 +7,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseRoleClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseUser;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.RemoveUserRolesRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
-import java.util.Collections;
-
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.times;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -41,27 +37,16 @@ public class CcdDataStoreServiceTest {
     private CcdDataStoreService ccdDataStoreService;
 
     @Test
-    @Ignore
     public void removeCreatorRoleCallsApi() {
         when(idamClient.getUserDetails(AUTH_TOKEN)).thenReturn(UserDetails.builder().id(TEST_USER_ID).build());
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_TOKEN);
 
         ccdDataStoreService.removeCreatorRole(CaseDetails.builder().caseId(TEST_CASE_ID).build(), AUTH_TOKEN);
 
-        verify(caseRoleClient, times(2)).removeCaseRoles(
-            AUTH_TOKEN,
-            TEST_SERVICE_TOKEN,
-            RemoveUserRolesRequest
-                .builder()
-                .caseUsers(
-                    Collections.singletonList(
-                        CaseUser.builder()
-                            .caseId(TEST_CASE_ID)
-                            .userId(TEST_USER_ID)
-                            .caseRole(anyString())
-                            .build()
-                    )
-                ).build()
+        verify(caseRoleClient).removeCaseRoles(
+            eq(AUTH_TOKEN),
+            eq(TEST_SERVICE_TOKEN),
+            any(RemoveUserRolesRequest.class)
         );
     }
 }

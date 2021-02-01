@@ -9,6 +9,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseUser;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.RemoveUserRolesRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
+import uk.gov.hmcts.reform.idam.client.models.UserDetails;
+
+import java.util.List;
 
 import static java.util.Arrays.asList;
 
@@ -17,48 +20,49 @@ import static java.util.Arrays.asList;
 @RequiredArgsConstructor
 public class CcdDataStoreService {
 
-    public static final String CREATOR_CASE_ROLE = "[CREATOR]";
-
     private final AuthTokenGenerator authTokenGenerator;
     private final IdamClient idamClient;
     private final CaseRoleClient caseRoleClient;
 
     public void removeCreatorRole(CaseDetails caseDetails, String authorisationToken) {
-        removeRole(caseDetails, authorisationToken, CREATOR_CASE_ROLE);
+        removeRole(caseDetails, authorisationToken);
     }
 
-    private void removeRole(CaseDetails caseDetails, String authorisationToken, String caseRole) {
-        String userId = idamClient.getUserDetails(authorisationToken).getId();
+    private void removeRole(CaseDetails caseDetails, String authorisationToken) {
+        UserDetails userDetails = idamClient.getUserDetails(authorisationToken);
+        String userId = userDetails.getId();
+        String caseId = caseDetails.getCaseId();
 
-        log.info("CaseId: {} removing case role {} from user {}", caseDetails.getCaseId(), caseRole, userId);
+        log.info("CaseID: {} removing [CREATOR] and [PETSOLICITOR] case roles from user {}", caseId, userId);
 
         caseRoleClient.removeCaseRoles(
             authorisationToken,
             authTokenGenerator.generate(),
-            buildRemoveUserRolesRequest(caseDetails, caseRole, userId)
+            buildRemoveUserRolesRequest(caseId, userId)
         );
 
-        log.info("CaseId: {} removed case role {} from user {}", caseDetails.getCaseId(), caseRole, userId);
+        log.info("CaseID: {} removed  [CREATOR] and [PETSOLICITOR] case roles from user {}", caseId, userId);
     }
 
-    private RemoveUserRolesRequest buildRemoveUserRolesRequest(
-        CaseDetails caseDetails, String caseRole, String userId) {
+    private RemoveUserRolesRequest buildRemoveUserRolesRequest(String caseId, String userId) {
         return RemoveUserRolesRequest
             .builder()
-            .caseUsers(
-                asList(
-                    CaseUser.builder()
-                        .caseId(caseDetails.getCaseId())
-                        .userId(userId)
-                        .caseRole("[CREATOR]")
-                        .build(),
-                    CaseUser.builder()
-                        .caseId(caseDetails.getCaseId())
-                        .userId(userId)
-                        .caseRole("[PETSOLICITOR]")
-                        .build()
-                )
+            .caseUsers(getCaseUsers(caseId, userId))
+            .build();
+    }
 
-            ).build();
+    private CaseUser buildCaseUser(String caseId, String caseRole, String userId) {
+        return CaseUser.builder()
+            .caseId(caseId)
+            .userId(userId)
+            .caseRole(caseRole)
+            .build();
+    }
+
+    private List<CaseUser> getCaseUsers(String caseId, String userId) {
+        return asList(
+            buildCaseUser(caseId, "[CREATOR]", userId),
+            buildCaseUser(caseId, "[PETSOLICITOR]", userId)
+        );
     }
 }
