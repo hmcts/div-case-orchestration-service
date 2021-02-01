@@ -44,12 +44,4 @@ public class AllowShareACaseWorkflow extends DefaultWorkflow<Map<String, Object>
             ImmutablePair.of(CASE_ID_JSON_KEY, caseDetails.getCaseId())
         );
     }
-
-    private boolean isPetitionerClaimingCostsAndClaimCostsFromIsEmptyIn(CaseDetails caseDetails) {
-        Map<String, Object> caseData = caseDetails.getCaseData();
-        boolean isPetitionerClaimingCosts = YES_VALUE.equalsIgnoreCase(String.valueOf(caseData.get(DIVORCE_COSTS_CLAIM_CCD_FIELD)));
-        boolean claimCostsFromIsEmpty = StringUtils.isEmpty(caseData.get(DIVORCE_COSTS_CLAIM_FROM_CCD_FIELD));
-
-        return isPetitionerClaimingCosts && claimCostsFromIsEmpty;
-    }
 }
