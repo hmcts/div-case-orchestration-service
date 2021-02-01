@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendSolicitorApplicationSubmittedEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetNewLegalConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
 
@@ -51,13 +52,15 @@ public class SolicitorUpdateWorkflowTest {
     @Mock
     FeatureToggleService featureToggleService;
 
+    @Mock
+    SetNewLegalConnectionPolicyTask setNewLegalConnectionPolicyTask;
+
     @InjectMocks
     SolicitorUpdateWorkflow solicitorUpdateWorkflow;
 
     private Map<String, Object> caseData;
     private TaskContext context;
     private CaseDetails caseDetails;
-
 
     @Before
     public void setup() {
@@ -76,7 +79,8 @@ public class SolicitorUpdateWorkflowTest {
             caseData,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
-            sendSolicitorApplicationSubmittedEmailTask
+            sendSolicitorApplicationSubmittedEmailTask,
+            setNewLegalConnectionPolicyTask
         );
 
         Map<String, Object> resultCaseData = solicitorUpdateWorkflow.run(caseDetails, AUTH_TOKEN);
@@ -87,7 +91,8 @@ public class SolicitorUpdateWorkflowTest {
             caseData,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
-            sendSolicitorApplicationSubmittedEmailTask
+            sendSolicitorApplicationSubmittedEmailTask,
+            setNewLegalConnectionPolicyTask
         );
     }
 
@@ -99,6 +104,7 @@ public class SolicitorUpdateWorkflowTest {
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
             sendSolicitorApplicationSubmittedEmailTask,
+            setNewLegalConnectionPolicyTask,
             setPetitionerSolicitorOrganisationPolicyReferenceTask,
             setRespondentSolicitorOrganisationPolicyReferenceTask
         );
@@ -111,6 +117,7 @@ public class SolicitorUpdateWorkflowTest {
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
             sendSolicitorApplicationSubmittedEmailTask,
+            setNewLegalConnectionPolicyTask,
             setPetitionerSolicitorOrganisationPolicyReferenceTask,
             setRespondentSolicitorOrganisationPolicyReferenceTask
         );
@@ -123,7 +130,8 @@ public class SolicitorUpdateWorkflowTest {
             caseData,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
-            sendSolicitorApplicationSubmittedEmailTask
+            sendSolicitorApplicationSubmittedEmailTask,
+            setNewLegalConnectionPolicyTask
         );
 
         Map<String, Object> resultCaseData = solicitorUpdateWorkflow.run(caseDetails, AUTH_TOKEN);
@@ -132,7 +140,8 @@ public class SolicitorUpdateWorkflowTest {
         verifyTasksCalledInOrder(
             caseData,
             addMiniPetitionDraftTask,
-            addNewDocumentsToCaseDataTask
+            addNewDocumentsToCaseDataTask,
+            setNewLegalConnectionPolicyTask
         );
 
         verifyTasksWereNeverCalled(setPetitionerSolicitorOrganisationPolicyReferenceTask);
