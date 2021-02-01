@@ -25,7 +25,6 @@ public class CcdDataStoreService {
 
     public void removeCreatorRole(CaseDetails caseDetails, String authorisationToken) {
         removeRole(caseDetails, authorisationToken, CREATOR_CASE_ROLE);
-        removeRole(caseDetails, authorisationToken, "[PETSOLICITOR]");
     }
 
     private void removeRole(CaseDetails caseDetails, String authorisationToken, String caseRole) {
@@ -51,7 +50,7 @@ public class CcdDataStoreService {
                     CaseUser.builder()
                         .caseId(caseDetails.getCaseId())
                         .userId(userId)
-                        .caseRole(caseRole)
+                        .caseRole(null)
                         .build()
                 )
             ).build();
