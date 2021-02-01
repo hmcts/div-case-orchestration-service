@@ -12,6 +12,8 @@ import uk.gov.hmcts.reform.idam.client.IdamClient;
 
 import java.util.Collections;
 
+import static java.util.Arrays.asList;
+
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -46,11 +48,16 @@ public class CcdDataStoreService {
         return RemoveUserRolesRequest
             .builder()
             .caseUsers(
-                Collections.singletonList(
+                asList(
                     CaseUser.builder()
                         .caseId(caseDetails.getCaseId())
                         .userId(userId)
-                        .caseRole(null)
+                        .caseRole("[CREATOR]")
+                        .build(),
+                    CaseUser.builder()
+                        .caseId(caseDetails.getCaseId())
+                        .userId(userId)
+                        .caseRole("[PETSOLICITOR]")
                         .build()
                 )
             ).build();
