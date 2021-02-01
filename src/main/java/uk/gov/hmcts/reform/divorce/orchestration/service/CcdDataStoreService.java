@@ -10,8 +10,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.RemoveUserRolesReq
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
-import java.util.Collections;
-
 import static java.util.Arrays.asList;
 
 @Component
