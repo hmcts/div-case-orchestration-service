@@ -50,7 +50,7 @@ public class CcdDataStoreService {
                     CaseUser.builder()
                         .caseId(caseDetails.getCaseId())
                         .userId(userId)
-                        .caseRole(caseRole)
+                        .caseRole(null)
                         .build()
                 )
             ).build();

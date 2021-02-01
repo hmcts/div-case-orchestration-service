@@ -21,7 +21,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.CcdDataStoreService.CREATOR_CASE_ROLE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CcdDataStoreServiceTest {
@@ -55,7 +54,7 @@ public class CcdDataStoreServiceTest {
                         CaseUser.builder()
                             .caseId(TEST_CASE_ID)
                             .userId(TEST_USER_ID)
-                            .caseRole(CREATOR_CASE_ROLE)
+                            .caseRole(null)
                             .build()
                     )
                 ).build()
