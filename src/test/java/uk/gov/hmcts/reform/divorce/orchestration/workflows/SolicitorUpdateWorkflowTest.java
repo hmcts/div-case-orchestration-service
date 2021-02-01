@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetNewLegalConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
 
@@ -44,12 +45,14 @@ public class SolicitorUpdateWorkflowTest {
     @Mock
     private FeatureToggleService featureToggleService;
 
+    @Mock
+    private SetNewLegalConnectionPolicyTask setNewLegalConnectionPolicyTask;
+
     @InjectMocks
     private SolicitorUpdateWorkflow solicitorUpdateWorkflow;
 
     private Map<String, Object> caseData;
     private CaseDetails caseDetails;
-
 
     @Before
     public void setup() {
@@ -64,7 +67,8 @@ public class SolicitorUpdateWorkflowTest {
         mockTasksExecution(
             caseData,
             addMiniPetitionDraftTask,
-            addNewDocumentsToCaseDataTask
+            addNewDocumentsToCaseDataTask,
+            setNewLegalConnectionPolicyTask
         );
 
         executeWorkflow();
@@ -72,7 +76,9 @@ public class SolicitorUpdateWorkflowTest {
         verifyTasksCalledInOrder(
             caseData,
             addMiniPetitionDraftTask,
-            addNewDocumentsToCaseDataTask
+            addNewDocumentsToCaseDataTask,
+            setNewLegalConnectionPolicyTask
+
         );
     }
 
@@ -83,6 +89,7 @@ public class SolicitorUpdateWorkflowTest {
             caseData,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
+            setNewLegalConnectionPolicyTask,
             setPetitionerSolicitorOrganisationPolicyReferenceTask,
             setRespondentSolicitorOrganisationPolicyReferenceTask
         );
@@ -93,6 +100,7 @@ public class SolicitorUpdateWorkflowTest {
             caseData,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
+            setNewLegalConnectionPolicyTask,
             setPetitionerSolicitorOrganisationPolicyReferenceTask,
             setRespondentSolicitorOrganisationPolicyReferenceTask
         );
@@ -104,7 +112,8 @@ public class SolicitorUpdateWorkflowTest {
         mockTasksExecution(
             caseData,
             addMiniPetitionDraftTask,
-            addNewDocumentsToCaseDataTask
+            addNewDocumentsToCaseDataTask,
+            setNewLegalConnectionPolicyTask
         );
 
         executeWorkflow();
@@ -112,7 +121,8 @@ public class SolicitorUpdateWorkflowTest {
         verifyTasksCalledInOrder(
             caseData,
             addMiniPetitionDraftTask,
-            addNewDocumentsToCaseDataTask
+            addNewDocumentsToCaseDataTask,
+            setNewLegalConnectionPolicyTask
         );
 
         verifyTasksWereNeverCalled(setPetitionerSolicitorOrganisationPolicyReferenceTask);

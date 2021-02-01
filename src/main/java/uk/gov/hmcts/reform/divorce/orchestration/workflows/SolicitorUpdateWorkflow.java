@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetNewLegalConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
 
@@ -32,8 +33,10 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
     private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
     private final SetPetitionerSolicitorOrganisationPolicyReferenceTask setPetitionerSolicitorOrganisationPolicyReferenceTask;
     private final SetRespondentSolicitorOrganisationPolicyReferenceTask setRespondentSolicitorOrganisationPolicyReferenceTask;
+    private final SetNewLegalConnectionPolicyTask setNewLegalConnectionPolicyTask;
 
     private final FeatureToggleService featureToggleService;
+
 
     public Map<String, Object> run(CaseDetails caseDetails, final String authToken) throws WorkflowException {
         final String caseId = caseDetails.getCaseId();
@@ -54,6 +57,8 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
 
         tasks.add(getAddMiniPetitionDraftTask(caseId));
         tasks.add(getAddNewDocumentsToCaseDataTask(caseId));
+        tasks.add(getNewLegalConnectionPolicyTask(caseId));
+
 
         if (featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)) {
             log.info("Adding OrganisationPolicyReferenceTasks, REPRESENTED_RESPONDENT_JOURNEY feature toggle is set to true.");
@@ -72,5 +77,10 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
     private Task<Map<String, Object>> getAddMiniPetitionDraftTask(String caseId) {
         log.info("CaseId: {} Adding task to Add Mini Petition Draft.", caseId);
         return addMiniPetitionDraftTask;
+    }
+
+    private Task<Map<String, Object>> getNewLegalConnectionPolicyTask(String caseId) {
+        log.info("CaseId: {} Adding task to set new legal connection policy.", caseId);
+        return setNewLegalConnectionPolicyTask;
     }
 }
