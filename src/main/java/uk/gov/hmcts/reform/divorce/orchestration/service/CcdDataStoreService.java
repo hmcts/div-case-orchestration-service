@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.RemoveUserRolesReq
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
-import static java.util.Arrays.asList;
+import java.util.Collections;
 
 @Component
 @Slf4j
@@ -25,6 +25,7 @@ public class CcdDataStoreService {
 
     public void removeCreatorRole(CaseDetails caseDetails, String authorisationToken) {
         removeRole(caseDetails, authorisationToken, CREATOR_CASE_ROLE);
+        removeRole(caseDetails, authorisationToken, "[PETSOLICITOR]");
     }
 
     private void removeRole(CaseDetails caseDetails, String authorisationToken, String caseRole) {
@@ -46,16 +47,11 @@ public class CcdDataStoreService {
         return RemoveUserRolesRequest
             .builder()
             .caseUsers(
-                asList(
+                Collections.singletonList(
                     CaseUser.builder()
                         .caseId(caseDetails.getCaseId())
                         .userId(userId)
-                        .caseRole("[CREATOR]")
-                        .build(),
-                    CaseUser.builder()
-                        .caseId(caseDetails.getCaseId())
-                        .userId(userId)
-                        .caseRole("[PETSOLICITOR]")
+                        .caseRole(caseRole)
                         .build()
                 )
             ).build();
