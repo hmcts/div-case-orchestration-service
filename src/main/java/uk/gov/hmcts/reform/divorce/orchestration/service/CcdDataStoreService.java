@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.client.CaseRoleClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseUser;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.RemoveUserRolesRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseRoles;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -61,8 +62,8 @@ public class CcdDataStoreService {
 
     private List<CaseUser> getCaseUsers(String caseId, String userId) {
         return asList(
-            buildCaseUser(caseId, "[CREATOR]", userId),
-            buildCaseUser(caseId, "[PETSOLICITOR]", userId)
+            buildCaseUser(caseId, CaseRoles.CREATOR, userId),
+            buildCaseUser(caseId, CaseRoles.PETITIONER_SOLICITOR, userId)
         );
     }
 }
