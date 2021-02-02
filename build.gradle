@@ -57,7 +57,7 @@ def versions = [
         jsonAssert                   : '1.2.3',
         jsonPathAssert               : '2.2.0',
         junit                        : '4.13.1',
-        lombok                       : '1.18.12',
+        lombok                       : '1.18.18',
         pitest                       : '1.4.10',
         postgresql                   : '42.2.13',
         puppyCrawl                   : '8.29',
