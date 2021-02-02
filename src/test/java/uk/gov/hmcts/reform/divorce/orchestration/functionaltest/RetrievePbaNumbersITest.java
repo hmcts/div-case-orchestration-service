@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static java.util.Arrays.asList;
 import static org.mockito.Mockito.when;
@@ -48,11 +47,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DynamicList.asDynamicList;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
-public class RetrievePbaNumbersITest extends MockedFunctionalTest {
+public class RetrievePbaNumbersITest extends IdamTestSupport {
 
     private static final String API_URL = "/retrieve-pba-numbers";
     private static final String RETRIEVE_PBA_NUMBERS_URL = "/refdata/external/v1/organisations/pbas?email=testRespondentSolicitor%40email.com";
-    private static final String IDAM_USER_DETAILS_URL = "/details";
 
     @Autowired
     private MockMvc webClient;
@@ -120,7 +118,7 @@ public class RetrievePbaNumbersITest extends MockedFunctionalTest {
 
         stubRetrievePbaNumbersEndpoint(HttpStatus.OK, buildPbaResponse(pbaNumbersOfSolicitor));
         stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
-        stubIdamUserDetailsEndpoint(HttpStatus.OK, BEARER_AUTH_TOKEN, getUserDetailsResponse());
+        stubUserDetailsEndpoint(HttpStatus.OK, BEARER_AUTH_TOKEN, getUserDetailsResponse());
 
         webClient.perform(post(API_URL)
             .content(convertObjectToJsonString(ccdCallbackRequest))
@@ -140,15 +138,6 @@ public class RetrievePbaNumbersITest extends MockedFunctionalTest {
                 .withStatus(status.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withBody(convertObjectToJsonString(response))));
-    }
-
-    private void stubIdamUserDetailsEndpoint(HttpStatus status, String authHeader, String message) {
-        idamServer.stubFor(get(IDAM_USER_DETAILS_URL)
-            .withHeader(AUTHORIZATION, new EqualToPattern(authHeader))
-            .willReturn(aResponse()
-                .withStatus(status.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                .withBody(message)));
     }
 
     private PBAOrganisationResponse buildPbaResponse(List<String> pbaNumbers) {
