@@ -2,13 +2,10 @@ package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetClaimCostsFromTask;
@@ -18,16 +15,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.when;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SolicitorCreateWorkflowTest {
@@ -48,25 +42,26 @@ public class SolicitorCreateWorkflowTest {
     SolicitorCreateWorkflow solicitorCreateWorkflow;
 
     @Test
-    public void runShouldExecuteTasksAndReturnPayload() throws Exception {
+    public void runShouldNotExecuteAllowShareACaseTaskWhenFeatureToggleOff() throws Exception {
         Map<String, Object> payload = Collections.emptyMap();
 
         CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
 
-        TaskContext context = new DefaultTaskContext();
-        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
+        mockTasksExecution(
+            caseDetails.getCaseData(),
+            setSolicitorCourtDetailsTask,
+            addMiniPetitionDraftTask,
+            addNewDocumentsToCaseDataTask
+        );
 
-        when(setSolicitorCourtDetailsTask.execute(any(), eq(payload))).thenReturn(payload);
-        when(addMiniPetitionDraftTask.execute(any(), eq(payload))).thenReturn(payload);
+        assertThat(solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN), is(payload));
 
-        assertEquals(payload, solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN));
-
-        InOrder inOrder = inOrder(setSolicitorCourtDetailsTask, addMiniPetitionDraftTask, addNewDocumentsToCaseDataTask);
-
-        inOrder.verify(setSolicitorCourtDetailsTask).execute(context, payload);
-        inOrder.verify(addMiniPetitionDraftTask).execute(context, payload);
-        inOrder.verify(addNewDocumentsToCaseDataTask).execute(context, payload);
+        verifyTasksCalledInOrder(
+            payload,
+            setSolicitorCourtDetailsTask,
+            addMiniPetitionDraftTask,
+            addNewDocumentsToCaseDataTask
+        );
     }
 
     @Test
@@ -76,21 +71,22 @@ public class SolicitorCreateWorkflowTest {
 
         CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
 
-        TaskContext context = new DefaultTaskContext();
-        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
+        mockTasksExecution(
+            caseDetails.getCaseData(),
+            setClaimCostsFromTask,
+            setSolicitorCourtDetailsTask,
+            addMiniPetitionDraftTask,
+            addNewDocumentsToCaseDataTask
+        );
 
-        when(setClaimCostsFromTask.execute(any(), eq(payload))).thenReturn(payload);
-        when(setSolicitorCourtDetailsTask.execute(any(), eq(payload))).thenReturn(payload);
-        when(addMiniPetitionDraftTask.execute(any(), eq(payload))).thenReturn(payload);
+        assertThat(solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN), is(caseDetails.getCaseData()));
 
-        assertEquals(Collections.emptyMap(), solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN));
-
-        InOrder inOrder = inOrder(setClaimCostsFromTask, setSolicitorCourtDetailsTask, addMiniPetitionDraftTask, addNewDocumentsToCaseDataTask);
-
-        inOrder.verify(setClaimCostsFromTask).execute(context, payload);
-        inOrder.verify(setSolicitorCourtDetailsTask).execute(context, payload);
-        inOrder.verify(addMiniPetitionDraftTask).execute(context, payload);
-        inOrder.verify(addNewDocumentsToCaseDataTask).execute(context, payload);
+        verifyTasksCalledInOrder(
+            caseDetails.getCaseData(),
+            setClaimCostsFromTask,
+            setSolicitorCourtDetailsTask,
+            addMiniPetitionDraftTask,
+            addNewDocumentsToCaseDataTask
+        );
     }
 }
