@@ -7,12 +7,15 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentG
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CtscContactDetailsDataProviderService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference.ENGLISH;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DISPENSE_WITH_SERVICE_GRANTED;
+
 @Component
 public class OrderToDispenseGenerationTask extends ServiceDecisionOrderGenerationTask {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FileMetadata {
-        public static final String TEMPLATE_ID = "FL-DIV-DEC-ENG-00531.docx";
+        public static final String TEMPLATE_ID = DISPENSE_WITH_SERVICE_GRANTED.getTemplateByLanguage(ENGLISH);
         public static final String DOCUMENT_TYPE = "dispenseWithServiceGranted";
     }
 

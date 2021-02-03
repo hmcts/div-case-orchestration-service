@@ -84,6 +84,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.CASE_LIST_FOR_PRONOUNCEMENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COE;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.ccdRequestWithData;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -178,6 +180,23 @@ public class CallbackControllerTest {
         when(caseOrchestrationService.solicitorCreate(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(caseData);
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorCreate(AUTH_TOKEN, ccdCallbackRequest);
+
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+
+        assertEquals(OK, response.getStatusCode());
+        assertEquals(expectedResponse, response.getBody());
+    }
+
+    @Test
+    public void whenAllowShareACase_thenReturnCcdResponse() throws Exception {
+        final Map<String, Object> caseData = Collections.emptyMap();
+        final CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+
+        final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        when(caseOrchestrationService.allowShareACase(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(caseData);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.allowShareACase(AUTH_TOKEN, ccdCallbackRequest);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
@@ -748,7 +767,7 @@ public class CallbackControllerTest {
             .caseDetails(TEST_INCOMING_CASE_DETAILS)
             .build();
 
-        when(caseOrchestrationService.handleDocumentGenerationCallback(eq(incomingRequest), eq(AUTH_TOKEN), any(), any(), any()))
+        when(caseOrchestrationService.handleDocumentGenerationCallback(eq(incomingRequest), eq(AUTH_TOKEN), anyString(), any(), any()))
             .thenReturn(TEST_INCOMING_CASE_DETAILS.getCaseData());
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateDocument(AUTH_TOKEN, "a", "b", "c", incomingRequest);
@@ -764,13 +783,13 @@ public class CallbackControllerTest {
             .caseDetails(TEST_INCOMING_CASE_DETAILS)
             .build();
 
-        when(caseOrchestrationService.handleDocumentGenerationCallback(eq(incomingRequest), eq(AUTH_TOKEN), any(), any(), any()))
+        when(caseOrchestrationService.handleDocumentGenerationCallback(eq(incomingRequest), eq(AUTH_TOKEN), any(DocumentType.class), any(), any()))
             .thenReturn(TEST_INCOMING_CASE_DETAILS.getCaseData());
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.prepareToPrintForPronouncement(AUTH_TOKEN, incomingRequest);
 
         verify(caseOrchestrationService).handleDocumentGenerationCallback(
-            incomingRequest, AUTH_TOKEN, "FL-DIV-GNO-ENG-00059.docx", "caseListForPronouncement", "caseListForPronouncement");
+            incomingRequest, AUTH_TOKEN, CASE_LIST_FOR_PRONOUNCEMENT, "caseListForPronouncement", "caseListForPronouncement");
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), is(TEST_INCOMING_CASE_DETAILS.getCaseData()));
     }
@@ -781,13 +800,13 @@ public class CallbackControllerTest {
             .caseDetails(TEST_INCOMING_CASE_DETAILS)
             .build();
 
-        when(caseOrchestrationService.handleDocumentGenerationCallback(eq(incomingRequest), eq(AUTH_TOKEN), any(), any(), any()))
+        when(caseOrchestrationService.handleDocumentGenerationCallback(eq(incomingRequest), eq(AUTH_TOKEN), any(DocumentType.class), any(), any()))
             .thenReturn(TEST_INCOMING_CASE_DETAILS.getCaseData());
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.updateBulkCaseHearingDetails(AUTH_TOKEN, incomingRequest);
 
         verify(caseOrchestrationService).handleDocumentGenerationCallback(
-            incomingRequest, AUTH_TOKEN, "FL-DIV-GNO-ENG-00020.docx", "coe", "certificateOfEntitlement");
+            incomingRequest, AUTH_TOKEN, COE, "coe", "certificateOfEntitlement");
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getData(), is(TEST_INCOMING_CASE_DETAILS.getCaseData()));
     }
@@ -798,7 +817,7 @@ public class CallbackControllerTest {
             .caseDetails(TEST_INCOMING_CASE_DETAILS)
             .build();
         CaseOrchestrationServiceException expectedException = new CaseOrchestrationServiceException("foo");
-        when(caseOrchestrationService.handleDocumentGenerationCallback(eq(incomingRequest), eq(AUTH_TOKEN), any(), any(), any()))
+        when(caseOrchestrationService.handleDocumentGenerationCallback(eq(incomingRequest), eq(AUTH_TOKEN), anyString(), any(), any()))
             .thenThrow(expectedException);
 
         CaseOrchestrationServiceException actualException = assertThrows(CaseOrchestrationServiceException.class,
@@ -812,7 +831,7 @@ public class CallbackControllerTest {
             .caseDetails(TEST_INCOMING_CASE_DETAILS)
             .build();
         CaseOrchestrationServiceException expectedException = new CaseOrchestrationServiceException("foo");
-        when(caseOrchestrationService.handleDocumentGenerationCallback(eq(incomingRequest), eq(AUTH_TOKEN), any(), any(), any()))
+        when(caseOrchestrationService.handleDocumentGenerationCallback(eq(incomingRequest), eq(AUTH_TOKEN), any(DocumentType.class), any(), any()))
             .thenThrow(expectedException);
 
         CaseOrchestrationServiceException actualException = assertThrows(CaseOrchestrationServiceException.class,
@@ -826,7 +845,7 @@ public class CallbackControllerTest {
             .caseDetails(TEST_INCOMING_CASE_DETAILS)
             .build();
         CaseOrchestrationServiceException expectedException = new CaseOrchestrationServiceException("foo");
-        when(caseOrchestrationService.handleDocumentGenerationCallback(eq(incomingRequest), eq(AUTH_TOKEN), any(), any(), any()))
+        when(caseOrchestrationService.handleDocumentGenerationCallback(eq(incomingRequest), eq(AUTH_TOKEN), any(DocumentType.class), any(), any()))
             .thenThrow(expectedException);
 
         CaseOrchestrationServiceException actualException = assertThrows(CaseOrchestrationServiceException.class,

@@ -22,6 +22,9 @@ import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_HEADER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_LIST_FOR_PRONOUNCEMENT_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_LIST_FOR_PRONOUNCEMENT_FILE_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.CASE_LIST_FOR_PRONOUNCEMENT;
 
 @RestController
 @Slf4j
@@ -83,6 +86,15 @@ public class BulkCaseController {
         return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
     }
 
+    /**
+     * Generate given document and attach it to the Divorce case.
+     *
+     * @deprecated Please don't use this endpoint.
+     *      It's not desirable that document generation information be contained in CCD. Instead it should be known by COS.
+     *      Also, having values outside of COS makes re-using the code harder and less safe.
+     *      Please create an endpoint for your specific need.
+     */
+    @Deprecated(since = "We are migrating the implementation details for producing a document into COS (from CCD-definitions).")
     @PostMapping(path = "/bulk/edit/listing")
     @ApiOperation(value = "Callback to validate bulk case data for listing")
     @ApiResponses(value = {
@@ -96,11 +108,43 @@ public class BulkCaseController {
         @RequestParam(value = "filename") @ApiParam("filename") String filename,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
+        log.warn("The /bulk/edit/listing endpoint was called with templateId [{}], documentType [{}] and filename [{}].",
+            templateId,
+            documentType,
+            filename);
+
         CcdCallbackResponse.CcdCallbackResponseBuilder ccdCallbackResponseBuilder = CcdCallbackResponse.builder();
 
         try {
             Map<String, Object> response = orchestrationService.editBulkCaseListingData(ccdCallbackRequest,
                 filename, templateId, documentType, authorizationToken);
+            ccdCallbackResponseBuilder.data(response);
+        } catch (WorkflowException exception) {
+            log.error("Error validating bulk case with BulkCaseId : {}", ccdCallbackRequest.getCaseDetails().getCaseId(), exception);
+            ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
+    }
+
+    @PostMapping(path = "/about-to-edit-bulk-case")
+    @ApiOperation(value = "Last operations before submitting the 'Edit bulk case' event.")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Bulk case processing has been initiated"),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> aboutToEditBulkCase(
+        @RequestHeader(AUTHORIZATION_HEADER)
+        @ApiParam(value = "Authorisation token issued by IDAM") final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder ccdCallbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            Map<String, Object> response = orchestrationService.editBulkCaseListingData(ccdCallbackRequest,
+                CASE_LIST_FOR_PRONOUNCEMENT_FILE_NAME,
+                CASE_LIST_FOR_PRONOUNCEMENT,
+                CASE_LIST_FOR_PRONOUNCEMENT_DOCUMENT_TYPE,
+                authorizationToken);
             ccdCallbackResponseBuilder.data(response);
         } catch (WorkflowException exception) {
             log.error("Error validating bulk case with BulkCaseId : {}", ccdCallbackRequest.getCaseDetails().getCaseId(), exception);

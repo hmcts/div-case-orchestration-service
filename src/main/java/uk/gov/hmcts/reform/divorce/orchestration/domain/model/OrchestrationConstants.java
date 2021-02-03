@@ -186,6 +186,8 @@ public class OrchestrationConstants {
     public static final String CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL = "CoRespContactMethodIsDigital";
     public static final String COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE = "coRespondentCostOrderLetter";
     public static final String COST_ORDER_CO_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE = "coRespondentSolicitorCostOrderLetter";
+    public static final String CASE_LIST_FOR_PRONOUNCEMENT_DOCUMENT_TYPE = "caseListForPronouncement";
+    public static final String CASE_LIST_FOR_PRONOUNCEMENT_FILE_NAME = "caseListForPronouncement";
     public static final String DN_DECISION_DATE_FIELD = "DNApprovalDate";
 
     // Divorce Session
@@ -307,6 +309,7 @@ public class OrchestrationConstants {
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE = "personalService";
     public static final String FEE_TO_PAY_JSON_KEY = "FeeToPay";
     public static final String AOS_OVERDUE_COVER_LETTER_DOCUMENT_TYPE = "aosOverdueCoverLetter";
+    public static final String CERTIFICATE_OF_ENTITLEMENT_FILENAME_PREFIX = "certificateOfEntitlement";
 
     public static final String DOCUMENT_TYPE_COE = "coe";
     public static final String DOCUMENT_TYPE_OTHER = "other";

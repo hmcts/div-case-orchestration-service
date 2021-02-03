@@ -27,11 +27,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference.ENGLISH;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_LIST_FOR_PRONOUNCEMENT_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.CASE_LIST_FOR_PRONOUNCEMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class EditBulkCaseITest extends MockedFunctionalTest {
-    private static final String API_URL = "/bulk/edit/listing?templateId=a&documentType=b&filename=c";
+
+    private static final String API_URL = "/about-to-edit-bulk-case";
+    private static final String DEPRECATED_API_URL = "/bulk/edit/listing?templateId=a&documentType=b&filename=c";
+
     private static final String ERROR_MESSAGE = "Court hearing date is in the past";
 
     private Map<String, Object> caseData;
@@ -61,7 +67,27 @@ public class EditBulkCaseITest extends MockedFunctionalTest {
 
     @Test
     public void givenCaseWithJudge_whenEditBulkCase_thenGenerateDocument() throws Exception {
+        LocalDateTime today = LocalDateTime.parse("1999-01-01T10:20:55.000");
+        when(clock.instant()).thenReturn(today.toInstant(ZoneOffset.UTC));
 
+        caseData.put("hearingDate", "2000-01-01T10:20:55.000");
+        caseData.put("PronouncementJudge", "Judge");
+
+        stubDocumentGeneratorService(CASE_LIST_FOR_PRONOUNCEMENT.getTemplateByLanguage(ENGLISH),
+            singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
+            CASE_LIST_FOR_PRONOUNCEMENT_DOCUMENT_TYPE);
+
+        webClient.perform(post(API_URL)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(ccdCallbackRequest))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(ImmutableMap.of("data", caseData))));
+    }
+
+    @Test
+    public void givenCaseWithJudge_whenEditBulkCase_thenGenerateDocument_ForDeprecatedEndpoint() throws Exception {
         LocalDateTime today = LocalDateTime.parse("1999-01-01T10:20:55.000");
         when(clock.instant()).thenReturn(today.toInstant(ZoneOffset.UTC));
 
@@ -73,7 +99,7 @@ public class EditBulkCaseITest extends MockedFunctionalTest {
 
         stubDocumentGeneratorService(templateId, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails), documentType);
 
-        webClient.perform(post(API_URL)
+        webClient.perform(post(DEPRECATED_API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .content(convertObjectToJsonString(ccdCallbackRequest))
             .contentType(MediaType.APPLICATION_JSON)
@@ -91,6 +117,23 @@ public class EditBulkCaseITest extends MockedFunctionalTest {
         caseData.put("hearingDate", "2000-01-01T10:20:55.000");
 
         webClient.perform(post(API_URL)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(ccdCallbackRequest))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.errors", contains(ERROR_MESSAGE)));
+    }
+
+    @Test
+    public void givenCallbackRequestWithPastDateBulkCaseData_thenReturnCallbackResponseWithErrors_ForDeprecatedEndpoint() throws Exception {
+        // Mock current date to be in the past compared to the request json
+        LocalDateTime today = LocalDateTime.parse("2001-01-01T10:20:55.000");
+        when(clock.instant()).thenReturn(today.toInstant(ZoneOffset.UTC));
+
+        caseData.put("hearingDate", "2000-01-01T10:20:55.000");
+
+        webClient.perform(post(DEPRECATED_API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .content(convertObjectToJsonString(ccdCallbackRequest))
             .contentType(MediaType.APPLICATION_JSON)

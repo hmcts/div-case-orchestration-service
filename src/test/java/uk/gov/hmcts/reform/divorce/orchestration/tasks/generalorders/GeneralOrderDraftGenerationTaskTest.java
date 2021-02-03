@@ -38,8 +38,7 @@ public class GeneralOrderDraftGenerationTaskTest extends AbstractGeneralOrderGen
                                     Map<String, Object> returnedCaseData,
                                     String expectedDocumentType,
                                     String expectedTemplateId,
-                                    DocmosisTemplateVars expectedDocmosisTemplateVars
-    ) {
+                                    DocmosisTemplateVars expectedDocmosisTemplateVars) {
         verifyDraftAddedToCaseData(expectedIncomingCaseData);
         verifyPdfDocumentGenerationCallIsCorrect(expectedTemplateId, expectedDocmosisTemplateVars);
     }
@@ -49,4 +48,5 @@ public class GeneralOrderDraftGenerationTaskTest extends AbstractGeneralOrderGen
 
         assertThat(generatedDocumentInfo.getDocumentFilename(), is(newGeneratedDocument.getFileName() + ".pdf"));
     }
+
 }

@@ -47,6 +47,9 @@ import static java.util.Collections.singletonList;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_PRINT_ERROR_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_LIST_FOR_PRONOUNCEMENT_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_LIST_FOR_PRONOUNCEMENT_FILE_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CERTIFICATE_OF_ENTITLEMENT_FILENAME_PREFIX;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_ANSWERS_LINK;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
@@ -57,6 +60,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ANSWERS_LINK;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_PBA_PAYMENT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.CASE_LIST_FOR_PRONOUNCEMENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COE;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.getPbaUpdatedState;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.getResponseErrors;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.isPaymentSuccess;
@@ -168,6 +173,24 @@ public class CallbackController {
         @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return ResponseEntity.ok(caseOrchestrationService.setOrderSummaryAssignRole(ccdCallbackRequest, authorizationToken));
+    }
+
+    @PostMapping(path = "/allow-share-a-case",
+        consumes = APPLICATION_JSON,
+        produces = APPLICATION_JSON)
+    @ApiOperation(value = "Allows Share a Case")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Petition issue fee amount is sent to CCD as callback response",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> allowShareACase(
+        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(caseOrchestrationService.allowShareACase(ccdCallbackRequest, authorizationToken))
+                .build()
+            );
     }
 
     @SuppressWarnings("unchecked")
@@ -640,11 +663,11 @@ public class CallbackController {
         @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
-        String templateId = "FL-DIV-GNO-ENG-00059.docx";
-        String documentType = "caseListForPronouncement";
-        String filename = "caseListForPronouncement";
-
-        return generateNewDocumentAndAddToCaseData(authorizationToken, ccdCallbackRequest, templateId, documentType, filename);
+        return generateNewDocumentAndAddToCaseData(authorizationToken,
+            ccdCallbackRequest,
+            CASE_LIST_FOR_PRONOUNCEMENT,
+            CASE_LIST_FOR_PRONOUNCEMENT_DOCUMENT_TYPE,
+            CASE_LIST_FOR_PRONOUNCEMENT_FILE_NAME);
     }
 
     @PostMapping(path = "/update-bulk-case-hearing-details", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
@@ -657,11 +680,10 @@ public class CallbackController {
         @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
-        String templateId = "FL-DIV-GNO-ENG-00020.docx";
-        String documentType = "coe";
-        String filename = "certificateOfEntitlement";
+        String ccdDocumentType = "coe";
+        String filename = CERTIFICATE_OF_ENTITLEMENT_FILENAME_PREFIX;
 
-        return generateNewDocumentAndAddToCaseData(authorizationToken, ccdCallbackRequest, templateId, documentType, filename);
+        return generateNewDocumentAndAddToCaseData(authorizationToken, ccdCallbackRequest, COE, ccdDocumentType, filename);
     }
 
     @PostMapping(path = "/generate-dn-pronouncement-documents", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
@@ -1495,17 +1517,35 @@ public class CallbackController {
     private ResponseEntity<CcdCallbackResponse> generateNewDocumentAndAddToCaseData(String authorizationToken,
                                                                                     CcdCallbackRequest ccdCallbackRequest,
                                                                                     String templateId,
-                                                                                    String documentType,
+                                                                                    String ccdDocumentType,
                                                                                     String filename) throws CaseOrchestrationServiceException {
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
 
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
 
         Map<String, Object> payloadToReturn = caseOrchestrationService.handleDocumentGenerationCallback(
-            ccdCallbackRequest, authorizationToken, templateId, documentType, filename
+            ccdCallbackRequest, authorizationToken, templateId, ccdDocumentType, filename
         );
         callbackResponseBuilder.data(payloadToReturn);
-        log.info("Generating document {} for case {}.", documentType, caseId);
+        log.info("Generating document {} for case {}.", ccdDocumentType, caseId);
+
+        return ResponseEntity.ok(callbackResponseBuilder.build());
+    }
+
+    private ResponseEntity<CcdCallbackResponse> generateNewDocumentAndAddToCaseData(String authorizationToken,
+                                                                                    CcdCallbackRequest ccdCallbackRequest,
+                                                                                    DocumentType documentType,
+                                                                                    String ccdDocumentType,
+                                                                                    String filename) throws CaseOrchestrationServiceException {
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+
+        Map<String, Object> payloadToReturn = caseOrchestrationService.handleDocumentGenerationCallback(
+            ccdCallbackRequest, authorizationToken, documentType, ccdDocumentType, filename
+        );
+        callbackResponseBuilder.data(payloadToReturn);
+        log.info("Generating document {} for case {}.", ccdDocumentType, caseId);
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
