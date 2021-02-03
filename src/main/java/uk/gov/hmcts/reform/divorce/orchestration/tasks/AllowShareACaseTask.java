@@ -32,7 +32,7 @@ public class AllowShareACaseTask implements Task<Map<String, Object>> {
         ccdDataStoreService.removeCreatorRole(caseDetails, authToken);
         assignCaseAccessService.assignCaseAccess(caseDetails, authToken);
 
-        log.info("CaseId: {}, Adding CREATOR case role", caseId);
+        log.info("CaseId: {}, Adding [PETSOLICITOR] case role", caseId);
         ccdDataStoreService.addPetitionerSolicitorRole(caseDetails, authToken);
 
         log.info("CaseId: {}, Share a Case should be enabled", caseId);
