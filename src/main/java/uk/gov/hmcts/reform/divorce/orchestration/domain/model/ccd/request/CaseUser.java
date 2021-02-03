@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.domain.model;
+package uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
