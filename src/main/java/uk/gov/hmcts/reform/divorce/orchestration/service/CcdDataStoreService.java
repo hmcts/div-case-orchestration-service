@@ -5,10 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseRoleClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseUser;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.RemoveUserRolesRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseRoles;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.request.CaseUser;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.request.RemoveUserRolesRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.request.UpdateUserRolesRequest;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -26,10 +27,32 @@ public class CcdDataStoreService {
     private final CaseRoleClient caseRoleClient;
 
     public void removeCreatorRole(CaseDetails caseDetails, String authorisationToken) {
-        removeRole(caseDetails, authorisationToken);
+        removeRoles(caseDetails, authorisationToken);
     }
 
-    private void removeRole(CaseDetails caseDetails, String authorisationToken) {
+    public void addPetitionerSolicitorRole(CaseDetails caseDetails, String authorisationToken) {
+        addCaseRole(caseDetails, authorisationToken, CaseRoles.PETITIONER_SOLICITOR);
+    }
+
+    private void addCaseRole(CaseDetails caseDetails, String authorisationToken, String caseRole) {
+        UserDetails userDetails = idamClient.getUserDetails(authorisationToken);
+        String userId = userDetails.getId();
+        String caseId = caseDetails.getCaseId();
+
+        log.info("CaseID: {} adding case role {} to user {}", caseId, caseRole, userId);
+
+        caseRoleClient.updateCaseRolesForUser(
+            authorisationToken,
+            authTokenGenerator.generate(),
+            caseId,
+            userId,
+            buildUpdateUserRolesRequest(caseId, userId, caseRole)
+        );
+
+        log.info("CaseID: {} added case role {} to user {}", caseId, caseRole, userId);
+    }
+
+    private void removeRoles(CaseDetails caseDetails, String authorisationToken) {
         UserDetails userDetails = idamClient.getUserDetails(authorisationToken);
         String userId = userDetails.getId();
         String caseId = caseDetails.getCaseId();
@@ -43,6 +66,14 @@ public class CcdDataStoreService {
         );
 
         log.info("CaseID: {} removed  [CREATOR] and [PETSOLICITOR] case roles from user {}", caseId, userId);
+    }
+
+    private UpdateUserRolesRequest buildUpdateUserRolesRequest(String caseId, String userId, String caseRole) {
+        return UpdateUserRolesRequest
+            .builder()
+            .caseId(caseId)
+            .caseRoles(asList(caseRole))
+            .build();
     }
 
     private RemoveUserRolesRequest buildRemoveUserRolesRequest(String caseId, String userId) {

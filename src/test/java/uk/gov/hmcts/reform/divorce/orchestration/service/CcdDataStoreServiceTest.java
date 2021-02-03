@@ -7,8 +7,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseRoleClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.RemoveUserRolesRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.request.RemoveUserRolesRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.request.UpdateUserRolesRequest;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -47,6 +48,22 @@ public class CcdDataStoreServiceTest {
             eq(AUTH_TOKEN),
             eq(TEST_SERVICE_TOKEN),
             any(RemoveUserRolesRequest.class)
+        );
+    }
+
+    @Test
+    public void updateRolesCallsApi() {
+        when(idamClient.getUserDetails(AUTH_TOKEN)).thenReturn(UserDetails.builder().id(TEST_USER_ID).build());
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_TOKEN);
+
+        ccdDataStoreService.addPetitionerSolicitorRole(CaseDetails.builder().caseId(TEST_CASE_ID).build(), AUTH_TOKEN);
+
+        verify(caseRoleClient).updateCaseRolesForUser(
+            eq(AUTH_TOKEN),
+            eq(TEST_SERVICE_TOKEN),
+            eq(TEST_CASE_ID),
+            eq(TEST_USER_ID),
+            any(UpdateUserRolesRequest.class)
         );
     }
 }

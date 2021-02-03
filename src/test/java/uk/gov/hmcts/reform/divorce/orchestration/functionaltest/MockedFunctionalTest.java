@@ -159,6 +159,15 @@ public abstract class MockedFunctionalTest {
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)));
     }
 
+    public void stubAddCaseRoleServerEndpoint(String authToken, String s2sAuthToken, String caseId, String userId) {
+        caseRoleServer.stubFor(WireMock.put("/cases/ " + caseId + " /users/" + userId)
+            .withHeader(SERVICE_AUTHORIZATION_HEADER, new EqualToPattern("Bearer " + s2sAuthToken))
+            .withHeader(AUTHORIZATION, new EqualToPattern(authToken))
+            .willReturn(aResponse()
+                .withStatus(HttpStatus.OK.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)));
+    }
+
     public void stubAssignCaseAccessServerEndpoint(String authToken, String s2sAuthToken) {
         assignCaseAccessServer.stubFor(WireMock.post("/case-assignments")
             .withHeader(SERVICE_AUTHORIZATION_HEADER, new EqualToPattern("Bearer " + s2sAuthToken))

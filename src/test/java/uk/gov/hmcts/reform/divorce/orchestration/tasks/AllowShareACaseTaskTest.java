@@ -49,5 +49,10 @@ public class AllowShareACaseTaskTest {
                 context.getTransientObject(CASE_DETAILS_JSON_KEY),
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY)
             );
+        verify(ccdDataStoreService)
+            .addPetitionerSolicitorRole(
+                context.getTransientObject(CASE_DETAILS_JSON_KEY),
+                context.getTransientObject(AUTH_TOKEN_JSON_KEY)
+            );
     }
 }
