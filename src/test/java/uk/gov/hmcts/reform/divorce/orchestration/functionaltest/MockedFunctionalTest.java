@@ -160,7 +160,7 @@ public abstract class MockedFunctionalTest {
     }
 
     public void stubAddCaseRoleServerEndpoint(String authToken, String s2sAuthToken, String caseId, String userId) {
-        caseRoleServer.stubFor(WireMock.put("/cases/ " + caseId + " /users/" + userId)
+        caseRoleServer.stubFor(WireMock.put("/cases/" + caseId + "/users/" + userId)
             .withHeader(SERVICE_AUTHORIZATION_HEADER, new EqualToPattern("Bearer " + s2sAuthToken))
             .withHeader(AUTHORIZATION, new EqualToPattern(authToken))
             .willReturn(aResponse()
