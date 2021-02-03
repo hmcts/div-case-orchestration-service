@@ -9,14 +9,14 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath("net.serenity-bdd:serenity-gradle-plugin:2.1.13")
+        classpath("net.serenity-bdd:serenity-gradle-plugin:2.2.13")
     }
 }
 
 plugins {
     id 'application'
     id 'checkstyle'
-    id 'com.github.ben-manes.versions' version '0.28.0'
+    id 'com.github.ben-manes.versions' version '0.36.0'
     id 'com.jfrog.bintray' version '1.8.4'
     id 'info.solidsoft.pitest' version '1.5.1'
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
@@ -37,11 +37,11 @@ def versions = [
         commonsIo                    : '2.6',
         commonsLang3                 : '3.9',
         commonsMath3                 : '3.6.1',
-        divCommonLib                 : '1.2.4',
+        divCommonLib                 : '1.2.5',
         dumbster                     : '1.7.1',
-        elasticsearch                : '7.9.3',
+        elasticsearch                : '7.10.2',
         feignHttpClient              : '10.3.0',
-        flyway                       : '6.5.5',
+        flyway                        : '6.5.5',
         googleAuth                   : '1.5.0',
         gradlePitest                 : '1.4.6',
         guava                        : '30.1-jre',
@@ -56,6 +56,7 @@ def versions = [
         jdbi                         : '2.78',
         jsonAssert                   : '1.2.3',
         jsonPathAssert               : '2.2.0',
+        junit                        : '4.13.1',
         lombok                       : '1.18.12',
         pitest                       : '1.4.10',
         postgresql                   : '42.2.13',
@@ -64,7 +65,7 @@ def versions = [
         reformPropertiesVolume       : '0.0.4',
         reformsJavaLogging           : '5.1.7',
         sendLetterClient             : '2.2.0',
-        serenity                     : '2.1.13',
+        serenity                     : '2.2.13',
         serenityCucumber             : '1.9.50',
         serviceTokenGenerator        : '3.1.1',
         sonarPitest                  : '0.5',
@@ -110,10 +111,10 @@ allprojects {
     }
 
     repositories {
-        maven { url "https://dl.bintray.com/hmcts/hmcts-maven" }
-        maven { url 'https://repo.spring.io/libs-milestone' }
         mavenCentral()
         jcenter()
+        maven { url "https://dl.bintray.com/hmcts/hmcts-maven" }
+        maven { url 'https://repo.spring.io/libs-milestone' }
     }
 
     dependencyManagement {
@@ -325,7 +326,7 @@ dependencies {
     runtimeOnly('org.springframework.boot:spring-boot-devtools')
 
     testImplementation group: 'org.awaitility', name: 'awaitility', version: versions.awaitility
-    testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '2.2.4.RELEASE'
+    testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '3.0.0'
     testImplementation(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
         exclude(module: 'commons-logging')
         exclude(module: 'android-json')
@@ -381,7 +382,7 @@ dependencies {
     contractTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
     contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.3.2")
     contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.7.0")
-    contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.3.2')
+    contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.7.0')
 
     contractTestCompile sourceSets.main.runtimeClasspath
     contractTestCompile sourceSets.test.runtimeClasspath

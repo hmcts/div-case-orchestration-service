@@ -22,7 +22,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 @RequiredArgsConstructor
-public class PopulateDocLink implements Task<Map<String, Object>> {
+public class PopulateDocLinkTask implements Task<Map<String, Object>> {
 
     private final ObjectMapper objectMapper;
 
@@ -35,14 +35,14 @@ public class PopulateDocLink implements Task<Map<String, Object>> {
                 }))
                 .orElse(new ArrayList<>());
 
-        String documentType = context.getTransientObject(DOCUMENT_TYPE);
+        String ccdDocumentType = context.getTransientObject(DOCUMENT_TYPE);
         String docLinkFieldName = context.getTransientObject(DOCUMENT_DRAFT_LINK_FIELD);
-        if (StringUtils.isNotBlank(documentType)) {
+        if (StringUtils.isNotBlank(ccdDocumentType)) {
             CollectionMember<Document> petitionDocument = documentList
                 .stream()
-                .filter(document -> documentType.equals(document.getValue().getDocumentType()))
+                .filter(document -> ccdDocumentType.equals(document.getValue().getDocumentType()))
                 .findFirst()
-                .orElseThrow(() -> new TaskException(documentType + " document not found"));
+                .orElseThrow(() -> new TaskException(ccdDocumentType + " document not found"));
 
             payload.put(docLinkFieldName, petitionDocument.getValue().getDocumentLink());
         }

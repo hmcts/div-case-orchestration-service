@@ -12,6 +12,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertThrows;
 import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.CO_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.PETITIONER;
 import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.RESPONDENT;
@@ -35,7 +36,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.CaseDataKeys.PETITIONER_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.CaseDataKeys.PETITIONER_CORRESPONDENCE_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.CaseDataKeys.PETITIONER_HOME_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.CaseDataKeys.RESPONDENT_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.CaseDataKeys.RESPONDENT_SOLICITOR_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.COSTS_CLAIM_GRANTED;
@@ -48,7 +50,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.workflows.GeneralEmailWo
 
 public class AddresseeDataExtractorTest {
 
-    public static final String PETITIONERS_ADDRESS = "456 Petitioner Str\nPetitionville\nPetitionshire\nPE4 J0N";
+    public static final String PETITIONERS_CORRESPONDENCE_ADDRESS = "456 Petitioner Correspondence Str\nPetitionville\nPetitionshire\nPE4 J0N";
+    public static final String PETITIONERS_HOME_ADDRESS = "789 Petitioner Home Str\nPetitionville\nPetitionshire\nPE4 J2N";
     public static final String RESPONDENTS_ADDRESS = "123 Respondent Str\nRespondent\ncounty\nRE5 P0N";
     public static final String RESPONDENT_SOLICITORS_ADDRESS = "321 Resp Solicitor\ntown\ncounty\npostcode";
     public static final String RESPONDENT_SOLICITOR_REF = "SolRef4567";
@@ -72,11 +75,21 @@ public class AddresseeDataExtractorTest {
 
     @Test
     public void getPetitionerShouldReturnValidValues() {
-        Map<String, Object> caseData = buildCaseDataWithPetitioner();
+        Map<String, Object> caseData = buildCaseDataWithPetitionerCorrespondenceAddressButNoHomeAddress();
 
         Addressee addressee = AddresseeDataExtractor.getPetitioner(caseData);
 
-        assertThat(addressee.getFormattedAddress(), is(PETITIONERS_ADDRESS));
+        assertThat(addressee.getFormattedAddress(), is(PETITIONERS_CORRESPONDENCE_ADDRESS));
+        assertThat(addressee.getName(), is(TestConstants.TEST_PETITIONER_FULL_NAME));
+    }
+
+    @Test
+    public void getPetitionerShouldReturnValidValuesWhenCorrespondenceAddressIsNotPresent() {
+        Map<String, Object> caseData = buildCaseDataWithPetitionerHomeAddressButNoCorrespondenceAddress();
+
+        Addressee addressee = AddresseeDataExtractor.getPetitioner(caseData);
+
+        assertThat(addressee.getFormattedAddress(), is(PETITIONERS_HOME_ADDRESS));
         assertThat(addressee.getName(), is(TestConstants.TEST_PETITIONER_FULL_NAME));
     }
 
@@ -107,11 +120,12 @@ public class AddresseeDataExtractorTest {
         AddresseeDataExtractor.getRespondent(caseData);
     }
 
-    @Test(expected = InvalidDataForTaskException.class)
+    @Test
     public void getPetitionerShouldThrowExceptionWhenAddressIsNotPresent() {
         Map<String, Object> caseData = buildCaseDataWithPetitionerNames();
 
-        AddresseeDataExtractor.getPetitioner(caseData);
+        InvalidDataForTaskException exception = assertThrows(InvalidDataForTaskException.class, () -> AddresseeDataExtractor.getPetitioner(caseData));
+        assertThat(exception.getMessage(), is("No address was found for petitioner"));
     }
 
     @Test
@@ -151,10 +165,18 @@ public class AddresseeDataExtractorTest {
         AddresseeDataExtractor.getRespondent(caseData);
     }
 
-    public static Map<String, Object> buildCaseDataWithPetitioner() {
+    public static Map<String, Object> buildCaseDataWithPetitionerCorrespondenceAddressButNoHomeAddress() {
         Map<String, Object> caseData = buildCaseDataWithPetitionerNames();
         caseData.put(GENERAL_EMAIL_PARTIES, PETITIONER.getDescription());
-        caseData.put(PETITIONER_ADDRESS, PETITIONERS_ADDRESS);
+        caseData.put(PETITIONER_CORRESPONDENCE_ADDRESS, PETITIONERS_CORRESPONDENCE_ADDRESS);
+
+        return caseData;
+    }
+
+    public static Map<String, Object> buildCaseDataWithPetitionerHomeAddressButNoCorrespondenceAddress() {
+        Map<String, Object> caseData = buildCaseDataWithPetitionerNames();
+        caseData.put(GENERAL_EMAIL_PARTIES, PETITIONER.getDescription());
+        caseData.put(PETITIONER_HOME_ADDRESS, PETITIONERS_HOME_ADDRESS);
 
         return caseData;
     }

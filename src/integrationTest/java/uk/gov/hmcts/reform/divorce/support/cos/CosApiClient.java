@@ -136,6 +136,7 @@ public interface CosApiClient {
         @RequestBody CcdCallbackRequest ccdCallbackRequest
     );
 
+    @Deprecated
     @ApiOperation("Handle callback to edit bulk listing")
     @PostMapping(value = "/bulk/edit/listing")
     Map<String, Object> editBulkListing(

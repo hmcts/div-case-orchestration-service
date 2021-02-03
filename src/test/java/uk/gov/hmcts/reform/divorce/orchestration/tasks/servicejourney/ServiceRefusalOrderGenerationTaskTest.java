@@ -60,8 +60,8 @@ public abstract class ServiceRefusalOrderGenerationTaskTest extends BasePayloadS
 
         runVerifications(
             returnedCaseData,
-            getTask().getDocumentType(),
-            getTask().getTemplateId(),
+            getExpectedDocumentType(),
+            getExpectedTemplateId(),
             buildServiceApplicationRefusalOrder()
         );
 
@@ -73,6 +73,10 @@ public abstract class ServiceRefusalOrderGenerationTaskTest extends BasePayloadS
         verifyDocumentAddedToCaseData(returnedCaseData, expectedDocumentType);
         verifyPdfDocumentGenerationCallIsCorrect(expectedTemplateId, expectedDocmosisTemplateVars);
     }
+
+    protected abstract String getExpectedDocumentType();
+
+    protected abstract String getExpectedTemplateId();
 
     private void verifyDocumentAddedToCaseData(Map<String, Object> returnedCaseData, String expectedDocumentType) {
         String expectedServiceFileName = getFileName();

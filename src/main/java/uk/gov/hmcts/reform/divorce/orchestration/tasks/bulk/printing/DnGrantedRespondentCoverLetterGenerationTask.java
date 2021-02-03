@@ -16,6 +16,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference.ENGLISH;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DN_GRANTED_COVER_LETTER_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 
 @Component
@@ -23,7 +25,7 @@ public class DnGrantedRespondentCoverLetterGenerationTask extends BasePayloadSpe
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FileMetadata {
-        public static final String TEMPLATE_ID = "FL-DIV-LET-ENG-00357.docx";
+        public static final String TEMPLATE_ID = DN_GRANTED_COVER_LETTER_RESPONDENT.getTemplateByLanguage(ENGLISH);
         public static final String DOCUMENT_TYPE = "dnGrantedCoverLetterRespondent";
     }
 

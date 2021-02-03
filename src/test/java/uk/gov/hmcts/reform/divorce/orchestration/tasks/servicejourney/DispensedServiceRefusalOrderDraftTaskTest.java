@@ -20,7 +20,7 @@ public class DispensedServiceRefusalOrderDraftTaskTest extends ServiceRefusalOrd
 
     @Override
     protected String getTemplateId() {
-        return DispensedServiceRefusalOrderDraftTask.FileMetadata.TEMPLATE_ID;
+        return "FL-DIV-GNO-ENG-00535.docx";
     }
 
     @Override
