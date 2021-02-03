@@ -42,6 +42,9 @@ public class GetPetitionIssueFeesTest extends IntegrationTest {
     @Value("${case.orchestration.solicitor.petition-issue-fees.context-path}")
     private String petitionIssueFeesContextPath;
 
+    @Value("${case.orchestration.solicitor.allow-share-a-case.context-path}")
+    private String allowShareACaseContextPath;
+
     @Autowired
     protected CcdClientSupport ccdClientSupport;
 
@@ -78,6 +81,19 @@ public class GetPetitionIssueFeesTest extends IntegrationTest {
     }
 
     @Test
+    public void allowShareACaseWorks() throws Exception {
+        solicitorUser = getCreatedUserDetails("fr_applicant_sol@sharklasers.com", "Testing1234");
+
+        baseCaseData = getJsonFromResourceFile(BASE_CASE_RESPONSE, new TypeReference<HashMap<String, Object>>() {
+        });
+        caseDetails = ccdClientSupport.submitSolicitorCase(baseCaseData, solicitorUser);
+
+        Response response = prepareAndCallCosEndpoint(caseDetails, serverUrl + allowShareACaseContextPath);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK.value()));
+    }
+
+    @Test
     public void givenAmendCaseCallbackRequest_whenGetPetitionIssueFees_thenReturnUpdatedData() {
         Map<String, Object> newCaseData = new HashMap<>(baseCaseData);
         newCaseData.put(PREVIOUS_CASE_ID_CCD_KEY, CaseLink.builder()
@@ -87,7 +103,7 @@ public class GetPetitionIssueFeesTest extends IntegrationTest {
         uk.gov.hmcts.reform.ccd.client.model.CaseDetails newCaseDetails = ccdClientSupport
             .submitSolicitorCase(newCaseData, solicitorUser);
 
-        Response response = prepareAndCallCosEndpoint(newCaseDetails, serverUrl + petitionIssueFeesContextPath);
+        Response response = prepareAndCallCosEndpoint(newCaseDetails, serverUrl + allowShareACaseContextPath);
 
         assertThat(response.getStatusCode(), is(HttpStatus.OK.value()));
         Map<String, Object> responseData = response.getBody().path(DATA);

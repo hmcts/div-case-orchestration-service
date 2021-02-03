@@ -172,15 +172,19 @@ public abstract class IntegrationTest {
     }
 
     private UserDetails getCreatedUserDetails(String username) {
+        return getCreatedUserDetails(username, PASSWORD);
+    }
+
+    protected UserDetails getCreatedUserDetails(String username, String password) {
         synchronized (this) {
-            final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, PASSWORD);
+            final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, password);
 
             final String userId = idamTestSupportUtil.getUserId(authToken);
 
             return UserDetails.builder()
                 .username(username)
                 .emailAddress(username)
-                .password(PASSWORD)
+                .password(password)
                 .authToken(authToken)
                 .id(userId)
                 .build();
