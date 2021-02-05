@@ -65,11 +65,13 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
     public void givenCallbackRequest_whenSolicitorCreateWithNoSolicitorReference_thenReturnWithError() throws Exception {
         Response response = postWithInValidDataAndValidateResponse();
 
-        assertThat(getResponseBody(response), isJson(
-            allOf(
-                withJsonPath("$.errors", hasSize(1)),
-                withJsonPath("$.errors[0]", is(SOLICITOR_REFERENCE_MISSING))
-            )));
+        assertThat(getResponseBody(response),
+            isJson(
+                allOf(
+                    withJsonPath("$.errors", hasSize(1)),
+                    withJsonPath("$.errors[0]", is(SOLICITOR_REFERENCE_MISSING)))
+            )
+        );
     }
 
     @Test
