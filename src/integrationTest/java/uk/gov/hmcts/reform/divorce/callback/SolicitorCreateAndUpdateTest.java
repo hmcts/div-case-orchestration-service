@@ -31,7 +31,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 
 public class SolicitorCreateAndUpdateTest extends IntegrationTest {
 
-    private static final String PAYLOAD_CONTEXT_PATH = "/fixtures/solicitor/";
+    private static final String SOLICITOR_PAYLOAD_CONTEXT_PATH = "/fixtures/solicitor/solicitor-request-data.json";
     private static final String SOLICITOR_REFERENCE = "SolicitorReference";
 
     @Value("${case.orchestration.solicitor.solicitor-create.context-path}")
@@ -42,22 +42,14 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
 
     @Test
     public void givenCallbackRequest_whenSolicitorCreate_thenReturnUpdatedData() throws Exception {
-        Response response = postWithDataAndValidateResponse(
-            serverUrl + solicitorCreatePath,
-            PAYLOAD_CONTEXT_PATH + "solicitor-request-data.json",
-            createSolicitorUser().getAuthToken()
-        );
+        Response response = postWithDataAndValidateResponse(getSolicitorCreateUrl(), SOLICITOR_PAYLOAD_CONTEXT_PATH);
 
         assertEverythingIsFine(response);
     }
 
     @Test
     public void givenCallbackRequest_whenSolicitorCreate_thenReturnUpdatedDataWithValidOrgPolicyReference() throws Exception {
-        Response response = postWithDataAndValidateResponse(
-            serverUrl + solicitorCreatePath,
-            PAYLOAD_CONTEXT_PATH + "solicitor-request-data.json",
-            createSolicitorUser().getAuthToken()
-        );
+        Response response = postWithDataAndValidateResponse(getSolicitorCreateUrl(), SOLICITOR_PAYLOAD_CONTEXT_PATH);
 
         assertEverythingIsFine(response);
         assertThat(getResponseBody(response),
@@ -82,16 +74,12 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
 
     @Test
     public void givenCallbackRequest_whenSolicitorUpdate_thenReturnUpdatedData() throws Exception {
-        Response response = postWithDataAndValidateResponse(
-            serverUrl + solicitorUpdatePath,
-            PAYLOAD_CONTEXT_PATH + "solicitor-request-data.json",
-            createSolicitorUser().getAuthToken()
-        );
+        Response response = postWithDataAndValidateResponse(getSolicitorUpdateUrl(), SOLICITOR_PAYLOAD_CONTEXT_PATH);
 
         assertEverythingIsFine(response);
     }
 
-    private static void assertEverythingIsFine(Response response) {
+    private void assertEverythingIsFine(Response response) {
         Map<String, Object> responseData = response.getBody().path(DATA);
 
         assertThat(responseData.get(CREATED_DATE_JSON_KEY), is(notNullValue()));
@@ -99,30 +87,36 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
         assertThat(responseData.get(DIVORCE_CENTRE_SITEID_JSON_KEY), is(notNullValue()));
     }
 
-    static Response postWithDataAndValidateResponse(String url, String pathToFileWithData, String authToken) throws Exception {
-        final Map<String, Object> headers = new HashMap<>();
-        headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
-        headers.put(HttpHeaders.AUTHORIZATION, authToken);
+    private String getSolicitorCreateUrl() {
+        return serverUrl + solicitorCreatePath;
+    }
 
+    private String getSolicitorUpdateUrl() {
+        return serverUrl + solicitorUpdatePath;
+    }
+
+    private Response postWithDataAndValidateResponse(String url, String pathToFileWithData) throws Exception {
         String requestBody = getJsonFromResourceFile(pathToFileWithData, JsonNode.class).toString();
-        Response response = RestUtil.postToRestService(url, headers, requestBody);
+        Response response = RestUtil.postToRestService(url, getRequestHeaders(), requestBody);
 
         assertThat(HttpStatus.OK.value(), is(response.getStatusCode()));
 
         return response;
     }
 
-    private Response postWithInValidDataAndValidateResponse() throws java.io.IOException {
-        CcdCallbackRequest jsonFromResourceFile = getJsonFromResourceFile(PAYLOAD_CONTEXT_PATH + "solicitor-request-data.json",
-            CcdCallbackRequest.class);
-        jsonFromResourceFile.getCaseDetails().getCaseData().remove(SOLICITOR_REFERENCE_JSON_KEY);
-        String requestBody = convertObjectToJsonString(jsonFromResourceFile);
-
+    private Map<String, Object> getRequestHeaders() {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
         headers.put(HttpHeaders.AUTHORIZATION, createSolicitorUser().getAuthToken());
+        return headers;
+    }
 
-        Response response = RestUtil.postToRestService(serverUrl + solicitorCreatePath, headers, requestBody);
+    private Response postWithInValidDataAndValidateResponse() throws java.io.IOException {
+        CcdCallbackRequest requestData = getJsonFromResourceFile(SOLICITOR_PAYLOAD_CONTEXT_PATH, CcdCallbackRequest.class);
+        requestData.getCaseDetails().getCaseData().remove(SOLICITOR_REFERENCE_JSON_KEY);
+        String requestPayload = convertObjectToJsonString(requestData);
+
+        Response response = RestUtil.postToRestService(getSolicitorCreateUrl(), getRequestHeaders(), requestPayload);
 
         assertThat(HttpStatus.OK.value(), is(response.getStatusCode()));
 
