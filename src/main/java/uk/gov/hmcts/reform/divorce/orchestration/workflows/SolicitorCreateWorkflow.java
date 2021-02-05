@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetClaimCostsFromTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorOrganisationPolicyDetailsTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,15 +33,18 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
     private final AddMiniPetitionDraftTask addMiniPetitionDraftTask;
     private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
     private final SetClaimCostsFromTask setClaimCostsFromTask;
+    private final SetSolicitorOrganisationPolicyDetailsTask setSolicitorOrganisationPolicyDetailsTask;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
         final List<Task<Map<String, Object>>> tasks = new ArrayList<>();
         if (isPetitionerClaimingCostsAndClaimCostsFromIsEmptyIn(caseDetails)) {
             tasks.add(setClaimCostsFromTask);
         }
+
         tasks.add(setSolicitorCourtDetailsTask);
         tasks.add(addMiniPetitionDraftTask);
         tasks.add(addNewDocumentsToCaseDataTask);
+        tasks.add(setSolicitorOrganisationPolicyDetailsTask);
 
         return this.execute(tasks.toArray(new Task[0]),
             caseDetails.getCaseData(),

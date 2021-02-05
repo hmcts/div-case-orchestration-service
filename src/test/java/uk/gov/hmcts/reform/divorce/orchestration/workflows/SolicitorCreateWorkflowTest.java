@@ -10,8 +10,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetClaimCostsFromTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorOrganisationPolicyDetailsTask;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,31 +38,11 @@ public class SolicitorCreateWorkflowTest {
     @Mock
     SetClaimCostsFromTask setClaimCostsFromTask;
 
+    @Mock
+    SetSolicitorOrganisationPolicyDetailsTask setSolicitorOrganisationPolicyDetailsTask;
+
     @InjectMocks
     SolicitorCreateWorkflow solicitorCreateWorkflow;
-
-    @Test
-    public void runShouldNotExecuteAllowShareACaseTaskWhenFeatureToggleOff() throws Exception {
-        Map<String, Object> payload = Collections.emptyMap();
-
-        CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
-
-        mockTasksExecution(
-            caseDetails.getCaseData(),
-            setSolicitorCourtDetailsTask,
-            addMiniPetitionDraftTask,
-            addNewDocumentsToCaseDataTask
-        );
-
-        assertThat(solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN), is(payload));
-
-        verifyTasksCalledInOrder(
-            payload,
-            setSolicitorCourtDetailsTask,
-            addMiniPetitionDraftTask,
-            addNewDocumentsToCaseDataTask
-        );
-    }
 
     @Test
     public void runShouldSetClaimCostsFromWhenClaimCostsIsYesAndClaimCostsFromIsEmpty() throws Exception {
@@ -76,7 +56,8 @@ public class SolicitorCreateWorkflowTest {
             setClaimCostsFromTask,
             setSolicitorCourtDetailsTask,
             addMiniPetitionDraftTask,
-            addNewDocumentsToCaseDataTask
+            addNewDocumentsToCaseDataTask,
+            setSolicitorOrganisationPolicyDetailsTask
         );
 
         assertThat(solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN), is(caseDetails.getCaseData()));
@@ -86,7 +67,8 @@ public class SolicitorCreateWorkflowTest {
             setClaimCostsFromTask,
             setSolicitorCourtDetailsTask,
             addMiniPetitionDraftTask,
-            addNewDocumentsToCaseDataTask
+            addNewDocumentsToCaseDataTask,
+            setSolicitorOrganisationPolicyDetailsTask
         );
     }
 }
