@@ -82,7 +82,7 @@ public class SolicitorCreateWorkflowTest {
     }
 
     @Test
-    public void runShouldNotRunsetSolicitorOrganisationPolicyDetailsTaskWhenFeatureIsOff() throws Exception {
+    public void runShouldNotRunSetSolicitorOrganisationPolicyDetailsTaskWhenFeatureIsOff() throws Exception {
         Map<String, Object> payload = new HashMap<>();
         payload.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
 
