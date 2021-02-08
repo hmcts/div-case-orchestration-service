@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Organisation;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -17,6 +18,8 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_CASE_ROLE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_POLICY_ORGANISATION_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
@@ -30,7 +33,6 @@ public class SetSolicitorOrganisationPolicyDetailsTaskTest {
 
     private Map<String, Object> caseData;
     private TaskContext context;
-    public static String SOLICITOR_REFERENCE_MISSING = "Could not evaluate value of mandatory property \"D8SolicitorReference\"";
 
     @Before
     public void setup() {
@@ -42,6 +44,9 @@ public class SetSolicitorOrganisationPolicyDetailsTaskTest {
     @Test
     public void shouldMapD8SolicitorReferenceToPetitionerOrganisationPolicy() {
         caseData.put(SOLICITOR_REFERENCE_JSON_KEY, TEST_SOLICITOR_REFERENCE);
+        caseData.put(PETITIONER_SOLICITOR_ORGANISATION_POLICY, OrganisationPolicy.builder()
+            .organisation(Organisation.builder().build())
+            .build());
 
         Map<String, Object> returnCaseData = setSolicitorOrganisationPolicyDetailsTask.execute(context, caseData);
 
@@ -61,4 +66,33 @@ public class SetSolicitorOrganisationPolicyDetailsTaskTest {
         assertThat(organisationPolicy, is(nullValue()));
         assertThat(caseData, is(returnCaseData));
     }
+
+    @Test
+    public void shouldUpdateExistingPetitionerOrganisationPolicyReferenceWhenSolicitorReferenceIsProvided() {
+        caseData.put(SOLICITOR_REFERENCE_JSON_KEY, TEST_SOLICITOR_REFERENCE);
+        caseData.put(PETITIONER_SOLICITOR_ORGANISATION_POLICY, OrganisationPolicy.builder()
+            .orgPolicyReference("ExistingPolicyReference")
+            .organisation(Organisation.builder()
+                .build())
+            .build());
+
+        Map<String, Object> returnCaseData = setSolicitorOrganisationPolicyDetailsTask.execute(context, caseData);
+
+        OrganisationPolicy organisationPolicy = (OrganisationPolicy) returnCaseData.get(PETITIONER_SOLICITOR_ORGANISATION_POLICY);
+
+        assertThat(organisationPolicy, is(notNullValue()));
+        assertThat(organisationPolicy.getOrgPolicyReference(), is(TEST_SOLICITOR_REFERENCE));
+    }
+
+    @Test
+    public void shouldNotAddPetitionerOrganisationPolicyWhenSolicitorReferenceIsProvidedAndPetitionerOrganisationPolicyDoesNotExist() {
+        caseData.put(SOLICITOR_REFERENCE_JSON_KEY, TEST_SOLICITOR_REFERENCE);
+
+        Map<String, Object> returnCaseData = setSolicitorOrganisationPolicyDetailsTask.execute(context, caseData);
+
+        OrganisationPolicy organisationPolicy = (OrganisationPolicy) returnCaseData.get(PETITIONER_SOLICITOR_ORGANISATION_POLICY);
+
+        assertThat(organisationPolicy, is(nullValue()));
+    }
+
 }
