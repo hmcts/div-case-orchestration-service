@@ -150,6 +150,7 @@ feature-toggle:
     solicitor_dn_reject_and_amend: ${SOLICITOR_DN_REJECT_AND_AMEND:false}
     pay_by_account: ${PAY_BY_ACCOUNT:false}
     share_a_case: ${FEATURE_SHARE_A_CASE:false}
+    represented_respondent_journey: ${FEATURE_REPRESENTED_RESPONDENT_JOURNEY:false}
 
 send-letter:
   url: ${SEND_LETTER_SERIVCE_BASEURL:http://localhost:4021}
