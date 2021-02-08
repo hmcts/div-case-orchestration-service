@@ -39,20 +39,8 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
     private final FeatureToggleService featureToggleService;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
-        final List<Task<Map<String, Object>>> tasks = new ArrayList<>();
-        if (isPetitionerClaimingCostsAndClaimCostsFromIsEmptyIn(caseDetails)) {
-            tasks.add(setClaimCostsFromTask);
-        }
-
-        tasks.add(setSolicitorCourtDetailsTask);
-        tasks.add(addMiniPetitionDraftTask);
-        tasks.add(addNewDocumentsToCaseDataTask);
-
-        if (featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)) {
-            tasks.add(setSolicitorOrganisationPolicyDetailsTask);
-        }
-
-        return this.execute(tasks.toArray(new Task[0]),
+        return this.execute(
+            getTasks(caseDetails),
             caseDetails.getCaseData(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
@@ -66,5 +54,23 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
         boolean claimCostsFromIsEmpty = StringUtils.isEmpty(caseData.get(DIVORCE_COSTS_CLAIM_FROM_CCD_FIELD));
 
         return isPetitionerClaimingCosts && claimCostsFromIsEmpty;
+    }
+
+    private Task<Map<String, Object>>[] getTasks(CaseDetails caseDetails) {
+        List<Task<Map<String, Object>>> tasks = new ArrayList<>();
+
+        if (isPetitionerClaimingCostsAndClaimCostsFromIsEmptyIn(caseDetails)) {
+            tasks.add(setClaimCostsFromTask);
+        }
+
+        tasks.add(setSolicitorCourtDetailsTask);
+        tasks.add(addMiniPetitionDraftTask);
+        tasks.add(addNewDocumentsToCaseDataTask);
+
+        if (featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)) {
+            tasks.add(setSolicitorOrganisationPolicyDetailsTask);
+        }
+
+        return tasks.toArray(new Task[] {});
     }
 }
