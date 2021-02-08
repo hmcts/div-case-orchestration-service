@@ -8,7 +8,7 @@ import lombok.ToString;
 @Data
 @Builder
 @ToString
-public class PetitionerOrganisationPolicy {
+public class OrganisationPolicy {
 
     @JsonProperty("Organisation")
     private Organisation organisation;

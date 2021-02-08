@@ -9,7 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DynamicList;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Organisation;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.PetitionerOrganisationPolicy;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
 
 import java.util.Map;
 import java.util.Optional;
@@ -46,8 +46,8 @@ public class SolicitorDataExtractor {
         return getMandatoryPropertyValueAsString(caseData, CaseDataKeys.SOLICITOR_PBA_NUMBER_V1);
     }
 
-    public static PetitionerOrganisationPolicy getPetitionerOrganisationPolicy(Map<String, Object> caseData) {
-        Optional<Object> organisationPolicy = Optional.ofNullable(caseData.get(CcdFields.SOLICITOR_PETITIONER_ORGANISATION_POLICY));
+    public static OrganisationPolicy getPetitionerOrganisationPolicy(Map<String, Object> caseData) {
+        Optional<Object> organisationPolicy = Optional.ofNullable(caseData.get(CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY));
 
         if (organisationPolicy.isEmpty()) {
             return buildPetitionerOrganisationPolicy();
@@ -56,8 +56,8 @@ public class SolicitorDataExtractor {
         return new ObjectMapper().convertValue(organisationPolicy.get(),new TypeReference<>() {});
     }
 
-    private static PetitionerOrganisationPolicy buildPetitionerOrganisationPolicy() {
-        return PetitionerOrganisationPolicy.builder()
+    private static OrganisationPolicy buildPetitionerOrganisationPolicy() {
+        return OrganisationPolicy.builder()
             .organisation(Organisation.builder()
                 .build())
             .build();

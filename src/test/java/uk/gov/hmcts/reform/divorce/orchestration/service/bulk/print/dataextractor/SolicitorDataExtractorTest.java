@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextract
 
 import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Organisation;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.PetitionerOrganisationPolicy;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.HashMap;
@@ -17,7 +17,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_POLIC
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_ACCOUNT_NUMBER;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PBA_NUMBERS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SOLICITOR_PETITIONER_ORGANISATION_POLICY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_PAY_BY_ACCOUNT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
@@ -80,7 +80,7 @@ public class SolicitorDataExtractorTest {
     public void getPetitionerOrganisationPolicyReturnsValidValue() {
         Map<String, Object> caseData = buildCaseDataWithOrganisationPolicy();
 
-        PetitionerOrganisationPolicy organisationPolicy = SolicitorDataExtractor.getPetitionerOrganisationPolicy(caseData);
+        OrganisationPolicy organisationPolicy = SolicitorDataExtractor.getPetitionerOrganisationPolicy(caseData);
 
         assertThat(organisationPolicy, notNullValue());
         assertThat(organisationPolicy.getOrgPolicyReference(), is(TEST_SOLICITOR_REFERENCE));
@@ -121,7 +121,7 @@ public class SolicitorDataExtractorTest {
     }
 
     private Map<String, Object> buildCaseDataWithOrganisationPolicy() {
-        PetitionerOrganisationPolicy organisationPolicy = PetitionerOrganisationPolicy.builder()
+        OrganisationPolicy organisationPolicy = OrganisationPolicy.builder()
             .orgPolicyCaseAssignedRole(TEST_PETITIONER_CASE_ROLE)
             .orgPolicyReference(TEST_SOLICITOR_REFERENCE)
             .organisation(Organisation.builder()
@@ -131,7 +131,7 @@ public class SolicitorDataExtractorTest {
             .build();
 
         Map<String, Object> caseData = buildCaseDataWith(SOLICITOR_REFERENCE_JSON_KEY, TEST_SOLICITOR_REFERENCE);
-        caseData.put(SOLICITOR_PETITIONER_ORGANISATION_POLICY, organisationPolicy);
+        caseData.put(PETITIONER_SOLICITOR_ORGANISATION_POLICY, organisationPolicy);
 
         return caseData;
     }

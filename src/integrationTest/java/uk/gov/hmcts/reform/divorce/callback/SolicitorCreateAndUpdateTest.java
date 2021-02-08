@@ -16,16 +16,15 @@ import java.util.Map;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.withJsonPath;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.withoutJsonPath;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CREATED_DATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_CENTRE_SITEID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorOrganisationPolicyDetailsTaskTest.SOLICITOR_REFERENCE_MISSING;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
@@ -62,15 +61,11 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
     }
 
     @Test
-    public void givenCallbackRequest_whenSolicitorCreateWithNoSolicitorReference_thenReturnWithError() throws Exception {
-        Response response = postWithInValidDataAndValidateResponse();
+    public void givenCallbackRequest_whenSolicitorCreateWithNoSolicitorReference_thenReturnWithoutOrgPolicyData() throws Exception {
+        Response response = postWithoutSolicitorReferenceDataAndValidateResponse();
 
         assertThat(getResponseBody(response),
-            isJson(
-                allOf(
-                    withJsonPath("$.errors", hasSize(1)),
-                    withJsonPath("$.errors[0]", is(SOLICITOR_REFERENCE_MISSING)))
-            )
+            isJson(withoutJsonPath("$.data.PetitionerOrganisationPolicy"))
         );
     }
 
@@ -113,7 +108,7 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
         return headers;
     }
 
-    private Response postWithInValidDataAndValidateResponse() throws java.io.IOException {
+    private Response postWithoutSolicitorReferenceDataAndValidateResponse() throws java.io.IOException {
         CcdCallbackRequest requestData = getJsonFromResourceFile(SOLICITOR_PAYLOAD_CONTEXT_PATH, CcdCallbackRequest.class);
         requestData.getCaseDetails().getCaseData().remove(SOLICITOR_REFERENCE_JSON_KEY);
         String requestPayload = convertObjectToJsonString(requestData);

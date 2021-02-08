@@ -16,7 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Organisation;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.PetitionerOrganisationPolicy;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Fee;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
@@ -96,6 +96,7 @@ import static java.util.Collections.singletonMap;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.junit.Assert.assertEquals;
@@ -130,7 +131,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLIC
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.controller.util.CallbackControllerTestUtils.assertCaseOrchestrationServiceExceptionIsSetProperly;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SOLICITOR_PETITIONER_ORGANISATION_POLICY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
@@ -157,7 +158,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Cour
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.CASE_LIST_FOR_PRONOUNCEMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COSTS_ORDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DECREE_NISI;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorOrganisationPolicyDetailsTaskTest.SOLICITOR_REFERENCE_MISSING;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseOrchestrationServiceImplTest {
@@ -802,7 +802,7 @@ public class CaseOrchestrationServiceImplTest {
         when(solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN)).thenReturn(requestPayload);
 
         Map<String, Object> actual = classUnderTest.solicitorCreate(ccdCallbackRequest, AUTH_TOKEN);
-        PetitionerOrganisationPolicy updatedOrganisationPolicy = (PetitionerOrganisationPolicy) actual.get(SOLICITOR_PETITIONER_ORGANISATION_POLICY);
+        OrganisationPolicy updatedOrganisationPolicy = (OrganisationPolicy) actual.get(PETITIONER_SOLICITOR_ORGANISATION_POLICY);
 
         assertThat(caseDetails.getCaseData(), is(actual));
         assertThat(updatedOrganisationPolicy.getOrgPolicyReference(), is(TEST_SOLICITOR_REFERENCE));
@@ -810,16 +810,21 @@ public class CaseOrchestrationServiceImplTest {
         verify(solicitorCreateWorkflow).run(caseDetails, AUTH_TOKEN);
     }
 
+
     @Test
-    public void givenCaseData_whenSolicitorCreate_thenErrorWhenNoD8SolicitorReference() throws Exception {
+    public void givenCaseData_whenSolicitorCreate_thenReturnCaseDataWhenNoSolicitorReference() throws Exception {
+        ccdCallbackRequest = buildCcdCallbackRequest(requestPayload);
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
 
-        when(solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN)).thenThrow(new WorkflowException(SOLICITOR_REFERENCE_MISSING));
+        when(solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN)).thenReturn(requestPayload);
 
-        CaseOrchestrationServiceException caseOrchestrationServiceException = assertThrows(CaseOrchestrationServiceException.class,
-            () -> classUnderTest.solicitorCreate(ccdCallbackRequest, AUTH_TOKEN));
+        Map<String, Object> actual = classUnderTest.solicitorCreate(ccdCallbackRequest, AUTH_TOKEN);
+        OrganisationPolicy updatedOrganisationPolicy = (OrganisationPolicy) actual.get(PETITIONER_SOLICITOR_ORGANISATION_POLICY);
 
-        assertThat(caseOrchestrationServiceException.getMessage(), is(SOLICITOR_REFERENCE_MISSING));
+        assertThat(caseDetails.getCaseData(), is(actual));
+        assertThat(updatedOrganisationPolicy, is(nullValue()));
+
+        verify(solicitorCreateWorkflow).run(caseDetails, AUTH_TOKEN);
     }
 
     @Test
@@ -1739,7 +1744,7 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     private Map<String, Object> buildCaseDataWithOrganisationPolicy() {
-        PetitionerOrganisationPolicy organisationPolicy = PetitionerOrganisationPolicy.builder()
+        OrganisationPolicy organisationPolicy = OrganisationPolicy.builder()
             .organisation(
                 Organisation.builder()
                     .organisationID("OrganisationID")
@@ -1751,7 +1756,7 @@ public class CaseOrchestrationServiceImplTest {
 
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(SOLICITOR_REFERENCE_JSON_KEY, TEST_SOLICITOR_REFERENCE);
-        caseData.put(SOLICITOR_PETITIONER_ORGANISATION_POLICY, organisationPolicy);
+        caseData.put(PETITIONER_SOLICITOR_ORGANISATION_POLICY, organisationPolicy);
         return caseData;
     }
 

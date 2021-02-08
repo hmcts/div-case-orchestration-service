@@ -8,7 +8,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Organisation;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.PetitionerOrganisationPolicy;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
@@ -29,13 +30,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CREATE_EVENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SOLICITOR_PETITIONER_ORGANISATION_POLICY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CREATED_DATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_CENTRE_SITEID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorOrganisationPolicyDetailsTaskTest.SOLICITOR_REFERENCE_MISSING;
 
 public class SolicitorCreateTest extends IdamTestSupport {
 
@@ -71,7 +71,7 @@ public class SolicitorCreateTest extends IdamTestSupport {
         CcdCallbackRequest ccdCallbackRequest = buildRequest();
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
         caseData.put(SOLICITOR_REFERENCE_JSON_KEY, TEST_SOLICITOR_REFERENCE);
-        caseData.put(SOLICITOR_PETITIONER_ORGANISATION_POLICY, PetitionerOrganisationPolicy.builder()
+        caseData.put(PETITIONER_SOLICITOR_ORGANISATION_POLICY, OrganisationPolicy.builder()
             .organisation(Organisation.builder().build())
             .build());
 
@@ -90,13 +90,14 @@ public class SolicitorCreateTest extends IdamTestSupport {
             .andReturn();
 
         assertThat(mvcResult.getResponse().getContentAsString(),
-            allOf(hasJsonPath("$.data.D8SolicitorReference"),
+            allOf(
+                hasJsonPath("$.data.D8SolicitorReference"),
                 hasJsonPath("$.data.PetitionerOrganisationPolicy.OrgPolicyReference", is(TEST_SOLICITOR_REFERENCE)))
         );
     }
 
     @Test
-    public void givenCaseData_whenSolicitorCreate_thenReturnWithErrorIfNoSolicitorReference() throws Exception {
+    public void givenCaseData_whenSolicitorCreate_thenReturnWithNoOrganisationPolicyReferenceSet() throws Exception {
         CcdCallbackRequest ccdCallbackRequest = buildRequest();
 
         stubDraftDocumentGeneratorService(
@@ -114,8 +115,10 @@ public class SolicitorCreateTest extends IdamTestSupport {
             .andReturn();
 
         assertThat(mvcResult.getResponse().getContentAsString(),
-            allOf(hasJsonPath("$.errors"),
-                hasJsonPath("$.errors[0]", is(SOLICITOR_REFERENCE_MISSING)))
+            allOf(
+                hasNoJsonPath("$.data.D8SolicitorReference"),
+                hasNoJsonPath("$.data.PetitionerOrganisationPolicy")
+            )
         );
     }
 
