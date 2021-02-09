@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration;
 
 import com.google.common.collect.ImmutableMap;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseRoles;
 import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
 import java.util.Map;
@@ -126,8 +127,8 @@ public class TestConstants {
     public static final CaseDetails TEST_INCOMING_CASE_DETAILS = CaseDetails.builder().caseData(TEST_INCOMING_PAYLOAD).build();
     public static final Map<String, Object> TEST_PAYLOAD_TO_RETURN = singletonMap("returnedKey", "returnedValue");
 
-    public static final String TEST_POLICY_ORGANISATION_NAME = "organisationName";
-    public static final String TEST_POLICY_ORGANISATION_ID = "organisationID";
-    public static final String TEST_PETITIONER_CASE_ROLE = "[PETSOLICITOR]";
+    public static final String TEST_ORGANISATION_POLICY_NAME = "organisationName";
+    public static final String TEST_ORGANISATION_POLICY_ID = "organisationID";
+    public static final String TEST_PETITIONER_SOLICITOR_CASE_ROLE = CaseRoles.PETITIONER_SOLICITOR;
 
 }
