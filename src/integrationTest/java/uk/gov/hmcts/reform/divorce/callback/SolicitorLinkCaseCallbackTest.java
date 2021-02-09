@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.callback;
 import io.restassured.response.Response;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.http.entity.ContentType;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -43,7 +42,6 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
     private String contextPath;
 
     @Test
-    @Ignore
     public void givenAosAwaitingState_whenSolicitorLinksCase_thenCaseShouldBeLinked() {
 
         final UserDetails petitionerUserDetails = createCitizenUser();

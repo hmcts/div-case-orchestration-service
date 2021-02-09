@@ -530,12 +530,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     @Override
     public Map<String, Object> solicitorCreate(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
-        throws CaseOrchestrationServiceException {
-        try {
-            return solicitorCreateWorkflow.run(ccdCallbackRequest.getCaseDetails(), authorizationToken);
-        } catch (WorkflowException e) {
-            throw new CaseOrchestrationServiceException(e);
-        }
+        throws WorkflowException {
+        return solicitorCreateWorkflow.run(ccdCallbackRequest.getCaseDetails(), authorizationToken);
     }
 
     @Override
