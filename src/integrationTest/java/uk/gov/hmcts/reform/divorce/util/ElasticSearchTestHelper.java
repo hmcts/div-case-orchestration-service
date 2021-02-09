@@ -27,7 +27,7 @@ public class ElasticSearchTestHelper {
     }
 
     public void ensureCaseIsSearchable(final String caseId, final String authToken, String expectedState) {
-        await().pollInterval(fibonacci(SECONDS)).atMost(120, SECONDS).untilAsserted(() -> {
+        await().pollInterval(fibonacci(SECONDS)).atMost(240, SECONDS).untilAsserted(() -> {
             List<CaseDetails> foundCases = searchCasesWithElasticSearch(caseId, authToken, expectedState);
             assertThat("The number of cases found by ElasticSearch was not expected", foundCases, hasSize(1));
         });
