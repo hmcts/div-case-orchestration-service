@@ -34,6 +34,7 @@ java:
         - idam-caseworker-username
         - idam-caseworker-password
         - uk-gov-notify-api-key
+        - AppInsightsInstrumentationKey
 
   # Don't modify these properties
   image: ${IMAGE_NAME}
