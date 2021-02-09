@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.maintenance;
 
 import io.restassured.response.Response;
 import org.apache.http.entity.ContentType;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -24,6 +25,7 @@ public class SolicitorAmendPetitionForRefusalTest extends CcdSubmissionSupport {
     private String solicitorAmendPetitionContextPath;
 
     @Test
+    @Ignore
     public void givenValidCase_whenSolicitorAmendPetitionForRefusalRejection_newDraftPetitionIsReturned() throws Exception {
         final UserDetails solicitorUser = createSolicitorUser();
 
