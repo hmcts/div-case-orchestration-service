@@ -13,14 +13,14 @@ import static org.junit.Assert.assertEquals;
 
 public class UpdateDivorceCaseHearingDetailsWithinBulkTest {
 
-    private UpdateDivorceCaseHearingDetailsWithinBulk classToTest  = new UpdateDivorceCaseHearingDetailsWithinBulk();
+    private final UpdateDivorceCaseHearingDetailsWithinBulk classToTest  = new UpdateDivorceCaseHearingDetailsWithinBulk();
 
     @Test
     public void givenBulkCase_whenGetEvents_thenReturnBulkScheduleEvent() {
         TaskContext context = new DefaultTaskContext();
         Map<String, Object> payload  = Collections.emptyMap();
 
-        List<ApplicationEvent> result = classToTest.getApplicationEvent(context, payload);
+        List<ApplicationEvent> result = classToTest.getApplicationEventsToPublish(context, payload);
         assertEquals(1, result.size());
     }
 }

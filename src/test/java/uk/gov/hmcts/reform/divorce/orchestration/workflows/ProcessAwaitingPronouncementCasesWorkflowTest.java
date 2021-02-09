@@ -8,18 +8,18 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.BulkCaseCreate;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.BulkCaseCreateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SearchAwaitingPronouncementCases;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateDivorceCaseWithinBulk;
 
-import java.util.Collections;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static java.util.Collections.emptyMap;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SEARCH_PAGE_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ProcessAwaitingPronouncementCasesWorkflowTest {
@@ -28,7 +28,7 @@ public class ProcessAwaitingPronouncementCasesWorkflowTest {
     private SearchAwaitingPronouncementCases searchAwaitingPronouncementCasesMock;
 
     @Mock
-    private BulkCaseCreate createBulkCaseMock;
+    private BulkCaseCreateTask createBulkCaseMock;
 
     @Mock
     private UpdateDivorceCaseWithinBulk updateDivorceCaseWithinBulkMock;
@@ -39,20 +39,16 @@ public class ProcessAwaitingPronouncementCasesWorkflowTest {
     @Test
     public void whenProcessAwaitingPronouncement_thenProcessAsExpected() throws WorkflowException {
         final ImmutablePair<String, Object> authTokenPair = new ImmutablePair<>(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        final ImmutablePair<String, Integer> searchPageKayPair = new ImmutablePair<>(SEARCH_PAGE_KEY, 0);
-
-        final Task[] tasks = new Task[]{
+        final Task[] tasks = new Task[] {
             searchAwaitingPronouncementCasesMock,
             createBulkCaseMock,
             updateDivorceCaseWithinBulkMock
         };
+        when(classUnderTest.execute(tasks, null, authTokenPair)).thenReturn(emptyMap());
 
-        Map<String, Object> expected = Collections.emptyMap();
+        Map<String, Object> returnedCaseData = classUnderTest.run(AUTH_TOKEN);
 
-        when(classUnderTest.execute(tasks, null, authTokenPair, searchPageKayPair)).thenReturn(expected);
-
-        Map<String, Object> actual = classUnderTest.run(AUTH_TOKEN);
-
-        assertEquals(expected, actual);
+        assertThat(returnedCaseData, is(emptyMap()));
     }
+
 }

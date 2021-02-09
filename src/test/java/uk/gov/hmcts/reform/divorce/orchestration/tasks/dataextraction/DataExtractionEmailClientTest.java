@@ -2,9 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextraction;
 
 import org.junit.Before;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -14,8 +12,7 @@ import java.io.File;
 import java.nio.file.Files;
 import javax.mail.MessagingException;
 
-import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.rules.ExpectedException.none;
+import static org.junit.Assert.assertThrows;
 
 /**
  * This test can be run to test (locally) that our e-mail is sent according to our expectations.
@@ -27,9 +24,6 @@ import static org.junit.rules.ExpectedException.none;
 public class DataExtractionEmailClientTest {
 
     private File file;
-
-    @Rule
-    public ExpectedException expectedException = none();
 
     @Autowired
     private DataExtractionEmailClient dataExtractionEmailClient;
@@ -43,17 +37,15 @@ public class DataExtractionEmailClientTest {
     }
 
     @Test
-    @Ignore
+    @Ignore("See description of this class to find out how to run this test")
     public void sendEmailWithAttachment() throws MessagingException {
         dataExtractionEmailClient.sendEmailWithAttachment("test@divorce.gov.uk", "myFileName.csv", file);
         //Now go to MailHog and check that your e-mail has been sent as expected
     }
 
     @Test
-    public void shouldThrowExceptionWhenEmailIsEmpty() throws MessagingException {
-        expectedException.expect(instanceOf(Exception.class));
-
-        dataExtractionEmailClient.sendEmailWithAttachment("", "myFileName.csv", file);
+    public void shouldThrowExceptionWhenEmailIsEmpty() {
+        assertThrows(Exception.class, () -> dataExtractionEmailClient.sendEmailWithAttachment("", "myFileName.csv", file));
     }
 
 }

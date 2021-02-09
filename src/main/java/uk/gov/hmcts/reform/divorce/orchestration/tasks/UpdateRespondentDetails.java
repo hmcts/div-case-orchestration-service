@@ -16,12 +16,17 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_AWAITING;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_OVERDUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_OVERDUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_ALTERNATIVE_SERVICE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DWP_RESPONSE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PROCESS_SERVER_SERVICE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_REISSUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_START_FROM_OVERDUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_START_FROM_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
@@ -59,7 +64,7 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
 
             UserDetails linkedUser =
                 idamClient.getUserDetails(
-                    authUtil.getBearToken(context.getTransientObject(AUTH_TOKEN_JSON_KEY)));
+                    authUtil.getBearerToken(context.getTransientObject(AUTH_TOKEN_JSON_KEY)));
 
             CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
 
@@ -91,11 +96,16 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
 
         switch (state) {
             case AOS_AWAITING:
+            case AWAITING_ALTERNATIVE_SERVICE:
+            case AWAITING_PROCESS_SERVER_SERVICE:
+            case AWAITING_DWP_RESPONSE:
                 return START_AOS_EVENT_ID;
             case AOS_OVERDUE:
                 return AOS_START_FROM_OVERDUE;
             case AWAITING_REISSUE:
                 return AOS_START_FROM_REISSUE;
+            case SERVICE_APPLICATION_NOT_APPROVED:
+                return AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED;
             default:
                 return LINK_RESPONDENT_GENERIC_EVENT_ID;
         }

@@ -8,6 +8,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -15,11 +16,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddDecreeNisiDecisionDateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddDnOutcomeFlagFieldTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DecreeNisiRefusalDocumentGeneratorTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DefineWhoPaysCostsOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetAmendPetitionFeeTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.PopulateDocLink;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.PopulateDocLinkTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDNDecisionStateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateDNDecisionTask;
 
@@ -40,6 +41,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_REJECT_OPTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
@@ -70,7 +73,7 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
     private DecreeNisiRefusalDocumentGeneratorTask decreeNisiRefusalDocumentGeneratorTask;
 
     @Mock
-    private CaseFormatterAddDocuments caseFormatterAddDocuments;
+    private AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     @Mock
     private GetAmendPetitionFeeTask getAmendPetitionFeeTask;
@@ -79,7 +82,7 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
     private FeatureToggleService featureToggleService;
 
     @Mock
-    private PopulateDocLink populateDocLink;
+    private PopulateDocLinkTask populateDocLinkTask;
 
     @InjectMocks
     private DecreeNisiAboutToBeGrantedWorkflow workflow;
@@ -226,7 +229,7 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
 
         verify(defineWhoPaysCostsOrderTask, never()).execute(any(), any());
         verify(decreeNisiRefusalDocumentGeneratorTask, never()).execute(any(), any());
-        verify(caseFormatterAddDocuments, never()).execute(any(), any());
+        verify(addNewDocumentsToCaseDataTask, never()).execute(any(), any());
     }
 
     @Test
@@ -241,13 +244,13 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
         when(addDnOutcomeFlagFieldTask.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
         when(getAmendPetitionFeeTask.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
         when(decreeNisiRefusalDocumentGeneratorTask.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
-        when(caseFormatterAddDocuments.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
-        when(populateDocLink.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
+        when(addNewDocumentsToCaseDataTask.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
+        when(populateDocLinkTask.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
 
         Map<String, Object> returnedPayload = workflow.run(CaseDetails.builder().caseData(inputPayload).build(), AUTH_TOKEN);
 
         assertThat(returnedPayload, allOf(
-                hasEntry(equalTo(DECREE_NISI_GRANTED_CCD_FIELD), equalTo(NO_VALUE))
+            hasEntry(equalTo(DECREE_NISI_GRANTED_CCD_FIELD), equalTo(NO_VALUE))
         ));
 
         final InOrder inOrder = inOrder(
@@ -258,8 +261,8 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
             addDnOutcomeFlagFieldTask,
             getAmendPetitionFeeTask,
             decreeNisiRefusalDocumentGeneratorTask,
-            caseFormatterAddDocuments,
-            populateDocLink
+            addNewDocumentsToCaseDataTask,
+            populateDocLinkTask
         );
 
         inOrder.verify(featureToggleService).isFeatureEnabled(eq(Features.DN_REFUSAL));
@@ -269,8 +272,8 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
         inOrder.verify(addDnOutcomeFlagFieldTask).execute(any(TaskContext.class), eq(payloadReturnedByTask));
         inOrder.verify(getAmendPetitionFeeTask).execute(any(TaskContext.class), eq(payloadReturnedByTask));
         inOrder.verify(decreeNisiRefusalDocumentGeneratorTask).execute(any(TaskContext.class), eq(payloadReturnedByTask));
-        inOrder.verify(caseFormatterAddDocuments).execute(any(TaskContext.class), eq(payloadReturnedByTask));
-        inOrder.verify(populateDocLink).execute(any(TaskContext.class), eq(payloadReturnedByTask));
+        inOrder.verify(addNewDocumentsToCaseDataTask).execute(any(TaskContext.class), eq(payloadReturnedByTask));
+        inOrder.verify(populateDocLinkTask).execute(any(TaskContext.class), eq(payloadReturnedByTask));
 
 
         verify(defineWhoPaysCostsOrderTask, never()).execute(any(), any());
@@ -309,7 +312,7 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
 
         verify(defineWhoPaysCostsOrderTask, never()).execute(any(), any());
         verify(decreeNisiRefusalDocumentGeneratorTask, never()).execute(any(), any());
-        verify(caseFormatterAddDocuments, never()).execute(any(), any());
+        verify(addNewDocumentsToCaseDataTask, never()).execute(any(), any());
     }
 
     @Test
@@ -329,4 +332,23 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
         verify(addDecreeNisiDecisionDateTask, never()).execute(any(), any());
         verify(addDnOutcomeFlagFieldTask, never()).execute(any(), any());
     }
+
+
+    @Test
+    public void shouldNotCallAnyTasks_IfBilingualDecreeNisiIsRefusedWithRejectReasonAddInfo() throws WorkflowException, TaskException {
+        inputPayload.put(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE);
+        inputPayload.put(REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION);
+        inputPayload.put(OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH, YES_VALUE);
+        inputPayload.put(OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO, "Blah blah additional info");
+        inputPayload.put(OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO_WELSH, EMPTY_STRING);
+
+        Map<String, Object> returnedPayload = workflow.run(CaseDetails.builder().caseData(inputPayload).build(), AUTH_TOKEN);
+
+        verify(validateDNDecisionTask, never()).execute(any(), any());
+        verify(addDecreeNisiDecisionDateTask, never()).execute(any(), any());
+        verify(addDnOutcomeFlagFieldTask, never()).execute(any(), any());
+        verify(defineWhoPaysCostsOrderTask, never()).execute(any(), any());
+        verify(decreeNisiRefusalDocumentGeneratorTask, never()).execute(any(), any());
+    }
+
 }

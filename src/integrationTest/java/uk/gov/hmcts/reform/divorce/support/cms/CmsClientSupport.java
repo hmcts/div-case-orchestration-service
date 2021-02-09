@@ -10,7 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
 import uk.gov.hmcts.reform.ccd.client.model.SearchResult;
-import uk.gov.hmcts.reform.divorce.model.UserDetails;
+import uk.gov.hmcts.reform.divorce.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.util.ResourceLoader;
 import uk.gov.hmcts.reform.divorce.util.RestUtil;
@@ -56,7 +56,7 @@ public class CmsClientSupport {
         final String searchUrl = cmsBaseUrl + CMS_URL_SEARCH;
         log.debug("About to call [{}], auth token [{}]", searchUrl, authToken);
 
-        // todo: cmsClient.searchCases is not used here the main reason is different domain objects CaseDetails and
+        // cmsClient.searchCases is not used here the main reason is different domain objects CaseDetails and
         // SearchResult are defined in the COS and CMS (references ccd-store-client)
         Response response = RestUtil.postToRestService(searchUrl,
                 buildCommonHeaders(HttpHeaders.AUTHORIZATION, authToken,

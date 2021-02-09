@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
@@ -10,9 +12,12 @@ import java.util.Optional;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 import static java.lang.String.format;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil.parseDateUsingCcdFormat;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TaskUtils {
 
     public static String getMandatoryPropertyValueAsString(Map<String, Object> propertiesMap, String key)
@@ -51,20 +56,33 @@ public class TaskUtils {
     }
 
     public static String getCaseId(TaskContext context) throws TaskException {
-        Object transientObject = context.getTransientObject(CASE_ID_JSON_KEY);
+        return getMandatoryContextValue(CASE_ID_JSON_KEY, context);
+    }
+
+    public static String getAuthToken(TaskContext context) throws TaskException {
+        return getMandatoryContextValue(AUTH_TOKEN_JSON_KEY, context);
+    }
+
+    public static String getMandatoryContextValue(String key, TaskContext context) {
+        Object transientObject = context.getTransientObject(key);
         if (!(transientObject instanceof String)) {
-            throw buildTaskExceptionForMandatoryProperty(CASE_ID_JSON_KEY);
+            throw buildTaskExceptionForMandatoryProperty(key);
         }
 
         String caseId = (String) transientObject;
         if (isNullOrEmpty(caseId)) {
-            throw buildTaskExceptionForMandatoryProperty(CASE_ID_JSON_KEY);
+            throw buildTaskExceptionForMandatoryProperty(key);
         }
 
         return caseId;
     }
 
+    public static boolean isYes(String value) {
+        return YES_VALUE.equalsIgnoreCase(value);
+    }
+
     private static TaskException buildTaskExceptionForMandatoryProperty(String key) {
         return new TaskException(format("Could not evaluate value of mandatory property \"%s\"", key));
     }
+
 }

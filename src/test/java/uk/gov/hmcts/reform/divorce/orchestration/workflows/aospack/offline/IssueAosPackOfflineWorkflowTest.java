@@ -1,6 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline;
 
-import org.hamcrest.Matchers;
+import org.hamcrest.collection.IsMapContaining;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,17 +8,18 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.internal.hamcrest.HamcrestArgumentMatcher;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.model.parties.DivorceParty;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.DocumentGenerationRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.MarkJourneyAsOffline;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AosPackDueDateSetterTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStoreTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.MarkJourneyAsOfflineTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MultipleDocumentGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
 
@@ -32,29 +33,28 @@ import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
-import static org.mockito.hamcrest.MockitoHamcrest.argThat;
+import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.CO_RESPONDENT;
+import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_PARTY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_GENERATION_REQUESTS_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.DESERTION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_FIVE_YEARS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.UNREASONABLE_BEHAVIOUR;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.CO_RESPONDENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.parties.DivorceParty.RESPONDENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.DIVORCE_PARTY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.DESERTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.SEPARATION_FIVE_YEARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.SEPARATION_TWO_YEARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.UNREASONABLE_BEHAVIOUR;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.BULK_PRINT_LETTER_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask.DOCUMENT_TYPES_TO_PRINT;
-import static uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline.IssueAosPackOfflineWorkflow.AOS_PACK_OFFLINE_CO_RESPONDENT_LETTER_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline.IssueAosPackOfflineWorkflow.AOS_PACK_OFFLINE_RESPONDENT_LETTER_TYPE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class IssueAosPackOfflineWorkflowTest {
@@ -104,19 +104,19 @@ public class IssueAosPackOfflineWorkflowTest {
     private MultipleDocumentGenerationTask documentsGenerationTask;
 
     @Mock
-    private CaseFormatterAddDocuments caseFormatterAddDocuments;
+    private AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     @Mock
-    private FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
+    private FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask;
 
     @Mock
     private BulkPrinterTask bulkPrinterTask;
 
     @Mock
-    private ModifyDueDate modifyDueDate;
+    private AosPackDueDateSetterTask aosPackDueDateSetterTask;
 
     @Mock
-    private MarkJourneyAsOffline markJourneyAsOffline;
+    private MarkJourneyAsOfflineTask markJourneyAsOfflineTask;
 
     @InjectMocks
     private IssueAosPackOfflineWorkflow classUnderTest;
@@ -124,7 +124,7 @@ public class IssueAosPackOfflineWorkflowTest {
     @Captor
     private ArgumentCaptor<TaskContext> taskContextArgumentCaptor;
 
-    private String testAuthToken = "authToken";
+    private final String testAuthToken = "authToken";
     private CaseDetails caseDetails;
 
     @Before
@@ -132,17 +132,18 @@ public class IssueAosPackOfflineWorkflowTest {
         Map<String, Object> payload = new HashMap<>();
         payload.put("testKey", "testValue");
         when(documentsGenerationTask.execute(any(), any())).thenReturn(singletonMap("returnedKey1", "returnedValue1"));
-        when(caseFormatterAddDocuments.execute(any(), any())).thenReturn(singletonMap("returnedKey2", "returnedValue2"));
-        when(fetchPrintDocsFromDmStore.execute(any(), any())).thenReturn(singletonMap("returnedKey3", "returnedValue3"));
+        when(addNewDocumentsToCaseDataTask.execute(any(), any())).thenReturn(singletonMap("returnedKey2", "returnedValue2"));
+        when(fetchPrintDocsFromDmStoreTask.execute(any(), any())).thenReturn(singletonMap("returnedKey3", "returnedValue3"));
         when(bulkPrinterTask.execute(any(), any())).thenReturn(singletonMap("returnedKey4", "returnedValue4"));
-        when(markJourneyAsOffline.execute(any(), any())).thenReturn(singletonMap("returnedKey5", "returnedValue5"));
-        when(modifyDueDate.execute(any(), any())).thenReturn(singletonMap("returnedKey6", "returnedValue6"));
+        when(markJourneyAsOfflineTask.execute(any(), any())).thenReturn(singletonMap("returnedKey5", "returnedValue5"));
+        when(aosPackDueDateSetterTask.execute(any(), any())).thenReturn(singletonMap("returnedKey6", "returnedValue6"));
+
         caseDetails = CaseDetails.builder().caseData(payload).build();
     }
 
     @Test
     public void testTasksAreCalledWithTheCorrectParams_ForRespondent_ForTwoYearSeparation() throws WorkflowException, TaskException {
-        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS);
+        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS.getValue());
 
         Map<String, Object> returnedPayload = classUnderTest.run(testAuthToken, caseDetails, RESPONDENT);
         assertThat(returnedPayload, hasEntry("returnedKey6", "returnedValue6"));
@@ -165,7 +166,7 @@ public class IssueAosPackOfflineWorkflowTest {
 
     @Test
     public void testTasksAreCalledWithTheCorrectParams_ForRespondent_ForFiveYearSeparation() throws WorkflowException, TaskException {
-        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, SEPARATION_FIVE_YEARS);
+        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, SEPARATION_FIVE_YEARS.getValue());
 
         Map<String, Object> returnedPayload = classUnderTest.run(testAuthToken, caseDetails, RESPONDENT);
         assertThat(returnedPayload, hasEntry("returnedKey6", "returnedValue6"));
@@ -188,7 +189,7 @@ public class IssueAosPackOfflineWorkflowTest {
 
     @Test
     public void testTasksAreCalledWithTheCorrectParams_ForRespondent_ForDesertion() throws WorkflowException, TaskException {
-        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, DESERTION);
+        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, DESERTION.getValue());
 
         Map<String, Object> returnedPayload = classUnderTest.run(testAuthToken, caseDetails, RESPONDENT);
         assertThat(returnedPayload, hasEntry("returnedKey6", "returnedValue6"));
@@ -211,7 +212,7 @@ public class IssueAosPackOfflineWorkflowTest {
 
     @Test
     public void testTasksAreCalledWithTheCorrectParams_ForRespondent_ForUnreasonableBehaviour() throws WorkflowException, TaskException {
-        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, UNREASONABLE_BEHAVIOUR);
+        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, UNREASONABLE_BEHAVIOUR.getValue());
 
         Map<String, Object> returnedPayload = classUnderTest.run(testAuthToken, caseDetails, RESPONDENT);
         assertThat(returnedPayload, hasEntry("returnedKey6", "returnedValue6"));
@@ -234,7 +235,7 @@ public class IssueAosPackOfflineWorkflowTest {
 
     @Test
     public void testTasksAreCalledWithTheCorrectParams_ForRespondent_ForAdultery() throws WorkflowException, TaskException {
-        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue());
 
         Map<String, Object> returnedPayload = classUnderTest.run(testAuthToken, caseDetails, RESPONDENT);
         assertThat(returnedPayload, hasEntry("returnedKey6", "returnedValue6"));
@@ -256,23 +257,34 @@ public class IssueAosPackOfflineWorkflowTest {
     }
 
     @Test
+    public void testTasksAreCalledWithTheCorrectParams_ForCoRespondent_WithouAdultery() throws WorkflowException,
+            TaskException {
+        Map<String, Object> returnedPayload = classUnderTest.run(testAuthToken, caseDetails, CO_RESPONDENT);
+        assertThat(returnedPayload, hasEntry("returnedKey5", "returnedValue5"));
+        verify(documentsGenerationTask).execute(taskContextArgumentCaptor.capture(), eq(caseDetails.getCaseData()));
+        TaskContext taskContext = taskContextArgumentCaptor.getValue();
+        List<DocumentGenerationRequest> documentGenerationRequestList = taskContext.getTransientObject(DOCUMENT_GENERATION_REQUESTS_KEY);
+        assertThat("list is empty ", documentGenerationRequestList, empty());
+    }
+
+    @Test
     public void testTasksAreCalledWithTheCorrectParams_ForCoRespondent_ForAdultery() throws WorkflowException, TaskException {
-        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        caseDetails.getCaseData().put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue());
 
         Map<String, Object> returnedPayload = classUnderTest.run(testAuthToken, caseDetails, CO_RESPONDENT);
         assertThat(returnedPayload, hasEntry("returnedKey5", "returnedValue5"));
 
         List<DocumentGenerationRequest> expectedDocumentGenerationRequests = asList(
-            new DocumentGenerationRequest(
-                CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
-                CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE,
-                CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_FILENAME
-            ),
-            new DocumentGenerationRequest(
-                CO_RESPONDENT_ADULTERY_FORM_TEMPLATE_ID,
-                CO_RESPONDENT_ADULTERY_FORM_DOCUMENT_TYPE,
-                CO_RESPONDENT_ADULTERY_FORM_FILENAME
-            )
+                new DocumentGenerationRequest(
+                        CO_RESPONDENT_AOS_INVITATION_LETTER_TEMPLATE_ID,
+                        CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE,
+                        CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_FILENAME
+                ),
+                new DocumentGenerationRequest(
+                        CO_RESPONDENT_ADULTERY_FORM_TEMPLATE_ID,
+                        CO_RESPONDENT_ADULTERY_FORM_DOCUMENT_TYPE,
+                        CO_RESPONDENT_ADULTERY_FORM_FILENAME
+                )
         );
         verifyDocumentGeneratorReceivesExpectedParameters(expectedDocumentGenerationRequests);
         verifyMarkJourneyAsOfflineReceivesExpectedParameterWithValueOf(CO_RESPONDENT);
@@ -280,7 +292,7 @@ public class IssueAosPackOfflineWorkflowTest {
         verifyModifyDueDateIsNotCalled();
 
         verifyBulkPrintIsCalledAsExpected(AOS_PACK_OFFLINE_CO_RESPONDENT_LETTER_TYPE,
-            asList(CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE, CO_RESPONDENT_ADULTERY_FORM_DOCUMENT_TYPE));
+                asList(CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE, CO_RESPONDENT_ADULTERY_FORM_DOCUMENT_TYPE));
     }
 
     private void verifyDocumentGeneratorReceivesExpectedParameters(List<DocumentGenerationRequest> expectedDocumentGenerationRequests)
@@ -301,31 +313,31 @@ public class IssueAosPackOfflineWorkflowTest {
     }
 
     private void verifyTasksAreCalledInOrder() {
-        verify(caseFormatterAddDocuments).execute(any(), argThat(allOf(
-            Matchers.<String, Object>hasEntry("returnedKey1", "returnedValue1")
-        )));
+        verify(addNewDocumentsToCaseDataTask).execute(any(), argThat(new HamcrestArgumentMatcher<>(allOf(
+            IsMapContaining.<String, Object>hasEntry("returnedKey1", "returnedValue1")
+        ))));
 
-        verify(fetchPrintDocsFromDmStore).execute(any(), argThat(allOf(
-            Matchers.<String, Object>hasEntry("returnedKey2", "returnedValue2")
-        )));
+        verify(fetchPrintDocsFromDmStoreTask).execute(any(), argThat(new HamcrestArgumentMatcher<>(allOf(
+            IsMapContaining.<String, Object>hasEntry("returnedKey2", "returnedValue2")
+        ))));
 
-        verify(bulkPrinterTask).execute(taskContextArgumentCaptor.capture(), argThat(allOf(
-            Matchers.<String, Object>hasEntry("returnedKey3", "returnedValue3")
-        )));
+        verify(bulkPrinterTask).execute(taskContextArgumentCaptor.capture(), argThat(new HamcrestArgumentMatcher<>(allOf(
+            IsMapContaining.<String, Object>hasEntry("returnedKey3", "returnedValue3")
+        ))));
 
-        verify(markJourneyAsOffline).execute(taskContextArgumentCaptor.capture(), argThat(allOf(
-                Matchers.<String, Object>hasEntry("returnedKey4", "returnedValue4")
-        )));
+        verify(markJourneyAsOfflineTask).execute(taskContextArgumentCaptor.capture(), argThat(new HamcrestArgumentMatcher<>(allOf(
+            IsMapContaining.<String, Object>hasEntry("returnedKey4", "returnedValue4")
+        ))));
     }
 
     private void verifyModifyDueDateIsCalled() {
-        verify(modifyDueDate).execute(any(), argThat(allOf(
-                Matchers.<String, Object>hasEntry("returnedKey5", "returnedValue5")
-        )));
+        verify(aosPackDueDateSetterTask).execute(any(), argThat(new HamcrestArgumentMatcher<>(allOf(
+            IsMapContaining.<String, Object>hasEntry("returnedKey5", "returnedValue5")
+        ))));
     }
 
     private void verifyModifyDueDateIsNotCalled() {
-        verifyZeroInteractions(modifyDueDate);
+        verifyNoInteractions(aosPackDueDateSetterTask);
     }
 
     private void verifyBulkPrintIsCalledAsExpected(String expectedLetterType, List<String> expectedDocumentTypesToPrint) {

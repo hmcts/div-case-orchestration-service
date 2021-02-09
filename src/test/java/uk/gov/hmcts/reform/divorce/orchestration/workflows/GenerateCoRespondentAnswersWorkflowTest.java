@@ -9,8 +9,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentAnswersGenerator;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentAnswersGeneratorTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,10 +26,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RunWith(MockitoJUnitRunner.class)
 public class GenerateCoRespondentAnswersWorkflowTest {
     @Mock
-    private CoRespondentAnswersGenerator coRespondentAnswersGenerator;
+    private CoRespondentAnswersGeneratorTask coRespondentAnswersGeneratorTask;
 
     @Mock
-    private CaseFormatterAddDocuments caseFormatterAddDocuments;
+    private AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     @InjectMocks
     private GenerateCoRespondentAnswersWorkflow classUnderTest;
@@ -42,16 +42,16 @@ public class GenerateCoRespondentAnswersWorkflowTest {
 
         Map<String, Object> payload = new HashMap<>();
 
-        when(coRespondentAnswersGenerator.execute(context, payload)).thenReturn(payload);
-        when(caseFormatterAddDocuments.execute(context, payload)).thenReturn(payload);
+        when(coRespondentAnswersGeneratorTask.execute(context, payload)).thenReturn(payload);
+        when(addNewDocumentsToCaseDataTask.execute(context, payload)).thenReturn(payload);
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(payload).build();
 
         Map<String, Object> actual = classUnderTest.run(caseDetails, AUTH_TOKEN);
 
         assertEquals(payload, actual);
-        verify(coRespondentAnswersGenerator).execute(context, payload);
-        verify(caseFormatterAddDocuments).execute(context, payload);
+        verify(coRespondentAnswersGeneratorTask).execute(context, payload);
+        verify(addNewDocumentsToCaseDataTask).execute(context, payload);
     }
 
     @Test(expected = WorkflowException.class)
@@ -62,11 +62,11 @@ public class GenerateCoRespondentAnswersWorkflowTest {
 
         Map<String, Object> payload = new HashMap<>();
 
-        when(coRespondentAnswersGenerator.execute(context, payload)).thenThrow(TaskException.class);
+        when(coRespondentAnswersGeneratorTask.execute(context, payload)).thenThrow(TaskException.class);
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(payload).build();
 
         classUnderTest.run(caseDetails, AUTH_TOKEN);
-        verify(coRespondentAnswersGenerator).execute(context, payload);
+        verify(coRespondentAnswersGeneratorTask).execute(context, payload);
     }
 }

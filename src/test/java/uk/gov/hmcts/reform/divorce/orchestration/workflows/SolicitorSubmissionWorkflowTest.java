@@ -11,9 +11,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPayment;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPaymentTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RemoveMiniPetitionDraftDocumentsTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSolicitorCaseData;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSolicitorCaseDataTask;
 
 import java.util.Collections;
 import java.util.Map;
@@ -33,13 +34,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class SolicitorSubmissionWorkflowTest {
 
     @Mock
-    private ValidateSolicitorCaseData validateSolicitorCaseData;
+    private ValidateSolicitorCaseDataTask validateSolicitorCaseDataTask;
 
     @Mock
-    private ProcessPbaPayment processPbaPayment;
+    private ProcessPbaPaymentTask processPbaPaymentTask;
 
     @Mock
     private RemoveMiniPetitionDraftDocumentsTask removeMiniPetitionDraftDocumentsTask;
+
+    @Mock
+    private SendPetitionerSubmissionNotificationEmailTask sendPetitionerSubmissionNotificationEmailTask;
 
     @InjectMocks
     private SolicitorSubmissionWorkflow solicitorSubmissionWorkflow;
@@ -58,13 +62,13 @@ public class SolicitorSubmissionWorkflowTest {
             .caseData(testData)
             .build();
         ccdCallbackRequestRequest =
-                CcdCallbackRequest.builder()
-                        .eventId(TEST_EVENT_ID)
-                        .token(TEST_TOKEN)
-                        .caseDetails(
-                            caseDetails
-                        )
-                        .build();
+            CcdCallbackRequest.builder()
+                .eventId(TEST_EVENT_ID)
+                .token(TEST_TOKEN)
+                .caseDetails(
+                    caseDetails
+                )
+                .build();
 
         context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
@@ -73,16 +77,24 @@ public class SolicitorSubmissionWorkflowTest {
 
     @Test
     public void runShouldExecuteTasksAndReturnPayload() throws Exception {
-        when(validateSolicitorCaseData.execute(context, testData)).thenReturn(testData);
-        when(processPbaPayment.execute(context, testData)).thenReturn(testData);
+        when(validateSolicitorCaseDataTask.execute(context, testData)).thenReturn(testData);
+        when(processPbaPaymentTask.execute(context, testData)).thenReturn(testData);
         when(removeMiniPetitionDraftDocumentsTask.execute(context, testData)).thenReturn(testData);
+        when(sendPetitionerSubmissionNotificationEmailTask.execute(context, testData)).thenReturn(testData);
 
         assertEquals(testData, solicitorSubmissionWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN));
 
-        InOrder inOrder = inOrder(validateSolicitorCaseData, processPbaPayment, removeMiniPetitionDraftDocumentsTask);
+        InOrder inOrder = inOrder(
+            validateSolicitorCaseDataTask,
+            processPbaPaymentTask,
+            removeMiniPetitionDraftDocumentsTask,
+            sendPetitionerSubmissionNotificationEmailTask
+        );
 
-        inOrder.verify(validateSolicitorCaseData).execute(context, testData);
-        inOrder.verify(processPbaPayment).execute(context, testData);
+        inOrder.verify(validateSolicitorCaseDataTask).execute(context, testData);
+        inOrder.verify(processPbaPaymentTask).execute(context, testData);
         inOrder.verify(removeMiniPetitionDraftDocumentsTask).execute(context, testData);
+        inOrder.verify(sendPetitionerSubmissionNotificationEmailTask).execute(context, testData);
     }
+
 }

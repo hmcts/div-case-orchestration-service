@@ -8,10 +8,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddCourtsToPayloadTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataDraftToDivorceFormatter;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseData;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetInconsistentPaymentInfo;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveDraft;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseDataDraftToDivorceFormatterTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetInconsistentPaymentInfoTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.RetrieveDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCaseIdAndStateOnSession;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdatePaymentMadeCase;
 
@@ -34,10 +34,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class RetrieveDraftWorkflowTest {
 
     @Mock
-    private RetrieveDraft retrieveDraft;
+    private RetrieveDraftTask retrieveDraftTask;
 
     @Mock
-    private CaseDataDraftToDivorceFormatter caseDataToDivorceFormatter;
+    private CaseDataDraftToDivorceFormatterTask caseDataToDivorceFormatter;
 
     @Mock
     private SetCaseIdAndStateOnSession setCaseIdAndStateOnSession;
@@ -46,13 +46,13 @@ public class RetrieveDraftWorkflowTest {
     private AddCourtsToPayloadTask addCourtsToPayloadTask;
 
     @Mock
-    private GetInconsistentPaymentInfo getInconsistentPaymentInfo;
+    private GetInconsistentPaymentInfoTask getInconsistentPaymentInfoTask;
 
     @Mock
     private UpdatePaymentMadeCase paymentMadeEvent;
 
     @Mock
-    private FormatDivorceSessionToCaseData formatDivorceSessionToCaseData;
+    private FormatDivorceSessionToCaseDataTask formatDivorceSessionToCaseDataTask;
 
     @InjectMocks
     private RetrieveDraftWorkflow target;
@@ -67,8 +67,8 @@ public class RetrieveDraftWorkflowTest {
         ArgumentMatcher<TaskContext> contextWithAuthTokenMatcher =
             argument -> argument.getTransientObject(AUTH_TOKEN_JSON_KEY) != null;
 
-        when(retrieveDraft.execute(argThat(contextWithAuthTokenMatcher), eq(payload))).thenReturn(casePayload);
-        when(getInconsistentPaymentInfo.execute(argThat(contextWithAuthTokenMatcher),
+        when(retrieveDraftTask.execute(argThat(contextWithAuthTokenMatcher), eq(payload))).thenReturn(casePayload);
+        when(getInconsistentPaymentInfoTask.execute(argThat(contextWithAuthTokenMatcher),
             eq(casePayload))).thenAnswer(invocation ->  {
                 TaskContext context = invocation.getArgument(0);
                 context.setTaskFailed(true);
@@ -84,13 +84,13 @@ public class RetrieveDraftWorkflowTest {
             eq(draftPayload))).thenReturn(draftPayload);
         assertEquals(draftPayload, target.run(AUTH_TOKEN));
 
-        verify(retrieveDraft).execute(argThat(contextWithAuthTokenMatcher),eq(payload));
-        verify(getInconsistentPaymentInfo).execute(argThat(contextWithAuthTokenMatcher),eq(casePayload));
+        verify(retrieveDraftTask).execute(argThat(contextWithAuthTokenMatcher),eq(payload));
+        verify(getInconsistentPaymentInfoTask).execute(argThat(contextWithAuthTokenMatcher),eq(casePayload));
         verify(caseDataToDivorceFormatter).execute(argThat(contextWithAuthTokenMatcher),eq(casePayload));
         verify(setCaseIdAndStateOnSession).execute(argThat(contextWithAuthTokenMatcher),eq(draftPayload));
         verify(addCourtsToPayloadTask).execute(argThat(contextWithAuthTokenMatcher),eq(draftPayload));
         verify(paymentMadeEvent, never()).execute(any(),any());
-        verify(formatDivorceSessionToCaseData, never()).execute(any(),any());
+        verify(formatDivorceSessionToCaseDataTask, never()).execute(any(),any());
     }
 
     @Test
@@ -103,10 +103,10 @@ public class RetrieveDraftWorkflowTest {
         ArgumentMatcher<TaskContext> contextWithAuthTokenMatcher =
             argument -> argument.getTransientObject(AUTH_TOKEN_JSON_KEY) != null;
 
-        when(retrieveDraft.execute(argThat(contextWithAuthTokenMatcher), eq(payload))).thenReturn(casePayload);
-        when(getInconsistentPaymentInfo.execute(argThat(contextWithAuthTokenMatcher),
+        when(retrieveDraftTask.execute(argThat(contextWithAuthTokenMatcher), eq(payload))).thenReturn(casePayload);
+        when(getInconsistentPaymentInfoTask.execute(argThat(contextWithAuthTokenMatcher),
             eq(casePayload))).thenReturn(paymentPayload);
-        when(formatDivorceSessionToCaseData.execute(argThat(contextWithAuthTokenMatcher),
+        when(formatDivorceSessionToCaseDataTask.execute(argThat(contextWithAuthTokenMatcher),
             eq(paymentPayload))).thenReturn(paymentPayload);
         when(paymentMadeEvent.execute(argThat(contextWithAuthTokenMatcher),
             eq(paymentPayload))).thenReturn(paymentPayload);
@@ -119,13 +119,13 @@ public class RetrieveDraftWorkflowTest {
             eq(draftPayload))).thenReturn(draftPayload);
         assertEquals(draftPayload, target.run(AUTH_TOKEN));
 
-        verify(retrieveDraft, times(2)).execute(argThat(contextWithAuthTokenMatcher),eq(payload));
-        verify(getInconsistentPaymentInfo).execute(argThat(contextWithAuthTokenMatcher),eq(casePayload));
+        verify(retrieveDraftTask, times(2)).execute(argThat(contextWithAuthTokenMatcher),eq(payload));
+        verify(getInconsistentPaymentInfoTask).execute(argThat(contextWithAuthTokenMatcher),eq(casePayload));
         verify(caseDataToDivorceFormatter).execute(argThat(contextWithAuthTokenMatcher),eq(casePayload));
         verify(setCaseIdAndStateOnSession).execute(argThat(contextWithAuthTokenMatcher),eq(draftPayload));
         verify(addCourtsToPayloadTask).execute(argThat(contextWithAuthTokenMatcher),eq(draftPayload));
         verify(paymentMadeEvent).execute(argThat(contextWithAuthTokenMatcher),eq(paymentPayload));
-        verify(formatDivorceSessionToCaseData).execute(argThat(contextWithAuthTokenMatcher),eq(paymentPayload));
+        verify(formatDivorceSessionToCaseDataTask).execute(argThat(contextWithAuthTokenMatcher),eq(paymentPayload));
     }
 
 }

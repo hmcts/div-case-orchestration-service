@@ -4,11 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,8 +28,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
@@ -53,10 +55,11 @@ public class SendPetitionerClarificationRequestEmail implements Task<Map<String,
 
         final String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
 
-        String petSolicitorEmail = (String) caseData.get(PET_SOL_EMAIL);
+        String petSolicitorEmail = (String) caseData.get(PETITIONER_SOLICITOR_EMAIL);
 
         String petitionerFirstName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME);
         String petitionerLastName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME);
+        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
 
         Map<String, String> templateVars = new HashMap<>();
 
@@ -64,7 +67,7 @@ public class SendPetitionerClarificationRequestEmail implements Task<Map<String,
 
             String respFirstName = getMandatoryPropertyValueAsString(caseData, RESP_FIRST_NAME_CCD_FIELD);
             String respLastName = getMandatoryPropertyValueAsString(caseData, RESP_LAST_NAME_CCD_FIELD);
-            String solicitorName = getMandatoryPropertyValueAsString(caseData, PET_SOL_NAME);
+            String solicitorName = getMandatoryPropertyValueAsString(caseData, PETITIONER_SOLICITOR_NAME);
 
             templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, context.getTransientObject(CASE_ID_JSON_KEY));
             templateVars.put(NOTIFICATION_EMAIL, petSolicitorEmail);
@@ -75,7 +78,8 @@ public class SendPetitionerClarificationRequestEmail implements Task<Map<String,
             emailService.sendEmail(petSolicitorEmail,
                 EmailTemplateNames.SOL_APPLICANT_MORE_INFO_REQUESTED.name(),
                 templateVars,
-                SOL_APPLICANT_MORE_INFO_REQUESTED_EMAIL_DESC);
+                SOL_APPLICANT_MORE_INFO_REQUESTED_EMAIL_DESC,
+                languagePreference);
 
         } else if (StringUtils.isNotBlank(petitionerEmail)) {
             String ccdReference = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
@@ -86,7 +90,8 @@ public class SendPetitionerClarificationRequestEmail implements Task<Map<String,
             emailService.sendEmail(petitionerEmail,
                 EmailTemplateNames.PETITIONER_CLARIFICATION_REQUEST_EMAIL_NOTIFICATION.name(),
                 templateVars,
-                PETITIONER_CLARIFICATION_REQUEST_EMAIL_DESC);
+                PETITIONER_CLARIFICATION_REQUEST_EMAIL_DESC,
+                languagePreference);
         } else {
             log.warn("petitioner email address found to be empty for case {}", caseData.get(D_8_CASE_REFERENCE));
         }

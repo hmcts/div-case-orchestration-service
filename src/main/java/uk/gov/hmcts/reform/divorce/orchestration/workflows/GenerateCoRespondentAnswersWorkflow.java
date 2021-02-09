@@ -7,8 +7,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentAnswersGenerator;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentAnswersGeneratorTask;
 
 import java.util.Map;
 
@@ -18,21 +18,21 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 public class GenerateCoRespondentAnswersWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final CoRespondentAnswersGenerator coRespondentAnswersGenerator;
-    private final CaseFormatterAddDocuments caseFormatterAddDocuments;
+    private final CoRespondentAnswersGeneratorTask coRespondentAnswersGeneratorTask;
+    private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     @Autowired
-    public GenerateCoRespondentAnswersWorkflow(CoRespondentAnswersGenerator coRespondentAnswersGenerator,
-                                               CaseFormatterAddDocuments caseFormatterAddDocuments) {
-        this.coRespondentAnswersGenerator = coRespondentAnswersGenerator;
-        this.caseFormatterAddDocuments = caseFormatterAddDocuments;
+    public GenerateCoRespondentAnswersWorkflow(CoRespondentAnswersGeneratorTask coRespondentAnswersGeneratorTask,
+                                               AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask) {
+        this.coRespondentAnswersGeneratorTask = coRespondentAnswersGeneratorTask;
+        this.addNewDocumentsToCaseDataTask = addNewDocumentsToCaseDataTask;
     }
 
     public Map<String, Object> run(CaseDetails caseDetails, String authorizationToken) throws WorkflowException {
         return execute(
                 new Task[] {
-                    coRespondentAnswersGenerator,
-                    caseFormatterAddDocuments
+                    coRespondentAnswersGeneratorTask,
+                    addNewDocumentsToCaseDataTask
                 },
                 caseDetails.getCaseData(),
                 ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authorizationToken),

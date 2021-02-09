@@ -6,7 +6,7 @@ This application orchestrates a workflow based on the requested business require
 
 **Prerequisites**
 
-- [JDK 8](https://www.oracle.com/java)
+- [JDK 11](https://openjdk.java.net/)
 
 **Building**
 
@@ -101,6 +101,7 @@ You don't need to migrate database manually since migrations are executed every 
 
 We use [SemVer](http://semver.org/) for versioning.
 For the versions available, see the tags on this repository.
+
 
 **Standard API**
 

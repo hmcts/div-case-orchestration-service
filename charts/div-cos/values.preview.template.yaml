@@ -3,15 +3,22 @@ java:
     IDAM_API_URL: "https://idam-api.aat.platform.hmcts.net"
     FEATURE_DN_REFUSAL: "true"
     FEATURE_RESP_SOLICITOR_DETAILS: "true"
+    SOLICITOR_DN_REJECT_AND_AMEND: "true"
+    FEATURE_SHARE_A_CASE: "true"
+    PAY_BY_ACCOUNT: "true"
     SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: false
     DATAEXTRACTION_STATUS_DA_EMAILTO: da_data_extraction@sharklasers.com
     DATAEXTRACTION_STATUS_AOS_EMAILTO: aos_data_extraction@sharklasers.com
     DATAEXTRACTION_STATUS_DN_EMAILTO: dn_data_extraction@sharklasers.com
-    DIV_SCHEDULER_DB_HOST : "{{ .Release.Name }}-postgresql"
-    DIV_SCHEDULER_DB_NAME : "{{ .Values.postgresql.postgresqlDatabase}}"
-    DIV_SCHEDULER_DB_USER_NAME : "{{ .Values.postgresql.postgresqlUsername}}"
-    DIV_SCHEDULER_DB_PASSWORD  : "{{ .Values.postgresql.postgresqlPassword}}"
-    FLYWAY_URL : "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/{{ .Values.postgresql.postgresqlDatabase}}"
+    DIV_SCHEDULER_DB_HOST: "{{ .Release.Name }}-postgresql"
+    DIV_SCHEDULER_DB_NAME: "{{ .Values.postgresql.postgresqlDatabase}}"
+    DIV_SCHEDULER_DB_USER_NAME: "{{ .Values.postgresql.postgresqlUsername}}"
+    DIV_SCHEDULER_DB_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
+    FLYWAY_URL: "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/{{ .Values.postgresql.postgresqlDatabase}}"
+    #Scheduler parameters
+    SCHEDULER_ENABLED: false
+    SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_ENABLED: false
+    SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_CRON: "0 0/10 * ? * * *"#Runs every 10 minutes (if enabled)
 
   keyVaults:
     "div":

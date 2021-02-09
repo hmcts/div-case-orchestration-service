@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequ
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport;
+import uk.gov.hmcts.reform.divorce.orchestration.util.elasticsearch.CMSElasticSearchSupport;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,7 +55,7 @@ public class DataExtractionFileCreator implements Task<Void> {
 
         StringBuilder csvFileContent = new StringBuilder();
         csvFileContent.append(csvExtractor.getHeaderLine());
-        List<CaseDetails> casesDetails = cmsElasticSearchSupport.searchCMSCases(0, 50, authToken, queryBuilders).collect(Collectors.toList());
+        List<CaseDetails> casesDetails = cmsElasticSearchSupport.searchCMSCases(authToken, queryBuilders).collect(Collectors.toList());
         for (CaseDetails caseDetails : casesDetails) {
             csvExtractor.mapCaseData(caseDetails)
                 .map(line -> System.lineSeparator() + line)

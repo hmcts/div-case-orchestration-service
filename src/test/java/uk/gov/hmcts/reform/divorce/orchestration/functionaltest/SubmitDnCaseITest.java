@@ -10,7 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,16 +21,16 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN_1;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_AWAITING;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_COMPLETED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_CLARIFICATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_COMPLETED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED;
@@ -39,6 +38,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FORMATTER_CASE_DATA_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FORMATTER_DIVORCE_SESSION_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class SubmitDnCaseITest extends IdamTestSupport {
@@ -91,6 +91,7 @@ public class SubmitDnCaseITest extends IdamTestSupport {
     @Test
     public void givenCaseUpdateFails_whenSubmitDn_thenPropagateTheException() throws Exception {
         final Map<String, Object> caseData = new HashMap<>();
+        caseData.put(LANGUAGE_PREFERENCE_WELSH,"No");
         final String caseDataString = convertObjectToJsonString(caseData);
         final Map<String, Object> caseDetails = new HashMap<>();
 
@@ -115,6 +116,7 @@ public class SubmitDnCaseITest extends IdamTestSupport {
     @Test
     public void givenDnReceivedAndAosNotCompleted_whenSubmitDn_thenProceedAsExpected() throws Exception {
         final Map<String, Object> caseData = getCaseData();
+        caseData.put(LANGUAGE_PREFERENCE_WELSH,"No");
         final String caseDataString = convertObjectToJsonString(caseData);
         final Map<String, Object> caseDetails = new HashMap<>();
 
@@ -138,6 +140,7 @@ public class SubmitDnCaseITest extends IdamTestSupport {
     @Test
     public void givenDnReceivedAndAosCompleted_whenSubmitDn_thenProceedAsExpected() throws Exception {
         final Map<String, Object> caseData = getCaseData();
+        caseData.put(LANGUAGE_PREFERENCE_WELSH,"No");
         final String caseDataString = convertObjectToJsonString(caseData);
         final Map<String, Object> caseDetails = new HashMap<>();
 
@@ -161,6 +164,7 @@ public class SubmitDnCaseITest extends IdamTestSupport {
     @Test
     public void givenDnReceivedAndAwaitingClarification_whenSubmitDn_thenProceedAsExpected() throws Exception {
         final Map<String, Object> caseData = getCaseData();
+        caseData.put(LANGUAGE_PREFERENCE_WELSH,"No");
         final String caseDataString = convertObjectToJsonString(caseData);
         final Map<String, Object> caseDetails = new HashMap<>();
 
@@ -171,8 +175,8 @@ public class SubmitDnCaseITest extends IdamTestSupport {
         stubMaintenanceServerEndpointForRetrieveCaseById(OK, caseDetails);
         stubFormatterClarificationEndpoint(OK,
             ImmutableMap.of(
-                FORMATTER_CASE_DATA_KEY, Collections.emptyMap(),
-                FORMATTER_DIVORCE_SESSION_KEY, Collections.emptyMap()
+                FORMATTER_CASE_DATA_KEY, caseData,
+                FORMATTER_DIVORCE_SESSION_KEY, caseData
             ), caseDataString);
         stubMaintenanceServerEndpointForUpdate(OK, DN_RECEIVED_CLARIFICATION, caseData, caseDataString);
 
@@ -190,7 +194,7 @@ public class SubmitDnCaseITest extends IdamTestSupport {
             .withRequestBody(equalToJson(convertObjectToJsonString(caseData)))
             .willReturn(aResponse()
                 .withStatus(status.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withBody(response)));
     }
 
@@ -199,7 +203,7 @@ public class SubmitDnCaseITest extends IdamTestSupport {
             .withRequestBody(equalToJson(convertObjectToJsonString(caseData)))
             .willReturn(aResponse()
                 .withStatus(status.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withBody(response)));
     }
 
@@ -210,7 +214,7 @@ public class SubmitDnCaseITest extends IdamTestSupport {
             .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
             .willReturn(aResponse()
                 .withStatus(status.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withBody(response)));
     }
 
@@ -219,11 +223,11 @@ public class SubmitDnCaseITest extends IdamTestSupport {
             .withHeader(AUTHORIZATION, new EqualToPattern(BEARER_AUTH_TOKEN_1))
             .willReturn(aResponse()
                 .withStatus(status.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withBody(convertObjectToJsonString(cmsData))));
     }
 
     private Map<String, Object> getCaseData() {
-        return ImmutableMap.of();
+        return new HashMap<>();
     }
 }

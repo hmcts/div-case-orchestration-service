@@ -15,7 +15,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseCon
 
 public class UpdateDivorceCasePronouncementDateWithinBulkTest {
 
-    private UpdateDivorceCasePronouncementDateWithinBulk classToTest  = new UpdateDivorceCasePronouncementDateWithinBulk();
+    private final UpdateDivorceCasePronouncementDateWithinBulk classToTest  = new UpdateDivorceCasePronouncementDateWithinBulk();
 
     @Test
     public void givenBulkCase_whenGetEvents_thenReturnBulkPronounceEvent() {
@@ -23,7 +23,7 @@ public class UpdateDivorceCasePronouncementDateWithinBulkTest {
         context.setTransientObject(BULK_CASE_DETAILS_CONTEXT_KEY, new HashMap<>());
         Map<String, Object> payload  = Collections.emptyMap();
 
-        List<ApplicationEvent> result = classToTest.getApplicationEvent(context, payload);
+        List<ApplicationEvent> result = classToTest.getApplicationEventsToPublish(context, payload);
         assertEquals(1, result.size());
     }
 }

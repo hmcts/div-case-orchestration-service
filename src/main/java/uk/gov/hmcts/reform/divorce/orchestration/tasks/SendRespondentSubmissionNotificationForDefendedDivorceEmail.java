@@ -1,18 +1,22 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.TemplateConfigService;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
@@ -21,26 +25,26 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_COURT_ADDRESS_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RDC_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.getRelationshipTermByGender;
 
 @Component
+@AllArgsConstructor
 @Slf4j
 public class SendRespondentSubmissionNotificationForDefendedDivorceEmail implements Task<Map<String, Object>> {
 
     private static final String EMAIL_DESCRIPTION = "respondent submission notification email - defended divorce";
 
-    @Autowired
     private CcdUtil ccdUtil;
-
-    @Autowired
     private TaskCommons taskCommons;
+    private TemplateConfigService templateConfigService;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseDataPayload) throws TaskException {
@@ -51,7 +55,8 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
         String respondentLastName = getMandatoryPropertyValueAsString(caseDataPayload, RESP_LAST_NAME_CCD_FIELD);
         String petitionerInferredGender = getMandatoryPropertyValueAsString(caseDataPayload,
             D_8_INFERRED_PETITIONER_GENDER);
-        String petitionerRelationshipToRespondent = getRelationshipTermByGender(petitionerInferredGender);
+        String petRelToRespondent = templateConfigService.getRelationshipTermByGender(petitionerInferredGender, LanguagePreference.ENGLISH);
+        String welshPpetRelToRespondent = templateConfigService.getRelationshipTermByGender(petitionerInferredGender,LanguagePreference.WELSH);
         String divorceUnitKey = getMandatoryPropertyValueAsString(caseDataPayload, DIVORCE_UNIT_JSON_KEY);
         Court court = taskCommons.getCourt(divorceUnitKey);
 
@@ -61,17 +66,23 @@ public class SendRespondentSubmissionNotificationForDefendedDivorceEmail impleme
         templateFields.put(NOTIFICATION_EMAIL, respondentEmailAddress);
         templateFields.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, respondentFirstName);
         templateFields.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, respondentLastName);
-        templateFields.put(NOTIFICATION_HUSBAND_OR_WIFE, petitionerRelationshipToRespondent);
+        templateFields.put(NOTIFICATION_HUSBAND_OR_WIFE, petRelToRespondent);
         templateFields.put(NOTIFICATION_RDC_NAME_KEY, court.getIdentifiableCentreName());
         templateFields.put(NOTIFICATION_COURT_ADDRESS_KEY, court.getFormattedAddress());
+        templateFields.put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, welshPpetRelToRespondent);
 
-        String formSubmissionDateLimit = ccdUtil.getFormattedDueDate(caseDataPayload, CCD_DUE_DATE);
-        templateFields.put("form submission date limit", formSubmissionDateLimit);
+        String formSubmissionDateLimit = ccdUtil.getFormattedDueDate(caseDataPayload, CcdFields.DUE_DATE);
+        templateFields.put(NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY, formSubmissionDateLimit);
 
+        String welshFormSubmissionDateLimit = ccdUtil.getWelshFormattedDate(caseDataPayload, CcdFields.DUE_DATE);
+        templateFields.put(OrchestrationConstants.NOTIFICATION_WELSH_FORM_SUBMISSION_DATE_LIMIT_KEY, welshFormSubmissionDateLimit);
+
+        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseDataPayload);
         taskCommons.sendEmail(RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION,
             EMAIL_DESCRIPTION,
             respondentEmailAddress,
-            templateFields);
+            templateFields,
+            languagePreference);
 
         return caseDataPayload;
     }

@@ -2,9 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextraction;
 
 import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -12,7 +10,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport;
+import uk.gov.hmcts.reform.divorce.orchestration.util.elasticsearch.CMSElasticSearchSupport;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,10 +21,9 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.util.Collections.singletonList;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNull.notNullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.rules.ExpectedException.none;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -44,9 +41,6 @@ public class DataExtractionFileCreatorTest {
     private static final String TEST_RELEVANT_STATE = "TEST_RELEVANT_STATE";
 
     private final LocalDate testLastModifiedDate = LocalDate.parse("2019-04-12");
-
-    @Rule
-    public ExpectedException expectedException = none();
 
     @Mock
     private CMSElasticSearchSupport cmsElasticSearchSupport;
@@ -75,7 +69,7 @@ public class DataExtractionFileCreatorTest {
 
     @Test
     public void givenTransformedCaseDetails_shouldAddExtractionFileToContext() throws TaskException, IOException {
-        when(cmsElasticSearchSupport.searchCMSCases(eq(0), eq(50), eq(TEST_AUTHORISATION_TOKEN), any(), any()))
+        when(cmsElasticSearchSupport.searchCMSCases(eq(TEST_AUTHORISATION_TOKEN), any(), any()))
             .thenReturn(Stream.of(
                 CaseDetails.builder().build(),
                 CaseDetails.builder().build(),
@@ -96,7 +90,7 @@ public class DataExtractionFileCreatorTest {
         assertThat(fileLines.get(1), is("line1"));
         assertThat(fileLines.get(2), is("line2"));
 
-        verify(cmsElasticSearchSupport).searchCMSCases(eq(0), eq(50), eq(TEST_AUTHORISATION_TOKEN),
+        verify(cmsElasticSearchSupport).searchCMSCases(eq(TEST_AUTHORISATION_TOKEN),
             eq(QueryBuilders.termQuery("last_modified", testLastModifiedDate)),
             eq(QueryBuilders.termsQuery("state", singletonList(TEST_RELEVANT_STATE.toLowerCase())))
         );

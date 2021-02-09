@@ -19,5 +19,15 @@ public interface FeesAndPaymentsClient {
     @ApiOperation("Returns amend Petitioner Fee")
     @GetMapping(value = "/fees-and-payments/version/1/amend-fee",
         headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE)
-    FeeResponse getAmendPetitioneFee();
+    FeeResponse getAmendPetitionerFee();
+
+    @ApiOperation("Returns General Application Without Notice Fee")
+    @GetMapping(value = "/fees-and-payments/version/1/application-without-notice-fee",
+        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE)
+    FeeResponse getGeneralApplicationWithoutFee();
+
+    @ApiOperation("Returns Bailiff Application Fee")
+    @GetMapping(value = "/fees-and-payments/version/1/enforcement-fee",
+        headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE)
+    FeeResponse getBailiffApplicationFee();
 }

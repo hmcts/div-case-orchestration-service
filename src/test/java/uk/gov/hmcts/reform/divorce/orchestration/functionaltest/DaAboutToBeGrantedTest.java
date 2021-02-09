@@ -1,31 +1,32 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import com.google.common.collect.ImmutableMap;
-import org.json.JSONObject;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
+import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Map;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static java.time.ZoneOffset.UTC;
 import static java.util.Collections.singletonMap;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -38,12 +39,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PRONO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
@@ -57,8 +55,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class DaAboutToBeGrantedTest extends MockedFunctionalTest {
 
     private static final String API_URL = "/da-about-to-be-granted";
-    private static final String ADD_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/add-documents";
-    private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
+    private static final String DECREE_ABSOLUTE_TEMPLATE_ID = "FL-DIV-GOR-ENG-00062.docx";
 
     private static final Map<String, Object> CASE_DATA = ImmutableMap.<String, Object>builder()
         .put(PRONOUNCEMENT_JUDGE_CCD_FIELD, TEST_PRONOUNCEMENT_JUDGE)
@@ -72,34 +69,35 @@ public class DaAboutToBeGrantedTest extends MockedFunctionalTest {
         .put(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD, TEST_DECREE_ABSOLUTE_GRANTED_DATE)
         .build();
 
-    private static final Map CASE_DETAILS = singletonMap(CASE_DETAILS_JSON_KEY,
-        ImmutableMap.<String, Object>builder()
-            .put(CCD_CASE_DATA_FIELD, CASE_DATA)
-            .put(CCD_CASE_ID, TEST_CASE_ID)
-            .build()
-    );
+    private static final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+        .caseDetails(CaseDetails.builder().caseData(CASE_DATA).caseId(TEST_CASE_ID).build())
+        .build();
 
     @Autowired
     private MockMvc webClient;
 
     @MockBean
-    EmailService mockEmailService;
+    private EmailService mockEmailService;
+
+    @MockBean
+    private Clock clock;
+
+    @Before
+    public void setUp() {
+        LocalDateTime grantedDate = LocalDateTime.parse(TEST_DECREE_ABSOLUTE_GRANTED_DATE);
+        when(clock.instant()).thenReturn(grantedDate.toInstant(ZoneOffset.UTC));
+        when(clock.getZone()).thenReturn(UTC);
+        when(clock.withZone(DateUtils.Settings.ZONE_ID)).thenReturn(clock);
+    }
 
     @Test
     public void givenCorrectRespondentDetails_ThenOkResponse() throws Exception {
+        stubDocumentGeneratorService(DECREE_ABSOLUTE_TEMPLATE_ID,
+            singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, ObjectMapperTestUtil.convertObject(ccdCallbackRequest.getCaseDetails(), Map.class)),
+            DECREE_ABSOLUTE_DOCUMENT_TYPE);
+        when(mockEmailService.sendEmail(anyString(), anyString(), anyMap(), anyString(), any())).thenReturn(null);
 
-        GeneratedDocumentInfo daDocumentGenerationResponse =
-            GeneratedDocumentInfo.builder()
-                .documentType(DECREE_ABSOLUTE_DOCUMENT_TYPE)
-                .fileName(DECREE_ABSOLUTE_FILENAME + TEST_CASE_ID)
-                .build();
-
-        stubDocumentGeneratorServerEndpoint(daDocumentGenerationResponse);
-        stubFormatterServerEndpoint(daDocumentGenerationResponse, CASE_DATA);
-        when(mockEmailService.sendEmail(anyString(), anyString(), anyMap(), anyString()))
-            .thenReturn(null);
-
-        String inputJson = JSONObject.valueToString(CASE_DETAILS);
+        String inputJson = convertObjectToJsonString(ccdCallbackRequest);
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(CASE_DATA).build();
 
         webClient.perform(post(API_URL)
@@ -112,8 +110,7 @@ public class DaAboutToBeGrantedTest extends MockedFunctionalTest {
     }
 
     @Test
-    public void givenBodyIsNull_whenEndpointInvoked_thenReturnBadRequest()
-        throws Exception {
+    public void givenBodyIsNull_whenEndpointInvoked_thenReturnBadRequest() throws Exception {
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
@@ -122,9 +119,8 @@ public class DaAboutToBeGrantedTest extends MockedFunctionalTest {
     }
 
     @Test
-    public void givenAuthHeaderIsNull_whenEndpointInvoked_thenReturnBadRequest()
-        throws Exception {
-        String inputJson = JSONObject.valueToString(CASE_DETAILS);
+    public void givenAuthHeaderIsNull_whenEndpointInvoked_thenReturnBadRequest() throws Exception {
+        String inputJson = convertObjectToJsonString(ccdCallbackRequest);
         webClient.perform(post(API_URL)
             .content(convertObjectToJsonString(inputJson))
             .contentType(MediaType.APPLICATION_JSON)
@@ -132,22 +128,4 @@ public class DaAboutToBeGrantedTest extends MockedFunctionalTest {
             .andExpect(status().isBadRequest());
     }
 
-    private void stubDocumentGeneratorServerEndpoint(GeneratedDocumentInfo response) {
-        documentGeneratorServiceServer.stubFor(WireMock.post(GENERATE_DOCUMENT_CONTEXT_PATH)
-            .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
-            .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withStatus(HttpStatus.OK.value())
-                .withBody(convertObjectToJsonString(response))));
-    }
-
-    private void stubFormatterServerEndpoint(GeneratedDocumentInfo generatedDocumentInfo ,
-                                             Map<String, Object> response) {
-        formatterServiceServer.stubFor(WireMock.post(ADD_DOCUMENTS_CONTEXT_PATH)
-            .withRequestBody(containing(convertObjectToJsonString(generatedDocumentInfo)))
-            .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE)
-                .withStatus(HttpStatus.OK.value())
-                .withBody(convertObjectToJsonString(response))));
-    }
 }

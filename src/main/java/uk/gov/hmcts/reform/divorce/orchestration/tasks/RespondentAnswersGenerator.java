@@ -3,10 +3,12 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentTypeHelper;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
@@ -30,10 +32,11 @@ public class RespondentAnswersGenerator implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) {
         CaseDetails caseDataForDoc = CaseDetails.builder().caseData(payload).build();
+        String templateId = DocumentTypeHelper.getLanguageAppropriateTemplate(payload, DocumentType.RESPONDENT_ANSWERS);
         GeneratedDocumentInfo respondentAnswers =
             documentGeneratorClient.generatePDF(
                 GenerateDocumentRequest.builder()
-                    .template(DOCUMENT_TYPE_RESPONDENT_ANSWERS)
+                    .template(templateId)
                     .values(ImmutableMap.of(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDataForDoc))
                     .build(),
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY)

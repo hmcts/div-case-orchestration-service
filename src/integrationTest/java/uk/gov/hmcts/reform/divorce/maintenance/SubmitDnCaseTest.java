@@ -2,15 +2,14 @@ package uk.gov.hmcts.reform.divorce.maintenance;
 
 import io.restassured.response.Response;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
-import uk.gov.hmcts.reform.divorce.model.UserDetails;
+import uk.gov.hmcts.reform.divorce.model.idam.UserDetails;
 import uk.gov.hmcts.reform.divorce.support.CcdSubmissionSupport;
 
 import static org.junit.Assert.assertEquals;
 import static org.springframework.http.HttpStatus.OK;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_LEGAL_ADVISOR_REFERRAL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_LEGAL_ADVISOR_REFERRAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 
 public class SubmitDnCaseTest extends CcdSubmissionSupport {
@@ -38,7 +37,7 @@ public class SubmitDnCaseTest extends CcdSubmissionSupport {
         assertEquals(AWAITING_LEGAL_ADVISOR_REFERRAL, cosResponse.path(CASE_STATE_JSON_KEY));
     }
 
-    @Ignore // Needs config to pass
+
     @Test
     public void whenSubmitDnWithAwaitingClarification_thenProceedAsExpected() throws Exception {
         updateCaseForCitizen(TEST_AOS_STARTED_EVENT_ID);

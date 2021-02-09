@@ -6,8 +6,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -20,4 +20,10 @@ public interface DocumentGeneratorClient {
     GeneratedDocumentInfo generatePDF(
         @RequestBody GenerateDocumentRequest generateDocumentRequest,
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken);
+
+    @ApiOperation("Generate Draft PDF Document")
+    @PostMapping(value = "/version/1/generateDraftPDF", headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE)
+    GeneratedDocumentInfo generateDraftPDF(
+            @RequestBody GenerateDocumentRequest generateDocumentRequest,
+            @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken);
 }

@@ -13,17 +13,17 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.apache.commons.lang3.StringUtils.SPACE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CARE_OF_PREFIX;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COURT_CONTACT_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_COURT_DETAILS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMAIL_LABEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINE_SEPARATOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PHONE_LABEL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SPACE_SEPARATOR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.DN_COURT_DETAILS;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SetFormattedDnCourtDetailsTest {
@@ -61,10 +61,10 @@ public class SetFormattedDnCourtDetailsTest {
 
         assertEquals(TEST_COURT_NAME, contextDnCourtDetails.get(COURT_NAME_CCD_FIELD));
         assertEquals(contextDnCourtDetails.get(COURT_CONTACT_JSON_KEY),
-                CARE_OF_PREFIX + SPACE_SEPARATOR + TEST_COURT_NAME + LINE_SEPARATOR
+                CARE_OF_PREFIX + SPACE + TEST_COURT_NAME + LINE_SEPARATOR
                 + TEST_COURT_ADDRESS + LINE_SEPARATOR + LINE_SEPARATOR
-                + EMAIL_LABEL + SPACE_SEPARATOR + TEST_COURT_EMAIL + LINE_SEPARATOR
-                + PHONE_LABEL + SPACE_SEPARATOR + TEST_COURT_PHONE);
+                + EMAIL_LABEL + SPACE + TEST_COURT_EMAIL + LINE_SEPARATOR
+                + PHONE_LABEL + SPACE + TEST_COURT_PHONE);
         assertEquals(outputPayload, payload);
     }
 

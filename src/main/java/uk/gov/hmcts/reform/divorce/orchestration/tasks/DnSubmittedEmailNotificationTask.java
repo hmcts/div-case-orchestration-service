@@ -4,10 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
@@ -27,8 +29,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 
@@ -46,7 +48,7 @@ public class DnSubmittedEmailNotificationTask implements Task<Map<String, Object
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> data) {
 
-        String petSolicitorEmail = (String) data.get(PET_SOL_EMAIL);
+        String petSolicitorEmail = (String) data.get(PETITIONER_SOLICITOR_EMAIL);
 
         String ccdReference = Objects.toString(data.get(D_8_CASE_REFERENCE), null);
         String petitionerFirstName = Objects.toString(data.get(D_8_PETITIONER_FIRST_NAME), null);
@@ -61,7 +63,7 @@ public class DnSubmittedEmailNotificationTask implements Task<Map<String, Object
         if (StringUtils.isNotBlank(petSolicitorEmail)) {
             String respFirstName = Objects.toString(data.get(RESP_FIRST_NAME_CCD_FIELD), null);
             String respLastName = Objects.toString(data.get(RESP_LAST_NAME_CCD_FIELD), null);
-            String solicitorName = Objects.toString(data.get(PET_SOL_NAME), null);
+            String solicitorName = Objects.toString(data.get(PETITIONER_SOLICITOR_NAME), null);
 
             notificationTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, caseId);
             notificationTemplateVars.put(NOTIFICATION_EMAIL, petSolicitorEmail);
@@ -78,8 +80,9 @@ public class DnSubmittedEmailNotificationTask implements Task<Map<String, Object
             emailToBeSentTo = petitionerEmail;
         }
         try {
+            LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(data);
             emailService.sendEmailAndReturnExceptionIfFails(emailToBeSentTo,
-                template, notificationTemplateVars, "DN Submission");
+                template, notificationTemplateVars, "DN Submission", languagePreference);
         } catch (NotificationClientException e) {
             log.warn("Error sending email on DN submitted for case {}", ccdReference, e);
         }

@@ -11,9 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
-import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest.Status.AOS;
 import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest.Status.DA;
 import static uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest.Status.DN;
@@ -22,13 +22,13 @@ public class DataExtractionTaskTest {
 
     private final LocalDate yesterday = LocalDate.now().minusDays(1);
 
-    private DataExtractionTask classUnderTest = new DataExtractionTask();
+    private final DataExtractionTask classUnderTest = new DataExtractionTask();
 
     @Test
     public void givenDataExtraction_whenGetEvents_thenReturnCorrectNumberOfEvents() {
         TaskContext context = new DefaultTaskContext();
         Map<String, Object> payload = new HashMap<>();
-        List<ApplicationEvent> events = classUnderTest.getApplicationEvent(context, payload);
+        List<ApplicationEvent> events = classUnderTest.getApplicationEventsToPublish(context, payload);
 
         assertThat(events, hasSize(3));
         assertEventIsAsExpected((DataExtractionRequest) events.get(0), yesterday, AOS);

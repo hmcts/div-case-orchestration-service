@@ -7,8 +7,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_ADDITIONAL_INFO_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
@@ -16,8 +16,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_COSTS_CCD_FIELD;
 
 public class RemoveLegalAdvisorMakeDecisionFieldsTaskTest {
-    
-    private RemoveLegalAdvisorMakeDecisionFieldsTask classToTest = new RemoveLegalAdvisorMakeDecisionFieldsTask();
+
+    private final RemoveLegalAdvisorMakeDecisionFieldsTask classToTest = new RemoveLegalAdvisorMakeDecisionFieldsTask();
 
     @Test
     public void testExecuteRemoveLegalAdvisorMakeDecisionFieldsTask() throws TaskException {

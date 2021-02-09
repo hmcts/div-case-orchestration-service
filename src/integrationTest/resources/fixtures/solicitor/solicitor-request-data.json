@@ -165,7 +165,17 @@
           }
         ]
       },
-      "SolicitorFeeAccountNumber" : "PBA1234567",
+      "PbaNumbers": {
+        "value": {
+          "code": "PBA0077051",
+          "label": "PBA0077051"
+        },"list_items": [
+          {
+            "code": "PBA0077051",
+            "label": "PBA0077051"
+          }
+        ]
+      },
       "D8SolicitorReference" : "SolicitorReference",
       "D8SelectedDivorceCentreSiteId" : "AA01",
       "PetitionerSolicitorFirm" : "Solicitor",

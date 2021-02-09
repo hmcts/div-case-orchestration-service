@@ -1,0 +1,616 @@
+{
+  "event_id": "amendPetitionForRefusalSol",
+  "case_details": {
+    "id": 1591614342465896,
+    "jurisdiction": "DIVORCE",
+    "state": "DNisRefused",
+    "version": 10,
+    "case_type_id": "DIVORCE",
+    "created_date": "2020-06-08T11:05:42.463",
+    "last_modified": "2020-06-30T13:15:30.895",
+    "last_state_modified_date": "2020-06-08T11:12:16.609",
+    "security_classification": "PUBLIC",
+    "case_data": {
+      "BehaviourStillHappeningDN": "Yes",
+      "D8DerivedRespondentHomeAddress": "Belgrave View\nBlock A 1 Belgrave Middleway",
+      "DivorceCostsOptionDN": null,
+      "BehaviourLivedApartSinceEventDN": null,
+      "SolServiceMethod": "courtService",
+      "D8InferredRespondentGender": "male",
+      "AdulteryTimeLivedTogetherDetailsDN": null,
+      "RefusalDecision": "reject",
+      "AdulteryLifeIntolerable": null,
+      "SolStatementOfReconciliationName": "Divorce Solicitor",
+      "statementOfTruthDN": "Yes",
+      "D8RespondentLastName": "Pet",
+      "D8PetitionerNameDifferentToMarriageCert": "No",
+      "PermittedDecreeNisiReason": "0",
+      "ReceivedAOSfromRespDate": null,
+      "D8SolicitorReference": "123456",
+      "DesertionAskedToResumeDN": null,
+      "D8StatementOfTruth": "Yes",
+      "PetitionerSolicitorFirm": "The Solicitor",
+      "SeparationTimeLivedTogetherDetailsDN": null,
+      "ReceivedAosFromCoResp": null,
+      "SolStatementOfReconciliationDiscussed": "Yes",
+      "SolicitorAgreeToReceiveEmails": "Yes",
+      "solDNSOTName": "Divorce Solicitor",
+      "D8PetitionerEmail": "piran.sam@mailinator.com",
+      "CoRespLinkedToCase": null,
+      "AdulteryLivedApartSinceEventDN": null,
+      "D8DerivedRespondentCorrespondenceAddr": "Belgrave View\nBlock A 1 Belgrave Middleway",
+      "D8MarriagePetitionerName": "Petia Pet",
+      "D8MarriageIsSameSexCouple": "No",
+      "D8FinancialOrder": "No",
+      "RespJurisdictionDisagreeReason": null,
+      "D8DivorceWho": "husband",
+      "RespCostsAmount": null,
+      "DocumentsUploadedQuestionDN": "No",
+      "DesertionAskedToResumeDNDetails": null,
+      "AdulteryDateFoundOut": null,
+      "RespAdmitOrConsentToFact": null,
+      "D8RespondentFirstName": "Petter",
+      "RespJurisdictionAgree": null,
+      "CoRespEmailAddress": null,
+      "PetitionerSolicitorName": "Divorce Solicitor",
+      "IssueDate": "2020-06-08",
+      "D8MarriedInUk": "Yes",
+      "D8PetitionerFirstName": "Petia",
+      "D8MarriageRespondentName": "Petter Pet",
+      "DNRefusalDraft": {
+        "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/96c8f2f4-ec27-495d-83fd-a6e1ea7e30ae",
+        "document_filename": "rejectionDnRefusalOrder1591614342465896.pdf",
+        "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/96c8f2f4-ec27-495d-83fd-a6e1ea7e30ae/binary"
+      },
+      "createdDate": "2020-06-08",
+      "D8MarriagePlaceOfMarriage": "United Kingdom",
+      "DnOutcomeCase": "Yes",
+      "RespWillDefendDivorce": null,
+      "DecreeNisiGranted": "No",
+      "PetitionerSolicitorEmail": "piran.sam@mailinator.com",
+      "D8DerivedPetitionerHomeAddress": "Belgrave View\nBlock A 1 Belgrave Middleway",
+      "dueDate": "2020-07-08",
+      "DesertionTimeLivedTogetherDetailsDN": null,
+      "D8DivorceCostsClaim": "No",
+      "solDNSOTFirm": "The Solicitor",
+      "RespAgreeToCosts": null,
+      "FeeAccountReference": "Divorce Solicitor",
+      "ReceivedAosFromCoRespDate": null,
+      "DNApplyForDecreeNisi": "Yes",
+      "minipetitionlink": {
+        "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/b172f4c7-a61b-4249-94c7-495a8c5d44e7",
+        "document_filename": "d8petition1591614342465896.pdf",
+        "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/b172f4c7-a61b-4249-94c7-495a8c5d44e7/binary"
+      },
+      "solSignStatementofTruth": "Yes",
+      "SolStatementOfReconciliationFirm": "The Solicitor",
+      "BehaviourTimeLivedTogetherDetailsDN": null,
+      "D8JurisdictionConnection": [
+        "G"
+      ],
+      "SolStatementOfReconciliationCertify": "Yes",
+      "D8SelectedDivorceCentreSiteId": "AA07",
+      "SeparationLivedApartSinceEventDN": null,
+      "D8PetitionerLastName": "Per",
+      "RespStatementOfTruth": null,
+      "D8PetitionerPhoneNumber": null,
+      "D8DocumentsGenerated": [
+        {
+          "id": "64305f6c-3476-4b89-b990-59f53b0dec45",
+          "value": {
+            "DocumentLink": {
+              "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/b172f4c7-a61b-4249-94c7-495a8c5d44e7",
+              "document_filename": "d8petition1591614342465896.pdf",
+              "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/b172f4c7-a61b-4249-94c7-495a8c5d44e7/binary"
+            },
+            "DocumentType": "petition",
+            "DocumentComment": null,
+            "DocumentFileName": "d8petition1591614342465896",
+            "DocumentDateAdded": null,
+            "DocumentEmailContent": null
+          }
+        },
+        {
+          "id": "b3091e82-faac-43ac-98c4-28c016f86ee0",
+          "value": {
+            "DocumentLink": {
+              "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/f369b8d7-1e8c-4f52-85b0-7b51b362805a",
+              "document_filename": "aosinvitation1591614342465896.pdf",
+              "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/f369b8d7-1e8c-4f52-85b0-7b51b362805a/binary"
+            },
+            "DocumentType": "aos",
+            "DocumentComment": null,
+            "DocumentFileName": "aosinvitation1591614342465896",
+            "DocumentDateAdded": null,
+            "DocumentEmailContent": null
+          }
+        },
+        {
+          "id": "69bdb132-b17d-4cf1-9738-7075e0f061c3",
+          "value": {
+            "DocumentLink": {
+              "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/165c3dcd-c511-42fc-a36f-02316113ed69",
+              "document_filename": "respondentAnswers.pdf",
+              "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/165c3dcd-c511-42fc-a36f-02316113ed69/binary"
+            },
+            "DocumentType": "respondentAnswers",
+            "DocumentComment": null,
+            "DocumentFileName": "respondentAnswers",
+            "DocumentDateAdded": null,
+            "DocumentEmailContent": null
+          }
+        },
+        {
+          "id": "2a83eb3d-7b8d-4ccd-85a8-564adf2d9d79",
+          "value": {
+            "DocumentLink": {
+              "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/8d4a2c0a-7d99-4d74-8777-33f7847eaf90",
+              "document_filename": "dnAnswers.pdf",
+              "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/8d4a2c0a-7d99-4d74-8777-33f7847eaf90/binary"
+            },
+            "DocumentType": "dnAnswers",
+            "DocumentComment": null,
+            "DocumentFileName": "dnAnswers",
+            "DocumentDateAdded": null,
+            "DocumentEmailContent": null
+          }
+        },
+        {
+          "id": "60f18ee3-b1f5-4de9-8793-a0773998f33c",
+          "value": {
+            "DocumentLink": {
+              "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/96c8f2f4-ec27-495d-83fd-a6e1ea7e30ae",
+              "document_filename": "rejectionDnRefusalOrder1591614342465896.pdf",
+              "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/96c8f2f4-ec27-495d-83fd-a6e1ea7e30ae/binary"
+            },
+            "DocumentType": "d79",
+            "DocumentComment": null,
+            "DocumentFileName": "rejectionDnRefusalOrder1591614342465896",
+            "DocumentDateAdded": null,
+            "DocumentEmailContent": null
+          }
+        }
+      ],
+      "ReceivedAOSfromResp": null,
+      "RespConfirmReadPetition": null,
+      "RespLegalProceedingsDescription": null,
+      "D8ReasonForDivorceBehaviourDetails": "vague details",
+      "D8DivorceUnit": "serviceCentre",
+      "PetitionerSolicitorPhone": "07123456789",
+      "DNApprovalDate": "2020-06-08",
+      "solDNAdditionalComments": null,
+      "RefusalRejectionReason": [
+        "insufficentDetails"
+      ],
+      "D8RespondentNameAsOnMarriageCertificate": "No",
+      "D8MarriageDate": "2000-12-12",
+      "D8caseReference": "LV17D80000",
+      "PetitionChangedDetailsDN": null,
+      "CoRespLinkedToCaseDate": null,
+      "BehaviourMostRecentIncidentDateDN": null,
+      "SolPaymentHowToPay": "feePayByAccount",
+      "StatementOfReconciliationComments": null,
+      "respondentanswerslink": {
+        "document_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/165c3dcd-c511-42fc-a36f-02316113ed69",
+        "document_filename": "respondentAnswers.pdf",
+        "document_binary_url": "http://dm-store-aat.service.core-compute-aat.internal/documents/165c3dcd-c511-42fc-a36f-02316113ed69/binary"
+      },
+      "D8DocumentsUploaded": [],
+      "PetitionChangedYesNoDN": "No",
+      "ConfirmPetitionDN": "Yes",
+      "SolicitorFeeAccountNumber": "PBA0077051",
+      "DerivedPetitionerSolicitorAddr": "Belgrave View\nBlock A 1 Belgrave Middleway",
+      "DesertionLivedApartSinceEventDN": null,
+      "DesertionAskedToResumeDNRefused": null,
+      "D8PetitionerContactDetailsConfidential": "share",
+      "CostsDifferentDetails": null,
+      "D8LegalProceedings": "No",
+      "RespCostsReason": null,
+      "RespLegalProceedingsExist": null,
+      "D8ReasonForDivorce": "unreasonable-behaviour",
+      "solApplicationFeeOrderSummary": {
+        "Fees": [
+          {
+            "id": "54f9764d-28cb-40ee-a01f-ad1c029fdb6f",
+            "value": {
+              "FeeCode": "FEE0002",
+              "FeeAmount": "55000",
+              "FeeVersion": "4",
+              "FeeDescription": "Filing an application for a divorce, nullity or civil partnership dissolution – fees order 1.2."
+            }
+          }
+        ],
+        "PaymentTotal": "55000",
+        "PaymentReference": null
+      },
+      "D8InferredPetitionerGender": "female"
+    },
+    "data_classification": {
+      "BehaviourStillHappeningDN": "PUBLIC",
+      "D8DerivedRespondentHomeAddress": "PUBLIC",
+      "DivorceCostsOptionDN": "PUBLIC",
+      "BehaviourLivedApartSinceEventDN": "PUBLIC",
+      "SolServiceMethod": "PUBLIC",
+      "D8InferredRespondentGender": "PUBLIC",
+      "AdulteryTimeLivedTogetherDetailsDN": "PUBLIC",
+      "RefusalDecision": "PUBLIC",
+      "AdulteryLifeIntolerable": "PUBLIC",
+      "SolStatementOfReconciliationName": "PUBLIC",
+      "statementOfTruthDN": "PUBLIC",
+      "D8RespondentLastName": "PUBLIC",
+      "D8PetitionerNameDifferentToMarriageCert": "PUBLIC",
+      "PermittedDecreeNisiReason": "PUBLIC",
+      "ReceivedAOSfromRespDate": "PUBLIC",
+      "D8SolicitorReference": "PUBLIC",
+      "DesertionAskedToResumeDN": "PUBLIC",
+      "D8StatementOfTruth": "PUBLIC",
+      "PetitionerSolicitorFirm": "PUBLIC",
+      "SeparationTimeLivedTogetherDetailsDN": "PUBLIC",
+      "ReceivedAosFromCoResp": "PUBLIC",
+      "SolStatementOfReconciliationDiscussed": "PUBLIC",
+      "SolicitorAgreeToReceiveEmails": "PUBLIC",
+      "solDNSOTName": "PUBLIC",
+      "D8PetitionerEmail": "PUBLIC",
+      "CoRespLinkedToCase": "PUBLIC",
+      "AdulteryLivedApartSinceEventDN": "PUBLIC",
+      "D8DerivedRespondentCorrespondenceAddr": "PUBLIC",
+      "D8MarriagePetitionerName": "PUBLIC",
+      "D8MarriageIsSameSexCouple": "PUBLIC",
+      "D8FinancialOrder": "PUBLIC",
+      "RespJurisdictionDisagreeReason": "PUBLIC",
+      "D8DivorceWho": "PUBLIC",
+      "RespCostsAmount": "PUBLIC",
+      "DocumentsUploadedQuestionDN": "PUBLIC",
+      "DesertionAskedToResumeDNDetails": "PUBLIC",
+      "AdulteryDateFoundOut": "PUBLIC",
+      "RespAdmitOrConsentToFact": "PUBLIC",
+      "D8RespondentFirstName": "PUBLIC",
+      "RespJurisdictionAgree": "PUBLIC",
+      "CoRespEmailAddress": "PUBLIC",
+      "PetitionerSolicitorName": "PUBLIC",
+      "IssueDate": "PUBLIC",
+      "D8MarriedInUk": "PUBLIC",
+      "D8PetitionerFirstName": "PUBLIC",
+      "D8MarriageRespondentName": "PUBLIC",
+      "DNRefusalDraft": "PUBLIC",
+      "createdDate": "PUBLIC",
+      "D8MarriagePlaceOfMarriage": "PUBLIC",
+      "DnOutcomeCase": "PUBLIC",
+      "RespWillDefendDivorce": "PUBLIC",
+      "DecreeNisiGranted": "PUBLIC",
+      "PetitionerSolicitorEmail": "PUBLIC",
+      "D8DerivedPetitionerHomeAddress": "PUBLIC",
+      "dueDate": "PUBLIC",
+      "DesertionTimeLivedTogetherDetailsDN": "PUBLIC",
+      "D8DivorceCostsClaim": "PUBLIC",
+      "solDNSOTFirm": "PUBLIC",
+      "RespAgreeToCosts": "PUBLIC",
+      "FeeAccountReference": "PUBLIC",
+      "ReceivedAosFromCoRespDate": "PUBLIC",
+      "DNApplyForDecreeNisi": "PUBLIC",
+      "minipetitionlink": "PUBLIC",
+      "solSignStatementofTruth": "PUBLIC",
+      "SolStatementOfReconciliationFirm": "PUBLIC",
+      "BehaviourTimeLivedTogetherDetailsDN": "PUBLIC",
+      "D8JurisdictionConnection": "PUBLIC",
+      "SolStatementOfReconciliationCertify": "PUBLIC",
+      "D8SelectedDivorceCentreSiteId": "PUBLIC",
+      "SeparationLivedApartSinceEventDN": "PUBLIC",
+      "D8PetitionerLastName": "PUBLIC",
+      "RespStatementOfTruth": "PUBLIC",
+      "D8PetitionerPhoneNumber": "PUBLIC",
+      "D8DocumentsGenerated": {
+        "value": [
+          {
+            "id": "64305f6c-3476-4b89-b990-59f53b0dec45",
+            "value": {
+              "DocumentLink": "PUBLIC",
+              "DocumentType": "PUBLIC",
+              "DocumentComment": "PUBLIC",
+              "DocumentFileName": "PUBLIC",
+              "DocumentDateAdded": "PUBLIC",
+              "DocumentEmailContent": "PUBLIC"
+            }
+          },
+          {
+            "id": "b3091e82-faac-43ac-98c4-28c016f86ee0",
+            "value": {
+              "DocumentLink": "PUBLIC",
+              "DocumentType": "PUBLIC",
+              "DocumentComment": "PUBLIC",
+              "DocumentFileName": "PUBLIC",
+              "DocumentDateAdded": "PUBLIC",
+              "DocumentEmailContent": "PUBLIC"
+            }
+          },
+          {
+            "id": "69bdb132-b17d-4cf1-9738-7075e0f061c3",
+            "value": {
+              "DocumentLink": "PUBLIC",
+              "DocumentType": "PUBLIC",
+              "DocumentComment": "PUBLIC",
+              "DocumentFileName": "PUBLIC",
+              "DocumentDateAdded": "PUBLIC",
+              "DocumentEmailContent": "PUBLIC"
+            }
+          },
+          {
+            "id": "2a83eb3d-7b8d-4ccd-85a8-564adf2d9d79",
+            "value": {
+              "DocumentLink": "PUBLIC",
+              "DocumentType": "PUBLIC",
+              "DocumentComment": "PUBLIC",
+              "DocumentFileName": "PUBLIC",
+              "DocumentDateAdded": "PUBLIC",
+              "DocumentEmailContent": "PUBLIC"
+            }
+          },
+          {
+            "id": "60f18ee3-b1f5-4de9-8793-a0773998f33c",
+            "value": {
+              "DocumentLink": "PUBLIC",
+              "DocumentType": "PUBLIC",
+              "DocumentComment": "PUBLIC",
+              "DocumentFileName": "PUBLIC",
+              "DocumentDateAdded": "PUBLIC",
+              "DocumentEmailContent": "PUBLIC"
+            }
+          }
+        ],
+        "classification": "PUBLIC"
+      },
+      "ReceivedAOSfromResp": "PUBLIC",
+      "RespConfirmReadPetition": "PUBLIC",
+      "RespLegalProceedingsDescription": "PUBLIC",
+      "D8ReasonForDivorceBehaviourDetails": "PUBLIC",
+      "D8DivorceUnit": "PUBLIC",
+      "PetitionerSolicitorPhone": "PUBLIC",
+      "DNApprovalDate": "PUBLIC",
+      "solDNAdditionalComments": "PUBLIC",
+      "RefusalRejectionReason": "PUBLIC",
+      "D8RespondentNameAsOnMarriageCertificate": "PUBLIC",
+      "D8MarriageDate": "PUBLIC",
+      "D8caseReference": "PUBLIC",
+      "PetitionChangedDetailsDN": "PUBLIC",
+      "CoRespLinkedToCaseDate": "PUBLIC",
+      "BehaviourMostRecentIncidentDateDN": "PUBLIC",
+      "SolPaymentHowToPay": "PUBLIC",
+      "StatementOfReconciliationComments": "PUBLIC",
+      "respondentanswerslink": "PUBLIC",
+      "D8DocumentsUploaded": {
+        "value": [],
+        "classification": "PUBLIC"
+      },
+      "PetitionChangedYesNoDN": "PUBLIC",
+      "ConfirmPetitionDN": "PUBLIC",
+      "SolicitorFeeAccountNumber": "PUBLIC",
+      "DerivedPetitionerSolicitorAddr": "PUBLIC",
+      "DesertionLivedApartSinceEventDN": "PUBLIC",
+      "DesertionAskedToResumeDNRefused": "PUBLIC",
+      "D8PetitionerContactDetailsConfidential": "PUBLIC",
+      "CostsDifferentDetails": "PUBLIC",
+      "D8LegalProceedings": "PUBLIC",
+      "RespCostsReason": "PUBLIC",
+      "RespLegalProceedingsExist": "PUBLIC",
+      "D8ReasonForDivorce": "PUBLIC",
+      "solApplicationFeeOrderSummary": {
+        "value": {
+          "Fees": {
+            "value": [
+              {
+                "id": "54f9764d-28cb-40ee-a01f-ad1c029fdb6f",
+                "value": {
+                  "FeeCode": "PUBLIC",
+                  "FeeAmount": "PUBLIC",
+                  "FeeVersion": "PUBLIC",
+                  "FeeDescription": "PUBLIC"
+                }
+              }
+            ],
+            "classification": "PUBLIC"
+          },
+          "PaymentTotal": "PUBLIC",
+          "PaymentReference": "PUBLIC"
+        },
+        "classification": "PUBLIC"
+      },
+      "D8InferredPetitionerGender": "PUBLIC"
+    },
+    "after_submit_callback_response": null,
+    "callback_response_status_code": null,
+    "callback_response_status": null,
+    "delete_draft_response_status_code": null,
+    "delete_draft_response_status": null,
+    "security_classifications": {
+      "BehaviourStillHappeningDN": "PUBLIC",
+      "D8DerivedRespondentHomeAddress": "PUBLIC",
+      "DivorceCostsOptionDN": "PUBLIC",
+      "BehaviourLivedApartSinceEventDN": "PUBLIC",
+      "SolServiceMethod": "PUBLIC",
+      "D8InferredRespondentGender": "PUBLIC",
+      "AdulteryTimeLivedTogetherDetailsDN": "PUBLIC",
+      "RefusalDecision": "PUBLIC",
+      "AdulteryLifeIntolerable": "PUBLIC",
+      "SolStatementOfReconciliationName": "PUBLIC",
+      "statementOfTruthDN": "PUBLIC",
+      "D8RespondentLastName": "PUBLIC",
+      "D8PetitionerNameDifferentToMarriageCert": "PUBLIC",
+      "PermittedDecreeNisiReason": "PUBLIC",
+      "ReceivedAOSfromRespDate": "PUBLIC",
+      "D8SolicitorReference": "PUBLIC",
+      "DesertionAskedToResumeDN": "PUBLIC",
+      "D8StatementOfTruth": "PUBLIC",
+      "PetitionerSolicitorFirm": "PUBLIC",
+      "SeparationTimeLivedTogetherDetailsDN": "PUBLIC",
+      "ReceivedAosFromCoResp": "PUBLIC",
+      "SolStatementOfReconciliationDiscussed": "PUBLIC",
+      "SolicitorAgreeToReceiveEmails": "PUBLIC",
+      "solDNSOTName": "PUBLIC",
+      "D8PetitionerEmail": "PUBLIC",
+      "CoRespLinkedToCase": "PUBLIC",
+      "AdulteryLivedApartSinceEventDN": "PUBLIC",
+      "D8DerivedRespondentCorrespondenceAddr": "PUBLIC",
+      "D8MarriagePetitionerName": "PUBLIC",
+      "D8MarriageIsSameSexCouple": "PUBLIC",
+      "D8FinancialOrder": "PUBLIC",
+      "RespJurisdictionDisagreeReason": "PUBLIC",
+      "D8DivorceWho": "PUBLIC",
+      "RespCostsAmount": "PUBLIC",
+      "DocumentsUploadedQuestionDN": "PUBLIC",
+      "DesertionAskedToResumeDNDetails": "PUBLIC",
+      "AdulteryDateFoundOut": "PUBLIC",
+      "RespAdmitOrConsentToFact": "PUBLIC",
+      "D8RespondentFirstName": "PUBLIC",
+      "RespJurisdictionAgree": "PUBLIC",
+      "CoRespEmailAddress": "PUBLIC",
+      "PetitionerSolicitorName": "PUBLIC",
+      "IssueDate": "PUBLIC",
+      "D8MarriedInUk": "PUBLIC",
+      "D8PetitionerFirstName": "PUBLIC",
+      "D8MarriageRespondentName": "PUBLIC",
+      "DNRefusalDraft": "PUBLIC",
+      "createdDate": "PUBLIC",
+      "D8MarriagePlaceOfMarriage": "PUBLIC",
+      "DnOutcomeCase": "PUBLIC",
+      "RespWillDefendDivorce": "PUBLIC",
+      "DecreeNisiGranted": "PUBLIC",
+      "PetitionerSolicitorEmail": "PUBLIC",
+      "D8DerivedPetitionerHomeAddress": "PUBLIC",
+      "dueDate": "PUBLIC",
+      "DesertionTimeLivedTogetherDetailsDN": "PUBLIC",
+      "D8DivorceCostsClaim": "PUBLIC",
+      "solDNSOTFirm": "PUBLIC",
+      "RespAgreeToCosts": "PUBLIC",
+      "FeeAccountReference": "PUBLIC",
+      "ReceivedAosFromCoRespDate": "PUBLIC",
+      "DNApplyForDecreeNisi": "PUBLIC",
+      "minipetitionlink": "PUBLIC",
+      "solSignStatementofTruth": "PUBLIC",
+      "SolStatementOfReconciliationFirm": "PUBLIC",
+      "BehaviourTimeLivedTogetherDetailsDN": "PUBLIC",
+      "D8JurisdictionConnection": "PUBLIC",
+      "SolStatementOfReconciliationCertify": "PUBLIC",
+      "D8SelectedDivorceCentreSiteId": "PUBLIC",
+      "SeparationLivedApartSinceEventDN": "PUBLIC",
+      "D8PetitionerLastName": "PUBLIC",
+      "RespStatementOfTruth": "PUBLIC",
+      "D8PetitionerPhoneNumber": "PUBLIC",
+      "D8DocumentsGenerated": {
+        "value": [
+          {
+            "id": "64305f6c-3476-4b89-b990-59f53b0dec45",
+            "value": {
+              "DocumentLink": "PUBLIC",
+              "DocumentType": "PUBLIC",
+              "DocumentComment": "PUBLIC",
+              "DocumentFileName": "PUBLIC",
+              "DocumentDateAdded": "PUBLIC",
+              "DocumentEmailContent": "PUBLIC"
+            }
+          },
+          {
+            "id": "b3091e82-faac-43ac-98c4-28c016f86ee0",
+            "value": {
+              "DocumentLink": "PUBLIC",
+              "DocumentType": "PUBLIC",
+              "DocumentComment": "PUBLIC",
+              "DocumentFileName": "PUBLIC",
+              "DocumentDateAdded": "PUBLIC",
+              "DocumentEmailContent": "PUBLIC"
+            }
+          },
+          {
+            "id": "69bdb132-b17d-4cf1-9738-7075e0f061c3",
+            "value": {
+              "DocumentLink": "PUBLIC",
+              "DocumentType": "PUBLIC",
+              "DocumentComment": "PUBLIC",
+              "DocumentFileName": "PUBLIC",
+              "DocumentDateAdded": "PUBLIC",
+              "DocumentEmailContent": "PUBLIC"
+            }
+          },
+          {
+            "id": "2a83eb3d-7b8d-4ccd-85a8-564adf2d9d79",
+            "value": {
+              "DocumentLink": "PUBLIC",
+              "DocumentType": "PUBLIC",
+              "DocumentComment": "PUBLIC",
+              "DocumentFileName": "PUBLIC",
+              "DocumentDateAdded": "PUBLIC",
+              "DocumentEmailContent": "PUBLIC"
+            }
+          },
+          {
+            "id": "60f18ee3-b1f5-4de9-8793-a0773998f33c",
+            "value": {
+              "DocumentLink": "PUBLIC",
+              "DocumentType": "PUBLIC",
+              "DocumentComment": "PUBLIC",
+              "DocumentFileName": "PUBLIC",
+              "DocumentDateAdded": "PUBLIC",
+              "DocumentEmailContent": "PUBLIC"
+            }
+          }
+        ],
+        "classification": "PUBLIC"
+      },
+      "ReceivedAOSfromResp": "PUBLIC",
+      "RespConfirmReadPetition": "PUBLIC",
+      "RespLegalProceedingsDescription": "PUBLIC",
+      "D8ReasonForDivorceBehaviourDetails": "PUBLIC",
+      "D8DivorceUnit": "PUBLIC",
+      "PetitionerSolicitorPhone": "PUBLIC",
+      "DNApprovalDate": "PUBLIC",
+      "solDNAdditionalComments": "PUBLIC",
+      "RefusalRejectionReason": "PUBLIC",
+      "D8RespondentNameAsOnMarriageCertificate": "PUBLIC",
+      "D8MarriageDate": "PUBLIC",
+      "D8caseReference": "PUBLIC",
+      "PetitionChangedDetailsDN": "PUBLIC",
+      "CoRespLinkedToCaseDate": "PUBLIC",
+      "BehaviourMostRecentIncidentDateDN": "PUBLIC",
+      "SolPaymentHowToPay": "PUBLIC",
+      "StatementOfReconciliationComments": "PUBLIC",
+      "respondentanswerslink": "PUBLIC",
+      "D8DocumentsUploaded": {
+        "value": [],
+        "classification": "PUBLIC"
+      },
+      "PetitionChangedYesNoDN": "PUBLIC",
+      "ConfirmPetitionDN": "PUBLIC",
+      "SolicitorFeeAccountNumber": "PUBLIC",
+      "DerivedPetitionerSolicitorAddr": "PUBLIC",
+      "DesertionLivedApartSinceEventDN": "PUBLIC",
+      "DesertionAskedToResumeDNRefused": "PUBLIC",
+      "D8PetitionerContactDetailsConfidential": "PUBLIC",
+      "CostsDifferentDetails": "PUBLIC",
+      "D8LegalProceedings": "PUBLIC",
+      "RespCostsReason": "PUBLIC",
+      "RespLegalProceedingsExist": "PUBLIC",
+      "D8ReasonForDivorce": "PUBLIC",
+      "solApplicationFeeOrderSummary": {
+        "value": {
+          "Fees": {
+            "value": [
+              {
+                "id": "54f9764d-28cb-40ee-a01f-ad1c029fdb6f",
+                "value": {
+                  "FeeCode": "PUBLIC",
+                  "FeeAmount": "PUBLIC",
+                  "FeeVersion": "PUBLIC",
+                  "FeeDescription": "PUBLIC"
+                }
+              }
+            ],
+            "classification": "PUBLIC"
+          },
+          "PaymentTotal": "PUBLIC",
+          "PaymentReference": "PUBLIC"
+        },
+        "classification": "PUBLIC"
+      },
+      "D8InferredPetitionerGender": "PUBLIC"
+    }
+  }
+}

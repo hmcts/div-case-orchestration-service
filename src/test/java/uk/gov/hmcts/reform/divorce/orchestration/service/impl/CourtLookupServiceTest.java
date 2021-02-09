@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.impl;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,15 +11,15 @@ import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
 
 import java.util.Map;
 
+import static org.apache.commons.lang3.StringUtils.SPACE;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
-import static org.junit.rules.ExpectedException.none;
+import static org.junit.Assert.assertThrows;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CARE_OF_PREFIX;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMAIL_LABEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINE_SEPARATOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PHONE_LABEL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SPACE_SEPARATOR;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -29,9 +27,6 @@ public class CourtLookupServiceTest {
 
     @Autowired
     private CourtLookupService courtLookupService;
-
-    @Rule
-    public ExpectedException expectedException = none();
 
     @Test
     public void testCourtAddressWithPOBoxIsFormattedCorrectly() throws CourtDetailsNotFound {
@@ -75,11 +70,11 @@ public class CourtLookupServiceTest {
     }
 
     @Test
-    public void testExceptionInThrownWhenCourtIsNotFound() throws CourtDetailsNotFound {
-        expectedException.expect(CourtDetailsNotFound.class);
-        expectedException.expectMessage("Could not find court by using key \"unknownCourt\"");
-
-        courtLookupService.getCourtByKey("unknownCourt");
+    public void testExceptionInThrownWhenCourtIsNotFound() {
+        CourtDetailsNotFound courtDetailsNotFound = assertThrows(
+            CourtDetailsNotFound.class, () -> courtLookupService.getCourtByKey("unknownCourt")
+        );
+        assertThat(courtDetailsNotFound.getMessage(), is("Could not find court by using key \"unknownCourt\""));
     }
 
     @Test
@@ -91,25 +86,24 @@ public class CourtLookupServiceTest {
         assertEquals("divorcecase@justice.gov.uk", foundCourt.getEmail());
         assertEquals("0300 303 0642", foundCourt.getPhone());
 
-        String expectedContactDetails = CARE_OF_PREFIX + SPACE_SEPARATOR + foundCourt.getName() + LINE_SEPARATOR
+        String expectedContactDetails = CARE_OF_PREFIX + SPACE + foundCourt.getName() + LINE_SEPARATOR
             + foundCourt.getAddress() + LINE_SEPARATOR + LINE_SEPARATOR
-            + EMAIL_LABEL + SPACE_SEPARATOR + foundCourt.getEmail() + LINE_SEPARATOR
-            + PHONE_LABEL + SPACE_SEPARATOR + foundCourt.getPhone();
+            + EMAIL_LABEL + SPACE + foundCourt.getEmail() + LINE_SEPARATOR
+            + PHONE_LABEL + SPACE + foundCourt.getPhone();
         assertEquals(foundCourt.getFormattedContactDetails(), expectedContactDetails);
     }
 
     @Test
-    public void testExceptionInThrownWhenDnCourtIsNotFound() throws CourtDetailsNotFound {
-        expectedException.expect(CourtDetailsNotFound.class);
-        expectedException.expectMessage("Could not find court by using key \"unknownCourt\"");
-
-        courtLookupService.getDnCourtByKey("unknownCourt");
+    public void testExceptionInThrownWhenDnCourtIsNotFound() {
+        CourtDetailsNotFound courtDetailsNotFound = assertThrows(
+            CourtDetailsNotFound.class, () -> courtLookupService.getDnCourtByKey("unknownCourt")
+        );
+        assertThat(courtDetailsNotFound.getMessage(), is("Could not find court by using key \"unknownCourt\""));
     }
 
     @Test
     public void shouldReturnAllCourts() {
-        Map allCourts = courtLookupService.getAllCourts();
+        Map<String, Court> allCourts = courtLookupService.getAllCourts();
         assertThat(allCourts.size(), is(5));
     }
-
 }

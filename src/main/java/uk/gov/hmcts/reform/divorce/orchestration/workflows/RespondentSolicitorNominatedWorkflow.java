@@ -8,9 +8,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CaseFormatterAddDocuments;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStore;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ModifyDueDate;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.AosPackDueDateSetterTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStoreTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetRespondentLinkingFields;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
@@ -27,47 +27,47 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 @Slf4j
 public class RespondentSolicitorNominatedWorkflow extends DefaultWorkflow<Map<String, Object>> {
+
     private final RespondentPinGenerator respondentPinGenerator;
     private final RespondentLetterGenerator respondentLetterGenerator;
-    private final CaseFormatterAddDocuments caseFormatterAddDocuments;
-    private final FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore;
+    private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
+    private final FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask;
     private final RespondentAosPackPrinterTask respondentAosPackPrinterTask;
-    private final ModifyDueDate modifyDueDate;
+    private final AosPackDueDateSetterTask aosPackDueDateSetterTask;
     private final ResetRespondentLinkingFields resetRespondentLinkingFields;
 
     @Autowired
     public RespondentSolicitorNominatedWorkflow(RespondentPinGenerator respondentPinGenerator,
                                                 RespondentLetterGenerator respondentLetterGenerator,
-                                                CaseFormatterAddDocuments caseFormatterAddDocuments,
-                                                FetchPrintDocsFromDmStore fetchPrintDocsFromDmStore,
+                                                AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask,
+                                                FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask,
                                                 RespondentAosPackPrinterTask respondentAosPackPrinterTask,
-                                                ModifyDueDate modifyDueDate,
+                                                AosPackDueDateSetterTask aosPackDueDateSetterTask,
                                                 ResetRespondentLinkingFields resetRespondentLinkingFields) {
         this.respondentPinGenerator = respondentPinGenerator;
         this.respondentLetterGenerator = respondentLetterGenerator;
-        this.caseFormatterAddDocuments = caseFormatterAddDocuments;
-        this.fetchPrintDocsFromDmStore = fetchPrintDocsFromDmStore;
+        this.addNewDocumentsToCaseDataTask = addNewDocumentsToCaseDataTask;
+        this.fetchPrintDocsFromDmStoreTask = fetchPrintDocsFromDmStoreTask;
         this.respondentAosPackPrinterTask = respondentAosPackPrinterTask;
-        this.modifyDueDate = modifyDueDate;
+        this.aosPackDueDateSetterTask = aosPackDueDateSetterTask;
         this.resetRespondentLinkingFields = resetRespondentLinkingFields;
     }
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
 
-        List<Task> tasks = new ArrayList<>();
-        final Map<String, Object> caseData = caseDetails.getCaseData();
+        List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
         tasks.add(respondentPinGenerator);
         tasks.add(respondentLetterGenerator);
-        tasks.add(caseFormatterAddDocuments);
-        tasks.add(fetchPrintDocsFromDmStore);
+        tasks.add(addNewDocumentsToCaseDataTask);
+        tasks.add(fetchPrintDocsFromDmStoreTask);
         tasks.add(respondentAosPackPrinterTask);
-        tasks.add(modifyDueDate);
+        tasks.add(aosPackDueDateSetterTask);
         tasks.add(resetRespondentLinkingFields);
 
         return this.execute(
             tasks.toArray(new Task[0]),
-            caseData,
+            caseDetails.getCaseData(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseDetails.getCaseId())

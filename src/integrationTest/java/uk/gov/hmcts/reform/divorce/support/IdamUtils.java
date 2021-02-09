@@ -7,11 +7,11 @@ import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import uk.gov.hmcts.reform.divorce.model.GeneratePinRequest;
-import uk.gov.hmcts.reform.divorce.model.PinResponse;
-import uk.gov.hmcts.reform.divorce.model.RegisterUserRequest;
-import uk.gov.hmcts.reform.divorce.model.UserDetails;
-import uk.gov.hmcts.reform.divorce.model.UserGroup;
+import uk.gov.hmcts.reform.divorce.model.idam.GeneratePinRequest;
+import uk.gov.hmcts.reform.divorce.model.idam.PinResponse;
+import uk.gov.hmcts.reform.divorce.model.idam.RegisterUserRequest;
+import uk.gov.hmcts.reform.divorce.model.idam.UserDetails;
+import uk.gov.hmcts.reform.divorce.model.idam.UserGroup;
 
 import java.util.ArrayList;
 import java.util.Base64;
@@ -40,7 +40,7 @@ public class IdamUtils {
                 .lastName(lastName)
                 .build();
 
-        Response pinResponse =  SerenityRest.given()
+        Response pinResponse = SerenityRest.given()
             .header(HttpHeaders.AUTHORIZATION, authToken)
             .header(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString())
             .body(generatePinRequest)
@@ -108,11 +108,17 @@ public class IdamUtils {
         String userLoginDetails = String.join(":", username, password);
         final String authHeader = "Basic " + new String(Base64.getEncoder().encode(userLoginDetails.getBytes()));
 
-        Response response = SerenityRest.given()
-            .header("Authorization", authHeader)
-            .header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-            .relaxedHTTPSValidation()
-            .post(idamCodeUrl());
+        int retryCount = 0;
+        Response response = null;
+        do {
+            response = SerenityRest.given()
+                .header("Authorization", authHeader)
+                .header("Content-Type", MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                .relaxedHTTPSValidation()
+                .post(idamCodeUrl());
+            retryCount++;
+        }
+        while (response.getStatusCode() > 300 && retryCount <= 3);
 
         if (response.getStatusCode() >= 300) {
             throw new IllegalStateException("Token generation failed with code: " + response.getStatusCode()

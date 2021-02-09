@@ -20,8 +20,6 @@ public class AuthUtil {
     private final AuthTokenValidator authTokenValidator;
     private final List<String> allowedToUpdate;
     private static final String BEARER = "Bearer ";
-    private static final String AUTHORIZATION_CODE = "authorization_code";
-    private static final String CODE = "code";
 
     @Value("${idam.client.redirect_uri}")
     private String authRedirectUrl;
@@ -69,7 +67,7 @@ public class AuthUtil {
         return idamClient.authenticateUser(username, password);
     }
 
-    public String getBearToken(String token) {
+    public String getBearerToken(String token) {
         if (StringUtils.isBlank(token)) {
             return token;
         }

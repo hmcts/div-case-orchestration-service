@@ -3,8 +3,8 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.BulkPrintService;
@@ -53,7 +53,19 @@ public class BulkPrinterTask implements Task<Map<String, Object>> {
         //Make sure every requested document type was found
         if (documentTypesToPrint.size() == documentsToPrint.size()) {
             try {
+                log.info("Sending {} document(s) to bulk print for case ID {}. Documents are {}",
+                    documentsToPrint.size(),
+                    caseDetails.getCaseId(),
+                    documentsToPrint
+                );
+
                 bulkPrintService.send(caseDetails.getCaseId(), bulkPrintLetterType, documentsToPrint);
+
+                log.info("Sent {} document(s) to bulk print for case ID {}. Documents are {}",
+                    documentsToPrint.size(),
+                    caseDetails.getCaseId(),
+                    documentsToPrint
+                );
             } catch (final Exception e) {
                 context.setTaskFailed(true);
                 log.error("Respondent pack bulk print failed for case {}", caseDetails.getCaseId(), e);
@@ -66,8 +78,6 @@ public class BulkPrinterTask implements Task<Map<String, Object>> {
                 documentTypesToPrint,
                 documentsToPrint
             );
-            context.setTaskFailed(true);
-            context.setTransientObject(BULK_PRINT_ERROR_KEY, "Bulk print didn't kicked off for " + bulkPrintLetterType);
         }
 
         return payload;

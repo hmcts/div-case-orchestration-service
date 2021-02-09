@@ -1,8 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.courtallocation;
 
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -12,17 +10,16 @@ import static java.math.BigDecimal.ONE;
 import static java.math.BigDecimal.ZERO;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.rules.ExpectedException.none;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 
 public class FactSpecificCourtWeightedDistributorTest {
 
     private final BigDecimal acceptedDeviation = new BigDecimal("0.005");
-
-    @Rule
-    public ExpectedException expectedException = none();
 
     @Test
     public void shouldReturnCourtsAccordinglyWithFullAllocation() {
@@ -82,17 +79,15 @@ public class FactSpecificCourtWeightedDistributorTest {
 
     @Test
     public void shouldThrowExceptionWhenFactSpecificAllocationIsOverOneHundredPercent() {
-        expectedException.expect(CourtAllocatorException.class);
-        expectedException.expectMessage("Configured fact allocation for \"fact1\" went over 100%.");
-
         Map<String, BigDecimal> courtAllocationForFact = new HashMap<>();
         courtAllocationForFact.put("court1", new BigDecimal("0.5"));
         courtAllocationForFact.put("court2", new BigDecimal("0.5"));
         courtAllocationForFact.put("court3", new BigDecimal("0.5"));
-        Map<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact =
-            singletonMap("fact1", courtAllocationForFact);
+        Map<String, Map<String, BigDecimal>> specificCourtsAllocationPerFact = singletonMap("fact1", courtAllocationForFact);
 
-        new FactSpecificCourtWeightedDistributor(specificCourtsAllocationPerFact);
+        CourtAllocatorException courtAllocatorException = assertThrows(CourtAllocatorException.class,
+            () -> new FactSpecificCourtWeightedDistributor(specificCourtsAllocationPerFact));
+        assertThat(courtAllocatorException.getMessage(), is("Configured fact allocation for \"fact1\" went over 100%."));
     }
 
 }

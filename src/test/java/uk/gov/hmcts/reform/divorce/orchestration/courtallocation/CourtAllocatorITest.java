@@ -7,11 +7,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.Assert.assertEquals;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.DESERTION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_FIVE_YEARS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.UNREASONABLE_BEHAVIOUR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.DESERTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.SEPARATION_FIVE_YEARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.SEPARATION_TWO_YEARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.UNREASONABLE_BEHAVIOUR;
 
 /*
     This simple test to give more confidence doing court allocation changes
@@ -29,7 +29,7 @@ public class CourtAllocatorITest {
     @Test
     public void givenDesertionCase_whenAllocateCase_thenReturnServiceCenter() {
         for (int i = 0 ; i < SAMPLES_NUMBER; i++) {
-            assertEquals(SERVICE_CENTER, courtAllocator.selectCourtForGivenDivorceFact(DESERTION));
+            assertEquals(SERVICE_CENTER, courtAllocator.selectCourtForGivenDivorceFact(DESERTION.getValue()));
         }
     }
 
@@ -37,7 +37,7 @@ public class CourtAllocatorITest {
     public void given5YearsSep_whenAllocateCase_thenReturnServiceCenter() {
         for (int i = 0 ; i < SAMPLES_NUMBER; i++) {
             assertEquals(SERVICE_CENTER, courtAllocator
-                .selectCourtForGivenDivorceFact(SEPARATION_FIVE_YEARS));
+                .selectCourtForGivenDivorceFact(SEPARATION_FIVE_YEARS.getValue()));
         }
     }
 
@@ -45,7 +45,7 @@ public class CourtAllocatorITest {
     public void givenBehaviour_whenAllocateCase_thenReturnServiceCenter() {
         for (int i = 0 ; i < SAMPLES_NUMBER; i++) {
             assertEquals(SERVICE_CENTER, courtAllocator
-                .selectCourtForGivenDivorceFact(UNREASONABLE_BEHAVIOUR));
+                .selectCourtForGivenDivorceFact(UNREASONABLE_BEHAVIOUR.getValue()));
         }
     }
 
@@ -53,7 +53,7 @@ public class CourtAllocatorITest {
     public void givenAdultery_whenAllocateCase_thenReturnServiceCenter() {
         for (int i = 0 ; i < SAMPLES_NUMBER; i++) {
             assertEquals(SERVICE_CENTER, courtAllocator
-                .selectCourtForGivenDivorceFact(ADULTERY));
+                .selectCourtForGivenDivorceFact(ADULTERY.getValue()));
         }
     }
 
@@ -61,7 +61,7 @@ public class CourtAllocatorITest {
     public void given2YearsSep_whenAllocateCase_thenReturnServiceCenter() {
         for (int i = 0 ; i < SAMPLES_NUMBER; i++) {
             assertEquals(SERVICE_CENTER, courtAllocator
-                .selectCourtForGivenDivorceFact(SEPARATION_TWO_YEARS));
+                .selectCourtForGivenDivorceFact(SEPARATION_TWO_YEARS.getValue()));
         }
     }
 }

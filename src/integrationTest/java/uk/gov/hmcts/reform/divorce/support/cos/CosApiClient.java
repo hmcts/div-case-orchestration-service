@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.support.cos;
 
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -77,6 +78,13 @@ public interface CosApiClient {
         @RequestBody CcdCallbackRequest ccdCallbackRequest
     );
 
+    @ApiOperation("Callback to run after DA Grant event has finished")
+    @PostMapping(value = "/handle-post-da-granted")
+    ResponseEntity<CcdCallbackResponse> handleDaGranted(
+        @RequestHeader(AUTHORIZATION) String authorisation,
+        @RequestBody CcdCallbackRequest ccdCallbackRequest
+    );
+
     @ApiOperation("Handle callback to notify respondent that the DA was requested")
     @PostMapping(value = "/da-requested-by-applicant")
     Map<String, Object> notifyRespondentOfDARequested(
@@ -128,6 +136,7 @@ public interface CosApiClient {
         @RequestBody CcdCallbackRequest ccdCallbackRequest
     );
 
+    @Deprecated
     @ApiOperation("Handle callback to edit bulk listing")
     @PostMapping(value = "/bulk/edit/listing")
     Map<String, Object> editBulkListing(
@@ -140,12 +149,27 @@ public interface CosApiClient {
 
     @ApiOperation("Handle callback to generate documents with provided parameters")
     @PostMapping(value = "/generate-document")
+    @Deprecated
     Map<String, Object> generateDocument(
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestBody CcdCallbackRequest ccdCallbackRequest,
         @RequestParam(name = "templateId") String templateId,
         @RequestParam(name = "documentType") String documentType,
         @RequestParam(name = "filename") String filename
+    );
+
+    @ApiOperation("Prepare case data before printing for pronouncement")
+    @PostMapping(value = "/prepare-to-print-for-pronouncement")
+    Map<String, Object> prepareToPrintForPronouncement(
+        @RequestHeader(AUTHORIZATION) String authorisation,
+        @RequestBody CcdCallbackRequest ccdCallbackRequest
+    );
+
+    @ApiOperation("Prepare case data before updating bulk case hearing details")
+    @PostMapping(value = "/update-bulk-case-hearing-details")
+    Map<String, Object> updateBulkCaseHearingDetails(
+        @RequestHeader(AUTHORIZATION) String authorisation,
+        @RequestBody CcdCallbackRequest ccdCallbackRequest
     );
 
     @ApiOperation("Handle callback to generate DN Pronouncement Documents")
@@ -172,6 +196,14 @@ public interface CosApiClient {
     @ApiOperation("Handle callback to issue AOS Pack offline for provided parties")
     @PostMapping(value = "/issue-aos-pack-offline/parties/{party}")
     Map<String, Object> issueAosPackOffline(
+        @RequestHeader(AUTHORIZATION) String authorisation,
+        @PathVariable("party") String party,
+        @RequestBody CcdCallbackRequest ccdCallbackRequest
+    );
+
+    @ApiOperation("Handle callback to trigger offline AOS Answers for Respondent or Co-Respondent process")
+    @PostMapping(value = "/processAosOfflineAnswers/parties/{party}")
+    CcdCallbackResponse processAosPackOfflineAnswers(
         @RequestHeader(AUTHORIZATION) String authorisation,
         @PathVariable("party") String party,
         @RequestBody CcdCallbackRequest ccdCallbackRequest
@@ -208,6 +240,11 @@ public interface CosApiClient {
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestBody CcdCallbackRequest ccdCallbackRequest
     );
+
+
+    @ApiOperation("Handle callback for Fee lookup")
+    @PostMapping(value = "/set-up-confirm-service-payment")
+    CcdCallbackResponse setupConfirmServicePayment(@RequestBody CcdCallbackRequest ccdCallbackRequest);
 
     @ApiOperation("Validate bulk scanned fields")
     @PostMapping(value = "/forms/{form-type}/validate-ocr")

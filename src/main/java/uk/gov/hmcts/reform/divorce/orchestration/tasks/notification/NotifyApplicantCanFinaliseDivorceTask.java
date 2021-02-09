@@ -4,11 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
+import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,8 +28,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PET_SOL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.APPLICANT_DA_ELIGIBLE;
@@ -46,16 +48,17 @@ public class NotifyApplicantCanFinaliseDivorceTask implements Task<Map<String, O
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
 
-        String solicitorEmail = (String) caseData.get(PET_SOL_EMAIL);
+        String solicitorEmail = (String) caseData.get(PETITIONER_SOLICITOR_EMAIL);
         String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
         String petFirstName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME);
         String petLastName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME);
+        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
         Map<String, String> templateVars = new HashMap<>();
 
         if (StringUtils.isNotBlank(solicitorEmail)) {
 
             String ccdReference = context.getTransientObject(CASE_ID_JSON_KEY);
-            String solicitorName = (String) caseData.get(PET_SOL_NAME);
+            String solicitorName = (String) caseData.get(PETITIONER_SOLICITOR_NAME);
             String respFirstName = getMandatoryPropertyValueAsString(caseData, RESP_FIRST_NAME_CCD_FIELD);
             String respLastName = getMandatoryPropertyValueAsString(caseData, RESP_LAST_NAME_CCD_FIELD);
 
@@ -69,7 +72,8 @@ public class NotifyApplicantCanFinaliseDivorceTask implements Task<Map<String, O
                     solicitorEmail,
                     EmailTemplateNames.SOL_APPLICANT_DA_ELIGIBLE.name(),
                     templateVars,
-                    SOL_EMAIL_DESC
+                    SOL_EMAIL_DESC,
+                    languagePreference
             );
 
         } else if (StringUtils.isNotBlank(petitionerEmail)) {
@@ -85,7 +89,8 @@ public class NotifyApplicantCanFinaliseDivorceTask implements Task<Map<String, O
                     petitionerEmail,
                     APPLICANT_DA_ELIGIBLE.name(),
                     templateVars,
-                    EMAIL_DESC
+                    EMAIL_DESC,
+                    languagePreference
             );
         }
 

@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
@@ -33,6 +34,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public abstract class IdamTestSupport extends MockedFunctionalTest {
+
     private static final String IDAM_PIN_DETAILS_CONTEXT_PATH = "/pin";
     private static final String IDAM_AUTHORIZE_CONTEXT_PATH = "/oauth2/authorize";
     private static final String IDAM_EXCHANGE_CODE_CONTEXT_PATH = "/oauth2/token";
@@ -50,7 +52,7 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
     private static final UserDetails USER_DETAILS_PIN_USER =
         UserDetails.builder().id(TEST_LETTER_HOLDER_ID_CODE).build();
 
-    static final String USER_DETAILS_PIN_USER_JSON = convertObjectToJsonString(USER_DETAILS_PIN_USER);
+    protected static final String USER_DETAILS_PIN_USER_JSON = convertObjectToJsonString(USER_DETAILS_PIN_USER);
 
     private static final UserDetails USER_DETAILS =
         UserDetails.builder().id(TEST_USER_ID).email(TEST_EMAIL).build();
@@ -85,7 +87,7 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
     @Value("${idam.caseworker.password}")
     private String caseworkerPassword;
 
-    void stubUserDetailsEndpoint(HttpStatus status, String authHeader, String message) {
+    public void stubUserDetailsEndpoint(HttpStatus status, String authHeader, String message) {
         idamServer.stubFor(get(IDAM_USER_DETAILS_CONTEXT_PATH)
             .withHeader(AUTHORIZATION, new EqualToPattern(authHeader))
             .willReturn(aResponse()
@@ -95,10 +97,9 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
     }
 
     void stubPinDetailsEndpoint(String authHeader, GeneratePinRequest pinRequest, Pin response) {
-        final String AppJsonUtf8 = APPLICATION_JSON_VALUE + ";charset=UTF-8";
         idamServer.stubFor(post(IDAM_PIN_DETAILS_CONTEXT_PATH)
             .withHeader(AUTHORIZATION, new EqualToPattern(authHeader))
-            .withHeader(CONTENT_TYPE, new EqualToPattern(AppJsonUtf8))
+            .withHeader(CONTENT_TYPE, equalTo(APPLICATION_JSON_VALUE))
             .withRequestBody(equalToJson(convertObjectToJsonString(pinRequest)))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
@@ -121,7 +122,7 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
     protected void stubSignInForCaseworker() {
         try {
             stubAuthoriseEndpoint(getBasicAuthHeader(caseworkerUserName, caseworkerPassword),
-                    convertObjectToJsonString(AUTHENTICATE_USER_RESPONSE));
+                convertObjectToJsonString(AUTHENTICATE_USER_RESPONSE));
 
             stubTokenExchangeEndpoint(HttpStatus.OK, convertObjectToJsonString(TOKEN_EXCHANGE_RESPONSE));
 
@@ -143,8 +144,8 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
     void stubPinAuthoriseEndpoint(HttpStatus status, String responseBody)
         throws UnsupportedEncodingException {
         idamServer.stubFor(get(IDAM_PIN_DETAILS_CONTEXT_PATH
-                + "?client_id=" + authClientId
-                + "&redirect_uri=" + URLEncoder.encode(authRedirectUrl, StandardCharsets.UTF_8.name()))
+            + "?client_id=" + authClientId
+            + "&redirect_uri=" + URLEncoder.encode(authRedirectUrl, StandardCharsets.UTF_8.name()))
             .withHeader("pin", new EqualToPattern(TEST_PIN))
             .willReturn(aResponse()
                 .withStatus(status.value())

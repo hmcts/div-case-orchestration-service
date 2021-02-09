@@ -10,7 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Fee;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Payment;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 
 import java.math.BigDecimal;
@@ -23,7 +22,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
@@ -45,7 +44,6 @@ public class PaymentUpdateITest extends IdamTestSupport {
         "/casemaintenance/version/1/case/%s",
         CASE_ID
     );
-    private static final String CCD_FORMAT_CONTEXT_PATH = "/caseformatter/version/1/to-ccd-format";
     private static final String UPDATE_CONTEXT_PATH = String.format(
         "/casemaintenance/version/1/updateCase/%s/%s",
         CASE_ID,
@@ -55,9 +53,9 @@ public class PaymentUpdateITest extends IdamTestSupport {
     @Autowired
     private MockMvc webClient;
 
-    private PaymentUpdate paymentUpdate = new PaymentUpdate();
+    private final PaymentUpdate paymentUpdate = new PaymentUpdate();
     private Payment payment = Payment.builder().build();
-    private Map<String, Object> caseData = new HashMap<>();
+    private final Map<String, Object> caseData = new HashMap<>();
 
     @Before
     public void setup() {
@@ -90,7 +88,6 @@ public class PaymentUpdateITest extends IdamTestSupport {
     public void givenEventDataAndAuth_whenEventDataIsSubmitted_thenReturnSuccess() throws Exception {
         stubSignInForCaseworker();
         stubMaintenanceServerEndpointForRetrieveCaseById();
-        stubFormatterServerEndpoint();
 
         Map<String, Object> responseData = Collections.singletonMap(ID, TEST_CASE_ID);
         stubMaintenanceServerEndpointForUpdate(responseData);

@@ -13,8 +13,6 @@ public class DefaultWorkflow<T> extends AbstractWorkflow<T> {
                 if (getContext().hasTaskFailed()) {
                     break;
                 }
-                // todo the payload to be returned will be the one from the last task, hence we need to
-                // create a map of task to task_payload
                 payload = task.execute(getContext(), payload);
             }
         } catch (TaskException e) {
@@ -23,4 +21,6 @@ public class DefaultWorkflow<T> extends AbstractWorkflow<T> {
 
         return payload;
     }
+
+
 }

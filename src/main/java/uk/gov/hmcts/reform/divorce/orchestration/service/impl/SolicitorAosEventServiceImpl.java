@@ -15,7 +15,6 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
@@ -29,9 +28,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UI_ONLY_RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.ADULTERY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_FIVE_YEARS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFacts.SEPARATION_TWO_YEARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.CCD_CASE_DATA;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.SEPARATION_FIVE_YEARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.SEPARATION_TWO_YEARS;
 
 @Slf4j
 @Service
@@ -58,7 +58,7 @@ public class SolicitorAosEventServiceImpl implements SolicitorAosEventService {
         final String respAos2yrConsent = (String) caseData.get(RESP_AOS_2_YR_CONSENT);
         final String respAosAdmitAdultery = (String) caseData.get(RESP_AOS_ADMIT_ADULTERY);
 
-        if (SEPARATION_TWO_YEARS.equalsIgnoreCase(reasonForDivorce) || ADULTERY.equalsIgnoreCase(reasonForDivorce)) {
+        if (SEPARATION_TWO_YEARS.getValue().equalsIgnoreCase(reasonForDivorce) || ADULTERY.getValue().equalsIgnoreCase(reasonForDivorce)) {
             if (YES_VALUE.equalsIgnoreCase(respAos2yrConsent) || YES_VALUE.equalsIgnoreCase(respAosAdmitAdultery)) {
                 // for 2yr separation and adultery, if respondent admits fact, assume not defended
                 updateData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE);
@@ -69,7 +69,7 @@ public class SolicitorAosEventServiceImpl implements SolicitorAosEventService {
                 updateData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
                 updateData.put(RESP_WILL_DEFEND_DIVORCE, caseData.get(UI_ONLY_RESP_WILL_DEFEND_DIVORCE));
             }
-        } else if (SEPARATION_FIVE_YEARS.equalsIgnoreCase(reasonForDivorce)) {
+        } else if (SEPARATION_FIVE_YEARS.getValue().equalsIgnoreCase(reasonForDivorce)) {
             // for 5 yr separation, no consent is asked, we just map over
             // UI_ONLY_RESP_WILL_DEFEND_DIVORCE to RESP_WILL_DEFEND_DIVORCE
             updateData.put(RESP_WILL_DEFEND_DIVORCE, caseData.get(UI_ONLY_RESP_WILL_DEFEND_DIVORCE));

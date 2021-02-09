@@ -60,23 +60,23 @@ class GlobalExceptionHandler {
     }
 
     private ResponseEntity<Object> handleTaskException(TaskException taskException) {
+        ResponseEntity<Object> responseEntity;
+
+        String exceptionMessage = taskException.getMessage();
+
         if (taskException.getCause() instanceof FeignException) {
-            return handleFeignException((FeignException) taskException.getCause());
+            responseEntity = handleFeignException((FeignException) taskException.getCause());
+        } else if (taskException.getCause() instanceof AuthenticationError) {
+            responseEntity = ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exceptionMessage);
+        } else if (taskException.getCause() instanceof CaseNotFoundException) {
+            responseEntity = ResponseEntity.status(HttpStatus.NOT_FOUND).body(exceptionMessage);
+        } else if (taskException.getCause() instanceof ValidationException) {
+            responseEntity = ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionMessage);
+        } else {
+            responseEntity = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionMessage);
         }
 
-        if (taskException.getCause() instanceof AuthenticationError) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(taskException.getMessage());
-        }
-
-        if (taskException.getCause() instanceof CaseNotFoundException) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(taskException.getMessage());
-        }
-
-        if (taskException.getCause() instanceof ValidationException) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(taskException.getMessage());
-        }
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(taskException.getMessage());
+        return responseEntity;
     }
 
     private ResponseEntity<Object> handleFeignException(FeignException exception) {

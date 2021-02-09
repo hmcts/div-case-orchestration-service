@@ -11,15 +11,15 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport;
+import uk.gov.hmcts.reform.divorce.orchestration.util.elasticsearch.CMSElasticSearchSupport;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.SEARCH_RESULT_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_CCD_FIELD;
 
@@ -27,30 +27,27 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Slf4j
 public class SearchCasesDAOverdueTask implements Task<Map<String, Object>> {
 
-    @Value("${case.event.da-overdue-period:1y}")
-    private String daOverduePeriod;
-
     private static final String DN_GRANTED_DATE = String.format("data.%s", DECREE_NISI_GRANTED_DATE_CCD_FIELD);
 
+    private final String daOverdueTimeLimit;
     private final CMSElasticSearchSupport cmsElasticSearchSupport;
 
-    @Autowired
-    public SearchCasesDAOverdueTask(CMSElasticSearchSupport cmsElasticSearchSupport) {
+    public SearchCasesDAOverdueTask(@Autowired CMSElasticSearchSupport cmsElasticSearchSupport,
+                                    @Value("${case.event.da-overdue-period:1y}") String daOverdueTimeLimit) {
         this.cmsElasticSearchSupport = cmsElasticSearchSupport;
+        this.daOverdueTimeLimit = daOverdueTimeLimit;
     }
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
-
-        int start = context.<Integer>getTransientObjectOptional("FROM").orElse(0);
-        int pageSize = context.<Integer>getTransientObjectOptional("PAGE_SIZE").orElse(50);
         String authToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY);
 
         QueryBuilder stateQuery = QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AWAITING_DA);
-        QueryBuilder dateFilter = QueryBuilders.rangeQuery(DN_GRANTED_DATE).lte(buildDateFilterExpression(daOverduePeriod));
+        String limitDate = CMSElasticSearchSupport.buildDateForTodayMinusGivenPeriod(daOverdueTimeLimit);
+        QueryBuilder dateFilter = QueryBuilders.rangeQuery(DN_GRANTED_DATE).lte(limitDate);
 
         try {
-            List<String> caseIdList = cmsElasticSearchSupport.searchCMSCases(start, pageSize, authToken, stateQuery, dateFilter)
+            List<String> caseIdList = cmsElasticSearchSupport.searchCMSCases(authToken, stateQuery, dateFilter)
                 .map(CaseDetails::getCaseId)
                 .collect(Collectors.toList());
             context.setTransientObject(SEARCH_RESULT_KEY, caseIdList);
@@ -62,8 +59,4 @@ public class SearchCasesDAOverdueTask implements Task<Map<String, Object>> {
         return payload;
     }
 
-    private static String buildDateFilterExpression(final String durationExp) {
-        String timeUnit = String.valueOf(durationExp.charAt(durationExp.length() - 1));
-        return String.format("now/%s-%s", timeUnit, durationExp);
-    }
 }
