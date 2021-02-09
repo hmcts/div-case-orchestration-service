@@ -231,7 +231,7 @@ public class CallbackController {
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> solicitorCreate(
         @RequestHeader(value = AUTHORIZATION_HEADER, required = false) String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
         return ResponseEntity.ok(CcdCallbackResponse.builder()
             .data(caseOrchestrationService.solicitorCreate(ccdCallbackRequest, authorizationToken))
             .build());
