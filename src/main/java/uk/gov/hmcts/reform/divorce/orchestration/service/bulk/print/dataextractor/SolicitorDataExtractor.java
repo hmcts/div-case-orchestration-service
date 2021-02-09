@@ -1,13 +1,18 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DynamicList;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Organisation;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
@@ -39,5 +44,22 @@ public class SolicitorDataExtractor {
             return pbaNumbers.getValue().getCode();
         }
         return getMandatoryPropertyValueAsString(caseData, CaseDataKeys.SOLICITOR_PBA_NUMBER_V1);
+    }
+
+    public static OrganisationPolicy getPetitionerOrganisationPolicy(Map<String, Object> caseData) {
+        Optional<Object> organisationPolicy = Optional.ofNullable(caseData.get(CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY));
+
+        if (organisationPolicy.isEmpty()) {
+            return buildPetitionerOrganisationPolicy();
+        }
+
+        return new ObjectMapper().convertValue(organisationPolicy.get(),new TypeReference<>() {});
+    }
+
+    private static OrganisationPolicy buildPetitionerOrganisationPolicy() {
+        return OrganisationPolicy.builder()
+            .organisation(Organisation.builder()
+                .build())
+            .build();
     }
 }

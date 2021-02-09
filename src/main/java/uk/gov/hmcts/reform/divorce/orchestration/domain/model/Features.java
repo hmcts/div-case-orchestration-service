@@ -12,7 +12,8 @@ public enum Features {
     PAPER_UPDATE("paper_update"),
     SOLICITOR_DN_REJECT_AND_AMEND("solicitor_dn_reject_and_amend"),
     PAY_BY_ACCOUNT("pay_by_account"),
-    SHARE_A_CASE("share_a_case");
+    SHARE_A_CASE("share_a_case"),
+    REPRESENTED_RESPONDENT_JOURNEY("represented_respondent_journey");
 
     private final String name;
 
