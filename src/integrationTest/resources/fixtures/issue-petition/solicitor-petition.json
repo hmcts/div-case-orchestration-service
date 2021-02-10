@@ -1,4 +1,11 @@
 {
+  "PetitionerOrganisationPolicy": {
+    "Organisation": {
+      "OrganisationID": null,
+      "OrganisationName": null
+    },
+    "OrgPolicyCaseAssignedRole": "[PETSOLICITOR]"
+  },
   "D8DerivedPetitionerHomeAddress": "123 some road\nSW2 2SW",
   "D8DerivedRespondentCorrespondenceAddr": "123 Resp Road\nSW3 3SW",
   "D8DerivedRespondentHomeAddress": null,

@@ -42,6 +42,9 @@ public class GetPetitionIssueFeesTest extends IntegrationTest {
     @Value("${case.orchestration.solicitor.petition-issue-fees.context-path}")
     private String petitionIssueFeesContextPath;
 
+    @Value("${case.orchestration.solicitor.allow-share-a-case.context-path}")
+    private String allowShareACaseContextPath;
+
     @Autowired
     protected CcdClientSupport ccdClientSupport;
 

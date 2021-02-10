@@ -177,6 +177,13 @@
         ]
       },
       "D8SolicitorReference" : "SolicitorReference",
+      "PetitionerOrganisationPolicy": {
+        "Organisation": {
+          "OrganisationID": null,
+          "OrganisationName": null
+        },
+        "OrgPolicyCaseAssignedRole": "[PETSOLICITOR]"
+      },
       "D8SelectedDivorceCentreSiteId" : "AA01",
       "PetitionerSolicitorFirm" : "Solicitor",
       "PetitionerSolicitorPhone" : "01234567890",
