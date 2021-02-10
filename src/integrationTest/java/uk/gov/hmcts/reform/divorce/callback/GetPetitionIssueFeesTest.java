@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import io.restassured.response.Response;
 import org.apache.http.entity.ContentType;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
