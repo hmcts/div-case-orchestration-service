@@ -11,9 +11,9 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_CASE_ROLE;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_POLICY_ORGANISATION_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_POLICY_ORGANISATION_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ORGANISATION_POLICY_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ORGANISATION_POLICY_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_SOLICITOR_CASE_ROLE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_ACCOUNT_NUMBER;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PBA_NUMBERS;
@@ -84,7 +84,7 @@ public class SolicitorDataExtractorTest {
 
         assertThat(organisationPolicy, notNullValue());
         assertThat(organisationPolicy.getOrgPolicyReference(), is(TEST_SOLICITOR_REFERENCE));
-        assertThat(organisationPolicy.getOrgPolicyCaseAssignedRole(), is(TEST_PETITIONER_CASE_ROLE));
+        assertThat(organisationPolicy.getOrgPolicyCaseAssignedRole(), is(TEST_PETITIONER_SOLICITOR_CASE_ROLE));
     }
 
     @Test(expected = TaskException.class)
@@ -122,11 +122,11 @@ public class SolicitorDataExtractorTest {
 
     private Map<String, Object> buildCaseDataWithOrganisationPolicy() {
         OrganisationPolicy organisationPolicy = OrganisationPolicy.builder()
-            .orgPolicyCaseAssignedRole(TEST_PETITIONER_CASE_ROLE)
+            .orgPolicyCaseAssignedRole(TEST_PETITIONER_SOLICITOR_CASE_ROLE)
             .orgPolicyReference(TEST_SOLICITOR_REFERENCE)
             .organisation(Organisation.builder()
-                .organisationName(TEST_POLICY_ORGANISATION_NAME)
-                .organisationID(TEST_POLICY_ORGANISATION_ID)
+                .organisationName(TEST_ORGANISATION_POLICY_NAME)
+                .organisationID(TEST_ORGANISATION_POLICY_ID)
                 .build())
             .build();
 

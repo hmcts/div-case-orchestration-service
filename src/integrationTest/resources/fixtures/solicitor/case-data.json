@@ -1,4 +1,11 @@
 {
+  "PetitionerOrganisationPolicy": {
+    "Organisation": {
+      "OrganisationID": null,
+      "OrganisationName": null
+    },
+    "OrgPolicyCaseAssignedRole": "[PETSOLICITOR]"
+  },
   "PetitionerSolicitorEmail": "pet_sol@example.local",
   "D8DerivedRespondentHomeAddress": "51 Bass Buildings,\n38 Alfred Street",
   "D8PetitionerNameChangedHow": [

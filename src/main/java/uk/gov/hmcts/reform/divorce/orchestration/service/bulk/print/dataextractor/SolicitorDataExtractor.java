@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DynamicList;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Organisation;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
 
 import java.util.Map;
@@ -49,17 +48,8 @@ public class SolicitorDataExtractor {
     public static OrganisationPolicy getPetitionerOrganisationPolicy(Map<String, Object> caseData) {
         Optional<Object> organisationPolicy = Optional.ofNullable(caseData.get(CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY));
 
-        if (organisationPolicy.isEmpty()) {
-            return buildPetitionerOrganisationPolicy();
-        }
-
-        return new ObjectMapper().convertValue(organisationPolicy.get(),new TypeReference<>() {});
+        return organisationPolicy.<OrganisationPolicy>map(orgPolicy -> new ObjectMapper().convertValue(orgPolicy, new TypeReference<>() {
+        })).orElse(null);
     }
 
-    private static OrganisationPolicy buildPetitionerOrganisationPolicy() {
-        return OrganisationPolicy.builder()
-            .organisation(Organisation.builder()
-                .build())
-            .build();
-    }
 }
