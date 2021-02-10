@@ -103,19 +103,6 @@ public class GetPetitionIssueFeesTest extends IntegrationTest {
         ));
     }
 
-    @Test
-    public void givenCallbackRequest_whenSolicitorSubmitCase_thenAllowShareACaseAndReturnData() throws Exception {
-        solicitorUser = createSolicitorUser();
-
-        baseCaseData = getJsonFromResourceFile(BASE_CASE_RESPONSE, new TypeReference<HashMap<String, Object>>() {
-        });
-        caseDetails = ccdClientSupport.submitSolicitorCase(baseCaseData, solicitorUser);
-
-        Response response = prepareAndCallCosEndpoint(caseDetails, serverUrl + allowShareACaseContextPath);
-
-        assertThat(response.getStatusCode(), is(HttpStatus.OK.value()));
-    }
-
     private Map<String, Object> getRequestHeaders() {
         Map<String, Object> requestHeaders = new HashMap<>();
         requestHeaders.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
