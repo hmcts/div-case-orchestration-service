@@ -155,6 +155,7 @@ public class SendPetitionerUpdateNotificationsEmailTask implements Task<Map<Stri
                 templateVars,
                 SOL_APPLICANT_AOS_RECEIVED_EMAIL_DESC,
                 languagePreference);
+            // TODO: This is where AC 1 is. "When digital AOS is received from citizen respondent, then petitioner solicitor receives 'AOS Received"
         } else if (isAosOverdueEvent(eventId)) {
             log.info(
                 "CaseId: {} AOS overdue, sending {}",
