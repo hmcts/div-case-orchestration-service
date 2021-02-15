@@ -31,7 +31,7 @@ public abstract class SolicitorOrganisationPolicyReferenceTask implements Task<M
         String solicitorReferenceCaseField = getSolicitorReferenceCaseField();
         String solicitorReference = getSolicitorReference(caseData, solicitorReferenceCaseField);
 
-        log.info("CaseID: {} About to update solicitor reference for {}", caseId, solicitorReferenceCaseField);
+        log.info("CaseID: {} About to update solicitor organisation policy reference for {}", caseId, solicitorReferenceCaseField);
 
         if (solicitorReference == null) {
             log.info("CaseID: {} Solicitor Reference {} not provided, returning case data", caseId, solicitorReferenceCaseField);
@@ -48,7 +48,7 @@ public abstract class SolicitorOrganisationPolicyReferenceTask implements Task<M
             caseData.put(organisationPolicyCaseField, updatedOrganisationPolicy);
         }
 
-        log.info("CaseID: {} Updated solicitor reference for {}", caseId, solicitorReferenceCaseField);
+        log.info("CaseID: {} Updated solicitor organisation policy reference for {}", caseId, solicitorReferenceCaseField);
         return caseData;
     }
 
