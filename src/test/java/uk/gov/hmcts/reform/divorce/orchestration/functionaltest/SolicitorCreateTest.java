@@ -138,7 +138,7 @@ public class SolicitorCreateTest extends IdamTestSupport {
     }
 
     @Test
-    public void givenCaseData_whenSolicitorCreate_thenReturnWithNoOrganisationPolicyReferencesSet() throws Exception {
+    public void givenCaseData_whenSolicitorCreate_AndNoSolicitorReferencesThenReturnWithNoOrganisationPolicyReferences() throws Exception {
         CcdCallbackRequest ccdCallbackRequest = buildRequest();
 
         stubDraftDocumentGeneratorService(
