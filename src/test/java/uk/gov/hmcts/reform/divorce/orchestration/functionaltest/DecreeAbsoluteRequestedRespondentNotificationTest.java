@@ -16,8 +16,12 @@ import java.util.Map;
 
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -48,7 +52,6 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
         .put(D_8_INFERRED_PETITIONER_GENDER, TEST_INFERRED_GENDER)
         .build();
 
-
     private static final Map CASE_DETAILS = singletonMap(CASE_DETAILS_JSON_KEY,
         ImmutableMap.<String, Object>builder()
             .put(CCD_CASE_DATA_FIELD, CASE_DATA)
@@ -61,8 +64,34 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
     @MockBean
     EmailClient mockEmailClient;
 
+
     @Test
-    public void givenCorrectRespondentDetails_ThenOkResponse() throws Exception {
+    public void testThatPetSolAndRespondentAreSentEmails() throws Exception {
+
+    }
+
+    @Test
+    public void testThatPetSolAndRespondentSolicitorIsSentEmails() throws Exception {
+
+    }
+
+    @Test
+    public void testOnlyRespondentIsSentEmails() throws Exception {
+
+        // verify petitioner solicitor is not send email
+        verify(emailClient, never()).sendEmail(PET SOL email TESMPate, anyString(), any(), anyString());
+
+        // verify you send email to respondent
+    }
+
+    @Test
+    public void testOnlyRespondentSolicitorIsSentEmails() throws Exception {
+
+    }
+
+
+    @Test
+    public void respondentAndPet() throws Exception {
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(CASE_DATA).build();
         when(mockEmailClient.sendEmail(anyString(), anyString(), anyMap(), anyString()))
@@ -77,6 +106,14 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(MockMvcResultMatchers.content().json(convertObjectToJsonString(expectedResponse)));
+
+        // verify email was actually send
+        verify(mockEmailClient).sendEmail(
+            eq(PETITIONER_COE_NOTIFICATION_EMAIL_TEMPLATE_ID),
+            eq("petitioner@justice.uk"),
+            any(),
+            any()
+        );
     }
 
     @Test
