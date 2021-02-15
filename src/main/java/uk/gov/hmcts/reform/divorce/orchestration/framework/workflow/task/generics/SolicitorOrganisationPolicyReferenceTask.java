@@ -17,7 +17,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public abstract class SolicitorOrganisationPolicyReferenceDetailTask implements Task<Map<String, Object>> {
+public abstract class SolicitorOrganisationPolicyReferenceTask implements Task<Map<String, Object>> {
 
     protected abstract String getSolicitorReferenceCaseField();
 

@@ -6,20 +6,20 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Organisation;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generics.SolicitorOrganisationPolicyReferenceDetailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generics.SolicitorOrganisationPolicyReferenceTask;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SetPetitionerSolicitorOrgPolicyReferenceTaskTest extends SolicitorOrganisationPolicyReferenceDetailTaskTest {
+public class SetPetitionerSolicitorOrganisationPolicyReferenceTaskTest extends SolicitorOrganisationPolicyReferenceTaskTest {
 
     @InjectMocks
-    private SetPetitionerSolicitorOrgPolicyReferenceTask setSolicitorOrgPolicyReferenceTask;
+    private SetPetitionerSolicitorOrganisationPolicyReferenceTask setSolicitorOrgPolicyReferenceTask;
 
     @Override
-    protected SolicitorOrganisationPolicyReferenceDetailTask getTask() {
+    protected SolicitorOrganisationPolicyReferenceTask getTask() {
         return setSolicitorOrgPolicyReferenceTask;
     }
 
