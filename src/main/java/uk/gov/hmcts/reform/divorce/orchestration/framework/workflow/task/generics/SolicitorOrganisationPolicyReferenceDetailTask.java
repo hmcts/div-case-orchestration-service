@@ -21,9 +21,9 @@ public abstract class SolicitorOrganisationPolicyReferenceDetailTask implements 
 
     protected abstract String getSolicitorReferenceCaseField();
 
-    protected abstract  String getOrganisationPolicyCaseField();
+    protected abstract String getOrganisationPolicyCaseField();
 
-    protected abstract  String getSolicitorReference(Map<String, Object> caseData, String caseField);
+    protected abstract String getSolicitorReference(Map<String, Object> caseData, String caseField);
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
