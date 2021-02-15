@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
@@ -23,6 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
@@ -33,8 +35,12 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
     private final FeatureToggleService featureToggleService;
 
     public Map<String, Object> run(CaseDetails caseDetails, final String authToken) throws WorkflowException {
+        String caseId = caseDetails.getCaseId();
+
+        log.info("CaseID: {} SolicitorUpdateWorkflow workflow is going to be executed.", caseId);
+
         return this.execute(
-            getTasks(),
+            getTasks(caseId),
             caseDetails.getCaseData(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
@@ -42,17 +48,32 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
         );
     }
 
-    private Task<Map<String, Object>>[] getTasks() {
+    private Task<Map<String, Object>>[] getTasks(String caseId) {
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
-        tasks.add(addMiniPetitionDraftTask);
-        tasks.add(addNewDocumentsToCaseDataTask);
-        tasks.add(sendSolicitorApplicationSubmittedEmailTask);
+        tasks.add(getAddMiniPetitionDraftTask(caseId));
+        tasks.add(getAddNewDocumentsToCaseDataTask(caseId));
+        tasks.add(getSolicitorApplicationSubmittedEmailTask(caseId));
 
         if (featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)) {
             tasks.add(setSolicitorOrganisationPolicyDetailsTask);
         }
 
         return tasks.toArray(new Task[] {});
+    }
+
+    private Task<Map<String, Object>> getSolicitorApplicationSubmittedEmailTask(String caseId) {
+        log.info("CaseId: {} Executing task to send Application Submitted email to Petitioner solicitor.", caseId);
+        return sendSolicitorApplicationSubmittedEmailTask;
+    }
+
+    private Task<Map<String, Object>> getAddNewDocumentsToCaseDataTask(String caseId) {
+        log.info("CaseId: {} Executing task to Add new documents to case data.", caseId);
+        return addNewDocumentsToCaseDataTask;
+    }
+
+    private Task<Map<String, Object>> getAddMiniPetitionDraftTask(String caseId) {
+        log.info("CaseId: {} Executing task to Add Mini Petition Draft.", caseId);
+        return addMiniPetitionDraftTask;
     }
 }
