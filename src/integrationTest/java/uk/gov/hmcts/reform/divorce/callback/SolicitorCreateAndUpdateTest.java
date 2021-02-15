@@ -24,7 +24,9 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CREATED_DATE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_CENTRE_SITEID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
@@ -35,6 +37,7 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
 
     private static final String SOLICITOR_PAYLOAD_CONTEXT_PATH = "/fixtures/solicitor/solicitor-request-data.json";
     private static final String SOLICITOR_REFERENCE = "SolicitorReference";
+    private static final String RESPONDENT_SOLICITOR_REFERENCE = "RespondentSolicitorReference";
     private static final String EXISTING_POLICY_REFERENCE_VALUE = "ExistingPolicyReferenceValue";
 
     @Value("${case.orchestration.solicitor.solicitor-create.context-path}")
@@ -51,7 +54,7 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
     }
 
     @Test
-    public void givenCallbackRequestWhenSolicitorCreateThenReturnUpdatedDataWithValidOrgPolicyReference() throws Exception {
+    public void givenCallbackRequestWhenSolicitorCreateThenReturnUpdatedDataWithValidSolicitorOrganisationPolicyReference() throws Exception {
         Response response = postWithDataAndValidateResponse(getSolicitorCreateUrl(), SOLICITOR_PAYLOAD_CONTEXT_PATH);
 
         assertEverythingIsFine(response);
@@ -59,18 +62,23 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
             isJson(
                 allOf(
                     withJsonPath("$.data.D8SolicitorReference", is(SOLICITOR_REFERENCE)),
-                    withJsonPath("$.data.PetitionerOrganisationPolicy.OrgPolicyReference", is(SOLICITOR_REFERENCE)))
+                    withJsonPath("$.data.PetitionerOrganisationPolicy.OrgPolicyReference", is(SOLICITOR_REFERENCE)),
+                    withJsonPath("$.data.respondentSolicitorReference", is(RESPONDENT_SOLICITOR_REFERENCE)),
+                    withJsonPath("$.data.RespondentOrganisationPolicy.OrgPolicyReference", is(RESPONDENT_SOLICITOR_REFERENCE)))
             )
         );
     }
 
     @Test
-    public void givenCallbackRequestWhenSolicitorCreateWithNoSolicitorReferenceThenReturnWithoutOrgPolicyData() throws Exception {
-        Response response = postWithoutSolicitorReferenceAndOrganisationPolicyDataAndValidateResponse();
+    public void givenCallbackRequestWhenSolicitorCreateWithNoSolicitorReferencesThenReturnWithoutOrganisationPolicyData() throws Exception {
+        Response response = postWithoutSolicitorReferencesAndOrganisationPolicyDataAndValidateResponse();
 
         assertThat(getResponseBody(response), isJson(withoutJsonPath("$.data.PetitionerOrganisationPolicy")));
+        assertThat(getResponseBody(response), isJson(withoutJsonPath("$.data.RespondentOrganisationPolicy")));
     }
 
+    // not respondent policy
+    // none respresented solicitor
     @Test
     public void givenCallbackRequestWhenSolicitorUpdateThenReturnUpdatedData() throws Exception {
         Response response = postWithDataAndValidateResponse(getSolicitorUpdateUrl(), SOLICITOR_PAYLOAD_CONTEXT_PATH);
@@ -134,10 +142,13 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
         return response;
     }
 
-    private Response postWithoutSolicitorReferenceAndOrganisationPolicyDataAndValidateResponse() throws Exception {
+    private Response postWithoutSolicitorReferencesAndOrganisationPolicyDataAndValidateResponse() throws Exception {
         CcdCallbackRequest ccdCallbackRequest = buildCcdCallbackRequest();
         ccdCallbackRequest.getCaseDetails().getCaseData().remove(SOLICITOR_REFERENCE_JSON_KEY);
         ccdCallbackRequest.getCaseDetails().getCaseData().remove(PETITIONER_SOLICITOR_ORGANISATION_POLICY);
+
+        ccdCallbackRequest.getCaseDetails().getCaseData().remove(D8_RESPONDENT_SOLICITOR_REFERENCE);
+        ccdCallbackRequest.getCaseDetails().getCaseData().remove(RESPONDENT_SOLICITOR_ORGANISATION_POLICY);
 
         String requestPayload = convertObjectToJsonString(ccdCallbackRequest);
 
