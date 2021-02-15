@@ -1,29 +1,29 @@
-package uk.gov.hmcts.reform.divorce.orchestration.tasks;
+package uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generics;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 
 import java.util.Map;
 import java.util.Optional;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.SolicitorDataExtractor.getSolicitorOrganisationPolicy;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 
 @Component
+@RequiredArgsConstructor
 @Slf4j
-public class SetSolicitorOrganisationPolicyDetailsTask implements Task<Map<String, Object>> {
+public abstract class SolicitorOrganisationPolicyReferenceDetailTask implements Task<Map<String, Object>> {
 
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
         String caseId = getCaseId(context);
         String solicitorReferenceCaseField = getSolicitorReferenceCaseField();
-        String solicitorReference = getCurrentSolicitorReference(caseData, solicitorReferenceCaseField);
+        String solicitorReference = getSolicitorReference(caseData, solicitorReferenceCaseField);
 
         if (solicitorReference == null) {
             log.info("CaseID: {} Solicitor Reference {} not provided, returning case data", caseId, solicitorReferenceCaseField);
@@ -33,39 +33,31 @@ public class SetSolicitorOrganisationPolicyDetailsTask implements Task<Map<Strin
         OrganisationPolicy updatedOrganisationPolicy = getUpdatedOrganisationPolicy(caseData, solicitorReference);
 
         if (updatedOrganisationPolicy == null) {
-            log.info("CaseID: {} Organisation Policy detail is non-existing. No data updated", caseId);
+            log.info("CaseID: {} Organisation Policy detail is non-existing. No data updated.", caseId);
         } else {
             String organisationPolicyCaseField = getOrganisationPolicyCaseField();
             log.info("CaseID: {} Adding Solicitor Reference to Organisation Policy detail for {}", caseId, organisationPolicyCaseField);
             caseData.put(organisationPolicyCaseField, updatedOrganisationPolicy);
         }
 
-        //if RESP_SOL_REPRESENTED (respondentSolicitorRepresented) == Yes
-        // D8_RESPONDENT_SOLICITOR_REFERENCE (respondentSolicitorReference)
-
         return caseData;
     }
 
-    private String getSolicitorReferenceCaseField() {
-        return SOLICITOR_REFERENCE_JSON_KEY;
-    }
+    protected abstract String getSolicitorReferenceCaseField();
 
-    private String getOrganisationPolicyCaseField() {
-        return PETITIONER_SOLICITOR_ORGANISATION_POLICY;
-    }
+    protected abstract  String getOrganisationPolicyCaseField();
 
-    private String getCurrentSolicitorReference(Map<String, Object> caseData, String caseField) {
-        return Optional.ofNullable(getOptionalPropertyValueAsString(caseData, caseField, null)).orElse(null);
-    }
+    protected abstract  String getSolicitorReference(Map<String, Object> caseData, String caseField);
 
-    private OrganisationPolicy getUpdatedOrganisationPolicy(Map<String, Object> caseData, String d8SolicitorReference) {
+    private OrganisationPolicy getUpdatedOrganisationPolicy(Map<String, Object> caseData, String solicitorReference) {
         OrganisationPolicy organisationPolicy = Optional.ofNullable(getSolicitorOrganisationPolicy(caseData, getOrganisationPolicyCaseField() ))
             .orElse(null);
 
         if (organisationPolicy != null) {
-            organisationPolicy.setOrgPolicyReference(d8SolicitorReference);
+            organisationPolicy.setOrgPolicyReference(solicitorReference);
         }
 
         return organisationPolicy;
     }
+
 }
