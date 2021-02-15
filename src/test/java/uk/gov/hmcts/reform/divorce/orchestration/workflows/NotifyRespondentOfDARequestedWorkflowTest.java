@@ -8,20 +8,18 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaRequestedNotifyRespondentEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.decreeabsolute.DaRequestedPetitionerSolicitorEmailTask;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NotifyRespondentOfDARequestedWorkflowTest {
@@ -29,28 +27,32 @@ public class NotifyRespondentOfDARequestedWorkflowTest {
     @Mock
     private SendDaRequestedNotifyRespondentEmailTask sendDaRequestedNotifyRespondentEmailTask;
 
+    @Mock
+    private DaRequestedPetitionerSolicitorEmailTask daRequestedPetitionerSolicitorEmailTask;
+
     @InjectMocks
     private NotifyRespondentOfDARequestedWorkflow notifyRespondentOfDARequestedWorkflow;
 
     @Test
     public void callsTheRequiredTask() throws WorkflowException, TaskException {
-        final TaskContext context = new DefaultTaskContext();
-        final Map<String, Object> payload = new HashMap<>();
 
-        final CaseDetails caseDetails = CaseDetails.builder()
-            .caseId(TEST_CASE_ID)
-            .state(TEST_STATE)
-            .caseData(payload)
+        final Map<String, Object> payload = new HashMap<>();
+        final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).build())
             .build();
 
-        final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
-        final Map<String, Object> result = notifyRespondentOfDARequestedWorkflow.run(ccdCallbackRequest);
+        mockTasksExecution(
+            payload,
+            sendDaRequestedNotifyRespondentEmailTask,
+            daRequestedPetitionerSolicitorEmailTask
+        );
 
-        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
-
-        assertThat(result, is(payload));
-
-        verify(sendDaRequestedNotifyRespondentEmailTask).execute(context, payload);
+        assertThat(notifyRespondentOfDARequestedWorkflow.run(ccdCallbackRequest), is(payload));
+        verifyTasksCalledInOrder(
+            payload,
+            sendDaRequestedNotifyRespondentEmailTask,
+            daRequestedPetitionerSolicitorEmailTask
+        );
     }
 
 }

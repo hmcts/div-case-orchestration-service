@@ -32,7 +32,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helpe
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.context;
 
 @RunWith(MockitoJUnitRunner.class)
-public class GeneralEmailPetitionerSolicitorTaskTest {
+public class DaRequestedPetitionerSolicitorEmailTaskTest {
 
     @Mock
     private EmailService emailService;
