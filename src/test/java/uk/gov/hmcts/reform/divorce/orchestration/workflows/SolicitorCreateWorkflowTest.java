@@ -11,7 +11,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetClaimCostsFromTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrgPolicyReferenceTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceDetailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceDetailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
 
 import java.util.HashMap;
@@ -46,7 +47,10 @@ public class SolicitorCreateWorkflowTest {
     SetClaimCostsFromTask setClaimCostsFromTask;
 
     @Mock
-    SetPetitionerSolicitorOrgPolicyReferenceTask setPetitionerSolicitorOrgPolicyReferenceTask;
+    SetPetitionerSolicitorOrganisationPolicyReferenceDetailTask setPetitionerSolicitorOrganisationPolicyReferenceDetailTask;
+
+    @Mock
+    SetRespondentSolicitorOrganisationPolicyReferenceDetailTask setRespondentSolicitorOrganisationPolicyReferenceDetailTask;
 
     @InjectMocks
     SolicitorCreateWorkflow solicitorCreateWorkflow;
@@ -66,7 +70,8 @@ public class SolicitorCreateWorkflowTest {
             setSolicitorCourtDetailsTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
-            setPetitionerSolicitorOrgPolicyReferenceTask
+            setPetitionerSolicitorOrganisationPolicyReferenceDetailTask,
+            setRespondentSolicitorOrganisationPolicyReferenceDetailTask
         );
 
         assertThat(solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN), is(caseDetails.getCaseData()));
@@ -77,7 +82,8 @@ public class SolicitorCreateWorkflowTest {
             setSolicitorCourtDetailsTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
-            setPetitionerSolicitorOrgPolicyReferenceTask
+            setPetitionerSolicitorOrganisationPolicyReferenceDetailTask,
+            setRespondentSolicitorOrganisationPolicyReferenceDetailTask
         );
     }
 
@@ -108,6 +114,7 @@ public class SolicitorCreateWorkflowTest {
             addNewDocumentsToCaseDataTask
         );
 
-        verifyTasksWereNeverCalled(setPetitionerSolicitorOrgPolicyReferenceTask);
+        verifyTasksWereNeverCalled(setPetitionerSolicitorOrganisationPolicyReferenceDetailTask);
+        verifyTasksWereNeverCalled(setRespondentSolicitorOrganisationPolicyReferenceDetailTask);
     }
 }

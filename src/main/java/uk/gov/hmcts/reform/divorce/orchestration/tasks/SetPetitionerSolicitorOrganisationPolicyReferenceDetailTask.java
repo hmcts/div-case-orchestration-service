@@ -13,7 +13,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 
 @Component
 @Slf4j
-public class SetPetitionerSolicitorOrgPolicyReferenceTask extends SolicitorOrganisationPolicyReferenceDetailTask {
+public class SetPetitionerSolicitorOrganisationPolicyReferenceDetailTask extends SolicitorOrganisationPolicyReferenceDetailTask {
 
     @Override
     protected String getSolicitorReferenceCaseField() {

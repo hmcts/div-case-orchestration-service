@@ -13,7 +13,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetClaimCostsFromTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrgPolicyReferenceTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceDetailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceDetailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
 
 import java.util.ArrayList;
@@ -35,7 +36,8 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
     private final AddMiniPetitionDraftTask addMiniPetitionDraftTask;
     private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
     private final SetClaimCostsFromTask setClaimCostsFromTask;
-    private final SetPetitionerSolicitorOrgPolicyReferenceTask setPetitionerSolicitorOrgPolicyReferenceTask;
+    private final SetPetitionerSolicitorOrganisationPolicyReferenceDetailTask setPetitionerSolicitorOrganisationPolicyReferenceDetailTask;
+    private final SetRespondentSolicitorOrganisationPolicyReferenceDetailTask setRespondentSolicitorOrganisationPolicyReferenceDetailTask;
     private final FeatureToggleService featureToggleService;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
@@ -68,7 +70,8 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
         tasks.add(addNewDocumentsToCaseDataTask);
 
         if (featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)) {
-            tasks.add(setPetitionerSolicitorOrgPolicyReferenceTask);
+            tasks.add(setPetitionerSolicitorOrganisationPolicyReferenceDetailTask);
+            tasks.add(setRespondentSolicitorOrganisationPolicyReferenceDetailTask);
         }
 
         return tasks.toArray(new Task[] {});

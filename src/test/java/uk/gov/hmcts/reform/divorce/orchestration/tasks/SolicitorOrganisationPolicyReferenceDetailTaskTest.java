@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public abstract class SolicitorOrganisationPolicyReferenceDetailTaskTest {
 
     protected Map<String, Object> caseData;
-    private TaskContext context;
+    protected TaskContext context;
 
     @Before
     public void setup() {
@@ -36,6 +36,8 @@ public abstract class SolicitorOrganisationPolicyReferenceDetailTaskTest {
     protected abstract SolicitorOrganisationPolicyReferenceDetailTask getTask();
 
     protected abstract String getSolicitorOrganisationPolicyCaseField();
+
+    protected abstract String getSolicitorReferenceCaseField();
 
     protected abstract void setCaseDataSolicitorCreate();
 

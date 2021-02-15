@@ -13,10 +13,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.P
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SetPetitionerSolicitorOrgPolicyReferenceTaskTest extends SolicitorOrganisationPolicyReferenceDetailTaskTest {
+public class SetPetitionerSolicitorOrganisationPolicyReferenceDetailTaskTest extends SolicitorOrganisationPolicyReferenceDetailTaskTest {
 
     @InjectMocks
-    private SetPetitionerSolicitorOrgPolicyReferenceTask setSolicitorOrgPolicyReferenceTask;
+    private SetPetitionerSolicitorOrganisationPolicyReferenceDetailTask setSolicitorOrgPolicyReferenceTask;
 
     @Override
     protected SolicitorOrganisationPolicyReferenceDetailTask getTask() {
@@ -29,14 +29,19 @@ public class SetPetitionerSolicitorOrgPolicyReferenceTaskTest extends SolicitorO
     }
 
     @Override
+    protected String getSolicitorReferenceCaseField() {
+        return SOLICITOR_REFERENCE_JSON_KEY;
+    }
+
+    @Override
     protected void setCaseDataWithoutOrganisationPolicy() {
-        caseData.put(SOLICITOR_REFERENCE_JSON_KEY, TEST_SOLICITOR_REFERENCE);
+        caseData.put(getSolicitorReferenceCaseField(), TEST_SOLICITOR_REFERENCE);
     }
 
     @Override
     protected void setCaseDataSolicitorCreate() {
         setCaseDataWithoutOrganisationPolicy();
-        caseData.put(PETITIONER_SOLICITOR_ORGANISATION_POLICY, OrganisationPolicy.builder()
+        caseData.put(getSolicitorOrganisationPolicyCaseField(), OrganisationPolicy.builder()
             .organisation(Organisation.builder().build())
             .build());
     }
@@ -49,7 +54,7 @@ public class SetPetitionerSolicitorOrgPolicyReferenceTaskTest extends SolicitorO
     @Override
     protected void setCaseDataSolicitorUpdate() {
         setCaseDataWithoutOrganisationPolicy();
-        caseData.put(PETITIONER_SOLICITOR_ORGANISATION_POLICY, OrganisationPolicy.builder()
+        caseData.put(getSolicitorOrganisationPolicyCaseField(), OrganisationPolicy.builder()
             .orgPolicyReference("ExistingPolicyReference")
             .organisation(Organisation.builder()
                 .build())
