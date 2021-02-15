@@ -49,7 +49,6 @@ public abstract class SolicitorOrganisationPolicyReferenceTask implements Task<M
         return caseData;
     }
 
-
     private OrganisationPolicy getUpdatedOrganisationPolicy(Map<String, Object> caseData, String solicitorReference) {
         OrganisationPolicy organisationPolicy = Optional.ofNullable(getSolicitorOrganisationPolicy(caseData, getOrganisationPolicyCaseField() ))
             .orElse(null);
@@ -60,5 +59,4 @@ public abstract class SolicitorOrganisationPolicyReferenceTask implements Task<M
 
         return organisationPolicy;
     }
-
 }

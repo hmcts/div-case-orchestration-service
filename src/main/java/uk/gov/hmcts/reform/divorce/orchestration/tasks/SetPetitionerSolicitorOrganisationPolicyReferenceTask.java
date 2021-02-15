@@ -27,7 +27,6 @@ public class SetPetitionerSolicitorOrganisationPolicyReferenceTask extends Solic
 
     @Override
     protected String getSolicitorReference(Map<String, Object> caseData, String caseField) {
-        return Optional.ofNullable(getOptionalPropertyValueAsString(caseData, caseField, null)).orElse(null);
+        return getOptionalPropertyValueAsString(caseData, caseField, null);
     }
-
 }
