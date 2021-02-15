@@ -11,8 +11,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetClaimCostsFromTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrgPolicyReferenceTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
 
 import java.util.HashMap;
 import java.util.Map;

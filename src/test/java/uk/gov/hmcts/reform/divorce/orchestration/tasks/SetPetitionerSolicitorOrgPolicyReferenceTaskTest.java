@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 
-import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -30,8 +29,13 @@ public class SetPetitionerSolicitorOrgPolicyReferenceTaskTest extends SolicitorO
     }
 
     @Override
-    protected void setValidCaseData() {
+    protected void setCaseDataWithoutOrganisationPolicy() {
         caseData.put(SOLICITOR_REFERENCE_JSON_KEY, TEST_SOLICITOR_REFERENCE);
+    }
+
+    @Override
+    protected void setCaseDataSolicitorCreate() {
+        setCaseDataWithoutOrganisationPolicy();
         caseData.put(PETITIONER_SOLICITOR_ORGANISATION_POLICY, OrganisationPolicy.builder()
             .organisation(Organisation.builder().build())
             .build());
@@ -43,18 +47,13 @@ public class SetPetitionerSolicitorOrgPolicyReferenceTaskTest extends SolicitorO
     }
 
     @Override
-    protected void setValidCaseDataWithExistingOrganisationPolicy() {
-        setDataWithoutOrganisationPolicy();
+    protected void setCaseDataSolicitorUpdate() {
+        setCaseDataWithoutOrganisationPolicy();
         caseData.put(PETITIONER_SOLICITOR_ORGANISATION_POLICY, OrganisationPolicy.builder()
             .orgPolicyReference("ExistingPolicyReference")
             .organisation(Organisation.builder()
                 .build())
             .build());
-    }
-
-    @Override
-    protected void setDataWithoutOrganisationPolicy() {
-        caseData.put(SOLICITOR_REFERENCE_JSON_KEY, TEST_SOLICITOR_REFERENCE);
     }
 
 }

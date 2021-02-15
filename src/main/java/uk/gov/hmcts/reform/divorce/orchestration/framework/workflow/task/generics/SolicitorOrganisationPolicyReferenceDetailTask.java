@@ -19,6 +19,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @Slf4j
 public abstract class SolicitorOrganisationPolicyReferenceDetailTask implements Task<Map<String, Object>> {
 
+    protected abstract String getSolicitorReferenceCaseField();
+
+    protected abstract  String getOrganisationPolicyCaseField();
+
+    protected abstract  String getSolicitorReference(Map<String, Object> caseData, String caseField);
+
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
         String caseId = getCaseId(context);
@@ -43,11 +49,6 @@ public abstract class SolicitorOrganisationPolicyReferenceDetailTask implements 
         return caseData;
     }
 
-    protected abstract String getSolicitorReferenceCaseField();
-
-    protected abstract  String getOrganisationPolicyCaseField();
-
-    protected abstract  String getSolicitorReference(Map<String, Object> caseData, String caseField);
 
     private OrganisationPolicy getUpdatedOrganisationPolicy(Map<String, Object> caseData, String solicitorReference) {
         OrganisationPolicy organisationPolicy = Optional.ofNullable(getSolicitorOrganisationPolicy(caseData, getOrganisationPolicyCaseField() ))

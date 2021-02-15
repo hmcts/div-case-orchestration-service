@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
@@ -38,17 +37,17 @@ public abstract class SolicitorOrganisationPolicyReferenceDetailTaskTest {
 
     protected abstract String getSolicitorOrganisationPolicyCaseField();
 
-    protected abstract void setValidCaseData();
+    protected abstract void setCaseDataSolicitorCreate();
+
+    protected abstract void setCaseDataSolicitorUpdate();
 
     protected abstract void setCaseDataWithoutSolicitorReference();
 
-    protected abstract void setValidCaseDataWithExistingOrganisationPolicy();
-
-    protected abstract void setDataWithoutOrganisationPolicy();
+    protected abstract void setCaseDataWithoutOrganisationPolicy();
 
     @Test
     public void shouldMapSolicitorReferenceToOrganisationPolicyReference() {
-        setValidCaseData();
+        setCaseDataSolicitorCreate();
 
         Map<String, Object> returnCaseData = getTask().execute(context, caseData);
 
@@ -72,7 +71,7 @@ public abstract class SolicitorOrganisationPolicyReferenceDetailTaskTest {
 
     @Test
     public void shouldUpdateExistingOrganisationPolicyReferenceWhenSolicitorReferenceIsProvided() {
-        setValidCaseDataWithExistingOrganisationPolicy();
+        setCaseDataSolicitorUpdate();
 
         Map<String, Object> returnCaseData = getTask().execute(context, caseData);
 
@@ -84,7 +83,7 @@ public abstract class SolicitorOrganisationPolicyReferenceDetailTaskTest {
 
     @Test
     public void shouldNotAddOrganisationPolicyWhenSolicitorReferenceIsProvidedAndOrganisationPolicyDoesNotExist() {
-        setDataWithoutOrganisationPolicy();
+        setCaseDataWithoutOrganisationPolicy();
 
         Map<String, Object> returnCaseData = getTask().execute(context, caseData);
 
