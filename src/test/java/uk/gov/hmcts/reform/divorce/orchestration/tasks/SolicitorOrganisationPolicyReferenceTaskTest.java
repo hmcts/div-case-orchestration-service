@@ -7,7 +7,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generics.SolicitorOrganisationPolicyReferenceDetailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generics.SolicitorOrganisationPolicyReferenceTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLIC
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
-public abstract class SolicitorOrganisationPolicyReferenceDetailTaskTest {
+public abstract class SolicitorOrganisationPolicyReferenceTaskTest {
 
     protected Map<String, Object> caseData;
     protected TaskContext context;
@@ -33,7 +33,7 @@ public abstract class SolicitorOrganisationPolicyReferenceDetailTaskTest {
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
     }
 
-    protected abstract SolicitorOrganisationPolicyReferenceDetailTask getTask();
+    protected abstract SolicitorOrganisationPolicyReferenceTask getTask();
 
     protected abstract String getSolicitorOrganisationPolicyCaseField();
 

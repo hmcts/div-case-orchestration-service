@@ -2,7 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generics.SolicitorOrganisationPolicyReferenceDetailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generics.SolicitorOrganisationPolicyReferenceTask;
 
 import java.util.Map;
 import java.util.Optional;
@@ -13,7 +13,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 
 @Component
 @Slf4j
-public class SetPetitionerSolicitorOrganisationPolicyReferenceDetailTask extends SolicitorOrganisationPolicyReferenceDetailTask {
+public class SetPetitionerSolicitorOrganisationPolicyReferenceTask extends SolicitorOrganisationPolicyReferenceTask {
 
     @Override
     protected String getSolicitorReferenceCaseField() {

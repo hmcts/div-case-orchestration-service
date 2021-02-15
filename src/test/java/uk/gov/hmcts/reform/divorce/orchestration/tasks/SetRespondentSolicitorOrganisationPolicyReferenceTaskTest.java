@@ -6,7 +6,7 @@ import org.mockito.InjectMocks;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Organisation;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generics.SolicitorOrganisationPolicyReferenceDetailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generics.SolicitorOrganisationPolicyReferenceTask;
 
 import java.util.Map;
 
@@ -22,13 +22,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 @Slf4j
-public class SetRespondentSolicitorOrganisationPolicyReferenceDetailTaskTest extends SolicitorOrganisationPolicyReferenceDetailTaskTest {
+public class SetRespondentSolicitorOrganisationPolicyReferenceTaskTest extends SolicitorOrganisationPolicyReferenceTaskTest {
 
     @InjectMocks
-    private SetRespondentSolicitorOrganisationPolicyReferenceDetailTask setSolicitorOrgPolicyReferenceTask;
+    private SetRespondentSolicitorOrganisationPolicyReferenceTask setSolicitorOrgPolicyReferenceTask;
 
     @Override
-    protected SolicitorOrganisationPolicyReferenceDetailTask getTask() {
+    protected SolicitorOrganisationPolicyReferenceTask getTask() {
         return setSolicitorOrgPolicyReferenceTask;
     }
 

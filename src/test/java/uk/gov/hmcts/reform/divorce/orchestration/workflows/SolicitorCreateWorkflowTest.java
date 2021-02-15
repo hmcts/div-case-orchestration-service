@@ -11,8 +11,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetClaimCostsFromTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceDetailTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceDetailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
 
 import java.util.HashMap;
@@ -47,10 +47,10 @@ public class SolicitorCreateWorkflowTest {
     SetClaimCostsFromTask setClaimCostsFromTask;
 
     @Mock
-    SetPetitionerSolicitorOrganisationPolicyReferenceDetailTask setPetitionerSolicitorOrganisationPolicyReferenceDetailTask;
+    SetPetitionerSolicitorOrganisationPolicyReferenceTask setPetitionerSolicitorOrganisationPolicyReferenceDetailTask;
 
     @Mock
-    SetRespondentSolicitorOrganisationPolicyReferenceDetailTask setRespondentSolicitorOrganisationPolicyReferenceDetailTask;
+    SetRespondentSolicitorOrganisationPolicyReferenceTask setRespondentSolicitorOrganisationPolicyReferenceDetailTask;
 
     @InjectMocks
     SolicitorCreateWorkflow solicitorCreateWorkflow;
