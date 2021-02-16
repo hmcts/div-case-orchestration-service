@@ -31,7 +31,7 @@ public class SetRespondentSolicitorOrganisationPolicyReferenceTask extends Solic
         if (!isRespondentRepresented(caseData)) {
             return null;
         }
-        return Optional.ofNullable(getOptionalPropertyValueAsString(caseData, caseField, null)).orElse(null);
+        return getOptionalPropertyValueAsString(caseData, caseField, null);
     }
 
 }
