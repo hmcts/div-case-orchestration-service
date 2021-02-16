@@ -15,7 +15,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendSolicitorApplicationSubmittedEmailTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorOrganisationPolicyDetailsTask;
 
 import java.util.Collections;
 import java.util.Map;
@@ -88,7 +87,7 @@ public class SolicitorUpdateWorkflowTest {
     }
 
     @Test
-    public void runShouldRunSetSolicitorOrganisationPolicyDetailsTaskWhenFeatureIsOn() throws Exception {
+    public void runShouldRunSetPetitionerSolicitorOrganisationPolicyReferenceDetailTaskWhenFeatureIsOn() throws Exception {
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
         mockTasksExecution(
             caseData,
@@ -105,14 +104,13 @@ public class SolicitorUpdateWorkflowTest {
             caseData,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
-            setPetitionerSolicitorOrganisationPolicyReferenceDetailTask
             sendSolicitorApplicationSubmittedEmailTask,
-            setSolicitorOrganisationPolicyDetailsTask
+            setPetitionerSolicitorOrganisationPolicyReferenceDetailTask
         );
     }
 
     @Test
-    public void runShouldNotRunSetSolicitorOrganisationPolicyDetailsTaskWhenFeatureIsOff() throws Exception {
+    public void runShouldNotRunSetPetitionerSolicitorOrganisationPolicyReferenceDetailTaskWhenFeatureIsOff() throws Exception {
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(false);
         mockTasksExecution(
             caseData,
