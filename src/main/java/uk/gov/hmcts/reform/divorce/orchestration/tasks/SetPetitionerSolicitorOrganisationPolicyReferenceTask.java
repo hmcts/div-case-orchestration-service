@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generics.SolicitorOrganisationPolicyReferenceTask;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
@@ -29,5 +28,4 @@ public class SetPetitionerSolicitorOrganisationPolicyReferenceTask extends Solic
     protected String getSolicitorReference(Map<String, Object> caseData, String caseField) {
         return getOptionalPropertyValueAsString(caseData, caseField, null);
     }
-
 }
