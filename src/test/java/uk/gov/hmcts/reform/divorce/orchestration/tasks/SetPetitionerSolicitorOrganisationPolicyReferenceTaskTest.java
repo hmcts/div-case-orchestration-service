@@ -29,14 +29,19 @@ public class SetPetitionerSolicitorOrganisationPolicyReferenceTaskTest extends S
     }
 
     @Override
+    protected String getSolicitorReferenceCaseField() {
+        return SOLICITOR_REFERENCE_JSON_KEY;
+    }
+
+    @Override
     protected void setCaseDataWithoutOrganisationPolicy() {
-        caseData.put(SOLICITOR_REFERENCE_JSON_KEY, TEST_SOLICITOR_REFERENCE);
+        caseData.put(getSolicitorReferenceCaseField(), TEST_SOLICITOR_REFERENCE);
     }
 
     @Override
     protected void setCaseDataSolicitorCreate() {
         setCaseDataWithoutOrganisationPolicy();
-        caseData.put(PETITIONER_SOLICITOR_ORGANISATION_POLICY, OrganisationPolicy.builder()
+        caseData.put(getSolicitorOrganisationPolicyCaseField(), OrganisationPolicy.builder()
             .organisation(Organisation.builder().build())
             .build());
     }
@@ -49,7 +54,7 @@ public class SetPetitionerSolicitorOrganisationPolicyReferenceTaskTest extends S
     @Override
     protected void setCaseDataSolicitorUpdate() {
         setCaseDataWithoutOrganisationPolicy();
-        caseData.put(PETITIONER_SOLICITOR_ORGANISATION_POLICY, OrganisationPolicy.builder()
+        caseData.put(getSolicitorOrganisationPolicyCaseField(), OrganisationPolicy.builder()
             .orgPolicyReference("ExistingPolicyReference")
             .organisation(Organisation.builder()
                 .build())
