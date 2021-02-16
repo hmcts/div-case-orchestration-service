@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendSolicitorApplicationSubmittedEmailTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorOrganisationPolicyDetailsTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +30,8 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
 
     private final AddMiniPetitionDraftTask addMiniPetitionDraftTask;
     private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
-    private final SetSolicitorOrganisationPolicyDetailsTask setSolicitorOrganisationPolicyDetailsTask;
     private final SendSolicitorApplicationSubmittedEmailTask sendSolicitorApplicationSubmittedEmailTask;
+    private final SetPetitionerSolicitorOrganisationPolicyReferenceTask setPetitionerSolicitorOrganisationPolicyReferenceDetailTask;
     private final FeatureToggleService featureToggleService;
 
     public Map<String, Object> run(CaseDetails caseDetails, final String authToken) throws WorkflowException {
@@ -56,7 +56,7 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
         tasks.add(getSolicitorApplicationSubmittedEmailTask(caseId));
 
         if (featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)) {
-            tasks.add(getSolicitorOrganisationPolicyDetailsTask(caseId));
+            tasks.add(setPetitionerSolicitorOrganisationPolicyReferenceDetailTask);
         }
 
         return tasks.toArray(new Task[] {});

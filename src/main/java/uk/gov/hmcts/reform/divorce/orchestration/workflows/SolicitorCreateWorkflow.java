@@ -13,8 +13,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetClaimCostsFromTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorOrganisationPolicyDetailsTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,7 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
     private final AddMiniPetitionDraftTask addMiniPetitionDraftTask;
     private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
     private final SetClaimCostsFromTask setClaimCostsFromTask;
-    private final SetSolicitorOrganisationPolicyDetailsTask setSolicitorOrganisationPolicyDetailsTask;
+    private final SetPetitionerSolicitorOrganisationPolicyReferenceTask setPetitionerSolicitorOrganisationPolicyReferenceDetailTask;
     private final FeatureToggleService featureToggleService;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
@@ -68,7 +68,7 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
         tasks.add(addNewDocumentsToCaseDataTask);
 
         if (featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)) {
-            tasks.add(setSolicitorOrganisationPolicyDetailsTask);
+            tasks.add(setPetitionerSolicitorOrganisationPolicyReferenceDetailTask);
         }
 
         return tasks.toArray(new Task[] {});
