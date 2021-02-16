@@ -29,6 +29,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_CENTRE_SITEID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
@@ -54,7 +56,7 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
     }
 
     @Test
-    public void givenCallbackRequestWhenSolicitorCreateThenReturnUpdatedDataWithValidSolicitorOrganisationPolicyReference() throws Exception {
+    public void givenCallbackRequestWhenSolicitorCreateThenReturnWithUpdatedSolicitorOrganisationPolicyReferences() throws Exception {
         Response response = postWithDataAndValidateResponse(getSolicitorCreateUrl(), SOLICITOR_PAYLOAD_CONTEXT_PATH);
 
         assertEverythingIsFine(response);
@@ -70,15 +72,28 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
     }
 
     @Test
-    public void givenCallbackRequestWhenSolicitorCreateWithNoSolicitorReferencesThenReturnWithoutOrganisationPolicyData() throws Exception {
+    public void givenCallbackRequestWhenSolicitorCreateWithNoSolicitorReferencesThenReturnWithNoOrganisationPolicyReferences() throws Exception {
         Response response = postWithoutSolicitorReferencesAndOrganisationPolicyDataAndValidateResponse();
 
         assertThat(getResponseBody(response), isJson(withoutJsonPath("$.data.PetitionerOrganisationPolicy")));
         assertThat(getResponseBody(response), isJson(withoutJsonPath("$.data.RespondentOrganisationPolicy")));
     }
 
-    // not respondent policy
-    // none respresented solicitor
+    @Test
+    public void givenCallbackRequestWhenSolicitorCreateAndNotRepresentedThenReturnWithNoRespondentOrganisationPolicyData() throws Exception {
+        Response response = postWithNoneRepresentedSolicitorDataAndValidateResponse();
+
+        assertThat(getResponseBody(response),
+            isJson(
+                allOf(
+                    withJsonPath("$.data.D8SolicitorReference", is(SOLICITOR_REFERENCE)),
+                    withJsonPath("$.data.PetitionerOrganisationPolicy.OrgPolicyReference", is(SOLICITOR_REFERENCE)),
+                    withJsonPath("$.data.respondentSolicitorReference", is(RESPONDENT_SOLICITOR_REFERENCE)),
+                    withoutJsonPath("$.data.RespondentOrganisationPolicy"))
+            )
+        );
+    }
+
     @Test
     public void givenCallbackRequestWhenSolicitorUpdateThenReturnUpdatedData() throws Exception {
         Response response = postWithDataAndValidateResponse(getSolicitorUpdateUrl(), SOLICITOR_PAYLOAD_CONTEXT_PATH);
@@ -142,13 +157,24 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
         return response;
     }
 
+    private Response postWithNoneRepresentedSolicitorDataAndValidateResponse() throws Exception {
+        CcdCallbackRequest ccdCallbackRequest = buildCcdCallbackRequest();
+        removeCaseData(ccdCallbackRequest, RESPONDENT_SOLICITOR_ORGANISATION_POLICY);
+        ccdCallbackRequest.getCaseDetails().getCaseData().put(RESP_SOL_REPRESENTED, NO_VALUE);
+
+        String requestPayload = convertObjectToJsonString(ccdCallbackRequest);
+
+        Response response = RestUtil.postToRestService(getSolicitorCreateUrl(), getRequestHeaders(), requestPayload);
+
+        assertThat(HttpStatus.OK.value(), is(response.getStatusCode()));
+
+        return response;
+    }
+
     private Response postWithoutSolicitorReferencesAndOrganisationPolicyDataAndValidateResponse() throws Exception {
         CcdCallbackRequest ccdCallbackRequest = buildCcdCallbackRequest();
-        ccdCallbackRequest.getCaseDetails().getCaseData().remove(SOLICITOR_REFERENCE_JSON_KEY);
-        ccdCallbackRequest.getCaseDetails().getCaseData().remove(PETITIONER_SOLICITOR_ORGANISATION_POLICY);
-
-        ccdCallbackRequest.getCaseDetails().getCaseData().remove(D8_RESPONDENT_SOLICITOR_REFERENCE);
-        ccdCallbackRequest.getCaseDetails().getCaseData().remove(RESPONDENT_SOLICITOR_ORGANISATION_POLICY);
+        removeCaseData(ccdCallbackRequest, RESP_SOL_REPRESENTED);
+        removeCaseData(ccdCallbackRequest, RESPONDENT_SOLICITOR_ORGANISATION_POLICY);
 
         String requestPayload = convertObjectToJsonString(ccdCallbackRequest);
 
@@ -175,7 +201,7 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
 
     private Response postWithPetitionerOrganisationPolicyDataAndNoSolicitorReferenceAndValidateResponse() throws Exception {
         CcdCallbackRequest ccdCallbackRequest = buildCcdCallbackRequest();
-        ccdCallbackRequest.getCaseDetails().getCaseData().remove(SOLICITOR_REFERENCE_JSON_KEY);
+        removeCaseData(ccdCallbackRequest, SOLICITOR_REFERENCE_JSON_KEY);
         ccdCallbackRequest.getCaseDetails().getCaseData().put(PETITIONER_SOLICITOR_ORGANISATION_POLICY, buildPetitionerOrganisationPolicyData());
 
         String requestPayload = convertObjectToJsonString(ccdCallbackRequest);
@@ -200,5 +226,9 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
 
     private CcdCallbackRequest buildCcdCallbackRequest() throws java.io.IOException {
         return getJsonFromResourceFile(SOLICITOR_PAYLOAD_CONTEXT_PATH, CcdCallbackRequest.class);
+    }
+
+    private void removeCaseData(CcdCallbackRequest ccdCallbackRequest, String caseField) {
+        ccdCallbackRequest.getCaseDetails().getCaseData().remove(caseField);
     }
 }
