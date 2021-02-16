@@ -37,7 +37,7 @@ public class SolicitorUpdateWorkflowTest {
     AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     @Mock
-    SetPetitionerSolicitorOrganisationPolicyReferenceTask setPetitionerSolicitorOrganisationPolicyReferenceDetailTask;
+    SetPetitionerSolicitorOrganisationPolicyReferenceTask setPetitionerSolicitorOrganisationPolicyReferenceTask;
 
     @Mock
     FeatureToggleService featureToggleService;
@@ -81,13 +81,13 @@ public class SolicitorUpdateWorkflowTest {
     }
 
     @Test
-    public void runShouldRunSetSolicitorOrganisationPolicyDetailsTaskWhenFeatureIsOn() throws Exception {
+    public void runShouldRunSetSolicitorOrganisationPolicyReferenceTaskWhenFeatureIsOn() throws Exception {
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
         mockTasksExecution(
             caseData,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
-            setPetitionerSolicitorOrganisationPolicyReferenceDetailTask
+            setPetitionerSolicitorOrganisationPolicyReferenceTask
         );
 
         Map<String, Object> resultCaseData = solicitorUpdateWorkflow.run(caseDetails, AUTH_TOKEN);
@@ -97,12 +97,12 @@ public class SolicitorUpdateWorkflowTest {
             caseData,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
-            setPetitionerSolicitorOrganisationPolicyReferenceDetailTask
+            setPetitionerSolicitorOrganisationPolicyReferenceTask
         );
     }
 
     @Test
-    public void runShouldNotRunSetSolicitorOrganisationPolicyDetailsTaskWhenFeatureIsOff() throws Exception {
+    public void runShouldNotRunSetSolicitorOrganisationPolicyReferenceTaskWhenFeatureIsOff() throws Exception {
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(false);
         mockTasksExecution(
             caseData,
