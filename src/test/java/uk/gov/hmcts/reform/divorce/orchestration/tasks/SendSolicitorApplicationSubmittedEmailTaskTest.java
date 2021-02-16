@@ -46,6 +46,7 @@ public class SendSolicitorApplicationSubmittedEmailTaskTest {
 
     private DefaultTaskContext testContext;
     private static final String SUBJECT_CONTENT = "Application has been submitted";
+    private static final EmailTemplateNames EXPECTED_TEMPLATE = SOL_APPLICANT_APPLICATION_SUBMITTED;
 
     @Before
     public void setUp() {
@@ -66,7 +67,7 @@ public class SendSolicitorApplicationSubmittedEmailTaskTest {
     public void shouldReturnTemplate() {
         EmailTemplateNames returnedTemplate = task.getTemplate();
 
-        assertEquals(SOL_APPLICANT_APPLICATION_SUBMITTED, returnedTemplate);
+        assertEquals(EXPECTED_TEMPLATE, returnedTemplate);
     }
 
     private Map<String, Object> buildCaseData() {
@@ -90,7 +91,7 @@ public class SendSolicitorApplicationSubmittedEmailTaskTest {
     private void verifySolicitorEmailSent(Map<String, Object> caseData) {
         verify(emailService).sendEmail(
             TEST_SOLICITOR_EMAIL,
-            SOL_APPLICANT_APPLICATION_SUBMITTED.name(),
+            EXPECTED_TEMPLATE.name(),
             getExpectedNotificationTemplateVars(true, testContext, caseData),
             getPetitionerFullName(caseData) + " vs " + getRespondentFullName(caseData) + ": " + SUBJECT_CONTENT,
             LanguagePreference.ENGLISH

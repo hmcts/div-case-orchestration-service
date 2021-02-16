@@ -56,7 +56,7 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
         tasks.add(getSolicitorApplicationSubmittedEmailTask(caseId));
 
         if (featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)) {
-            tasks.add(setSolicitorOrganisationPolicyDetailsTask);
+            tasks.add(getSolicitorOrganisationPolicyDetailsTask(caseId));
         }
 
         return tasks.toArray(new Task[] {});
@@ -75,5 +75,13 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
     private Task<Map<String, Object>> getAddMiniPetitionDraftTask(String caseId) {
         log.info("CaseId: {} Executing task to Add Mini Petition Draft.", caseId);
         return addMiniPetitionDraftTask;
+    }
+
+    private Task<Map<String, Object>> getSolicitorOrganisationPolicyDetailsTask(String caseId) {
+        log.info(
+            "CaseId: {} Feature Toggle {} is enabled. Executing solicitor organisation policy detail task.",
+            caseId,
+            Features.REPRESENTED_RESPONDENT_JOURNEY);
+        return setSolicitorOrganisationPolicyDetailsTask;
     }
 }
