@@ -47,10 +47,10 @@ public class SolicitorCreateWorkflowTest {
     SetClaimCostsFromTask setClaimCostsFromTask;
 
     @Mock
-    SetPetitionerSolicitorOrganisationPolicyReferenceTask setPetitionerSolicitorOrganisationPolicyReferenceDetailTask;
+    SetPetitionerSolicitorOrganisationPolicyReferenceTask setPetitionerSolicitorOrganisationPolicyReferenceTask;
 
     @Mock
-    SetRespondentSolicitorOrganisationPolicyReferenceTask setRespondentSolicitorOrganisationPolicyReferenceDetailTask;
+    SetRespondentSolicitorOrganisationPolicyReferenceTask setRespondentSolicitorOrganisationPolicyReferenceTask;
 
     @InjectMocks
     SolicitorCreateWorkflow solicitorCreateWorkflow;
@@ -70,8 +70,8 @@ public class SolicitorCreateWorkflowTest {
             setSolicitorCourtDetailsTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
-            setPetitionerSolicitorOrganisationPolicyReferenceDetailTask,
-            setRespondentSolicitorOrganisationPolicyReferenceDetailTask
+            setPetitionerSolicitorOrganisationPolicyReferenceTask,
+            setRespondentSolicitorOrganisationPolicyReferenceTask
         );
 
         assertThat(solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN), is(caseDetails.getCaseData()));
@@ -82,8 +82,8 @@ public class SolicitorCreateWorkflowTest {
             setSolicitorCourtDetailsTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
-            setPetitionerSolicitorOrganisationPolicyReferenceDetailTask,
-            setRespondentSolicitorOrganisationPolicyReferenceDetailTask
+            setPetitionerSolicitorOrganisationPolicyReferenceTask,
+            setRespondentSolicitorOrganisationPolicyReferenceTask
         );
     }
 
@@ -114,7 +114,7 @@ public class SolicitorCreateWorkflowTest {
             addNewDocumentsToCaseDataTask
         );
 
-        verifyTasksWereNeverCalled(setPetitionerSolicitorOrganisationPolicyReferenceDetailTask);
-        verifyTasksWereNeverCalled(setRespondentSolicitorOrganisationPolicyReferenceDetailTask);
+        verifyTasksWereNeverCalled(setPetitionerSolicitorOrganisationPolicyReferenceTask);
+        verifyTasksWereNeverCalled(setRespondentSolicitorOrganisationPolicyReferenceTask);
     }
 }

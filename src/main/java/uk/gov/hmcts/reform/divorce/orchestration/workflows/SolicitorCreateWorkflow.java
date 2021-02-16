@@ -36,8 +36,8 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
     private final AddMiniPetitionDraftTask addMiniPetitionDraftTask;
     private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
     private final SetClaimCostsFromTask setClaimCostsFromTask;
-    private final SetPetitionerSolicitorOrganisationPolicyReferenceTask setPetitionerSolicitorOrganisationPolicyReferenceDetailTask;
-    private final SetRespondentSolicitorOrganisationPolicyReferenceTask setRespondentSolicitorOrganisationPolicyReferenceDetailTask;
+    private final SetPetitionerSolicitorOrganisationPolicyReferenceTask setPetitionerSolicitorOrganisationPolicyReferenceTask;
+    private final SetRespondentSolicitorOrganisationPolicyReferenceTask setRespondentSolicitorOrganisationPolicyReferenceTask;
     private final FeatureToggleService featureToggleService;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
@@ -70,8 +70,8 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
         tasks.add(addNewDocumentsToCaseDataTask);
 
         if (featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)) {
-            tasks.add(setPetitionerSolicitorOrganisationPolicyReferenceDetailTask);
-            tasks.add(setRespondentSolicitorOrganisationPolicyReferenceDetailTask);
+            tasks.add(setPetitionerSolicitorOrganisationPolicyReferenceTask);
+            tasks.add(setRespondentSolicitorOrganisationPolicyReferenceTask);
         }
 
         return tasks.toArray(new Task[] {});
