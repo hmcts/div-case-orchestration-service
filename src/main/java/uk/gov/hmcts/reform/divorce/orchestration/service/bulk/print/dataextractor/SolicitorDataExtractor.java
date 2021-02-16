@@ -45,8 +45,8 @@ public class SolicitorDataExtractor {
         return getMandatoryPropertyValueAsString(caseData, CaseDataKeys.SOLICITOR_PBA_NUMBER_V1);
     }
 
-    public static OrganisationPolicy getPetitionerOrganisationPolicy(Map<String, Object> caseData) {
-        Optional<Object> organisationPolicy = Optional.ofNullable(caseData.get(CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY));
+    public static OrganisationPolicy getSolicitorOrganisationPolicy(Map<String, Object> caseData, String organisationPolicyCaseField) {
+        Optional<Object> organisationPolicy = Optional.ofNullable(caseData.get(organisationPolicyCaseField));
 
         return organisationPolicy.<OrganisationPolicy>map(orgPolicy -> new ObjectMapper().convertValue(orgPolicy, new TypeReference<>() {
         })).orElse(null);

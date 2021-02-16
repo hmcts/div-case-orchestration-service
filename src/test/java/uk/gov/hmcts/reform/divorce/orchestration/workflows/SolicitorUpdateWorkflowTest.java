@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorOrganisationPolicyDetailsTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
 
 import java.util.Collections;
 import java.util.Map;
@@ -37,7 +37,7 @@ public class SolicitorUpdateWorkflowTest {
     AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     @Mock
-    SetSolicitorOrganisationPolicyDetailsTask setSolicitorOrganisationPolicyDetailsTask;
+    SetPetitionerSolicitorOrganisationPolicyReferenceTask setPetitionerSolicitorOrganisationPolicyReferenceDetailTask;
 
     @Mock
     FeatureToggleService featureToggleService;
@@ -87,7 +87,7 @@ public class SolicitorUpdateWorkflowTest {
             caseData,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
-            setSolicitorOrganisationPolicyDetailsTask
+            setPetitionerSolicitorOrganisationPolicyReferenceDetailTask
         );
 
         Map<String, Object> resultCaseData = solicitorUpdateWorkflow.run(caseDetails, AUTH_TOKEN);
@@ -97,7 +97,7 @@ public class SolicitorUpdateWorkflowTest {
             caseData,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
-            setSolicitorOrganisationPolicyDetailsTask
+            setPetitionerSolicitorOrganisationPolicyReferenceDetailTask
         );
     }
 

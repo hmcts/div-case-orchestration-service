@@ -11,8 +11,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetClaimCostsFromTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorOrganisationPolicyDetailsTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,7 +46,7 @@ public class SolicitorCreateWorkflowTest {
     SetClaimCostsFromTask setClaimCostsFromTask;
 
     @Mock
-    SetSolicitorOrganisationPolicyDetailsTask setSolicitorOrganisationPolicyDetailsTask;
+    SetPetitionerSolicitorOrganisationPolicyReferenceTask setPetitionerSolicitorOrganisationPolicyReferenceDetailTask;
 
     @InjectMocks
     SolicitorCreateWorkflow solicitorCreateWorkflow;
@@ -66,7 +66,7 @@ public class SolicitorCreateWorkflowTest {
             setSolicitorCourtDetailsTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
-            setSolicitorOrganisationPolicyDetailsTask
+            setPetitionerSolicitorOrganisationPolicyReferenceDetailTask
         );
 
         assertThat(solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN), is(caseDetails.getCaseData()));
@@ -77,7 +77,7 @@ public class SolicitorCreateWorkflowTest {
             setSolicitorCourtDetailsTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
-            setSolicitorOrganisationPolicyDetailsTask
+            setPetitionerSolicitorOrganisationPolicyReferenceDetailTask
         );
     }
 
@@ -108,6 +108,6 @@ public class SolicitorCreateWorkflowTest {
             addNewDocumentsToCaseDataTask
         );
 
-        verifyTasksWereNeverCalled(setSolicitorOrganisationPolicyDetailsTask);
+        verifyTasksWereNeverCalled(setPetitionerSolicitorOrganisationPolicyReferenceDetailTask);
     }
 }
