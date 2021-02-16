@@ -28,14 +28,20 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CREATE_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CREATED_DATE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_CENTRE_SITEID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 public class SolicitorCreateTest extends IdamTestSupport {
 
@@ -67,13 +73,14 @@ public class SolicitorCreateTest extends IdamTestSupport {
     }
 
     @Test
-    public void givenCaseData_whenSolicitorCreate_thenReturnWithMappedOrgPolicyReference() throws Exception {
+    public void givenCaseData_whenSolicitorCreate_thenReturnWithMappedOrgPolicyReferences() throws Exception {
         CcdCallbackRequest ccdCallbackRequest = buildRequest();
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
         caseData.put(SOLICITOR_REFERENCE_JSON_KEY, TEST_SOLICITOR_REFERENCE);
-        caseData.put(PETITIONER_SOLICITOR_ORGANISATION_POLICY, OrganisationPolicy.builder()
-            .organisation(Organisation.builder().build())
-            .build());
+        caseData.put(PETITIONER_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
+        caseData.put(D8_RESPONDENT_SOLICITOR_REFERENCE, TEST_RESPONDENT_SOLICITOR_REFERENCE);
+        caseData.put(RESP_SOL_REPRESENTED, YES_VALUE);
+        caseData.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
 
         stubDraftDocumentGeneratorService(
             DRAFT_MINI_PETITION_TEMPLATE_NAME,
@@ -92,12 +99,46 @@ public class SolicitorCreateTest extends IdamTestSupport {
         assertThat(mvcResult.getResponse().getContentAsString(),
             allOf(
                 hasJsonPath("$.data.D8SolicitorReference"),
-                hasJsonPath("$.data.PetitionerOrganisationPolicy.OrgPolicyReference", is(TEST_SOLICITOR_REFERENCE)))
+                hasJsonPath("$.data.respondentSolicitorReference"),
+                hasJsonPath("$.data.PetitionerOrganisationPolicy.OrgPolicyReference", is(TEST_SOLICITOR_REFERENCE)),
+                hasJsonPath("$.data.RespondentOrganisationPolicy.OrgPolicyReference", is(TEST_RESPONDENT_SOLICITOR_REFERENCE)))
         );
     }
 
     @Test
-    public void givenCaseData_whenSolicitorCreate_thenReturnWithNoOrganisationPolicyReferenceSet() throws Exception {
+    public void givenCaseData_whenSolicitorCreate_AndNotRepresented_thenReturnWithUnMappedRespondentOrgPolicyReference() throws Exception {
+        CcdCallbackRequest ccdCallbackRequest = buildRequest();
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+        caseData.put(SOLICITOR_REFERENCE_JSON_KEY, TEST_SOLICITOR_REFERENCE);
+        caseData.put(PETITIONER_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
+        caseData.put(D8_RESPONDENT_SOLICITOR_REFERENCE, TEST_RESPONDENT_SOLICITOR_REFERENCE);
+        caseData.put(RESP_SOL_REPRESENTED, NO_VALUE);
+
+        stubDraftDocumentGeneratorService(
+            DRAFT_MINI_PETITION_TEMPLATE_NAME,
+            singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequest.getCaseDetails()),
+            AddMiniPetitionDraftTask.DOCUMENT_TYPE
+        );
+
+        MvcResult mvcResult = webClient.perform(post(API_URL_CREATE)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(getBody(ccdCallbackRequest))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn();
+
+        assertThat(mvcResult.getResponse().getContentAsString(),
+            allOf(
+                hasJsonPath("$.data.D8SolicitorReference"),
+                hasJsonPath("$.data.respondentSolicitorReference"),
+                hasJsonPath("$.data.PetitionerOrganisationPolicy.OrgPolicyReference", is(TEST_SOLICITOR_REFERENCE)),
+                hasNoJsonPath("$.data.RespondentOrganisationPolicy"))
+        );
+    }
+
+    @Test
+    public void givenCaseData_whenSolicitorCreate_AndNoSolicitorReferencesThenReturnWithNoOrganisationPolicyReferences() throws Exception {
         CcdCallbackRequest ccdCallbackRequest = buildRequest();
 
         stubDraftDocumentGeneratorService(
@@ -117,7 +158,9 @@ public class SolicitorCreateTest extends IdamTestSupport {
         assertThat(mvcResult.getResponse().getContentAsString(),
             allOf(
                 hasNoJsonPath("$.data.D8SolicitorReference"),
-                hasNoJsonPath("$.data.PetitionerOrganisationPolicy")
+                hasNoJsonPath("$.data.PetitionerOrganisationPolicy"),
+                hasNoJsonPath("$.data.respondentSolicitorReference"),
+                hasNoJsonPath("$.data.RespondentOrganisationPolicy")
             )
         );
     }
@@ -140,6 +183,12 @@ public class SolicitorCreateTest extends IdamTestSupport {
         return CcdCallbackRequest.builder()
             .eventId(CREATE_EVENT)
             .caseDetails(fullCase)
+            .build();
+    }
+
+    private OrganisationPolicy buildOrganisationPolicy() {
+        return OrganisationPolicy.builder()
+            .organisation(Organisation.builder().build())
             .build();
     }
 }
