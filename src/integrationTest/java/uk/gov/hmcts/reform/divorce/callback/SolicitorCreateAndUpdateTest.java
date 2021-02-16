@@ -26,6 +26,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CREATED_DATE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_CENTRE_SITEID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
@@ -172,8 +173,10 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
 
     private Response postWithoutSolicitorReferencesAndOrganisationPolicyDataAndValidateResponse() throws Exception {
         CcdCallbackRequest ccdCallbackRequest = buildCcdCallbackRequest();
-        removeCaseData(ccdCallbackRequest, RESP_SOL_REPRESENTED);
+        removeCaseData(ccdCallbackRequest, SOLICITOR_REFERENCE_JSON_KEY);
+        removeCaseData(ccdCallbackRequest, D8_RESPONDENT_SOLICITOR_REFERENCE);
         removeCaseData(ccdCallbackRequest, RESPONDENT_SOLICITOR_ORGANISATION_POLICY);
+        removeCaseData(ccdCallbackRequest, PETITIONER_SOLICITOR_ORGANISATION_POLICY);
 
         String requestPayload = convertObjectToJsonString(ccdCallbackRequest);
 
