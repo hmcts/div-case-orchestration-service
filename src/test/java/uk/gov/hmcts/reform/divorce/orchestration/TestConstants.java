@@ -43,6 +43,7 @@ public class TestConstants {
     public static final String TEST_SOLICITOR_FIRM_NAME = "test.solicitor.firm";
     public static final String TEST_SOLICITOR_COMPANY = "Awesome Solicitors LLP";
     public static final String TEST_SOLICITOR_REFERENCE = "test.solicitor.reference";
+    public static final String TEST_RESPONDENT_SOLICITOR_REFERENCE = "test.resp.solicitor.reference";
     public static final String TEST_SOLICITOR_PHONE = "test.solicitor.phone";
     public static final String TEST_SOLICITOR_ADDRESS = "123 Solicitor Str\nSolicitor\nCounty\nRE3 P0T";
     public static final String TEST_SERVICE_AUTH_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9."
