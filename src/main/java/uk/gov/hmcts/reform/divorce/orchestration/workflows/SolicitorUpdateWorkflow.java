@@ -63,22 +63,22 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
     }
 
     private Task<Map<String, Object>> getSolicitorApplicationSubmittedEmailTask(String caseId) {
-        log.info("CaseId: {} Executing task to send Application Submitted email to Petitioner solicitor.", caseId);
+        log.info("CaseId: {} Adding task to send Application Submitted email to Petitioner solicitor.", caseId);
         return sendSolicitorApplicationSubmittedEmailTask;
     }
 
     private Task<Map<String, Object>> getAddNewDocumentsToCaseDataTask(String caseId) {
-        log.info("CaseId: {} Executing task to Add new documents to case data.", caseId);
+        log.info("CaseId: {} Adding task to Add new documents to case data.", caseId);
         return addNewDocumentsToCaseDataTask;
     }
 
     private Task<Map<String, Object>> getAddMiniPetitionDraftTask(String caseId) {
-        log.info("CaseId: {} Executing task to Add Mini Petition Draft.", caseId);
+        log.info("CaseId: {} Adding task to Add Mini Petition Draft.", caseId);
         return addMiniPetitionDraftTask;
     }
 
     private Task<Map<String, Object>> getSolicitorOrganisationPolicyDetailsTask(String caseId) {
-        log.info("CaseId: {} Feature Toggle {} is enabled. Executing solicitor organisation policy detail task.",
+        log.info("CaseId: {} Feature Toggle {} is enabled. Adding petitioner solicitor organisation policy reference details task.",
             caseId, Features.REPRESENTED_RESPONDENT_JOURNEY);
         return setPetitionerSolicitorOrganisationPolicyReferenceDetailTask;
     }
