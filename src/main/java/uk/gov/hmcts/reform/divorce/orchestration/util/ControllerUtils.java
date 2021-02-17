@@ -58,7 +58,7 @@ public class ControllerUtils {
         return CcdStates.SUBMITTED;
     }
 
-    public static boolean hasErrorKeyInResponse(String errorKey, Map<String, Object> response) {//TODO - even better to throw exception in service
+    public static boolean hasErrorKeyInResponse(String errorKey, Map<String, Object> response) {
         return Optional.ofNullable(response)
             .map(responseMap -> responseMap.containsKey(errorKey))
             .orElse(false);
