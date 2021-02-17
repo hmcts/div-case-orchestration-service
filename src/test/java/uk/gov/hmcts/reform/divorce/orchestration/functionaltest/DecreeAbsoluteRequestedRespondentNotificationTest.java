@@ -90,7 +90,7 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
     private MockMvc webClient;
 
     @Test
-    public void testThatPetSolAndRespAreSentEmails() throws Exception {
+    public void shouldSendEmails_ToPetitionerSolicitorAndRespondent() throws Exception {
         setRespondentJourneyFeatureToggleOn();
 
         callApiEndpointSuccessfully(getCcdCallbackRequest(CASE_DATA));
@@ -100,7 +100,7 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
     }
 
     @Test
-    public void testRespIsSentEmailWhenNoPetSolEmailProvided() throws Exception {
+    public void shouldSendEmail_ToRespondent_WhenNoPetitionerSolicitorEmailProvided() throws Exception {
         setRespondentJourneyFeatureToggleOn();
 
         Map<String, Object> caseDataWithoutPetSolEmail = new HashMap<>(CASE_DATA);
@@ -113,7 +113,7 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
     }
 
     @Test
-    public void testThatPetSolAndRespSolAreSentEmails() throws Exception {
+    public void shouldSendEmails_ToPetitionerSolicitorAndRespondentSolicitor() throws Exception {
         setRespondentJourneyFeatureToggleOn();
 
         Map<String, Object> caseDataWithRespSolEmail = new HashMap<>(CASE_DATA);
@@ -127,7 +127,7 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
     }
 
     @Test
-    public void testThatRespIsSentEmailWhenFeatureToggleOff() throws Exception {
+    public void shouldSendEmail_ToRespondent_WhenRespondentJourneyFeatureToggleOff() throws Exception {
         setRespondentJourneyFeatureToggleOff();
 
         callApiEndpointSuccessfully(getCcdCallbackRequest(CASE_DATA));
