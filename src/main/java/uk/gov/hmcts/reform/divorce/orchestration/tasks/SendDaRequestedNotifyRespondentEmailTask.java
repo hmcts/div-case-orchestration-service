@@ -53,9 +53,7 @@ public class SendDaRequestedNotifyRespondentEmailTask implements Task<Map<String
         "Decree Absolute Requested Notification - Solicitor Requested Decree Absolute";
 
     private final EmailService emailService;
-    private TemplateConfigService templateConfigService;
-
-
+    private final TemplateConfigService templateConfigService;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
