@@ -58,6 +58,9 @@ public class CcdFields {
     public static final String FEE_AMOUNT_WITHOUT_NOTICE = "FeeAmountWithoutNotice";
     public static final String GENERAL_REFERRAL_PREVIOUS_CASE_STATE = "StateBeforeGeneralReferral";
 
+    public static final String AWAITING_BAILIFF_REFERRAL_STATE = "AwaitingBailiffReferral";
+    public static final String AWAITING_SERVICE_CONSIDERATION_STATE = "AwaitingServiceConsideration";
+
     public static final String PETITIONER_FIRST_NAME = OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
     public static final String PETITIONER_LAST_NAME = OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
     public static final String PETITIONER_EMAIL = OrchestrationConstants.D_8_PETITIONER_EMAIL;

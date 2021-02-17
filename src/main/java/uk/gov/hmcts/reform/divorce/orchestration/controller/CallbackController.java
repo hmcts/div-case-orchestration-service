@@ -33,6 +33,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralOrderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralReferralService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPaymentTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
@@ -45,6 +46,8 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.AWAITING_BAILIFF_REFERRAL_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.AWAITING_SERVICE_CONSIDERATION_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_PRINT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_LIST_FOR_PRONOUNCEMENT_DOCUMENT_TYPE;
@@ -1309,9 +1312,13 @@ public class CallbackController {
     public ResponseEntity<CcdCallbackResponse> confirmServicePaymentEvent(
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
-                .data(serviceJourneyService.confirmServicePaymentEvent(ccdCallbackRequest.getCaseDetails()))
+                .state(Conditions.isServiceApplicationBailiff(caseDetails.getCaseData()) ?
+                        AWAITING_BAILIFF_REFERRAL_STATE : AWAITING_SERVICE_CONSIDERATION_STATE)
+                .data(serviceJourneyService.confirmServicePaymentEvent(caseDetails))
                 .build());
     }
 
