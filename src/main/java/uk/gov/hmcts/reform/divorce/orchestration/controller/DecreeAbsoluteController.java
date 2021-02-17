@@ -18,7 +18,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.DecreeAbsoluteService;
 
 import static java.util.Collections.singletonList;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_HEADER;
 
 @RestController
 @Slf4j
@@ -34,7 +34,7 @@ public class DecreeAbsoluteController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> notifyRespondentOfDARequested(
-        @RequestHeader(value = AUTHORIZATION) String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
 
