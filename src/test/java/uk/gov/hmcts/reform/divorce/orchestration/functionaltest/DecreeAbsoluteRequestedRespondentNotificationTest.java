@@ -98,7 +98,7 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
 
         callApiEndpointSuccessfully(getCcdCallbackRequest(caseDataWithoutPetSolEmail));
 
-        verifyEmailWasSentToPetSol();
+        verifyEmailNeverSentToPetSol();
         verifyEmailWasSentToRespondent();
     }
 
@@ -114,7 +114,6 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
 
         verifyEmailWasSentToPetSol();
         verifyEmailWasSentToRespSol();
-        verifyEmailNeverSentToRespondent();
     }
 
     @Test
@@ -218,6 +217,7 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
             any(),
             anyString()
         );
+        verifyEmailNeverSentToRespSol();
     }
 
     private void verifyEmailNeverSentToRespondent() throws Exception{
@@ -231,6 +231,16 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
 
     private void verifyEmailWasSentToRespSol() throws Exception{
         verify(mockEmailClient).sendEmail(
+            eq(DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_SOLICITOR_TEMPLATE_ID),
+            eq(TEST_RESP_SOLICITOR_EMAIL),
+            any(),
+            anyString()
+        );
+        verifyEmailNeverSentToRespondent();
+    }
+
+    private void verifyEmailNeverSentToRespSol() throws Exception{
+        verify(mockEmailClient, never()).sendEmail(
             eq(DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_SOLICITOR_TEMPLATE_ID),
             eq(TEST_RESP_SOLICITOR_EMAIL),
             any(),
