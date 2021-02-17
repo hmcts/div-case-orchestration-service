@@ -45,3 +45,4 @@ java:
                 - idam-caseworker-password
                 - uk-gov-notify-api-key
                 - cos-postgresql-password
+                - AppInsightsInstrumentationKey
