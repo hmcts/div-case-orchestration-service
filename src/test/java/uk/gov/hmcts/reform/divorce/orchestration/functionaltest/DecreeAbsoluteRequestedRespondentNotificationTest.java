@@ -38,6 +38,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETIT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESP_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
@@ -45,6 +46,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_SOLICITOR_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
@@ -55,6 +57,7 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
 
     private static final String DA_APPLICATION_HAS_BEEN_RECEIVED_TEMPLATE_ID = "8d546d3c-9df4-420d-b11c-9706ef3a7e89";
     private static final String DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_TEMPLATE_ID = "b1296cb4-1df2-4d89-b32c-23600a0a8070";
+    private static final String DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_SOLICITOR_TEMPLATE_ID = "43b52d1a-b9be-4de5-b5ae-627c51a55111";
 
     private static final Map<String, Object> CASE_DATA = ImmutableMap.<String, Object>builder()
         .put(PETITIONER_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL)
@@ -78,96 +81,50 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
 
     @Test
     public void testThatPetSolAndRespAreSentEmails() throws Exception {
-        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
+        setRespondentJourneyFeatureToggleOn();
 
         callApiEndpointSuccessfully(getCcdCallbackRequest(CASE_DATA));
 
-        verify(mockEmailClient).sendEmail(
-            eq(DA_APPLICATION_HAS_BEEN_RECEIVED_TEMPLATE_ID),
-            eq(TEST_SOLICITOR_EMAIL),
-            any(),
-            anyString()
-        );
-
-        verify(mockEmailClient).sendEmail(
-            eq(DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_TEMPLATE_ID),
-            eq(TEST_RESPONDENT_EMAIL),
-            any(),
-            anyString()
-        );
+        verifyEmailWasSentToPetSol();
+        verifyEmailWasSentToRespondent();
     }
 
     @Test
     public void testRespIsSentEmailWhenNoPetSolEmailProvided() throws Exception {
-        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
-
-        Map<String, Object> caseDataWithoutPetSolEmail = new HashMap<>(CASE_DATA);
-        caseDataWithoutPetSolEmail.remove(PETITIONER_SOLICITOR_EMAIL);
-
-        CcdCallbackRequest ccdCallbackRequest = getCcdCallbackRequest(caseDataWithoutPetSolEmail);
-
-        callApiEndpointSuccessfully(ccdCallbackRequest);
-
-        verify(mockEmailClient, never()).sendEmail(
-            eq(DA_APPLICATION_HAS_BEEN_RECEIVED_TEMPLATE_ID),
-            eq(TEST_SOLICITOR_EMAIL),
-            any(),
-            anyString()
-        );
-
-        verify(mockEmailClient).sendEmail(
-            eq(DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_TEMPLATE_ID),
-            eq(TEST_RESPONDENT_EMAIL),
-            any(),
-            anyString()
-        );
-    }
-
-    @Test
-    public void testThatRespIsSentEmailWhenFeatureToggleOff() throws Exception {
-        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(false);
-
-        CcdCallbackRequest ccdCallbackRequest = getCcdCallbackRequest(CASE_DATA);
-
-        callApiEndpointSuccessfully(ccdCallbackRequest);
-
-        verify(mockEmailClient, never()).sendEmail(
-            eq(DA_APPLICATION_HAS_BEEN_RECEIVED_TEMPLATE_ID),
-            eq(TEST_SOLICITOR_EMAIL),
-            any(),
-            anyString()
-        );
-
-        verify(mockEmailClient).sendEmail(
-            eq(DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_TEMPLATE_ID),
-            eq(TEST_RESPONDENT_EMAIL),
-            any(),
-            anyString()
-        );
-    }
-
-    @Test
-    public void testThatRespIsSentEmailWhenFeatureToggleOffAndNoPetSolEmailProvided() throws Exception {
-        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(false);
+        setRespondentJourneyFeatureToggleOn();
 
         Map<String, Object> caseDataWithoutPetSolEmail = new HashMap<>(CASE_DATA);
         caseDataWithoutPetSolEmail.remove(PETITIONER_SOLICITOR_EMAIL);
 
         callApiEndpointSuccessfully(getCcdCallbackRequest(caseDataWithoutPetSolEmail));
 
-        verify(mockEmailClient, never()).sendEmail(
-            eq(DA_APPLICATION_HAS_BEEN_RECEIVED_TEMPLATE_ID),
-            eq(TEST_SOLICITOR_EMAIL),
-            any(),
-            anyString()
-        );
+        verifyEmailWasSentToPetSol();
+        verifyEmailWasSentToRespondent();
+    }
 
-        verify(mockEmailClient).sendEmail(
-            eq(DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_TEMPLATE_ID),
-            eq(TEST_RESPONDENT_EMAIL),
-            any(),
-            anyString()
-        );
+    @Test
+    public void testThatPetSolAndRespSolAreSentEmails() throws Exception {
+        setRespondentJourneyFeatureToggleOn();
+
+        Map<String, Object> caseDataWithRespSolEmail = new HashMap<>(CASE_DATA);
+        caseDataWithRespSolEmail.put(RESPONDENT_SOLICITOR_EMAIL_ADDRESS, TEST_RESP_SOLICITOR_EMAIL);
+        caseDataWithRespSolEmail.remove(RESPONDENT_EMAIL_ADDRESS);
+
+        callApiEndpointSuccessfully(getCcdCallbackRequest(caseDataWithRespSolEmail));
+
+        verifyEmailWasSentToPetSol();
+        verifyEmailWasSentToRespSol();
+        verifyEmailNeverSentToRespondent();
+    }
+
+    @Test
+    public void testThatRespIsSentEmailWhenFeatureToggleOff() throws Exception {
+        setRespondentJourneyFeatureToggleOff();
+
+        callApiEndpointSuccessfully(getCcdCallbackRequest(CASE_DATA));
+
+        verifyEmailNeverSentToPetSol();
+        verifyEmailWasSentToRespondent();
     }
 
     @Test
@@ -217,6 +174,14 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
             );
     }
 
+    private void setRespondentJourneyFeatureToggleOn() {
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
+    }
+
+    private void setRespondentJourneyFeatureToggleOff() {
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(false);
+    }
+
     private CcdCallbackRequest getCcdCallbackRequest(Map<String, Object> caseData) {
         return CcdCallbackRequest.builder()
             .caseDetails(
@@ -226,5 +191,50 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
                     .build()
             )
             .build();
+    }
+
+    private void verifyEmailWasSentToPetSol() throws Exception{
+        verify(mockEmailClient).sendEmail(
+            eq(DA_APPLICATION_HAS_BEEN_RECEIVED_TEMPLATE_ID),
+            eq(TEST_SOLICITOR_EMAIL),
+            any(),
+            anyString()
+        );
+    }
+
+    private void verifyEmailNeverSentToPetSol() throws Exception{
+        verify(mockEmailClient, never()).sendEmail(
+            eq(DA_APPLICATION_HAS_BEEN_RECEIVED_TEMPLATE_ID),
+            eq(TEST_SOLICITOR_EMAIL),
+            any(),
+            anyString()
+        );
+    }
+
+    private void verifyEmailWasSentToRespondent() throws Exception{
+        verify(mockEmailClient).sendEmail(
+            eq(DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_TEMPLATE_ID),
+            eq(TEST_RESPONDENT_EMAIL),
+            any(),
+            anyString()
+        );
+    }
+
+    private void verifyEmailNeverSentToRespondent() throws Exception{
+        verify(mockEmailClient, never()).sendEmail(
+            eq(DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_TEMPLATE_ID),
+            eq(TEST_RESPONDENT_EMAIL),
+            any(),
+            anyString()
+        );
+    }
+
+    private void verifyEmailWasSentToRespSol() throws Exception{
+        verify(mockEmailClient).sendEmail(
+            eq(DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_SOLICITOR_TEMPLATE_ID),
+            eq(TEST_RESP_SOLICITOR_EMAIL),
+            any(),
+            anyString()
+        );
     }
 }
