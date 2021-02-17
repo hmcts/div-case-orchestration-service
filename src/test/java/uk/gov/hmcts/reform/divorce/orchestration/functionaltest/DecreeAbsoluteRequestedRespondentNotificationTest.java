@@ -21,7 +21,10 @@ import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -192,7 +195,7 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
             .build();
     }
 
-    private void verifyEmailWasSentToPetSol() throws Exception{
+    private void verifyEmailWasSentToPetSol() throws Exception {
         verify(mockEmailClient).sendEmail(
             eq(DA_APPLICATION_HAS_BEEN_RECEIVED_TEMPLATE_ID),
             eq(TEST_SOLICITOR_EMAIL),
@@ -201,7 +204,7 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
         );
     }
 
-    private void verifyEmailNeverSentToPetSol() throws Exception{
+    private void verifyEmailNeverSentToPetSol() throws Exception {
         verify(mockEmailClient, never()).sendEmail(
             eq(DA_APPLICATION_HAS_BEEN_RECEIVED_TEMPLATE_ID),
             eq(TEST_SOLICITOR_EMAIL),
@@ -210,7 +213,7 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
         );
     }
 
-    private void verifyEmailWasSentToRespondent() throws Exception{
+    private void verifyEmailWasSentToRespondent() throws Exception {
         verify(mockEmailClient).sendEmail(
             eq(DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_TEMPLATE_ID),
             eq(TEST_RESPONDENT_EMAIL),
@@ -220,7 +223,7 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
         verifyEmailNeverSentToRespSol();
     }
 
-    private void verifyEmailNeverSentToRespondent() throws Exception{
+    private void verifyEmailNeverSentToRespondent() throws Exception {
         verify(mockEmailClient, never()).sendEmail(
             eq(DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_TEMPLATE_ID),
             eq(TEST_RESPONDENT_EMAIL),
@@ -229,7 +232,7 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
         );
     }
 
-    private void verifyEmailWasSentToRespSol() throws Exception{
+    private void verifyEmailWasSentToRespSol() throws Exception {
         verify(mockEmailClient).sendEmail(
             eq(DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_SOLICITOR_TEMPLATE_ID),
             eq(TEST_RESP_SOLICITOR_EMAIL),
@@ -239,7 +242,7 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
         verifyEmailNeverSentToRespondent();
     }
 
-    private void verifyEmailNeverSentToRespSol() throws Exception{
+    private void verifyEmailNeverSentToRespSol() throws Exception {
         verify(mockEmailClient, never()).sendEmail(
             eq(DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_SOLICITOR_TEMPLATE_ID),
             eq(TEST_RESP_SOLICITOR_EMAIL),
