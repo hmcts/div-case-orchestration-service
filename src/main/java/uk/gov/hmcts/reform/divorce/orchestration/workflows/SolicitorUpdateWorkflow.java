@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendSolicitorApplicationSubmittedEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,8 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
     private final AddMiniPetitionDraftTask addMiniPetitionDraftTask;
     private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
     private final SendSolicitorApplicationSubmittedEmailTask sendSolicitorApplicationSubmittedEmailTask;
-    private final SetPetitionerSolicitorOrganisationPolicyReferenceTask setPetitionerSolicitorOrganisationPolicyReferenceDetailTask;
+    private final SetPetitionerSolicitorOrganisationPolicyReferenceTask setPetitionerSolicitorOrganisationPolicyReferenceTask;
+    private final SetRespondentSolicitorOrganisationPolicyReferenceTask setRespondentSolicitorOrganisationPolicyReferenceTask;
     private final FeatureToggleService featureToggleService;
 
     public Map<String, Object> run(CaseDetails caseDetails, final String authToken) throws WorkflowException {
@@ -56,7 +58,9 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
         tasks.add(getSolicitorApplicationSubmittedEmailTask(caseId));
 
         if (featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)) {
-            tasks.add(getSolicitorOrganisationPolicyDetailsTask(caseId));
+            log.info("Adding OrganisationPolicyReferenceTasks, REPRESENTED_RESPONDENT_JOURNEY feature toggle is set to true.");
+            tasks.add(setPetitionerSolicitorOrganisationPolicyReferenceTask);
+            tasks.add(setRespondentSolicitorOrganisationPolicyReferenceTask);
         }
 
         return tasks.toArray(new Task[] {});
@@ -75,11 +79,5 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
     private Task<Map<String, Object>> getAddMiniPetitionDraftTask(String caseId) {
         log.info("CaseId: {} Adding task to Add Mini Petition Draft.", caseId);
         return addMiniPetitionDraftTask;
-    }
-
-    private Task<Map<String, Object>> getSolicitorOrganisationPolicyDetailsTask(String caseId) {
-        log.info("CaseId: {} Feature Toggle {} is enabled. Adding petitioner solicitor organisation policy reference details task.",
-            caseId, Features.REPRESENTED_RESPONDENT_JOURNEY);
-        return setPetitionerSolicitorOrganisationPolicyReferenceDetailTask;
     }
 }
