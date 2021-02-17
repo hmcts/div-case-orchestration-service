@@ -1,26 +1,34 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendSolicitorApplicationSubmittedEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
 
 import java.util.Collections;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.inOrder;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksWereNeverCalled;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SolicitorUpdateWorkflowTest {
@@ -31,26 +39,103 @@ public class SolicitorUpdateWorkflowTest {
     @Mock
     AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
+    @Mock
+    SetPetitionerSolicitorOrganisationPolicyReferenceTask setPetitionerSolicitorOrganisationPolicyReferenceTask;
+
+    @Mock
+    SetRespondentSolicitorOrganisationPolicyReferenceTask setRespondentSolicitorOrganisationPolicyReferenceTask;
+
+    @Mock
+    SendSolicitorApplicationSubmittedEmailTask sendSolicitorApplicationSubmittedEmailTask;
+
+    @Mock
+    FeatureToggleService featureToggleService;
+
     @InjectMocks
     SolicitorUpdateWorkflow solicitorUpdateWorkflow;
 
-    @Test
-    public void runShouldExecuteTasksAndReturnPayload() throws Exception {
-        Map<String, Object> payload = Collections.emptyMap();
+    private Map<String, Object> caseData;
+    private TaskContext context;
+    private CaseDetails caseDetails;
 
-        CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
 
-        TaskContext context = new DefaultTaskContext();
+    @Before
+    public void setup() {
+        caseData = Collections.emptyMap();
+        caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .build();
+        context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
+    }
 
-        when(addMiniPetitionDraftTask.execute(context, payload)).thenReturn(payload);
+    @Test
+    public void runShouldExecuteTasksAndReturnPayload() throws Exception {
+        mockTasksExecution(
+            caseData,
+            addMiniPetitionDraftTask,
+            addNewDocumentsToCaseDataTask,
+            sendSolicitorApplicationSubmittedEmailTask
+        );
 
-        assertEquals(payload, solicitorUpdateWorkflow.run(caseDetails, AUTH_TOKEN));
+        Map<String, Object> resultCaseData = solicitorUpdateWorkflow.run(caseDetails, AUTH_TOKEN);
 
-        InOrder inOrder = inOrder(addMiniPetitionDraftTask, addNewDocumentsToCaseDataTask);
+        assertThat(caseData, is(resultCaseData));
 
-        inOrder.verify(addMiniPetitionDraftTask).execute(context, payload);
-        inOrder.verify(addNewDocumentsToCaseDataTask).execute(context, payload);
+        verifyTasksCalledInOrder(
+            caseData,
+            addMiniPetitionDraftTask,
+            addNewDocumentsToCaseDataTask,
+            sendSolicitorApplicationSubmittedEmailTask
+        );
+    }
+
+    @Test
+    public void runShouldRunSetSolicitorOrganisationPolicyReferenceTaskWhenFeatureIsOn() throws Exception {
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
+        mockTasksExecution(
+            caseData,
+            addMiniPetitionDraftTask,
+            addNewDocumentsToCaseDataTask,
+            sendSolicitorApplicationSubmittedEmailTask,
+            setPetitionerSolicitorOrganisationPolicyReferenceTask,
+            setRespondentSolicitorOrganisationPolicyReferenceTask
+        );
+
+        Map<String, Object> resultCaseData = solicitorUpdateWorkflow.run(caseDetails, AUTH_TOKEN);
+        assertThat(caseData, is(resultCaseData));
+
+        verifyTasksCalledInOrder(
+            caseData,
+            addMiniPetitionDraftTask,
+            addNewDocumentsToCaseDataTask,
+            sendSolicitorApplicationSubmittedEmailTask,
+            setPetitionerSolicitorOrganisationPolicyReferenceTask,
+            setRespondentSolicitorOrganisationPolicyReferenceTask
+        );
+    }
+
+    @Test
+    public void runShouldNotRunSetSolicitorOrganisationPolicyReferenceTaskWhenFeatureIsOff() throws Exception {
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(false);
+        mockTasksExecution(
+            caseData,
+            addMiniPetitionDraftTask,
+            addNewDocumentsToCaseDataTask,
+            sendSolicitorApplicationSubmittedEmailTask
+        );
+
+        Map<String, Object> resultCaseData = solicitorUpdateWorkflow.run(caseDetails, AUTH_TOKEN);
+        assertThat(caseData, is(resultCaseData));
+
+        verifyTasksCalledInOrder(
+            caseData,
+            addMiniPetitionDraftTask,
+            addNewDocumentsToCaseDataTask
+        );
+
+        verifyTasksWereNeverCalled(setPetitionerSolicitorOrganisationPolicyReferenceTask);
+        verifyTasksWereNeverCalled(setRespondentSolicitorOrganisationPolicyReferenceTask);
     }
 }

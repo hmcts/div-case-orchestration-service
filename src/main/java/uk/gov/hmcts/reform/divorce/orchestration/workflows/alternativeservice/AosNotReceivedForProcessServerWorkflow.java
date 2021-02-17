@@ -15,6 +15,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerRepresented;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.alternativeservice.AlternativeServiceHelper.isServedByProcessServer;
 
 @Component
 @AllArgsConstructor
@@ -30,21 +31,20 @@ public class AosNotReceivedForProcessServerWorkflow extends DefaultWorkflow<Map<
         log.info("CaseID: {} AOS not received for process server workflow is going to be executed.", caseId);
 
         return this.execute(
-            getTasks(caseDetails.getCaseData()),
+            getTasks(caseDetails.getCaseData(), caseId),
             caseDetails.getCaseData(),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseId)
         );
     }
 
-    private Task[] getTasks(Map<String, Object> caseData) {
-        if (isPetitionerRepresented(caseData)) {
-            return new Task[] {
-                awaitingDnPetitionerSolicitorEmailTask
-            };
+    private Task<Map<String, Object>>[] getTasks(Map<String, Object> caseData, String caseId) {
+        if (!isServedByProcessServer(caseData)) {
+            log.warn("CaseID: {} field ServedByProcessServer != 'YES'. No task will be executed.", caseId);
+            return new Task[] {};
         }
 
         return new Task[] {
-            awaitingDnPetitionerEmailTask
+            isPetitionerRepresented(caseData) ? awaitingDnPetitionerSolicitorEmailTask : awaitingDnPetitionerEmailTask
         };
     }
 }

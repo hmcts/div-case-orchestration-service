@@ -21,6 +21,16 @@ public class OrderToDispenseGenerationTaskTest extends ServiceDecisionOrderGener
         return orderToDispenseGenerationTask;
     }
 
+    @Override
+    protected String getExpectedDocumentType() {
+        return "dispenseWithServiceGranted";
+    }
+
+    @Override
+    protected String getExpectedTemplateId() {
+        return "FL-DIV-DEC-ENG-00531.docx";
+    }
+
     @Test
     public void testExecuteShouldGenerateAFile() throws TaskException {
         Map<String, Object> returnedCaseData = executeShouldGenerateAFile();

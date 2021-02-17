@@ -10,7 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentAnswersGenerator;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentAnswersGeneratorTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +26,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RunWith(MockitoJUnitRunner.class)
 public class GenerateCoRespondentAnswersWorkflowTest {
     @Mock
-    private CoRespondentAnswersGenerator coRespondentAnswersGenerator;
+    private CoRespondentAnswersGeneratorTask coRespondentAnswersGeneratorTask;
 
     @Mock
     private AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
@@ -42,7 +42,7 @@ public class GenerateCoRespondentAnswersWorkflowTest {
 
         Map<String, Object> payload = new HashMap<>();
 
-        when(coRespondentAnswersGenerator.execute(context, payload)).thenReturn(payload);
+        when(coRespondentAnswersGeneratorTask.execute(context, payload)).thenReturn(payload);
         when(addNewDocumentsToCaseDataTask.execute(context, payload)).thenReturn(payload);
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(payload).build();
@@ -50,7 +50,7 @@ public class GenerateCoRespondentAnswersWorkflowTest {
         Map<String, Object> actual = classUnderTest.run(caseDetails, AUTH_TOKEN);
 
         assertEquals(payload, actual);
-        verify(coRespondentAnswersGenerator).execute(context, payload);
+        verify(coRespondentAnswersGeneratorTask).execute(context, payload);
         verify(addNewDocumentsToCaseDataTask).execute(context, payload);
     }
 
@@ -62,11 +62,11 @@ public class GenerateCoRespondentAnswersWorkflowTest {
 
         Map<String, Object> payload = new HashMap<>();
 
-        when(coRespondentAnswersGenerator.execute(context, payload)).thenThrow(TaskException.class);
+        when(coRespondentAnswersGeneratorTask.execute(context, payload)).thenThrow(TaskException.class);
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(payload).build();
 
         classUnderTest.run(caseDetails, AUTH_TOKEN);
-        verify(coRespondentAnswersGenerator).execute(context, payload);
+        verify(coRespondentAnswersGeneratorTask).execute(context, payload);
     }
 }

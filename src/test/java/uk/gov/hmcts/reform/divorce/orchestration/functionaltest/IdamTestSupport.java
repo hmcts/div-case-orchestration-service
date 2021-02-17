@@ -52,7 +52,7 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
     private static final UserDetails USER_DETAILS_PIN_USER =
         UserDetails.builder().id(TEST_LETTER_HOLDER_ID_CODE).build();
 
-    static final String USER_DETAILS_PIN_USER_JSON = convertObjectToJsonString(USER_DETAILS_PIN_USER);
+    protected static final String USER_DETAILS_PIN_USER_JSON = convertObjectToJsonString(USER_DETAILS_PIN_USER);
 
     private static final UserDetails USER_DETAILS =
         UserDetails.builder().id(TEST_USER_ID).email(TEST_EMAIL).build();
@@ -87,7 +87,7 @@ public abstract class IdamTestSupport extends MockedFunctionalTest {
     @Value("${idam.caseworker.password}")
     private String caseworkerPassword;
 
-    void stubUserDetailsEndpoint(HttpStatus status, String authHeader, String message) {
+    public void stubUserDetailsEndpoint(HttpStatus status, String authHeader, String message) {
         idamServer.stubFor(get(IDAM_USER_DETAILS_CONTEXT_PATH)
             .withHeader(AUTHORIZATION, new EqualToPattern(authHeader))
             .willReturn(aResponse()

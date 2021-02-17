@@ -1,13 +1,17 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DynamicList;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
@@ -40,4 +44,12 @@ public class SolicitorDataExtractor {
         }
         return getMandatoryPropertyValueAsString(caseData, CaseDataKeys.SOLICITOR_PBA_NUMBER_V1);
     }
+
+    public static OrganisationPolicy getSolicitorOrganisationPolicy(Map<String, Object> caseData, String organisationPolicyCaseField) {
+        Optional<Object> organisationPolicy = Optional.ofNullable(caseData.get(organisationPolicyCaseField));
+
+        return organisationPolicy.<OrganisationPolicy>map(orgPolicy -> new ObjectMapper().convertValue(orgPolicy, new TypeReference<>() {
+        })).orElse(null);
+    }
+
 }

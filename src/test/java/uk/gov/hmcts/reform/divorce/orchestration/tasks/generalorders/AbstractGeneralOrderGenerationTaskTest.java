@@ -87,8 +87,8 @@ public abstract class AbstractGeneralOrderGenerationTaskTest extends BasePayload
         runVerifications(
             caseData,
             returnedCaseData,
-            getTask().getDocumentType(),
-            getTask().getTemplateId(),
+            getExpectedDocumentType(),
+            getExpectedTemplateId(),
             generalOrder
         );
 
@@ -96,13 +96,6 @@ public abstract class AbstractGeneralOrderGenerationTaskTest extends BasePayload
 
         return returnedCaseData;
     }
-
-    protected abstract void runVerifications(Map<String, Object> expectedIncomingCaseData,
-                                             Map<String, Object> returnedCaseData,
-                                             String expectedDocumentType,
-                                             String expectedTemplateId,
-                                             DocmosisTemplateVars expectedDocmosisTemplateVars
-    );
 
     private Map<String, Object> buildCaseData() {
         Map<String, Object> caseData = new HashMap<>();
@@ -126,4 +119,20 @@ public abstract class AbstractGeneralOrderGenerationTaskTest extends BasePayload
 
         return caseData;
     }
+
+    protected abstract void runVerifications(Map<String, Object> expectedIncomingCaseData,
+                                             Map<String, Object> returnedCaseData,
+                                             String expectedDocumentType,
+                                             String expectedTemplateId,
+                                             DocmosisTemplateVars expectedDocmosisTemplateVars
+    );
+
+    protected String getExpectedDocumentType() {
+        return "generalOrder";
+    }
+
+    protected String getExpectedTemplateId() {
+        return "FL-DIV-GOR-ENG-00572.docx";
+    }
+
 }

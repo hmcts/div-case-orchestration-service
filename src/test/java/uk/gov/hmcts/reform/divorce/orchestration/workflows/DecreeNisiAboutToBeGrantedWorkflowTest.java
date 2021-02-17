@@ -20,7 +20,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseData
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DecreeNisiRefusalDocumentGeneratorTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DefineWhoPaysCostsOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetAmendPetitionFeeTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.PopulateDocLink;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.PopulateDocLinkTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDNDecisionStateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateDNDecisionTask;
 
@@ -82,7 +82,7 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
     private FeatureToggleService featureToggleService;
 
     @Mock
-    private PopulateDocLink populateDocLink;
+    private PopulateDocLinkTask populateDocLinkTask;
 
     @InjectMocks
     private DecreeNisiAboutToBeGrantedWorkflow workflow;
@@ -245,7 +245,7 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
         when(getAmendPetitionFeeTask.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
         when(decreeNisiRefusalDocumentGeneratorTask.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
         when(addNewDocumentsToCaseDataTask.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
-        when(populateDocLink.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
+        when(populateDocLinkTask.execute(isNotNull(), eq(payloadReturnedByTask))).thenReturn(payloadReturnedByTask);
 
         Map<String, Object> returnedPayload = workflow.run(CaseDetails.builder().caseData(inputPayload).build(), AUTH_TOKEN);
 
@@ -262,7 +262,7 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
             getAmendPetitionFeeTask,
             decreeNisiRefusalDocumentGeneratorTask,
             addNewDocumentsToCaseDataTask,
-            populateDocLink
+            populateDocLinkTask
         );
 
         inOrder.verify(featureToggleService).isFeatureEnabled(eq(Features.DN_REFUSAL));
@@ -273,7 +273,7 @@ public class DecreeNisiAboutToBeGrantedWorkflowTest {
         inOrder.verify(getAmendPetitionFeeTask).execute(any(TaskContext.class), eq(payloadReturnedByTask));
         inOrder.verify(decreeNisiRefusalDocumentGeneratorTask).execute(any(TaskContext.class), eq(payloadReturnedByTask));
         inOrder.verify(addNewDocumentsToCaseDataTask).execute(any(TaskContext.class), eq(payloadReturnedByTask));
-        inOrder.verify(populateDocLink).execute(any(TaskContext.class), eq(payloadReturnedByTask));
+        inOrder.verify(populateDocLinkTask).execute(any(TaskContext.class), eq(payloadReturnedByTask));
 
 
         verify(defineWhoPaysCostsOrderTask, never()).execute(any(), any());

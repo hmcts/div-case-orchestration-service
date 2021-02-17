@@ -18,6 +18,7 @@ public class CcdFields {
     public static final String SERVICE_APPLICATIONS = "ServiceApplications";
     public static final String SERVICE_APPLICATION_DOCUMENTS = "ServiceApplicationDocuments";
     public static final String SERVICE_APPLICATION_REFUSAL_REASON = "ServiceApplicationRefusalReason";
+    public static final String LAST_SERVICE_APPLICATION = "LastServiceApplication";
     public static final String HELP_WITH_FEES_REF_NUMBER = "D8HelpWithFeesReferenceNumber";
 
     public static final String JUDGE_TYPE = "JudgeType";
@@ -55,13 +56,25 @@ public class CcdFields {
     public static final String ALTERNATIVE_SERVICE_APPLICATION = "alternativeServiceApplication";
     public static final String ALTERNATIVE_SERVICE_MEDIUM = "AlternativeServiceMedium";
     public static final String FEE_AMOUNT_WITHOUT_NOTICE = "FeeAmountWithoutNotice";
+    public static final String GENERAL_REFERRAL_PREVIOUS_CASE_STATE = "StateBeforeGeneralReferral";
 
     public static final String PETITIONER_FIRST_NAME = OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
     public static final String PETITIONER_LAST_NAME = OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
     public static final String PETITIONER_EMAIL = OrchestrationConstants.D_8_PETITIONER_EMAIL;
 
     public static final String PBA_NUMBERS = "PbaNumbers";
+    public static final String FURTHER_HWF_REFERENCE = "HelpWithFeesReferenceNumber";
+    public static final String FURTHER_PBA_REFERENCE = "FeeAccountReferenceNumber";
+    public static final String FURTHER_HWF_REFERENCE_NUMBERS = "FurtherHWFReferenceNumbers";
+    public static final String FURTHER_PBA_REFERENCE_NUMBERS = "FurtherPBAReferenceNumbers";
 
     public static final String GENERAL_APPLICATION_WITHOUT_NOTICE_FEE_SUMMARY = "generalApplicationWithoutNoticeFeeSummary";
     public static final String GENERAL_REFERRAL_WITHOUT_NOTICE_FEE_SUMMARY = "generalReferralWithoutNoticeFeeSummary";
+
+    public static final String SERVED_BY_PROCESS_SERVER = "ServedByProcessServer";
+    public static final String SERVED_BY_ALTERNATIVE_METHOD = "ServedByAlternativeMethod";
+
+    public static final String PETITIONER_SOLICITOR_ORGANISATION_POLICY = "PetitionerOrganisationPolicy";
+    public static final String RESPONDENT_SOLICITOR_ORGANISATION_POLICY = "RespondentOrganisationPolicy";
+
 }

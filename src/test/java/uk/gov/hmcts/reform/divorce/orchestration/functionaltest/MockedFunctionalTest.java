@@ -20,7 +20,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
 import java.util.List;
@@ -37,7 +36,9 @@ import static org.springframework.http.MediaType.ALL_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_AUTHORIZATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.elasticsearch.CMSElasticSearchSupport.buildCMSBooleanSearchSource;
 
 @ContextConfiguration(classes = OrchestrationServiceApplication.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -80,13 +81,16 @@ public abstract class MockedFunctionalTest {
     public static WireMockClassRule serviceAuthProviderServer = new WireMockClassRule(buildWireMockConfig(4504));
 
     @ClassRule
-    public static WireMockClassRule validationServiceServer = new WireMockClassRule(buildWireMockConfig(4008));
-
-    @ClassRule
     public static WireMockClassRule documentStore = new WireMockClassRule(buildWireMockConfig(4020));
 
     @ClassRule
     public static WireMockClassRule pbaValidationServer = new WireMockClassRule(buildWireMockConfig(8090));
+
+    @ClassRule
+    public static WireMockClassRule assignCaseAccessServer = new WireMockClassRule(buildWireMockConfig(4454));
+
+    @ClassRule
+    public static WireMockClassRule caseRoleServer = new WireMockClassRule(buildWireMockConfig(4452));
 
     private static WireMockConfiguration buildWireMockConfig(int port) {
         return WireMockSpring
@@ -132,65 +136,36 @@ public abstract class MockedFunctionalTest {
         return documentId;
     }
 
-    public String stubDocumentGeneratorServiceBaseOnContextPath(String templateName, Map<String, Object> templateValues,
-                                                                String documentTypeToReturn) {
-        String documentId = UUID.randomUUID().toString();
-
-        final GenerateDocumentRequest generateDocumentRequest =
-            GenerateDocumentRequest.builder()
-                .template(templateName)
-                .values(templateValues)
-                .build();
-
-        final GeneratedDocumentInfo dgsResponse =
-            GeneratedDocumentInfo.builder()
-                .documentType(documentTypeToReturn)
-                .url(getDocumentStoreTestUrl(documentId))
-                .build();
-
-        documentGeneratorServiceServer.stubFor(WireMock.post(GENERATE_DOCUMENT_CONTEXT_PATH)
-            .withRequestBody(equalToJson(convertObjectToJsonString(generateDocumentRequest)))
-            .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
-            .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                .withStatus(HttpStatus.OK.value())
-                .withBody(convertObjectToJsonString(dgsResponse))));
-
-        return documentId;
-    }
-
-    public String stubDocumentGeneratorServiceBaseOnContextPath(String templateName, String documentTypeToReturn) {
-        String documentId = UUID.randomUUID().toString();
-
-        final GeneratedDocumentInfo dgsResponse =
-            GeneratedDocumentInfo.builder()
-                .documentType(documentTypeToReturn)
-                .url(getDocumentStoreTestUrl(documentId))
-                .build();
-
-        documentGeneratorServiceServer.stubFor(WireMock.post(GENERATE_DOCUMENT_CONTEXT_PATH)
-            .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
-            .withRequestBody(matchingJsonPath("$.template", equalTo(templateName)))
-            .willReturn(aResponse()
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                .withStatus(HttpStatus.OK.value())
-                .withBody(convertObjectToJsonString(dgsResponse))));
-
-        return documentId;
-    }
-
     protected String getDocumentStoreTestUrl(String documentId) {
         return documentStore.baseUrl() + "/documents/" + documentId;
     }
 
     public void stubDMStore(String documentId, byte[] fileBytes) {
         documentStore.stubFor(WireMock.get("/documents/" + documentId + "/binary")
-            .withHeader("ServiceAuthorization", new EqualToPattern("Bearer " + TEST_SERVICE_AUTH_TOKEN))
+            .withHeader(SERVICE_AUTHORIZATION_HEADER, new EqualToPattern("Bearer " + TEST_SERVICE_AUTH_TOKEN))
             .withHeader("user-roles", new EqualToPattern("caseworker-divorce"))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader(CONTENT_TYPE, ALL_VALUE)
                 .withBody(fileBytes)));
+    }
+
+    public void stubRemoveCaseRoleServerEndpoint(String authToken, String s2sAuthToken) {
+        caseRoleServer.stubFor(WireMock.delete("/case-users")
+            .withHeader(SERVICE_AUTHORIZATION_HEADER, new EqualToPattern("Bearer " + s2sAuthToken))
+            .withHeader(AUTHORIZATION, new EqualToPattern(authToken))
+            .willReturn(aResponse()
+                .withStatus(HttpStatus.OK.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)));
+    }
+
+    public void stubAssignCaseAccessServerEndpoint(String authToken, String s2sAuthToken) {
+        assignCaseAccessServer.stubFor(WireMock.post("/case-assignments")
+            .withHeader(SERVICE_AUTHORIZATION_HEADER, new EqualToPattern("Bearer " + s2sAuthToken))
+            .withHeader(AUTHORIZATION, new EqualToPattern(authToken))
+            .willReturn(aResponse()
+                .withStatus(HttpStatus.OK.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)));
     }
 
     protected void stubServiceAuthProvider(HttpStatus status, String response) {
@@ -200,7 +175,7 @@ public abstract class MockedFunctionalTest {
                 .withBody(response)));
     }
 
-    protected void stubCaseMaintenanceSearchEndpoint(List<CaseDetails> casesToReturn, QueryBuilder... expectedQueryBuilders) {
+    protected void stubCaseMaintenanceSearchEndpoint(List<CaseDetails> casesToReturn, QueryBuilder query) {
         SearchResult searchResult = SearchResult.builder()
             .total(casesToReturn.size())
             .cases(casesToReturn)
@@ -208,8 +183,8 @@ public abstract class MockedFunctionalTest {
 
         MappingBuilder mappingBuilder = WireMock.post(CASE_MAINTENANCE_CLIENT_SEARCH_URL);
 
-        if (expectedQueryBuilders.length > 0) {
-            String expectedElasticSearchQuery = CMSElasticSearchSupport.buildCMSBooleanSearchSource(0, 50, expectedQueryBuilders);
+        if (query != null) {
+            String expectedElasticSearchQuery = buildCMSBooleanSearchSource(0, 50, query);
             mappingBuilder = mappingBuilder.withRequestBody(equalTo(expectedElasticSearchQuery));
         }
 
@@ -221,6 +196,10 @@ public abstract class MockedFunctionalTest {
         );
 
         maintenanceServiceServer.stubFor(mappingBuilder);
+    }
+
+    protected void stubCaseMaintenanceSearchEndpoint(List<CaseDetails> casesToReturn) {
+        stubCaseMaintenanceSearchEndpoint(casesToReturn, null);
     }
 
     public String stubDocumentGeneratorService(String templateName, Map<String, Object> templateValues, String documentTypeToReturn) {
@@ -259,8 +238,8 @@ public abstract class MockedFunctionalTest {
                 .build();
 
         documentGeneratorServiceServer.stubFor(WireMock.post(GENERATE_DOCUMENT_CONTEXT_PATH)
-            .withRequestBody(matchingJsonPath("$.template", equalTo(templateName)))
             .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
+            .withRequestBody(matchingJsonPath("$.template", equalTo(templateName)))
             .willReturn(aResponse()
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withStatus(HttpStatus.OK.value())
@@ -279,7 +258,6 @@ public abstract class MockedFunctionalTest {
         paymentServiceServer.resetAll();
         sendLetterService.resetAll();
         serviceAuthProviderServer.resetAll();
-        validationServiceServer.resetAll();
         documentStore.resetAll();
     }
 

@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.IdamTestSupport;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
@@ -20,6 +21,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -34,6 +36,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVED_BY_PROCESS_SERVER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
@@ -44,6 +47,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Gender.MALE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.CaseDataKeys.PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
@@ -66,8 +70,8 @@ public class AosNotReceivedForProcessServerTest extends IdamTestSupport {
     private MockMvc webClient;
 
     @Test
-    public void petitionerRepresentedThenSendEmailToPetSolicitor() throws Exception {
-        callEndpointWithData(buildCaseDataForSolicitor());
+    public void petitionerRepresentedThenSendEmailToPetitionerSolicitor() throws Exception {
+        callEndpointWithData(buildCaseDataForSolicitor(SERVED_BY_PROCESS_SERVER));
 
         verify(emailClient).sendEmail(
             eq(PET_SOL_AWAITING_DN_SERVED_BY_PROCESS),
@@ -78,8 +82,8 @@ public class AosNotReceivedForProcessServerTest extends IdamTestSupport {
     }
 
     @Test
-    public void petitionerNotRepresentedThenSendEmailToPetSolicitor() throws Exception {
-        callEndpointWithData(buildCaseDataForPetitioner());
+    public void petitionerNotRepresentedThenSendEmailToPetitioner() throws Exception {
+        callEndpointWithData(buildCaseDataForPetitioner(SERVED_BY_PROCESS_SERVER));
 
         verify(emailClient).sendEmail(
             eq(CITIZEN_AWAITING_DN_SERVED_BY_PROCESS),
@@ -87,6 +91,13 @@ public class AosNotReceivedForProcessServerTest extends IdamTestSupport {
             eq(getExpectedPetitionerTemplateVars()),
             any()
         );
+    }
+
+    @Test
+    public void servedByProcessFieldIsNotYesThenDontSendAnyEmail() throws Exception {
+        callEndpointWithData(new HashMap<>());
+
+        verifyNoInteractions(emailClient);
     }
 
     private void callEndpointWithData(Map<String, Object> stringObjectMap) throws Exception {
@@ -108,8 +119,8 @@ public class AosNotReceivedForProcessServerTest extends IdamTestSupport {
             )));
     }
 
-    private Map<String, Object> buildCaseDataForSolicitor() {
-        Map<String, Object> caseData = buildCommonCaseData();
+    static Map<String, Object> buildCaseDataForSolicitor(String field) {
+        Map<String, Object> caseData = buildCommonCaseData(field);
 
         caseData.put(PETITIONER_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
         caseData.put(PETITIONER_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL);
@@ -117,8 +128,8 @@ public class AosNotReceivedForProcessServerTest extends IdamTestSupport {
         return caseData;
     }
 
-    private Map<String, Object> buildCaseDataForPetitioner() {
-        Map<String, Object> caseData = buildCommonCaseData();
+    static Map<String, Object> buildCaseDataForPetitioner(String field) {
+        Map<String, Object> caseData = buildCommonCaseData(field);
 
         caseData.put(D_8_CASE_REFERENCE, TEST_CASE_FAMILY_MAN_ID);
         caseData.put(D_8_INFERRED_PETITIONER_GENDER, MALE.getValue());
@@ -128,8 +139,10 @@ public class AosNotReceivedForProcessServerTest extends IdamTestSupport {
         return caseData;
     }
 
-    private Map<String, Object> buildCommonCaseData() {
+    static Map<String, Object> buildCommonCaseData(String field) {
         Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithRespondent();
+
+        caseData.put(field, YES_VALUE);
 
         caseData.put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         caseData.put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
@@ -139,7 +152,7 @@ public class AosNotReceivedForProcessServerTest extends IdamTestSupport {
         return caseData;
     }
 
-    private Map<String, String> getExpectedSolicitorTemplateVars() {
+    static Map<String, String> getExpectedSolicitorTemplateVars() {
         return ImmutableMap.of(
             NOTIFICATION_PET_NAME, TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME,
             NOTIFICATION_RESP_NAME, TEST_RESPONDENT_FIRST_NAME + " " + TEST_RESPONDENT_LAST_NAME,
@@ -148,7 +161,7 @@ public class AosNotReceivedForProcessServerTest extends IdamTestSupport {
         );
     }
 
-    private Map<String, String> getExpectedPetitionerTemplateVars() {
+    static Map<String, String> getExpectedPetitionerTemplateVars() {
         return ImmutableMap.of(
             NOTIFICATION_PET_NAME, TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME,
             NOTIFICATION_CASE_NUMBER_KEY, TEST_CASE_FAMILY_MAN_ID,

@@ -6,19 +6,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.model.payment.Payment;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
-import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.AllowShareACaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionForRefusalWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
@@ -85,7 +83,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.NotifyAp
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.NotifyForRefusalOrderWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.SendDaGrantedNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.SendPetitionerAmendEmailNotificationWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.SetupConfirmServicePaymentWorkflow;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.math.BigDecimal;
@@ -106,6 +103,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COSTS_ORDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isPetitionerClaimingCosts;
 
 @Slf4j
@@ -130,6 +129,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SetOrderSummaryWorkflow setOrderSummaryWorkflow;
     private final SolicitorSubmissionWorkflow solicitorSubmissionWorkflow;
     private final SolicitorCreateWorkflow solicitorCreateWorkflow;
+    private final AllowShareACaseWorkflow allowShareACaseWorkflow;
     private final SolicitorUpdateWorkflow solicitorUpdateWorkflow;
     private final SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow;
     private final SendPetitionerEmailNotificationWorkflow sendPetitionerEmailNotificationWorkflow;
@@ -184,8 +184,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final RemoveDNDocumentsWorkflow removeDNDocumentsWorkflow;
     private final SendClarificationSubmittedNotificationWorkflow sendClarificationSubmittedNotificationWorkflow;
     private final CreateNewAmendedCaseAndSubmitToCCDWorkflow createNewAmendedCaseAndSubmitToCCDWorkflow;
-    private final DocumentTemplateService documentTemplateService;
-    private final SetupConfirmServicePaymentWorkflow setupConfirmServicePaymentWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -456,8 +454,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> sendPetitionerGenericUpdateNotificationEmail(
-        CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+    public Map<String, Object> sendPetitionerGenericUpdateNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return sendPetitionerEmailNotificationWorkflow.run(ccdCallbackRequest);
     }
 
@@ -484,7 +481,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         } else {
             log.error("Clarification submitted notification for  CASE ID: {} failed. ", caseId);
             List<String> errors = sendClarificationSubmittedNotificationWorkflow.errors().values().stream()
-                .map(x -> (String) x)
+                .map(String.class::cast)
                 .collect(Collectors.toList());
             return CcdCallbackResponse.builder()
                 .errors(errors)
@@ -507,7 +504,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         } else {
             log.error("Callback to assign [PETSOLICITOR] role with CASE ID: {} failed. ", caseId);
             List<String> errors = petitionerSolicitorRoleWorkflow.errors().values().stream()
-                .map(x -> (String) x)
+                .map(String.class::cast)
                 .collect(Collectors.toList());
             return CcdCallbackResponse.builder()
                 .errors(errors)
@@ -533,8 +530,18 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     @Override
     public Map<String, Object> solicitorCreate(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
+        throws CaseOrchestrationServiceException {
+        try {
+            return solicitorCreateWorkflow.run(ccdCallbackRequest.getCaseDetails(), authorizationToken);
+        } catch (WorkflowException e) {
+            throw new CaseOrchestrationServiceException(e);
+        }
+    }
+
+    @Override
+    public Map<String, Object> allowShareACase(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
         throws WorkflowException {
-        return solicitorCreateWorkflow.run(ccdCallbackRequest.getCaseDetails(), authorizationToken);
+        return allowShareACaseWorkflow.run(ccdCallbackRequest.getCaseDetails(), authorizationToken);
     }
 
     @Override
@@ -650,10 +657,10 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> processSolDnDoc(CcdCallbackRequest ccdCallbackRequest, final String documentType, final String docLinkFieldName)
+    public Map<String, Object> processSolDnDoc(CcdCallbackRequest ccdCallbackRequest, final String ccdDocumentType, final String docLinkFieldName)
         throws CaseOrchestrationServiceException {
         try {
-            return solicitorDnFetchDocWorkflow.run(ccdCallbackRequest.getCaseDetails(), documentType, docLinkFieldName);
+            return solicitorDnFetchDocWorkflow.run(ccdCallbackRequest.getCaseDetails(), ccdDocumentType, docLinkFieldName);
         } catch (WorkflowException e) {
             throw new CaseOrchestrationServiceException(e);
         }
@@ -699,32 +706,55 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         return result;
     }
 
+    /**
+     * Service called for generating document based on String parameters.
+     *
+     * @deprecated Please prefer the implementation that takes a <code>DocumentType</code> instead of a String with templateId.
+     */
     @Override
-    public Map<String, Object> handleDocumentGenerationCallback(final CcdCallbackRequest ccdCallbackRequest, final String authToken,
-                                                                final String templateId, final String documentType, final String filename)
-        throws WorkflowException {
+    @Deprecated(forRemoval = true)
+    public Map<String, Object> handleDocumentGenerationCallback(final CcdCallbackRequest ccdCallbackRequest,
+                                                                final String authToken,
+                                                                final String templateId,
+                                                                final String ccdDocumentType,
+                                                                final String filename) throws CaseOrchestrationServiceException {
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        try {
+            return documentGenerationWorkflow.run(caseDetails, authToken, ccdDocumentType, templateId, ccdDocumentType, filename);
+        } catch (WorkflowException workflowException) {
+            throw new CaseOrchestrationServiceException(workflowException, caseDetails.getCaseId());
+        }
+    }
 
-        return documentGenerationWorkflow.run(ccdCallbackRequest, authToken, templateId, documentType, filename);
+    @Override
+    public Map<String, Object> handleDocumentGenerationCallback(final CcdCallbackRequest ccdCallbackRequest,
+                                                                final String authToken,
+                                                                final DocumentType documentType,
+                                                                final String ccdDocumentType,
+                                                                final String filename) throws CaseOrchestrationServiceException {
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        try {
+            return documentGenerationWorkflow.run(caseDetails, authToken, ccdDocumentType, documentType, filename);
+        } catch (WorkflowException workflowException) {
+            throw new CaseOrchestrationServiceException(workflowException, caseDetails.getCaseId());
+        }
     }
 
     @Override
     public Map<String, Object> handleDnPronouncementDocumentGeneration(final CcdCallbackRequest ccdCallbackRequest, final String authToken)
         throws WorkflowException {
 
-        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        Map<String, Object> caseData = caseDetails.getCaseData();
 
         if (Objects.nonNull(caseData.get(BULK_LISTING_CASE_ID_FIELD))) {
-            LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
-            String templateId = documentTemplateService.getTemplateId(languagePreference, DocumentType.DECREE_NISI_TEMPLATE_ID);
-            caseData.putAll(documentGenerationWorkflow.run(ccdCallbackRequest, authToken,
-                templateId, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI_FILENAME));
+            caseData.putAll(
+                documentGenerationWorkflow.run(caseDetails, authToken, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME));
 
             if (isPetitionerClaimingCosts(caseData)) {
-                templateId = documentTemplateService.getTemplateId(languagePreference, DocumentType.COSTS_ORDER_TEMPLATE_ID);
-
                 // DocumentType is clear enough to use as the file name
-                caseData.putAll(documentGenerationWorkflow.run(ccdCallbackRequest, authToken,
-                    templateId, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_DOCUMENT_TYPE));
+                caseData.putAll(
+                    documentGenerationWorkflow.run(caseDetails, authToken, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE));
             }
         }
 
@@ -732,8 +762,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> handleGrantDACallback(final CcdCallbackRequest ccdCallbackRequest, String authToken)
-        throws WorkflowException {
+    public Map<String, Object> handleGrantDACallback(final CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
 
         return decreeAbsoluteAboutToBeGrantedWorkflow.run(ccdCallbackRequest, authToken);
     }
@@ -780,13 +809,33 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         return validateBulkCaseListingWorkflow.run(caseData);
     }
 
+    /**
+     * Service called just before editing bulk case listing.
+     *
+     * @deprecated Please prefer the implementation that takes a <code>DocumentType</code> instead of a String with templateId.
+     */
+    @Override
+    @Deprecated(forRemoval = true)
+    public Map<String, Object> editBulkCaseListingData(CcdCallbackRequest ccdCallbackRequest, String fileName,
+                                                       String templateId, String ccdDocumentType, String authToken) throws WorkflowException {
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        Map<String, Object> response = validateBulkCaseListingWorkflow.run(caseDetails.getCaseData());
+        String judgeName = (String) caseDetails.getCaseData().get(PRONOUNCEMENT_JUDGE_CCD_FIELD);
+        if (StringUtils.isNotEmpty(judgeName)) {
+            response = documentGenerationWorkflow.run(caseDetails, authToken, ccdDocumentType, templateId, ccdDocumentType, fileName);
+        }
+
+        return response;
+    }
+
     @Override
     public Map<String, Object> editBulkCaseListingData(CcdCallbackRequest ccdCallbackRequest, String fileName,
-                                                       String templateId, String documentType, String authToken) throws WorkflowException {
-        Map<String, Object> response = validateBulkCaseListingWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
-        String judgeName = (String) ccdCallbackRequest.getCaseDetails().getCaseData().get(PRONOUNCEMENT_JUDGE_CCD_FIELD);
+                                                       DocumentType documentType, String ccdDocumentType, String authToken) throws WorkflowException {
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        Map<String, Object> response = validateBulkCaseListingWorkflow.run(caseDetails.getCaseData());
+        String judgeName = (String) caseDetails.getCaseData().get(PRONOUNCEMENT_JUDGE_CCD_FIELD);
         if (StringUtils.isNotEmpty(judgeName)) {
-            response = documentGenerationWorkflow.run(ccdCallbackRequest, authToken, templateId, documentType, fileName);
+            response = documentGenerationWorkflow.run(caseDetails, authToken, ccdDocumentType, documentType, fileName);
         }
 
         return response;

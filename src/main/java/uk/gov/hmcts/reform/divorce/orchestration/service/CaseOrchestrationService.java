@@ -4,6 +4,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -61,6 +62,9 @@ public interface CaseOrchestrationService {
     Map<String, Object> solicitorSubmission(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
     Map<String, Object> solicitorCreate(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
+        throws CaseOrchestrationServiceException;
+
+    Map<String, Object> allowShareACase(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
         throws WorkflowException;
 
     Map<String, Object> solicitorUpdate(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
@@ -98,7 +102,7 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> coRespondentAnswerReceived(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
-    Map<String, Object> processSolDnDoc(CcdCallbackRequest ccdCallbackRequest, String documentType, String docLinkFieldName)
+    Map<String, Object> processSolDnDoc(CcdCallbackRequest ccdCallbackRequest, String ccdDocumentType, String docLinkFieldName)
         throws CaseOrchestrationServiceException;
 
     Map<String, Object> generateCoRespondentAnswers(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
@@ -106,7 +110,10 @@ public interface CaseOrchestrationService {
     Map<String, Object> generateBulkCaseForListing() throws WorkflowException;
 
     Map<String, Object> handleDocumentGenerationCallback(CcdCallbackRequest ccdCallbackRequest, String authToken, String templateId,
-                                                         String documentType, String filename) throws WorkflowException;
+                                                         String ccdDocumentType, String filename) throws CaseOrchestrationServiceException;
+
+    Map<String, Object> handleDocumentGenerationCallback(CcdCallbackRequest ccdCallbackRequest, String authToken, DocumentType documentType,
+                                                         String ccdDocumentType, String filename) throws CaseOrchestrationServiceException;
 
     Map<String, Object> processAosSolicitorNominated(CcdCallbackRequest ccdCallbackRequest,
                                                      String authToken) throws CaseOrchestrationServiceException;
@@ -145,7 +152,10 @@ public interface CaseOrchestrationService {
     Map<String, Object> updateBulkCaseAcceptedCases(CaseDetails caseDetails, String authToken) throws WorkflowException;
 
     Map<String, Object> editBulkCaseListingData(CcdCallbackRequest ccdCallbackRequest, String fileName,
-                                                String templateId, String documentType, String authToken) throws WorkflowException;
+                                                String templateId, String ccdDocumentType, String authToken) throws WorkflowException;
+
+    Map<String, Object> editBulkCaseListingData(CcdCallbackRequest ccdCallbackRequest, String fileName,
+                                                DocumentType documentType, String ccdDocumentType, String authToken) throws WorkflowException;
 
     Map<String, Object> removeBulkListed(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 

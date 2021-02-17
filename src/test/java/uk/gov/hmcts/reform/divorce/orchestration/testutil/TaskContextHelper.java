@@ -31,8 +31,19 @@ public class TaskContextHelper {
 
     public static TaskContext contextWithCaseDetails() {
         TaskContext context = context();
-        context.setTransientObject(CASE_DETAILS_JSON_KEY, CaseDetails.builder().build());
+        context.setTransientObject(CASE_DETAILS_JSON_KEY, buildCaseDetailsWithId());
 
         return context;
+    }
+
+    public static TaskContext contextWithCommonValues() {
+        TaskContext context = contextWithToken();
+        context.setTransientObject(CASE_DETAILS_JSON_KEY, buildCaseDetailsWithId());
+
+        return context;
+    }
+
+    private static CaseDetails buildCaseDetailsWithId() {
+        return CaseDetails.builder().caseId(TEST_CASE_ID).build();
     }
 }

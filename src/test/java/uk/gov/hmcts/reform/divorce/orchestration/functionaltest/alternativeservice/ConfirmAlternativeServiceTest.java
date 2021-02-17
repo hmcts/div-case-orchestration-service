@@ -21,6 +21,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class ConfirmAlternativeServiceTest extends IdamTestSupport {
@@ -32,7 +34,7 @@ public class ConfirmAlternativeServiceTest extends IdamTestSupport {
     private MockMvc webClient;
 
     @Test
-    public void givenCaseData_whenCalledEndpoint_thenDueDateFieldIsPopulated() throws Exception {
+    public void givenCaseData_whenCalledEndpoint_thenDueDateFieldIsPopulatedAndFlagsAreSet() throws Exception {
         CcdCallbackRequest input = new CcdCallbackRequest(
             AUTH_TOKEN,
             "confirmAlternativeService",
@@ -46,10 +48,11 @@ public class ConfirmAlternativeServiceTest extends IdamTestSupport {
             .andExpect(status().isOk())
             .andExpect(content().string(allOf(
                 isJson(),
-                hasJsonPath(
-                    "$.data.dueDate",
-                    is(DateCalculator.getDateWithOffset(DUE_DATE_OFFSET))
-                ),
+                hasJsonPath("$.data", allOf(
+                    hasJsonPath("dueDate", is(DateCalculator.getDateWithOffset(DUE_DATE_OFFSET))),
+                    hasJsonPath("ServedByAlternativeMethod", is(YES_VALUE)),
+                    hasJsonPath("ServedByProcessServer", is(NO_VALUE))
+                )),
                 hasNoJsonPath("$.errors"),
                 hasNoJsonPath("$.warnings")
             )));

@@ -11,7 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport;
+import uk.gov.hmcts.reform.divorce.orchestration.util.elasticsearch.CMSElasticSearchSupport;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -33,7 +33,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DA_OVERDUE_PERIOD_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.CMSElasticSearchSupport.buildDateForTodayMinusGivenPeriod;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.elasticsearch.CMSElasticSearchSupport.buildDateForTodayMinusGivenPeriod;
 import static wiremock.org.eclipse.jetty.http.HttpStatus.BAD_REQUEST_400;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -72,7 +72,7 @@ public class SearchCasesDAOverdueTaskTest {
 
         final Map<String, Object> actualResult = classUnderTest.execute(contextBeingModified, Collections.emptyMap());
         assertEquals(expectedCaseIdsInTheContext, contextBeingModified.getTransientObject(SEARCH_RESULT_KEY));
-        assertEquals(actualResult, Collections.emptyMap());
+        assertEquals(Collections.emptyMap(), actualResult);
 
         verify(cmsElasticSearchSupport).searchCMSCases(eq(AUTH_TOKEN),
             eq(QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, AWAITING_DA)),
@@ -104,7 +104,6 @@ public class SearchCasesDAOverdueTaskTest {
             any())
         ).thenReturn(buildCases(10));
 
-
         final Map<String, Object> actualResult = classUnderTest.execute(contextBeingModified, null);
         assertEquals(expectedCaseIdsInTheContext, contextBeingModified.getTransientObject(SEARCH_RESULT_KEY));
         assertNull(actualResult);
@@ -115,8 +114,10 @@ public class SearchCasesDAOverdueTaskTest {
     @Test
     public void execute_pageSize10_totalResults20() throws TaskException {
 
-        final List<String> expectedCaseIdsInTheContext = Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11",
-            "12", "13", "14", "15", "16", "17", "18", "19", "20");
+        final List<String> expectedCaseIdsInTheContext = Arrays.asList(
+            "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11",
+            "12", "13", "14", "15", "16", "17", "18", "19", "20"
+        );
 
         when(cmsElasticSearchSupport.searchCMSCases(
             eq(AUTH_TOKEN),
@@ -157,5 +158,4 @@ public class SearchCasesDAOverdueTaskTest {
         }
         return streamBuilder.build();
     }
-
 }

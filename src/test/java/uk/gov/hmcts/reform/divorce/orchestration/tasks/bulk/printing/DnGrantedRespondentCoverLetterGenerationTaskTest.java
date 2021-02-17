@@ -49,8 +49,8 @@ public class DnGrantedRespondentCoverLetterGenerationTaskTest extends BasePayloa
         runCommonVerifications(
             caseData,
             returnedCaseData,
-            DnGrantedRespondentCoverLetterGenerationTask.FileMetadata.DOCUMENT_TYPE,
-            DnGrantedRespondentCoverLetterGenerationTask.FileMetadata.TEMPLATE_ID,
+            "dnGrantedCoverLetterRespondent",
+            "FL-DIV-LET-ENG-00357.docx",
             getTemplateModel()
         );
     }

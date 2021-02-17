@@ -9,14 +9,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.DocumentTemplateService;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -38,9 +35,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class DecreeNisiAnswersGeneratorTaskTest {
     @Mock
     private DocumentGeneratorClient documentGeneratorClient;
-
-    @Mock
-    private DocumentTemplateService documentTemplateService;
 
     @InjectMocks
     private DecreeNisiAnswersGeneratorTask decreeNisiAnswersGenerator;
@@ -72,11 +66,7 @@ public class DecreeNisiAnswersGeneratorTaskTest {
                 .build();
 
         //given
-        when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN))
-            .thenReturn(expectedDNAnswers);
-
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_ANSWER_TEMPLATE_ID))
-                .thenReturn(DN_ANSWERS_TEMPLATE_ID);
+        when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN)).thenReturn(expectedDNAnswers);
 
         //when
         decreeNisiAnswersGenerator.execute(context, payload);
@@ -105,9 +95,6 @@ public class DecreeNisiAnswersGeneratorTaskTest {
                 .template(DN_ANSWERS_TEMPLATE_ID)
                 .values(ImmutableMap.of(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails))
                 .build();
-
-        when(documentTemplateService.getTemplateId(LanguagePreference.ENGLISH, DocumentType.DECREE_NISI_ANSWER_TEMPLATE_ID))
-                .thenReturn(DN_ANSWERS_TEMPLATE_ID);
 
         when(documentGeneratorClient.generatePDF(generateDocumentRequest, AUTH_TOKEN))
             .thenThrow(FeignException.class);

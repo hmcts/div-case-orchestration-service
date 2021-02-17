@@ -16,9 +16,10 @@ import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 
-import static org.assertj.core.util.Sets.newLinkedHashSet;
+import static com.jayway.jsonassert.impl.matcher.IsCollectionWithSize.hasSize;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -65,23 +66,26 @@ public class DocumentGenerationTaskTest {
         context.setTransientObject(DOCUMENT_FILENAME, TEST_DOCUMENT_FILE_NAME);
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
 
-        final GeneratedDocumentInfo expectedDocument = GeneratedDocumentInfo.builder()
-            .documentType(TEST_DOCUMENT_TYPE)
-            .fileName(TEST_DOCUMENT_FILE_NAME + TEST_CASE_ID)
-            .build();
-
         //given
-        when(documentGeneratorClient.generatePDF(matchesDocumentInputParameters(TEST_DOCUMENT_TEMPLATE_ID, caseDetails), eq(AUTH_TOKEN)))
-            .thenReturn(expectedDocument);
+        final GeneratedDocumentInfo documentToReturn = GeneratedDocumentInfo.builder()
+            .documentType(TEST_DOCUMENT_TYPE)
+            .fileName("filename.pdf")
+            .build();
+        when(documentGeneratorClient.generatePDF(argThat(matchesDocumentInputParameters(TEST_DOCUMENT_TEMPLATE_ID, caseDetails)), eq(AUTH_TOKEN)))
+            .thenReturn(documentToReturn);
 
         //when
         documentGenerationTask.execute(context, payload);
 
         final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context.getTransientObject(DOCUMENT_COLLECTION);
 
-        assertThat(documentCollection, is(newLinkedHashSet(expectedDocument)));
+        assertThat(documentCollection, hasSize(1));
+        documentCollection.forEach(doc -> {
+            assertThat(doc.getDocumentType(), is(TEST_DOCUMENT_TYPE));
+            assertThat(doc.getFileName(), is(TEST_DOCUMENT_FILE_NAME + TEST_CASE_ID));
+        });
 
-        verify(documentGeneratorClient).generatePDF(matchesDocumentInputParameters(TEST_DOCUMENT_TEMPLATE_ID, caseDetails), eq(AUTH_TOKEN));
+        verify(documentGeneratorClient).generatePDF(argThat(matchesDocumentInputParameters(TEST_DOCUMENT_TEMPLATE_ID, caseDetails)), eq(AUTH_TOKEN));
     }
 
     @Test
@@ -106,11 +110,6 @@ public class DocumentGenerationTaskTest {
         );
         context.setTransientObject(DN_COURT_DETAILS, dnCourtDetails);
 
-        final GeneratedDocumentInfo expectedDocument = GeneratedDocumentInfo.builder()
-            .documentType(TEST_DOCUMENT_TYPE)
-            .fileName(TEST_DOCUMENT_FILE_NAME + TEST_CASE_ID)
-            .build();
-
         CaseDetails dnCourtCaseDetails = CaseDetails.builder()
             .caseId(TEST_CASE_ID)
             .caseData(new HashMap<>())
@@ -118,17 +117,26 @@ public class DocumentGenerationTaskTest {
         dnCourtCaseDetails.getCaseData().putAll(dnCourtDetails);
 
         //given
-        when(documentGeneratorClient.generatePDF(matchesDocumentInputParameters(TEST_DOCUMENT_TEMPLATE_ID, dnCourtCaseDetails), eq(AUTH_TOKEN)))
-            .thenReturn(expectedDocument);
+        final GeneratedDocumentInfo documentToReturn = GeneratedDocumentInfo.builder()
+            .documentType(TEST_DOCUMENT_TYPE)
+            .fileName("filename.pdf")
+            .build();
+        when(documentGeneratorClient.generatePDF(
+            argThat(matchesDocumentInputParameters(TEST_DOCUMENT_TEMPLATE_ID, dnCourtCaseDetails)), eq(AUTH_TOKEN))).thenReturn(documentToReturn);
 
         //when
         documentGenerationTask.execute(context, payload);
 
         final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context.getTransientObject(DOCUMENT_COLLECTION);
 
-        assertThat(documentCollection, is(newLinkedHashSet(expectedDocument)));
+        assertThat(documentCollection, hasSize(1));
+        documentCollection.forEach(doc -> {
+            assertThat(doc.getDocumentType(), is(TEST_DOCUMENT_TYPE));
+            assertThat(doc.getFileName(), is(TEST_DOCUMENT_FILE_NAME + TEST_CASE_ID));
+        });
 
-        verify(documentGeneratorClient).generatePDF(matchesDocumentInputParameters(TEST_DOCUMENT_TEMPLATE_ID, dnCourtCaseDetails), eq(AUTH_TOKEN));
+        verify(documentGeneratorClient).generatePDF(
+            argThat(matchesDocumentInputParameters(TEST_DOCUMENT_TEMPLATE_ID, dnCourtCaseDetails)), eq(AUTH_TOKEN));
     }
 
 }

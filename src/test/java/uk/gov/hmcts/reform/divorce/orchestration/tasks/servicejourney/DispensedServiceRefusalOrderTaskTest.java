@@ -21,6 +21,16 @@ public class DispensedServiceRefusalOrderTaskTest extends ServiceRefusalOrderGen
         return dispensedServiceRefusalOrderTask;
     }
 
+    @Override
+    protected String getExpectedDocumentType() {
+        return "dispenseWithServiceRefused";
+    }
+
+    @Override
+    protected String getExpectedTemplateId() {
+        return "FL-DIV-GNO-ENG-00535.docx";
+    }
+
     @Test
     public void testExecuteShouldGenerateAFile() throws TaskException {
         Map<String, Object> returnedCaseData = executeShouldGenerateAFile();

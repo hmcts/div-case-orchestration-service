@@ -10,6 +10,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 
 public class GeneralReferralUtil {
+
     public static Map<String, Object> buildCaseDataWithGeneralReferralFee(String referralFeeValue) {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(CcdFields.GENERAL_REFERRAL_FEE, referralFeeValue);

@@ -9,7 +9,6 @@ import java.time.Period;
 public class OrchestrationConstants {
 
     public static final String LINE_SEPARATOR = System.lineSeparator();
-    public static final String SPACE_SEPARATOR = " ";
     public static final String EMPTY_STRING = "";
 
     // Authentication
@@ -88,7 +87,7 @@ public class OrchestrationConstants {
     public static final String ISSUE_DATE = "IssueDate";
     public static final String D_8_PAYMENTS = "Payments";
     public static final String BULK_LISTING_CASE_ID_FIELD = "BulkListingCaseId";
-    public static final String D_8_REASON_FOR_DIVORCE_DESERTION_DAIE = "D8ReasonForDivorceDesertionDate";
+    public static final String D_8_REASON_FOR_DIVORCE_DESERTION_DATE = "D8ReasonForDivorceDesertionDate";
     public static final String D_8_REASON_FOR_DIVORCE_SEP_DATE = "D8ReasonForDivorceSeperationDate";
     public static final String D_8_MENTAL_SEP_DATE = "D8MentalSeparationDate";
     public static final String D_8_PHYSICAL_SEP_DAIE = "D8PhysicalSeparationDate";
@@ -187,6 +186,8 @@ public class OrchestrationConstants {
     public static final String CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL = "CoRespContactMethodIsDigital";
     public static final String COST_ORDER_CO_RESPONDENT_LETTER_DOCUMENT_TYPE = "coRespondentCostOrderLetter";
     public static final String COST_ORDER_CO_RESPONDENT_SOLICITOR_LETTER_DOCUMENT_TYPE = "coRespondentSolicitorCostOrderLetter";
+    public static final String CASE_LIST_FOR_PRONOUNCEMENT_DOCUMENT_TYPE = "caseListForPronouncement";
+    public static final String CASE_LIST_FOR_PRONOUNCEMENT_FILE_NAME = "caseListForPronouncement";
     public static final String DN_DECISION_DATE_FIELD = "DNApprovalDate";
 
     // Divorce Session
@@ -308,12 +309,13 @@ public class OrchestrationConstants {
     public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE = "personalService";
     public static final String FEE_TO_PAY_JSON_KEY = "FeeToPay";
     public static final String AOS_OVERDUE_COVER_LETTER_DOCUMENT_TYPE = "aosOverdueCoverLetter";
-
-    //Bulk print letter types
-    public static final String DA_GRANTED_OFFLINE_PACK_RESPONDENT = "da-granted-offline-pack-respondent";
+    public static final String CERTIFICATE_OF_ENTITLEMENT_FILENAME_PREFIX = "certificateOfEntitlement";
 
     public static final String DOCUMENT_TYPE_COE = "coe";
     public static final String DOCUMENT_TYPE_OTHER = "other";
+
+    //Bulk print letter types
+    public static final String DA_GRANTED_OFFLINE_PACK_RESPONDENT = "da-granted-offline-pack-respondent";
 
     public static final String DOCUMENT_DRAFT_LINK_FIELD = "DocumentDraftLinkFieldName";
     public static final String MINI_PETITION_LINK = "minipetitionlink";

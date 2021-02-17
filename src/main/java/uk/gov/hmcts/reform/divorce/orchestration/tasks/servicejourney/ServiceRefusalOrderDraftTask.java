@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.bsp.common.model.document.CtscContactDetails;
 import uk.gov.hmcts.reform.divorce.model.ccd.DocumentLink;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
@@ -21,12 +20,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Condition
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 
 @Slf4j
-@Component
 public abstract class ServiceRefusalOrderDraftTask extends BasePayloadSpecificDocumentGenerationTask {
 
-    public ServiceRefusalOrderDraftTask(CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
-                                        PdfDocumentGenerationService pdfDocumentGenerationService,
-                                        CcdUtil ccdUtil) {
+    protected ServiceRefusalOrderDraftTask(
+        CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
+        PdfDocumentGenerationService pdfDocumentGenerationService,
+        CcdUtil ccdUtil) {
         super(ctscContactDetailsDataProviderService, pdfDocumentGenerationService, ccdUtil);
     }
 

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.CalculateDecreeAbsoluteDates;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CalculateDecreeAbsoluteDatesTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetDaRequestedDetailsTask;
 
 import java.util.Map;
@@ -17,7 +17,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class ApplicantDecreeAbsoluteEligibilityWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     @Autowired
-    private CalculateDecreeAbsoluteDates calculateDecreeAbsoluteDates;
+    private CalculateDecreeAbsoluteDatesTask calculateDecreeAbsoluteDatesTask;
 
     @Autowired
     private SetDaRequestedDetailsTask setDaRequestedDetailsTask;
@@ -25,7 +25,7 @@ public class ApplicantDecreeAbsoluteEligibilityWorkflow extends DefaultWorkflow<
     public Map<String, Object> run(String caseId, Map<String, Object> payload) throws WorkflowException {
         return execute(
             new Task[] {
-                calculateDecreeAbsoluteDates,
+                calculateDecreeAbsoluteDatesTask,
                 setDaRequestedDetailsTask
             },
             payload,

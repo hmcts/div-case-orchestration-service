@@ -14,18 +14,20 @@ import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.model.ccd.DocumentLink;
 import uk.gov.hmcts.reform.divorce.model.response.ValidationResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AlternativeServiceService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.CourtOrderDocumentsUpdateService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralEmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralOrderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralReferralService;
@@ -82,6 +84,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.CASE_LIST_FOR_PRONOUNCEMENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COE;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.ccdRequestWithData;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CallbackControllerTest {
@@ -106,6 +111,9 @@ public class CallbackControllerTest {
 
     @Mock
     private AlternativeServiceService alternativeServiceService;
+
+    @Mock
+    private CourtOrderDocumentsUpdateService courtOrderDocumentsUpdateService;
 
     @InjectMocks
     private CallbackController classUnderTest;
@@ -172,6 +180,23 @@ public class CallbackControllerTest {
         when(caseOrchestrationService.solicitorCreate(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(caseData);
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorCreate(AUTH_TOKEN, ccdCallbackRequest);
+
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+
+        assertEquals(OK, response.getStatusCode());
+        assertEquals(expectedResponse, response.getBody());
+    }
+
+    @Test
+    public void whenAllowShareACase_thenReturnCcdResponse() throws Exception {
+        final Map<String, Object> caseData = Collections.emptyMap();
+        final CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+
+        final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        when(caseOrchestrationService.allowShareACase(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(caseData);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.allowShareACase(AUTH_TOKEN, ccdCallbackRequest);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
@@ -623,7 +648,7 @@ public class CallbackControllerTest {
             .build();
 
         when(caseOrchestrationService
-            .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateName(),
+            .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateLogicalName(),
                 OrchestrationConstants.RESP_ANSWERS_LINK)
         ).thenReturn(incomingPayload);
 
@@ -633,7 +658,7 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getData(), is(equalTo(incomingPayload)));
         assertThat(response.getBody().getErrors(), is(nullValue()));
         verify(caseOrchestrationService)
-            .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateName(), OrchestrationConstants.RESP_ANSWERS_LINK);
+            .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateLogicalName(), OrchestrationConstants.RESP_ANSWERS_LINK);
     }
 
     @Test
@@ -645,7 +670,7 @@ public class CallbackControllerTest {
             .build();
 
         when(caseOrchestrationService
-            .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateName(), OrchestrationConstants.RESP_ANSWERS_LINK)
+            .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateLogicalName(), OrchestrationConstants.RESP_ANSWERS_LINK)
         ).thenThrow(new CaseOrchestrationServiceException(new Exception("This is a test error message.")));
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.solDnRespAnswersDoc(incomingRequest);
@@ -654,7 +679,7 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getData(), is(nullValue()));
         assertThat(response.getBody().getErrors(), hasItem("This is a test error message."));
         verify(caseOrchestrationService)
-            .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateName(), OrchestrationConstants.RESP_ANSWERS_LINK);
+            .processSolDnDoc(incomingRequest, DocumentType.RESPONDENT_ANSWERS.getTemplateLogicalName(), OrchestrationConstants.RESP_ANSWERS_LINK);
     }
 
     @Test
@@ -738,42 +763,94 @@ public class CallbackControllerTest {
 
     @Test
     public void whenGenerateDocument_thenExecuteService() throws Exception {
-        Map<String, Object> payload = singletonMap("testKey", "testValue");
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .caseData(payload)
-                .build())
+            .caseDetails(TEST_INCOMING_CASE_DETAILS)
             .build();
 
-        when(caseOrchestrationService
-            .handleDocumentGenerationCallback(incomingRequest, AUTH_TOKEN, "a", "b", "c")).thenReturn(payload);
+        when(caseOrchestrationService.handleDocumentGenerationCallback(eq(incomingRequest), eq(AUTH_TOKEN), anyString(), any(), any()))
+            .thenReturn(TEST_INCOMING_CASE_DETAILS.getCaseData());
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateDocument(AUTH_TOKEN, "a", "b", "c",
-            incomingRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateDocument(AUTH_TOKEN, "a", "b", "c", incomingRequest);
 
+        verify(caseOrchestrationService).handleDocumentGenerationCallback(incomingRequest, AUTH_TOKEN, "a", "b", "c");
         assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody().getData(), is(TEST_INCOMING_CASE_DETAILS.getCaseData()));
     }
 
     @Test
-    public void givenWorkflowException_whenGenerateDocuments_thenReturnErrors() throws WorkflowException {
-        Map<String, Object> payload = singletonMap("testKey", "testValue");
+    public void whenGenerateDocument_whenPreparingToPrintForPronouncement() throws Exception {
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .caseData(payload)
-                .build())
+            .caseDetails(TEST_INCOMING_CASE_DETAILS)
             .build();
 
-        String errorString = "foo";
+        when(caseOrchestrationService.handleDocumentGenerationCallback(eq(incomingRequest), eq(AUTH_TOKEN), any(DocumentType.class), any(), any()))
+            .thenReturn(TEST_INCOMING_CASE_DETAILS.getCaseData());
 
-        when(caseOrchestrationService
-            .handleDocumentGenerationCallback(incomingRequest, AUTH_TOKEN, "a", "b", "c"))
-            .thenThrow(new WorkflowException(errorString));
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.prepareToPrintForPronouncement(AUTH_TOKEN, incomingRequest);
 
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateDocument(AUTH_TOKEN, "a", "b", "c",
-            incomingRequest);
-
+        verify(caseOrchestrationService).handleDocumentGenerationCallback(
+            incomingRequest, AUTH_TOKEN, CASE_LIST_FOR_PRONOUNCEMENT, "caseListForPronouncement", "caseListForPronouncement");
         assertThat(response.getStatusCode(), is(OK));
-        assertThat(response.getBody().getErrors(), contains(errorString));
+        assertThat(response.getBody().getData(), is(TEST_INCOMING_CASE_DETAILS.getCaseData()));
+    }
+
+    @Test
+    public void whenGenerateDocument_whenUpdateBulkCaseHearingDetails() throws Exception {
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+            .caseDetails(TEST_INCOMING_CASE_DETAILS)
+            .build();
+
+        when(caseOrchestrationService.handleDocumentGenerationCallback(eq(incomingRequest), eq(AUTH_TOKEN), any(DocumentType.class), any(), any()))
+            .thenReturn(TEST_INCOMING_CASE_DETAILS.getCaseData());
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.updateBulkCaseHearingDetails(AUTH_TOKEN, incomingRequest);
+
+        verify(caseOrchestrationService).handleDocumentGenerationCallback(
+            incomingRequest, AUTH_TOKEN, COE, "coe", "certificateOfEntitlement");
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody().getData(), is(TEST_INCOMING_CASE_DETAILS.getCaseData()));
+    }
+
+    @Test
+    public void givenWorkflowException_whenGenerateDocuments_thenReturnErrors() throws CaseOrchestrationServiceException {
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+            .caseDetails(TEST_INCOMING_CASE_DETAILS)
+            .build();
+        CaseOrchestrationServiceException expectedException = new CaseOrchestrationServiceException("foo");
+        when(caseOrchestrationService.handleDocumentGenerationCallback(eq(incomingRequest), eq(AUTH_TOKEN), anyString(), any(), any()))
+            .thenThrow(expectedException);
+
+        CaseOrchestrationServiceException actualException = assertThrows(CaseOrchestrationServiceException.class,
+            () -> classUnderTest.generateDocument(AUTH_TOKEN, "a", "b", "c", incomingRequest));
+        assertThat(actualException, is(expectedException));
+    }
+
+    @Test
+    public void givenWorkflowException_whenPreparingToPrintForPronouncement_thenReturnErrors() throws CaseOrchestrationServiceException {
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+            .caseDetails(TEST_INCOMING_CASE_DETAILS)
+            .build();
+        CaseOrchestrationServiceException expectedException = new CaseOrchestrationServiceException("foo");
+        when(caseOrchestrationService.handleDocumentGenerationCallback(eq(incomingRequest), eq(AUTH_TOKEN), any(DocumentType.class), any(), any()))
+            .thenThrow(expectedException);
+
+        CaseOrchestrationServiceException actualException = assertThrows(CaseOrchestrationServiceException.class,
+            () -> classUnderTest.prepareToPrintForPronouncement(AUTH_TOKEN, incomingRequest));
+        assertThat(actualException, is(expectedException));
+    }
+
+    @Test
+    public void givenWorkflowException_whenUpdateBulkCaseHearingDetails_thenReturnErrors() throws CaseOrchestrationServiceException {
+        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
+            .caseDetails(TEST_INCOMING_CASE_DETAILS)
+            .build();
+        CaseOrchestrationServiceException expectedException = new CaseOrchestrationServiceException("foo");
+        when(caseOrchestrationService.handleDocumentGenerationCallback(eq(incomingRequest), eq(AUTH_TOKEN), any(DocumentType.class), any(), any()))
+            .thenThrow(expectedException);
+
+        CaseOrchestrationServiceException actualException = assertThrows(CaseOrchestrationServiceException.class,
+            () -> classUnderTest.updateBulkCaseHearingDetails(AUTH_TOKEN, incomingRequest));
+        assertThat(actualException, is(expectedException));
     }
 
     @Test
@@ -1593,6 +1670,37 @@ public class CallbackControllerTest {
     }
 
     @Test
+    public void shouldReturnOK_WhenGeneralReferralPaymentEventIsCalled() throws CaseOrchestrationServiceException {
+        final Map<String, Object> caseData = Collections.emptyMap();
+        final CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+        final CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+
+        when(generalReferralService.generalReferralPaymentEvent(caseDetails)).thenReturn(caseData);
+
+        final ResponseEntity<CcdCallbackResponse> response = classUnderTest.generalReferralPaymentEvent(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody(), is(expectedResponse));
+    }
+
+
+    @Test
+    public void shouldReturnOK_WhenConfirmServicePaymentEventIsCalled() throws CaseOrchestrationServiceException {
+        final Map<String, Object> caseData = Collections.emptyMap();
+        final CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+        final CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+
+        when(serviceJourneyService.confirmServicePaymentEvent(caseDetails)).thenReturn(caseData);
+
+        final ResponseEntity<CcdCallbackResponse> response = classUnderTest.confirmServicePaymentEvent(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody(), is(expectedResponse));
+    }
+
+    @Test
     public void shouldCallRightServiceMethod_ForPreparingAosNotReceivedForSubmission() throws CaseOrchestrationServiceException {
         when(aosService.prepareAosNotReceivedEventForSubmission(any(), any())).thenReturn(TEST_PAYLOAD_TO_RETURN);
 
@@ -1661,6 +1769,39 @@ public class CallbackControllerTest {
     }
 
     @Test
+    public void shouldReturnOk_whenReturnToStateBeforeGeneralReferralIsCalled() throws CaseOrchestrationServiceException {
+        Map<String, Object> caseData = ImmutableMap.of(
+            CcdFields.GENERAL_REFERRAL_PREVIOUS_CASE_STATE, "previousCaseState");
+        CcdCallbackRequest ccdCallbackRequest = ccdRequestWithData(caseData);
+        when(generalReferralService.returnToStateBeforeGeneralReferral(any()))
+            .thenReturn(CcdCallbackResponse.builder()
+                .state("previousCaseState")
+                .data(caseData)
+                .build());
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.returnToStateBeforeGeneralReferral(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getState(), is("previousCaseState"));
+        verify(generalReferralService).returnToStateBeforeGeneralReferral(ccdCallbackRequest.getCaseDetails());
+    }
+
+    public void shouldReturnOk_whenConfirmProcessServerServiceIsCalled() throws CaseOrchestrationServiceException {
+        when(alternativeServiceService.confirmProcessServerService(TEST_INCOMING_CASE_DETAILS))
+            .thenReturn(CaseDetails.builder().caseData(TEST_PAYLOAD_TO_RETURN)
+                .build());
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(TEST_INCOMING_CASE_DETAILS)
+            .build();
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.confirmProcessServerService(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        assertThat(response.getBody().getData(), is(TEST_PAYLOAD_TO_RETURN));
+        verify(alternativeServiceService).confirmProcessServerService(TEST_INCOMING_CASE_DETAILS);
+    }
+
+    @Test
     public void shouldReturnOk_whenAosNotReceivedForProcessServerIsCalled() throws CaseOrchestrationServiceException {
         CaseDetails caseDetails = CaseDetails.builder().build();
         when(alternativeServiceService.aosNotReceivedForProcessServer(caseDetails))
@@ -1675,4 +1816,35 @@ public class CallbackControllerTest {
         assertThat(response.getStatusCode(), equalTo(OK));
         verify(alternativeServiceService).aosNotReceivedForProcessServer(caseDetails);
     }
+
+    @Test
+    public void shouldReturnOk_whenAlternativeServiceConfirmedIsCalled() throws CaseOrchestrationServiceException {
+        CaseDetails caseDetails = CaseDetails.builder().build();
+        when(alternativeServiceService.alternativeServiceConfirmed(caseDetails))
+            .thenReturn(CaseDetails.builder().build());
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.alternativeServiceConfirmed(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), equalTo(OK));
+        verify(alternativeServiceService).alternativeServiceConfirmed(caseDetails);
+    }
+
+    @Test
+    public void shouldCallAdequateServiceWhenUpdatingCourtOrderDocuments() throws CaseOrchestrationServiceException {
+        when(courtOrderDocumentsUpdateService.updateExistingCourtOrderDocuments(AUTH_TOKEN, TEST_INCOMING_CASE_DETAILS))
+            .thenReturn(TEST_PAYLOAD_TO_RETURN);
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(TEST_INCOMING_CASE_DETAILS).build();
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.updateCourtOrderDocuments(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+        assertThat(response.getBody().getData(), is(TEST_PAYLOAD_TO_RETURN));
+        verify(courtOrderDocumentsUpdateService).updateExistingCourtOrderDocuments(AUTH_TOKEN, TEST_INCOMING_CASE_DETAILS);
+    }
+
 }

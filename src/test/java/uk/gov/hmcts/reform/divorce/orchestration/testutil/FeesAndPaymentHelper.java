@@ -13,6 +13,12 @@ import java.util.Map;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseFieldConstants.FEE_ACCOUNT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseFieldConstants.HELP_WITH_FEE_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.FURTHER_HWF_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.FURTHER_HWF_REFERENCE_NUMBERS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.FURTHER_PBA_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.FURTHER_PBA_REFERENCE_NUMBERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class FeesAndPaymentHelper {
@@ -59,5 +65,21 @@ public class FeesAndPaymentHelper {
         orderSummary.add(feeResponse);
 
         return orderSummary;
+    }
+
+    public static Map<String, Object> buildFurtherPaymentData(String paymentType, String pbaReferenceNumber) {
+        Map<String, Object> caseData = new HashMap<>();
+
+        if (HELP_WITH_FEE_TYPE.equals(paymentType)) {
+            caseData.put(FURTHER_HWF_REFERENCE, pbaReferenceNumber);
+        } else if (FEE_ACCOUNT_TYPE.equals(paymentType)) {
+            caseData.put(FURTHER_PBA_REFERENCE, pbaReferenceNumber);
+        }
+
+        return caseData;
+    }
+
+    public static String getPaymentCollectionProperty(String paymentType) {
+        return HELP_WITH_FEE_TYPE.equals(paymentType) ? FURTHER_HWF_REFERENCE_NUMBERS : FURTHER_PBA_REFERENCE_NUMBERS;
     }
 }
