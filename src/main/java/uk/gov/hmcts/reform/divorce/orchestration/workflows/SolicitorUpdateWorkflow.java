@@ -58,6 +58,7 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
         tasks.add(getSolicitorApplicationSubmittedEmailTask(caseId));
 
         if (featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)) {
+            log.info("Adding OrganisationPolicyReferenceTasks, REPRESENTED_RESPONDENT_JOURNEY feature toggle is set to true.");
             tasks.add(setPetitionerSolicitorOrganisationPolicyReferenceTask);
             tasks.add(setRespondentSolicitorOrganisationPolicyReferenceTask);
         }
