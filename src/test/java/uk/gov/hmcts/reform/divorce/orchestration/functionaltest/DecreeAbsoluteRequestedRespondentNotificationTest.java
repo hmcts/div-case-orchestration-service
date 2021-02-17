@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import com.google.common.collect.ImmutableMap;
-import org.json.JSONObject;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -34,6 +33,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INFERRED_GENDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
@@ -58,8 +59,8 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
     private static final Map<String, Object> CASE_DATA = ImmutableMap.<String, Object>builder()
         .put(PETITIONER_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL)
         .put(RESPONDENT_EMAIL_ADDRESS, TEST_RESPONDENT_EMAIL)
-        .put(D_8_PETITIONER_FIRST_NAME, "D8PetitionerFirstName")
-        .put(D_8_PETITIONER_LAST_NAME, "D8PetitionerLastName")
+        .put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME)
+        .put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME)
         .put(RESP_FIRST_NAME_CCD_FIELD, TEST_RESPONDENT_FIRST_NAME)
         .put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME)
         .put(D_8_CASE_REFERENCE, TEST_CASE_ID)
@@ -79,13 +80,7 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
     public void testThatPetSolAndRespAreSentEmails() throws Exception {
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
 
-        CcdCallbackRequest ccdCallbackRequest = getCcdCallbackRequest(CASE_DATA);
-
-        CcdCallbackResponse expected = CcdCallbackResponse.builder()
-            .data(ccdCallbackRequest.getCaseDetails().getCaseData())
-            .build();
-
-        performEventAPICall(ccdCallbackRequest, expected);
+        callApiEndpointSuccessfully(getCcdCallbackRequest(CASE_DATA));
 
         verify(mockEmailClient).sendEmail(
             eq(DA_APPLICATION_HAS_BEEN_RECEIVED_TEMPLATE_ID),
@@ -111,11 +106,7 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
 
         CcdCallbackRequest ccdCallbackRequest = getCcdCallbackRequest(caseDataWithoutPetSolEmail);
 
-        CcdCallbackResponse expected = CcdCallbackResponse.builder()
-            .data(ccdCallbackRequest.getCaseDetails().getCaseData())
-            .build();
-
-        performEventAPICall(ccdCallbackRequest, expected);
+        callApiEndpointSuccessfully(ccdCallbackRequest);
 
         verify(mockEmailClient, never()).sendEmail(
             eq(DA_APPLICATION_HAS_BEEN_RECEIVED_TEMPLATE_ID),
@@ -138,11 +129,7 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
 
         CcdCallbackRequest ccdCallbackRequest = getCcdCallbackRequest(CASE_DATA);
 
-        CcdCallbackResponse expected = CcdCallbackResponse.builder()
-            .data(ccdCallbackRequest.getCaseDetails().getCaseData())
-            .build();
-
-        performEventAPICall(ccdCallbackRequest, expected);
+        callApiEndpointSuccessfully(ccdCallbackRequest);
 
         verify(mockEmailClient, never()).sendEmail(
             eq(DA_APPLICATION_HAS_BEEN_RECEIVED_TEMPLATE_ID),
@@ -166,13 +153,7 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
         Map<String, Object> caseDataWithoutPetSolEmail = new HashMap<>(CASE_DATA);
         caseDataWithoutPetSolEmail.remove(PETITIONER_SOLICITOR_EMAIL);
 
-        CcdCallbackRequest ccdCallbackRequest = getCcdCallbackRequest(caseDataWithoutPetSolEmail);
-
-        CcdCallbackResponse expected = CcdCallbackResponse.builder()
-            .data(ccdCallbackRequest.getCaseDetails().getCaseData())
-            .build();
-
-        performEventAPICall(ccdCallbackRequest, expected);
+        callApiEndpointSuccessfully(getCcdCallbackRequest(caseDataWithoutPetSolEmail));
 
         verify(mockEmailClient, never()).sendEmail(
             eq(DA_APPLICATION_HAS_BEEN_RECEIVED_TEMPLATE_ID),
@@ -215,7 +196,13 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
             .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
     }
 
-    private void performEventAPICall(CcdCallbackRequest ccdCallbackRequest, CcdCallbackResponse expected) throws Exception {
+    private void callApiEndpointSuccessfully(CcdCallbackRequest ccdCallbackRequest)
+        throws Exception {
+
+        CcdCallbackResponse expected = CcdCallbackResponse.builder()
+            .data(ccdCallbackRequest.getCaseDetails().getCaseData())
+            .build();
+
         webClient.perform(post(API_URL)
             .content(convertObjectToJsonString(ccdCallbackRequest))
             .header(AUTHORIZATION, AUTH_TOKEN)
