@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendSolicitorApplicationSubmittedEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
 
 import java.util.Collections;
@@ -38,6 +39,9 @@ public class SolicitorUpdateWorkflowTest {
 
     @Mock
     SetPetitionerSolicitorOrganisationPolicyReferenceTask setPetitionerSolicitorOrganisationPolicyReferenceDetailTask;
+
+    @Mock
+    SendSolicitorApplicationSubmittedEmailTask sendSolicitorApplicationSubmittedEmailTask;
 
     @Mock
     FeatureToggleService featureToggleService;
@@ -66,7 +70,8 @@ public class SolicitorUpdateWorkflowTest {
         mockTasksExecution(
             caseData,
             addMiniPetitionDraftTask,
-            addNewDocumentsToCaseDataTask
+            addNewDocumentsToCaseDataTask,
+            sendSolicitorApplicationSubmittedEmailTask
         );
 
         Map<String, Object> resultCaseData = solicitorUpdateWorkflow.run(caseDetails, AUTH_TOKEN);
@@ -76,18 +81,20 @@ public class SolicitorUpdateWorkflowTest {
         verifyTasksCalledInOrder(
             caseData,
             addMiniPetitionDraftTask,
-            addNewDocumentsToCaseDataTask
+            addNewDocumentsToCaseDataTask,
+            sendSolicitorApplicationSubmittedEmailTask
         );
     }
 
     @Test
-    public void runShouldRunSetSolicitorOrganisationPolicyDetailsTaskWhenFeatureIsOn() throws Exception {
+    public void runShouldRunSetPetitionerSolicitorOrganisationPolicyReferenceDetailTaskWhenFeatureIsOn() throws Exception {
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
         mockTasksExecution(
             caseData,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
-            setPetitionerSolicitorOrganisationPolicyReferenceDetailTask
+            setPetitionerSolicitorOrganisationPolicyReferenceDetailTask,
+            sendSolicitorApplicationSubmittedEmailTask
         );
 
         Map<String, Object> resultCaseData = solicitorUpdateWorkflow.run(caseDetails, AUTH_TOKEN);
@@ -97,17 +104,19 @@ public class SolicitorUpdateWorkflowTest {
             caseData,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
+            sendSolicitorApplicationSubmittedEmailTask,
             setPetitionerSolicitorOrganisationPolicyReferenceDetailTask
         );
     }
 
     @Test
-    public void runShouldNotRunSetSolicitorOrganisationPolicyDetailsTaskWhenFeatureIsOff() throws Exception {
+    public void runShouldNotRunSetPetitionerSolicitorOrganisationPolicyReferenceDetailTaskWhenFeatureIsOff() throws Exception {
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(false);
         mockTasksExecution(
             caseData,
             addMiniPetitionDraftTask,
-            addNewDocumentsToCaseDataTask
+            addNewDocumentsToCaseDataTask,
+            sendSolicitorApplicationSubmittedEmailTask
         );
 
         Map<String, Object> resultCaseData = solicitorUpdateWorkflow.run(caseDetails, AUTH_TOKEN);
