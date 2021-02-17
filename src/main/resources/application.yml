@@ -567,8 +567,6 @@ management:
       enabled: false
   endpoint:
     health:
-      probes:
-        enabled: true
       show-details: "ALWAYS"
       cache:
         time-to-live: 4000
