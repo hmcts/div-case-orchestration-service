@@ -80,7 +80,8 @@ public class SolicitorDataExtractorTest {
     public void getPetitionerOrganisationPolicyReturnsValidValue() {
         Map<String, Object> caseData = buildCaseDataWithOrganisationPolicy();
 
-        OrganisationPolicy organisationPolicy = SolicitorDataExtractor.getPetitionerOrganisationPolicy(caseData);
+        OrganisationPolicy organisationPolicy = SolicitorDataExtractor
+            .getSolicitorOrganisationPolicy(caseData, PETITIONER_SOLICITOR_ORGANISATION_POLICY);
 
         assertThat(organisationPolicy, notNullValue());
         assertThat(organisationPolicy.getOrgPolicyReference(), is(TEST_SOLICITOR_REFERENCE));

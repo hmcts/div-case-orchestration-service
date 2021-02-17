@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -13,8 +14,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetClaimCostsFromTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorOrganisationPolicyDetailsTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +30,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
@@ -35,7 +38,8 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
     private final AddMiniPetitionDraftTask addMiniPetitionDraftTask;
     private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
     private final SetClaimCostsFromTask setClaimCostsFromTask;
-    private final SetSolicitorOrganisationPolicyDetailsTask setSolicitorOrganisationPolicyDetailsTask;
+    private final SetPetitionerSolicitorOrganisationPolicyReferenceTask setPetitionerSolicitorOrganisationPolicyReferenceTask;
+    private final SetRespondentSolicitorOrganisationPolicyReferenceTask setRespondentSolicitorOrganisationPolicyReferenceTask;
     private final FeatureToggleService featureToggleService;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
@@ -68,7 +72,9 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
         tasks.add(addNewDocumentsToCaseDataTask);
 
         if (featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)) {
-            tasks.add(setSolicitorOrganisationPolicyDetailsTask);
+            log.info("Adding OrganisationPolicyReferenceTasks, REPRESENTED_RESPONDENT_JOURNEY feature toggle is set to true.");
+            tasks.add(setPetitionerSolicitorOrganisationPolicyReferenceTask);
+            tasks.add(setRespondentSolicitorOrganisationPolicyReferenceTask);
         }
 
         return tasks.toArray(new Task[] {});

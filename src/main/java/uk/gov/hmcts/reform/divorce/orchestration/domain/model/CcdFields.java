@@ -75,5 +75,6 @@ public class CcdFields {
     public static final String SERVED_BY_ALTERNATIVE_METHOD = "ServedByAlternativeMethod";
 
     public static final String PETITIONER_SOLICITOR_ORGANISATION_POLICY = "PetitionerOrganisationPolicy";
+    public static final String RESPONDENT_SOLICITOR_ORGANISATION_POLICY = "RespondentOrganisationPolicy";
 
 }
