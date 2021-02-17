@@ -513,11 +513,11 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> solicitorSubmission(CcdCallbackRequest ccdCallbackRequest,
-                                                   String authToken) throws WorkflowException {
+    public Map<String, Object> solicitorSubmission(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
 
-        Map<String, Object> payLoad = solicitorSubmissionWorkflow.run(ccdCallbackRequest, authToken);
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        log.info("About to run solicitorSubmission service method for case id {}", caseId);
+        Map<String, Object> payLoad = solicitorSubmissionWorkflow.run(ccdCallbackRequest, authToken);
 
         if (solicitorSubmissionWorkflow.errors().isEmpty()) {
             log.info("CaseID: {} Callback pay by account for solicitor successfully completed.", caseId);

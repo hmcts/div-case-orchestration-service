@@ -165,7 +165,7 @@ public class ControllerUtilsTest {
         Map<String, Object> errors = new HashMap<>();
         errors.put(TEST_ERROR, singletonList(TEST_ERROR_CONTENT));
 
-        assertThat(ControllerUtils.isResponseErrors(TEST_ERROR, errors), is(true));
+        assertThat(ControllerUtils.hasErrorKeyInResponse(TEST_ERROR, errors), is(true));
     }
 
     @Test
@@ -178,12 +178,12 @@ public class ControllerUtilsTest {
 
     @Test
     public void givenValidResponse_thenContainsNoErrors() {
-        assertThat(ControllerUtils.isResponseErrors(TEST_ERROR, Collections.emptyMap()), is(false));
+        assertThat(ControllerUtils.hasErrorKeyInResponse(TEST_ERROR, Collections.emptyMap()), is(false));
     }
 
     @Test
     public void givenNullError_thenContainsNoErrors() {
-        assertThat(ControllerUtils.isResponseErrors(TEST_ERROR, null), is(false));
+        assertThat(ControllerUtils.hasErrorKeyInResponse(TEST_ERROR, null), is(false));
     }
 
     @Test
