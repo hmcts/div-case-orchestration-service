@@ -19,10 +19,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.SetupC
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_REFERRAL_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_REFERRAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_SERVICE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationBailiff;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationGranted;
@@ -110,10 +110,12 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
     public CcdCallbackResponse confirmServicePaymentEvent(CaseDetails caseDetails, String authorisation) throws ServiceJourneyServiceException {
         CcdCallbackResponse.CcdCallbackResponseBuilder builder = CcdCallbackResponse.builder();
 
-        if(Conditions.isServiceApplicationBailiff(caseDetails.getCaseData()))
-            builder.state(AWAITING_BAILIFF_REFERRAL_STATE);
-        else
-            builder.state(AWAITING_SERVICE_CONSIDERATION_STATE);
+        if (Conditions.isServiceApplicationBailiff(caseDetails.getCaseData())) {
+            builder.state(AWAITING_BAILIFF_REFERRAL);
+        }
+        else {
+            builder.state(AWAITING_SERVICE_CONSIDERATION);
+        }
 
         try {
             builder.data(furtherPaymentWorkflow.run(caseDetails, getServiceApplicationPaymentType()));
