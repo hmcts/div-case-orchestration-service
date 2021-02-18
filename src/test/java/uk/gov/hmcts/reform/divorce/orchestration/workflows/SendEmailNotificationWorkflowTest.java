@@ -13,7 +13,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerUpdateNotificationsEmailTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.notification.SendNoticeOfProceedingsEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.notification.SendPetitionerNoticeOfProceedingsEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.notification.SendRespondentNoticeOfProceedingsEmailTask;
 
 import java.util.Collections;
 import java.util.Map;
@@ -29,26 +30,31 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.ve
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksWereNeverCalled;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SendPetitionerEmailNotificationWorkflowTest {
+public class SendEmailNotificationWorkflowTest {
 
     @Mock
     private SendPetitionerUpdateNotificationsEmailTask sendPetitionerUpdateNotificationsEmailTask;
 
     @Mock
-    private SendNoticeOfProceedingsEmailTask sendNoticeOfProceedingsEmailTask;
+    private SendPetitionerNoticeOfProceedingsEmailTask sendPetitionerNoticeOfProceedingsEmailTask;
+
+    @Mock
+    private SendRespondentNoticeOfProceedingsEmailTask sendRespondentNoticeOfProceedingsEmailTask;
 
     @Mock
     private FeatureToggleService featureToggleService;
 
     @InjectMocks
-    private SendPetitionerEmailNotificationWorkflow sendPetitionerEmailNotificationWorkflow;
+    private SendEmailNotificationWorkflow sendEmailNotificationWorkflow;
 
     @Test
     public void executeSendNoticeOfProceedingsEmailTaskWhenIssueAosEvent() throws Exception {
         when(featureToggleService.isFeatureEnabled(Features.SOLICITOR_DN_REJECT_AND_AMEND)).thenReturn(true);
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
         runTestForEventExpectTaskToBeCalled(
-            SendNoticeOfProceedingsEmailTask.EVENT_ISSUE_AOS,
-            sendNoticeOfProceedingsEmailTask
+            SendPetitionerNoticeOfProceedingsEmailTask.EVENT_ISSUE_AOS,
+            sendPetitionerNoticeOfProceedingsEmailTask,
+            sendRespondentNoticeOfProceedingsEmailTask
         );
         verifyTasksWereNeverCalled(sendPetitionerUpdateNotificationsEmailTask);
     }
@@ -56,36 +62,38 @@ public class SendPetitionerEmailNotificationWorkflowTest {
     @Test
     public void executeSendNoticeOfProceedingsEmailTaskWhenIssueAosFromReissueEvent() throws Exception {
         when(featureToggleService.isFeatureEnabled(Features.SOLICITOR_DN_REJECT_AND_AMEND)).thenReturn(true);
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
         runTestForEventExpectTaskToBeCalled(
-            SendNoticeOfProceedingsEmailTask.EVENT_ISSUE_AOS_FROM_REISSUE,
-            sendNoticeOfProceedingsEmailTask
+            SendPetitionerNoticeOfProceedingsEmailTask.EVENT_ISSUE_AOS_FROM_REISSUE,
+            sendPetitionerNoticeOfProceedingsEmailTask,
+            sendRespondentNoticeOfProceedingsEmailTask
         );
         verifyTasksWereNeverCalled(sendPetitionerUpdateNotificationsEmailTask);
     }
 
     @Test
     public void executeSendPetitionerUpdateNotificationsEmailTask() throws Exception {
-        when(featureToggleService.isFeatureEnabled(Features.SOLICITOR_DN_REJECT_AND_AMEND)).thenReturn(true);
         runTestForEventExpectTaskToBeCalled("any-event", sendPetitionerUpdateNotificationsEmailTask);
-        verifyTasksWereNeverCalled(sendNoticeOfProceedingsEmailTask);
+        verifyTasksWereNeverCalled(sendPetitionerNoticeOfProceedingsEmailTask, sendRespondentNoticeOfProceedingsEmailTask);
     }
 
     @Test
     public void executeSendNoticeOfProceedingsEmailTaskWhenFeatureToggleOff() throws Exception {
         when(featureToggleService.isFeatureEnabled(Features.SOLICITOR_DN_REJECT_AND_AMEND)).thenReturn(false);
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(false);
         runTestForEventExpectTaskToBeCalled(
-            SendNoticeOfProceedingsEmailTask.EVENT_ISSUE_AOS_FROM_REISSUE,
+            SendPetitionerNoticeOfProceedingsEmailTask.EVENT_ISSUE_AOS_FROM_REISSUE,
             sendPetitionerUpdateNotificationsEmailTask
         );
-        verifyTasksWereNeverCalled(sendNoticeOfProceedingsEmailTask);
+        verifyTasksWereNeverCalled(sendPetitionerNoticeOfProceedingsEmailTask, sendRespondentNoticeOfProceedingsEmailTask);
     }
 
-    private void runTestForEventExpectTaskToBeCalled(String eventId, Task<Map<String, Object>> task) throws TaskException, WorkflowException {
+    private void runTestForEventExpectTaskToBeCalled(String eventId, Task<Map<String, Object>>... task) throws TaskException, WorkflowException {
         Map<String, Object> testData = Collections.emptyMap();
 
         mockTasksExecution(testData, task);
 
-        Map<String, Object> returnedCaseData = sendPetitionerEmailNotificationWorkflow
+        Map<String, Object> returnedCaseData = sendEmailNotificationWorkflow
             .run(buildCcdCallbackRequest(testData, eventId));
 
         assertThat(returnedCaseData, is(testData));

@@ -12,29 +12,27 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.EmailConstants.RESPONDENT_SOLICITOR_ORGANISATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_SOLICITOR_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerFullName;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerSolicitorFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getRespondentFullName;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getRespondentSolicitorFullName;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.SolicitorDataExtractor.getRespondentSolicitorOrganisation;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerRepresented;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class SendNoticeOfProceedingsEmailTask implements Task<Map<String, Object>> {
+public class SendRespondentNoticeOfProceedingsEmailTask implements Task<Map<String, Object>> {
 
     public static final String EVENT_ISSUE_AOS_FROM_REISSUE = "issueAosFromReissue";
     public static final String EVENT_ISSUE_AOS = "issueAos";
@@ -47,39 +45,23 @@ public class SendNoticeOfProceedingsEmailTask implements Task<Map<String, Object
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
         String caseId = getCaseId(context);
 
-        if (isPetitionerRepresented(caseData)) {
-            log.info("CaseId: {}. Notice Of Proceedings. Sending email to solicitor.", caseId);
-            return sendNoticeOfProceedingsToPetitionerSolicitor(context, caseData);
+        if (isRespondentSolicitorDigital(caseData)) {
+            log.info("CaseId: {}. Respondent Notice Of Proceedings. Sending email to respondent solicitor.", caseId);
+            return sendNoticeOfProceedingsToRespondentSolicitor(context, caseData);
         }
 
-        log.info("CaseId: {}. Notice Of Proceedings. Sending email to petitioner.", caseId);
-        return sendNoticeOfProceedingsToPetitioner(caseData);
+        return caseData;
     }
 
-    private Map<String, Object> sendNoticeOfProceedingsToPetitionerSolicitor(TaskContext context, Map<String, Object> payload) throws TaskException {
-        String solicitorEmail = getMandatoryStringValue(payload, PETITIONER_SOLICITOR_EMAIL);
+    private Map<String, Object> sendNoticeOfProceedingsToRespondentSolicitor(TaskContext context, Map<String, Object> payload) throws TaskException {
+        String solicitorEmail = getMandatoryStringValue(payload, RESPONDENT_SOLICITOR_EMAIL_ADDRESS);
         LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(payload);
 
         emailService.sendEmail(
             solicitorEmail,
-            EmailTemplateNames.SOL_PETITIONER_NOTICE_OF_PROCEEDINGS.name(),
+            EmailTemplateNames.SOL_RESPONDENT_NOTICE_OF_PROCEEDINGS.name(),
             getPersonalisationForSolicitor(context, payload),
-            EMAIL_DESCRIPTION + "- Solicitor",
-            languagePreference
-        );
-
-        return payload;
-    }
-
-    private Map<String, Object> sendNoticeOfProceedingsToPetitioner(Map<String, Object> payload) {
-        String petitionerEmail = getMandatoryStringValue(payload, D_8_PETITIONER_EMAIL);
-        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(payload);
-
-        emailService.sendEmail(
-            petitionerEmail,
-            EmailTemplateNames.PETITIONER_NOTICE_OF_PROCEEDINGS.name(),
-            getPersonalisationForPetitioner(payload),
-            EMAIL_DESCRIPTION,
+            EMAIL_DESCRIPTION + "- Respondent Solicitor",
             languagePreference
         );
 
@@ -92,18 +74,9 @@ public class SendNoticeOfProceedingsEmailTask implements Task<Map<String, Object
             NOTIFICATION_PET_NAME, getPetitionerFullName(payload),
             NOTIFICATION_RESP_NAME, getRespondentFullName(payload),
             NOTIFICATION_CCD_REFERENCE_KEY, getCaseId(context),
-            NOTIFICATION_SOLICITOR_NAME, getPetitionerSolicitorFullName(payload)
+            NOTIFICATION_SOLICITOR_NAME, getRespondentSolicitorFullName(payload),
+            RESPONDENT_SOLICITOR_ORGANISATION, getRespondentSolicitorOrganisation(payload).getOrganisation().getOrganisationName()
         );
-    }
-
-    private Map<String, String> getPersonalisationForPetitioner(Map<String, Object> payload) {
-        Map<String, String> personalisation = new HashMap<>();
-
-        personalisation.put(NOTIFICATION_CASE_NUMBER_KEY, getMandatoryStringValue(payload, D_8_CASE_REFERENCE));
-        personalisation.put(NOTIFICATION_PET_NAME, getPetitionerFullName(payload));
-        personalisation.put(NOTIFICATION_RESP_NAME, getRespondentFullName(payload));
-
-        return personalisation;
     }
 
     public static boolean isEventSupported(String eventId) {

@@ -14,7 +14,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
-import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerEmailNotificationWorkflowTest.buildCcdCallbackRequest;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SendEmailNotificationWorkflowTest.buildCcdCallbackRequest;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SendPetitionerSubmissionNotificationWorkflowTest {

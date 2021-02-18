@@ -11,8 +11,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerUpdateNotificationsEmailTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.notification.SendNoticeOfProceedingsEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.notification.SendPetitionerNoticeOfProceedingsEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.notification.SendRespondentNoticeOfProceedingsEmailTask;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
@@ -21,10 +24,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class SendPetitionerEmailNotificationWorkflow extends DefaultWorkflow<Map<String, Object>> {
+public class SendEmailNotificationWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final SendPetitionerUpdateNotificationsEmailTask sendPetitionerUpdateNotificationsEmailTask;
-    private final SendNoticeOfProceedingsEmailTask sendNoticeOfProceedingsEmailTask;
+    private final SendPetitionerNoticeOfProceedingsEmailTask sendPetitionerNoticeOfProceedingsEmailTask;
+    private final SendRespondentNoticeOfProceedingsEmailTask sendRespondentNoticeOfProceedingsEmailTask;
 
     private final FeatureToggleService featureToggleService;
 
@@ -47,21 +51,29 @@ public class SendPetitionerEmailNotificationWorkflow extends DefaultWorkflow<Map
     }
 
     private Task<Map<String, Object>>[] getTasks(String caseId, String eventId) {
-        if (isSolicitorDnRejectedEnabled() && SendNoticeOfProceedingsEmailTask.isEventSupported(eventId)) {
+        List<Task<Map<String, Object>>> tasks = new ArrayList<>();
+
+        if (isRepresentedRespondentJourneyEnabled() && SendRespondentNoticeOfProceedingsEmailTask.isEventSupported(eventId)) {
+            log.info("CaseId: {} adding sendRespondentNoticeOfProceedingsEmailTask", caseId);
+            tasks.add(sendRespondentNoticeOfProceedingsEmailTask);
+        }
+
+        if (isSolicitorDnRejectedEnabled() && SendPetitionerNoticeOfProceedingsEmailTask.isEventSupported(eventId)) {
             log.info("CaseId: {} adding sendNoticeOfProceedingsEmailTask", caseId);
-            return new Task[] {
-                sendNoticeOfProceedingsEmailTask
-            };
+            tasks.add(sendPetitionerNoticeOfProceedingsEmailTask);
+            return tasks.toArray(new Task[] {});
         }
 
         log.info("CaseId: {} adding sendPetitionerUpdateNotificationsEmailTask", caseId);
-
-        return new Task[] {
-            sendPetitionerUpdateNotificationsEmailTask
-        };
+        tasks.add(sendPetitionerUpdateNotificationsEmailTask);
+        return tasks.toArray(new Task[] {});
     }
 
     private boolean isSolicitorDnRejectedEnabled() {
         return featureToggleService.isFeatureEnabled(Features.SOLICITOR_DN_REJECT_AND_AMEND);
+    }
+
+    private boolean isRepresentedRespondentJourneyEnabled() {
+        return featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY);
     }
 }
