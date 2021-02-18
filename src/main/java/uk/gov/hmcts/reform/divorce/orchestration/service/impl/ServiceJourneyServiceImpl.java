@@ -112,8 +112,7 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
 
         if (Conditions.isServiceApplicationBailiff(caseDetails.getCaseData())) {
             builder.state(AWAITING_BAILIFF_REFERRAL);
-        }
-        else {
+        } else {
             builder.state(AWAITING_SERVICE_CONSIDERATION);
         }
 
