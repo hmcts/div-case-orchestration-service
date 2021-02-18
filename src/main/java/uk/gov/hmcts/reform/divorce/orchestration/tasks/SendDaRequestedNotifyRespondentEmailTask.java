@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
@@ -57,9 +58,15 @@ public class SendDaRequestedNotifyRespondentEmailTask implements Task<Map<String
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
+        final String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
+
+        log.info("CaseId: {} trying to send email to respondent/solicitor", caseId);
+
         if (shouldEmailBeSentToRespondent(caseData)) {
-            sendEmailToRespondent(caseData);
+            log.info("CaseId: {} email to respondent", caseId);
+            sendEmailToRespondent(caseData, caseId);
         } else if (shouldEmailBeSentToRespondentSolicitor(caseData)) {
+            log.info("CaseId: {} email to respondent solicitor", caseId);
             CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
             sendEmailToRespondentSolicitor(caseData, caseDetails.getCaseId());
         } else {
@@ -68,6 +75,8 @@ public class SendDaRequestedNotifyRespondentEmailTask implements Task<Map<String
                 caseData.get(D_8_CASE_REFERENCE)
             );
         }
+
+        log.info("CaseId: {} email to respondent/solicitor should be sent", caseId);
 
         return caseData;
     }
@@ -84,12 +93,13 @@ public class SendDaRequestedNotifyRespondentEmailTask implements Task<Map<String
         return StringUtils.isNotBlank(emailAddress);
     }
 
-    private void sendEmailToRespondent(Map<String, Object> caseData) throws TaskException {
+    private void sendEmailToRespondent(Map<String, Object> caseData, String caseId) throws TaskException {
         Map<String, String> templateVars = prepareEmailTemplateVars(caseData);
         String emailAddress = (String) caseData.get(RESPONDENT_EMAIL_ADDRESS);
         LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
         templateVars.put(NOTIFICATION_EMAIL_ADDRESS_KEY, emailAddress);
 
+        log.info("CaseId: {} triggering email to respondent. Size of template vars {}", caseId, templateVars.size());
         send(emailAddress, DECREE_ABSOLUTE_REQUESTED_NOTIFICATION, templateVars, REQUESTED_BY_APPLICANT, languagePreference);
     }
 
@@ -100,7 +110,14 @@ public class SendDaRequestedNotifyRespondentEmailTask implements Task<Map<String
         templateVars.put(NOTIFICATION_EMAIL_ADDRESS_KEY, emailAddress);
         templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, caseId);
 
-        send(emailAddress, DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_SOLICITOR, templateVars, REQUESTED_BY_SOLICITOR , languagePreference);
+        log.info("CaseId: {} triggering email to respondent solicitor. Size of template vars {}", caseId, templateVars.size());
+        send(
+            emailAddress,
+            DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_SOLICITOR,
+            templateVars,
+            REQUESTED_BY_SOLICITOR,
+            languagePreference
+        );
     }
 
     private void send(
