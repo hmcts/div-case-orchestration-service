@@ -241,6 +241,13 @@ public interface CosApiClient {
         @RequestBody CcdCallbackRequest ccdCallbackRequest
     );
 
+    @ApiOperation("Handle callback for migrate cheque payment")
+    @PostMapping(value = "/migrate-cheque-payment")
+    ResponseEntity<CcdCallbackResponse> migrateChequePayment(
+        @RequestHeader(AUTHORIZATION) String authorisation,
+        @RequestBody CcdCallbackRequest ccdCallbackRequest
+    );
+
     @ApiOperation("Handle callback for Fee lookup")
     @PostMapping(value = "/set-up-confirm-service-payment")
     CcdCallbackResponse setupConfirmServicePayment(@RequestBody CcdCallbackRequest ccdCallbackRequest);

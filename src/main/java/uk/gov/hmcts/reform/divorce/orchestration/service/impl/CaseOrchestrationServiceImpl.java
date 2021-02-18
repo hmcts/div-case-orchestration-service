@@ -42,6 +42,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDecreeAbsoluteWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.MigrateChequePaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.PetitionerSolicitorRoleWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveDNDocumentsWorkflow;
@@ -195,6 +196,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SendClarificationSubmittedNotificationWorkflow sendClarificationSubmittedNotificationWorkflow;
     private final CreateNewAmendedCaseAndSubmitToCCDWorkflow createNewAmendedCaseAndSubmitToCCDWorkflow;
     private final FeatureToggleService featureToggleService;
+    private final MigrateChequePaymentWorkflow migrateChequePaymentWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -1027,4 +1029,17 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         }
     }
 
+    @Override
+    public Map<String, Object> migrateChequePayment(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        Map<String, Object> response = migrateChequePaymentWorkflow.run(ccdCallbackRequest, authUtil.getCaseworkerToken());
+
+        if (migrateChequePaymentWorkflow.errors().isEmpty()) {
+            return response;
+        } else {
+            Map<String, Object> workflowErrors = migrateChequePaymentWorkflow.errors();
+            log.error("CASE ID: {} failed {}. ",
+                ccdCallbackRequest.getCaseDetails().getCaseId(), workflowErrors);
+            return migrateChequePaymentWorkflow.errors();
+        }
+    }
 }

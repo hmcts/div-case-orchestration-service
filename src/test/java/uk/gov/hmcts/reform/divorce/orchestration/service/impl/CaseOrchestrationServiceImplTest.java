@@ -47,6 +47,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.JudgeCostsDecisionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDecreeAbsoluteWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.MigrateChequePaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.PetitionerSolicitorRoleWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveDNDocumentsWorkflow;
@@ -361,6 +362,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private WelshSetPreviousStateWorkflow welshSetPreviousStateWorkflow;
+
+    @Mock
+    private MigrateChequePaymentWorkflow migrateChequePaymentWorkflow;
 
     @Mock
     private JudgeCostsDecisionWorkflow judgeCostsDecisionWorkflow;
@@ -2033,6 +2037,13 @@ public class CaseOrchestrationServiceImplTest {
 
         List<String> errors = workflowErrors.values().stream().map(String.class::cast).collect(Collectors.toList());
         assertThat(ccdCallbackResponse.getErrors(), is(errors));
+    }
+
+    @Test
+    public void shouldSetExpectedField_WhenJudgeCostsDecision() {
+        Map<String, Object> result = classUnderTest.judgeCostsDecision(buildCcdCallbackRequest(new HashMap<>()));
+
+        assertThat(result.get(JUDGE_COSTS_DECISION), is(YES_VALUE));
     }
 
     private CcdCallbackRequest buildCcdCallbackRequest(Map<String, Object> requestPayload) {
