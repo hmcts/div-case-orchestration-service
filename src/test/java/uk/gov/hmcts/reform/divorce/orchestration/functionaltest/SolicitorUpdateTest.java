@@ -3,14 +3,17 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Organisation;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
@@ -24,6 +27,8 @@ import static java.util.Collections.singletonMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.verify;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -50,12 +55,18 @@ public class SolicitorUpdateTest extends IdamTestSupport {
 
     private static final String API_URL = "/solicitor-update";
     private static final String DRAFT_MINI_PETITION_TEMPLATE_NAME = "divorcedraftminipetition";
+    private static final String SOL_APPLICANT_APPLICATION_SUBMITTED_TEMPLATE_ID = "93c79e53-e638-42a6-8584-7d19604e7697";
 
     @Autowired
     private CcdUtil ccdUtil;
 
     @Autowired
     private MockMvc webClient;
+
+    @MockBean
+    private EmailClient mockEmailClient;
+
+    private FeatureToggleService featureToggleService;
 
     // update all test methods' names
     // add feature toggles and see how it woudl work for feature toggle ON/OFF
@@ -73,19 +84,16 @@ public class SolicitorUpdateTest extends IdamTestSupport {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        // update to verify email was sent
-    }
-
-    private void stubDgsCall(CcdCallbackRequest ccdCallbackRequest) {
-        stubDraftDocumentGeneratorService(
-            DRAFT_MINI_PETITION_TEMPLATE_NAME,
-            singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequest.getCaseDetails()),
-            AddMiniPetitionDraftTask.DOCUMENT_TYPE
+        verify(mockEmailClient).sendEmail(
+            eq(SOL_APPLICANT_APPLICATION_SUBMITTED_TEMPLATE_ID),
+            eq(TEST_SOLICITOR_EMAIL),
+            any(),
+            anyString()
         );
     }
 
     @Test
-    public void givenCaseData_whenSolicitorCreate_thenReturnWithMappedOrgPolicyReferences() throws Exception {
+    public void givenCaseData_whenSolicitorUpdate_AndRepresentedRespondentJourneyIsOff_thenReturnWithMappedOrgPolicyReferences() throws Exception {
         CcdCallbackRequest ccdCallbackRequest = buildRequest();
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
         caseData.put(SOLICITOR_REFERENCE_JSON_KEY, TEST_SOLICITOR_REFERENCE);
@@ -129,10 +137,6 @@ public class SolicitorUpdateTest extends IdamTestSupport {
         );
     }
 
-    private Matcher<? super Object> assertPetitionerOrganisationPolicyFieldIsPopulated() {
-        return hasJsonPath("$.data.PetitionerOrganisationPolicy.OrgPolicyReference", is(TEST_SOLICITOR_REFERENCE));
-    }
-
     @Test
     public void givenCaseData_whenSolicitorCreate_AndNoSolicitorReferencesThenReturnWithNoOrganisationPolicyReferences() throws Exception {
         CcdCallbackRequest ccdCallbackRequest = buildRequest();
@@ -148,6 +152,14 @@ public class SolicitorUpdateTest extends IdamTestSupport {
                 hasNoJsonPath("$.data.respondentSolicitorReference"),
                 hasNoJsonPath("$.data.RespondentOrganisationPolicy")
             )
+        );
+    }
+
+    private void stubDgsCall(CcdCallbackRequest ccdCallbackRequest) {
+        stubDraftDocumentGeneratorService(
+            DRAFT_MINI_PETITION_TEMPLATE_NAME,
+            singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequest.getCaseDetails()),
+            AddMiniPetitionDraftTask.DOCUMENT_TYPE
         );
     }
 
@@ -187,5 +199,9 @@ public class SolicitorUpdateTest extends IdamTestSupport {
         return OrganisationPolicy.builder()
             .organisation(Organisation.builder().build())
             .build();
+    }
+
+    private Matcher<? super Object> assertPetitionerOrganisationPolicyFieldIsPopulated() {
+        return hasJsonPath("$.data.PetitionerOrganisationPolicy.OrgPolicyReference", is(TEST_SOLICITOR_REFERENCE));
     }
 }
