@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.CourtAllocationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DeleteDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DuplicateCaseValidationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetNewLegalConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SubmitCaseToCCD;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseDataTask;
 
@@ -53,6 +54,9 @@ public class SubmitToCCDWorkflowTest {
     @Mock
     private DuplicateCaseValidationTask duplicateCaseValidationTask;
 
+    @Mock
+    private SetNewLegalConnectionPolicyTask setNewLegalConnectionPolicyTask;
+
     @InjectMocks
     private SubmitToCCDWorkflow submitToCCDWorkflow;
 
@@ -75,6 +79,7 @@ public class SubmitToCCDWorkflowTest {
         });
         when(duplicateCaseValidationTask.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
         when(formatDivorceSessionToCaseDataTask.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
+        when(setNewLegalConnectionPolicyTask.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
         when(validateCaseDataTask.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
         when(submitCaseToCCD.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
         when(deleteDraftTask.execute(any(), eq(incomingPayload))).thenReturn(singletonMap("Hello", "World"));
@@ -86,6 +91,7 @@ public class SubmitToCCDWorkflowTest {
         verify(duplicateCaseValidationTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
         verify(courtAllocationTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
         verify(formatDivorceSessionToCaseDataTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
+        verify(setNewLegalConnectionPolicyTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
         verify(validateCaseDataTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
         verify(submitCaseToCCD).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
         verify(deleteDraftTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
