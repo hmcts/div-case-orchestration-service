@@ -539,8 +539,16 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> allowShareACase(CcdCallbackRequest ccdCallbackRequest, String authorizationToken) throws WorkflowException {
-        return allowShareACaseWorkflow.run(ccdCallbackRequest.getCaseDetails(), authorizationToken);
+    public Map<String, Object> allowShareACase(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
+        throws CaseOrchestrationServiceException {
+
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+
+        try {
+            return allowShareACaseWorkflow.run(caseDetails, authorizationToken);
+        } catch (WorkflowException workflowException) {
+            throw new CaseOrchestrationServiceException(workflowException, caseDetails.getCaseId());
+        }
     }
 
     @Override
