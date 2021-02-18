@@ -43,6 +43,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDecreeAbsoluteWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.MigrateChequePaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.PetitionerSolicitorRoleWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ProcessAwaitingPronouncementCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveDNDocumentsWorkflow;
@@ -346,6 +347,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private AllowShareACaseWorkflow allowShareACaseWorkflow;
+
+    @Mock
+    private MigrateChequePaymentWorkflow migrateChequePaymentWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -1744,6 +1748,19 @@ public class CaseOrchestrationServiceImplTest {
 
         assertThat(exception.getCause(), isA(WorkflowException.class));
         assertThat(exception.getCaseId().get(), is(TEST_CASE_ID));
+    }
+
+    @Test
+    public void shouldCallMigrateChequePaymentWorkflow() throws WorkflowException {
+
+        ccdCallbackRequest = buildCcdCallbackRequest(requestPayload);
+
+        when(authUtil.getCaseworkerToken()).thenReturn(AUTH_TOKEN);
+        when(migrateChequePaymentWorkflow.run(ccdCallbackRequest, AUTH_TOKEN)).thenReturn(expectedPayload);
+
+        classUnderTest.migrateChequePayment(ccdCallbackRequest);
+
+        verify(migrateChequePaymentWorkflow).run(ccdCallbackRequest, AUTH_TOKEN);
     }
 
     private CcdCallbackRequest buildCcdCallbackRequest(Map<String, Object> requestPayload) {

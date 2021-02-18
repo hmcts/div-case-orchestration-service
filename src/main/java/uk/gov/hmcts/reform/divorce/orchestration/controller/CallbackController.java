@@ -335,6 +335,37 @@ public class CallbackController {
             .build());
     }
 
+
+    @PostMapping(path = "/migrate-cheque-payment", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Migrate case dataq for a case where payment method if cheque")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Case has been successfully migrated",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> migrateChequePayment(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        log.info("/migrate-cheque-payment endpoint called for caseId {}",
+            ccdCallbackRequest.getCaseDetails().getCaseId());
+
+        Map<String, Object> response;
+
+        try {
+            response = caseOrchestrationService.migrateChequePayment(ccdCallbackRequest);
+        } catch (Exception e) {
+            return ResponseEntity.ok(
+                CcdCallbackResponse.builder()
+                    .data(ccdCallbackRequest.getCaseDetails().getCaseData())
+                    .errors(singletonList(e.getMessage()))
+                    .build()
+            );
+        }
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(response)
+                .build());
+    }
+
     @PostMapping(path = "/default-values",
         consumes = MediaType.APPLICATION_JSON,
         produces = MediaType.APPLICATION_JSON)
