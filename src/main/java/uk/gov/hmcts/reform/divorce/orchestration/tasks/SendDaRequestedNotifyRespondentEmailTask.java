@@ -94,9 +94,9 @@ public class SendDaRequestedNotifyRespondentEmailTask implements Task<Map<String
     }
 
     private void sendEmailToRespondent(Map<String, Object> caseData, String caseId) throws TaskException {
-        Map<String, String> templateVars = prepareEmailTemplateVars(caseData);
-        String emailAddress = (String) caseData.get(RESPONDENT_EMAIL_ADDRESS);
-        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
+        final Map<String, String> templateVars = prepareEmailTemplateVars(caseData);
+        final String emailAddress = (String) caseData.get(RESPONDENT_EMAIL_ADDRESS);
+        final LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
         templateVars.put(NOTIFICATION_EMAIL_ADDRESS_KEY, emailAddress);
 
         log.info("CaseId: {} triggering email to respondent. Size of template vars {}", caseId, templateVars.size());
@@ -104,9 +104,9 @@ public class SendDaRequestedNotifyRespondentEmailTask implements Task<Map<String
     }
 
     private void sendEmailToRespondentSolicitor(Map<String, Object> caseData, String caseId) throws TaskException {
-        Map<String, String> templateVars = prepareEmailTemplateVarsForSol(caseData);
-        String emailAddress = (String) caseData.get(RESPONDENT_SOLICITOR_EMAIL_ADDRESS);
-        LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
+        final Map<String, String> templateVars = prepareEmailTemplateVarsForSol(caseData);
+        final String emailAddress = (String) caseData.get(RESPONDENT_SOLICITOR_EMAIL_ADDRESS);
+        final LanguagePreference languagePreference = CaseDataUtils.getLanguagePreference(caseData);
         templateVars.put(NOTIFICATION_EMAIL_ADDRESS_KEY, emailAddress);
         templateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, caseId);
 
