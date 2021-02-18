@@ -187,7 +187,7 @@ public class ServiceJourneyServiceImplTest {
 
         when(furtherPaymentWorkflow.run(eq(caseDetails), anyString())).thenReturn(new HashMap<>());
 
-        classUnderTest.confirmServicePaymentEvent(caseDetails);
+        classUnderTest.confirmServicePaymentEvent(caseDetails, AUTH_TOKEN);
 
         verify(furtherPaymentWorkflow).run(eq(caseDetails), anyString());
     }

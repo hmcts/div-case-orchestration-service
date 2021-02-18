@@ -38,4 +38,6 @@ public class CcdStates {
     public static final String AWAITING_ALTERNATIVE_SERVICE = "AwaitingAlternativeService";
     public static final String AWAITING_PROCESS_SERVER_SERVICE = "AwaitingProcessServerService";
     public static final String AWAITING_DWP_RESPONSE = "AwaitingDWPResponse";
+    public static final String AWAITING_BAILIFF_REFERRAL_STATE = "AwaitingBailiffReferral";
+    public static final String AWAITING_SERVICE_CONSIDERATION_STATE = "AwaitingServiceConsideration";
 }

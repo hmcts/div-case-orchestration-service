@@ -46,8 +46,8 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.AWAITING_BAILIFF_REFERRAL_STATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.AWAITING_SERVICE_CONSIDERATION_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_REFERRAL_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_PRINT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_LIST_FOR_PRONOUNCEMENT_DOCUMENT_TYPE;
@@ -1310,16 +1310,16 @@ public class CallbackController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Service payment confirmation callback")})
     public ResponseEntity<CcdCallbackResponse> confirmServicePaymentEvent(
+            @RequestHeader(AUTHORIZATION_HEADER)
+            @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
 
         return ResponseEntity.ok(
-            CcdCallbackResponse.builder()
-                .state(Conditions.isServiceApplicationBailiff(caseDetails.getCaseData()) ?
-                        AWAITING_BAILIFF_REFERRAL_STATE : AWAITING_SERVICE_CONSIDERATION_STATE)
-                .data(serviceJourneyService.confirmServicePaymentEvent(caseDetails))
-                .build());
+                serviceJourneyService
+                        .confirmServicePaymentEvent(ccdCallbackRequest.getCaseDetails(), authorizationToken)
+        );
     }
 
     @PostMapping(path = "/set-up-order-summary/without-notice-fee")
