@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PopulateExistingCollections;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetNewLegalConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 
 import java.util.Collections;
@@ -32,6 +33,9 @@ public class UpdateToCCDWorkflowTest {
 
     @Mock
     private PopulateExistingCollections populateExistingCollections;
+
+    @Mock
+    private SetNewLegalConnectionPolicyTask setNewLegalConnectionPolicyTask;
 
     @Mock
     private FormatDivorceSessionToCaseDataTask formatDivorceSessionToCaseDataTask;
@@ -64,12 +68,14 @@ public class UpdateToCCDWorkflowTest {
         Map<String, Object> resultData = Collections.singletonMap("Hello", "World");
 
         when(populateExistingCollections.execute(context, testData)).thenReturn(testData);
+        when(setNewLegalConnectionPolicyTask.execute(context, testData)).thenReturn(testData);
         when(formatDivorceSessionToCaseDataTask.execute(context, testData)).thenReturn(testData);
         when(updateCaseInCCD.execute(context, testData)).thenReturn(resultData);
 
         assertEquals(resultData, updateToCCDWorkflow.run(eventData, AUTH_TOKEN, TEST_CASE_ID));
 
         verify(populateExistingCollections).execute(context, testData);
+        verify(setNewLegalConnectionPolicyTask).execute(context, testData);
         verify(formatDivorceSessionToCaseDataTask).execute(context, testData);
         verify(updateCaseInCCD).execute(context, testData);
     }

@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PopulateExistingCollections;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetNewLegalConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 
 import java.util.Map;
@@ -27,6 +28,9 @@ public class UpdateToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
     private FormatDivorceSessionToCaseDataTask formatDivorceSessionToCaseDataTask;
 
     @Autowired
+    private SetNewLegalConnectionPolicyTask setNewLegalConnectionPolicyTask;
+
+    @Autowired
     private UpdateCaseInCCD updateCaseInCCD;
 
     @SuppressWarnings("unchecked")
@@ -40,6 +44,7 @@ public class UpdateToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
         return this.execute(
             new Task[] {
                 populateExistingCollections,
+                setNewLegalConnectionPolicyTask,
                 formatDivorceSessionToCaseDataTask,
                 updateCaseInCCD
             },

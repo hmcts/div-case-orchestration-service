@@ -78,8 +78,8 @@ public class SubmitToCCDWorkflowTest {
             return incomingPayload;
         });
         when(duplicateCaseValidationTask.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
-        when(formatDivorceSessionToCaseDataTask.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
         when(setNewLegalConnectionPolicyTask.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
+        when(formatDivorceSessionToCaseDataTask.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
         when(validateCaseDataTask.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
         when(submitCaseToCCD.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
         when(deleteDraftTask.execute(any(), eq(incomingPayload))).thenReturn(singletonMap("Hello", "World"));
@@ -90,8 +90,8 @@ public class SubmitToCCDWorkflowTest {
         assertThat(actual, hasEntry(equalTo(ALLOCATED_COURT_KEY), equalTo(testCourt)));
         verify(duplicateCaseValidationTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
         verify(courtAllocationTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
-        verify(formatDivorceSessionToCaseDataTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
         verify(setNewLegalConnectionPolicyTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
+        verify(formatDivorceSessionToCaseDataTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
         verify(validateCaseDataTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
         verify(submitCaseToCCD).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
         verify(deleteDraftTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));

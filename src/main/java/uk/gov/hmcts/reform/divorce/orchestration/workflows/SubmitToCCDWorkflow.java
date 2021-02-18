@@ -55,8 +55,8 @@ public class SubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
             new Task[]{
                 duplicateCaseValidationTask,
                 courtAllocationTask,
-                formatDivorceSessionToCaseDataTask,
                 setNewLegalConnectionPolicyTask,
+                formatDivorceSessionToCaseDataTask,
                 validateCaseDataTask,
                 submitCaseToCCD,
                 deleteDraftTask
