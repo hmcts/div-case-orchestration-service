@@ -21,6 +21,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.CaseDataKeys.OTHER_PARTY_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.OTHER_PARTY_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.SolicitorDataExtractor.getSolicitorOrganisationPolicy;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PartyRepresentationChecker {
@@ -93,7 +94,7 @@ public class PartyRepresentationChecker {
     }
 
     private static boolean isPopulatedOrganisation(Map<String, Object> caseData, String field) {
-        OrganisationPolicy orgPolicy = (OrganisationPolicy) caseData.get(field);
+        OrganisationPolicy orgPolicy = getSolicitorOrganisationPolicy(caseData, field);
         return orgPolicy != null && orgPolicy.isPopulated();
     }
 }

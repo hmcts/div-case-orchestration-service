@@ -49,6 +49,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH_FEMALE_GENDER_IN_RELATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS_FROM_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCED_WHO;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
@@ -57,6 +59,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
@@ -72,8 +75,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.GENERIC_UPDATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.PETITIONER_NOTICE_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.PETITIONER_RESP_NOT_RESPONDED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.SOL_APPLICANT_RESP_NOT_RESPONDED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.SOL_PETITIONER_NOTICE_OF_PROCEEDINGS;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class AosOverdueNotificationTest extends MockedFunctionalTest {
@@ -119,6 +125,44 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
     @Test
     public void givenCorrectSolicitorDetails_WithAosNotReceivedStartedEventId_ThenOkResponse() throws Exception {
         runSolicitorTestProcedureUsing(NOT_RECEIVED_AOS_STARTED_EVENT_ID);
+    }
+
+    @Test
+    public void givenCorrectSolicitorDetails_WithIssueAosEventId_ThenOkResponse() throws Exception {
+        addSolicitorTestData();
+        testTemplateVars.remove(NOTIFICATION_EMAIL);
+
+        runTestProcedureUsing(ISSUE_AOS, SOL_PETITIONER_NOTICE_OF_PROCEEDINGS);
+    }
+
+    @Test
+    public void givenCorrectSolicitorDetails_WithIssueAosFromReIssueEventId_ThenOkResponse() throws Exception {
+        addSolicitorTestData();
+        testTemplateVars.remove(NOTIFICATION_EMAIL);
+
+        runTestProcedureUsing(ISSUE_AOS_FROM_REISSUE, SOL_PETITIONER_NOTICE_OF_PROCEEDINGS);
+    }
+
+    @Test
+    public void givenCorrectPetitionerDetails_WithIssueAosEventIdAndToggleOn_ThenOkResponse() throws Exception {
+        addPetitionerTestDataForNoticeOfProceeding();
+
+        runTestProcedureUsing(ISSUE_AOS, PETITIONER_NOTICE_OF_PROCEEDINGS);
+    }
+
+    @Test
+    public void givenCorrectPetitionerDetails_WithIssueAosEventIdAndToggleOff_ThenOkResponse() throws Exception {
+        featureToggleOff();
+        addPetitionerTestData();
+
+        runTestProcedureUsing(ISSUE_AOS, GENERIC_UPDATE);
+    }
+
+    @Test
+    public void givenCorrectPetitionerDetails_WithIssueAosFromReIssueEventId_ThenOkResponse() throws Exception {
+        addPetitionerTestDataForNoticeOfProceeding();
+
+        runTestProcedureUsing(ISSUE_AOS_FROM_REISSUE, PETITIONER_NOTICE_OF_PROCEEDINGS);
     }
 
     @Test
@@ -198,6 +242,19 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
         testTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, D8_CASE_ID);
     }
 
+    private void addPetitionerTestDataForNoticeOfProceeding() {
+        testData.put(D_8_CASE_REFERENCE, D8_CASE_ID);
+        testData.put(D_8_PETITIONER_EMAIL, TEST_USER_EMAIL);
+        testData.put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
+        testData.put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
+        testData.put(RESP_FIRST_NAME_CCD_FIELD, TEST_RESPONDENT_FIRST_NAME);
+        testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME);
+
+        testTemplateVars.put(NOTIFICATION_CASE_NUMBER_KEY, D8_CASE_ID);
+        testTemplateVars.put(NOTIFICATION_PET_NAME, TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME);
+        testTemplateVars.put(NOTIFICATION_RESP_NAME, TEST_RESPONDENT_FIRST_NAME + " " + TEST_RESPONDENT_LAST_NAME);
+    }
+
     private void addSolicitorTestData() {
         testData.put(D_8_CASE_REFERENCE, D8_CASE_ID);
         testData.put(PETITIONER_SOLICITOR_EMAIL, TEST_USER_EMAIL);
@@ -267,6 +324,10 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(statusCondition)
             .andExpect(MockMvcResultMatchers.content().json(convertObjectToJsonString(expectedResponse)));
+    }
+
+    private void featureToggleOff() {
+        when(featureToggleService.isFeatureEnabled(Features.SOLICITOR_DN_REJECT_AND_AMEND)).thenReturn(false);
     }
 
     private void featureToggleOn() {

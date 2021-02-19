@@ -4,8 +4,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class EmailConstants {
+public class EmailVars {
 
-    public static final String RESPONDENT_SOLICITOR_ORGANISATION = "respondent solicitor org";
+    public static final String SOLICITOR_ORGANISATION = "solicitor organisation";
 
 }

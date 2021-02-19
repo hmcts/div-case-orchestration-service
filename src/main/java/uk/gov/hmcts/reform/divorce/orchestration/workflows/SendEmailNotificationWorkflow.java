@@ -20,6 +20,8 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.EventHelper.isIssueAosEvent;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
 
 @Component
 @RequiredArgsConstructor
@@ -35,6 +37,7 @@ public class SendEmailNotificationWorkflow extends DefaultWorkflow<Map<String, O
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         final String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         final String eventId = ccdCallbackRequest.getEventId();
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
 
         log.info(
             "CaseId: {} send petitioner email task is going to be executed for event {}",
@@ -43,22 +46,22 @@ public class SendEmailNotificationWorkflow extends DefaultWorkflow<Map<String, O
         );
 
         return this.execute(
-            getTasks(caseId, eventId),
-            ccdCallbackRequest.getCaseDetails().getCaseData(),
+            getTasks(caseId, eventId, caseData),
+            caseData,
             ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, eventId),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseId)
         );
     }
 
-    private Task<Map<String, Object>>[] getTasks(String caseId, String eventId) {
+    private Task<Map<String, Object>>[] getTasks(String caseId, String eventId, Map<String, Object> caseData) {
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
-        if (isRepresentedRespondentJourneyEnabled() && SendRespondentNoticeOfProceedingsEmailTask.isEventSupported(eventId)) {
+        if (isRepresentedRespondentJourneyEnabled() && isIssueAosEvent(eventId) && isRespondentSolicitorDigital(caseData)) {
             log.info("CaseId: {} adding sendRespondentNoticeOfProceedingsEmailTask", caseId);
             tasks.add(sendRespondentNoticeOfProceedingsEmailTask);
         }
 
-        if (isSolicitorDnRejectedEnabled() && SendPetitionerNoticeOfProceedingsEmailTask.isEventSupported(eventId)) {
+        if (isSolicitorDnRejectedEnabled() && isIssueAosEvent(eventId)) {
             log.info("CaseId: {} adding sendNoticeOfProceedingsEmailTask", caseId);
             tasks.add(sendPetitionerNoticeOfProceedingsEmailTask);
             return tasks.toArray(new Task[] {});
