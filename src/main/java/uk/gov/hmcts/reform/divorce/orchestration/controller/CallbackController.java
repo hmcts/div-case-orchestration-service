@@ -1312,8 +1312,6 @@ public class CallbackController {
             @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
-        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
-
         return ResponseEntity.ok(
                 serviceJourneyService
                         .confirmServicePaymentEvent(ccdCallbackRequest.getCaseDetails(), authorizationToken)

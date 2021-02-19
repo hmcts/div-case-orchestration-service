@@ -32,13 +32,16 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_APPLICATION_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_SERVICE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.BAILIFF;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ServiceJourneyServiceImplTest {
@@ -67,13 +70,13 @@ public class ServiceJourneyServiceImplTest {
     @Test
     public void whenServiceApplicationIsNotGrantedThenReturnServiceApplicationNotApproved()
         throws ServiceJourneyServiceException, WorkflowException {
-        runTestMakeServiceDecision(NO_VALUE, SERVICE_APPLICATION_NOT_APPROVED, ApplicationServiceTypes.BAILIFF);
+        runTestMakeServiceDecision(NO_VALUE, SERVICE_APPLICATION_NOT_APPROVED, BAILIFF);
     }
 
     @Test
     public void whenBailiffServiceApplicationGrantedThenReturnAwaitingBailiffService()
         throws ServiceJourneyServiceException, WorkflowException {
-        runTestMakeServiceDecision(YES_VALUE, AWAITING_BAILIFF_SERVICE, ApplicationServiceTypes.BAILIFF);
+        runTestMakeServiceDecision(YES_VALUE, AWAITING_BAILIFF_SERVICE, BAILIFF);
     }
 
     @Test
@@ -180,9 +183,11 @@ public class ServiceJourneyServiceImplTest {
 
     @Test
     public void givenCaseData_whenConfirmServicePaymentEvent_thenReturnPayload() throws Exception {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(SERVICE_APPLICATION_TYPE, TEST_SERVICE_APPLICATION_TYPE);
+
         CaseDetails caseDetails = CaseDetails.builder()
-            .caseId(TEST_CASE_ID)
-            .state(TEST_STATE)
+            .caseData(caseData)
             .build();
 
         when(furtherPaymentWorkflow.run(eq(caseDetails), anyString())).thenReturn(new HashMap<>());
