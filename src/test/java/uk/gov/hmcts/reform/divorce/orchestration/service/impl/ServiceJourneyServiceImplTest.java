@@ -35,6 +35,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_APPLICATION_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_REFERRAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_SERVICE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
@@ -42,6 +43,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.S
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.BAILIFF;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DEEMED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DISPENSED;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ServiceJourneyServiceImplTest {
@@ -195,6 +198,48 @@ public class ServiceJourneyServiceImplTest {
         classUnderTest.confirmServicePaymentEvent(caseDetails, AUTH_TOKEN);
 
         verify(furtherPaymentWorkflow).run(eq(caseDetails), anyString());
+    }
+
+    @Test
+    public void shouldChangeToAwaitingServiceConsiderationState_whenDispensedApplicationIsPaid() throws Exception {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(SERVICE_APPLICATION_TYPE, DISPENSED);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+                .caseData(caseData)
+                .build();
+
+        CcdCallbackResponse response = classUnderTest.confirmServicePaymentEvent(caseDetails, AUTH_TOKEN);
+
+        assertThat(response.getState(), is(AWAITING_SERVICE_CONSIDERATION));
+    }
+
+    @Test
+    public void shouldChangeToAwaitingServiceConsiderationState_whenDeemedApplicationIsPaid() throws Exception {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(SERVICE_APPLICATION_TYPE, DEEMED);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+                .caseData(caseData)
+                .build();
+
+        CcdCallbackResponse response = classUnderTest.confirmServicePaymentEvent(caseDetails, AUTH_TOKEN);
+
+        assertThat(response.getState(), is(AWAITING_SERVICE_CONSIDERATION));
+    }
+
+    @Test
+    public void shouldChangeToAwaitingBailiffReferralState_whenBailiffApplicationIsPaid() throws Exception {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(SERVICE_APPLICATION_TYPE, BAILIFF);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+                .caseData(caseData)
+                .build();
+
+        CcdCallbackResponse response = classUnderTest.confirmServicePaymentEvent(caseDetails, AUTH_TOKEN);
+
+        assertThat(response.getState(), is(AWAITING_BAILIFF_REFERRAL));
     }
 
     @Test(expected = ServiceJourneyServiceException.class)
