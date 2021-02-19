@@ -3,11 +3,12 @@ package uk.gov.hmcts.reform.divorce.orchestration;
 import com.google.common.collect.ImmutableMap;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseRoles;
-import uk.gov.hmcts.reform.divorce.utils.DateUtils;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
 
 import java.util.Map;
 
 import static java.util.Collections.singletonMap;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.buildOrganisationPolicy;
 
 public class TestConstants {
     public static final String TEST_BULK_CASE_ID = "test.bulk.case.id";
@@ -22,7 +23,6 @@ public class TestConstants {
     public static final String TEST_DECREE_ABSOLUTE_GRANTED_DATE = "2019-06-30T10:00:00.000";
     public static final String TEST_NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE = "2021-10-20";
     public static final String TEST_CUSTOMER_FACING_NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE = "30 June 2020";
-    public static final String TEST_URL = "http://example.com";
     public static final String TEST_USER_ID = "test.user.id";
     public static final String TEST_COURT = "serviceCentre";
     public static final String TEST_COURT_ID = "birmingham";
@@ -117,7 +117,6 @@ public class TestConstants {
     public static final String TEST_RECEIVED_DATE = "2020-05-05";
     public static final String TEST_DECISION_DATE = "2030-10-10";
     public static final String TEST_ADDED_DATE = "2000-01-01";
-    public static final String TEST_ADDED_DATE_FORMATTED = DateUtils.formatDateWithCustomerFacingFormat(TEST_ADDED_DATE);
     public static final String TEST_SERVICE_APPLICATION_PAYMENT = "feeAccount";
 
     public static final String TEST_MY_REASON = "this is my reason";
@@ -131,5 +130,6 @@ public class TestConstants {
     public static final String TEST_ORGANISATION_POLICY_NAME = "organisationName";
     public static final String TEST_ORGANISATION_POLICY_ID = "organisationID";
     public static final String TEST_PETITIONER_SOLICITOR_CASE_ROLE = CaseRoles.PETITIONER_SOLICITOR;
+    public static final OrganisationPolicy TEST_ORGANISATION_POLICY = buildOrganisationPolicy();
 
 }
