@@ -185,12 +185,12 @@ public class CallbackController {
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> allowShareACase(
         @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
                 .data(caseOrchestrationService.allowShareACase(ccdCallbackRequest, authorizationToken))
                 .build()
-            );
+        );
     }
 
     @SuppressWarnings("unchecked")
