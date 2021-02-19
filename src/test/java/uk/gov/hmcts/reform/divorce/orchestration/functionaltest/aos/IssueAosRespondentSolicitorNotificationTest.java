@@ -185,7 +185,7 @@ public class IssueAosRespondentSolicitorNotificationTest extends MockedFunctiona
         return emailTemplatesConfig.getTemplates().get(LanguagePreference.ENGLISH).get(templateName.name());
     }
 
-    private CaseDetails caseDetailsOf(Map data) {
+    private CaseDetails buildCaseDetails(Map data) {
         return CaseDetails.builder()
             .caseId(TEST_CASE_ID)
             .state(TEST_STATE)
@@ -202,7 +202,7 @@ public class IssueAosRespondentSolicitorNotificationTest extends MockedFunctiona
     }
 
     private void expect(ResultMatcher statusCondition, CcdCallbackResponse expectedResponse) throws Exception {
-        CcdCallbackRequest ccdCallbackRequest = requestFrom(caseDetailsOf(testData), testEventId);
+        CcdCallbackRequest ccdCallbackRequest = requestFrom(buildCaseDetails(testData), testEventId);
         String inputJson = convertObjectToJsonString(ccdCallbackRequest);
 
         webClient.perform(post(API_URL)
