@@ -52,6 +52,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS_FROM_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.EmailVars.EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.EmailVars.SOLICITOR_ORGANISATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCED_WHO;
@@ -100,41 +101,42 @@ public class IssueAosRespondentSolicitorNotificationTest extends MockedFunctiona
     public void setup() {
         testData = new HashMap<>();
         testTemplateVars = new HashMap<>();
-        respSolFeatureToggleOn();
-        solDnRejectFeatureToggleOff();
+        respSolFeatureToggle(true);
+        solDnRejectFeatureToggle(false);
     }
 
     @Test
     public void givenCorrectRespondentSolicitorDetails_WithIssueAosEventId_ThenOkResponse() throws Exception {
         addRespondentSolicitorTestData();
-        testTemplateVars.remove(NOTIFICATION_EMAIL);
 
-        runTestProcedureUsing(ISSUE_AOS, SOL_RESPONDENT_NOTICE_OF_PROCEEDINGS);
+        runTestUsing(ISSUE_AOS, SOL_RESPONDENT_NOTICE_OF_PROCEEDINGS);
     }
 
     @Test
     public void givenCorrectRespondentSolicitorDetails_WithIssueAosFromReIssueEventId_ThenOkResponse() throws Exception {
         addRespondentSolicitorTestData();
-        testTemplateVars.remove(NOTIFICATION_EMAIL);
 
-        runTestProcedureUsing(ISSUE_AOS_FROM_REISSUE, SOL_RESPONDENT_NOTICE_OF_PROCEEDINGS);
+        runTestUsing(ISSUE_AOS_FROM_REISSUE, SOL_RESPONDENT_NOTICE_OF_PROCEEDINGS);
     }
 
     @Test
     public void givenCorrectPetitionerDetails_WithIssueAosEventIdAndToggleOff_ThenOkResponse() throws Exception {
-        respSolFeatureToggleOff();
+        respSolFeatureToggle(false);
         addPetitionerTestData();
 
-        runTestProcedureUsing(ISSUE_AOS, GENERIC_UPDATE);
+        runTestUsing(ISSUE_AOS, GENERIC_UPDATE);
     }
 
-    private void runTestProcedureUsing(String eventId, EmailTemplateNames expectedTemplate) throws Exception {
+    private void runTestUsing(String eventId, EmailTemplateNames expectedTemplate) throws Exception {
         setEventIdTo(eventId);
-        setUpEmailClientMockWith(expectedTemplate.name(), testTemplateVars);
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(testData).build();
         expect(status().isOk(), expectedResponse);
-        verifySendEmailIsCalledWithUserDataAnd(expectedTemplate.name());
+        verifySendEmailIsCalledWithUserDataAnd(expectedTemplate);
+    }
+
+    private void setEventIdTo(String eventId) {
+        testEventId = eventId;
     }
 
     private void addPetitionerTestData() {
@@ -166,31 +168,21 @@ public class IssueAosRespondentSolicitorNotificationTest extends MockedFunctiona
         testData.put(RESPONDENT_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
         testData.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, TEST_ORGANISATION_POLICY);
 
-        testTemplateVars.put(NOTIFICATION_EMAIL, TEST_USER_EMAIL);
         testTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, TEST_CASE_ID);
         testTemplateVars.put(NOTIFICATION_PET_NAME, TEST_PETITIONER_FULL_NAME);
         testTemplateVars.put(NOTIFICATION_RESP_NAME, TEST_RESPONDENT_FULL_NAME);
         testTemplateVars.put(NOTIFICATION_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
+        testTemplateVars.put(EMAIL_ADDRESS, TEST_USER_EMAIL);
         testTemplateVars.put(SOLICITOR_ORGANISATION, TEST_ORGANISATION_POLICY_NAME);
     }
 
-    private void setEventIdTo(String eventId) {
-        testEventId = eventId;
-    }
-
-    private void setUpEmailClientMockWith(String templateName, Map emailArgs) throws NotificationClientException {
-        when(mockEmailClient
-            .sendEmail(eq(templateIdOf(templateName)), eq(TEST_USER_EMAIL), eq(emailArgs), anyString()))
-            .thenReturn(null);
-    }
-
-    private void verifySendEmailIsCalledWithUserDataAnd(String templateName) throws NotificationClientException {
+    private void verifySendEmailIsCalledWithUserDataAnd(EmailTemplateNames templateName) throws NotificationClientException {
         verify(mockEmailClient, times(1))
             .sendEmail(eq(templateIdOf(templateName)), eq(TEST_USER_EMAIL), eq(testTemplateVars), anyString());
     }
 
-    private String templateIdOf(String templateName) {
-        return emailTemplatesConfig.getTemplates().get(LanguagePreference.ENGLISH).get(templateName);
+    private String templateIdOf(EmailTemplateNames templateName) {
+        return emailTemplatesConfig.getTemplates().get(LanguagePreference.ENGLISH).get(templateName.name());
     }
 
     private CaseDetails caseDetailsOf(Map data) {
@@ -222,15 +214,11 @@ public class IssueAosRespondentSolicitorNotificationTest extends MockedFunctiona
             .andExpect(MockMvcResultMatchers.content().json(convertObjectToJsonString(expectedResponse)));
     }
 
-    private void respSolFeatureToggleOff() {
-        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(false);
+    private void respSolFeatureToggle(boolean bool) {
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(bool);
     }
 
-    private void respSolFeatureToggleOn() {
-        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
-    }
-
-    private void solDnRejectFeatureToggleOff() {
-        when(featureToggleService.isFeatureEnabled(Features.SOLICITOR_DN_REJECT_AND_AMEND)).thenReturn(false);
+    private void solDnRejectFeatureToggle(boolean bool) {
+        when(featureToggleService.isFeatureEnabled(Features.SOLICITOR_DN_REJECT_AND_AMEND)).thenReturn(bool);
     }
 }
