@@ -74,6 +74,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INCOM
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PAYLOAD_TO_RETURN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_REFERRAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
@@ -84,6 +86,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.BAILIFF;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DEEMED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DISPENSED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.CASE_LIST_FOR_PRONOUNCEMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COE;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.ccdRequestWithData;
@@ -1692,13 +1697,79 @@ public class CallbackControllerTest {
         final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
         final CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
-        when(serviceJourneyService.confirmServicePaymentEvent(caseDetails, anyString()))
-                .thenReturn(CcdCallbackResponse.builder().build());
+        when(serviceJourneyService.confirmServicePaymentEvent(caseDetails, AUTH_TOKEN))
+                .thenReturn(CcdCallbackResponse.builder().data(caseData).build());
 
         final ResponseEntity<CcdCallbackResponse> response = classUnderTest.confirmServicePaymentEvent(AUTH_TOKEN, ccdCallbackRequest);
 
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody(), is(expectedResponse));
+    }
+
+    @Test
+    public void shouldChangeToAwaitingBailiffReferralState_whenBailiffApplicationIsPaid() throws CaseOrchestrationServiceException {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(SERVICE_APPLICATION_TYPE, BAILIFF);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+                .caseData(caseData).build();
+
+        CcdCallbackRequest ccdCallbackRequest = ccdRequestWithData(caseData);
+
+        when(serviceJourneyService.confirmServicePaymentEvent(caseDetails, AUTH_TOKEN))
+                .thenReturn(CcdCallbackResponse.builder()
+                        .state(AWAITING_BAILIFF_REFERRAL)
+                        .data(caseData)
+                        .build());
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.confirmServicePaymentEvent(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody().getState(), is(AWAITING_BAILIFF_REFERRAL));
+    }
+
+    @Test
+    public void shouldChangeToAwaitingServiceConsiderationState_whenDispensedApplicationIsPaid() throws CaseOrchestrationServiceException {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(SERVICE_APPLICATION_TYPE, DISPENSED);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+                .caseData(caseData).build();
+
+        CcdCallbackRequest ccdCallbackRequest = ccdRequestWithData(caseData);
+
+        when(serviceJourneyService.confirmServicePaymentEvent(caseDetails, AUTH_TOKEN))
+                .thenReturn(CcdCallbackResponse.builder()
+                        .state(AWAITING_SERVICE_CONSIDERATION)
+                        .data(caseData)
+                        .build());
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.confirmServicePaymentEvent(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody().getState(), is(AWAITING_SERVICE_CONSIDERATION));
+    }
+
+    @Test
+    public void shouldChangeToAwaitingServiceConsiderationState_whenDeemedApplicationIsPaid() throws CaseOrchestrationServiceException {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(SERVICE_APPLICATION_TYPE, DEEMED);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+                .caseData(caseData).build();
+
+        CcdCallbackRequest ccdCallbackRequest = ccdRequestWithData(caseData);
+
+        when(serviceJourneyService.confirmServicePaymentEvent(caseDetails, AUTH_TOKEN))
+                .thenReturn(CcdCallbackResponse.builder()
+                        .state(AWAITING_SERVICE_CONSIDERATION)
+                        .data(caseData)
+                        .build());
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.confirmServicePaymentEvent(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody().getState(), is(AWAITING_SERVICE_CONSIDERATION));
     }
 
     @Test
