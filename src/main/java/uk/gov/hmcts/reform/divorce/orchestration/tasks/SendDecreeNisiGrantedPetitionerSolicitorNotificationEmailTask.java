@@ -1,5 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -16,7 +18,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 @Component
 public class SendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask extends PetitionerSolicitorSendEmailTask {
 
-    private static final String PET_SOL_EMAIL_DESC = "Decree Nisi granted - Solicitor (Applicant)";
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class EmailMetadata {
+        public static final String EMAIL_SUBJECT = "Decree Nisi granted - Solicitor (Applicant)";
+        public static final EmailTemplateNames TEMPLATE_ID = SOL_PETITIONER_DECREE_NISI_GRANTED;
+        public static final String TEMPLATE_STRUCTURE = "%s vs %s: %s";
+    }
 
     protected SendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask(EmailService emailService) {
         super(emailService);
@@ -25,15 +32,15 @@ public class SendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask exten
     @Override
     protected String getSubject(TaskContext context, Map<String, Object> caseData) {
         return format(
-            "%s vs %s: %s",
+            EmailMetadata.TEMPLATE_STRUCTURE,
             getPetitionerFullName(caseData),
             getRespondentFullName(caseData),
-            PET_SOL_EMAIL_DESC
+            EmailMetadata.EMAIL_SUBJECT
         );
     }
 
     @Override
     protected EmailTemplateNames getTemplate() {
-        return SOL_PETITIONER_DECREE_NISI_GRANTED;
+        return EmailMetadata.TEMPLATE_ID;
     }
 }
