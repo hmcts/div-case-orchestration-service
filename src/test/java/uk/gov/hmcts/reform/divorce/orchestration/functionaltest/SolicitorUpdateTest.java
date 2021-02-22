@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 import uk.gov.service.notify.NotificationClientException;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -102,7 +103,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
         MvcResult mvcResult = callCallbackEndpointSuccessfully(ccdCallbackRequest);
 
         assertThat(
-            mvcResult.getResponse().getContentAsString(),
+            getResponseContent(mvcResult),
             allOf(
                 hasJsonPath("$.data.D8SolicitorReference"),
                 hasJsonPath("$.data.respondentSolicitorReference"),
@@ -131,7 +132,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
         MvcResult mvcResult = callCallbackEndpointSuccessfully(ccdCallbackRequest);
 
         assertThat(
-            mvcResult.getResponse().getContentAsString(),
+            getResponseContent(mvcResult),
             allOf(
                 hasJsonPath("$.data.D8SolicitorReference"),
                 hasJsonPath("$.data.respondentSolicitorReference"),
@@ -158,7 +159,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
 
         MvcResult mvcResult = callCallbackEndpointSuccessfully(ccdCallbackRequest);
 
-        assertThat(mvcResult.getResponse().getContentAsString(),
+        assertThat(getResponseContent(mvcResult),
             allOf(
                 hasJsonPath("$.data.D8SolicitorReference"),
                 hasJsonPath("$.data.respondentSolicitorReference"),
@@ -185,7 +186,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
 
         MvcResult mvcResult = callCallbackEndpointSuccessfully(ccdCallbackRequest);
 
-        assertThat(mvcResult.getResponse().getContentAsString(),
+        assertThat(getResponseContent(mvcResult),
             allOf(
                 hasJsonPath("$.data.D8SolicitorReference"),
                 hasJsonPath("$.data.respondentSolicitorReference"),
@@ -207,7 +208,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
 
         MvcResult mvcResult = callCallbackEndpointSuccessfully(ccdCallbackRequest);
 
-        assertThat(mvcResult.getResponse().getContentAsString(),
+        assertThat(getResponseContent(mvcResult),
             allOf(
                 hasNoJsonPath("$.data.D8SolicitorReference"),
                 hasNoJsonPath("$.data.PetitionerOrganisationPolicy"),
@@ -229,7 +230,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
 
         MvcResult mvcResult = callCallbackEndpointSuccessfully(ccdCallbackRequest);
 
-        assertThat(mvcResult.getResponse().getContentAsString(),
+        assertThat(getResponseContent(mvcResult),
             allOf(
                 hasNoJsonPath("$.data.D8SolicitorReference"),
                 hasNoJsonPath("$.data.PetitionerOrganisationPolicy"),
@@ -293,6 +294,10 @@ public class SolicitorUpdateTest extends IdamTestSupport {
         return OrganisationPolicy.builder()
             .organisation(Organisation.builder().build())
             .build();
+    }
+
+    private String getResponseContent(MvcResult mvcResult) throws UnsupportedEncodingException {
+        return mvcResult.getResponse().getContentAsString();
     }
 
     private void verifySolicitorApplicationSubmittedEmailWasSent() throws NotificationClientException {
