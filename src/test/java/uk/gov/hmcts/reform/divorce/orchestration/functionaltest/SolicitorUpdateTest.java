@@ -237,7 +237,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
     }
 
     @Test
-    public void givenCaseData_whenSolicitorUpdate_andRRJourneyIsOn_andNoSolicitorReferencesThenReturnWithNoOrganisationPolicyReferences() throws Exception {
+    public void givenCaseData_whenSolicitorUpdate_andRRJourneyIsOn_andNoSolicitorReferences_thenRetWithNoOrgPolicyReferences() throws Exception {
         setRespondentJourneyFeatureToggleOn();
 
         CcdCallbackRequest ccdCallbackRequest = buildRequest();
