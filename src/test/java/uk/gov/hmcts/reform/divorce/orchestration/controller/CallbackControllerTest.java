@@ -318,7 +318,7 @@ public class CallbackControllerTest {
             .build();
         final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
         ccdCallbackRequest.setCaseDetails(caseDetails);
-        when(caseOrchestrationService.sendPetitionerGenericUpdateNotificationEmail(ccdCallbackRequest)).thenReturn(caseData);
+        when(caseOrchestrationService.sendNotificationEmail(ccdCallbackRequest)).thenReturn(caseData);
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.petitionUpdated(ccdCallbackRequest);
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
         assertEquals(OK, response.getStatusCode());

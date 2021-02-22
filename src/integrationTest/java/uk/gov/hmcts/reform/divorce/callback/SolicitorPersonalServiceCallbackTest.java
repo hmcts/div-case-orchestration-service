@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.callback;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -29,7 +28,6 @@ public class SolicitorPersonalServiceCallbackTest extends CcdSubmissionSupport {
     private CosApiClient cosApiClient;
 
     @Test
-    @Ignore
     public void testSolicitorPersonalServiceCallbackGeneratesPersonalServicePack() {
         //given
         final UserDetails solicitorUser = createSolicitorUser();
