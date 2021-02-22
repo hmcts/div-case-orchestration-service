@@ -57,8 +57,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendClarificationSubmittedNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendCoRespondSubmissionNotificationWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerClarificationRequestNotificationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
@@ -192,7 +192,7 @@ public class CaseOrchestrationServiceImplTest {
     private SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow;
 
     @Mock
-    private SendEmailNotificationWorkflow sendEmailNotificationWorkflow;
+    private SendPetitionerEmailNotificationWorkflow sendPetitionerEmailNotificationWorkflow;
 
     @Mock
     private SendPetitionerClarificationRequestNotificationWorkflow sendPetitionerClarificationRequestNotificationWorkflow;
@@ -701,13 +701,13 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void givenCaseData_whenSendPetitionerGenericEmailNotification_thenReturnPayload() throws Exception {
-        when(sendEmailNotificationWorkflow.run(ccdCallbackRequest))
+        when(sendPetitionerEmailNotificationWorkflow.run(ccdCallbackRequest))
             .thenReturn(requestPayload);
 
-        Map<String, Object> actual = classUnderTest.sendNotificationEmail(ccdCallbackRequest);
+        Map<String, Object> actual = classUnderTest.sendPetitionerGenericUpdateNotificationEmail(ccdCallbackRequest);
 
         assertEquals(requestPayload, actual);
-        verify(sendEmailNotificationWorkflow).run(ccdCallbackRequest);
+        verify(sendPetitionerEmailNotificationWorkflow).run(ccdCallbackRequest);
     }
 
     @Test
