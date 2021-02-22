@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -13,12 +14,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Collections.EMPTY_MAP;
+import static java.util.Collections.emptyMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_D8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.VALUE_NOT_SET;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.context;
 
@@ -78,10 +83,28 @@ public class SendEmailTaskTest {
     }
 
     @Test
-    public void getLanguage() {
+    public void getLanguageShouldReturnEnglishWhenNotSpecified() {
+        assertThat(task.getLanguage(emptyMap()), is(LanguagePreference.ENGLISH));
     }
 
     @Test
-    public void canEmailBeSent() {
+    public void getLanguageShouldReturnEnglishWhenSetEnglish() {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(LANGUAGE_PREFERENCE_WELSH, NO_VALUE);
+
+        assertThat(task.getLanguage(emptyMap()), is(LanguagePreference.ENGLISH));
+    }
+
+    @Test
+    public void getLanguageShouldReturnWelshWhenSetWelsh() {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(LANGUAGE_PREFERENCE_WELSH, YES_VALUE);
+
+        assertThat(task.getLanguage(caseData), is(LanguagePreference.WELSH));
+    }
+
+    @Test
+    public void canEmailBeSentShouldReturnTrue() {
+        assertThat(task.canEmailBeSent(emptyMap()), is(true));
     }
 }
