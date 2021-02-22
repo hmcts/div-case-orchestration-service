@@ -20,4 +20,8 @@ public class OrganisationPolicy {
 
     @JsonProperty("OrgPolicyReference")
     private String orgPolicyReference;
+
+    public boolean isPopulated() {
+        return organisation.isPopulated();
+    }
 }

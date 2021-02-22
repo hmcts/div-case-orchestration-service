@@ -19,7 +19,6 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -53,11 +52,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_SOLICITOR_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.notification.SendNoticeOfProceedingsEmailTask.EVENT_ISSUE_AOS;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.notification.SendNoticeOfProceedingsEmailTask.EVENT_ISSUE_AOS_FROM_REISSUE;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SendNoticeOfProceedingsEmailTaskTest {
+public class SendPetitionerNoticeOfProceedingsEmailTaskTest {
 
     private static final String SOLICITOR_TEMPLATE = EmailTemplateNames.SOL_PETITIONER_NOTICE_OF_PROCEEDINGS.name();
     private static final String PETITIONER_TEMPLATE = EmailTemplateNames.PETITIONER_NOTICE_OF_PROCEEDINGS.name();
@@ -69,7 +66,7 @@ public class SendNoticeOfProceedingsEmailTaskTest {
     private EmailService emailService;
 
     @InjectMocks
-    private SendNoticeOfProceedingsEmailTask sendNoticeOfProceedingsEmailTask;
+    private SendPetitionerNoticeOfProceedingsEmailTask sendPetitionerNoticeOfProceedingsEmailTask;
 
     @Before
     public void setUp() {
@@ -116,7 +113,7 @@ public class SendNoticeOfProceedingsEmailTaskTest {
     public void shouldSendNotificationEmailToPetitioner_whenPetitionerIsNotRepresented() throws TaskException {
         incomingPayload.put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
         incomingPayload.put(PETITIONER_SOLICITOR_EMAIL, null);
-        taskContext.setTransientObject(CASE_EVENT_ID_JSON_KEY, EVENT_ISSUE_AOS);
+        taskContext.setTransientObject(CASE_EVENT_ID_JSON_KEY, ISSUE_AOS);
 
         executeTask();
 
@@ -136,22 +133,8 @@ public class SendNoticeOfProceedingsEmailTaskTest {
         );
     }
 
-    @Test
-    public void isEventSupportedShouldReturnTrue() {
-        assertThat(SendNoticeOfProceedingsEmailTask.isEventSupported(EVENT_ISSUE_AOS_FROM_REISSUE), is(true));
-        assertThat(SendNoticeOfProceedingsEmailTask.isEventSupported(EVENT_ISSUE_AOS), is(true));
-    }
-
-    @Test
-    public void isEventSupportedShouldReturnFalse() {
-        assertThat(SendNoticeOfProceedingsEmailTask.isEventSupported("any other"), is(false));
-        assertThat(SendNoticeOfProceedingsEmailTask.isEventSupported("submit"), is(false));
-        assertThat(SendNoticeOfProceedingsEmailTask.isEventSupported(""), is(false));
-        assertThat(SendNoticeOfProceedingsEmailTask.isEventSupported(null), is(false));
-    }
-
     private void executeTask() throws TaskException {
-        Map<String, Object> returnedPayload = sendNoticeOfProceedingsEmailTask.execute(taskContext, incomingPayload);
+        Map<String, Object> returnedPayload = sendPetitionerNoticeOfProceedingsEmailTask.execute(taskContext, incomingPayload);
 
         assertThat(returnedPayload, equalTo(incomingPayload));
     }
