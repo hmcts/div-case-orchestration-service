@@ -4,13 +4,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.model.ccd.DocumentLink;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Organisation;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ORGANISATION_POLICY_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ORGANISATION_POLICY_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObject;
 
 public class CaseDataTestHelper {
@@ -35,16 +31,6 @@ public class CaseDataTestHelper {
     public static Map<String, Object> createCollectionMemberDocumentAsMap(String url, String documentType, String fileName) {
         CollectionMember<Document> document = createCollectionMemberDocument(url, documentType, fileName);
         return convertObject(document, new TypeReference<>() {});
-    }
-
-    public static OrganisationPolicy buildOrganisationPolicy() {
-        return OrganisationPolicy.builder()
-            .organisation(
-                Organisation.builder()
-                    .organisationID(TEST_ORGANISATION_POLICY_ID)
-                    .organisationName(TEST_ORGANISATION_POLICY_NAME)
-                    .build())
-            .build();
     }
 
 }
