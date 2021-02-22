@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.util;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
 
 import java.util.Map;
 
@@ -22,6 +21,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.CaseDataKeys.OTHER_PARTY_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.OTHER_PARTY_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.SolicitorDataExtractor.getSolicitorOrganisationPolicy;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.OrganisationPolicyHelper.isOrganisationPolicyPopulated;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PartyRepresentationChecker {
@@ -94,7 +94,6 @@ public class PartyRepresentationChecker {
     }
 
     private static boolean isPopulatedOrganisation(Map<String, Object> caseData, String field) {
-        OrganisationPolicy orgPolicy = getSolicitorOrganisationPolicy(caseData, field);
-        return orgPolicy != null && orgPolicy.isPopulated();
+        return isOrganisationPolicyPopulated(getSolicitorOrganisationPolicy(caseData, field));
     }
 }
