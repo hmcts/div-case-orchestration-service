@@ -103,7 +103,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
     }
 
     @Test
-    public void givenCaseData_whenSolicitorUpdate_andRepresentedRespondentJourneyIsOff_thenReturnWithMappedOrgPolicyReferences() throws Exception {
+    public void givenCaseData_whenSolicitorUpdate_andRRJourneyIsOff_thenReturnWithMappedOrgPolicyReferences() throws Exception {
         setRespondentJourneyFeatureToggleOff();
 
         CcdCallbackRequest ccdCallbackRequest = buildRequest();
@@ -132,7 +132,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
     }
 
     @Test
-    public void givenCaseData_whenSolicitorUpdate_andRepresentedRespondentJourneyIsOn_thenReturnWithMappedOrgPolicyReferences() throws Exception {
+    public void givenCaseData_whenSolicitorUpdate_andRRJourneyIsOn_thenReturnWithMappedOrgPolicyReferences() throws Exception {
         setRespondentJourneyFeatureToggleOn();
 
         CcdCallbackRequest ccdCallbackRequest = buildRequest();
@@ -161,7 +161,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
     }
 
     @Test
-    public void givenCaseData_whenSolicitorUpdate_andRepresentedRespondentJourneyIsOff_andNotRepresented_thenReturnWithUnMappedRespondentOrgPolicyReference() throws Exception {
+    public void givenCaseData_whenSolicitorUpdate_andRRJourneyIsOff_andNotRepresented_thenReturnWithUnMappedRespondentOrgPolicyReference() throws Exception {
         setRespondentJourneyFeatureToggleOff();
 
         CcdCallbackRequest ccdCallbackRequest = buildRequest();
@@ -188,7 +188,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
     }
 
     @Test
-    public void givenCaseData_whenSolicitorUpdate_andRepresentedRespondentJourneyIsOn_andNotRepresented_thenReturnWithUnMappedRespondentOrgPolicyReference() throws Exception {
+    public void givenCaseData_whenSolicitorUpdate_andRRJourneyIsOn_andNotRepresented_thenRetWithUnMappedRespOrgPolicyReference() throws Exception {
         setRespondentJourneyFeatureToggleOn();
 
         CcdCallbackRequest ccdCallbackRequest = buildRequest();
@@ -215,7 +215,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
     }
 
     @Test
-    public void givenCaseData_whenSolicitorUpdate_andRepresentedRespondentJourneyIsOff_andNoSolicitorReferencesThenReturnWithNoOrganisationPolicyReferences() throws Exception {
+    public void givenCaseData_whenSolicitorUpdate_andRRJourneyIsOff_andNoSolicitorReferences_thenRetWithNoOrgPolicyReferences() throws Exception {
         setRespondentJourneyFeatureToggleOff();
 
         CcdCallbackRequest ccdCallbackRequest = buildRequest();
@@ -237,7 +237,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
     }
 
     @Test
-    public void givenCaseData_whenSolicitorUpdate_andRepresentedRespondentJourneyIsOn_andNoSolicitorReferencesThenReturnWithNoOrganisationPolicyReferences() throws Exception {
+    public void givenCaseData_whenSolicitorUpdate_andRRJourneyIsOn_andNoSolicitorReferencesThenReturnWithNoOrganisationPolicyReferences() throws Exception {
         setRespondentJourneyFeatureToggleOn();
 
         CcdCallbackRequest ccdCallbackRequest = buildRequest();
