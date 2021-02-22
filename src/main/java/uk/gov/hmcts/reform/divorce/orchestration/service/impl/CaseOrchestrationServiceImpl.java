@@ -56,8 +56,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendClarificationSubmittedNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendCoRespondSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendDnPronouncedNotificationWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerClarificationRequestNotificationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
@@ -132,7 +132,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final AllowShareACaseWorkflow allowShareACaseWorkflow;
     private final SolicitorUpdateWorkflow solicitorUpdateWorkflow;
     private final SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow;
-    private final SendEmailNotificationWorkflow sendEmailNotificationWorkflow;
+    private final SendPetitionerEmailNotificationWorkflow sendPetitionerEmailNotificationWorkflow;
     private final SendPetitionerClarificationRequestNotificationWorkflow sendPetitionerClarificationRequestNotificationWorkflow;
     private final AosSubmissionWorkflow aosSubmissionWorkflow;
     private final SendCoRespondSubmissionNotificationWorkflow sendCoRespondSubmissionNotificationWorkflow;
@@ -454,8 +454,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> sendNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        return sendEmailNotificationWorkflow.run(ccdCallbackRequest);
+    public Map<String, Object> sendPetitionerGenericUpdateNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        return sendPetitionerEmailNotificationWorkflow.run(ccdCallbackRequest);
     }
 
     @Override

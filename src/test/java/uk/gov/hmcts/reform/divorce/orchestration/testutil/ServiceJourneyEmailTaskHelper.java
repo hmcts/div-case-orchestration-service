@@ -19,7 +19,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerSolicitorFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getRespondentFullName;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ServiceJourneyEmailTaskHelper.respondentSolicitorTemplateVariables;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 
 public class ServiceJourneyEmailTaskHelper {
@@ -58,9 +57,5 @@ public class ServiceJourneyEmailTaskHelper {
         return isPetitionerRepresented
             ? getSolicitorTemplateVariables(taskContext, caseData)
             : getCitizenTemplateVariables(caseData);
-    }
-
-    public static Map<String, String> getExpectedRespondentSolicitorNotificationTemplateVars(TaskContext taskContext, Map<String, Object> caseData) {
-        return respondentSolicitorTemplateVariables(taskContext, caseData);
     }
 }
