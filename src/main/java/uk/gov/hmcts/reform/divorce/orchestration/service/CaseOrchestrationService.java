@@ -50,7 +50,7 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> sendPetitionerSubmissionNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 
-    Map<String, Object> sendNotificationEmail(CcdCallbackRequest ccdCallbackRequest)
+    Map<String, Object> sendPetitionerGenericUpdateNotificationEmail(CcdCallbackRequest ccdCallbackRequest)
         throws WorkflowException;
 
     Map<String, Object> aosSubmission(CcdCallbackRequest ccdCallbackRequest, String authorizationToken) throws WorkflowException;

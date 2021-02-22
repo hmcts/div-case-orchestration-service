@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
@@ -33,7 +34,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentation
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class SendPetitionerNoticeOfProceedingsEmailTask implements Task<Map<String, Object>> {
+public class SendNoticeOfProceedingsEmailTask implements Task<Map<String, Object>> {
+
+    public static final String EVENT_ISSUE_AOS_FROM_REISSUE = "issueAosFromReissue";
+    public static final String EVENT_ISSUE_AOS = "issueAos";
 
     private static final String EMAIL_DESCRIPTION = "Notice of Proceedings";
 
@@ -100,5 +104,10 @@ public class SendPetitionerNoticeOfProceedingsEmailTask implements Task<Map<Stri
         personalisation.put(NOTIFICATION_RESP_NAME, getRespondentFullName(payload));
 
         return personalisation;
+    }
+
+    public static boolean isEventSupported(String eventId) {
+        return Stream.of(EVENT_ISSUE_AOS, EVENT_ISSUE_AOS_FROM_REISSUE)
+            .anyMatch(supportEvent -> supportEvent.equalsIgnoreCase(eventId));
     }
 }
