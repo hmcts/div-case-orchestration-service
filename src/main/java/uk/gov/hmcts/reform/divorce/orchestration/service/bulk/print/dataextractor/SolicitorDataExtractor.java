@@ -27,7 +27,6 @@ public class SolicitorDataExtractor {
         public static final String SOLICITOR_PAYMENT_METHOD = OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
         public static final String SOLICITOR_PBA_NUMBER_V1 = OrchestrationConstants.SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY;
         public static final String SOLICITOR_PBA_NUMBER_V2 = CcdFields.PBA_NUMBERS;
-        public static final String RESPONDENT_SOLICITOR_ORGANISATION = CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
     }
 
     public static String getSolicitorReference(Map<String, Object> caseData) {
@@ -51,10 +50,6 @@ public class SolicitorDataExtractor {
 
         return organisationPolicy.<OrganisationPolicy>map(orgPolicy -> new ObjectMapper().convertValue(orgPolicy, new TypeReference<>() {
         })).orElse(null);
-    }
-
-    public static OrganisationPolicy getRespondentSolicitorOrganisation(Map<String, Object> caseData) {
-        return getSolicitorOrganisationPolicy(caseData, CaseDataKeys.RESPONDENT_SOLICITOR_ORGANISATION);
     }
 
 }
