@@ -320,7 +320,7 @@ public class CallbackController {
         log.info("/petition-updated endpoint called for caseId {}", caseId);
 
         try {
-            caseOrchestrationService.sendPetitionerGenericUpdateNotificationEmail(ccdCallbackRequest);
+            caseOrchestrationService.sendNotificationEmail(ccdCallbackRequest);
         } catch (WorkflowException e) {
             log.error("Failed to complete service for caseId {}", caseId, e);
             return ResponseEntity.ok(CcdCallbackResponse.builder()
