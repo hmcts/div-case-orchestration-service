@@ -56,8 +56,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendClarificationSubmittedNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendCoRespondSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendDnPronouncedNotificationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerClarificationRequestNotificationWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
@@ -132,7 +132,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final AllowShareACaseWorkflow allowShareACaseWorkflow;
     private final SolicitorUpdateWorkflow solicitorUpdateWorkflow;
     private final SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow;
-    private final SendPetitionerEmailNotificationWorkflow sendPetitionerEmailNotificationWorkflow;
+    private final SendEmailNotificationWorkflow sendEmailNotificationWorkflow;
     private final SendPetitionerClarificationRequestNotificationWorkflow sendPetitionerClarificationRequestNotificationWorkflow;
     private final AosSubmissionWorkflow aosSubmissionWorkflow;
     private final SendCoRespondSubmissionNotificationWorkflow sendCoRespondSubmissionNotificationWorkflow;
@@ -454,8 +454,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> sendPetitionerGenericUpdateNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        return sendPetitionerEmailNotificationWorkflow.run(ccdCallbackRequest);
+    public Map<String, Object> sendNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        return sendEmailNotificationWorkflow.run(ccdCallbackRequest);
     }
 
     @Override
@@ -513,11 +513,11 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> solicitorSubmission(CcdCallbackRequest ccdCallbackRequest,
-                                                   String authToken) throws WorkflowException {
+    public Map<String, Object> solicitorSubmission(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
 
-        Map<String, Object> payLoad = solicitorSubmissionWorkflow.run(ccdCallbackRequest, authToken);
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        log.info("About to run solicitorSubmission service method for case id {}", caseId);
+        Map<String, Object> payLoad = solicitorSubmissionWorkflow.run(ccdCallbackRequest, authToken);
 
         if (solicitorSubmissionWorkflow.errors().isEmpty()) {
             log.info("CaseID: {} Callback pay by account for solicitor successfully completed.", caseId);
@@ -540,8 +540,15 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     @Override
     public Map<String, Object> allowShareACase(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
-        throws WorkflowException {
-        return allowShareACaseWorkflow.run(ccdCallbackRequest.getCaseDetails(), authorizationToken);
+        throws CaseOrchestrationServiceException {
+
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+
+        try {
+            return allowShareACaseWorkflow.run(caseDetails, authorizationToken);
+        } catch (WorkflowException workflowException) {
+            throw new CaseOrchestrationServiceException(workflowException, caseDetails.getCaseId());
+        }
     }
 
     @Override

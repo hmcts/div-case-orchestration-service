@@ -64,8 +64,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.te
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COE;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.getPbaUpdatedState;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.getResponseErrors;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.hasErrorKeyInResponse;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.isPaymentSuccess;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.isResponseErrors;
 
 @RestController
 @Slf4j
@@ -185,12 +185,12 @@ public class CallbackController {
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> allowShareACase(
         @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
                 .data(caseOrchestrationService.allowShareACase(ccdCallbackRequest, authorizationToken))
                 .build()
-            );
+        );
     }
 
     @SuppressWarnings("unchecked")
@@ -204,12 +204,13 @@ public class CallbackController {
         @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
+        log.info("About to process PBA payment for case id {}", ccdCallbackRequest.getCaseDetails().getCaseId());
         Map<String, Object> response = caseOrchestrationService.solicitorSubmission(ccdCallbackRequest, authorizationToken);
 
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         CcdCallbackResponse.CcdCallbackResponseBuilder responseBuilder = CcdCallbackResponse.builder();
 
-        if (isResponseErrors(SOLICITOR_PBA_PAYMENT_ERROR_KEY, response)) {
+        if (hasErrorKeyInResponse(SOLICITOR_PBA_PAYMENT_ERROR_KEY, response)) {
             responseBuilder.errors(getResponseErrors(SOLICITOR_PBA_PAYMENT_ERROR_KEY, response));
         } else if (isPaymentSuccess(response)) {
             responseBuilder.state(getPbaUpdatedState(caseId, response));
@@ -319,7 +320,7 @@ public class CallbackController {
         log.info("/petition-updated endpoint called for caseId {}", caseId);
 
         try {
-            caseOrchestrationService.sendPetitionerGenericUpdateNotificationEmail(ccdCallbackRequest);
+            caseOrchestrationService.sendNotificationEmail(ccdCallbackRequest);
         } catch (WorkflowException e) {
             log.error("Failed to complete service for caseId {}", caseId, e);
             return ResponseEntity.ok(CcdCallbackResponse.builder()

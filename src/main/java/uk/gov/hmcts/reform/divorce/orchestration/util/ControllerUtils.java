@@ -58,14 +58,10 @@ public class ControllerUtils {
         return CcdStates.SUBMITTED;
     }
 
-    public static boolean isResponseErrors(String errorKey, Map<String, Object> errorResponse) {
-        return Optional.ofNullable(errorResponse)
-            .map(errors ->
-                Optional.ofNullable(errorKey)
-                    .map(errors::containsKey)
-                    .orElseGet(() -> false)
-            )
-            .orElseGet(() -> false);
+    public static boolean hasErrorKeyInResponse(String errorKey, Map<String, Object> response) {
+        return Optional.ofNullable(response)
+            .map(responseMap -> responseMap.containsKey(errorKey))
+            .orElse(false);
     }
 
     public static List<String> getResponseErrors(String errorKey, Map<String, Object> errorResponse) {

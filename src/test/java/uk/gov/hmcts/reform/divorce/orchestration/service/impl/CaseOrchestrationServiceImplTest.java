@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpd
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.AllowShareACaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionForRefusalWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
@@ -56,8 +57,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendClarificationSubmittedNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendCoRespondSubmissionNotificationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerClarificationRequestNotificationWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
@@ -99,6 +100,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
@@ -190,7 +192,7 @@ public class CaseOrchestrationServiceImplTest {
     private SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow;
 
     @Mock
-    private SendPetitionerEmailNotificationWorkflow sendPetitionerEmailNotificationWorkflow;
+    private SendEmailNotificationWorkflow sendEmailNotificationWorkflow;
 
     @Mock
     private SendPetitionerClarificationRequestNotificationWorkflow sendPetitionerClarificationRequestNotificationWorkflow;
@@ -341,6 +343,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private WelshSetPreviousStateWorkflow welshSetPreviousStateWorkflow;
+
+    @Mock
+    private AllowShareACaseWorkflow allowShareACaseWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -696,13 +701,13 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void givenCaseData_whenSendPetitionerGenericEmailNotification_thenReturnPayload() throws Exception {
-        when(sendPetitionerEmailNotificationWorkflow.run(ccdCallbackRequest))
+        when(sendEmailNotificationWorkflow.run(ccdCallbackRequest))
             .thenReturn(requestPayload);
 
-        Map<String, Object> actual = classUnderTest.sendPetitionerGenericUpdateNotificationEmail(ccdCallbackRequest);
+        Map<String, Object> actual = classUnderTest.sendNotificationEmail(ccdCallbackRequest);
 
         assertEquals(requestPayload, actual);
-        verify(sendPetitionerEmailNotificationWorkflow).run(ccdCallbackRequest);
+        verify(sendEmailNotificationWorkflow).run(ccdCallbackRequest);
     }
 
     @Test
@@ -1728,6 +1733,17 @@ public class CaseOrchestrationServiceImplTest {
 
         List<String> errors = workflowErrors.values().stream().map(String.class::cast).collect(Collectors.toList());
         assertThat(ccdCallbackResponse.getErrors(), is(errors));
+    }
+
+    @Test
+    public void shouldThrowCaseOrchestrationException_IfWorkflowExceptionIsThrow_WhenAllowingShareACase() throws WorkflowException {
+        when(allowShareACaseWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN)).thenThrow(WorkflowException.class);
+
+        CaseOrchestrationServiceException exception = assertThrows(CaseOrchestrationServiceException.class,
+            () -> classUnderTest.allowShareACase(ccdCallbackRequest, AUTH_TOKEN));
+
+        assertThat(exception.getCause(), isA(WorkflowException.class));
+        assertThat(exception.getCaseId().get(), is(TEST_CASE_ID));
     }
 
     private CcdCallbackRequest buildCcdCallbackRequest(Map<String, Object> requestPayload) {
