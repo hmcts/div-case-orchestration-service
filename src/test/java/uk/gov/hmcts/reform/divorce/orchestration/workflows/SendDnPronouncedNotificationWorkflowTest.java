@@ -15,6 +15,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStoreTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderCoRespondentCoverLetterGenerationTask;
@@ -31,23 +33,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_TYPE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_RESPONDENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_COSTS_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.*;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.*;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.buildCaseDataWithRespondent;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.buildCaseDataWithRespondentSolicitor;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.COSTS_CLAIM_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocumentAsMap;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithCaseDetails;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTaskWasNeverCalled;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
@@ -75,6 +67,12 @@ public class SendDnPronouncedNotificationWorkflowTest {
 
     @Mock
     private DnGrantedRespondentSolicitorCoverLetterGenerationTask dnGrantedRespondentSolicitorCoverLetterGenerationTask;
+
+    @Mock
+    private SendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask sendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask;
+
+    @Mock
+    private SendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask sendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask;
 
     @Mock
     private FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask;
@@ -472,6 +470,32 @@ public class SendDnPronouncedNotificationWorkflowTest {
             caseData,
             sendPetitionerGenericUpdateNotificationEmailTask,
             sendRespondentGenericUpdateNotificationEmailTask
+        );
+    }
+
+    @Test
+    public void givenPetitionerIsRepresentedBySolicitor_thenSendDecreeNisiNotificationToPetitionerSolicitorx() throws Exception {
+        contextWithCaseDetails();
+
+        Map<String, Object> caseData = buildCaseDataWithRespondentSolicitor();
+        caseData.put(PETITIONER_SOLICITOR_EMAIL, TEST_PETITIONER_EMAIL);
+        caseData.put(RESPONDENT_SOLICITOR_EMAIL_ADDRESS, TEST_RESPONDENT_SOLICITOR_EMAIL);
+
+        mockTasksExecution(
+            caseData,
+            sendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask,
+            sendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask
+        );
+
+        when(featureToggleService.isFeatureEnabled(Features.RESPONDENT_SOLICITOR_DETAILS)).thenReturn(true);
+
+        executeWorkflowRun(caseData);
+
+        verifyNoBulkPrintTasksCalled();
+        verifyTasksCalledInOrder(
+            caseData,
+            sendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask,
+            sendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask
         );
     }
 

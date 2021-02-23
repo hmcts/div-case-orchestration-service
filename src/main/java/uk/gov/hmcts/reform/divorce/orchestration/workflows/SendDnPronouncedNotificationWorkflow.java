@@ -13,6 +13,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStoreTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BasePayloadSpecificDocumentGenerationTask;
@@ -36,11 +38,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.isCostsClaimGranted;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.MultiBulkPrinterTask.ContextFields.MULTI_BULK_PRINT_CONFIGS;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.removeDocumentsByDocumentType;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentDigital;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentLiableForCosts;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentRepresented;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentDigital;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.*;
 
 @Component
 @RequiredArgsConstructor
@@ -56,6 +54,9 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
 
     private final DnGrantedRespondentCoverLetterGenerationTask dnGrantedRespondentCoverLetterGenerationTask;
     private final DnGrantedRespondentSolicitorCoverLetterGenerationTask dnGrantedRespondentSolicitorCoverLetterGenerationTask;
+
+    private final SendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask sendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask;
+    private final SendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask sendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask;
 
     private final FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask;
     private final MultiBulkPrinterTask multiBulkPrinterTask;
@@ -191,6 +192,10 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
             tasks.add(multiBulkPrinterTask);
         }
 
+        if (isRespondentRepresentedJourneyEnabled()) {
+            addEmailForDecreeNisiGrantedNotificationToSolicitors(caseId, caseData);
+        }
+
         return tasks.toArray(new Task[0]);
     }
 
@@ -255,5 +260,28 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         return isCoRespondentRepresented(caseData)
             ? costOrderCoRespondentSolicitorCoverLetterGenerationTask
             : costOrderCoRespondentCoverLetterGenerationTask;
+    }
+
+    private Task<Map<String, Object>> addDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask(String caseId) {
+        log.info("CaseId: {} Adding DecreeNisiGranted email task to Petitioner Solicitor.", caseId);
+        return sendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask;
+    }
+
+    private Task<Map<String, Object>> addDecreeNisiGrantedRespondentSolicitorNotificationEmailTask(String caseId) {
+        log.info("CaseId: {} Adding DecreeNisiGranted email task to Respondent Solicitor.", caseId);
+        return sendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask;
+    }
+
+    private void addEmailForDecreeNisiGrantedNotificationToSolicitors(String caseId, Map<String, Object> caseData) {
+        if (isPetitionerRepresented(caseData)) {
+            addDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask(caseId);
+        }
+        if (isRespondentRepresented(caseData) && isRespondentSolicitorDigital(caseData)) {
+            addDecreeNisiGrantedRespondentSolicitorNotificationEmailTask(caseId);
+        }
+    }
+
+    private boolean isRespondentRepresentedJourneyEnabled() {
+        return featureToggleService.isFeatureEnabled(Features.RESPONDENT_SOLICITOR_DETAILS);
     }
 }
