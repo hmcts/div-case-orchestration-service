@@ -7,9 +7,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConst
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ExtractorHelper.getMandatoryStringValue;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CaseDataExtractor {
+
+    public static final String VALUE_NOT_SET = "not-set";
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class CaseDataKeys {
@@ -18,5 +21,9 @@ public class CaseDataExtractor {
 
     public static String getCaseReference(Map<String, Object> caseData) {
         return getMandatoryStringValue(caseData, CaseDataKeys.CASE_REFERENCE);
+    }
+
+    public static String getCaseReferenceOptional(Map<String, Object> caseData) {
+        return getOptionalPropertyValueAsString(caseData, CaseDataKeys.CASE_REFERENCE, VALUE_NOT_SET);
     }
 }
