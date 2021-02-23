@@ -38,7 +38,8 @@ public class TaskCommons {
     }
 
     /**
-     * Please use GenericEmailNotification as it's a self contained task, instead of this "Common" task.
+     * Please use SendEmailTask as a base for any email you want to send.
+     * CommonTask and GenericEmailNotification shouldn't be used anymore.
      */
     public void sendEmail(EmailTemplateNames emailTemplate,
                           String emailDescription,
