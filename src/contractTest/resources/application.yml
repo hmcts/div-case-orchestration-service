@@ -330,7 +330,7 @@ uk:
 court-distribution-config:
   distribution:
     eastMidlands: 0
-    southWest: 0src/main/java/uk/gov/hmcts/reform/divorce/orchestration/domain/model/email/EmailTemplateNames.java
+    southWest: 0
     northWest: 0
     westMidlands: 0
     serviceCentre: 1.00
