@@ -34,6 +34,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.D8_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_D8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INFERRED_MALE_GENDER;
@@ -41,6 +42,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETIT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RELATIONSHIP;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RELATIONSHIP_HUSBAND;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
@@ -48,6 +50,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH_FEMALE_GENDER_IN_RELATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH_MALE_GENDER_IN_RELATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
@@ -59,12 +62,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_COURT_ADDRESS_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL_ADDRESS_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RDC_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_FORM_SUBMISSION_DATE_LIMIT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
@@ -119,7 +126,19 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
         verify(mockClient).sendEmail(
             eq(DEFENDED_DIVORCE_EMAIL_TEMPLATE_ID),
             eq("respondent@divorce.co.uk"),
-            any(),
+            eq(ImmutableMap.<String, Object>builder()
+                .put(NOTIFICATION_CASE_NUMBER_KEY, D8_CASE_ID)
+                .put(NOTIFICATION_HUSBAND_OR_WIFE, TEST_RELATIONSHIP)
+                .put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, "Jones")
+                .put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, "Ted")
+                .put(NOTIFICATION_COURT_ADDRESS_KEY, "West Midlands Regional Divorce Centre\nPO Box 3650\nStoke-on-Trent\nST4 9NH")
+                .put(NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY, "20 September 2018")
+                .put(NOTIFICATION_EMAIL_ADDRESS_KEY, "respondent@divorce.co.uk")
+                .put(NOTIFICATION_RDC_NAME_KEY, "West Midlands Regional Divorce Centre")
+                .put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TEST_WELSH_FEMALE_GENDER_IN_RELATION)
+                .put(NOTIFICATION_WELSH_FORM_SUBMISSION_DATE_LIMIT_KEY, "20 Medi 2018")
+                .build()
+            ),
             any()
         );
     }
@@ -147,7 +166,16 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
         verify(mockClient).sendEmail(
             eq(UNDEFENDED_DIVORCE_EMAIL_TEMPLATE_ID),
             eq("respondent@divorce.co.uk"),
-            any(),
+            eq(ImmutableMap.<String, Object>builder()
+                .put(NOTIFICATION_CASE_NUMBER_KEY, D8_CASE_ID)
+                .put(NOTIFICATION_HUSBAND_OR_WIFE, TEST_RELATIONSHIP_HUSBAND)
+                .put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, "Jones")
+                .put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, "Sarah")
+                .put(NOTIFICATION_EMAIL_ADDRESS_KEY, "respondent@divorce.co.uk")
+                .put(NOTIFICATION_RDC_NAME_KEY, "West Midlands Regional Divorce Centre")
+                .put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TEST_WELSH_MALE_GENDER_IN_RELATION)
+                .build()
+            ),
             any()
         );
     }
@@ -180,7 +208,16 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
         verify(mockClient).sendEmail(
             eq(UNDEFENDED_DIVORCE_EMAIL_TEMPLATE_ID),
             eq("respondent@divorce.co.uk"),
-            any(),
+            eq(ImmutableMap.<String, Object>builder()
+                .put(NOTIFICATION_CASE_NUMBER_KEY, D8_CASE_ID)
+                .put(NOTIFICATION_HUSBAND_OR_WIFE, TEST_RELATIONSHIP_HUSBAND)
+                .put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, "Jones")
+                .put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, "Sarah")
+                .put(NOTIFICATION_EMAIL_ADDRESS_KEY, "respondent@divorce.co.uk")
+                .put(NOTIFICATION_RDC_NAME_KEY, "West Midlands Regional Divorce Centre")
+                .put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TEST_WELSH_MALE_GENDER_IN_RELATION)
+                .build()
+            ),
             any()
         );
     }
