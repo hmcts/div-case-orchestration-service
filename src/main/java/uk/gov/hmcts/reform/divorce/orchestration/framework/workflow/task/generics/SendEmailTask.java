@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.getCaseReferenceOptional;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 
 @Component
@@ -21,13 +22,25 @@ public abstract class SendEmailTask implements Task<Map<String, Object>> {
 
     private final EmailService emailService;
 
-    protected abstract String getSubject(TaskContext context, Map<String, Object> caseData);
-
     protected abstract Map<String, String> getPersonalisation(TaskContext context, Map<String, Object> caseData);
 
     protected abstract EmailTemplateNames getTemplate();
 
     protected abstract String getRecipientEmail(Map<String, Object> caseData);
+
+    /**
+     * This method is only use to produce msg for log. It's not sent to external api
+     * */
+    protected String getSubject(TaskContext context, Map<String, Object> caseData) {
+        String caseId;
+        try {
+            caseId = getCaseId(context);
+        } catch (Exception exception) {
+            caseId = getCaseReferenceOptional(caseData);
+        }
+
+        return String.format("CaseId: %s, email template %s", caseId, getTemplate().name());
+    }
 
     protected LanguagePreference getLanguage(Map<String, Object> caseData) {
         return CaseDataUtils.getLanguagePreference(caseData);
