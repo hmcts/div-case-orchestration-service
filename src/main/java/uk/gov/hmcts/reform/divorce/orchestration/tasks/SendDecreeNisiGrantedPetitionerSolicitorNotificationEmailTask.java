@@ -21,7 +21,6 @@ public class SendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask exten
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class EmailMetadata {
-        public static final String EMAIL_SUBJECT = "Decree Nisi granted - Solicitor (Applicant)";
         public static EmailTemplateNames TEMPLATE_ID = SOL_PETITIONER_DECREE_NISI_GRANTED;
     }
 
@@ -35,8 +34,7 @@ public class SendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask exten
         return format(
             "%s vs %s: %s",
             getPetitionerFullName(caseData),
-            getRespondentFullName(caseData),
-            EmailMetadata.EMAIL_SUBJECT
+            getRespondentFullName(caseData)
         );
     }
 

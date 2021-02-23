@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextracto
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
@@ -28,8 +29,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.RESPONDENT_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getPetitionerFullName;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getRespondentFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.getExpectedNotificationTemplateVars;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.getTaskContext;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithToken;
@@ -42,8 +41,6 @@ public class SendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTaskTest {
 
     @InjectMocks
     private SendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask task;
-
-    private static final String SUBJECT_CONTENT = "Decree Nisi granted - Solicitor (Applicant)";
 
     private TaskContext testContext;
 
@@ -91,7 +88,7 @@ public class SendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTaskTest {
             TEST_SOLICITOR_EMAIL,
             SOL_PETITIONER_DECREE_NISI_GRANTED.name(),
             getExpectedNotificationTemplateVars(true, testContext, caseData),
-            getPetitionerFullName(caseData) + " vs " + getRespondentFullName(caseData) + ": " + SUBJECT_CONTENT,
+            any(),
             LanguagePreference.ENGLISH
         );
     }
