@@ -37,7 +37,7 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
     private final FeatureToggleService featureToggleService;
 
     public Map<String, Object> run(CaseDetails caseDetails, final String authToken) throws WorkflowException {
-        String caseId = caseDetails.getCaseId();
+        final String caseId = caseDetails.getCaseId();
 
         log.info("CaseID: {} SolicitorUpdateWorkflow workflow is going to be executed.", caseId);
 
@@ -46,7 +46,7 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
             caseDetails.getCaseData(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
-            ImmutablePair.of(CASE_ID_JSON_KEY, caseDetails.getCaseId())
+            ImmutablePair.of(CASE_ID_JSON_KEY, caseId)
         );
     }
 

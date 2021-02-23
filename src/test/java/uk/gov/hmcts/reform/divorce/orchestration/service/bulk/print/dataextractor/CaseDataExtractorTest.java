@@ -11,6 +11,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_FAMILY_MAN_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.VALUE_NOT_SET;
 
 public class CaseDataExtractorTest {
 
@@ -23,6 +24,31 @@ public class CaseDataExtractorTest {
     @Test(expected = InvalidDataForTaskException.class)
     public void getCaseReferenceShouldThrowInvalidDataForTaskException() {
         CaseDataExtractor.getCaseReference(Collections.emptyMap());
+    }
+
+
+    @Test
+    public void getCaseReferenceOptionalShouldReturnValidValue() {
+        assertThat(
+            CaseDataExtractor.getCaseReferenceOptional(
+                buildCaseDataWithField(CASE_REFERENCE, TEST_CASE_FAMILY_MAN_ID)),
+            is(TEST_CASE_FAMILY_MAN_ID)
+        );
+
+        assertThat(
+            CaseDataExtractor.getCaseReferenceOptional(buildCaseDataWithField(CASE_REFERENCE, "")),
+            is("")
+        );
+
+        assertThat(
+            CaseDataExtractor.getCaseReferenceOptional(buildCaseDataWithField(CASE_REFERENCE, null)),
+            is(VALUE_NOT_SET)
+        );
+
+        assertThat(
+            CaseDataExtractor.getCaseReferenceOptional(Collections.emptyMap()),
+            is(VALUE_NOT_SET)
+        );
     }
 
     private static Map<String, Object> buildCaseDataWithField(String field, String value) {
