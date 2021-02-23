@@ -201,10 +201,14 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         if (isRespondentRepresentedJourneyEnabled()) {
             if (isPetitionerRepresented(caseData)) {
                 addDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask(caseId, tasks);
+            } else {
+                log.info("CaseId: {} DecreeNisiGranted email task not added for Petitioner Solicitor.", caseId);
             }
 
             if (isRespondentRepresented(caseData) && isRespondentSolicitorDigital(caseData)) {
                 addDecreeNisiGrantedRespondentSolicitorNotificationEmailTask(caseId, tasks);
+            } else {
+                log.info("CaseId: {} DecreeNisiGranted email task not added for Respondent Solicitor.", caseId);
             }
         }
 
