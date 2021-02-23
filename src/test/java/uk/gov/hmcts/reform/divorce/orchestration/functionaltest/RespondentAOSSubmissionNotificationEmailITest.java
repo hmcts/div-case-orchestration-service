@@ -96,7 +96,6 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
 
     @Test
     public void testResponseHasDataAndNoErrors_whenEmailCanBeSent_forDefendedDivorce() throws Exception {
-
         CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
             "/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json", CcdCallbackRequest.class);
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
@@ -114,11 +113,15 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
             .andExpect(content().string(allOf(
                 isJson(),
                 hasJsonPath("$.errors", nullValue())
-            )));
+            ))
+        );
 
-        verify(mockClient).sendEmail(eq(DEFENDED_DIVORCE_EMAIL_TEMPLATE_ID),
+        verify(mockClient).sendEmail(
+            eq(DEFENDED_DIVORCE_EMAIL_TEMPLATE_ID),
             eq("respondent@divorce.co.uk"),
-            any(), any());
+            any(),
+            any()
+        );
     }
 
     @Test
@@ -141,9 +144,12 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
                 hasJsonPath("$.errors", nullValue())
             )));
 
-        verify(mockClient).sendEmail(eq(UNDEFENDED_DIVORCE_EMAIL_TEMPLATE_ID),
+        verify(mockClient).sendEmail(
+            eq(UNDEFENDED_DIVORCE_EMAIL_TEMPLATE_ID),
             eq("respondent@divorce.co.uk"),
-            any(), any());
+            any(),
+            any()
+        );
     }
 
     @Test
@@ -171,9 +177,12 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
                 hasJsonPath("$.errors", nullValue())
             )));
 
-        verify(mockClient).sendEmail(eq(UNDEFENDED_DIVORCE_EMAIL_TEMPLATE_ID),
+        verify(mockClient).sendEmail(
+            eq(UNDEFENDED_DIVORCE_EMAIL_TEMPLATE_ID),
             eq("respondent@divorce.co.uk"),
-            any(), any());
+            any(),
+            any()
+        );
     }
 
     @Test
@@ -202,7 +211,8 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
             .andExpect(content().string(allOf(
                 isJson(),
                 hasJsonPath("$.errors", nullValue())
-            )));
+            ))
+        );
 
         Map<String, String> emailVars = new HashMap<>();
         emailVars.put(NOTIFICATION_EMAIL, TEST_RESPONDENT_EMAIL);
@@ -250,32 +260,6 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
             "/jsonExamples/payloads/defendedDivorceAOSMissingCaseId.json",
             "Could not evaluate value of mandatory property \"D8caseReference\""
         );
-    }
-
-    private void runTestResponseWithValidErrors(String filePath, String errorMsg) throws Exception {
-        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
-            filePath, CcdCallbackRequest.class
-        );
-
-        when(templateConfigService.getRelationshipTermByGender(
-            eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.ENGLISH))
-        ).thenReturn(TEST_RELATIONSHIP_HUSBAND);
-
-        when(templateConfigService.getRelationshipTermByGender(
-            eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.WELSH))
-        ).thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
-
-        webClient.perform(post(API_URL)
-            .content(convertObjectToJsonString(ccdCallbackRequest))
-            .contentType(APPLICATION_JSON)
-            .accept(APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().string(allOf(
-                isJson(),
-                hasJsonPath("$.data", is(nullValue())),
-                hasJsonPath("$.errors",
-                    hasItem(errorMsg))
-            )));
     }
 
     @Test
@@ -335,5 +319,32 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
         caseData.put(D_8_INFERRED_PETITIONER_GENDER, TEST_INFERRED_MALE_GENDER);
 
         return caseData;
+    }
+
+    private void runTestResponseWithValidErrors(String filePath, String errorMsg) throws Exception {
+        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
+            filePath, CcdCallbackRequest.class
+        );
+
+        when(templateConfigService.getRelationshipTermByGender(
+            eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.ENGLISH))
+        ).thenReturn(TEST_RELATIONSHIP_HUSBAND);
+
+        when(templateConfigService.getRelationshipTermByGender(
+            eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.WELSH))
+        ).thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
+
+        webClient.perform(post(API_URL)
+            .content(convertObjectToJsonString(ccdCallbackRequest))
+            .contentType(APPLICATION_JSON)
+            .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(
+                isJson(),
+                hasJsonPath("$.data", is(nullValue())),
+                hasJsonPath("$.errors",
+                    hasItem(errorMsg))
+            ))
+        );
     }
 }
