@@ -279,7 +279,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
     }
 
     private boolean isRespondentRepresentedJourneyEnabled() {
-        return featureToggleService.isFeatureEnabled(Features.RESPONDENT_SOLICITOR_DETAILS);
+        return featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY);
     }
 
     private BasePayloadSpecificDocumentGenerationTask respondentOrSolicitor(Map<String, Object> caseData) {
