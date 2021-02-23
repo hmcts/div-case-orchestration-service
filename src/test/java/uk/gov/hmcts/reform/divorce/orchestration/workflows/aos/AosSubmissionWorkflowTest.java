@@ -22,7 +22,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.TemplateConfigService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotificationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.QueueAosSolicitorSubmitTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForDefendedDivorceEmail;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForUndefendedDivorceEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForUndefendedDivorceEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.aos.AosReceivedPetitionerSolicitorEmailTask;
 
 import java.io.IOException;
@@ -100,7 +100,7 @@ public class AosSubmissionWorkflowTest {
     private SendRespondentSubmissionNotificationForDefendedDivorceEmail defendedDivorceNotificationEmailTask;
 
     @Mock
-    private SendRespondentSubmissionNotificationForUndefendedDivorceEmailTask undefendedDivorceNotificationEmailTask;
+    private SendRespondentSubmissionNotificationForUndefendedDivorceEmail undefendedDivorceNotificationEmailTask;
 
     @Mock
     private AosReceivedPetitionerSolicitorEmailTask aosReceivedPetitionerSolicitorEmailTask;

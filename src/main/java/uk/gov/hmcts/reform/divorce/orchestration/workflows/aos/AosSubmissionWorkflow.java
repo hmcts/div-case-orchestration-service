@@ -17,7 +17,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.TemplateConfigService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotificationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.QueueAosSolicitorSubmitTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForDefendedDivorceEmail;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForUndefendedDivorceEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForUndefendedDivorceEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.aos.AosReceivedPetitionerSolicitorEmailTask;
 
 import java.util.ArrayList;
@@ -64,7 +64,7 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
     private final GenericEmailNotificationTask emailNotificationTask;
     private final SendRespondentSubmissionNotificationForDefendedDivorceEmail
         sendRespondentSubmissionNotificationForDefendedDivorceEmailTask;
-    private final SendRespondentSubmissionNotificationForUndefendedDivorceEmailTask
+    private final SendRespondentSubmissionNotificationForUndefendedDivorceEmail
         sendRespondentSubmissionNotificationForUndefendedDivorceEmailTask;
     private final AosReceivedPetitionerSolicitorEmailTask aosReceivedPetitionerSolicitorEmailTask;
 
