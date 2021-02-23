@@ -251,19 +251,20 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
             ))
         );
 
-        Map<String, String> emailVars = new HashMap<>();
-        emailVars.put(NOTIFICATION_EMAIL, TEST_RESPONDENT_EMAIL);
-        emailVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_RESPONDENT_FIRST_NAME);
-        emailVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_RESPONDENT_LAST_NAME);
-        emailVars.put(NOTIFICATION_HUSBAND_OR_WIFE, TEST_RELATIONSHIP_HUSBAND);
-        emailVars.put(NOTIFICATION_CASE_NUMBER_KEY, TEST_D8_CASE_REFERENCE);
-        emailVars.put(NOTIFICATION_RDC_NAME_KEY, "West Midlands Regional Divorce Centre");
-        emailVars.put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TEST_WELSH_MALE_GENDER_IN_RELATION);
-
         verify(mockClient).sendEmail(
             eq(UNDEFENDED_DIVORCE_EMAIL_TEMPLATE_ID),
             eq(TEST_RESPONDENT_EMAIL),
-            eq(emailVars),
+            eq(
+                ImmutableMap.<String, Object>builder()
+                    .put(NOTIFICATION_EMAIL, TEST_RESPONDENT_EMAIL)
+                    .put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_RESPONDENT_FIRST_NAME)
+                    .put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_RESPONDENT_LAST_NAME)
+                    .put(NOTIFICATION_HUSBAND_OR_WIFE, TEST_RELATIONSHIP_HUSBAND)
+                    .put(NOTIFICATION_CASE_NUMBER_KEY, TEST_D8_CASE_REFERENCE)
+                    .put(NOTIFICATION_RDC_NAME_KEY, "West Midlands Regional Divorce Centre")
+                    .put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TEST_WELSH_MALE_GENDER_IN_RELATION)
+                    .build()
+            ),
             anyString()
         );
 
@@ -273,7 +274,6 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
             eq(
                 ImmutableMap.of(
                     NOTIFICATION_SOLICITOR_NAME, TEST_SOLICITOR_NAME,
-                    NOTIFICATION_EMAIL, TEST_SOLICITOR_EMAIL,
                     NOTIFICATION_PET_NAME, TEST_PETITIONER_FULL_NAME,
                     NOTIFICATION_RESP_NAME, TEST_RESPONDENT_FULL_NAME,
                     NOTIFICATION_CCD_REFERENCE_KEY, TEST_CASE_ID
