@@ -21,7 +21,7 @@ public class SendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask exten
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class EmailMetadata {
         public static final EmailTemplateNames TEMPLATE_ID = SOL_RESPONDENT_DECREE_NISI_GRANTED;
-        public static final String SUBJECT_FORMAT = "%s vs %s: %s";
+        public static final String SUBJECT_FORMAT = "%s vs %s";
     }
 
     protected SendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask(EmailService emailService) {
