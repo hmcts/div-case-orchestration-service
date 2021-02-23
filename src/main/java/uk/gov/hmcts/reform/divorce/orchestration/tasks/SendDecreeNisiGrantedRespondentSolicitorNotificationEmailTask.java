@@ -18,11 +18,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 @Component
 public class SendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask extends PetitionerSolicitorSendEmailTask {
 
-    @NoArgsConstructor(access = AccessLevel.PRIVATE)
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class EmailMetadata {
         public static final String EMAIL_SUBJECT = "Decree Nisi granted - Solicitor (Respondent)";
         public static final EmailTemplateNames TEMPLATE_ID = SOL_RESPONDENT_DECREE_NISI_GRANTED;
-        public static final String TEMPLATE_STRUCTURE = "%s vs %s: %s";
     }
 
     protected SendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask(EmailService emailService) {
@@ -32,7 +31,7 @@ public class SendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask exten
     @Override
     protected String getSubject(TaskContext context, Map<String, Object> caseData) {
         return format(
-            EmailMetadata.TEMPLATE_STRUCTURE,
+            "%s vs %s: %s",
             getPetitionerFullName(caseData),
             getRespondentFullName(caseData),
             EmailMetadata.EMAIL_SUBJECT
