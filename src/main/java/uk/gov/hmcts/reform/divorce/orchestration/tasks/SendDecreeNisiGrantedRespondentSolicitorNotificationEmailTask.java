@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generics.PetitionerSolicitorSendEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.generics.RespondentSolicitorSendEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
 import java.util.Map;
@@ -16,9 +16,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getRespondentFullName;
 
 @Component
-public class SendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask extends PetitionerSolicitorSendEmailTask {
+public class SendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask extends RespondentSolicitorSendEmailTask {
 
-    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class EmailMetadata {
         public static final String EMAIL_SUBJECT = "Decree Nisi granted - Solicitor (Respondent)";
         public static final EmailTemplateNames TEMPLATE_ID = SOL_RESPONDENT_DECREE_NISI_GRANTED;

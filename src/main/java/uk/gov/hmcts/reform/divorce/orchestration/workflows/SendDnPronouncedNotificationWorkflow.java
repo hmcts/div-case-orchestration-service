@@ -38,7 +38,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.isCostsClaimGranted;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.MultiBulkPrinterTask.ContextFields.MULTI_BULK_PRINT_CONFIGS;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.removeDocumentsByDocumentType;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.*;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentDigital;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentLiableForCosts;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentRepresented;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerRepresented;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentDigital;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
 
 @Component
 @RequiredArgsConstructor
@@ -193,10 +199,26 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         }
 
         if (isRespondentRepresentedJourneyEnabled()) {
-            addEmailForDecreeNisiGrantedNotificationToSolicitors(caseId, caseData);
+            if (isPetitionerRepresented(caseData)) {
+                addDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask(caseId, tasks);
+            }
+
+            if (isRespondentRepresented(caseData) && isRespondentSolicitorDigital(caseData)) {
+                addDecreeNisiGrantedRespondentSolicitorNotificationEmailTask(caseId, tasks);
+            }
         }
 
         return tasks.toArray(new Task[0]);
+    }
+
+    private void addDecreeNisiGrantedRespondentSolicitorNotificationEmailTask(String caseId, List<Task<Map<String, Object>>> tasks) {
+        log.info("CaseId: {} Adding DecreeNisiGranted email task to Respondent Solicitor.", caseId);
+        tasks.add(sendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask);
+    }
+
+    private void addDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask(String caseId, List<Task<Map<String, Object>>> tasks) {
+        log.info("CaseId: {} Adding DecreeNisiGranted email task to Petitioner Solicitor.", caseId);
+        tasks.add(sendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask);
     }
 
     private void addRespondentPaperTasks(List<Task<Map<String, Object>>> tasks, CaseDetails caseDetails) {
@@ -250,6 +272,10 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         return featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE);
     }
 
+    private boolean isRespondentRepresentedJourneyEnabled() {
+        return featureToggleService.isFeatureEnabled(Features.RESPONDENT_SOLICITOR_DETAILS);
+    }
+
     private BasePayloadSpecificDocumentGenerationTask respondentOrSolicitor(Map<String, Object> caseData) {
         return isRespondentRepresented(caseData)
             ? dnGrantedRespondentSolicitorCoverLetterGenerationTask
@@ -260,28 +286,5 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         return isCoRespondentRepresented(caseData)
             ? costOrderCoRespondentSolicitorCoverLetterGenerationTask
             : costOrderCoRespondentCoverLetterGenerationTask;
-    }
-
-    private Task<Map<String, Object>> addDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask(String caseId) {
-        log.info("CaseId: {} Adding DecreeNisiGranted email task to Petitioner Solicitor.", caseId);
-        return sendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask;
-    }
-
-    private Task<Map<String, Object>> addDecreeNisiGrantedRespondentSolicitorNotificationEmailTask(String caseId) {
-        log.info("CaseId: {} Adding DecreeNisiGranted email task to Respondent Solicitor.", caseId);
-        return sendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask;
-    }
-
-    private void addEmailForDecreeNisiGrantedNotificationToSolicitors(String caseId, Map<String, Object> caseData) {
-        if (isPetitionerRepresented(caseData)) {
-            addDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask(caseId);
-        }
-        if (isRespondentRepresented(caseData) && isRespondentSolicitorDigital(caseData)) {
-            addDecreeNisiGrantedRespondentSolicitorNotificationEmailTask(caseId);
-        }
-    }
-
-    private boolean isRespondentRepresentedJourneyEnabled() {
-        return featureToggleService.isFeatureEnabled(Features.RESPONDENT_SOLICITOR_DETAILS);
     }
 }

@@ -6,10 +6,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.exceptions.verification.WantedButNotInvoked;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest;
@@ -31,21 +33,42 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.*;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.*;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_TYPE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_SOLICITOR_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_RESPONDENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_COSTS_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.buildCaseDataWithPetitionerSolicitor;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.buildCaseDataWithRespondent;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.buildCaseDataWithRespondentSolicitor;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.COSTS_CLAIM_GRANTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.buildOrganisationPolicy;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocumentAsMap;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithCaseDetails;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTaskWasCalled;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTaskWasNeverCalled;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SendDnPronouncedNotificationWorkflowTest {
+
+    @InjectMocks
+    private SendDnPronouncedNotificationWorkflow sendDnPronouncedNotificationWorkflow;
 
     @Mock
     private SendPetitionerGenericUpdateNotificationEmailTask sendPetitionerGenericUpdateNotificationEmailTask;
@@ -86,11 +109,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
     @Mock
     private CaseDataUtils caseDataUtils;
 
-
     private static final String COSTS_ORDER_TEMPLATE_ID = "FL-DIV-DEC-ENG-00060.docx";
-
-    @InjectMocks
-    private SendDnPronouncedNotificationWorkflow sendDnPronouncedNotificationWorkflow;
 
     @Before
     public void setup() {
@@ -474,32 +493,6 @@ public class SendDnPronouncedNotificationWorkflowTest {
     }
 
     @Test
-    public void givenPetitionerIsRepresentedBySolicitor_thenSendDecreeNisiNotificationToPetitionerSolicitorx() throws Exception {
-        contextWithCaseDetails();
-
-        Map<String, Object> caseData = buildCaseDataWithRespondentSolicitor();
-        caseData.put(PETITIONER_SOLICITOR_EMAIL, TEST_PETITIONER_EMAIL);
-        caseData.put(RESPONDENT_SOLICITOR_EMAIL_ADDRESS, TEST_RESPONDENT_SOLICITOR_EMAIL);
-
-        mockTasksExecution(
-            caseData,
-            sendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask,
-            sendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask
-        );
-
-        when(featureToggleService.isFeatureEnabled(Features.RESPONDENT_SOLICITOR_DETAILS)).thenReturn(true);
-
-        executeWorkflowRun(caseData);
-
-        verifyNoBulkPrintTasksCalled();
-        verifyTasksCalledInOrder(
-            caseData,
-            sendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask,
-            sendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask
-        );
-    }
-
-    @Test
     public void givenPaperBasedAndPaperUpdateToggledOff_thenNoBulkPrintTasksAreCalled() throws Exception {
         Map<String, Object> caseData = ImmutableMap.of(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE);
 
@@ -519,6 +512,53 @@ public class SendDnPronouncedNotificationWorkflowTest {
             sendPetitionerGenericUpdateNotificationEmailTask,
             sendRespondentGenericUpdateNotificationEmailTask
         );
+    }
+
+    @Test
+    public void givenPetitionerIsRepresentedBySolicitor_thenSendDecreeNisiNotificationToPetitionerSolicitor() throws Exception {
+        Map<String, Object> caseData = buildCaseDataWithPetitionerSolicitor();
+
+        when(featureToggleService.isFeatureEnabled(Features.RESPONDENT_SOLICITOR_DETAILS)).thenReturn(true);
+
+        CaseDetails caseDetails = setupCaseDetails(caseData);
+
+        executeAndVerityTask(caseData, caseDetails, sendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask);
+    }
+
+    @Test(expected = WantedButNotInvoked.class)
+    public void givenFeatureToggle_RESPONDENT_SOLICITOR_DETAILS_isFalse_doNotSendDecreeNisiNotificationToPetitionerSolicitor() throws Exception {
+        Map<String, Object> caseData = buildCaseDataWithPetitionerSolicitor();
+
+        when(featureToggleService.isFeatureEnabled(Features.RESPONDENT_SOLICITOR_DETAILS)).thenReturn(false);
+
+        CaseDetails caseDetails = setupCaseDetails(caseData);
+
+        executeAndVerityTask(caseData, caseDetails, sendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask);
+    }
+
+    @Test
+    public void givenRespondentIsRepresentedBySolicitor_thenSendDecreeNisiNotificationToRespondentSolicitor() throws Exception {
+        Map<String, Object> caseData = buildCaseDataWithRespondentSolicitor();
+        caseData.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
+
+        when(featureToggleService.isFeatureEnabled(Features.RESPONDENT_SOLICITOR_DETAILS)).thenReturn(true);
+
+        CaseDetails caseDetails = setupCaseDetails(caseData);
+
+        executeAndVerityTask(caseData, caseDetails, sendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask);
+    }
+
+    @Test(expected = WantedButNotInvoked.class)
+    public void givenFeatureToggle_RESPONDENT_SOLICITOR_DETAILS_isFalse_doNotSendDecreeNisiNotificationToRespondentSolicitor() throws Exception {
+        Map<String, Object> caseData = buildCaseDataWithPetitionerSolicitor();
+        caseData.put(RESPONDENT_SOLICITOR_EMAIL_ADDRESS, TEST_RESPONDENT_SOLICITOR_EMAIL);
+        caseData.put(RESP_SOL_REPRESENTED, YES_VALUE);
+
+        when(featureToggleService.isFeatureEnabled(Features.RESPONDENT_SOLICITOR_DETAILS)).thenReturn(false);
+
+        CaseDetails caseDetails = setupCaseDetails(caseData);
+
+        executeAndVerityTask(caseData, caseDetails, sendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask);
     }
 
     private void executeWorkflowRun(Map<String, Object> caseData) throws WorkflowException {
@@ -549,5 +589,28 @@ public class SendDnPronouncedNotificationWorkflowTest {
         verifyTaskWasNeverCalled(dnGrantedRespondentCoverLetterGenerationTask);
         verifyTaskWasNeverCalled(fetchPrintDocsFromDmStoreTask);
         verifyTaskWasNeverCalled(multiBulkPrinterTask);
+    }
+
+    private Map<String, Object> executeWorkflow(CaseDetails caseDetails)
+        throws WorkflowException {
+        Map<String, Object> returnedData = sendDnPronouncedNotificationWorkflow.run(caseDetails, AUTH_TOKEN);
+        assertThat(returnedData, is(notNullValue()));
+
+        return returnedData;
+    }
+
+    private void executeAndVerityTask(Map<String, Object> caseData, CaseDetails caseDetails, Task task) throws WorkflowException {
+        mockTasksExecution(caseData, task);
+
+        Map<String, Object> returnedCaseData = executeWorkflow(caseDetails);
+
+        verifyTaskWasCalled(returnedCaseData, task);
+    }
+
+    private CaseDetails setupCaseDetails(Map<String, Object> caseData) {
+        return CaseDetails.builder()
+            .caseData(caseData)
+            .caseId(TEST_CASE_ID)
+            .build();
     }
 }

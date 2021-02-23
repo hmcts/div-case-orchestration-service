@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -18,12 +19,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 @Component
 public class SendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask extends PetitionerSolicitorSendEmailTask {
 
-    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class EmailMetadata {
         public static final String EMAIL_SUBJECT = "Decree Nisi granted - Solicitor (Applicant)";
-        public static final EmailTemplateNames TEMPLATE_ID = SOL_PETITIONER_DECREE_NISI_GRANTED;
+        public static EmailTemplateNames TEMPLATE_ID = SOL_PETITIONER_DECREE_NISI_GRANTED;
     }
-
+    @Autowired
     protected SendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask(EmailService emailService) {
         super(emailService);
     }

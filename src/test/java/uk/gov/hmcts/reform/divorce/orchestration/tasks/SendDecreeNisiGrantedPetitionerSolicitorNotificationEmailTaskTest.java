@@ -46,7 +46,6 @@ public class SendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTaskTest {
 
     private DefaultTaskContext testContext;
     private static final String SUBJECT_CONTENT = "Decree Nisi granted - Solicitor (Applicant)";
-    private static final EmailTemplateNames EXPECTED_TEMPLATE = SOL_PETITIONER_DECREE_NISI_GRANTED;
 
     @Before
     public void setUp() {
@@ -67,7 +66,7 @@ public class SendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTaskTest {
     public void shouldReturnTemplate() {
         EmailTemplateNames returnedTemplate = task.getTemplate();
 
-        assertEquals(EXPECTED_TEMPLATE, returnedTemplate);
+        assertEquals(SOL_PETITIONER_DECREE_NISI_GRANTED, returnedTemplate);
     }
 
     private Map<String, Object> buildCaseData() {
@@ -91,7 +90,7 @@ public class SendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTaskTest {
     private void verifySolicitorEmailSent(Map<String, Object> caseData) {
         verify(emailService).sendEmail(
             TEST_SOLICITOR_EMAIL,
-            EXPECTED_TEMPLATE.name(),
+            SOL_PETITIONER_DECREE_NISI_GRANTED.name(),
             getExpectedNotificationTemplateVars(true, testContext, caseData),
             getPetitionerFullName(caseData) + " vs " + getRespondentFullName(caseData) + ": " + SUBJECT_CONTENT,
             LanguagePreference.ENGLISH
