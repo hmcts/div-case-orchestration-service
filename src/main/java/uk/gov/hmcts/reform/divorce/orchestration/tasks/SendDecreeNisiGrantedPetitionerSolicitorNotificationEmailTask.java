@@ -22,6 +22,7 @@ public class SendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask exten
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class EmailMetadata {
         public static EmailTemplateNames TEMPLATE_ID = SOL_PETITIONER_DECREE_NISI_GRANTED;
+        public static final String SUBJECT_FORMAT = "%s vs %s";
     }
 
     @Autowired
@@ -32,7 +33,7 @@ public class SendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask exten
     @Override
     protected String getSubject(TaskContext context, Map<String, Object> caseData) {
         return format(
-            "%s vs %s: %s",
+            "%s vs %s",
             getPetitionerFullName(caseData),
             getRespondentFullName(caseData)
         );

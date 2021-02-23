@@ -21,6 +21,7 @@ public class SendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask exten
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class EmailMetadata {
         public static final EmailTemplateNames TEMPLATE_ID = SOL_RESPONDENT_DECREE_NISI_GRANTED;
+        public static final String SUBJECT_FORMAT = "%s vs %s: %s";
     }
 
     protected SendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask(EmailService emailService) {
@@ -30,7 +31,7 @@ public class SendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask exten
     @Override
     protected String getSubject(TaskContext context, Map<String, Object> caseData) {
         return format(
-            "%s vs %s: %s",
+            EmailMetadata.SUBJECT_FORMAT,
             getPetitionerFullName(caseData),
             getRespondentFullName(caseData)
         );
