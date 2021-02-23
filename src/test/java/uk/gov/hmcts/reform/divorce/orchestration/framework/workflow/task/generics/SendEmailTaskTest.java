@@ -31,6 +31,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelp
 public class SendEmailTaskTest {
 
     public static final EmailTemplateNames EMAIL_TEMPLATE_ID = EmailTemplateNames.AOS_RECEIVED_NO_ADMIT_ADULTERY;
+
     @Mock
     private EmailService emailService;
 

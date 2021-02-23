@@ -13,8 +13,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStoreTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmailTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BasePayloadSpecificDocumentGenerationTask;
@@ -23,6 +21,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderCo
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DnGrantedRespondentCoverLetterGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DnGrantedRespondentSolicitorCoverLetterGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.MultiBulkPrinterTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.decreenisi.DecreeNisiGrantedPetitionerSolicitorEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.decreenisi.DecreeNisiGrantedRespondentSolicitorEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.ArrayList;
@@ -61,8 +61,8 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
     private final DnGrantedRespondentCoverLetterGenerationTask dnGrantedRespondentCoverLetterGenerationTask;
     private final DnGrantedRespondentSolicitorCoverLetterGenerationTask dnGrantedRespondentSolicitorCoverLetterGenerationTask;
 
-    private final SendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask sendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask;
-    private final SendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask sendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask;
+    private final DecreeNisiGrantedPetitionerSolicitorEmailTask decreeNisiGrantedPetitionerSolicitorEmailTask;
+    private final DecreeNisiGrantedRespondentSolicitorEmailTask decreeNisiGrantedRespondentSolicitorEmailTask;
 
     private final FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask;
     private final MultiBulkPrinterTask multiBulkPrinterTask;
@@ -217,12 +217,12 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
 
     private void addDecreeNisiGrantedRespondentSolicitorNotificationEmailTask(String caseId, List<Task<Map<String, Object>>> tasks) {
         log.info("CaseId: {} Adding DecreeNisiGranted email task to Respondent Solicitor.", caseId);
-        tasks.add(sendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask);
+        tasks.add(decreeNisiGrantedRespondentSolicitorEmailTask);
     }
 
     private void addDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask(String caseId, List<Task<Map<String, Object>>> tasks) {
         log.info("CaseId: {} Adding DecreeNisiGranted email task to Petitioner Solicitor.", caseId);
-        tasks.add(sendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask);
+        tasks.add(decreeNisiGrantedPetitionerSolicitorEmailTask);
     }
 
     private void addRespondentPaperTasks(List<Task<Map<String, Object>>> tasks, CaseDetails caseDetails) {

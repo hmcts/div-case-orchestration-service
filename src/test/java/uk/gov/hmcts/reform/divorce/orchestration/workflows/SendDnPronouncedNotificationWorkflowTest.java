@@ -17,8 +17,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStoreTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendCoRespondentGenericUpdateNotificationEmailTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentGenericUpdateNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderCoRespondentCoverLetterGenerationTask;
@@ -26,6 +24,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderCo
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DnGrantedRespondentCoverLetterGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DnGrantedRespondentSolicitorCoverLetterGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.MultiBulkPrinterTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.decreenisi.DecreeNisiGrantedPetitionerSolicitorEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.decreenisi.DecreeNisiGrantedRespondentSolicitorEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.Map;
@@ -92,10 +92,10 @@ public class SendDnPronouncedNotificationWorkflowTest {
     private DnGrantedRespondentSolicitorCoverLetterGenerationTask dnGrantedRespondentSolicitorCoverLetterGenerationTask;
 
     @Mock
-    private SendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask sendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask;
+    private DecreeNisiGrantedPetitionerSolicitorEmailTask decreeNisiGrantedPetitionerSolicitorEmailTask;
 
     @Mock
-    private SendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask sendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask;
+    private DecreeNisiGrantedRespondentSolicitorEmailTask decreeNisiGrantedRespondentSolicitorEmailTask;
 
     @Mock
     private FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask;
@@ -522,7 +522,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
 
         CaseDetails caseDetails = setupCaseDetails(caseData);
 
-        executeAndVerityTask(caseData, caseDetails, sendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask);
+        executeAndVerityTask(caseData, caseDetails, decreeNisiGrantedPetitionerSolicitorEmailTask);
     }
 
     @Test(expected = WantedButNotInvoked.class)
@@ -533,7 +533,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
 
         CaseDetails caseDetails = setupCaseDetails(caseData);
 
-        executeAndVerityTask(caseData, caseDetails, sendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask);
+        executeAndVerityTask(caseData, caseDetails, decreeNisiGrantedPetitionerSolicitorEmailTask);
     }
 
     @Test
@@ -545,7 +545,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
 
         CaseDetails caseDetails = setupCaseDetails(caseData);
 
-        executeAndVerityTask(caseData, caseDetails, sendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask);
+        executeAndVerityTask(caseData, caseDetails, decreeNisiGrantedRespondentSolicitorEmailTask);
     }
 
     @Test(expected = WantedButNotInvoked.class)
@@ -558,7 +558,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
 
         CaseDetails caseDetails = setupCaseDetails(caseData);
 
-        executeAndVerityTask(caseData, caseDetails, sendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask);
+        executeAndVerityTask(caseData, caseDetails, decreeNisiGrantedRespondentSolicitorEmailTask);
     }
 
     private void executeWorkflowRun(Map<String, Object> caseData) throws WorkflowException {
