@@ -12,5 +12,7 @@ public class CcdEvents {
     public static final String CO_RESP_SUBMISSION_AWAITING_DWP_RESPONSE = "co-RespAOSReceivedFromAwaitingDWPResponse";
     public static final String AOS_NOT_RECEIVED_FOR_PROCESS_SERVER_EVENT_ID = "aosNotReceivedForProcessServer";
     public static final String AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD_EVENT_ID = "aosNotReceivedForAltMethod";
+    public static final String ISSUE_AOS_FROM_REISSUE = "issueAosFromReissue";
+    public static final String ISSUE_AOS = "issueAos";
 
 }
