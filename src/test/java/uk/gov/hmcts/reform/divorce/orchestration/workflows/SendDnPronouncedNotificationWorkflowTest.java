@@ -526,7 +526,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
     }
 
     @Test(expected = WantedButNotInvoked.class)
-    public void givenFeatureToggle_RESPONDENT_SOLICITOR_DETAILS_isFalse_doNotSendDecreeNisiNotificationToPetitionerSolicitor() throws Exception {
+    public void givenFeatureToggle_Respondent_Solicitor_Details_isFalse_doNotSendDecreeNisiNotificationToPetitionerSolicitor() throws Exception {
         Map<String, Object> caseData = buildCaseDataWithPetitionerSolicitor();
 
         when(featureToggleService.isFeatureEnabled(Features.RESPONDENT_SOLICITOR_DETAILS)).thenReturn(false);
@@ -549,7 +549,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
     }
 
     @Test(expected = WantedButNotInvoked.class)
-    public void givenFeatureToggle_RESPONDENT_SOLICITOR_DETAILS_isFalse_doNotSendDecreeNisiNotificationToRespondentSolicitor() throws Exception {
+    public void givenFeatureToggle_Respondent_Solicitor_Details_isFalse_doNotSendDecreeNisiNotificationToRespondentSolicitor() throws Exception {
         Map<String, Object> caseData = buildCaseDataWithPetitionerSolicitor();
         caseData.put(RESPONDENT_SOLICITOR_EMAIL_ADDRESS, TEST_RESPONDENT_SOLICITOR_EMAIL);
         caseData.put(RESP_SOL_REPRESENTED, YES_VALUE);
