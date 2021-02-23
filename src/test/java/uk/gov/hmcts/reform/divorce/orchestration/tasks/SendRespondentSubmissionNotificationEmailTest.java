@@ -84,7 +84,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
     private SendRespondentSubmissionNotificationForDefendedDivorceEmail defendedDivorceNotificationEmailTask;
 
     @InjectMocks
-    private SendRespondentSubmissionNotificationForUndefendedDivorceEmail undefendedDivorceNotificationEmailTask;
+    private SendRespondentSubmissionNotificationForUndefendedDivorceEmailTask undefendedDivorceNotificationEmailTask;
 
     private Court testCourt;
 

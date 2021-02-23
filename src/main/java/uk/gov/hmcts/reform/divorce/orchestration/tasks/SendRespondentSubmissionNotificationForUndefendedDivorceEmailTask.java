@@ -33,7 +33,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @Component
 @AllArgsConstructor
 @Slf4j
-public class SendRespondentSubmissionNotificationForUndefendedDivorceEmail implements Task<Map<String, Object>> {
+public class SendRespondentSubmissionNotificationForUndefendedDivorceEmailTask implements Task<Map<String, Object>> {
 
     private static final String EMAIL_DESCRIPTION = "respondent submission notification email - undefended divorce";
 
