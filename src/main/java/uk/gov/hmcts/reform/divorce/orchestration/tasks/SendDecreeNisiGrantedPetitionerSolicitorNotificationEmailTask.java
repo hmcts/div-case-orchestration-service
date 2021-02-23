@@ -24,6 +24,7 @@ public class SendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask exten
         public static final String EMAIL_SUBJECT = "Decree Nisi granted - Solicitor (Applicant)";
         public static EmailTemplateNames TEMPLATE_ID = SOL_PETITIONER_DECREE_NISI_GRANTED;
     }
+
     @Autowired
     protected SendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask(EmailService emailService) {
         super(emailService);

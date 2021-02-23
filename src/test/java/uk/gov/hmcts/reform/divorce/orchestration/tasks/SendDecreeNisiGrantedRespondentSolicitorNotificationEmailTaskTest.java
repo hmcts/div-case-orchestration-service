@@ -9,6 +9,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest;
@@ -36,6 +37,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.getRespondentFullName;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.getExpectedNotificationTemplateVars;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyEmailTaskHelper.getTaskContext;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithToken;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SendDecreeNisiGrantedRespondentSolicitorNotificationEmailTaskTest {
@@ -44,20 +46,19 @@ public class SendDecreeNisiGrantedRespondentSolicitorNotificationEmailTaskTest {
     private EmailService emailService;
 
     @InjectMocks
-    private SendDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask task;
+    private SendDecreeNisiGrantedRespondentSolicitorNotificationEmailTask task;
 
-    private DefaultTaskContext testContext;
     private static final String SUBJECT_CONTENT = "Decree Nisi granted - Solicitor (Respondent)";
-    private static final EmailTemplateNames EXPECTED_TEMPLATE = SOL_RESPONDENT_DECREE_NISI_GRANTED;
+
+    private TaskContext testContext;
 
     @Before
     public void setUp() {
-        testContext = new DefaultTaskContext();
-        testContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
+        testContext = contextWithToken();
     }
 
     @Test
-    public void shouldSendEmail_ToPetitionerSolicitor_whenExecuted() throws TaskException {
+    public void shouldSendEmail_ToRespondentSolicitor_whenExecuted() throws TaskException {
         Map<String, Object> caseData = buildCaseData();
 
         executeTask(caseData);
@@ -69,18 +70,17 @@ public class SendDecreeNisiGrantedRespondentSolicitorNotificationEmailTaskTest {
     public void shouldReturnTemplate() {
         EmailTemplateNames returnedTemplate = task.getTemplate();
 
-        assertEquals(EXPECTED_TEMPLATE, returnedTemplate);
+        assertEquals(SOL_RESPONDENT_DECREE_NISI_GRANTED, returnedTemplate);
     }
 
     private Map<String, Object> buildCaseData() {
-        Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithPetitionerSolicitor();
+        Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithRespondentSolicitor();
 
         caseData.put(PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
         caseData.put(PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
         caseData.put(RESPONDENT_FIRST_NAME, TEST_RESPONDENT_FIRST_NAME);
         caseData.put(RESPONDENT_LAST_NAME, TEST_RESPONDENT_LAST_NAME);
 
-        caseData.put(RESPONDENT_SOLICITOR_EMAIL, TEST_RESP_SOLICITOR_EMAIL);
 
         return caseData;
     }
@@ -93,7 +93,7 @@ public class SendDecreeNisiGrantedRespondentSolicitorNotificationEmailTaskTest {
     private void verifySolicitorEmailSent(Map<String, Object> caseData) {
         verify(emailService).sendEmail(
             TEST_RESP_SOLICITOR_EMAIL,
-            EXPECTED_TEMPLATE.name(),
+            SOL_RESPONDENT_DECREE_NISI_GRANTED.name(),
             getExpectedNotificationTemplateVars(true, testContext, caseData),
             getPetitionerFullName(caseData) + " vs " + getRespondentFullName(caseData) + ": " + SUBJECT_CONTENT,
             LanguagePreference.ENGLISH
