@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.exceptions.verification.WantedButNotInvoked;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -40,13 +39,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_TYPE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_SOLICITOR_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT;
@@ -515,54 +512,64 @@ public class SendDnPronouncedNotificationWorkflowTest {
     }
 
     @Test
-    public void givenPetitionerIsRepresentedBySolicitor_thenSendDecreeNisiNotificationToPetitionerSolicitor() throws Exception {
+    public void givenPetitionerIsRepresented_thenDecreeNisiPetitionerSolicitorIsCalled()
+        throws Exception {
+        respondentJourneySwitchedOn();
+
         Map<String, Object> caseData = buildCaseDataWithPetitionerSolicitor();
 
-        when(featureToggleService.isFeatureEnabled(Features.RESPONDENT_SOLICITOR_DETAILS)).thenReturn(true);
+        CaseDetails caseDetails = buildCaseDetails(caseData);
 
-        CaseDetails caseDetails = setupCaseDetails(caseData);
-
-        executeAndVerityTask(caseData, caseDetails, decreeNisiGrantedPetitionerSolicitorEmailTask);
-    }
-
-    @Test(expected = WantedButNotInvoked.class)
-    public void givenFeatureToggle_Respondent_Solicitor_Details_isFalse_doNotSendDecreeNisiNotificationToPetitionerSolicitor() throws Exception {
-        Map<String, Object> caseData = buildCaseDataWithPetitionerSolicitor();
-
-        when(featureToggleService.isFeatureEnabled(Features.RESPONDENT_SOLICITOR_DETAILS)).thenReturn(false);
-
-        CaseDetails caseDetails = setupCaseDetails(caseData);
-
-        executeAndVerityTask(caseData, caseDetails, decreeNisiGrantedPetitionerSolicitorEmailTask);
+        executeAndVerityTask(caseDetails, decreeNisiGrantedPetitionerSolicitorEmailTask);
     }
 
     @Test
-    public void givenRespondentIsRepresentedBySolicitor_thenSendDecreeNisiNotificationToRespondentSolicitor() throws Exception {
+    public void decreeNisiPetitionerSolicitorEmailTaskNotCalledWhenRespondentJourneySwitchedOff() throws Exception {
+        respondentJourneySwitchedOff();
+
+        Map<String, Object> caseData = buildCaseDataWithPetitionerSolicitor();
+
+        mockTasksExecution(caseData,
+            sendPetitionerGenericUpdateNotificationEmailTask,
+            sendRespondentGenericUpdateNotificationEmailTask
+        );
+
+        executeWorkflowRun(caseData);
+
+        verifyTaskWasNeverCalled(decreeNisiGrantedPetitionerSolicitorEmailTask);
+    }
+
+    @Test
+    public void givenRespondentIsRepresented_thenDecreeNisiNotificationToRespondentSolicitor() throws Exception {
         Map<String, Object> caseData = buildCaseDataWithRespondentSolicitor();
         caseData.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
 
-        when(featureToggleService.isFeatureEnabled(Features.RESPONDENT_SOLICITOR_DETAILS)).thenReturn(true);
+        respondentJourneySwitchedOn();
 
-        CaseDetails caseDetails = setupCaseDetails(caseData);
+        CaseDetails caseDetails = buildCaseDetails(caseData);
 
-        executeAndVerityTask(caseData, caseDetails, decreeNisiGrantedRespondentSolicitorEmailTask);
+        executeAndVerityTask(caseDetails, decreeNisiGrantedRespondentSolicitorEmailTask);
     }
 
-    @Test(expected = WantedButNotInvoked.class)
-    public void givenFeatureToggle_Respondent_Solicitor_Details_isFalse_doNotSendDecreeNisiNotificationToRespondentSolicitor() throws Exception {
-        Map<String, Object> caseData = buildCaseDataWithPetitionerSolicitor();
-        caseData.put(RESPONDENT_SOLICITOR_EMAIL_ADDRESS, TEST_RESPONDENT_SOLICITOR_EMAIL);
-        caseData.put(RESP_SOL_REPRESENTED, YES_VALUE);
+    @Test
+    public void decreeNisiRespondentSolicitorEmailTaskNotCalledWhenRespondentJourneySwitchedOff() throws Exception {
+        respondentJourneySwitchedOff();
 
-        when(featureToggleService.isFeatureEnabled(Features.RESPONDENT_SOLICITOR_DETAILS)).thenReturn(false);
+        Map<String, Object> caseData = buildCaseDataWithRespondentSolicitor();
 
-        CaseDetails caseDetails = setupCaseDetails(caseData);
+        mockTasksExecution(caseData,
+            sendPetitionerGenericUpdateNotificationEmailTask,
+            sendRespondentGenericUpdateNotificationEmailTask
+        );
 
-        executeAndVerityTask(caseData, caseDetails, decreeNisiGrantedRespondentSolicitorEmailTask);
+        executeWorkflowRun(caseData);
+
+        verifyTaskWasNeverCalled(decreeNisiGrantedRespondentSolicitorEmailTask);
     }
 
     private void executeWorkflowRun(Map<String, Object> caseData) throws WorkflowException {
-        Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(buildCaseDetails(caseData), AUTH_TOKEN);
+        Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow
+            .run(buildCaseDetails(caseData), AUTH_TOKEN);
         assertThat(returnedPayload, is(caseData));
     }
 
@@ -575,10 +582,10 @@ public class SendDnPronouncedNotificationWorkflowTest {
         return caseData;
     }
 
-    private CaseDetails buildCaseDetails(Map<String, Object> casePayload) {
+    private CaseDetails buildCaseDetails(Map<String, Object> caseData) {
         return CaseDetails.builder()
-            .caseId(CASE_TYPE_ID)
-            .caseData(casePayload)
+            .caseId(TEST_CASE_ID)
+            .caseData(caseData)
             .build();
     }
 
@@ -599,18 +606,19 @@ public class SendDnPronouncedNotificationWorkflowTest {
         return returnedData;
     }
 
-    private void executeAndVerityTask(Map<String, Object> caseData, CaseDetails caseDetails, Task task) throws WorkflowException {
-        mockTasksExecution(caseData, task);
+    private void executeAndVerityTask(CaseDetails caseDetails, Task<Map<String, Object>> task) throws WorkflowException {
+        mockTasksExecution(caseDetails.getCaseData(), task);
 
         Map<String, Object> returnedCaseData = executeWorkflow(caseDetails);
 
         verifyTaskWasCalled(returnedCaseData, task);
     }
 
-    private CaseDetails setupCaseDetails(Map<String, Object> caseData) {
-        return CaseDetails.builder()
-            .caseData(caseData)
-            .caseId(TEST_CASE_ID)
-            .build();
+    private void respondentJourneySwitchedOn() {
+        when(featureToggleService.isFeatureEnabled(Features.RESPONDENT_SOLICITOR_DETAILS)).thenReturn(true);
+    }
+
+    private void respondentJourneySwitchedOff() {
+        when(featureToggleService.isFeatureEnabled(Features.RESPONDENT_SOLICITOR_DETAILS)).thenReturn(false);
     }
 }

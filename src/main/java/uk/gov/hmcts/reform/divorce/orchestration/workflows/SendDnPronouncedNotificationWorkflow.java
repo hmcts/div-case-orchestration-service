@@ -210,6 +210,8 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
             } else {
                 log.info("CaseId: {} DecreeNisiGranted email task not added for Respondent Solicitor.", caseId);
             }
+        } else {
+            log.info("CaseId: {} respondent journey switched off.", caseId);
         }
 
         return tasks.toArray(new Task[0]);
