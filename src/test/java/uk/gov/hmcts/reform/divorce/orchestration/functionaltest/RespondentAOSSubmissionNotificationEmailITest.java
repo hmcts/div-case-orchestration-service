@@ -57,6 +57,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_RESPONDENT_GENDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
@@ -453,6 +454,9 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
         CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
             "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json", CcdCallbackRequest.class);
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+        caseData.put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME);
+        caseData.put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
+        caseData.put(D_8_INFERRED_RESPONDENT_GENDER, TEST_INFERRED_MALE_GENDER);
         caseData.putAll(extraCaseData);
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
             .data(caseData)
@@ -471,11 +475,11 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
         );
 
         Map<String, Object> templateVars = new HashMap<>();
+        templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_PETITIONER_FIRST_NAME);
+        templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_PETITIONER_LAST_NAME);
+        templateVars.put(NOTIFICATION_RELATIONSHIP_KEY, TEST_RELATIONSHIP_HUSBAND);
+        templateVars.put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TEST_WELSH_MALE_GENDER_IN_RELATION);
         templateVars.put(NOTIFICATION_REFERENCE_KEY, D8_CASE_ID);
-        templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, null);
-        templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, null);
-        templateVars.put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, null);
-        templateVars.put(NOTIFICATION_RELATIONSHIP_KEY, null);
 
         verify(mockClient).sendEmail(
             eq(petitionerEmailTemplateID),
