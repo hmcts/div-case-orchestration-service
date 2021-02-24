@@ -108,7 +108,7 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
     private static final String AOS_RECEIVED_UNDEFENDED_NO_CONSENT_2_YEARS_TEMPLATE_ID = "2781acfa-3f60-4fc9-8d5b-de35cf121893";
     private static final String RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED_TEMPLATE_ID = "44e2dd30-4303-4f4c-a394-ce0b54af81dd";
     private static final String USER_TOKEN = "anytoken";
-    
+
     @Autowired
     private MockMvc webClient;
 
@@ -137,8 +137,8 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
             .andExpect(content().string(allOf(
                 isJson(),
                 hasJsonPath("$.errors", nullValue())
-            ))
-        );
+                ))
+            );
 
         verify(mockClient).sendEmail(
             eq(DEFENDED_DIVORCE_EMAIL_TEMPLATE_ID),
@@ -178,8 +178,8 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
             .andExpect(content().string(allOf(
                 isJson(),
                 hasJsonPath("$.errors", nullValue())
-            ))
-        );
+                ))
+            );
 
         verify(mockClient).sendEmail(
             eq(UNDEFENDED_DIVORCE_EMAIL_TEMPLATE_ID),
@@ -296,8 +296,8 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
             .andExpect(content().string(allOf(
                 isJson(),
                 hasJsonPath("$.errors", nullValue())
-            ))
-        );
+                ))
+            );
 
         verify(mockClient).sendEmail(
             eq(UNDEFENDED_DIVORCE_EMAIL_TEMPLATE_ID),
@@ -335,8 +335,8 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
             .andExpect(content().string(allOf(
                 isJson(),
                 hasJsonPath("$.errors", nullValue())
-            ))
-        );
+                ))
+            );
 
         verify(mockClient, never()).sendEmail(any(), any(), any(), any());
     }
@@ -367,8 +367,8 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
             .andExpect(content().string(allOf(
                 isJson(),
                 hasJsonPath("$.errors", nullValue())
-            ))
-        );
+                ))
+            );
 
         verify(mockClient).sendEmail(
             eq(UNDEFENDED_DIVORCE_EMAIL_TEMPLATE_ID),
@@ -454,8 +454,8 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
                 isJson(),
                 hasJsonPath("$.data", is(nullValue())),
                 hasJsonPath("$.errors", hasItem("Failed to send e-mail"))
-            ))
-        );
+                ))
+            );
     }
 
     private void runTestForUndefendedDivorce_AndPetitionerIsNotRepresented(
@@ -481,8 +481,8 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
             .andExpect(content().string(allOf(
                 isJson(),
                 hasJsonPath("$.errors", nullValue())
-            ))
-        );
+                ))
+            );
 
         Map<String, Object> templateVars = new HashMap<>();
         templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_PETITIONER_FIRST_NAME);
@@ -558,7 +558,7 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
                 hasJsonPath("$.data", is(nullValue())),
                 hasJsonPath("$.errors",
                     hasItem(errorMsg))
-            ))
-        );
+                ))
+            );
     }
 }
