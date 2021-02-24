@@ -173,13 +173,27 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         final boolean coRespondentExists = caseDataUtils.isAdulteryCaseWithNamedCoRespondent(caseData);
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
-        log.info("CaseID: {} adding task for email to petitioner and respondent", caseId);
-        tasks.add(sendPetitionerGenericUpdateNotificationEmailTask);
 
-        if (respondentDigital) {
-            tasks.add(sendRespondentGenericUpdateNotificationEmailTask);
+
+        if (isRespondentRepresentedJourneyEnabled()
+            && isRespondentRepresented(caseData)
+            && isRespondentSolicitorDigital(caseData)) {
+            addDecreeNisiGrantedRespondentSolicitorEmailTask(caseId, tasks);
         } else {
-            addRespondentPaperTasks(tasks, caseDetails);
+            if (respondentDigital) {
+                log.info("CaseId: {} email to Respondent.", caseId);
+                tasks.add(sendRespondentGenericUpdateNotificationEmailTask);
+            } else {
+                addRespondentPaperTasks(tasks, caseDetails);
+            }
+        }
+
+        if (isRespondentRepresentedJourneyEnabled()
+            && isPetitionerRepresented(caseData)) {
+            addDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask(caseId, tasks);
+        } else {
+            log.info("CaseID: {} adding task for email to petitioner and respondent", caseId);
+            tasks.add(sendPetitionerGenericUpdateNotificationEmailTask);
         }
 
         if (coRespondentExists) {
@@ -198,26 +212,10 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
             tasks.add(multiBulkPrinterTask);
         }
 
-        if (isRespondentRepresentedJourneyEnabled()) {
-            if (isPetitionerRepresented(caseData)) {
-                addDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask(caseId, tasks);
-            } else {
-                log.info("CaseId: {} DecreeNisiGranted email task not added for Petitioner Solicitor.", caseId);
-            }
-
-            if (isRespondentRepresented(caseData) && isRespondentSolicitorDigital(caseData)) {
-                addDecreeNisiGrantedRespondentSolicitorNotificationEmailTask(caseId, tasks);
-            } else {
-                log.info("CaseId: {} DecreeNisiGranted email task not added for Respondent Solicitor.", caseId);
-            }
-        } else {
-            log.info("CaseId: {} respondent journey switched off.", caseId);
-        }
-
         return tasks.toArray(new Task[0]);
     }
 
-    private void addDecreeNisiGrantedRespondentSolicitorNotificationEmailTask(String caseId, List<Task<Map<String, Object>>> tasks) {
+    private void addDecreeNisiGrantedRespondentSolicitorEmailTask(String caseId, List<Task<Map<String, Object>>> tasks) {
         log.info("CaseId: {} Adding DecreeNisiGranted email task to Respondent Solicitor.", caseId);
         tasks.add(decreeNisiGrantedRespondentSolicitorEmailTask);
     }
