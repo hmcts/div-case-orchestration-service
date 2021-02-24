@@ -35,6 +35,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.D8_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_D8_CASE_REFERENCE;
@@ -107,7 +108,6 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
     private static final String AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_TEMPLATE_ID = "78e21621-66bd-4c70-a294-15210724b0f6";
     private static final String AOS_RECEIVED_UNDEFENDED_NO_CONSENT_2_YEARS_TEMPLATE_ID = "2781acfa-3f60-4fc9-8d5b-de35cf121893";
     private static final String RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED_TEMPLATE_ID = "44e2dd30-4303-4f4c-a394-ce0b54af81dd";
-    private static final String USER_TOKEN = "anytoken";
 
     @Autowired
     private MockMvc webClient;
@@ -128,7 +128,7 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
             .build();
 
         webClient.perform(post(API_URL)
-            .header(AUTHORIZATION, USER_TOKEN)
+            .header(AUTHORIZATION, AUTH_TOKEN)
             .content(convertObjectToJsonString(ccdCallbackRequest))
             .contentType(APPLICATION_JSON)
             .accept(APPLICATION_JSON))
