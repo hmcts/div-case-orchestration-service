@@ -614,10 +614,10 @@ public class SendDnPronouncedNotificationWorkflowTest {
     }
 
     private void respondentJourneySwitchedOn() {
-        when(featureToggleService.isFeatureEnabled(Features.RESPONDENT_SOLICITOR_DETAILS)).thenReturn(true);
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
     }
 
     private void respondentJourneySwitchedOff() {
-        when(featureToggleService.isFeatureEnabled(Features.RESPONDENT_SOLICITOR_DETAILS)).thenReturn(false);
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(false);
     }
 }
