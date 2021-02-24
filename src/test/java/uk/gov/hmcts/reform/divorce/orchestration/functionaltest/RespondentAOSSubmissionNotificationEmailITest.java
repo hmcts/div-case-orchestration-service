@@ -142,7 +142,7 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
 
         verify(mockClient).sendEmail(
             eq(DEFENDED_DIVORCE_EMAIL_TEMPLATE_ID),
-            eq("respondent@divorce.co.uk"),
+            eq(TEST_RESPONDENT_EMAIL),
             eq(ImmutableMap.<String, Object>builder()
                 .put(NOTIFICATION_CASE_NUMBER_KEY, D8_CASE_ID)
                 .put(NOTIFICATION_HUSBAND_OR_WIFE, TEST_RELATIONSHIP)
@@ -150,7 +150,7 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
                 .put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, "Ted")
                 .put(NOTIFICATION_COURT_ADDRESS_KEY, "West Midlands Regional Divorce Centre\nPO Box 3650\nStoke-on-Trent\nST4 9NH")
                 .put(NOTIFICATION_FORM_SUBMISSION_DATE_LIMIT_KEY, "20 September 2018")
-                .put(NOTIFICATION_EMAIL_ADDRESS_KEY, "respondent@divorce.co.uk")
+                .put(NOTIFICATION_EMAIL_ADDRESS_KEY, TEST_RESPONDENT_EMAIL)
                 .put(NOTIFICATION_RDC_NAME_KEY, "West Midlands Regional Divorce Centre")
                 .put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TEST_WELSH_FEMALE_GENDER_IN_RELATION)
                 .put(NOTIFICATION_WELSH_FORM_SUBMISSION_DATE_LIMIT_KEY, "20 Medi 2018")
@@ -183,13 +183,13 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
 
         verify(mockClient).sendEmail(
             eq(UNDEFENDED_DIVORCE_EMAIL_TEMPLATE_ID),
-            eq("respondent@divorce.co.uk"),
+            eq(TEST_RESPONDENT_EMAIL),
             eq(ImmutableMap.<String, Object>builder()
                 .put(NOTIFICATION_CASE_NUMBER_KEY, D8_CASE_ID)
                 .put(NOTIFICATION_HUSBAND_OR_WIFE, TEST_RELATIONSHIP_HUSBAND)
                 .put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, "Jones")
                 .put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, "Sarah")
-                .put(NOTIFICATION_EMAIL_ADDRESS_KEY, "respondent@divorce.co.uk")
+                .put(NOTIFICATION_EMAIL_ADDRESS_KEY, TEST_RESPONDENT_EMAIL)
                 .put(NOTIFICATION_RDC_NAME_KEY, "West Midlands Regional Divorce Centre")
                 .put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TEST_WELSH_MALE_GENDER_IN_RELATION)
                 .build()
@@ -301,13 +301,13 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
 
         verify(mockClient).sendEmail(
             eq(UNDEFENDED_DIVORCE_EMAIL_TEMPLATE_ID),
-            eq("respondent@divorce.co.uk"),
+            eq(TEST_RESPONDENT_EMAIL),
             eq(ImmutableMap.<String, Object>builder()
                 .put(NOTIFICATION_CASE_NUMBER_KEY, D8_CASE_ID)
                 .put(NOTIFICATION_HUSBAND_OR_WIFE, TEST_RELATIONSHIP_HUSBAND)
                 .put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, "Jones")
                 .put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, "Sarah")
-                .put(NOTIFICATION_EMAIL_ADDRESS_KEY, "respondent@divorce.co.uk")
+                .put(NOTIFICATION_EMAIL_ADDRESS_KEY, TEST_RESPONDENT_EMAIL)
                 .put(NOTIFICATION_RDC_NAME_KEY, "West Midlands Regional Divorce Centre")
                 .put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TEST_WELSH_MALE_GENDER_IN_RELATION)
                 .build()
@@ -500,13 +500,13 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
 
         verify(mockClient).sendEmail(
             eq(UNDEFENDED_DIVORCE_EMAIL_TEMPLATE_ID),
-            eq("respondent@divorce.co.uk"),
+            eq(TEST_RESPONDENT_EMAIL),
             eq(ImmutableMap.<String, Object>builder()
                 .put(NOTIFICATION_CASE_NUMBER_KEY, D8_CASE_ID)
                 .put(NOTIFICATION_HUSBAND_OR_WIFE, TEST_RELATIONSHIP_HUSBAND)
                 .put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, "Jones")
                 .put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, "Sarah")
-                .put(NOTIFICATION_EMAIL_ADDRESS_KEY, "respondent@divorce.co.uk")
+                .put(NOTIFICATION_EMAIL_ADDRESS_KEY, TEST_RESPONDENT_EMAIL)
                 .put(NOTIFICATION_RDC_NAME_KEY, "West Midlands Regional Divorce Centre")
                 .put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TEST_WELSH_MALE_GENDER_IN_RELATION)
                 .build()
