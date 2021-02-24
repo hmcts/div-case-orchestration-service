@@ -173,7 +173,13 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         final boolean coRespondentExists = caseDataUtils.isAdulteryCaseWithNamedCoRespondent(caseData);
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
-
+        if (isRespondentRepresentedJourneyEnabled()
+            && isPetitionerRepresented(caseData)) {
+            addDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask(caseId, tasks);
+        } else {
+            log.info("CaseID: {} adding task for email to petitioner and respondent", caseId);
+            tasks.add(sendPetitionerGenericUpdateNotificationEmailTask);
+        }
 
         if (isRespondentRepresentedJourneyEnabled()
             && isRespondentRepresented(caseData)
@@ -186,14 +192,6 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
             } else {
                 addRespondentPaperTasks(tasks, caseDetails);
             }
-        }
-
-        if (isRespondentRepresentedJourneyEnabled()
-            && isPetitionerRepresented(caseData)) {
-            addDecreeNisiGrantedPetitionerSolicitorNotificationEmailTask(caseId, tasks);
-        } else {
-            log.info("CaseID: {} adding task for email to petitioner and respondent", caseId);
-            tasks.add(sendPetitionerGenericUpdateNotificationEmailTask);
         }
 
         if (coRespondentExists) {

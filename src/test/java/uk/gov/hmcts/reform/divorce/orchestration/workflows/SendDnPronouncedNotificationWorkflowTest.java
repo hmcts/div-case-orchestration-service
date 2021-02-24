@@ -338,6 +338,46 @@ public class SendDnPronouncedNotificationWorkflowTest {
     }
 
     @Test
+    public void givenCostsClaimNotGrantedAndOffline_thenSendEmailToPetitionerAndSendDocsToBulkPrint()
+        throws Exception {
+        Map<String, Object> caseData = buildCaseDataWithCoRespondentAsAddressee();
+        caseData.putAll(buildCaseDataWithRespondent());
+        caseData.put(RESP_IS_USING_DIGITAL_CHANNEL, NO_VALUE);
+        caseData.put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE);
+        caseData.put(WHO_PAYS_COSTS_CCD_FIELD, WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT);
+        caseData.put(CO_RESPONDENT_REPRESENTED, NO_VALUE);
+        caseData.put(RESP_SOL_REPRESENTED, NO_VALUE);
+        caseData.put(COSTS_CLAIM_GRANTED, NO_VALUE);
+
+        when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
+        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(eq(caseData))).thenReturn(true);
+
+        mockTasksExecution(
+            caseData,
+            sendPetitionerGenericUpdateNotificationEmailTask,
+            dnGrantedRespondentCoverLetterGenerationTask,
+            fetchPrintDocsFromDmStoreTask,
+            multiBulkPrinterTask
+        );
+
+        executeWorkflowRun(caseData);
+
+        verifyTasksCalledInOrder(
+            caseData,
+            sendPetitionerGenericUpdateNotificationEmailTask,
+            dnGrantedRespondentCoverLetterGenerationTask,
+
+            fetchPrintDocsFromDmStoreTask,
+            multiBulkPrinterTask
+        );
+        verifyTaskWasNeverCalled(costOrderCoRespondentCoverLetterGenerationTask);
+        verifyTaskWasNeverCalled(sendRespondentGenericUpdateNotificationEmailTask);
+        verifyTaskWasNeverCalled(sendCoRespondentGenericUpdateNotificationEmailTask);
+        verifyTaskWasNeverCalled(dnGrantedRespondentSolicitorCoverLetterGenerationTask);
+        verifyTaskWasNeverCalled(costOrderCoRespondentSolicitorCoverLetterGenerationTask);
+    }
+
+    @Test
     public void givenCostsClaimGrantedAndOfflineRespAndCoRespRepresented_thenSendEmailToPetitionerAndSendDocsToBulkPrint()
         throws Exception {
         Map<String, Object> caseData = buildCaseDataWithCoRespondentAsAddressee();
@@ -517,9 +557,20 @@ public class SendDnPronouncedNotificationWorkflowTest {
 
         Map<String, Object> caseData = buildCaseDataWithPetitionerSolicitor();
 
-        CaseDetails caseDetails = buildCaseDetails(caseData);
+        mockTasksExecution(
+            caseData,
+            decreeNisiGrantedPetitionerSolicitorEmailTask,
+            sendRespondentGenericUpdateNotificationEmailTask
+        );
 
-        executeAndVerityTask(caseDetails, decreeNisiGrantedPetitionerSolicitorEmailTask);
+        executeWorkflowRun(caseData);
+
+        verifyNoBulkPrintTasksCalled();
+        verifyTasksCalledInOrder(
+            caseData,
+            decreeNisiGrantedPetitionerSolicitorEmailTask,
+            sendRespondentGenericUpdateNotificationEmailTask
+        );
     }
 
     @Test
