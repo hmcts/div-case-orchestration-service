@@ -107,7 +107,8 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
     private static final String AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_TEMPLATE_ID = "78e21621-66bd-4c70-a294-15210724b0f6";
     private static final String AOS_RECEIVED_UNDEFENDED_NO_CONSENT_2_YEARS_TEMPLATE_ID = "2781acfa-3f60-4fc9-8d5b-de35cf121893";
     private static final String RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED_TEMPLATE_ID = "44e2dd30-4303-4f4c-a394-ce0b54af81dd";
-
+    private static final String USER_TOKEN = "anytoken";
+    
     @Autowired
     private MockMvc webClient;
 
@@ -115,9 +116,7 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
     private EmailClient mockClient;
 
     @Mock
-    TemplateConfigService templateConfigService;
-
-    private static final String USER_TOKEN = "anytoken";
+    private TemplateConfigService templateConfigService;
 
     @Test
     public void testResponseHasDataAndNoErrors_whenEmailCanBeSent_forDefendedDivorce() throws Exception {
@@ -179,7 +178,8 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
             .andExpect(content().string(allOf(
                 isJson(),
                 hasJsonPath("$.errors", nullValue())
-            )));
+            ))
+        );
 
         verify(mockClient).sendEmail(
             eq(UNDEFENDED_DIVORCE_EMAIL_TEMPLATE_ID),
@@ -199,7 +199,7 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
     }
 
     @Test
-    public void testResponseHasDataAndNoErrors_WhenEmailCanBeSent_ForUndefendedDivorce_AndPetitionerIsNotRepresented() throws Exception {
+    public void testResponseHasDataAndNoErrors_WhenEmailCanBeSent_ForUndefendedDivorce_AndPetIsNotRepresented() throws Exception {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(D_8_PETITIONER_EMAIL, "petitioner@divorce.co.uk");
 
@@ -207,7 +207,8 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
     }
 
     @Test
-    public void testResponseHasDataAndNoErrors_WhenEmailCanBeSent_ForUndefendedDivorce_AndPetitionerIsNotRepresented_AndIsAdulteryAndNoConsent_AndIsCoRespNamedAndNotReplied() throws Exception {
+    public void testResponseHasDataAndNoErrors_WhenEmailCanBeSent_ForUndefendedDivorce_AndPetIsNotRepresented_AndIsAdulteryAndIsCoRespNamed()
+        throws Exception {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(D_8_PETITIONER_EMAIL, "petitioner@divorce.co.uk");
 
@@ -219,11 +220,15 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
         caseData.put(D_8_CO_RESPONDENT_NAMED, YES_VALUE);
         caseData.put(RECEIVED_AOS_FROM_CO_RESP, NO_VALUE);
 
-        runTestForUndefendedDivorce_AndPetitionerIsNotRepresented(caseData, AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED_TEMPLATE_ID);
+        runTestForUndefendedDivorce_AndPetitionerIsNotRepresented(
+            caseData,
+            AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED_TEMPLATE_ID
+        );
     }
 
     @Test
-    public void testResponseHasDataAndNoErrors_WhenEmailCanBeSent_ForUndefendedDivorce_AndPetitionerIsNotRepresented_AndIsAdulteryAndNotConsent_AndIsNotCoRespNamedAndNotReplied() throws Exception {
+    public void testResponseHasDataAndNoErrors_WhenEmailCanBeSent_ForUndefendedDivorce_AndPetIsNotRepresented_AndIsAdulteryAndIsNotCoRespNamed()
+        throws Exception {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(D_8_PETITIONER_EMAIL, "petitioner@divorce.co.uk");
 
@@ -239,7 +244,8 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
     }
 
     @Test
-    public void testResponseHasDataAndNoErrors_WhenEmailCanBeSent_ForUndefendedDivorce_AndPetitionerIsNotRepresented_AndIsSep2YrAndNoConsent() throws Exception {
+    public void testResponseHasDataAndNoErrors_WhenEmailCanBeSent_ForUndefendedDivorce_AndPetIsNotRepresented_AndIsSep2YrAndNoConsent()
+        throws Exception {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(D_8_PETITIONER_EMAIL, "petitioner@divorce.co.uk");
 
@@ -251,7 +257,8 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
     }
 
     @Test
-    public void testResponseHasDataAndNoErrors_WhenEmailCanBeSent_ForUndefendedDivorce_AndPetitionerIsNotRepresented_AndIsCoRespNamedAndNotReplied() throws Exception {
+    public void testResponseHasDataAndNoErrors_WhenEmailCanBeSent_ForUndefendedDivorce_AndPetIsNotRepresented_AndIsCoRespNamedAndNotReplied()
+        throws Exception {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(D_8_PETITIONER_EMAIL, "petitioner@divorce.co.uk");
 
@@ -447,10 +454,13 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
                 isJson(),
                 hasJsonPath("$.data", is(nullValue())),
                 hasJsonPath("$.errors", hasItem("Failed to send e-mail"))
-            )));
+            ))
+        );
     }
 
-    private void runTestForUndefendedDivorce_AndPetitionerIsNotRepresented(Map<String, Object> extraCaseData, String petitionerEmailTemplateID) throws Exception {
+    private void runTestForUndefendedDivorce_AndPetitionerIsNotRepresented(
+        Map<String, Object> extraCaseData, String petitionerEmailTemplateID
+    ) throws Exception {
         CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
             "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json", CcdCallbackRequest.class);
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
