@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CopyJurisdictionConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CourtAllocationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DeleteDraftTask;
@@ -42,6 +43,9 @@ public class SubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     @Autowired
     private FormatDivorceSessionToCaseDataTask formatDivorceSessionToCaseDataTask;
+
+    @Autowired
+    private CopyJurisdictionConnectionPolicyTask copyJurisdictionConnectionPolicyTask;
 
     @Autowired
     private ValidateCaseDataTask validateCaseDataTask;
@@ -83,6 +87,7 @@ public class SubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
         tasks.add(duplicateCaseValidationTask);
         tasks.add(courtAllocationTask);
+        tasks.add(copyJurisdictionConnectionPolicyTask);
         tasks.add(formatDivorceSessionToCaseDataTask);
         tasks.add(validateCaseDataTask);
         if (isRepresentedRespondentJourneyEnabled()
