@@ -54,11 +54,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLIC
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH_FEMALE_GENDER_IN_RELATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH_MALE_GENDER_IN_RELATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
@@ -79,12 +81,17 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.SEPARATION_FIVE_YEARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.SEPARATION_TWO_YEARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
@@ -95,6 +102,10 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
     private static final String DEFENDED_DIVORCE_EMAIL_TEMPLATE_ID = "eac41143-b296-4879-ba60-a0ea6f97c757";
     private static final String UNDEFENDED_DIVORCE_EMAIL_TEMPLATE_ID = "277fd3f3-2fdb-4c79-9354-1b3db8d44cca";
     private static final String RESPONDENT_SUBMISSION_CONSENT_TEMPLATE_ID = "594dc500-93ca-4f4b-931b-acbf9ee83d25";
+    private static final String AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED_TEMPLATE_ID = "341119b9-5a8d-4c5e-9296-2e6bfa37c49d";
+    private static final String AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_TEMPLATE_ID = "78e21621-66bd-4c70-a294-15210724b0f6";
+    private static final String AOS_RECEIVED_UNDEFENDED_NO_CONSENT_2_YEARS_TEMPLATE_ID = "2781acfa-3f60-4fc9-8d5b-de35cf121893";
+    private static final String RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED_TEMPLATE_ID = "44e2dd30-4303-4f4c-a394-ce0b54af81dd";
 
     @Autowired
     private MockMvc webClient;
@@ -188,54 +199,70 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
 
     @Test
     public void testResponseHasDataAndNoErrors_WhenEmailCanBeSent_ForUndefendedDivorce_AndPetitionerIsNotRepresented() throws Exception {
-        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
-            "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json", CcdCallbackRequest.class);
-        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+        Map<String, Object> caseData = new HashMap<>();
         caseData.put(D_8_PETITIONER_EMAIL, "petitioner@divorce.co.uk");
-        CcdCallbackResponse expected = CcdCallbackResponse.builder()
-            .data(caseData)
-            .build();
 
-        webClient.perform(post(API_URL)
-            .content(convertObjectToJsonString(ccdCallbackRequest))
-            .contentType(APPLICATION_JSON)
-            .accept(APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().json(convertObjectToJsonString(expected)))
-            .andExpect(content().string(allOf(
-                isJson(),
-                hasJsonPath("$.errors", nullValue())
-            ))
-        );
+        runTestForUndefendedDivorce_AndPetitionerIsNotRepresented(caseData, RESPONDENT_SUBMISSION_CONSENT_TEMPLATE_ID);
+    }
 
-        verify(mockClient).sendEmail(
-            eq(RESPONDENT_SUBMISSION_CONSENT_TEMPLATE_ID),
-            eq("petitioner@divorce.co.uk"),
-            eq(ImmutableMap.<String, Object>builder()
-                .put(NOTIFICATION_REFERENCE_KEY, D8_CASE_ID)
-                .put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, nullValue())
-                .put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, nullValue())
-                .put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, nullValue())
-                .put(NOTIFICATION_RELATIONSHIP_KEY, nullValue())
-                .build()),
-            anyString()
-        );
+    @Test
+    public void testResponseHasDataAndNoErrors_WhenEmailCanBeSent_ForUndefendedDivorce_AndPetitionerIsNotRepresented_AndIsAdulteryAndNoConsent_AndIsCoRespNamedAndNotReplied() throws Exception {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(D_8_PETITIONER_EMAIL, "petitioner@divorce.co.uk");
 
-        verify(mockClient).sendEmail(
-            eq(UNDEFENDED_DIVORCE_EMAIL_TEMPLATE_ID),
-            eq("respondent@divorce.co.uk"),
-            eq(ImmutableMap.<String, Object>builder()
-                .put(NOTIFICATION_CASE_NUMBER_KEY, D8_CASE_ID)
-                .put(NOTIFICATION_HUSBAND_OR_WIFE, TEST_RELATIONSHIP_HUSBAND)
-                .put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, "Jones")
-                .put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, "Sarah")
-                .put(NOTIFICATION_EMAIL_ADDRESS_KEY, "respondent@divorce.co.uk")
-                .put(NOTIFICATION_RDC_NAME_KEY, "West Midlands Regional Divorce Centre")
-                .put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TEST_WELSH_MALE_GENDER_IN_RELATION)
-                .build()
-            ),
-            anyString()
-        );
+        // isAdulteryAndNoConsent
+        caseData.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
+        caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
+
+        // isCoRespNamedAndNotReplied
+        caseData.put(D_8_CO_RESPONDENT_NAMED, YES_VALUE);
+        caseData.put(RECEIVED_AOS_FROM_CO_RESP, NO_VALUE);
+
+        runTestForUndefendedDivorce_AndPetitionerIsNotRepresented(caseData, AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED_TEMPLATE_ID);
+    }
+
+    @Test
+    public void testResponseHasDataAndNoErrors_WhenEmailCanBeSent_ForUndefendedDivorce_AndPetitionerIsNotRepresented_AndIsAdulteryAndNotConsent_AndIsNotCoRespNamedAndNotReplied() throws Exception {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(D_8_PETITIONER_EMAIL, "petitioner@divorce.co.uk");
+
+        // isAdulteryAndNoConsent
+        caseData.put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue());
+        caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
+
+        // !isCoRespNamedAndNotReplied
+        caseData.put(D_8_CO_RESPONDENT_NAMED, NO_VALUE);
+        caseData.put(RECEIVED_AOS_FROM_CO_RESP, NO_VALUE);
+
+        runTestForUndefendedDivorce_AndPetitionerIsNotRepresented(caseData, AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_TEMPLATE_ID);
+    }
+
+    @Test
+    public void testResponseHasDataAndNoErrors_WhenEmailCanBeSent_ForUndefendedDivorce_AndPetitionerIsNotRepresented_AndIsSep2YrAndNoConsent() throws Exception {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(D_8_PETITIONER_EMAIL, "petitioner@divorce.co.uk");
+
+        // !isAdulteryAndNoConsent && isSep2YrAndNoConsent
+        caseData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS.getValue());
+        caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
+
+        runTestForUndefendedDivorce_AndPetitionerIsNotRepresented(caseData, AOS_RECEIVED_UNDEFENDED_NO_CONSENT_2_YEARS_TEMPLATE_ID);
+    }
+
+    @Test
+    public void testResponseHasDataAndNoErrors_WhenEmailCanBeSent_ForUndefendedDivorce_AndPetitionerIsNotRepresented_AndIsCoRespNamedAndNotReplied() throws Exception {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(D_8_PETITIONER_EMAIL, "petitioner@divorce.co.uk");
+
+        // !isAdulteryAndNoConsent && !isSep2YrAndNoConsent
+        caseData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_FIVE_YEARS);
+        caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
+
+        // isCoRespNamedAndNotReplied
+        caseData.put(D_8_CO_RESPONDENT_NAMED, YES_VALUE);
+        caseData.put(RECEIVED_AOS_FROM_CO_RESP, NO_VALUE);
+
+        runTestForUndefendedDivorce_AndPetitionerIsNotRepresented(caseData, RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED_TEMPLATE_ID);
     }
 
     @Test
@@ -420,6 +447,58 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
                 hasJsonPath("$.data", is(nullValue())),
                 hasJsonPath("$.errors", hasItem("Failed to send e-mail"))
             )));
+    }
+
+    private void runTestForUndefendedDivorce_AndPetitionerIsNotRepresented(Map<String, Object> extraCaseData, String petitionerEmailTemplateID) throws Exception {
+        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
+            "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json", CcdCallbackRequest.class);
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+        caseData.putAll(extraCaseData);
+        CcdCallbackResponse expected = CcdCallbackResponse.builder()
+            .data(caseData)
+            .build();
+
+        webClient.perform(post(API_URL)
+            .content(convertObjectToJsonString(ccdCallbackRequest))
+            .contentType(APPLICATION_JSON)
+            .accept(APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(expected)))
+            .andExpect(content().string(allOf(
+                isJson(),
+                hasJsonPath("$.errors", nullValue())
+            ))
+        );
+
+        Map<String, Object> templateVars = new HashMap<>();
+        templateVars.put(NOTIFICATION_REFERENCE_KEY, D8_CASE_ID);
+        templateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, null);
+        templateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, null);
+        templateVars.put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, null);
+        templateVars.put(NOTIFICATION_RELATIONSHIP_KEY, null);
+
+        verify(mockClient).sendEmail(
+            eq(petitionerEmailTemplateID),
+            eq("petitioner@divorce.co.uk"),
+            eq(templateVars),
+            anyString()
+        );
+
+        verify(mockClient).sendEmail(
+            eq(UNDEFENDED_DIVORCE_EMAIL_TEMPLATE_ID),
+            eq("respondent@divorce.co.uk"),
+            eq(ImmutableMap.<String, Object>builder()
+                .put(NOTIFICATION_CASE_NUMBER_KEY, D8_CASE_ID)
+                .put(NOTIFICATION_HUSBAND_OR_WIFE, TEST_RELATIONSHIP_HUSBAND)
+                .put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, "Jones")
+                .put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, "Sarah")
+                .put(NOTIFICATION_EMAIL_ADDRESS_KEY, "respondent@divorce.co.uk")
+                .put(NOTIFICATION_RDC_NAME_KEY, "West Midlands Regional Divorce Centre")
+                .put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TEST_WELSH_MALE_GENDER_IN_RELATION)
+                .build()
+            ),
+            anyString()
+        );
     }
 
     private Map<String, Object> buildCaseDataForPetSolicitor() {
