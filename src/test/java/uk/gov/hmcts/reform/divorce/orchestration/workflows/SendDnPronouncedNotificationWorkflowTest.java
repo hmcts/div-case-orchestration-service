@@ -10,6 +10,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest;
@@ -22,6 +23,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CostOrderCo
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DnGrantedRespondentCoverLetterGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.DnGrantedRespondentSolicitorCoverLetterGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.MultiBulkPrinterTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.decreenisi.DecreeNisiGrantedPetitionerSolicitorEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.decreenisi.DecreeNisiGrantedRespondentSolicitorEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
 import java.util.Map;
@@ -29,10 +32,12 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_TYPE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
@@ -44,16 +49,22 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_COSTS_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.buildCaseDataWithPetitionerSolicitor;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.buildCaseDataWithRespondent;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.buildCaseDataWithRespondentSolicitor;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.COSTS_CLAIM_GRANTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.buildOrganisationPolicy;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocumentAsMap;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTaskWasCalled;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTaskWasNeverCalled;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SendDnPronouncedNotificationWorkflowTest {
+
+    @InjectMocks
+    private SendDnPronouncedNotificationWorkflow sendDnPronouncedNotificationWorkflow;
 
     @Mock
     private SendPetitionerGenericUpdateNotificationEmailTask sendPetitionerGenericUpdateNotificationEmailTask;
@@ -77,6 +88,12 @@ public class SendDnPronouncedNotificationWorkflowTest {
     private DnGrantedRespondentSolicitorCoverLetterGenerationTask dnGrantedRespondentSolicitorCoverLetterGenerationTask;
 
     @Mock
+    private DecreeNisiGrantedPetitionerSolicitorEmailTask decreeNisiGrantedPetitionerSolicitorEmailTask;
+
+    @Mock
+    private DecreeNisiGrantedRespondentSolicitorEmailTask decreeNisiGrantedRespondentSolicitorEmailTask;
+
+    @Mock
     private FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask;
 
     @Mock
@@ -88,11 +105,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
     @Mock
     private CaseDataUtils caseDataUtils;
 
-
     private static final String COSTS_ORDER_TEMPLATE_ID = "FL-DIV-DEC-ENG-00060.docx";
-
-    @InjectMocks
-    private SendDnPronouncedNotificationWorkflow sendDnPronouncedNotificationWorkflow;
 
     @Before
     public void setup() {
@@ -325,6 +338,46 @@ public class SendDnPronouncedNotificationWorkflowTest {
     }
 
     @Test
+    public void givenCostsClaimNotGrantedAndOffline_thenSendEmailToPetitionerAndSendDocsToBulkPrint()
+        throws Exception {
+        Map<String, Object> caseData = buildCaseDataWithCoRespondentAsAddressee();
+        caseData.putAll(buildCaseDataWithRespondent());
+        caseData.put(RESP_IS_USING_DIGITAL_CHANNEL, NO_VALUE);
+        caseData.put(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE);
+        caseData.put(WHO_PAYS_COSTS_CCD_FIELD, WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT);
+        caseData.put(CO_RESPONDENT_REPRESENTED, NO_VALUE);
+        caseData.put(RESP_SOL_REPRESENTED, NO_VALUE);
+        caseData.put(COSTS_CLAIM_GRANTED, NO_VALUE);
+
+        when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
+        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(eq(caseData))).thenReturn(true);
+
+        mockTasksExecution(
+            caseData,
+            sendPetitionerGenericUpdateNotificationEmailTask,
+            dnGrantedRespondentCoverLetterGenerationTask,
+            fetchPrintDocsFromDmStoreTask,
+            multiBulkPrinterTask
+        );
+
+        executeWorkflowRun(caseData);
+
+        verifyTasksCalledInOrder(
+            caseData,
+            sendPetitionerGenericUpdateNotificationEmailTask,
+            dnGrantedRespondentCoverLetterGenerationTask,
+
+            fetchPrintDocsFromDmStoreTask,
+            multiBulkPrinterTask
+        );
+        verifyTaskWasNeverCalled(costOrderCoRespondentCoverLetterGenerationTask);
+        verifyTaskWasNeverCalled(sendRespondentGenericUpdateNotificationEmailTask);
+        verifyTaskWasNeverCalled(sendCoRespondentGenericUpdateNotificationEmailTask);
+        verifyTaskWasNeverCalled(dnGrantedRespondentSolicitorCoverLetterGenerationTask);
+        verifyTaskWasNeverCalled(costOrderCoRespondentSolicitorCoverLetterGenerationTask);
+    }
+
+    @Test
     public void givenCostsClaimGrantedAndOfflineRespAndCoRespRepresented_thenSendEmailToPetitionerAndSendDocsToBulkPrint()
         throws Exception {
         Map<String, Object> caseData = buildCaseDataWithCoRespondentAsAddressee();
@@ -497,8 +550,76 @@ public class SendDnPronouncedNotificationWorkflowTest {
         );
     }
 
+    @Test
+    public void givenPetitionerIsRepresented_thenDecreeNisiPetitionerSolicitorIsCalled()
+        throws Exception {
+        respondentJourneySwitchedOn();
+
+        Map<String, Object> caseData = buildCaseDataWithPetitionerSolicitor();
+
+        mockTasksExecution(
+            caseData,
+            decreeNisiGrantedPetitionerSolicitorEmailTask,
+            sendRespondentGenericUpdateNotificationEmailTask
+        );
+
+        executeWorkflowRun(caseData);
+
+        verifyNoBulkPrintTasksCalled();
+        verifyTasksCalledInOrder(
+            caseData,
+            decreeNisiGrantedPetitionerSolicitorEmailTask,
+            sendRespondentGenericUpdateNotificationEmailTask
+        );
+    }
+
+    @Test
+    public void decreeNisiPetitionerSolicitorEmailTaskNotCalledWhenRespondentJourneySwitchedOff() throws Exception {
+        respondentJourneySwitchedOff();
+
+        Map<String, Object> caseData = buildCaseDataWithPetitionerSolicitor();
+
+        mockTasksExecution(caseData,
+            sendPetitionerGenericUpdateNotificationEmailTask,
+            sendRespondentGenericUpdateNotificationEmailTask
+        );
+
+        executeWorkflowRun(caseData);
+
+        verifyTaskWasNeverCalled(decreeNisiGrantedPetitionerSolicitorEmailTask);
+    }
+
+    @Test
+    public void givenRespondentIsRepresented_thenDecreeNisiNotificationToRespondentSolicitor() throws Exception {
+        Map<String, Object> caseData = buildCaseDataWithRespondentSolicitor();
+        caseData.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
+
+        respondentJourneySwitchedOn();
+
+        CaseDetails caseDetails = buildCaseDetails(caseData);
+
+        executeAndVerityTask(caseDetails, decreeNisiGrantedRespondentSolicitorEmailTask);
+    }
+
+    @Test
+    public void decreeNisiRespondentSolicitorEmailTaskNotCalledWhenRespondentJourneySwitchedOff() throws Exception {
+        respondentJourneySwitchedOff();
+
+        Map<String, Object> caseData = buildCaseDataWithRespondentSolicitor();
+
+        mockTasksExecution(caseData,
+            sendPetitionerGenericUpdateNotificationEmailTask,
+            sendRespondentGenericUpdateNotificationEmailTask
+        );
+
+        executeWorkflowRun(caseData);
+
+        verifyTaskWasNeverCalled(decreeNisiGrantedRespondentSolicitorEmailTask);
+    }
+
     private void executeWorkflowRun(Map<String, Object> caseData) throws WorkflowException {
-        Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow.run(buildCaseDetails(caseData), AUTH_TOKEN);
+        Map<String, Object> returnedPayload = sendDnPronouncedNotificationWorkflow
+            .run(buildCaseDetails(caseData), AUTH_TOKEN);
         assertThat(returnedPayload, is(caseData));
     }
 
@@ -511,10 +632,10 @@ public class SendDnPronouncedNotificationWorkflowTest {
         return caseData;
     }
 
-    private CaseDetails buildCaseDetails(Map<String, Object> casePayload) {
+    private CaseDetails buildCaseDetails(Map<String, Object> caseData) {
         return CaseDetails.builder()
-            .caseId(CASE_TYPE_ID)
-            .caseData(casePayload)
+            .caseId(TEST_CASE_ID)
+            .caseData(caseData)
             .build();
     }
 
@@ -525,5 +646,29 @@ public class SendDnPronouncedNotificationWorkflowTest {
         verifyTaskWasNeverCalled(dnGrantedRespondentCoverLetterGenerationTask);
         verifyTaskWasNeverCalled(fetchPrintDocsFromDmStoreTask);
         verifyTaskWasNeverCalled(multiBulkPrinterTask);
+    }
+
+    private Map<String, Object> executeWorkflow(CaseDetails caseDetails)
+        throws WorkflowException {
+        Map<String, Object> returnedData = sendDnPronouncedNotificationWorkflow.run(caseDetails, AUTH_TOKEN);
+        assertThat(returnedData, is(notNullValue()));
+
+        return returnedData;
+    }
+
+    private void executeAndVerityTask(CaseDetails caseDetails, Task<Map<String, Object>> task) throws WorkflowException {
+        mockTasksExecution(caseDetails.getCaseData(), task);
+
+        Map<String, Object> returnedCaseData = executeWorkflow(caseDetails);
+
+        verifyTaskWasCalled(returnedCaseData, task);
+    }
+
+    private void respondentJourneySwitchedOn() {
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
+    }
+
+    private void respondentJourneySwitchedOff() {
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(false);
     }
 }

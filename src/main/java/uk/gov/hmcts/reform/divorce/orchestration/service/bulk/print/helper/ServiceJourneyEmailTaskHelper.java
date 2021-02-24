@@ -31,7 +31,7 @@ public class ServiceJourneyEmailTaskHelper {
         );
     }
 
-    public static Map<String, String> petitionerSolicitorTemplateVariables(TaskContext taskContext, Map<String, Object> caseData) {
+    public static Map<String, String> defaultSolicitorTemplateVariables(TaskContext taskContext, Map<String, Object> caseData) {
         return ImmutableMap.of(
             NOTIFICATION_PET_NAME, getPetitionerFullName(caseData),
             NOTIFICATION_RESP_NAME, getRespondentFullName(caseData),
@@ -41,13 +41,24 @@ public class ServiceJourneyEmailTaskHelper {
     }
 
     public static Map<String, String> respondentSolicitorTemplateVariables(TaskContext taskContext, Map<String, Object> caseData) {
+        return ImmutableMap.of(
+            NOTIFICATION_PET_NAME, getPetitionerFullName(caseData),
+            NOTIFICATION_RESP_NAME, getRespondentFullName(caseData),
+            NOTIFICATION_CCD_REFERENCE_KEY, getCaseId(taskContext),
+            NOTIFICATION_SOLICITOR_NAME, getRespondentSolicitorFullName(caseData)
+        );
+    }
+
+    public static Map<String, String> respondentSolicitorWithOrgTemplateVariables(TaskContext taskContext, Map<String, Object> caseData) {
         Map<String, String> templateVariables = new HashMap<>();
         templateVariables.put(NOTIFICATION_PET_NAME, getPetitionerFullName(caseData));
         templateVariables.put(NOTIFICATION_RESP_NAME, getRespondentFullName(caseData));
         templateVariables.put(NOTIFICATION_CCD_REFERENCE_KEY, getCaseId(taskContext));
         templateVariables.put(NOTIFICATION_SOLICITOR_NAME, getRespondentSolicitorFullName(caseData));
         templateVariables.put(EMAIL_ADDRESS, getRespondentSolicitorEmail(caseData));
-        templateVariables.put(SOLICITOR_ORGANISATION, getRespondentSolicitorOrganisation(caseData).getOrganisation().getOrganisationName());
+        templateVariables.put(SOLICITOR_ORGANISATION, getRespondentSolicitorOrganisation(caseData)
+            .getOrganisation().getOrganisationName());
+
         return templateVariables;
     }
 }
