@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.getPetitionerSolicitorEmail;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ServiceJourneyEmailTaskHelper.petitionerSolicitorTemplateVariables;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ServiceJourneyEmailTaskHelper.defaultSolicitorTemplateVariables;
 
 public abstract class PetitionerSolicitorSendEmailTask extends SendEmailTask {
     protected PetitionerSolicitorSendEmailTask(EmailService emailService) {
@@ -15,7 +15,7 @@ public abstract class PetitionerSolicitorSendEmailTask extends SendEmailTask {
 
     @Override
     protected Map<String, String> getPersonalisation(TaskContext taskContext, Map<String, Object> caseData) {
-        return petitionerSolicitorTemplateVariables(taskContext, caseData);
+        return defaultSolicitorTemplateVariables(taskContext, caseData);
     }
 
     @Override
