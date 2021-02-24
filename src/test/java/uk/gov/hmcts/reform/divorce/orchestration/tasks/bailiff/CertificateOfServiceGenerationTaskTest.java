@@ -61,7 +61,7 @@ public class CertificateOfServiceGenerationTaskTest extends BasePayloadSpecificD
 
     private void runVerifications(Map<String, Object> returnedCaseData) {
         verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
-        
+
         assertThat((Document)returnedCaseData.get(CERTIFICATE_OF_SERVICE_DOCUMENT), isA(Document.class));
 
         final CertificateOfService expectedDocmosisTemplateVars = CertificateOfService.certificateOfServiceBuilder()

@@ -1858,7 +1858,7 @@ public class CallbackControllerTest {
             .thenReturn(TEST_PAYLOAD_TO_RETURN);
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(TEST_INCOMING_CASE_DETAILS).build();
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.updateCourtOrderDocuments(AUTH_TOKEN, ccdCallbackRequest);
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.issueBailiffPack(AUTH_TOKEN, ccdCallbackRequest);
 
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getErrors(), is(nullValue()));
