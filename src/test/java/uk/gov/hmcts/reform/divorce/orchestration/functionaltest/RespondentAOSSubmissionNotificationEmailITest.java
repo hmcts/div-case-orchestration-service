@@ -201,7 +201,7 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
     @Test
     public void testResponseHasDataAndNoErrors_WhenEmailCanBeSent_ForUndefendedDivorce_AndPetIsNotRepresented() throws Exception {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(D_8_PETITIONER_EMAIL, "petitioner@divorce.co.uk");
+        caseData.put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
 
         runTestForUndefendedDivorce_AndPetitionerIsNotRepresented(caseData, RESPONDENT_SUBMISSION_CONSENT_TEMPLATE_ID);
     }
@@ -210,7 +210,7 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
     public void testResponseHasDataAndNoErrors_WhenEmailCanBeSent_ForUndefendedDivorce_AndPetIsNotRepresented_AndIsAdulteryAndIsCoRespNamed()
         throws Exception {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(D_8_PETITIONER_EMAIL, "petitioner@divorce.co.uk");
+        caseData.put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
 
         // isAdulteryAndNoConsent
         caseData.put(D_8_REASON_FOR_DIVORCE, ADULTERY);
@@ -230,7 +230,7 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
     public void testResponseHasDataAndNoErrors_WhenEmailCanBeSent_ForUndefendedDivorce_AndPetIsNotRepresented_AndIsAdulteryAndIsNotCoRespNamed()
         throws Exception {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(D_8_PETITIONER_EMAIL, "petitioner@divorce.co.uk");
+        caseData.put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
 
         // isAdulteryAndNoConsent
         caseData.put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue());
@@ -247,7 +247,7 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
     public void testResponseHasDataAndNoErrors_WhenEmailCanBeSent_ForUndefendedDivorce_AndPetIsNotRepresented_AndIsSep2YrAndNoConsent()
         throws Exception {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(D_8_PETITIONER_EMAIL, "petitioner@divorce.co.uk");
+        caseData.put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
 
         // !isAdulteryAndNoConsent && isSep2YrAndNoConsent
         caseData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS.getValue());
@@ -260,7 +260,7 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
     public void testResponseHasDataAndNoErrors_WhenEmailCanBeSent_ForUndefendedDivorce_AndPetIsNotRepresented_AndIsCoRespNamedAndNotReplied()
         throws Exception {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(D_8_PETITIONER_EMAIL, "petitioner@divorce.co.uk");
+        caseData.put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
 
         // !isAdulteryAndNoConsent && !isSep2YrAndNoConsent
         caseData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_FIVE_YEARS);
@@ -493,7 +493,7 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
 
         verify(mockClient).sendEmail(
             eq(petitionerEmailTemplateID),
-            eq("petitioner@divorce.co.uk"),
+            eq(TEST_PETITIONER_EMAIL),
             eq(templateVars),
             anyString()
         );
