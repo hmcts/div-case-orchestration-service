@@ -43,6 +43,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INFER
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INFERRED_MALE_GENDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RELATIONSHIP;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RELATIONSHIP_HUSBAND;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH_FEMALE_GENDER_IN_RELATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH_MALE_GENDER_IN_RELATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
@@ -120,13 +121,13 @@ public class SendRespondentSubmissionNotificationEmailTest {
         assertThat(caseData, is(sameInstance(returnedPayload)));
         verify(taskCommons).sendEmail(eq(RESPONDENT_DEFENDED_AOS_SUBMISSION_NOTIFICATION),
             eq("respondent submission notification email - defended divorce"),
-            eq("respondent@divorce.co.uk"),
+            eq(TEST_RESPONDENT_EMAIL),
             templateParametersCaptor.capture(),
             eq(LanguagePreference.ENGLISH));
         Map<String, String> templateParameters = templateParametersCaptor.getValue();
         assertThat(templateParameters, hasEntry(NOTIFICATION_CASE_NUMBER_KEY, D8_CASE_ID));
         assertThat(templateParameters, allOf(
-            hasEntry(NOTIFICATION_EMAIL, "respondent@divorce.co.uk"),
+            hasEntry(NOTIFICATION_EMAIL, TEST_RESPONDENT_EMAIL),
             hasEntry(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, "Ted"),
             hasEntry(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, "Jones"),
             hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, "wife"),
@@ -201,13 +202,13 @@ public class SendRespondentSubmissionNotificationEmailTest {
         assertThat(caseData, is(sameInstance(returnedPayload)));
         verify(taskCommons).sendEmail(eq(RESPONDENT_UNDEFENDED_AOS_SUBMISSION_NOTIFICATION),
             eq("respondent submission notification email - undefended divorce"),
-            eq("respondent@divorce.co.uk"),
+            eq(TEST_RESPONDENT_EMAIL),
             templateParametersCaptor.capture(),
             eq(LanguagePreference.ENGLISH));
         Map<String, String> templateParameters = templateParametersCaptor.getValue();
         assertThat(templateParameters, hasEntry(NOTIFICATION_CASE_NUMBER_KEY, D8_CASE_ID));
         assertThat(templateParameters, allOf(
-            hasEntry(NOTIFICATION_EMAIL, "respondent@divorce.co.uk"),
+            hasEntry(NOTIFICATION_EMAIL, TEST_RESPONDENT_EMAIL),
             hasEntry(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, "Sarah"),
             hasEntry(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, "Jones"),
             hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, "husband"),
