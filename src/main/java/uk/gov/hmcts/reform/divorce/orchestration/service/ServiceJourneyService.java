@@ -20,6 +20,6 @@ public interface ServiceJourneyService {
     Map<String, Object> setupConfirmServicePaymentEvent(CaseDetails caseDetails)
         throws ServiceJourneyServiceException;
 
-    Map<String, Object> confirmServicePaymentEvent(CaseDetails caseDetails)
+    CcdCallbackResponse confirmServicePaymentEvent(CaseDetails caseDetails, String authorisation)
         throws ServiceJourneyServiceException;
 }
