@@ -450,6 +450,11 @@ dncourt:
       address: "Priory Courts\n33 Bull Street\nBirmingham\nB4 6DS"
       email: "divorcecase@justice.gov.uk"
       phone: "0300 303 0642"
+    bury:
+      name: "Bury St. Edmunds Regional Divorce Centre"
+      address: "2nd Floor\nTriton House\nSt. Andrews Street North\nBury St. Edmunds\nIP33 1TR"
+      email: "divorcecase@justice.gov.uk"
+      phone: "0300 303 0642"
 
 judge:
   types:
