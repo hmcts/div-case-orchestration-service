@@ -49,6 +49,7 @@ public class CertificateOfServiceGenerationTask extends BasePayloadSpecificDocum
     protected Map<String, Object> addToCaseData(TaskContext context, Map<String, Object> caseData, GeneratedDocumentInfo documentInfo) {
         log.info("CaseID: {} Adding certificate of service to field {}.", getCaseId(context), CERTIFICATE_OF_SERVICE_DOCUMENT);
         caseData.put(CERTIFICATE_OF_SERVICE_DOCUMENT, CcdMappers.mapDocumentInfoToCcdDocument(documentInfo).getValue());
+        log.info("debug---addToCaseData\n{}\n---debug", caseData);
         return caseData;
     }
 

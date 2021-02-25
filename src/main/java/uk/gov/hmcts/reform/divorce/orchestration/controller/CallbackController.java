@@ -1518,6 +1518,8 @@ public class CallbackController {
             ccdCallbackRequest.getCaseDetails()
         );
 
+        log.info("debug---returnedPayload\n{}\n---debug", returnedPayload);
+
         return ResponseEntity.ok(
             CcdCallbackResponse.builder()
                 .data(returnedPayload)
