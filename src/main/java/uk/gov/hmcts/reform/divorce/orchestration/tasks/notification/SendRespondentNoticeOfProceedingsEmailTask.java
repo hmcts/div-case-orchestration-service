@@ -9,9 +9,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
 import java.util.Map;
 
-import static java.lang.String.format;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.SOL_RESPONDENT_NOTICE_OF_PROCEEDINGS;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.ServiceJourneyEmailTaskHelper.respondentSolicitorWithOrgTemplateVariables;
 
 @Component
 @Slf4j
@@ -22,11 +21,8 @@ public class SendRespondentNoticeOfProceedingsEmailTask extends RespondentSolici
     }
 
     @Override
-    protected String getSubject(TaskContext context, Map<String, Object> caseData) {
-        return format(
-            "CaseID: %s. Email to respondent solicitor on issue AOS event",
-            getCaseId(context)
-        );
+    protected Map<String, String> getPersonalisation(TaskContext taskContext, Map<String, Object> caseData) {
+        return respondentSolicitorWithOrgTemplateVariables(taskContext, caseData);
     }
 
     @Override
