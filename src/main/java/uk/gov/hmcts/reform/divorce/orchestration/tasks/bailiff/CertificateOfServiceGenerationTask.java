@@ -19,7 +19,6 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference.ENGLISH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CERTIFICATE_OF_SERVICE_DOCUMENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CERTIFICATE_OF_SERVICE_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.CERTIFICATE_OF_SERVICE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.formatCaseIdToReferenceNumber;
@@ -60,6 +59,6 @@ public class CertificateOfServiceGenerationTask extends BasePayloadSpecificDocum
 
     @Override
     public String getDocumentType() {
-        return CERTIFICATE_OF_SERVICE_DOCUMENT_TYPE;
+        return CERTIFICATE_OF_SERVICE.getTemplateLogicalName();
     }
 }
