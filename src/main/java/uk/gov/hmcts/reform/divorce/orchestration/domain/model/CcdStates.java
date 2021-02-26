@@ -21,6 +21,7 @@ public class CcdStates {
     public static final String AWAITING_PRONOUNCEMENT = "AwaitingPronouncement";
     public static final String AWAITING_CLARIFICATION = "AwaitingClarification";
     public static final String AWAITING_SERVICE_CONSIDERATION = "AwaitingServiceConsideration";
+    public static final String AWAITING_BAILIFF_REFERRAL = "AwaitingBailiffReferral";
     public static final String AWAITING_REISSUE = "AwaitingReissue";
     public static final String DEFENDED = "DefendedDivorce";
     public static final String DN_PRONOUNCED = "DNPronounced";
