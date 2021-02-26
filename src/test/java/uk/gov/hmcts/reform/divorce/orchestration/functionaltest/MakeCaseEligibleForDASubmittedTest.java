@@ -27,6 +27,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_FAMILY_MAN_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
@@ -125,7 +126,7 @@ public class MakeCaseEligibleForDASubmittedTest extends MockedFunctionalTest {
         caseData.put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME);
         caseData.put(PETITIONER_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
         caseData.put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
-        caseData.put(D_8_CASE_REFERENCE, TEST_CASE_ID);
+        caseData.put(D_8_CASE_REFERENCE, TEST_CASE_FAMILY_MAN_ID);
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
@@ -155,7 +156,7 @@ public class MakeCaseEligibleForDASubmittedTest extends MockedFunctionalTest {
             eq(APPLICANT_DA_ELIGIBLE_TEMPLATE_ID),
             eq(TEST_PETITIONER_EMAIL),
             eq(ImmutableMap.<String, Object>builder()
-                .put(NOTIFICATION_CASE_NUMBER_KEY, TEST_CASE_ID)
+                .put(NOTIFICATION_CASE_NUMBER_KEY, TEST_CASE_FAMILY_MAN_ID)
                 .put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_PETITIONER_LAST_NAME)
                 .put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_PETITIONER_FIRST_NAME)
                 .put(NOTIFICATION_EMAIL_ADDRESS_KEY, TEST_PETITIONER_EMAIL)
