@@ -1306,7 +1306,7 @@ public class CallbackController {
     @PostMapping(path = "/confirm-service-payment")
     @ApiOperation(value = "Returns updated case data with payment reference collection")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Service payment confirmation callback")})
+            @ApiResponse(code = 200, message = "Service payment confirmation callback")})
     public ResponseEntity<CcdCallbackResponse> confirmServicePaymentEvent(
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
@@ -1314,6 +1314,21 @@ public class CallbackController {
             CcdCallbackResponse.builder()
                 .data(serviceJourneyService.confirmServicePaymentEvent(ccdCallbackRequest.getCaseDetails()))
                 .build());
+    }
+
+    @PostMapping(path = "/add-bailiff-return")
+    @ApiOperation(value = "Setup Add Bailiff Return event")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Setup Add Bailiff Return event")})
+    public ResponseEntity<CcdCallbackResponse> setupAddBailiffReturnEvent(
+            @RequestHeader(AUTHORIZATION_HEADER)
+            @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+                serviceJourneyService
+                        .setupAddBailiffReturnEvent(ccdCallbackRequest.getCaseDetails(), authorizationToken)
+        );
     }
 
     @PostMapping(path = "/set-up-order-summary/without-notice-fee")
