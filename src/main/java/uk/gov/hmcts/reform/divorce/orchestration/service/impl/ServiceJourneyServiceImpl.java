@@ -130,13 +130,11 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
     @Override
     public CcdCallbackResponse setupAddBailiffReturnEvent(CaseDetails caseDetails, String authorisation) throws ServiceJourneyServiceException {
         CcdCallbackResponse.CcdCallbackResponseBuilder builder = CcdCallbackResponse.builder();
-
         try {
             builder.data(bailiffOutcomeWorkflow.run(caseDetails));
         } catch (WorkflowException exception) {
             throw new ServiceJourneyServiceException(exception, caseDetails.getCaseId());
         }
-
         return builder.build();
     }
 }
