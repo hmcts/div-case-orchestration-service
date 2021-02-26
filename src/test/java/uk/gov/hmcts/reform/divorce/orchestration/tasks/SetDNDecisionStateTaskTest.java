@@ -16,13 +16,13 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_GRANT_DN_MAKE_DECISION_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_ADMIN_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PRONOUNCEMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.DN_REFUSED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.WELSH_LA_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features.DN_REFUSAL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BO_WELSH_GRANT_DN_MAKE_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_ADMIN_ERROR_OPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_REJECT_OPTION;
@@ -109,7 +109,7 @@ public class SetDNDecisionStateTaskTest {
             hasEntry(STATE_CCD_FIELD, WELSH_LA_DECISION),
             hasEntry(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE),
             hasEntry(REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION),
-            hasEntry(WELSH_NEXT_EVENT, BO_WELSH_GRANT_DN_MAKE_DECISION)
+            hasEntry(WELSH_NEXT_EVENT, BO_WELSH_GRANT_DN_MAKE_DECISION_ID)
         ));
     }
 
@@ -126,7 +126,7 @@ public class SetDNDecisionStateTaskTest {
             hasEntry(STATE_CCD_FIELD, WELSH_LA_DECISION),
             hasEntry(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE),
             hasEntry(REFUSAL_DECISION_CCD_FIELD, REFUSAL_DECISION_MORE_INFO_VALUE),
-            hasEntry(WELSH_NEXT_EVENT, BO_WELSH_GRANT_DN_MAKE_DECISION)
+            hasEntry(WELSH_NEXT_EVENT, BO_WELSH_GRANT_DN_MAKE_DECISION_ID)
         ));
     }
 

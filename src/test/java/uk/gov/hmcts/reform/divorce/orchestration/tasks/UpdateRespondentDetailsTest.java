@@ -33,12 +33,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_OVERDUE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_REISSUE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.LINK_RESPONDENT_GENERIC_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.START_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_OVERDUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_START_FROM_OVERDUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_START_FROM_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
@@ -47,9 +49,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCE_UNIT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_RESPONDENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINK_RESPONDENT_GENERIC_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.START_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -159,7 +159,7 @@ public class UpdateRespondentDetailsTest {
         UserDetails result = classUnderTest.execute(taskContext, payload);
         assertEquals(payload, result);
 
-        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AOS_START_FROM_OVERDUE, dataToUpdate);
+        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AOS_START_FROM_OVERDUE_ID, dataToUpdate);
     }
 
     @Test
@@ -183,7 +183,7 @@ public class UpdateRespondentDetailsTest {
         UserDetails result = classUnderTest.execute(taskContext, payload);
         assertEquals(payload, result);
 
-        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AOS_START_FROM_REISSUE, dataToUpdate);
+        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AOS_START_FROM_REISSUE_ID, dataToUpdate);
     }
 
     @Test
@@ -247,7 +247,7 @@ public class UpdateRespondentDetailsTest {
         UserDetails result = classUnderTest.execute(taskContext, payload);
         assertEquals(payload, result);
 
-        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED, dataToUpdate);
+        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED_EVENT_ID, dataToUpdate);
     }
 
     private void whenGivenState_thenTriggerStartAosEvent(String state) throws TaskException {

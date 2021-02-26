@@ -11,13 +11,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 import java.util.HashMap;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_GRANT_DN_MAKE_DECISION_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_ADMIN_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PRONOUNCEMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.DN_REFUSED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.WELSH_LA_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features.DN_REFUSAL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BO_WELSH_GRANT_DN_MAKE_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_ADMIN_ERROR_OPTION;
@@ -67,7 +67,7 @@ public class SetDNDecisionStateTask implements Task<Map<String, Object>> {
     private String evaluateStop(Map<String, Object> caseData, Map<String, Object> payload, String endState) {
         if (CaseDataUtils.isRejectReasonAddInfoAwaitingTranslation(caseData)) {
             endState = WELSH_LA_DECISION;
-            payload.put(WELSH_NEXT_EVENT, BO_WELSH_GRANT_DN_MAKE_DECISION);
+            payload.put(WELSH_NEXT_EVENT, BO_WELSH_GRANT_DN_MAKE_DECISION_ID);
         }
         return endState;
     }

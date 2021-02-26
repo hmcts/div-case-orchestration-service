@@ -16,7 +16,11 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_OVERDUE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_REISSUE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.LINK_RESPONDENT_GENERIC_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.START_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_OVERDUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_ALTERNATIVE_SERVICE;
@@ -24,8 +28,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.A
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PROCESS_SERVER_SERVICE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_START_FROM_OVERDUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_START_FROM_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
@@ -33,9 +35,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.IS_RESPONDENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINK_RESPONDENT_GENERIC_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.START_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UPDATE_RESPONDENT_DATA_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
@@ -101,11 +101,11 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
             case AWAITING_DWP_RESPONSE:
                 return START_AOS_EVENT_ID;
             case AOS_OVERDUE:
-                return AOS_START_FROM_OVERDUE;
+                return AOS_START_FROM_OVERDUE_ID;
             case AWAITING_REISSUE:
-                return AOS_START_FROM_REISSUE;
+                return AOS_START_FROM_REISSUE_ID;
             case SERVICE_APPLICATION_NOT_APPROVED:
-                return AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED;
+                return AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED_EVENT_ID;
             default:
                 return LINK_RESPONDENT_GENERIC_EVENT_ID;
         }

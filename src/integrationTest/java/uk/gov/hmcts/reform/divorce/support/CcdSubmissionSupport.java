@@ -30,7 +30,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.junit.Assert.assertEquals;
 import static org.springframework.http.HttpStatus.OK;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AWAITING_DN_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.support.EvidenceManagementUtil.readDataFromEvidenceManagement;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJsonToObject;

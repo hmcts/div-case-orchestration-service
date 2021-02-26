@@ -49,8 +49,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH_FEMALE_GENDER_IN_RELATION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS_FROM_REISSUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS_FROM_REISSUE_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.NOT_RECEIVED_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.NOT_RECEIVED_AOS_STARTED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCED_WHO;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
@@ -67,8 +69,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_RELATIONSHIP_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOT_RECEIVED_AOS_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOT_RECEIVED_AOS_STARTED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
@@ -132,7 +132,7 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
         addSolicitorTestData();
         testTemplateVars.remove(NOTIFICATION_EMAIL);
 
-        runTestProcedureUsing(ISSUE_AOS, SOL_PETITIONER_NOTICE_OF_PROCEEDINGS);
+        runTestProcedureUsing(ISSUE_AOS_EVENT_ID, SOL_PETITIONER_NOTICE_OF_PROCEEDINGS);
     }
 
     @Test
@@ -140,14 +140,14 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
         addSolicitorTestData();
         testTemplateVars.remove(NOTIFICATION_EMAIL);
 
-        runTestProcedureUsing(ISSUE_AOS_FROM_REISSUE, SOL_PETITIONER_NOTICE_OF_PROCEEDINGS);
+        runTestProcedureUsing(ISSUE_AOS_FROM_REISSUE_EVENT_ID, SOL_PETITIONER_NOTICE_OF_PROCEEDINGS);
     }
 
     @Test
     public void givenCorrectPetitionerDetails_WithIssueAosEventIdAndToggleOn_ThenOkResponse() throws Exception {
         addPetitionerTestDataForNoticeOfProceeding();
 
-        runTestProcedureUsing(ISSUE_AOS, PETITIONER_NOTICE_OF_PROCEEDINGS);
+        runTestProcedureUsing(ISSUE_AOS_EVENT_ID, PETITIONER_NOTICE_OF_PROCEEDINGS);
     }
 
     @Test
@@ -155,14 +155,14 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
         featureToggleOff();
         addPetitionerTestData();
 
-        runTestProcedureUsing(ISSUE_AOS, GENERIC_UPDATE);
+        runTestProcedureUsing(ISSUE_AOS_EVENT_ID, GENERIC_UPDATE);
     }
 
     @Test
     public void givenCorrectPetitionerDetails_WithIssueAosFromReIssueEventId_ThenOkResponse() throws Exception {
         addPetitionerTestDataForNoticeOfProceeding();
 
-        runTestProcedureUsing(ISSUE_AOS_FROM_REISSUE, PETITIONER_NOTICE_OF_PROCEEDINGS);
+        runTestProcedureUsing(ISSUE_AOS_FROM_REISSUE_EVENT_ID, PETITIONER_NOTICE_OF_PROCEEDINGS);
     }
 
     @Test

@@ -34,9 +34,17 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CO_RESP_SUBMISSION_AWAITING_ALTERNATIVE_SERVICE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CO_RESP_SUBMISSION_AWAITING_DWP_RESPONSE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CO_RESP_SUBMISSION_AWAITING_PROCESS_SERVER_SERVICE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CO_RESPONDENT_SUBMISSION_AOS_AWAITING_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CO_RESPONDENT_SUBMISSION_AOS_COMPLETED_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CO_RESPONDENT_SUBMISSION_AOS_DEFENDED_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CO_RESPONDENT_SUBMISSION_AOS_OVERDUE_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CO_RESPONDENT_SUBMISSION_AOS_STARTED_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CO_RESPONDENT_SUBMISSION_AOS_SUBMIT_AWAIT_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CO_RESPONDENT_SUBMISSION_AWAITING_DN_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CO_RESPONDENT_SUBMISSION_AWAITING_LA_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CO_RESP_SUBMISSION_AWAITING_ALTERNATIVE_SERVICE_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CO_RESP_SUBMISSION_AWAITING_DWP_RESPONSE_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CO_RESP_SUBMISSION_AWAITING_PROCESS_SERVER_SERVICE_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_COMPLETED;
@@ -54,14 +62,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_DEFENDS_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_DUE_DATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_SUBMISSION_AOS_AWAITING_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_SUBMISSION_AOS_COMPLETED_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_SUBMISSION_AOS_DEFENDED_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_SUBMISSION_AOS_OVERDUE_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_SUBMISSION_AOS_STARTED_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_SUBMISSION_AOS_SUBMIT_AWAIT_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_SUBMISSION_AWAITING_DN_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_SUBMISSION_AWAITING_LA_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -192,21 +192,21 @@ public class SubmitCoRespondentAosCaseTest {
     public void givenCaseIsAwaitingAlternativeService_whenCoRespondentSubmits_thenSubmitCorrectEvent() throws TaskException {
         assertForGivenStateWhenCoRespondentSubmitsThenSubmitCorrectEvent(
             AWAITING_ALTERNATIVE_SERVICE,
-            CO_RESP_SUBMISSION_AWAITING_ALTERNATIVE_SERVICE);
+            CO_RESP_SUBMISSION_AWAITING_ALTERNATIVE_SERVICE_EVENT_ID);
     }
 
     @Test
     public void givenCaseIsAwaitingProcessServerService_whenCoRespondentSubmits_thenSubmitCorrectEvent() throws TaskException {
         assertForGivenStateWhenCoRespondentSubmitsThenSubmitCorrectEvent(
             AWAITING_PROCESS_SERVER_SERVICE,
-            CO_RESP_SUBMISSION_AWAITING_PROCESS_SERVER_SERVICE);
+            CO_RESP_SUBMISSION_AWAITING_PROCESS_SERVER_SERVICE_EVENT_ID);
     }
 
     @Test
     public void givenCaseIsAwaitingDWPResponse_whenCoRespondentSubmits_thenSubmitCorrectEvent() throws TaskException {
         assertForGivenStateWhenCoRespondentSubmitsThenSubmitCorrectEvent(
             AWAITING_DWP_RESPONSE,
-            CO_RESP_SUBMISSION_AWAITING_DWP_RESPONSE);
+            CO_RESP_SUBMISSION_AWAITING_DWP_RESPONSE_EVENT_ID);
     }
 
     @Test
