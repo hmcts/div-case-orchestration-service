@@ -16,7 +16,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_GRANT_DN_MAKE_DECISION_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_GRANT_DN_MAKE_DECISION_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_ADMIN_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PRONOUNCEMENT;
@@ -109,7 +109,7 @@ public class SetDNDecisionStateTaskTest {
             hasEntry(STATE_CCD_FIELD, WELSH_LA_DECISION),
             hasEntry(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE),
             hasEntry(REFUSAL_DECISION_CCD_FIELD, DN_REFUSED_REJECT_OPTION),
-            hasEntry(WELSH_NEXT_EVENT, BO_WELSH_GRANT_DN_MAKE_DECISION_ID)
+            hasEntry(WELSH_NEXT_EVENT, BO_WELSH_GRANT_DN_MAKE_DECISION_EVENT_ID)
         ));
     }
 
@@ -126,7 +126,7 @@ public class SetDNDecisionStateTaskTest {
             hasEntry(STATE_CCD_FIELD, WELSH_LA_DECISION),
             hasEntry(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE),
             hasEntry(REFUSAL_DECISION_CCD_FIELD, REFUSAL_DECISION_MORE_INFO_VALUE),
-            hasEntry(WELSH_NEXT_EVENT, BO_WELSH_GRANT_DN_MAKE_DECISION_ID)
+            hasEntry(WELSH_NEXT_EVENT, BO_WELSH_GRANT_DN_MAKE_DECISION_EVENT_ID)
         ));
     }
 

@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_NOMINATE_SOLICITOR_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_NOMINATE_SOLICITOR_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AWAITING_ANSWER_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AWAITING_DN_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.COMPLETED_AOS_EVENT_ID;
@@ -257,7 +257,7 @@ public class SubmitRespondentAosCaseITest extends MockedFunctionalTest {
         final String caseDataString = convertObjectToJsonString(caseData);
 
         stubFormatterServerEndpoint(OK, caseData, caseDataString);
-        stubMaintenanceServerEndpointForUpdate(OK, AOS_NOMINATE_SOLICITOR_ID, caseData, caseDataString);
+        stubMaintenanceServerEndpointForUpdate(OK, AOS_NOMINATE_SOLICITOR_EVENT_ID, caseData, caseDataString);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
                 .header(AUTHORIZATION, AUTH_TOKEN)

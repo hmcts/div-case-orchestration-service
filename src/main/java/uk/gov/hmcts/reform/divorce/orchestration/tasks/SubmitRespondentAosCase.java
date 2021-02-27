@@ -14,13 +14,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_NOMINATE_SOLICITOR_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_NOMINATE_SOLICITOR_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AWAITING_ANSWER_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AWAITING_DN_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_AOS_RECEIVED_NO_AD_CON_STARTED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_AOS_SUBMITTED_DEFENDED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_AOS_SUBMITTED_UNDEFENDED_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_REVIEW_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_REVIEW_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.COMPLETED_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
@@ -53,7 +53,7 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
 
         if (isSolicitorRepresentingRespondent(submissionData)) {
             //move back to AOS awaiting, as technically the nominated solicitor will provide a response
-            eventId = AOS_NOMINATE_SOLICITOR_ID;
+            eventId = AOS_NOMINATE_SOLICITOR_EVENT_ID;
         } else {
             //if respondent didn't nominate a solicitor, then they've provided an answer
             if (isRespondentDefendingDivorce(submissionData)) {
@@ -93,7 +93,7 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
             return CaseDataUtils.isLanguagePreferenceWelsh(currentCasedata);
         };
 
-        return welshNextEventUtil.storeNextEventAndReturnStopEvent(isWelsh, submissionData, eventId, welshEventId, BO_WELSH_REVIEW_ID);
+        return welshNextEventUtil.storeNextEventAndReturnStopEvent(isWelsh, submissionData, eventId, welshEventId, BO_WELSH_REVIEW_EVENT_ID);
     }
 
     private boolean isSolicitorRepresentingRespondent(Map<String, Object> submissionData) {

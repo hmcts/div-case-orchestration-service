@@ -15,11 +15,11 @@ import java.util.function.BooleanSupplier;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_DN_RECEIVED_AOS_COMPLETED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_DN_RECEIVED_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_DN_RECEIVED_REVIEW_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_DN_RECEIVED_REVIEW_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_SUBMIT_DN_CLARIFICATION_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.DN_RECEIVED_AOS_COMPLETE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.DN_RECEIVED_CLARIFICATION_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.DN_RECEIVED_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.DN_RECEIVED_AOS_COMPLETE_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.DN_RECEIVED_CLARIFICATION_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.DN_RECEIVED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_COMPLETED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
@@ -70,11 +70,11 @@ public class SubmitDnCase implements Task<Map<String, Object>> {
         final String caseState = currentCaseDetails.getState();
 
         if (AWAITING_CLARIFICATION.equalsIgnoreCase(caseState)) {
-            return evaluateEventId(context, caseData, DN_RECEIVED_CLARIFICATION_ID, BO_WELSH_SUBMIT_DN_CLARIFICATION_EVENT_ID);
+            return evaluateEventId(context, caseData, DN_RECEIVED_CLARIFICATION_EVENT_ID, BO_WELSH_SUBMIT_DN_CLARIFICATION_EVENT_ID);
         } else if (AOS_COMPLETED.equalsIgnoreCase(caseState)) {
-            return evaluateEventId(context, caseData, DN_RECEIVED_AOS_COMPLETE_ID, BO_WELSH_DN_RECEIVED_AOS_COMPLETED_EVENT_ID);
+            return evaluateEventId(context, caseData, DN_RECEIVED_AOS_COMPLETE_EVENT_ID, BO_WELSH_DN_RECEIVED_AOS_COMPLETED_EVENT_ID);
         } else {
-            return evaluateEventId(context, caseData, DN_RECEIVED_ID, BO_WELSH_DN_RECEIVED_EVENT_ID);
+            return evaluateEventId(context, caseData, DN_RECEIVED_EVENT_ID, BO_WELSH_DN_RECEIVED_EVENT_ID);
         }
     }
 
@@ -88,6 +88,6 @@ public class SubmitDnCase implements Task<Map<String, Object>> {
                         .getCaseData());
             return CaseDataUtils.isLanguagePreferenceWelsh(currentCasedata);
         };
-        return welshNextEventUtil.storeNextEventAndReturnStopEvent(isWelsh, caseData, eventId, welshEventId, BO_WELSH_DN_RECEIVED_REVIEW_ID);
+        return welshNextEventUtil.storeNextEventAndReturnStopEvent(isWelsh, caseData, eventId, welshEventId, BO_WELSH_DN_RECEIVED_REVIEW_EVENT_ID);
     }
 }

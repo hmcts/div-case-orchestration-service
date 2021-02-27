@@ -16,8 +16,8 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_OVERDUE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_REISSUE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_OVERDUE_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_REISSUE_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.LINK_RESPONDENT_GENERIC_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.START_AOS_EVENT_ID;
@@ -101,9 +101,9 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
             case AWAITING_DWP_RESPONSE:
                 return START_AOS_EVENT_ID;
             case AOS_OVERDUE:
-                return AOS_START_FROM_OVERDUE_ID;
+                return AOS_START_FROM_OVERDUE_EVENT_ID;
             case AWAITING_REISSUE:
-                return AOS_START_FROM_REISSUE_ID;
+                return AOS_START_FROM_REISSUE_EVENT_ID;
             case SERVICE_APPLICATION_NOT_APPROVED:
                 return AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED_EVENT_ID;
             default:
