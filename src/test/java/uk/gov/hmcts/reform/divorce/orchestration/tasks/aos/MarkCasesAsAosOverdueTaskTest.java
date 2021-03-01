@@ -34,7 +34,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -110,7 +109,7 @@ public class MarkCasesAsAosOverdueTaskTest {
 
         classUnderTest.execute(context, null);
 
-        verify(featureToggleService).isFeatureEnabled(eq(Features.REPRESENTED_RESPONDENT_JOURNEY));
+        verify(featureToggleService).isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY);
 
         int amountOfEventsExpectedToBePublished = 5;
         verify(applicationEventPublisher, times(amountOfEventsExpectedToBePublished)).publishEvent(argumentCaptor.capture());
@@ -139,7 +138,7 @@ public class MarkCasesAsAosOverdueTaskTest {
 
         classUnderTest.execute(context, null);
 
-        verify(featureToggleService).isFeatureEnabled(eq(Features.REPRESENTED_RESPONDENT_JOURNEY));
+        verify(featureToggleService).isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY);
 
         int amountOfEventsExpectedToBePublished = 4;
         verify(applicationEventPublisher, times(amountOfEventsExpectedToBePublished)).publishEvent(argumentCaptor.capture());
@@ -158,7 +157,7 @@ public class MarkCasesAsAosOverdueTaskTest {
 
         String multiStateSearchQueryString = classUnderTest.buildElasticSearchMultiStateSearchQuery();
 
-        verify(featureToggleService, atLeastOnce()).isFeatureEnabled(eq(Features.REPRESENTED_RESPONDENT_JOURNEY));
+        verify(featureToggleService, atLeastOnce()).isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY);
         assertThat(multiStateSearchQueryString, is(expectedMultiStateSearchQueryString));
     }
 
@@ -169,7 +168,7 @@ public class MarkCasesAsAosOverdueTaskTest {
 
         String multiStateSearchQueryString = classUnderTest.buildElasticSearchMultiStateSearchQuery();
 
-        verify(featureToggleService, atLeastOnce()).isFeatureEnabled(eq(Features.REPRESENTED_RESPONDENT_JOURNEY));
+        verify(featureToggleService, atLeastOnce()).isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY);
         assertThat(multiStateSearchQueryString, is(expectedMultiStateSearchQueryString));
     }
 
