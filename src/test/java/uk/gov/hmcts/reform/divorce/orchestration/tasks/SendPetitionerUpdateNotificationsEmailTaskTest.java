@@ -40,6 +40,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH_FEMALE_GENDER_IN_RELATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.UNFORMATTED_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.NOT_RECEIVED_AOS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.NOT_RECEIVED_AOS_STARTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
@@ -59,8 +61,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_RELATIONSHIP_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOT_RECEIVED_AOS_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOT_RECEIVED_AOS_STARTED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
@@ -173,7 +173,7 @@ public class SendPetitionerUpdateNotificationsEmailTaskTest {
     @Test
     public void shouldCallAppropriateSolEmailServiceWhenAosNotReceived() throws Exception {
         addSolicitorTestData();
-        setEventIdTo(NOT_RECEIVED_AOS_EVENT_ID);
+        setEventIdTo(NOT_RECEIVED_AOS);
 
         verifyCallsEmailTemplate(EmailTemplateNames.SOL_APPLICANT_RESP_NOT_RESPONDED.name());
     }
@@ -181,7 +181,7 @@ public class SendPetitionerUpdateNotificationsEmailTaskTest {
     @Test
     public void shouldCallAppropriateSolEmailServiceWhenAosNotReceivedStarted() throws Exception {
         addSolicitorTestData();
-        setEventIdTo(NOT_RECEIVED_AOS_STARTED_EVENT_ID);
+        setEventIdTo(NOT_RECEIVED_AOS_STARTED);
 
         verifyCallsEmailTemplate(EmailTemplateNames.SOL_APPLICANT_RESP_NOT_RESPONDED.name());
     }
@@ -225,7 +225,7 @@ public class SendPetitionerUpdateNotificationsEmailTaskTest {
     @Test
     public void shouldCallAppropriatePetEmailServiceWhenAosNotReceived() throws Exception {
         addPetTestData();
-        setEventIdTo(NOT_RECEIVED_AOS_EVENT_ID);
+        setEventIdTo(NOT_RECEIVED_AOS);
 
         verifyCallsEmailTemplate(EmailTemplateNames.PETITIONER_RESP_NOT_RESPONDED.name());
     }
@@ -233,7 +233,7 @@ public class SendPetitionerUpdateNotificationsEmailTaskTest {
     @Test
     public void shouldCallAppropriatePetEmailServiceWhenAosNotReceivedStarted() throws Exception {
         addPetTestData();
-        setEventIdTo(NOT_RECEIVED_AOS_STARTED_EVENT_ID);
+        setEventIdTo(NOT_RECEIVED_AOS_STARTED);
 
         verifyCallsEmailTemplate(EmailTemplateNames.PETITIONER_RESP_NOT_RESPONDED.name());
     }
