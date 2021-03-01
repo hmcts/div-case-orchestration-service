@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AlternativeServiceService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.BailiffPackService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CourtOrderDocumentsUpdateService;
@@ -114,6 +115,9 @@ public class CallbackControllerTest {
 
     @Mock
     private CourtOrderDocumentsUpdateService courtOrderDocumentsUpdateService;
+
+    @Mock
+    private BailiffPackService bailiffPackService;
 
     @InjectMocks
     private CallbackController classUnderTest;
@@ -1847,4 +1851,18 @@ public class CallbackControllerTest {
         verify(courtOrderDocumentsUpdateService).updateExistingCourtOrderDocuments(AUTH_TOKEN, TEST_INCOMING_CASE_DETAILS);
     }
 
+
+    @Test
+    public void shouldCallAdequateServiceWhenIssuingBailiffPack() throws CaseOrchestrationServiceException {
+        when(bailiffPackService.issueCertificateOfServiceDocument(AUTH_TOKEN, TEST_INCOMING_CASE_DETAILS))
+            .thenReturn(TEST_PAYLOAD_TO_RETURN);
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(TEST_INCOMING_CASE_DETAILS).build();
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.issueBailiffPack(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+        assertThat(response.getBody().getData(), is(TEST_PAYLOAD_TO_RETURN));
+        verify(bailiffPackService).issueCertificateOfServiceDocument(AUTH_TOKEN, TEST_INCOMING_CASE_DETAILS);
+    }
 }
