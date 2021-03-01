@@ -180,7 +180,7 @@ public class ServiceJourneyServiceImplTest {
 
         classUnderTest.setupAddBailiffReturnEvent(input.getCaseDetails(), AUTH_TOKEN);
 
-        verify(bailiffOutcomeWorkflow).run(input.getCaseDetails());
+        verify(bailiffOutcomeWorkflow).run(input.getCaseDetails(), AUTH_TOKEN);
     }
 
     @Test(expected = ServiceJourneyServiceException.class)
@@ -188,7 +188,7 @@ public class ServiceJourneyServiceImplTest {
             throws ServiceJourneyServiceException, WorkflowException {
         CcdCallbackRequest input = buildCcdCallbackRequest();
 
-        when(bailiffOutcomeWorkflow.run(any(CaseDetails.class)))
+        when(bailiffOutcomeWorkflow.run(any(CaseDetails.class), AUTH_TOKEN))
                 .thenThrow(WorkflowException.class);
 
         classUnderTest.setupAddBailiffReturnEvent(input.getCaseDetails(), AUTH_TOKEN);
