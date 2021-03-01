@@ -113,12 +113,12 @@ public class AosOverdueTest extends MockedFunctionalTest {
             .andExpect(status().isOk());
 
         await().untilAsserted(() -> {
-            verifyCaseWasUpdated("2", NOT_RECEIVED_AOS_EVENT_ID);
-            verifyCaseWasUpdated("3", AOS_NOT_RECEIVED_FOR_PROCESS_SERVER_EVENT_ID);
-            verifyCaseWasUpdated("4", NOT_RECEIVED_AOS_EVENT_ID);
-            verifyCaseWasUpdated("5", AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD_EVENT_ID);
+            verifyCaseWasUpdated("2", NOT_RECEIVED_AOS);
+            verifyCaseWasUpdated("3", AOS_NOT_RECEIVED_FOR_PROCESS_SERVER);
+            verifyCaseWasUpdated("4", NOT_RECEIVED_AOS);
+            verifyCaseWasUpdated("5", AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD);
         });
-        verifyCaseWasNotUpdated("1", NOT_RECEIVED_AOS_EVENT_ID);
+        verifyCaseWasNotUpdated("1", NOT_RECEIVED_AOS);
     }
 
     private List<CaseDetails> buildCaseMaintenanceResponseWithAosDraftedCases() {

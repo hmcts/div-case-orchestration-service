@@ -36,9 +36,9 @@ public class AosOverdueTest extends RetrieveCaseSupport {
     private String jobSchedulerContextPath;
 
     private static final String SUBMIT_COMPLETE_CASE_JSON_FILE_PATH = "submit-complete-case.json";
-    private static final String TEST_AOS_AWAITING_EVENT_ID = "testAosAwaiting";
-    private static final String TEST_AOS_STARTED_EVENT_ID = "testAosStarted";
-    private static final String TEST_AOS_DRAFTED_EVENT_ID = "testAosDrafted";
+    private static final String TEST_AOS_AWAITING_EVENT = "testAosAwaiting";
+    private static final String TEST_AOS_STARTED_EVENT = "testAosStarted";
+    private static final String TEST_AOS_DRAFTED_EVENT = "testAosDrafted";
 
     private String aosAwaitingCaseId;
     private String aosStartedCaseId;
@@ -59,14 +59,16 @@ public class AosOverdueTest extends RetrieveCaseSupport {
         citizenUser = createCitizenUser();
         caseworkerUser = createCaseWorkerUser();
 
-        aosAwaitingCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_AWAITING_EVENT_ID);
-        aosStartedCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_STARTED_EVENT_ID);
-        servedByProcessServerCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_STARTED_EVENT_ID, Pair.of(SERVED_BY_PROCESS_SERVER, YES_VALUE));
-        servedByAlternativeMethodCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_STARTED_EVENT_ID, Pair.of(SERVED_BY_ALTERNATIVE_METHOD, YES_VALUE));
+        aosAwaitingCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_AWAITING_EVENT);
+        aosStartedCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_STARTED_EVENT);
+        servedByProcessServerCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_STARTED_EVENT, Pair.of(SERVED_BY_PROCESS_SERVER, YES_VALUE));
+        servedByAlternativeMethodCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_STARTED_EVENT, Pair.of(SERVED_BY_ALTERNATIVE_METHOD, YES_VALUE));
 
-        aosDraftedCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_DRAFTED_EVENT_ID);
-        aosDraftedServedByProcessServerCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_DRAFTED_EVENT_ID, Pair.of(SERVED_BY_PROCESS_SERVER, YES_VALUE));
-        aosDraftedServedByAlternativeMethodCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_DRAFTED_EVENT_ID, Pair.of(SERVED_BY_ALTERNATIVE_METHOD, YES_VALUE));
+        aosDraftedCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_DRAFTED_EVENT);
+        aosDraftedServedByProcessServerCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_DRAFTED_EVENT,
+            Pair.of(SERVED_BY_PROCESS_SERVER, YES_VALUE));
+        aosDraftedServedByAlternativeMethodCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_DRAFTED_EVENT,
+            Pair.of(SERVED_BY_ALTERNATIVE_METHOD, YES_VALUE));
 
         elasticSearchTestHelper.ensureCaseIsSearchable(aosAwaitingCaseId, caseworkerUser.getAuthToken(), AOS_AWAITING);
         elasticSearchTestHelper.ensureCaseIsSearchable(aosStartedCaseId, caseworkerUser.getAuthToken(), AOS_STARTED);
