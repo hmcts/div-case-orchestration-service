@@ -47,10 +47,10 @@ public class BailiffOutcomeWorkflow extends DefaultWorkflow<Map<String, Object>>
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
         if (isBailiffServiceSuccessful(caseData)) {
-            log.info("CaseID: {}. Certificate of service due date set to +7 days ", caseId);
+            log.info("CaseID: {}. Setting Certificate of service due date after Bailiff Service successful", caseId);
             tasks.add(bailiffSuccessServiceDueDateSetterTask);
         } else {
-            log.info("CaseID: {}. Certificate of service due date set to +30 days", caseId);
+            log.info("CaseID: {}. Setting Certificate of service due date after Bailiff Service unsuccessful", caseId);
             tasks.add(bailiffUnsuccessServiceDueDateSetterTask);
         }
 
