@@ -13,6 +13,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
 import java.util.HashMap;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.SOL_AOS_RECEIVED_NO_ADCON_STARTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.SOL_AOS_SUBMITTED_DEFENDED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.SOL_AOS_SUBMITTED_UNDEFENDED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
@@ -23,9 +26,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_AOS_2_YR_CONSENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_AOS_ADMIT_ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UI_ONLY_RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.CCD_CASE_DATA;
@@ -100,13 +100,13 @@ public class SolicitorAosEventServiceImpl implements SolicitorAosEventService {
         final String respAosAdmitAdultery = (String) caseData.get(RESP_AOS_ADMIT_ADULTERY);
         String eventId;
         if (respondentIsDefending(caseData)) {
-            eventId = SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID;
+            eventId = SOL_AOS_SUBMITTED_DEFENDED;
         } else {
-            eventId = SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID;
+            eventId = SOL_AOS_SUBMITTED_UNDEFENDED;
         }
 
         if (NO_VALUE.equalsIgnoreCase(respAos2yrConsent) || NO_VALUE.equalsIgnoreCase(respAosAdmitAdultery)) {
-            eventId = SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID;
+            eventId = SOL_AOS_RECEIVED_NO_ADCON_STARTED;
         }
         return eventId;
     }

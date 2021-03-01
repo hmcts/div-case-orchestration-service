@@ -21,6 +21,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.SOL_AOS_RECEIVED_NO_ADCON_STARTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.SOL_AOS_SUBMITTED_DEFENDED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.SOL_AOS_SUBMITTED_UNDEFENDED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_COMPANY;
@@ -37,9 +40,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_AOS_ADMIT_ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UI_ONLY_RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.CCD_CASE_DATA;
@@ -83,7 +83,7 @@ public class SolicitorAosEventServiceImplTest {
         assertEquals(expectedData, classUnderTest.fireSecondaryAosEvent(event));
 
         verify(caseMaintenanceClient).updateCase(
-            eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID), eq(expectedData));
+            eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_SUBMITTED_UNDEFENDED), eq(expectedData));
     }
 
     @Test
@@ -106,7 +106,7 @@ public class SolicitorAosEventServiceImplTest {
         assertEquals(expectedData, classUnderTest.fireSecondaryAosEvent(event));
 
         verify(caseMaintenanceClient).updateCase(
-            eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID), eq(expectedData));
+            eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_SUBMITTED_UNDEFENDED), eq(expectedData));
     }
 
     @Test
@@ -129,7 +129,7 @@ public class SolicitorAosEventServiceImplTest {
         assertEquals(expectedData, classUnderTest.fireSecondaryAosEvent(event));
 
         verify(caseMaintenanceClient).updateCase(
-            eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID), eq(expectedData));
+            eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_SUBMITTED_UNDEFENDED), eq(expectedData));
     }
 
     @Test
@@ -147,7 +147,7 @@ public class SolicitorAosEventServiceImplTest {
         assertEquals(expectedData, classUnderTest.fireSecondaryAosEvent(event));
 
         verify(caseMaintenanceClient).updateCase(
-            eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID), eq(expectedData));
+            eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_SUBMITTED_DEFENDED), eq(expectedData));
     }
 
     @Test
@@ -165,7 +165,7 @@ public class SolicitorAosEventServiceImplTest {
         assertEquals(expectedData, classUnderTest.fireSecondaryAosEvent(event));
 
         verify(caseMaintenanceClient)
-            .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID), eq(expectedData));
+            .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_SUBMITTED_UNDEFENDED), eq(expectedData));
     }
 
     @Test
@@ -186,7 +186,7 @@ public class SolicitorAosEventServiceImplTest {
         assertEquals(expectedData, classUnderTest.fireSecondaryAosEvent(event));
 
         verify(caseMaintenanceClient).updateCase(
-            eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID), eq(expectedData));
+            eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_RECEIVED_NO_ADCON_STARTED), eq(expectedData));
     }
 
     @Test
@@ -206,7 +206,7 @@ public class SolicitorAosEventServiceImplTest {
         assertEquals(expectedData, classUnderTest.fireSecondaryAosEvent(event));
 
         verify(caseMaintenanceClient).updateCase(
-            eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID), eq(expectedData));
+            eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_SUBMITTED_UNDEFENDED), eq(expectedData));
     }
 
     @Test
@@ -226,7 +226,7 @@ public class SolicitorAosEventServiceImplTest {
         assertEquals(expectedData, classUnderTest.fireSecondaryAosEvent(event));
 
         verify(caseMaintenanceClient).updateCase(
-            eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID), eq(expectedData));
+            eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_SUBMITTED_UNDEFENDED), eq(expectedData));
     }
 
     @Test
@@ -248,7 +248,7 @@ public class SolicitorAosEventServiceImplTest {
         assertEquals(expectedData, classUnderTest.fireSecondaryAosEvent(event));
 
         verify(caseMaintenanceClient).updateCase(
-            eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID), eq(expectedData));
+            eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_RECEIVED_NO_ADCON_STARTED), eq(expectedData));
     }
 
     @Test
@@ -267,7 +267,7 @@ public class SolicitorAosEventServiceImplTest {
         assertEquals(expectedData, classUnderTest.fireSecondaryAosEvent(event));
 
         verify(caseMaintenanceClient).updateCase(
-            eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID), eq(expectedData));
+            eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_SUBMITTED_DEFENDED), eq(expectedData));
     }
 
     @Test
@@ -286,7 +286,7 @@ public class SolicitorAosEventServiceImplTest {
         assertEquals(expectedData, classUnderTest.fireSecondaryAosEvent(event));
 
         verify(caseMaintenanceClient).updateCase(
-            eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID), eq(expectedData));
+            eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_SUBMITTED_UNDEFENDED), eq(expectedData));
     }
 
     private Map<String, Object> buildSolicitorResponse() {

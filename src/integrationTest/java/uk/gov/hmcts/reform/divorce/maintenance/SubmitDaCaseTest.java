@@ -12,9 +12,9 @@ import uk.gov.hmcts.reform.divorce.support.cos.CosApiClient;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.DA_REQUESTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.STATE_CCD_FIELD;
 
 public class SubmitDaCaseTest extends CcdSubmissionSupport {
@@ -30,7 +30,7 @@ public class SubmitDaCaseTest extends CcdSubmissionSupport {
         final CaseDetails caseDetails = submitCase("submit-complete-case.json", userDetails);
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, UPDATE_TO_DN_PRONOUNCED_EVENT_ID, userDetails);
-        updateCase(String.valueOf(caseDetails.getId()), null, MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER_EVENT_ID,
+        updateCase(String.valueOf(caseDetails.getId()), null, MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER,
                 ImmutablePair.of(DECREE_NISI_GRANTED_DATE_CCD_FIELD, "2000-01-01"));
 
         Map<String, Object> cosResponse = cosApiClient

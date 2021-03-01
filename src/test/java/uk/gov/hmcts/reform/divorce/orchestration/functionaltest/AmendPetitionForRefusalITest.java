@@ -18,7 +18,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AMEND_PETITION_FOR_REFUSAL_EVENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AMEND_PETITION_FOR_REFUSAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
@@ -31,7 +31,7 @@ public class AmendPetitionForRefusalITest extends MockedFunctionalTest {
     private static final String CMS_UPDATE_CONTEXT_PATH = String.format(
         "/casemaintenance/version/1/updateCase/%s/%s",
         CASE_ID,
-        AMEND_PETITION_FOR_REFUSAL_EVENT
+        AMEND_PETITION_FOR_REFUSAL
     );
 
     @Autowired

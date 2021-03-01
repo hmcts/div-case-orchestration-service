@@ -29,20 +29,20 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_DN_RECEIVED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_DN_RECEIVED_AOS_COMPLETED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_DN_RECEIVED_REVIEW;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_SUBMIT_DN_CLARIFICATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.DN_RECEIVED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.DN_RECEIVED_AOS_COMPLETE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.DN_RECEIVED_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_COMPLETED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BO_WELSH_DN_RECEIVED_AOS_COMPLETED_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BO_WELSH_DN_RECEIVED_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BO_WELSH_DN_RECEIVED_REVIEW;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BO_WELSH_SUBMIT_DN_CLARIFICATION_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED_AOS_COMPLETE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_RECEIVED_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WELSH_NEXT_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -90,7 +90,7 @@ public class SubmitDnCaseTest {
             .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(DN_RECEIVED), eq(caseDetails.getCaseData()));
 
         verify(welshNextEventUtil).storeNextEventAndReturnStopEvent(isWelsh.capture(), eq(caseDetails.getCaseData()),
-            eq(DN_RECEIVED), eq(BO_WELSH_DN_RECEIVED_EVENT_ID), eq(BO_WELSH_DN_RECEIVED_REVIEW));
+            eq(DN_RECEIVED), eq(BO_WELSH_DN_RECEIVED), eq(BO_WELSH_DN_RECEIVED_REVIEW));
         assertThat(isWelsh.getValue().getAsBoolean(), equalTo(false));
     }
 
@@ -111,7 +111,7 @@ public class SubmitDnCaseTest {
             .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(DN_RECEIVED_AOS_COMPLETE), eq(caseDetails.getCaseData()));
 
         verify(welshNextEventUtil).storeNextEventAndReturnStopEvent(isWelsh.capture(), eq(caseDetails.getCaseData()),
-            eq(DN_RECEIVED_AOS_COMPLETE), eq(BO_WELSH_DN_RECEIVED_AOS_COMPLETED_EVENT_ID), eq(BO_WELSH_DN_RECEIVED_REVIEW));
+            eq(DN_RECEIVED_AOS_COMPLETE), eq(BO_WELSH_DN_RECEIVED_AOS_COMPLETED), eq(BO_WELSH_DN_RECEIVED_REVIEW));
         assertThat(isWelsh.getValue().getAsBoolean(), equalTo(false));
     }
 
@@ -132,7 +132,7 @@ public class SubmitDnCaseTest {
             .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(DN_RECEIVED_CLARIFICATION), eq(caseDetails.getCaseData()));
 
         verify(welshNextEventUtil).storeNextEventAndReturnStopEvent(isWelsh.capture(), eq(caseDetails.getCaseData()),
-            eq(DN_RECEIVED_CLARIFICATION), eq(BO_WELSH_SUBMIT_DN_CLARIFICATION_EVENT_ID), eq(BO_WELSH_DN_RECEIVED_REVIEW));
+            eq(DN_RECEIVED_CLARIFICATION), eq(BO_WELSH_SUBMIT_DN_CLARIFICATION), eq(BO_WELSH_DN_RECEIVED_REVIEW));
         assertThat(isWelsh.getValue().getAsBoolean(), equalTo(false));
     }
 
@@ -143,7 +143,7 @@ public class SubmitDnCaseTest {
         CaseDetails caseDetails = CaseDetails.builder().caseData(divorceSession).build();
 
         Map<String, Object> expectedData = new HashMap<>(divorceSession);
-        expectedData.put(WELSH_NEXT_EVENT, BO_WELSH_SUBMIT_DN_CLARIFICATION_EVENT_ID);
+        expectedData.put(WELSH_NEXT_EVENT, BO_WELSH_SUBMIT_DN_CLARIFICATION);
 
         TASK_CONTEXT.setTransientObject(CASE_DETAILS_JSON_KEY,
             CaseDetails.builder().caseId(TEST_CASE_ID).state(AWAITING_CLARIFICATION).build());
@@ -154,7 +154,7 @@ public class SubmitDnCaseTest {
             .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(BO_WELSH_DN_RECEIVED_REVIEW), eq(expectedData));
 
         verify(welshNextEventUtil).storeNextEventAndReturnStopEvent(isWelsh.capture(), eq(caseDetails.getCaseData()),
-            eq(DN_RECEIVED_CLARIFICATION), eq(BO_WELSH_SUBMIT_DN_CLARIFICATION_EVENT_ID), eq(BO_WELSH_DN_RECEIVED_REVIEW));
+            eq(DN_RECEIVED_CLARIFICATION), eq(BO_WELSH_SUBMIT_DN_CLARIFICATION), eq(BO_WELSH_DN_RECEIVED_REVIEW));
         assertThat(isWelsh.getValue().getAsBoolean(), equalTo(true));
     }
 
@@ -165,7 +165,7 @@ public class SubmitDnCaseTest {
         CaseDetails caseDetails = CaseDetails.builder().caseData(divorceSession).build();
 
         Map<String, Object> expectedData = new HashMap<>(divorceSession);
-        expectedData.put(WELSH_NEXT_EVENT, BO_WELSH_DN_RECEIVED_AOS_COMPLETED_EVENT_ID);
+        expectedData.put(WELSH_NEXT_EVENT, BO_WELSH_DN_RECEIVED_AOS_COMPLETED);
 
         TASK_CONTEXT.setTransientObject(CASE_DETAILS_JSON_KEY,
             CaseDetails.builder().caseId(TEST_CASE_ID).state(AOS_COMPLETED).build());
@@ -176,7 +176,7 @@ public class SubmitDnCaseTest {
             .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(BO_WELSH_DN_RECEIVED_REVIEW), eq(expectedData));
 
         verify(welshNextEventUtil).storeNextEventAndReturnStopEvent(isWelsh.capture(), eq(caseDetails.getCaseData()),
-            eq(DN_RECEIVED_AOS_COMPLETE), eq(BO_WELSH_DN_RECEIVED_AOS_COMPLETED_EVENT_ID), eq(BO_WELSH_DN_RECEIVED_REVIEW));
+            eq(DN_RECEIVED_AOS_COMPLETE), eq(BO_WELSH_DN_RECEIVED_AOS_COMPLETED), eq(BO_WELSH_DN_RECEIVED_REVIEW));
         assertThat(isWelsh.getValue().getAsBoolean(), equalTo(true));
     }
 
@@ -187,7 +187,7 @@ public class SubmitDnCaseTest {
         CaseDetails caseDetails = CaseDetails.builder().caseData(divorceSession).build();
 
         Map<String, Object> expectedData = new HashMap<>(divorceSession);
-        expectedData.put(WELSH_NEXT_EVENT, BO_WELSH_DN_RECEIVED_EVENT_ID);
+        expectedData.put(WELSH_NEXT_EVENT, BO_WELSH_DN_RECEIVED);
 
         TASK_CONTEXT.setTransientObject(CASE_DETAILS_JSON_KEY,
             CaseDetails.builder().caseId(TEST_CASE_ID).state(AWAITING_DECREE_NISI).build());
@@ -198,7 +198,7 @@ public class SubmitDnCaseTest {
             .updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(BO_WELSH_DN_RECEIVED_REVIEW), eq(expectedData));
 
         verify(welshNextEventUtil).storeNextEventAndReturnStopEvent(isWelsh.capture(), eq(caseDetails.getCaseData()),
-            eq(DN_RECEIVED), eq(BO_WELSH_DN_RECEIVED_EVENT_ID), eq(BO_WELSH_DN_RECEIVED_REVIEW));
+            eq(DN_RECEIVED), eq(BO_WELSH_DN_RECEIVED), eq(BO_WELSH_DN_RECEIVED_REVIEW));
         assertThat(isWelsh.getValue().getAsBoolean(), equalTo(true));
     }
 }

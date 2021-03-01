@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Default
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
-import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,15 +51,16 @@ public class NotifyApplicantCanFinaliseDivorceTaskTest {
 
     private static final String EMAIL_DESC = "Email to inform applicant they can finalise divorce";
     private static final String SOL_EMAIL_DESC = "Email to inform solicitor the applicant can finalise divorce";
+
     private Map<String, Object> testData;
     private TaskContext context;
     private Map<String, String> expectedTemplateVars;
 
     @Mock
-    EmailService emailService;
+    private EmailService emailService;
 
     @InjectMocks
-    NotifyApplicantCanFinaliseDivorceTask notifyApplicantCanFinaliseDivorceTask;
+    private NotifyApplicantCanFinaliseDivorceTask notifyApplicantCanFinaliseDivorceTask;
 
     @Before
     public void setup() {
@@ -77,13 +77,13 @@ public class NotifyApplicantCanFinaliseDivorceTaskTest {
     }
 
     @Test
-    public void testExecuteCallsEmailServiceWithTheCorrectParamsForPetitioner() throws NotificationClientException, TaskException {
+    public void testExecuteCallsEmailServiceWithTheCorrectParamsForPetitioner() throws TaskException {
         //given
         testData.put(D_8_PETITIONER_EMAIL, TEST_USER_EMAIL);
         testData.put(LANGUAGE_PREFERENCE_WELSH, "Yes");
 
         expectedTemplateVars.put(NOTIFICATION_CASE_NUMBER_KEY, D8_CASE_ID);
-        expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_PETITIONER_FIRST_NAME );
+        expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_PETITIONER_FIRST_NAME);
         expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_PETITIONER_LAST_NAME);
 
         //when
@@ -91,16 +91,16 @@ public class NotifyApplicantCanFinaliseDivorceTaskTest {
 
         //then
         verify(emailService).sendEmail(
-                eq(TEST_USER_EMAIL),
-                eq(EmailTemplateNames.APPLICANT_DA_ELIGIBLE.name()),
-                eq(expectedTemplateVars),
-                eq(EMAIL_DESC),
-                eq(LanguagePreference.WELSH)
+            eq(TEST_USER_EMAIL),
+            eq(EmailTemplateNames.APPLICANT_DA_ELIGIBLE.name()),
+            eq(expectedTemplateVars),
+            eq(EMAIL_DESC),
+            eq(LanguagePreference.WELSH)
         );
     }
 
     @Test
-    public void testExecuteCallsEmailServiceWithTheCorrectParamsForSolicitor() throws NotificationClientException, TaskException {
+    public void testExecuteCallsEmailServiceWithTheCorrectParamsForSolicitor() throws TaskException {
         //given
         testData.put(PETITIONER_SOLICITOR_EMAIL, TEST_USER_EMAIL);
         testData.put(CASE_ID_JSON_KEY, UNFORMATTED_CASE_ID);
@@ -120,16 +120,16 @@ public class NotifyApplicantCanFinaliseDivorceTaskTest {
 
         //then
         verify(emailService).sendEmail(
-                eq(TEST_USER_EMAIL),
-                eq(EmailTemplateNames.SOL_APPLICANT_DA_ELIGIBLE.name()),
-                eq(expectedTemplateVars),
-                eq(SOL_EMAIL_DESC),
-                eq(LanguagePreference.ENGLISH)
+            eq(TEST_USER_EMAIL),
+            eq(EmailTemplateNames.SOL_APPLICANT_DA_ELIGIBLE.name()),
+            eq(expectedTemplateVars),
+            eq(SOL_EMAIL_DESC),
+            eq(LanguagePreference.ENGLISH)
         );
     }
 
     @Test
-    public void shouldNotCallEmailServiceForUpdateIfPetitionerOrSolicitorEmailDoesNotExist() throws Exception {
+    public void shouldNotCallEmailServiceForUpdateIfPetitionerOrSolicitorEmailDoesNotExist() {
         notifyApplicantCanFinaliseDivorceTask.execute(context, testData);
 
         verifyNoInteractions(emailService);
