@@ -9,6 +9,9 @@ import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Map;
+
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor.getCertificateOfServiceDateUnformatted;
 
 @Component
 public class BailiffUnsuccessServiceDueDateSetterTask extends DueDateSetterTask {
@@ -25,9 +28,13 @@ public class BailiffUnsuccessServiceDueDateSetterTask extends DueDateSetterTask 
     }
 
     @Override
-    protected String getFormattedDate() {
-        LocalDate date = LocalDate.parse(CcdFields.CERTIFICATE_OF_SERVICE_DATE,
-                                        DateTimeFormatter.ofPattern(DateUtils.Formats.CCD_DATE));
-        return DateUtils.formatDateFromLocalDate(date.plus(getDueDateOffsetInDays(), ChronoUnit.DAYS));
+    protected String getFormattedDate(Map<String, Object> caseData) {
+        // please see DatesDataExtractor, replace it by new method added there
+        // add unit test for `getCertificateOfServiceDateUnformatted`
+        String date = getCertificateOfServiceDateUnformatted(caseData);
+
+        LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ofPattern(DateUtils.Formats.CCD_DATE));
+
+        return DateUtils.formatDateFromLocalDate(localDate.plus(getDueDateOffsetInDays(), ChronoUnit.DAYS));
     }
 }

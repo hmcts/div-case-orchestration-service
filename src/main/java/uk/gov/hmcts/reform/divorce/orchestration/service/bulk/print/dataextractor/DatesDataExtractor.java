@@ -28,6 +28,7 @@ public class DatesDataExtractor {
         public static final String RECEIVED_SERVICE_APPLICATION_DATE = CcdFields.RECEIVED_SERVICE_APPLICATION_DATE;
         public static final String SERVICE_APPLICATION_DECISION_DATE = CcdFields.SERVICE_APPLICATION_DECISION_DATE;
         public static final String RECEIVED_SERVICE_ADDED_DATE = CcdFields.RECEIVED_SERVICE_ADDED_DATE;
+        public static final String CERTIFICATE_OF_SERVICE_DATE = CcdFields.CERTIFICATE_OF_SERVICE_DATE;
     }
 
     public static String getHearingDate(Map<String, Object> caseData) {
@@ -58,6 +59,10 @@ public class DatesDataExtractor {
 
     public static String getReceivedServiceAddedDateUnformatted(Map<String, Object> caseData) {
         return getMandatoryStringValue(caseData, CaseDataKeys.RECEIVED_SERVICE_ADDED_DATE);
+    }
+
+    public static String getCertificateOfServiceDateUnformatted(Map<String, Object> caseData) {
+        return getMandatoryStringValue(caseData, CaseDataKeys.CERTIFICATE_OF_SERVICE_DATE);
     }
 
     public static String getServiceApplicationDecisionDate(Map<String, Object> caseData) {

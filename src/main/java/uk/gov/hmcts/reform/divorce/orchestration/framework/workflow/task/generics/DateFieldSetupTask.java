@@ -19,16 +19,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 public abstract class DateFieldSetupTask implements Task<Map<String, Object>> {
 
     @Override
-    public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
         final String caseId = getCaseId(context);
-        String fieldName = getFieldName();
-        String formattedDateValue = getFormattedDate();
+        final String fieldName = getFieldName();
+        final String formattedDateValue = getFormattedDate(caseData);
 
         log.info("CaseID: {} setting up date {} for field {}", caseId, formattedDateValue, fieldName);
 
-        payload.put(getFieldName(), getFormattedDate());
+        caseData.put(fieldName, formattedDateValue);
 
-        return payload;
+        return caseData;
     }
 
     protected abstract String getFieldName();
@@ -36,11 +36,15 @@ public abstract class DateFieldSetupTask implements Task<Map<String, Object>> {
     /**
      * Overwrite if you need other date than default CCD date format of today.
      */
-    protected String getFormattedDate() {
-        return getFormattedStringDateForTodayAsDefault();
+    protected String getFormattedDate(Map<String, Object> caseData) {
+        return getFormattedStringDateForTodayAsDefault(caseData);
     }
 
-    private String getFormattedStringDateForTodayAsDefault() {
-        return DateUtils.formatDateFromLocalDate(LocalDate.now());
+    protected LocalDate getStartingDate(Map<String, Object> caseData) {
+        return LocalDate.now();
+    }
+
+    private String getFormattedStringDateForTodayAsDefault(Map<String, Object> caseData) {
+        return DateUtils.formatDateFromLocalDate(getStartingDate(caseData));
     }
 }

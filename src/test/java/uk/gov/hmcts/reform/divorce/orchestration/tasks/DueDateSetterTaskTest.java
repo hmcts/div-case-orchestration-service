@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.testutil.DateCalculator;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.Collections.emptyMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.core.Is.is;
@@ -47,7 +48,7 @@ public abstract class DueDateSetterTaskTest {
     public void gettersReturnExpectedValues() {
         assertThat(dueDateSetterTask.getDueDateOffsetInDays(), is(offset));
         assertThat(dueDateSetterTask.getFieldName(), is(CcdFields.DUE_DATE));
-        assertThat(dueDateSetterTask.getFormattedDate(), is(getDatePlusOffsetInCcdFormat()));
+        assertThat(dueDateSetterTask.getFormattedDate(emptyMap()), is(getDatePlusOffsetInCcdFormat()));
     }
 
     private String getDatePlusOffsetInCcdFormat() {

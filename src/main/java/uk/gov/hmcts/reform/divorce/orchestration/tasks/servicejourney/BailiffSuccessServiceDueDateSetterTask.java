@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Map;
 
 @Component
 public class BailiffSuccessServiceDueDateSetterTask extends DueDateSetterTask {
@@ -25,7 +26,7 @@ public class BailiffSuccessServiceDueDateSetterTask extends DueDateSetterTask {
     }
 
     @Override
-    protected String getFormattedDate() {
+    protected String getFormattedDate(Map<String, Object> caseData) {
         LocalDate date = LocalDate.parse(CcdFields.CERTIFICATE_OF_SERVICE_DATE,
                 DateTimeFormatter.ofPattern(DateUtils.Formats.CCD_DATE));
         return DateUtils.formatDateFromLocalDate(date.plus(getDueDateOffsetInDays(), ChronoUnit.DAYS));
