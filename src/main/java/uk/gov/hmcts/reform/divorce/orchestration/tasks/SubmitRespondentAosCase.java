@@ -14,17 +14,17 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_NOMINATE_SOLICITOR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_NOMINATE_SOLICITOR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AWAITING_ANSWER_AOS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AWAITING_DN_AOS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_AOS_RECEIVED_NO_AD_CON_STARTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_AOS_SUBMITTED_DEFENDED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_AOS_SUBMITTED_UNDEFENDED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_REVIEW;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.COMPLETED_AOS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_ANSWER_AOS_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AWAITING_DN_AOS_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BO_WELSH_AOS_RECEIVED_NO_AD_CON_STARTED_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BO_WELSH_AOS_SUBMITTED_DEFENDED_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BO_WELSH_AOS_SUBMITTED_UNDEFENDED_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BO_WELSH_REVIEW;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COMPLETED_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
@@ -57,11 +57,11 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
         } else {
             //if respondent didn't nominate a solicitor, then they've provided an answer
             if (isRespondentDefendingDivorce(submissionData)) {
-                eventId = evaluateEventId(context, submissionData, AWAITING_ANSWER_AOS_EVENT_ID, BO_WELSH_AOS_SUBMITTED_DEFENDED_EVENT_ID) ;
+                eventId = evaluateEventId(context, submissionData, AWAITING_ANSWER_AOS, BO_WELSH_AOS_SUBMITTED_DEFENDED) ;
             } else if (isRespondentAgreeingDivorceButNotAdmittingFact(submissionData, context)) {
-                eventId = evaluateEventId(context, submissionData, COMPLETED_AOS_EVENT_ID, BO_WELSH_AOS_RECEIVED_NO_AD_CON_STARTED_EVENT_ID);
+                eventId = evaluateEventId(context, submissionData, COMPLETED_AOS, BO_WELSH_AOS_RECEIVED_NO_AD_CON_STARTED);
             } else {
-                eventId = evaluateEventId(context, submissionData, AWAITING_DN_AOS_EVENT_ID, BO_WELSH_AOS_SUBMITTED_UNDEFENDED_EVENT_ID);
+                eventId = evaluateEventId(context, submissionData, AWAITING_DN_AOS, BO_WELSH_AOS_SUBMITTED_UNDEFENDED);
             }
 
             submissionData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);

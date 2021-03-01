@@ -11,10 +11,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.DECREE_ABSOLUTE_REQUESTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_REQUESTED_EVENT_ID;
 
 @Component
 public class SubmitDaCaseWorkflow extends DefaultWorkflow<Map<String, Object>> {
@@ -36,7 +36,7 @@ public class SubmitDaCaseWorkflow extends DefaultWorkflow<Map<String, Object>> {
             payload,
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseId),
-            ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, DECREE_ABSOLUTE_REQUESTED_EVENT_ID)
+            ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, DECREE_ABSOLUTE_REQUESTED)
         );
     }
 }

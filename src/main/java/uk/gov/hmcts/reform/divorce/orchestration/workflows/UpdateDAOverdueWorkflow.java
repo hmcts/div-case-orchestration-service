@@ -12,10 +12,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateDAOverdueCase;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.MAKE_CASE_DA_OVERDUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASES_OVERDUE_FOR_DA_PROCESSED_COUNT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MAKE_CASE_DA_OVERDUE_EVENT_ID;
 
 @Component
 @Slf4j
@@ -40,7 +40,7 @@ public class UpdateDAOverdueWorkflow extends DefaultWorkflow<Map<String, Object>
             null,
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASES_OVERDUE_FOR_DA_PROCESSED_COUNT, 0),
-            ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, MAKE_CASE_DA_OVERDUE_EVENT_ID)
+            ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, MAKE_CASE_DA_OVERDUE)
         );
         return getContext().getTransientObject(CASES_OVERDUE_FOR_DA_PROCESSED_COUNT);
     }
