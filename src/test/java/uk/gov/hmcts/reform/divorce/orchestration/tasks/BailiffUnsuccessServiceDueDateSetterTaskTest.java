@@ -6,7 +6,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.BailiffUns
 public class BailiffUnsuccessServiceDueDateSetterTaskTest extends DueDateSetterTaskTest {
 
     @Autowired
-    private BailiffUnsuccessServiceDueDateSetterTask bailiffunSuccessServiceDueDateSetterTask;
+    private BailiffUnsuccessServiceDueDateSetterTask bailiffUnsuccessServiceDueDateSetterTask;
 
     private static final Integer DUE_DATE_OFFSET = 30;
 
@@ -17,6 +17,6 @@ public class BailiffUnsuccessServiceDueDateSetterTaskTest extends DueDateSetterT
 
     @Override
     protected DueDateSetterTask getDueDateSetterTaskInstance() {
-        return bailiffunSuccessServiceDueDateSetterTask;
+        return bailiffUnsuccessServiceDueDateSetterTask;
     }
 }

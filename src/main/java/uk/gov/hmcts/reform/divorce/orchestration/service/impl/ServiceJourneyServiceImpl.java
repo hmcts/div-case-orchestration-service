@@ -100,7 +100,7 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
 
     @Override
     public Map<String, Object> setupConfirmServicePaymentEvent(CaseDetails caseDetails)
-            throws ServiceJourneyServiceException {
+        throws ServiceJourneyServiceException {
         try {
             return setupConfirmServicePaymentWorkflow.run(caseDetails);
         } catch (WorkflowException exception) {

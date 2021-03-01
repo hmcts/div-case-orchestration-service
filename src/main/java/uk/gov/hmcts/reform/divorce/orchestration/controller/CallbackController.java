@@ -1308,7 +1308,7 @@ public class CallbackController {
     @PostMapping(path = "/confirm-service-payment")
     @ApiOperation(value = "Returns updated case data with payment reference collection")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Service payment confirmation callback")})
+        @ApiResponse(code = 200, message = "Service payment confirmation callback")})
     public ResponseEntity<CcdCallbackResponse> confirmServicePaymentEvent(
             @RequestHeader(AUTHORIZATION_HEADER)
             @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
@@ -1323,7 +1323,7 @@ public class CallbackController {
     @PostMapping(path = "/add-bailiff-return")
     @ApiOperation(value = "Setup Add Bailiff Return event")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Setup Add Bailiff Return event")})
+        @ApiResponse(code = 200, message = "Setup Add Bailiff Return event")})
     public ResponseEntity<CcdCallbackResponse> setupAddBailiffReturnEvent(
             @RequestHeader(AUTHORIZATION_HEADER)
             @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
