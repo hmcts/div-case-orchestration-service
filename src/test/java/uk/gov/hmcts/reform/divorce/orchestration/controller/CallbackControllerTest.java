@@ -1684,7 +1684,6 @@ public class CallbackControllerTest {
         assertThat(response.getBody(), is(expectedResponse));
     }
 
-
     @Test
     public void shouldReturnOK_WhenConfirmServicePaymentEventIsCalled() throws CaseOrchestrationServiceException {
         final Map<String, Object> caseData = Collections.emptyMap();
@@ -1692,9 +1691,10 @@ public class CallbackControllerTest {
         final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
         final CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
-        when(serviceJourneyService.confirmServicePaymentEvent(caseDetails)).thenReturn(caseData);
+        when(serviceJourneyService.confirmServicePaymentEvent(caseDetails, AUTH_TOKEN))
+                .thenReturn(CcdCallbackResponse.builder().data(caseData).build());
 
-        final ResponseEntity<CcdCallbackResponse> response = classUnderTest.confirmServicePaymentEvent(ccdCallbackRequest);
+        final ResponseEntity<CcdCallbackResponse> response = classUnderTest.confirmServicePaymentEvent(AUTH_TOKEN, ccdCallbackRequest);
 
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody(), is(expectedResponse));

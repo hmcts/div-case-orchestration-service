@@ -1308,12 +1308,14 @@ public class CallbackController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Service payment confirmation callback")})
     public ResponseEntity<CcdCallbackResponse> confirmServicePaymentEvent(
+            @RequestHeader(AUTHORIZATION_HEADER)
+            @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
         return ResponseEntity.ok(
-            CcdCallbackResponse.builder()
-                .data(serviceJourneyService.confirmServicePaymentEvent(ccdCallbackRequest.getCaseDetails()))
-                .build());
+                serviceJourneyService
+                        .confirmServicePaymentEvent(ccdCallbackRequest.getCaseDetails(), authorizationToken)
+        );
     }
 
     @PostMapping(path = "/set-up-order-summary/without-notice-fee")

@@ -22,10 +22,12 @@ import static java.util.Collections.emptyMap;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.emptyOrNullString;
 import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember.buildCollectionMember;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PBA_REF;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
@@ -50,6 +52,7 @@ public class ConfirmServicePaymentTest extends MockedFunctionalTest {
 
         webClient.perform(post(API_URL)
             .content(convertObjectToJsonString(ccdCallbackRequest))
+            .header(AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -71,6 +74,7 @@ public class ConfirmServicePaymentTest extends MockedFunctionalTest {
 
         webClient.perform(post(API_URL)
             .content(convertObjectToJsonString(ccdCallbackRequest))
+            .header(AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -92,6 +96,7 @@ public class ConfirmServicePaymentTest extends MockedFunctionalTest {
 
         webClient.perform(post(API_URL)
             .content(convertObjectToJsonString(ccdCallbackRequest))
+            .header(AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -113,6 +118,7 @@ public class ConfirmServicePaymentTest extends MockedFunctionalTest {
 
         webClient.perform(post(API_URL)
             .content(convertObjectToJsonString(ccdCallbackRequest))
+            .header(AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -133,6 +139,7 @@ public class ConfirmServicePaymentTest extends MockedFunctionalTest {
 
         webClient.perform(post(API_URL)
             .content(convertObjectToJsonString(ccdCallbackRequest))
+            .header(AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
