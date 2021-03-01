@@ -15,6 +15,7 @@ public class TestConstants {
     public static final String TEST_CASE_ID = "test.case.id";
     public static final String TEST_CASE_FAMILY_MAN_ID = "test.family.man.id";
     public static final String TEST_STATE = "test.state";
+    public static final String TEST_SERVICE_APPLICATION_TYPE = "test.service.application.type";
     public static final String TEST_PIN = "abcd1234";
     public static final String TEST_EXPECTED_DUE_DATE = "2020-10-20";
     public static final String TEST_EXPECTED_DUE_DATE_FORMATTED = "20 October 2020";

@@ -38,10 +38,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CO_RESPONDENT_SUBMISSION_AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_DEFENDS_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_DUE_DATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_SUBMISSION_AOS_AWAITING_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -203,7 +203,7 @@ public class SubmitCoRespondentAosCaseITest extends MockedFunctionalTest {
     }
 
     private void stubMaintenanceServerEndpointForAosUpdate(HttpStatus status, Map<String, Object> caseData, String response) {
-        maintenanceServiceServer.stubFor(post(UPDATE_CONTEXT_PATH + CO_RESPONDENT_SUBMISSION_AOS_AWAITING_EVENT_ID)
+        maintenanceServiceServer.stubFor(post(UPDATE_CONTEXT_PATH + CO_RESPONDENT_SUBMISSION_AOS_AWAITING)
             .withRequestBody(equalToJson(convertObjectToJsonString(caseData)))
             .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
             .willReturn(aResponse()

@@ -16,7 +16,6 @@ public class OrchestrationConstants {
     public static final String AUTH_TOKEN_JSON_KEY = "authToken";
     public static final String GRANT_TYPE = "authorization_code";
     public static final String BASIC = "Basic ";
-    public static final String CODE = "code";
     public static final String LOCATION_HEADER = "Location";
     public static final String SERVICE_AUTHORIZATION_HEADER = "ServiceAuthorization";
     public static final String AUTHORIZATION_HEADER = "Authorization";
@@ -52,17 +51,6 @@ public class OrchestrationConstants {
     public static final String CO_RESPONDENT_SOLICITOR_ADDRESS = "DerivedCoRespondentSolicitorAddr";
     public static final String CCD_CASE_DATA_FIELD = "case_data";
     public static final String CCD_CASE_ID = "id";
-    public static final String NOT_RECEIVED_AOS_EVENT_ID = "aosNotReceived";
-    public static final String NOT_RECEIVED_AOS_STARTED_EVENT_ID = "aosNotReceivedStarted";
-    public static final String CO_RESPONDENT_SUBMISSION_AOS_AWAITING_EVENT_ID = "co-RespAOSReceivedAwaiting";
-    public static final String CO_RESPONDENT_SUBMISSION_AOS_STARTED_EVENT_ID = "co-RespAOSReceivedStarted";
-    public static final String CO_RESPONDENT_SUBMISSION_AOS_SUBMIT_AWAIT_EVENT_ID = "co-RespAOSReceivedAwaitingAnswer";
-    public static final String CO_RESPONDENT_SUBMISSION_AOS_OVERDUE_EVENT_ID = "co-RespAOSReceivedOverdue";
-    public static final String CO_RESPONDENT_SUBMISSION_AOS_DEFENDED_EVENT_ID = "co-RespAOSReceivedDefended";
-    public static final String CO_RESPONDENT_SUBMISSION_AOS_COMPLETED_EVENT_ID = "co-RespAOSCompleted";
-    public static final String CO_RESPONDENT_SUBMISSION_AWAITING_DN_EVENT_ID = "co-RespAwaitingDN";
-    public static final String CO_RESPONDENT_SUBMISSION_AWAITING_LA_EVENT_ID = "co-RespAwaitingLAReferral";
-    public static final String DECREE_ABSOLUTE_REQUESTED_EVENT_ID = "RequestDA";
     public static final String RESP_AOS_2_YR_CONSENT = "RespAOS2yrConsent";
     public static final String RESP_AOS_ADMIT_ADULTERY = "RespAOSAdultery";
     public static final String RESP_ADMIT_OR_CONSENT_TO_FACT = "RespAdmitOrConsentToFact";
@@ -137,37 +125,6 @@ public class OrchestrationConstants {
     public static final String DN_REFUSED_ADMIN_ERROR_OPTION = "adminError";
     public static final String DN_APPLICATION_SUBMITTED_DATE = "DNApplicationSubmittedDate";
     public static final String DN_REFUSAL_DRAFT = "DNRefusalDraft";
-
-    // CCD Events
-    public static final String DN_RECEIVED = "dnReceived";
-    public static final String DN_RECEIVED_AOS_COMPLETE = "dnReceivedAosCompleted";
-    public static final String DN_RECEIVED_CLARIFICATION = "submitDnClarification";
-    public static final String AMEND_PETITION_EVENT = "amendPetition";
-    public static final String AMEND_PETITION_FOR_REFUSAL_EVENT = "amendPetitionForRefusalRejection";
-    public static final String AOS_START_FROM_OVERDUE = "startAosFromOverdue";
-    public static final String AOS_START_FROM_REISSUE = "startAosFromReissue";
-    public static final String AWAITING_DN_AOS_EVENT_ID = "aosSubmittedUndefended";
-    public static final String AWAITING_ANSWER_AOS_EVENT_ID = "aosSubmittedDefended";
-    public static final String COMPLETED_AOS_EVENT_ID = "aosReceivedNoAdConStarted";
-    public static final String BO_WELSH_AOS_SUBMITTED_DEFENDED_EVENT_ID = "boWelshAosSubmittedDefended";
-    public static final String BO_WELSH_DN_RECEIVED_EVENT_ID = "boDnReceived";
-    public static final String BO_WELSH_DN_RECEIVED_AOS_COMPLETED_EVENT_ID = "boDnReceivedAosCompleted";
-    public static final String BO_WELSH_SUBMIT_DN_CLARIFICATION_EVENT_ID = "boSubmitDnClarification";
-    public static final String BO_WELSH_AOS_RECEIVED_NO_AD_CON_STARTED_EVENT_ID = "boWelshAosReceivedNoAdConStarted";
-    public static final String BO_WELSH_AOS_SUBMITTED_UNDEFENDED_EVENT_ID = "boWelshAosSubmittedUndefended";
-    public static final String AOS_NOMINATE_SOLICITOR = "aosNominateSol";
-    public static final String SOL_AOS_SUBMITTED_DEFENDED_EVENT_ID = "solAosSubmittedDefended";
-    public static final String SOL_AOS_SUBMITTED_UNDEFENDED_EVENT_ID = "solAosSubmittedUndefended";
-    public static final String SOL_AOS_RECEIVED_NO_ADCON_STARTED_EVENT_ID = "solAosReceivedNoAdConStarted";
-    public static final String LINK_RESPONDENT_GENERIC_EVENT_ID = "linkRespondent";
-    public static final String START_AOS_EVENT_ID = "startAos";
-    public static final String PAYMENT_MADE_EVENT = "paymentMade";
-    public static final String MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER_EVENT_ID = "MakeEligibleForDA_Petitioner";
-    public static final String MAKE_CASE_DA_OVERDUE_EVENT_ID = "DecreeAbsoluteOverdue";
-    public static final String SOLICITOR_SUBMIT_EVENT = "solicitorStatementOfTruthPaySubmit";
-    public static final String BO_WELSH_REVIEW = "boWelshReview";
-    public static final String BO_WELSH_DN_RECEIVED_REVIEW = "boWelshDnReceivedReview";
-    public static final String BO_WELSH_GRANT_DN_MAKE_DECISION = "boWelshGrantDnMakeDecision";
 
     // CCD Co-Respondent Fields
     public static final String CO_RESP_LINKED_TO_CASE = "CoRespLinkedToCase";
@@ -382,6 +339,9 @@ public class OrchestrationConstants {
     public static final String DA_OVERDUE_PERIOD_KEY = "daOverduePeriod";
     public static final String CASES_ELIGIBLE_FOR_DA_PROCESSED_COUNT = "casesEligibleForDAProcessedCount";
     public static final String CASES_OVERDUE_FOR_DA_PROCESSED_COUNT = "casesOverdueForDAProcessedCount";
+
+    // Bailiff
+    public static final String CERTIFICATE_OF_SERVICE_DOCUMENT = "CertificateOfServiceDocument";
 
     // Validation
     public static final String ERROR_STATUS = "error";

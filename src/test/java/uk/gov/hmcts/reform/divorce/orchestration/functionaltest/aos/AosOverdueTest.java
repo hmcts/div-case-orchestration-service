@@ -36,8 +36,9 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_NOT_RECEIVED_FOR_PROCESS_SERVER_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_NOT_RECEIVED_FOR_PROCESS_SERVER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.NOT_RECEIVED_AOS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVED_BY_ALTERNATIVE_METHOD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVED_BY_PROCESS_SERVER;
@@ -45,7 +46,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.A
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_DRAFTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_STARTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOT_RECEIVED_AOS_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.elasticsearch.CMSElasticSearchSupport.buildDateForTodayMinusGivenPeriod;
 
@@ -66,9 +66,9 @@ public class AosOverdueTest extends MockedFunctionalTest {
     public void setUp() {
         when(authUtil.getCaseworkerToken()).thenReturn(AUTH_TOKEN);
 
-        stubUpdateCaseEndpointForGivenEvents(NOT_RECEIVED_AOS_EVENT_ID,
-            AOS_NOT_RECEIVED_FOR_PROCESS_SERVER_EVENT_ID,
-            AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD_EVENT_ID);
+        stubUpdateCaseEndpointForGivenEvents(NOT_RECEIVED_AOS,
+            AOS_NOT_RECEIVED_FOR_PROCESS_SERVER,
+            AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD);
     }
 
     @After
@@ -93,14 +93,14 @@ public class AosOverdueTest extends MockedFunctionalTest {
             .andExpect(status().isOk());
 
         await().untilAsserted(() -> {
-            verifyCaseWasUpdated("2", NOT_RECEIVED_AOS_EVENT_ID);
-            verifyCaseWasUpdated("3", NOT_RECEIVED_AOS_EVENT_ID);
-            verifyCaseWasUpdated("4", AOS_NOT_RECEIVED_FOR_PROCESS_SERVER_EVENT_ID);
-            verifyCaseWasUpdated("5", AOS_NOT_RECEIVED_FOR_PROCESS_SERVER_EVENT_ID);
-            verifyCaseWasUpdated("6", AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD_EVENT_ID);
-            verifyCaseWasUpdated("7", AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD_EVENT_ID);
+            verifyCaseWasUpdated("2", NOT_RECEIVED_AOS);
+            verifyCaseWasUpdated("3", NOT_RECEIVED_AOS);
+            verifyCaseWasUpdated("4", AOS_NOT_RECEIVED_FOR_PROCESS_SERVER);
+            verifyCaseWasUpdated("5", AOS_NOT_RECEIVED_FOR_PROCESS_SERVER);
+            verifyCaseWasUpdated("6", AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD);
+            verifyCaseWasUpdated("7", AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD);
         });
-        verifyCaseWasNotUpdated("1", NOT_RECEIVED_AOS_EVENT_ID);
+        verifyCaseWasNotUpdated("1", NOT_RECEIVED_AOS);
     }
 
     @Test

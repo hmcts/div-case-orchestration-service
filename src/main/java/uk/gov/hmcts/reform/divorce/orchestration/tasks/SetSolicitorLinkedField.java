@@ -13,9 +13,9 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import java.util.HashMap;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.LINK_RESPONDENT_GENERIC;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LINK_RESPONDENT_GENERIC_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_LINKED_EMAIL;
 
 @AllArgsConstructor
@@ -35,7 +35,7 @@ public class SetSolicitorLinkedField implements Task<UserDetails> {
             caseMaintenanceClient.updateCase(
                     context.getTransientObject(AUTH_TOKEN_JSON_KEY),
                     context.getTransientObject(CASE_ID_JSON_KEY),
-                    LINK_RESPONDENT_GENERIC_EVENT_ID,
+                LINK_RESPONDENT_GENERIC,
                     updateFields
             );
         } catch (FeignException exception) {
