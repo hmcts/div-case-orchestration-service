@@ -16,11 +16,11 @@ import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_OVERDUE_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_REISSUE_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.LINK_RESPONDENT_GENERIC_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.START_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_OVERDUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_REISSUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.LINK_RESPONDENT_GENERIC;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.START_AOS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_OVERDUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_ALTERNATIVE_SERVICE;
@@ -75,7 +75,7 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
                 updateFields.put(CO_RESP_EMAIL_ADDRESS, linkedUser.getEmail());
                 updateFields.put(CO_RESP_LINKED_TO_CASE, YES_VALUE);
                 updateFields.put(CO_RESP_LINKED_TO_CASE_DATE, ccdUtil.getCurrentDateCcdFormat());
-                eventId = LINK_RESPONDENT_GENERIC_EVENT_ID;
+                eventId = LINK_RESPONDENT_GENERIC;
             }
 
             caseMaintenanceClient.updateCase(
@@ -99,15 +99,15 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
             case AWAITING_ALTERNATIVE_SERVICE:
             case AWAITING_PROCESS_SERVER_SERVICE:
             case AWAITING_DWP_RESPONSE:
-                return START_AOS_EVENT_ID;
+                return START_AOS;
             case AOS_OVERDUE:
-                return AOS_START_FROM_OVERDUE_EVENT_ID;
+                return AOS_START_FROM_OVERDUE;
             case AWAITING_REISSUE:
-                return AOS_START_FROM_REISSUE_EVENT_ID;
+                return AOS_START_FROM_REISSUE;
             case SERVICE_APPLICATION_NOT_APPROVED:
-                return AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED_EVENT_ID;
+                return AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED;
             default:
-                return LINK_RESPONDENT_GENERIC_EVENT_ID;
+                return LINK_RESPONDENT_GENERIC;
         }
     }
 }

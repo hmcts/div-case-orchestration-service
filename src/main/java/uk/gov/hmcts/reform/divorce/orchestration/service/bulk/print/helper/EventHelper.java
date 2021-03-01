@@ -5,14 +5,14 @@ import lombok.NoArgsConstructor;
 
 import java.util.stream.Stream;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS_FROM_REISSUE_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS_FROM_REISSUE;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class EventHelper {
 
     public static boolean isIssueAosEvent(String eventId) {
-        return Stream.of(ISSUE_AOS_EVENT_ID, ISSUE_AOS_FROM_REISSUE_EVENT_ID)
+        return Stream.of(ISSUE_AOS, ISSUE_AOS_FROM_REISSUE)
             .anyMatch(supportEvent -> supportEvent.equalsIgnoreCase(eventId));
     }
 }

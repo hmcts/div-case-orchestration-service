@@ -45,8 +45,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_LETTER_HOLDER_ID_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PIN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.LINK_RESPONDENT_GENERIC_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.START_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.LINK_RESPONDENT_GENERIC;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.START_AOS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE;
@@ -69,12 +69,12 @@ public class LinkRespondentIdamTest extends IdamTestSupport {
     private static final String UPDATE_CONTEXT_PATH_AOS = String.format(
         "/casemaintenance/version/1/updateCase/%s/%s",
         TEST_CASE_ID,
-        START_AOS_EVENT_ID
+        START_AOS
     );
     private static final String UPDATE_CONTEXT_PATH_NOT_AOS = String.format(
         "/casemaintenance/version/1/updateCase/%s/%s",
         TEST_CASE_ID,
-        LINK_RESPONDENT_GENERIC_EVENT_ID
+        LINK_RESPONDENT_GENERIC
     );
     private static final Map<String, Object> CASE_DATA_RESPONDENT =
         ImmutableMap.of(

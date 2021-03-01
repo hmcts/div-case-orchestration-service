@@ -22,7 +22,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.PAYMENT_MADE_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.PAYMENT_MADE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE;
@@ -66,7 +66,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_SERVICE_CENTRE_CASE, petitionerUserDetails);
 
         // make payment
-        updateCase(caseDetails.getId().toString(), PAYMENT_MADE_JSON, PAYMENT_MADE_EVENT_ID);
+        updateCase(caseDetails.getId().toString(), PAYMENT_MADE_JSON, PAYMENT_MADE);
         final CaseDetails issuedCase = fireEvent(caseDetails.getId().toString(), ISSUE_EVENT_ID);
 
         assertGeneratedDocumentsExists(issuedCase, true, false);
@@ -79,7 +79,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_SERVICE_CENTRE_CO_RESPONDENT_CASE, petitionerUserDetails);
 
         // make payment
-        updateCase(caseDetails.getId().toString(), PAYMENT_MADE_JSON, PAYMENT_MADE_EVENT_ID);
+        updateCase(caseDetails.getId().toString(), PAYMENT_MADE_JSON, PAYMENT_MADE);
         final CaseDetails issuedCase = fireEvent(caseDetails.getId().toString(), ISSUE_EVENT_ID);
 
         assertGeneratedDocumentsExists(issuedCase, true, true);
@@ -92,7 +92,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_SERVICE_CENTRE_CO_RESPONDENT_CASE, petitionerUserDetails);
 
         // make payment
-        updateCase(caseDetails.getId().toString(), null, PAYMENT_MADE_EVENT_ID);
+        updateCase(caseDetails.getId().toString(), null, PAYMENT_MADE);
         fireEvent(caseDetails.getId().toString(), ISSUE_EVENT_ID);
 
         log.info("case {}", caseDetails.getId().toString());

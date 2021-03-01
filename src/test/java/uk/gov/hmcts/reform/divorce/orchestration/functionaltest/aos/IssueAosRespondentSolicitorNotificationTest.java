@@ -49,8 +49,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH_FEMALE_GENDER_IN_RELATION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS_FROM_REISSUE_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS_FROM_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.EmailVars.EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.EmailVars.SOLICITOR_ORGANISATION;
@@ -109,14 +109,14 @@ public class IssueAosRespondentSolicitorNotificationTest extends MockedFunctiona
     public void givenCorrectRespondentSolicitorDetails_WithIssueAosEventId_ThenOkResponse() throws Exception {
         addRespondentSolicitorTestData();
 
-        runTestUsing(ISSUE_AOS_EVENT_ID, SOL_RESPONDENT_NOTICE_OF_PROCEEDINGS);
+        runTestUsing(ISSUE_AOS, SOL_RESPONDENT_NOTICE_OF_PROCEEDINGS);
     }
 
     @Test
     public void givenCorrectRespondentSolicitorDetails_WithIssueAosFromReIssueEventId_ThenOkResponse() throws Exception {
         addRespondentSolicitorTestData();
 
-        runTestUsing(ISSUE_AOS_FROM_REISSUE_EVENT_ID, SOL_RESPONDENT_NOTICE_OF_PROCEEDINGS);
+        runTestUsing(ISSUE_AOS_FROM_REISSUE, SOL_RESPONDENT_NOTICE_OF_PROCEEDINGS);
     }
 
     @Test
@@ -124,7 +124,7 @@ public class IssueAosRespondentSolicitorNotificationTest extends MockedFunctiona
         respSolFeatureToggle(false);
         addPetitionerTestData();
 
-        runTestUsing(ISSUE_AOS_EVENT_ID, GENERIC_UPDATE);
+        runTestUsing(ISSUE_AOS, GENERIC_UPDATE);
     }
 
     private void runTestUsing(String eventId, EmailTemplateNames expectedTemplate) throws Exception {

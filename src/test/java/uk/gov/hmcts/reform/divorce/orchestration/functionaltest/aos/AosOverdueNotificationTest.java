@@ -49,10 +49,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH_FEMALE_GENDER_IN_RELATION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS_FROM_REISSUE_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.NOT_RECEIVED_AOS_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.NOT_RECEIVED_AOS_STARTED_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS_FROM_REISSUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.NOT_RECEIVED_AOS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.NOT_RECEIVED_AOS_STARTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCED_WHO;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
@@ -109,22 +109,22 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
 
     @Test
     public void givenCorrectPetitionerDetails_WithAosNotReceivedEventId_ThenOkResponse() throws Exception {
-        runPetitionerTestProcedureUsing(NOT_RECEIVED_AOS_EVENT_ID);
+        runPetitionerTestProcedureUsing(NOT_RECEIVED_AOS);
     }
 
     @Test
     public void givenCorrectPetitionerDetails_WithAosNotReceivedStartedEventId_ThenOkResponse() throws Exception {
-        runPetitionerTestProcedureUsing(NOT_RECEIVED_AOS_STARTED_EVENT_ID);
+        runPetitionerTestProcedureUsing(NOT_RECEIVED_AOS_STARTED);
     }
 
     @Test
     public void givenCorrectSolicitorDetails_WithAosNotReceivedEventId_ThenOkResponse() throws Exception {
-        runSolicitorTestProcedureUsing(NOT_RECEIVED_AOS_EVENT_ID);
+        runSolicitorTestProcedureUsing(NOT_RECEIVED_AOS);
     }
 
     @Test
     public void givenCorrectSolicitorDetails_WithAosNotReceivedStartedEventId_ThenOkResponse() throws Exception {
-        runSolicitorTestProcedureUsing(NOT_RECEIVED_AOS_STARTED_EVENT_ID);
+        runSolicitorTestProcedureUsing(NOT_RECEIVED_AOS_STARTED);
     }
 
     @Test
@@ -132,7 +132,7 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
         addSolicitorTestData();
         testTemplateVars.remove(NOTIFICATION_EMAIL);
 
-        runTestProcedureUsing(ISSUE_AOS_EVENT_ID, SOL_PETITIONER_NOTICE_OF_PROCEEDINGS);
+        runTestProcedureUsing(ISSUE_AOS, SOL_PETITIONER_NOTICE_OF_PROCEEDINGS);
     }
 
     @Test
@@ -140,14 +140,14 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
         addSolicitorTestData();
         testTemplateVars.remove(NOTIFICATION_EMAIL);
 
-        runTestProcedureUsing(ISSUE_AOS_FROM_REISSUE_EVENT_ID, SOL_PETITIONER_NOTICE_OF_PROCEEDINGS);
+        runTestProcedureUsing(ISSUE_AOS_FROM_REISSUE, SOL_PETITIONER_NOTICE_OF_PROCEEDINGS);
     }
 
     @Test
     public void givenCorrectPetitionerDetails_WithIssueAosEventIdAndToggleOn_ThenOkResponse() throws Exception {
         addPetitionerTestDataForNoticeOfProceeding();
 
-        runTestProcedureUsing(ISSUE_AOS_EVENT_ID, PETITIONER_NOTICE_OF_PROCEEDINGS);
+        runTestProcedureUsing(ISSUE_AOS, PETITIONER_NOTICE_OF_PROCEEDINGS);
     }
 
     @Test
@@ -155,19 +155,19 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
         featureToggleOff();
         addPetitionerTestData();
 
-        runTestProcedureUsing(ISSUE_AOS_EVENT_ID, GENERIC_UPDATE);
+        runTestProcedureUsing(ISSUE_AOS, GENERIC_UPDATE);
     }
 
     @Test
     public void givenCorrectPetitionerDetails_WithIssueAosFromReIssueEventId_ThenOkResponse() throws Exception {
         addPetitionerTestDataForNoticeOfProceeding();
 
-        runTestProcedureUsing(ISSUE_AOS_FROM_REISSUE_EVENT_ID, PETITIONER_NOTICE_OF_PROCEEDINGS);
+        runTestProcedureUsing(ISSUE_AOS_FROM_REISSUE, PETITIONER_NOTICE_OF_PROCEEDINGS);
     }
 
     @Test
     public void givenBadRequestBody_thenReturnBadRequest() throws Exception {
-        setEventIdTo(NOT_RECEIVED_AOS_EVENT_ID);
+        setEventIdTo(NOT_RECEIVED_AOS);
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
@@ -179,7 +179,7 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
     @Test
     public void givenEmailServiceThrowsException_ThenInternalServerErrorResponse() throws Exception {
         addPetitionerTestData();
-        setEventIdTo(NOT_RECEIVED_AOS_EVENT_ID);
+        setEventIdTo(NOT_RECEIVED_AOS);
         String templateName = PETITIONER_RESP_NOT_RESPONDED.name();
         setUpEmailClientMockThrowsExceptionWith(templateName, testTemplateVars);
 
@@ -192,7 +192,7 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
     @Test
     public void givenEmailServiceThrowsExceptionWithSolicitorData_ThenInternalServerErrorResponse() throws Exception {
         addSolicitorTestData();
-        setEventIdTo(NOT_RECEIVED_AOS_EVENT_ID);
+        setEventIdTo(NOT_RECEIVED_AOS);
         String templateName = SOL_APPLICANT_RESP_NOT_RESPONDED.name();
         setUpEmailClientMockThrowsExceptionWith(templateName, testTemplateVars);
 

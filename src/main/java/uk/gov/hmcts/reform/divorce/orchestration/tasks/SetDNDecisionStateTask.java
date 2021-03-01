@@ -11,7 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 import java.util.HashMap;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_GRANT_DN_MAKE_DECISION_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_GRANT_DN_MAKE_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_ADMIN_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PRONOUNCEMENT;
@@ -67,7 +67,7 @@ public class SetDNDecisionStateTask implements Task<Map<String, Object>> {
     private String evaluateStop(Map<String, Object> caseData, Map<String, Object> payload, String endState) {
         if (CaseDataUtils.isRejectReasonAddInfoAwaitingTranslation(caseData)) {
             endState = WELSH_LA_DECISION;
-            payload.put(WELSH_NEXT_EVENT, BO_WELSH_GRANT_DN_MAKE_DECISION_EVENT_ID);
+            payload.put(WELSH_NEXT_EVENT, BO_WELSH_GRANT_DN_MAKE_DECISION);
         }
         return endState;
     }

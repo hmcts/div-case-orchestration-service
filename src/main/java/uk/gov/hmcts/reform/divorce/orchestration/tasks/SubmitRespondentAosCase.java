@@ -14,14 +14,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_NOMINATE_SOLICITOR_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AWAITING_ANSWER_AOS_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AWAITING_DN_AOS_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_AOS_RECEIVED_NO_AD_CON_STARTED_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_AOS_SUBMITTED_DEFENDED_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_AOS_SUBMITTED_UNDEFENDED_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_REVIEW_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.COMPLETED_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_NOMINATE_SOLICITOR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AWAITING_ANSWER_AOS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AWAITING_DN_AOS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_AOS_RECEIVED_NO_AD_CON_STARTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_AOS_SUBMITTED_DEFENDED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_AOS_SUBMITTED_UNDEFENDED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.BO_WELSH_REVIEW;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.COMPLETED_AOS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
@@ -53,15 +53,15 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
 
         if (isSolicitorRepresentingRespondent(submissionData)) {
             //move back to AOS awaiting, as technically the nominated solicitor will provide a response
-            eventId = AOS_NOMINATE_SOLICITOR_EVENT_ID;
+            eventId = AOS_NOMINATE_SOLICITOR;
         } else {
             //if respondent didn't nominate a solicitor, then they've provided an answer
             if (isRespondentDefendingDivorce(submissionData)) {
-                eventId = evaluateEventId(context, submissionData, AWAITING_ANSWER_AOS_EVENT_ID, BO_WELSH_AOS_SUBMITTED_DEFENDED_EVENT_ID) ;
+                eventId = evaluateEventId(context, submissionData, AWAITING_ANSWER_AOS, BO_WELSH_AOS_SUBMITTED_DEFENDED) ;
             } else if (isRespondentAgreeingDivorceButNotAdmittingFact(submissionData, context)) {
-                eventId = evaluateEventId(context, submissionData, COMPLETED_AOS_EVENT_ID, BO_WELSH_AOS_RECEIVED_NO_AD_CON_STARTED_EVENT_ID);
+                eventId = evaluateEventId(context, submissionData, COMPLETED_AOS, BO_WELSH_AOS_RECEIVED_NO_AD_CON_STARTED);
             } else {
-                eventId = evaluateEventId(context, submissionData, AWAITING_DN_AOS_EVENT_ID, BO_WELSH_AOS_SUBMITTED_UNDEFENDED_EVENT_ID);
+                eventId = evaluateEventId(context, submissionData, AWAITING_DN_AOS, BO_WELSH_AOS_SUBMITTED_UNDEFENDED);
             }
 
             submissionData.put(RECEIVED_AOS_FROM_RESP, YES_VALUE);
@@ -93,7 +93,7 @@ public class SubmitRespondentAosCase implements Task<Map<String, Object>> {
             return CaseDataUtils.isLanguagePreferenceWelsh(currentCasedata);
         };
 
-        return welshNextEventUtil.storeNextEventAndReturnStopEvent(isWelsh, submissionData, eventId, welshEventId, BO_WELSH_REVIEW_EVENT_ID);
+        return welshNextEventUtil.storeNextEventAndReturnStopEvent(isWelsh, submissionData, eventId, welshEventId, BO_WELSH_REVIEW);
     }
 
     private boolean isSolicitorRepresentingRespondent(Map<String, Object> submissionData) {

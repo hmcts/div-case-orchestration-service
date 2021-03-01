@@ -16,7 +16,6 @@ public class OrchestrationConstants {
     public static final String AUTH_TOKEN_JSON_KEY = "authToken";
     public static final String GRANT_TYPE = "authorization_code";
     public static final String BASIC = "Basic ";
-    public static final String CODE = "code";
     public static final String LOCATION_HEADER = "Location";
     public static final String SERVICE_AUTHORIZATION_HEADER = "ServiceAuthorization";
     public static final String AUTHORIZATION_HEADER = "Authorization";

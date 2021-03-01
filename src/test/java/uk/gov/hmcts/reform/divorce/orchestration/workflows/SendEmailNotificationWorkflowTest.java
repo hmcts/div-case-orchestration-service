@@ -26,8 +26,8 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS_FROM_REISSUE_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS_FROM_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.buildOrganisationPolicy;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
@@ -58,7 +58,7 @@ public class SendEmailNotificationWorkflowTest {
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
         runTestForEventExpectTaskToBeCalled(
             buildCaseData(),
-            ISSUE_AOS_EVENT_ID,
+            ISSUE_AOS,
             sendRespondentNoticeOfProceedingsEmailTask,
             sendPetitionerNoticeOfProceedingsEmailTask
         );
@@ -71,7 +71,7 @@ public class SendEmailNotificationWorkflowTest {
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
         runTestForEventExpectTaskToBeCalled(
             buildCaseData(),
-                ISSUE_AOS_FROM_REISSUE_EVENT_ID,
+            ISSUE_AOS_FROM_REISSUE,
             sendRespondentNoticeOfProceedingsEmailTask,
             sendPetitionerNoticeOfProceedingsEmailTask
         );
@@ -90,7 +90,7 @@ public class SendEmailNotificationWorkflowTest {
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(false);
         runTestForEventExpectTaskToBeCalled(
             buildCaseData(),
-                ISSUE_AOS_FROM_REISSUE_EVENT_ID,
+            ISSUE_AOS_FROM_REISSUE,
             sendPetitionerUpdateNotificationsEmailTask
         );
         verifyTasksWereNeverCalled(sendPetitionerNoticeOfProceedingsEmailTask, sendRespondentNoticeOfProceedingsEmailTask);
@@ -102,7 +102,7 @@ public class SendEmailNotificationWorkflowTest {
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
         runTestForEventExpectTaskToBeCalled(
             emptyMap(),
-            ISSUE_AOS_EVENT_ID,
+            ISSUE_AOS,
             sendPetitionerNoticeOfProceedingsEmailTask
         );
         verifyTasksWereNeverCalled(sendPetitionerUpdateNotificationsEmailTask, sendRespondentNoticeOfProceedingsEmailTask);

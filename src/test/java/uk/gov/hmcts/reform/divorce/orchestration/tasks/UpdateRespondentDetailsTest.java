@@ -33,11 +33,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_OVERDUE_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_REISSUE_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.LINK_RESPONDENT_GENERIC_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.START_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_OVERDUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_REISSUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.LINK_RESPONDENT_GENERIC;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.START_AOS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_OVERDUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
@@ -134,7 +134,7 @@ public class UpdateRespondentDetailsTest {
 
         verify(idamClient).getUserDetails(BEARER_AUTH_TOKEN);
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID,
-            LINK_RESPONDENT_GENERIC_EVENT_ID, dataToUpdate);
+            LINK_RESPONDENT_GENERIC, dataToUpdate);
     }
 
     @Test
@@ -159,7 +159,7 @@ public class UpdateRespondentDetailsTest {
         UserDetails result = classUnderTest.execute(taskContext, payload);
         assertEquals(payload, result);
 
-        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AOS_START_FROM_OVERDUE_EVENT_ID, dataToUpdate);
+        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AOS_START_FROM_OVERDUE, dataToUpdate);
     }
 
     @Test
@@ -183,7 +183,7 @@ public class UpdateRespondentDetailsTest {
         UserDetails result = classUnderTest.execute(taskContext, payload);
         assertEquals(payload, result);
 
-        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AOS_START_FROM_REISSUE_EVENT_ID, dataToUpdate);
+        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AOS_START_FROM_REISSUE, dataToUpdate);
     }
 
     @Test
@@ -222,7 +222,7 @@ public class UpdateRespondentDetailsTest {
             );
 
         verify(idamClient).getUserDetails(BEARER_AUTH_TOKEN);
-        verify(caseMaintenanceClient).updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(LINK_RESPONDENT_GENERIC_EVENT_ID), eq(expectedDataToUpdate));
+        verify(caseMaintenanceClient).updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(LINK_RESPONDENT_GENERIC), eq(expectedDataToUpdate));
     }
 
     @Test
@@ -247,7 +247,7 @@ public class UpdateRespondentDetailsTest {
         UserDetails result = classUnderTest.execute(taskContext, payload);
         assertEquals(payload, result);
 
-        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED_EVENT_ID, dataToUpdate);
+        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED, dataToUpdate);
     }
 
     private void whenGivenState_thenTriggerStartAosEvent(String state) throws TaskException {
@@ -279,13 +279,13 @@ public class UpdateRespondentDetailsTest {
         taskContext.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
 
         when(idamClient.getUserDetails(BEARER_AUTH_TOKEN)).thenReturn(respondentDetails);
-        when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, START_AOS_EVENT_ID, dataToUpdate))
+        when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, START_AOS, dataToUpdate))
             .thenReturn(null);
 
         assertEquals(payload, classUnderTest.execute(taskContext, payload));
 
         verify(idamClient).getUserDetails(BEARER_AUTH_TOKEN);
-        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, START_AOS_EVENT_ID, dataToUpdate);
+        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, START_AOS, dataToUpdate);
     }
 
     private UserDetails createTestUserDetails() {

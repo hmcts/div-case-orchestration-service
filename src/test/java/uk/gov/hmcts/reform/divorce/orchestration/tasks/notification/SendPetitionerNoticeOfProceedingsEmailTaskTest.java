@@ -36,7 +36,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
@@ -88,7 +88,7 @@ public class SendPetitionerNoticeOfProceedingsEmailTaskTest {
     public void shouldSendNotificationEmailToSolicitor_whenPetitionerIsRepresented() throws TaskException {
         incomingPayload.put(D_8_PETITIONER_EMAIL, null);
         incomingPayload.put(PETITIONER_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL);
-        taskContext.setTransientObject(CASE_EVENT_ID_JSON_KEY, ISSUE_AOS_EVENT_ID);
+        taskContext.setTransientObject(CASE_EVENT_ID_JSON_KEY, ISSUE_AOS);
 
         executeTask();
 
@@ -113,7 +113,7 @@ public class SendPetitionerNoticeOfProceedingsEmailTaskTest {
     public void shouldSendNotificationEmailToPetitioner_whenPetitionerIsNotRepresented() throws TaskException {
         incomingPayload.put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
         incomingPayload.put(PETITIONER_SOLICITOR_EMAIL, null);
-        taskContext.setTransientObject(CASE_EVENT_ID_JSON_KEY, ISSUE_AOS_EVENT_ID);
+        taskContext.setTransientObject(CASE_EVENT_ID_JSON_KEY, ISSUE_AOS);
 
         executeTask();
 
