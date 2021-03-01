@@ -92,7 +92,7 @@ public class BailiffOutcomeWorkflowTest {
     private Map<String, Object> executeWorkflow(CaseDetails caseDetails)
         throws WorkflowException {
         Map<String, Object> returnedData = classUnderTest.run(caseDetails, AUTH_TOKEN);
-        assertThat(returnedData, is(notNullValue()));
+        assertThat(returnedData, is(caseDetails.getCaseData()));
 
         return returnedData;
     }

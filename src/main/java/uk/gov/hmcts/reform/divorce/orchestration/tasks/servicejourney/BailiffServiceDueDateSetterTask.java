@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney;
 
-import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DueDateSetterTask;
 import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
