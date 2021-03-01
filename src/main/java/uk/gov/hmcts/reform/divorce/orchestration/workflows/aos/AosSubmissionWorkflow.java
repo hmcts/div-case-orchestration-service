@@ -77,6 +77,10 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         final String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         final String caseState = ccdCallbackRequest.getCaseDetails().getState();
 
+        if (isPetitionerRepresented(caseData)) {
+            tasks.add(aosReceivedPetitionerSolicitorEmailTask);
+        }
+
         if (usingRespondentSolicitor(caseData)) {
             log.info("Attempting to queue solicitor AoS submission for case {}, case state: {}", caseId, caseState);
             tasks.add(queueAosSolicitorSubmitTask);
@@ -124,9 +128,7 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         if (respondentIsDefending(caseDetails)) {
             tasks.add(sendRespondentSubmissionNotificationForDefendedDivorceEmailTask);
         } else if (respondentIsNotDefending(caseDetails)) {
-            if (isPetitionerRepresented(caseData)) {
-                tasks.add(aosReceivedPetitionerSolicitorEmailTask);
-            } else if (StringUtils.isNotEmpty(petitionerEmail)) {
+            if (!isPetitionerRepresented(caseData) && StringUtils.isNotEmpty(petitionerEmail)) {
                 notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, petitionerFirstName);
                 notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, petitionerLastName);
                 notificationTemplateVars.put(NOTIFICATION_RELATIONSHIP_KEY, relationship);
@@ -134,7 +136,7 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
                 notificationTemplateVars.put(NOTIFICATION_REFERENCE_KEY, ref);
 
                 tasks.add(emailNotificationTask);
-                template = findTemplateNameToBeSent(caseDetails, false);
+                template = findTemplateNameToBeSent(caseDetails);
                 emailToBeSentTo = petitionerEmail;
             }
 
@@ -187,11 +189,9 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         return fieldValue.toString();
     }
 
-    private EmailTemplateNames findTemplateNameToBeSent(CaseDetails caseDetails, boolean isSolicitor) {
+    private EmailTemplateNames findTemplateNameToBeSent(CaseDetails caseDetails) {
         EmailTemplateNames template = EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT;
-        if (isSolicitor) {
-            template = EmailTemplateNames.SOL_APPLICANT_AOS_RECEIVED;
-        } else if (isAdulteryAndNoConsent(caseDetails)) {
+        if (isAdulteryAndNoConsent(caseDetails)) {
             if (isCoRespNamedAndNotReplied(caseDetails)) {
                 template = EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED;
             } else {
@@ -210,7 +210,7 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         String reasonForDivorce = getFieldAsStringOrNull(caseDetails, D_8_REASON_FOR_DIVORCE);
         String respAdmitOrConsentToFact = getFieldAsStringOrNull(caseDetails, RESP_ADMIT_OR_CONSENT_TO_FACT);
         return StringUtils.equalsIgnoreCase(ADULTERY.getValue(), reasonForDivorce) && StringUtils.equalsIgnoreCase(NO_VALUE,
-                respAdmitOrConsentToFact);
+            respAdmitOrConsentToFact);
     }
 
     private boolean isSep2YrAndNoConsent(CaseDetails caseDetails) {
