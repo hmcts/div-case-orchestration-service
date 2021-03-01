@@ -13,7 +13,6 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 
-@Component
 @RequiredArgsConstructor
 @Slf4j
 public abstract class DateFieldSetupTask implements Task<Map<String, Object>> {
@@ -40,11 +39,7 @@ public abstract class DateFieldSetupTask implements Task<Map<String, Object>> {
         return getFormattedStringDateForTodayAsDefault(caseData);
     }
 
-    protected LocalDate getStartingDate(Map<String, Object> caseData) {
-        return LocalDate.now();
-    }
-
     private String getFormattedStringDateForTodayAsDefault(Map<String, Object> caseData) {
-        return DateUtils.formatDateFromLocalDate(getStartingDate(caseData));
+        return DateUtils.formatDateFromLocalDate(LocalDate.now());
     }
 }
