@@ -23,15 +23,6 @@ public class SendSolicitorApplicationSubmittedEmailTask extends PetitionerSolici
     }
 
     @Override
-    protected String getSubject(TaskContext context, Map<String, Object> caseData) {
-        return format(
-            "%s vs %s: Application has been submitted",
-            getPetitionerFullName(caseData),
-            getRespondentFullName(caseData)
-        );
-    }
-
-    @Override
     protected EmailTemplateNames getTemplate() {
         return SOL_APPLICANT_APPLICATION_SUBMITTED;
     }
