@@ -7,17 +7,20 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.event.domain.AosOverdueEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.domain.AosOverdueForAlternativeMethodCaseEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.domain.AosOverdueForProcessServerCaseEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.SelfPublishingAsyncTask;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseOrchestrationValues;
 import uk.gov.hmcts.reform.divorce.orchestration.util.elasticsearch.CMSElasticSearchIterator;
 import uk.gov.hmcts.reform.divorce.orchestration.util.elasticsearch.CMSElasticSearchSupport;
 
 import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import javax.annotation.PostConstruct;
@@ -27,6 +30,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.D
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVED_BY_ALTERNATIVE_METHOD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVED_BY_PROCESS_SERVER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_DRAFTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_STARTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
@@ -44,6 +48,9 @@ public class MarkCasesAsAosOverdueTask extends SelfPublishingAsyncTask<Void> {
     @Autowired
     private CaseOrchestrationValues caseOrchestrationValues;
 
+    @Autowired
+    private FeatureToggleService featureToggleService;
+
     private QueryBuilder query;
 
     @PostConstruct
@@ -52,7 +59,7 @@ public class MarkCasesAsAosOverdueTask extends SelfPublishingAsyncTask<Void> {
         log.info("Initialising {} with {} days of grace period.", MarkCasesAsAosOverdueTask.class.getSimpleName(), aosOverdueGracePeriod);
         String limitDate = buildDateForTodayMinusGivenPeriod(aosOverdueGracePeriod + ELASTIC_SEARCH_DAYS_REPRESENTATION);
 
-        String elasticSearchMultiStateSearchQuery = String.join(SPACE, AOS_AWAITING, AOS_STARTED);
+        String elasticSearchMultiStateSearchQuery = buildElasticSearchMultiStateSearchQuery();
 
         query = QueryBuilders.boolQuery()
             .filter(QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, elasticSearchMultiStateSearchQuery).operator(Operator.OR))
@@ -75,16 +82,8 @@ public class MarkCasesAsAosOverdueTask extends SelfPublishingAsyncTask<Void> {
     private final Function<CaseDetails, Optional<ApplicationEvent>> caseDetailsTransformationFunction = caseDetails -> {
         ApplicationEvent eventToRaise;
 
-        boolean caseServedByAlternativeMethod = Optional.ofNullable(caseDetails.getCaseData())
-            .map(caseData -> caseData.get(SERVED_BY_ALTERNATIVE_METHOD))
-            .map(String.class::cast)
-            .map(YES_VALUE::equalsIgnoreCase)
-            .orElse(false);
-        boolean caseServedByProcessServer = Optional.ofNullable(caseDetails.getCaseData())
-            .map(caseData -> caseData.get(SERVED_BY_PROCESS_SERVER))
-            .map(String.class::cast)
-            .map(YES_VALUE::equalsIgnoreCase)
-            .orElse(false);
+        boolean caseServedByAlternativeMethod = isAlternativeService(caseDetails, SERVED_BY_ALTERNATIVE_METHOD);
+        boolean caseServedByProcessServer = isAlternativeService(caseDetails, SERVED_BY_PROCESS_SERVER);
 
         String caseId = caseDetails.getCaseId();
         if (caseServedByAlternativeMethod) {
@@ -107,5 +106,29 @@ public class MarkCasesAsAosOverdueTask extends SelfPublishingAsyncTask<Void> {
 
         return Optional.ofNullable(eventToRaise);
     };
+
+    String buildElasticSearchMultiStateSearchQuery() {
+        StringJoiner searchCriteria = new StringJoiner(SPACE);
+        searchCriteria.add(AOS_AWAITING);
+        searchCriteria.add(AOS_STARTED);
+
+        if (isRespondentRepresentedJourneyEnabled()) {
+            searchCriteria.add(AOS_DRAFTED);
+        }
+
+        return searchCriteria.toString();
+    }
+
+    private Boolean isAlternativeService(CaseDetails caseDetails, String serviceType) {
+        return Optional.ofNullable(caseDetails.getCaseData())
+            .map(caseData -> caseData.get(serviceType))
+            .map(String.class::cast)
+            .map(YES_VALUE::equalsIgnoreCase)
+            .orElse(false);
+    }
+
+    private boolean isRespondentRepresentedJourneyEnabled() {
+        return featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY);
+    }
 
 }
