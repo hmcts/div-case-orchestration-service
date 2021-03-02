@@ -74,13 +74,13 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
     private static final String CASE_REFERENCE_KEY = "CaseReference";
 
     @Mock
-    EmailService emailService;
+    private EmailService emailService;
 
     @Mock
     private TaskCommons taskCommons;
 
     @InjectMocks
-    SendPetitionerSubmissionNotificationEmailTask sendPetitionerSubmissionNotificationEmailTask;
+    private SendPetitionerSubmissionNotificationEmailTask sendPetitionerSubmissionNotificationEmailTask;
 
     private Map<String, Object> testData;
     private TaskContext context;
@@ -145,9 +145,7 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
         expectedTemplateVars.put(NOTIFICATION_RDC_NAME_KEY, TEST_COURT_DISPLAY_NAME);
         expectedTemplateVars.replace(NOTIFICATION_CCD_REFERENCE_KEY, UNFORMATTED_CASE_ID);
 
-        Map returnPayload = sendPetitionerSubmissionNotificationEmailTask.execute(context, testData);
-
-        assertEquals(testData, returnPayload);
+        executeTask();
 
         verify(emailService).sendEmail(
             eq(TEST_USER_EMAIL),
@@ -166,9 +164,7 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
         expectedTemplateVars.replace(NOTIFICATION_CCD_REFERENCE_KEY, UNFORMATTED_CASE_ID);
         expectedTemplateVars.put(NOTIFICATION_RDC_NAME_KEY, SERVICE_CENTRE_DISPLAY_NAME);
 
-        Map returnPayload = sendPetitionerSubmissionNotificationEmailTask.execute(context, testData);
-
-        assertEquals(testData, returnPayload);
+        executeTask();
 
         verify(emailService).sendEmail(
             eq(TEST_USER_EMAIL),
@@ -185,9 +181,7 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
         expectedTemplateVars.replace(NOTIFICATION_CCD_REFERENCE_KEY, UNFORMATTED_CASE_ID);
         expectedTemplateVars.put(NOTIFICATION_RDC_NAME_KEY, TEST_COURT_DISPLAY_NAME);
 
-        Map returnPayload = sendPetitionerSubmissionNotificationEmailTask.execute(context, testData);
-
-        assertEquals(testData, returnPayload);
+        executeTask();
 
         verify(emailService).sendEmail(
             eq(TEST_USER_EMAIL),
@@ -206,9 +200,7 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
         expectedTemplateVars.replace(NOTIFICATION_CCD_REFERENCE_KEY, UNFORMATTED_CASE_ID);
         expectedTemplateVars.put(NOTIFICATION_RDC_NAME_KEY, SERVICE_CENTRE_DISPLAY_NAME);
 
-        Map returnPayload = sendPetitionerSubmissionNotificationEmailTask.execute(context, testData);
-
-        assertEquals(testData, returnPayload);
+        executeTask();
 
         verify(emailService).sendEmail(
             eq(TEST_USER_EMAIL),
@@ -223,9 +215,7 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
         addSolicitorTestData();
         setupSolicitorDocumentData();
 
-        Map returnPayload = sendPetitionerSubmissionNotificationEmailTask.execute(context, testData);
-
-        assertEquals(testData, returnPayload);
+        executeTask();
 
         verify(emailService).sendEmail(
             eq(TEST_SOLICITOR_EMAIL),
@@ -241,9 +231,7 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
         testData.remove(D_8_PETITIONER_EMAIL);
         testData.remove(PREVIOUS_CASE_ID_CCD_KEY);
 
-        Map<String, Object> returnedPayload = sendPetitionerSubmissionNotificationEmailTask.execute(context, testData);
-
-        assertEquals(testData, returnedPayload);
+        executeTask();
 
         verifyNoInteractions(emailService);
     }
@@ -254,9 +242,7 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
         testData.put(D_8_PETITIONER_EMAIL, null);
         testData.remove(PREVIOUS_CASE_ID_CCD_KEY);
 
-        Map<String, Object> returnedPayload = sendPetitionerSubmissionNotificationEmailTask.execute(context, testData);
-
-        assertEquals(testData, returnedPayload);
+        executeTask();
 
         verifyNoInteractions(emailService);
     }
@@ -267,11 +253,14 @@ public class SendPetitionerSubmissionNotificationEmailTaskTest {
         testData.put(D_8_PETITIONER_EMAIL, "");
         testData.remove(PREVIOUS_CASE_ID_CCD_KEY);
 
-        Map<String, Object> returnedPayload = sendPetitionerSubmissionNotificationEmailTask.execute(context, testData);
-
-        assertEquals(testData, returnedPayload);
+        executeTask();
 
         verifyNoInteractions(emailService);
+    }
+
+    private void executeTask() {
+        Map<String, Object> returnedPayload = sendPetitionerSubmissionNotificationEmailTask.execute(context, testData);
+        assertEquals(testData, returnedPayload);
     }
 
     private void setupSolicitorDocumentData() {
