@@ -15,6 +15,7 @@ public class CcdStates {
     public static final String AOS_COMPLETED = "AosCompleted";
     public static final String AOS_OVERDUE = "AosOverdue";
     public static final String AOS_STARTED = "AosStarted";
+    public static final String AOS_DRAFTED = "AosDrafted";
     public static final String AOS_SUBMITTED_AWAITING_ANSWER = "AosSubmittedAwaitingAnswer";
     public static final String AWAITING_DECREE_NISI = "AwaitingDecreeNisi";
     public static final String AWAITING_LEGAL_ADVISOR_REFERRAL = "AwaitingLegalAdvisorReferral";
