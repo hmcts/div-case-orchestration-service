@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.alternativeservice;
+package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import org.joda.time.LocalDate;
 import org.junit.Test;
