@@ -35,10 +35,10 @@ public abstract class DateFieldSetupTask implements Task<Map<String, Object>> {
      * Overwrite if you need other date than default CCD date format of today.
      */
     protected String getFormattedDate(Map<String, Object> caseData) {
-        return getFormattedStringDateForTodayAsDefault(caseData);
+        return getFormattedStringDateForTodayAsDefault();
     }
 
-    private String getFormattedStringDateForTodayAsDefault(Map<String, Object> caseData) {
+    private String getFormattedStringDateForTodayAsDefault() {
         return DateUtils.formatDateFromLocalDate(LocalDate.now());
     }
 }
