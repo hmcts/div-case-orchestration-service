@@ -31,13 +31,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ServiceJourneyE
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.context;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SendSolicitorApplicationSubmittedEmailTaskTest {
+public class PetitionerSolicitorApplicationSubmittedEmailTaskTest {
 
     @Mock
     private EmailService emailService;
 
     @InjectMocks
-    private SendSolicitorApplicationSubmittedEmailTask task;
+    private PetitionerSolicitorApplicationSubmittedEmailTask task;
 
     @Test
     public void shouldSendEmail_ToSolicitor_whenExecuteEmailNotificationTask() throws TaskException {
