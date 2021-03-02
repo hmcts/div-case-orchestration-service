@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendSolicitorApplicationSubmittedEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
 
@@ -31,9 +30,9 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
 
     private final AddMiniPetitionDraftTask addMiniPetitionDraftTask;
     private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
-    private final SendSolicitorApplicationSubmittedEmailTask sendSolicitorApplicationSubmittedEmailTask;
     private final SetPetitionerSolicitorOrganisationPolicyReferenceTask setPetitionerSolicitorOrganisationPolicyReferenceTask;
     private final SetRespondentSolicitorOrganisationPolicyReferenceTask setRespondentSolicitorOrganisationPolicyReferenceTask;
+
     private final FeatureToggleService featureToggleService;
 
     public Map<String, Object> run(CaseDetails caseDetails, final String authToken) throws WorkflowException {
@@ -55,7 +54,6 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
 
         tasks.add(getAddMiniPetitionDraftTask(caseId));
         tasks.add(getAddNewDocumentsToCaseDataTask(caseId));
-        tasks.add(getSolicitorApplicationSubmittedEmailTask(caseId));
 
         if (featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)) {
             log.info("Adding OrganisationPolicyReferenceTasks, REPRESENTED_RESPONDENT_JOURNEY feature toggle is set to true.");
@@ -64,11 +62,6 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
         }
 
         return tasks.toArray(new Task[] {});
-    }
-
-    private Task<Map<String, Object>> getSolicitorApplicationSubmittedEmailTask(String caseId) {
-        log.info("CaseId: {} Adding task to send Application Submitted email to Petitioner solicitor.", caseId);
-        return sendSolicitorApplicationSubmittedEmailTask;
     }
 
     private Task<Map<String, Object>> getAddNewDocumentsToCaseDataTask(String caseId) {

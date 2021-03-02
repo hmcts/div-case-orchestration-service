@@ -6,24 +6,33 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionerSolicitorApplicationSubmittedEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPaymentTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RemoveMiniPetitionDraftDocumentsTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSolicitorCaseDataTask;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_CCD_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTaskWasNeverCalled;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -41,6 +50,12 @@ public class SolicitorSubmissionWorkflowTest {
     @Mock
     private SendPetitionerSubmissionNotificationEmailTask sendPetitionerSubmissionNotificationEmailTask;
 
+    @Mock
+    private PetitionerSolicitorApplicationSubmittedEmailTask petitionerSolicitorApplicationSubmittedEmailTask;
+
+    @Mock
+    private FeatureToggleService featureToggleService;
+
     @InjectMocks
     private SolicitorSubmissionWorkflow solicitorSubmissionWorkflow;
 
@@ -49,7 +64,7 @@ public class SolicitorSubmissionWorkflowTest {
 
     @Before
     public void setup() {
-        caseData = Collections.emptyMap();
+        caseData = new HashMap<>();
         ccdCallbackRequestRequest = CcdCallbackRequest.builder()
             .eventId(TEST_EVENT_ID)
             .token(TEST_TOKEN)
@@ -62,7 +77,64 @@ public class SolicitorSubmissionWorkflowTest {
     }
 
     @Test
-    public void runShouldExecuteTasksAndReturnPayload() throws Exception {
+    public void executeNonFeatureToggledTasksAndReturnPayloadWhenRespondentJourneyToggledOff() throws Exception {
+        disabledRespondentJourney();
+        runTestExecuteAllTasksButPetSolEmailAreCalled();
+    }
+
+    @Test
+    public void executeTasksButNotPetSolEmailAndReturnPayloadWhenPetitionerIsNotRepresented() throws Exception {
+        enabledRespondentJourney();
+        runTestExecuteAllTasksButPetSolEmailAreCalled();
+    }
+
+    @Test
+    public void executeTasksButNotPetSolEmailAndReturnPayloadWhenCaseIsAmended() throws Exception {
+        enabledRespondentJourney();
+        givenAmendedCase();
+
+        runTestExecuteAllTasksButPetSolEmailAreCalled();
+    }
+
+    @Test
+    public void executeAllTasksAndReturnPayloadWhenRespondentJourneyEnabledAndPetRepresentedAndCaseNotAmended() throws Exception {
+        enabledRespondentJourney();
+        givenPetitionerRepresented();
+
+        runTestAllTasksAreCalled();
+    }
+
+    private void runTestAllTasksAreCalled() throws WorkflowException {
+        mockTasksExecution(
+            caseData,
+            validateSolicitorCaseDataTask,
+            processPbaPaymentTask,
+            removeMiniPetitionDraftDocumentsTask,
+            sendPetitionerSubmissionNotificationEmailTask,
+            petitionerSolicitorApplicationSubmittedEmailTask
+        );
+
+        assertThat(solicitorSubmissionWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN), is(caseData));
+
+        verifyTasksCalledInOrder(
+            caseData,
+            validateSolicitorCaseDataTask,
+            processPbaPaymentTask,
+            removeMiniPetitionDraftDocumentsTask,
+            sendPetitionerSubmissionNotificationEmailTask,
+            petitionerSolicitorApplicationSubmittedEmailTask
+        );
+    }
+
+    private void givenAmendedCase() {
+        caseData.put(PREVIOUS_CASE_ID_CCD_KEY, new Object());
+    }
+
+    private void givenPetitionerRepresented() {
+        caseData.put(PETITIONER_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL);
+    }
+
+    private void runTestExecuteAllTasksButPetSolEmailAreCalled() throws WorkflowException {
         mockTasksExecution(
             caseData,
             validateSolicitorCaseDataTask,
@@ -80,5 +152,15 @@ public class SolicitorSubmissionWorkflowTest {
             removeMiniPetitionDraftDocumentsTask,
             sendPetitionerSubmissionNotificationEmailTask
         );
+
+        verifyTaskWasNeverCalled(petitionerSolicitorApplicationSubmittedEmailTask);
+    }
+
+    private void enabledRespondentJourney() {
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
+    }
+
+    private void disabledRespondentJourney() {
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(false);
     }
 }

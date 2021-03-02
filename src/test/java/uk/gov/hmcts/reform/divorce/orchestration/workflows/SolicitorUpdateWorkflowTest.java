@@ -8,12 +8,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendSolicitorApplicationSubmittedEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
 
@@ -24,8 +22,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksWereNeverCalled;
@@ -34,28 +30,24 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.ve
 public class SolicitorUpdateWorkflowTest {
 
     @Mock
-    AddMiniPetitionDraftTask addMiniPetitionDraftTask;
+    private AddMiniPetitionDraftTask addMiniPetitionDraftTask;
 
     @Mock
-    AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
+    private AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     @Mock
-    SetPetitionerSolicitorOrganisationPolicyReferenceTask setPetitionerSolicitorOrganisationPolicyReferenceTask;
+    private SetPetitionerSolicitorOrganisationPolicyReferenceTask setPetitionerSolicitorOrganisationPolicyReferenceTask;
 
     @Mock
-    SetRespondentSolicitorOrganisationPolicyReferenceTask setRespondentSolicitorOrganisationPolicyReferenceTask;
+    private SetRespondentSolicitorOrganisationPolicyReferenceTask setRespondentSolicitorOrganisationPolicyReferenceTask;
 
     @Mock
-    SendSolicitorApplicationSubmittedEmailTask sendSolicitorApplicationSubmittedEmailTask;
-
-    @Mock
-    FeatureToggleService featureToggleService;
+    private FeatureToggleService featureToggleService;
 
     @InjectMocks
-    SolicitorUpdateWorkflow solicitorUpdateWorkflow;
+    private SolicitorUpdateWorkflow solicitorUpdateWorkflow;
 
     private Map<String, Object> caseData;
-    private TaskContext context;
     private CaseDetails caseDetails;
 
 
@@ -65,9 +57,6 @@ public class SolicitorUpdateWorkflowTest {
         caseDetails = CaseDetails.builder()
             .caseData(caseData)
             .build();
-        context = new DefaultTaskContext();
-        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
     }
 
     @Test
@@ -75,19 +64,15 @@ public class SolicitorUpdateWorkflowTest {
         mockTasksExecution(
             caseData,
             addMiniPetitionDraftTask,
-            addNewDocumentsToCaseDataTask,
-            sendSolicitorApplicationSubmittedEmailTask
+            addNewDocumentsToCaseDataTask
         );
 
-        Map<String, Object> resultCaseData = solicitorUpdateWorkflow.run(caseDetails, AUTH_TOKEN);
-
-        assertThat(caseData, is(resultCaseData));
+        executeWorkflow();
 
         verifyTasksCalledInOrder(
             caseData,
             addMiniPetitionDraftTask,
-            addNewDocumentsToCaseDataTask,
-            sendSolicitorApplicationSubmittedEmailTask
+            addNewDocumentsToCaseDataTask
         );
     }
 
@@ -98,19 +83,16 @@ public class SolicitorUpdateWorkflowTest {
             caseData,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
-            sendSolicitorApplicationSubmittedEmailTask,
             setPetitionerSolicitorOrganisationPolicyReferenceTask,
             setRespondentSolicitorOrganisationPolicyReferenceTask
         );
 
-        Map<String, Object> resultCaseData = solicitorUpdateWorkflow.run(caseDetails, AUTH_TOKEN);
-        assertThat(caseData, is(resultCaseData));
+        executeWorkflow();
 
         verifyTasksCalledInOrder(
             caseData,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
-            sendSolicitorApplicationSubmittedEmailTask,
             setPetitionerSolicitorOrganisationPolicyReferenceTask,
             setRespondentSolicitorOrganisationPolicyReferenceTask
         );
@@ -122,12 +104,10 @@ public class SolicitorUpdateWorkflowTest {
         mockTasksExecution(
             caseData,
             addMiniPetitionDraftTask,
-            addNewDocumentsToCaseDataTask,
-            sendSolicitorApplicationSubmittedEmailTask
+            addNewDocumentsToCaseDataTask
         );
 
-        Map<String, Object> resultCaseData = solicitorUpdateWorkflow.run(caseDetails, AUTH_TOKEN);
-        assertThat(caseData, is(resultCaseData));
+        executeWorkflow();
 
         verifyTasksCalledInOrder(
             caseData,
@@ -137,5 +117,10 @@ public class SolicitorUpdateWorkflowTest {
 
         verifyTasksWereNeverCalled(setPetitionerSolicitorOrganisationPolicyReferenceTask);
         verifyTasksWereNeverCalled(setRespondentSolicitorOrganisationPolicyReferenceTask);
+    }
+
+    private void executeWorkflow() throws WorkflowException {
+        Map<String, Object> resultCaseData = solicitorUpdateWorkflow.run(caseDetails, AUTH_TOKEN);
+        assertThat(caseData, is(resultCaseData));
     }
 }
