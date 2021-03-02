@@ -30,9 +30,10 @@ public class SolicitorSubmissionWorkflow extends DefaultWorkflow<Map<String, Obj
     private final SendPetitionerSubmissionNotificationEmailTask sendPetitionerSubmissionNotificationEmailTask;
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
-        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
-        String caseId = caseDetails.getCaseId();
-        log.info("About to run {} workflow for case id {}", this.getClass().getSimpleName(), caseId);
+        final CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        final String caseId = caseDetails.getCaseId();
+
+        log.info("CaseId {}, SolicitorSubmissionWorkflow is about to run.", caseId);
 
         return this.execute(
             new Task[] {
@@ -46,5 +47,4 @@ public class SolicitorSubmissionWorkflow extends DefaultWorkflow<Map<String, Obj
             ImmutablePair.of(CASE_ID_JSON_KEY, caseId)
         );
     }
-
 }
