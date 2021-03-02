@@ -24,6 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RELATIONSHIP_HUSBAND;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESP_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESP_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_CLAIM_GRANTED;
@@ -38,6 +39,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
@@ -78,17 +80,22 @@ public class CaseLinkedForHearingTest extends MockedFunctionalTest {
                 hasJsonPath("$.errors", nullValue())
             )));
 
-        verify(mockClient).sendEmail(
-            eq(PETITIONER_COE_NOTIFICATION_EMAIL_TEMPLATE_ID),
-            eq("petitioner@justice.uk"),
-            any(),
-            any()
-        );
+        verifyPetitionerCoENotificationEmailWasSent();
 
         verify(mockClient).sendEmail(
             eq(RESPONDENT_COE_NOTIFICATION_EMAIL_TEMPLATE_ID),
             eq("respondent@justice.uk"),
-            any(),
+            eq(ImmutableMap.<String, Object>builder()
+                .put(NOTIFICATION_CASE_NUMBER_KEY, "HR290831")
+                .put(NOTIFICATION_HUSBAND_OR_WIFE, TEST_RELATIONSHIP_HUSBAND)
+                .put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, "Jamed")
+                .put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, "Jane")
+                .put(LIMIT_DATE_TO_CONTACT_COURT, "7 April 2019")
+                .put(COSTS_CLAIM_GRANTED, "yes")
+                .put(DATE_OF_HEARING, "21 April 2019")
+                .put(NOTIFICATION_EMAIL, "respondent@justice.uk")
+                .put(COURT_NAME_TEMPLATE_ID, "Liverpool Civil and Family Court Hearing Centre")
+                .build()),
             any()
         );
     }
@@ -116,22 +123,7 @@ public class CaseLinkedForHearingTest extends MockedFunctionalTest {
                 hasJsonPath("$.errors", nullValue())
             )));
 
-        verify(mockClient).sendEmail(
-            eq(PETITIONER_COE_NOTIFICATION_EMAIL_TEMPLATE_ID),
-            eq("petitioner@justice.uk"),
-            eq(ImmutableMap.<String, Object>builder()
-                .put(NOTIFICATION_CASE_NUMBER_KEY, "HR290831")
-                .put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, "Johnson")
-                .put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, "James")
-                .put(LIMIT_DATE_TO_CONTACT_COURT, "7 April 2019")
-                .put(COSTS_CLAIM_GRANTED, "yes")
-                .put(DATE_OF_HEARING, "21 April 2019")
-                .put(NOTIFICATION_EMAIL, "petitioner@justice.uk")
-                .put(COSTS_CLAIM_NOT_GRANTED, "no")
-                .put(COURT_NAME_TEMPLATE_ID, "Liverpool Civil and Family Court Hearing Centre")
-                .build()),
-            any()
-        );
+        verifyPetitionerCoENotificationEmailWasSent();
 
         verify(mockClient).sendEmail(
             eq(SOL_RESP_COE_NOTIFICATION_TEMPLATE_ID),
@@ -146,6 +138,25 @@ public class CaseLinkedForHearingTest extends MockedFunctionalTest {
                 .put(NOTIFICATION_PET_NAME, "James Johnson")
                 .put(NOTIFICATION_CCD_REFERENCE_KEY, "0123456789012345")
                 .put(NOTIFICATION_RESP_NAME, "Jane Jamed")
+                .build()),
+            any()
+        );
+    }
+
+    private void verifyPetitionerCoENotificationEmailWasSent() throws Exception {
+        verify(mockClient).sendEmail(
+            eq(PETITIONER_COE_NOTIFICATION_EMAIL_TEMPLATE_ID),
+            eq("petitioner@justice.uk"),
+            eq(ImmutableMap.<String, Object>builder()
+                .put(NOTIFICATION_CASE_NUMBER_KEY, "HR290831")
+                .put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, "Johnson")
+                .put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, "James")
+                .put(LIMIT_DATE_TO_CONTACT_COURT, "7 April 2019")
+                .put(COSTS_CLAIM_GRANTED, "yes")
+                .put(DATE_OF_HEARING, "21 April 2019")
+                .put(NOTIFICATION_EMAIL, "petitioner@justice.uk")
+                .put(COSTS_CLAIM_NOT_GRANTED, "no")
+                .put(COURT_NAME_TEMPLATE_ID, "Liverpool Civil and Family Court Hearing Centre")
                 .build()),
             any()
         );
