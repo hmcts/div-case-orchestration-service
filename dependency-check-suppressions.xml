@@ -81,7 +81,7 @@
         <packageUrl regex="true">^pkg:maven/junit/junit@.*$</packageUrl>
         <vulnerabilityName>CVE-2020-15250</vulnerabilityName>
     </suppress>
-    <suppress until="2030-01-01">
+    <suppress>
         <notes><![CDATA[
      spring-security-crypto-5.2.4.RELEASE.jar (pkg:maven/org.springframework.security/spring-security-crypto@5.2.4.RELEASE, cpe:2.3:a:pivotal_software:spring_security:5.2.4:release:*:*:*:*:*:*)
    ]]></notes>
