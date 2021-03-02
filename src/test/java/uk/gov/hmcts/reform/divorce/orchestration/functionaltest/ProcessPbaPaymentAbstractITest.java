@@ -43,6 +43,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -207,10 +208,8 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
 
         makePaymentAndReturn();
 
-        verifyAmendendApplicationSubmittedEmailWasSent();
+        verifyAmendedApplicationSubmittedEmailWasSent();
     }
-
-
 
     @Test
     public void makePaymentAndSendEmailToPetitionerSolicitor_whenPetitionerRepresentedAndCaseNotAmended() throws Exception {
@@ -281,6 +280,8 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expected)));
+
+        verifyApplicationSubmittedEmailWasSent();
     }
 
     @Test
@@ -320,6 +321,8 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expected)));
+
+        verifyApplicationSubmittedEmailWasSent();
     }
 
     @Test
@@ -359,6 +362,8 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expected)));
+
+        verifyApplicationSubmittedEmailWasSent();
     }
 
     @Test
@@ -389,6 +394,8 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expected)));
+
+        verifyNoInteractions(mockEmailClient);
     }
 
     @Test
@@ -399,7 +406,8 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
             HttpStatus.FORBIDDEN,
             expectedErrorMessage(PbaErrorMessage.CAE0001),
             buildValidCaseData(),
-            failedResponse);
+            failedResponse
+        );
     }
 
     @Test
@@ -410,7 +418,8 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
             HttpStatus.FORBIDDEN,
             expectedErrorMessage(PbaErrorMessage.CAE0004),
             buildValidCaseData(),
-            failedResponse);
+            failedResponse
+        );
     }
 
     @Test
@@ -420,7 +429,8 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
             HttpStatus.NOT_FOUND,
             expectedErrorMessage(PbaErrorMessage.NOTFOUND),
             buildValidCaseData(),
-            basicFailedResponse);
+            basicFailedResponse
+        );
     }
 
     @Test
@@ -430,7 +440,8 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
             HttpStatus.UNPROCESSABLE_ENTITY,
             expectedErrorMessage(PbaErrorMessage.GENERAL),
             buildValidCaseData(),
-            basicFailedResponse);
+            basicFailedResponse
+        );
     }
 
     @Test
@@ -440,7 +451,8 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
             HttpStatus.GATEWAY_TIMEOUT,
             expectedErrorMessage(PbaErrorMessage.GENERAL),
             buildValidCaseData(),
-            basicFailedResponse);
+            basicFailedResponse
+        );
     }
 
     @Test
@@ -450,7 +462,8 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
             HttpStatus.BAD_REQUEST,
             expectedErrorMessage(PbaErrorMessage.GENERAL),
             buildValidCaseData(),
-            basicFailedResponse);
+            basicFailedResponse
+        );
     }
 
     private String expectedErrorMessage(PbaErrorMessage pbaErrorMessage) {
@@ -515,6 +528,8 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
         ccdCallbackRequest = buildCcdCallbackRequest();
         setupStubs(httpStatus, caseData, errorPaymentResponse);
         performRequestAndVerifyExpectations(expectedErrorMessage);
+
+        verifyNoInteractions(mockEmailClient);
     }
 
     private void performRequestAndVerifyExpectations(String expectedErrorMessage) throws Exception {
@@ -593,7 +608,7 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
         );
     }
 
-    private void verifyAmendendApplicationSubmittedEmailWasSent() throws NotificationClientException {
+    private void verifyAmendedApplicationSubmittedEmailWasSent() throws NotificationClientException {
         verify(mockEmailClient).sendEmail(
             eq(APPLIC_SUBMISSION_AMEND_TEMPLATE_ID),
             eq(TEST_PETITIONER_EMAIL),
