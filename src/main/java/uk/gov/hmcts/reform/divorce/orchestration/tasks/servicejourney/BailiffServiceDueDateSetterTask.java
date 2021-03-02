@@ -25,8 +25,6 @@ public abstract class BailiffServiceDueDateSetterTask extends DueDateSetterTask 
 
     @Override
     protected String getFormattedDate(Map<String, Object> caseData) {
-        // please see DatesDataExtractor, replace it by new method added there
-        // add unit test for `getCertificateOfServiceDateUnformatted`
         String date = getCertificateOfServiceDateUnformatted(caseData);
 
         LocalDate localDate = LocalDate.parse(date, DateTimeFormatter.ofPattern(DateUtils.Formats.CCD_DATE));

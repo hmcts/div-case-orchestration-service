@@ -133,8 +133,8 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
             return CcdCallbackResponse.builder()
                     .data(bailiffOutcomeWorkflow.run(caseDetails, authorisation))
                     .build();
-        } catch(WorkflowException ex) {
-            throw new ServiceJourneyServiceException(ex, caseDetails.getCaseId());
+        } catch (WorkflowException exception) {
+            throw new ServiceJourneyServiceException(exception, caseDetails.getCaseId());
         }
     }
 }

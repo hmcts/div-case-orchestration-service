@@ -188,7 +188,7 @@ public class ServiceJourneyServiceImplTest {
             throws ServiceJourneyServiceException, WorkflowException {
         CcdCallbackRequest input = buildCcdCallbackRequest();
 
-        when(bailiffOutcomeWorkflow.run(any(CaseDetails.class), AUTH_TOKEN))
+        when(bailiffOutcomeWorkflow.run(any(CaseDetails.class), anyString()))
                 .thenThrow(WorkflowException.class);
 
         classUnderTest.setupAddBailiffReturnEvent(input.getCaseDetails(), AUTH_TOKEN);
