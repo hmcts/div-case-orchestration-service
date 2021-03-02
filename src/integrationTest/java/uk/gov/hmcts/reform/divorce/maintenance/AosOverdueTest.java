@@ -23,6 +23,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVED_BY_ALTERNATIVE_METHOD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVED_BY_PROCESS_SERVER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_DRAFTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_OVERDUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_STARTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
@@ -35,13 +36,17 @@ public class AosOverdueTest extends RetrieveCaseSupport {
     private String jobSchedulerContextPath;
 
     private static final String SUBMIT_COMPLETE_CASE_JSON_FILE_PATH = "submit-complete-case.json";
-    private static final String TEST_AOS_AWAITING_EVENT_ID = "testAosAwaiting";
-    private static final String TEST_AOS_STARTED_EVENT_ID = "testAosStarted";
+    private static final String TEST_AOS_AWAITING_EVENT = "testAosAwaiting";
+    private static final String TEST_AOS_STARTED_EVENT = "testAosStarted";
+    private static final String TEST_AOS_DRAFTED_EVENT = "testAosDrafted";
 
     private String aosAwaitingCaseId;
     private String aosStartedCaseId;
     private String servedByProcessServerCaseId;
     private String servedByAlternativeMethodCaseId;
+    private String aosDraftedCaseId;
+    private String aosDraftedServedByProcessServerCaseId;
+    private String aosDraftedServedByAlternativeMethodCaseId;
 
     private UserDetails citizenUser;
     private UserDetails caseworkerUser;
@@ -54,15 +59,25 @@ public class AosOverdueTest extends RetrieveCaseSupport {
         citizenUser = createCitizenUser();
         caseworkerUser = createCaseWorkerUser();
 
-        aosAwaitingCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_AWAITING_EVENT_ID);
-        aosStartedCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_STARTED_EVENT_ID);
-        servedByProcessServerCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_STARTED_EVENT_ID, Pair.of(SERVED_BY_PROCESS_SERVER, YES_VALUE));
-        servedByAlternativeMethodCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_STARTED_EVENT_ID, Pair.of(SERVED_BY_ALTERNATIVE_METHOD, YES_VALUE));
+        aosAwaitingCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_AWAITING_EVENT);
+        aosStartedCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_STARTED_EVENT);
+        servedByProcessServerCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_STARTED_EVENT, Pair.of(SERVED_BY_PROCESS_SERVER, YES_VALUE));
+        servedByAlternativeMethodCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_STARTED_EVENT, Pair.of(SERVED_BY_ALTERNATIVE_METHOD, YES_VALUE));
+
+        aosDraftedCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_DRAFTED_EVENT);
+        aosDraftedServedByProcessServerCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_DRAFTED_EVENT,
+            Pair.of(SERVED_BY_PROCESS_SERVER, YES_VALUE));
+        aosDraftedServedByAlternativeMethodCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_DRAFTED_EVENT,
+            Pair.of(SERVED_BY_ALTERNATIVE_METHOD, YES_VALUE));
 
         elasticSearchTestHelper.ensureCaseIsSearchable(aosAwaitingCaseId, caseworkerUser.getAuthToken(), AOS_AWAITING);
         elasticSearchTestHelper.ensureCaseIsSearchable(aosStartedCaseId, caseworkerUser.getAuthToken(), AOS_STARTED);
         elasticSearchTestHelper.ensureCaseIsSearchable(servedByProcessServerCaseId, caseworkerUser.getAuthToken(), AOS_STARTED);
         elasticSearchTestHelper.ensureCaseIsSearchable(servedByAlternativeMethodCaseId, caseworkerUser.getAuthToken(), AOS_STARTED);
+
+        elasticSearchTestHelper.ensureCaseIsSearchable(aosDraftedCaseId, caseworkerUser.getAuthToken(), AOS_DRAFTED);
+        elasticSearchTestHelper.ensureCaseIsSearchable(aosDraftedServedByProcessServerCaseId, caseworkerUser.getAuthToken(), AOS_DRAFTED);
+        elasticSearchTestHelper.ensureCaseIsSearchable(aosDraftedServedByAlternativeMethodCaseId, caseworkerUser.getAuthToken(), AOS_DRAFTED);
     }
 
     private String createCaseAndTriggerGivenEvent(String eventId, Pair<String, Object>... additionalCaseData) {
@@ -89,6 +104,9 @@ public class AosOverdueTest extends RetrieveCaseSupport {
             assertCaseIsInExpectedState(aosStartedCaseId, AOS_STARTED);
             assertCaseIsInExpectedState(servedByProcessServerCaseId, AWAITING_DECREE_NISI);
             assertCaseIsInExpectedState(servedByAlternativeMethodCaseId, AWAITING_DECREE_NISI);
+            assertCaseIsInExpectedState(aosDraftedCaseId, AOS_OVERDUE);
+            assertCaseIsInExpectedState(aosDraftedServedByProcessServerCaseId, AWAITING_DECREE_NISI);
+            assertCaseIsInExpectedState(aosDraftedServedByAlternativeMethodCaseId, AWAITING_DECREE_NISI);
         });
     }
 

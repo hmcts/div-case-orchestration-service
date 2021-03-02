@@ -3,9 +3,11 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.aos;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.github.tomakehurst.wiremock.matching.AnythingPattern;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctional
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -40,6 +43,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.D
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVED_BY_ALTERNATIVE_METHOD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVED_BY_PROCESS_SERVER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_DRAFTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_STARTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -67,11 +71,14 @@ public class AosOverdueTest extends MockedFunctionalTest {
             AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD);
     }
 
+    @After
+    public void tearDown() {
+        maintenanceServiceServer.resetAll();
+    }
+
     @Test
     public void shouldMoveEligibleCasesToAosOverdue() throws Exception {
-        QueryBuilder expectedQuery = QueryBuilders.boolQuery()
-            .filter(QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, String.join(SPACE, AOS_AWAITING, AOS_STARTED)).operator(Operator.OR))
-            .filter(QueryBuilders.rangeQuery("data." + DUE_DATE).lt(buildDateForTodayMinusGivenPeriod(TEST_CONFIGURED_AOS_OVERDUE_GRACE_PERIOD)));
+        QueryBuilder expectedQuery = buildCaseMaintenanceQuery();
         stubCaseMaintenanceSearchEndpoint(asList(
             CaseDetails.builder().state(AOS_STARTED).caseId("1").build(),
             CaseDetails.builder().state(AOS_AWAITING).caseId("2").build(),
@@ -94,6 +101,43 @@ public class AosOverdueTest extends MockedFunctionalTest {
             verifyCaseWasUpdated("7", AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD);
         });
         verifyCaseWasNotUpdated("1", NOT_RECEIVED_AOS);
+    }
+
+    @Test
+    public void shouldMoveEligibleAosDraftedCasesToAosOverdue() throws Exception {
+        QueryBuilder expectedCMSQuery = buildCaseMaintenanceQuery();
+        List<CaseDetails> expectedCMSResponse = buildCaseMaintenanceResponseWithAosDraftedCases();
+        stubCaseMaintenanceSearchEndpoint(expectedCMSResponse, expectedCMSQuery);
+
+        mockMvc.perform(post("/cases/aos/make-overdue").header(AUTHORIZATION, AUTH_TOKEN))
+            .andExpect(status().isOk());
+
+        await().untilAsserted(() -> {
+            verifyCaseWasUpdated("2", NOT_RECEIVED_AOS);
+            verifyCaseWasUpdated("3", AOS_NOT_RECEIVED_FOR_PROCESS_SERVER);
+            verifyCaseWasUpdated("4", NOT_RECEIVED_AOS);
+            verifyCaseWasUpdated("5", AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD);
+        });
+        verifyCaseWasNotUpdated("1", NOT_RECEIVED_AOS);
+    }
+
+    private List<CaseDetails> buildCaseMaintenanceResponseWithAosDraftedCases() {
+        return asList(
+            CaseDetails.builder().state(AOS_STARTED).caseId("1").build(),
+            CaseDetails.builder().state(AOS_DRAFTED).caseId("2").build(),
+            CaseDetails.builder().state(AOS_DRAFTED).caseId("3").caseData(Map.of(SERVED_BY_PROCESS_SERVER, YES_VALUE)).build(),
+            CaseDetails.builder().state(AOS_AWAITING).caseId("4").build(),
+            CaseDetails.builder().state(AOS_DRAFTED).caseId("5").caseData(Map.of(SERVED_BY_ALTERNATIVE_METHOD, YES_VALUE)).build()
+        );
+    }
+
+    private BoolQueryBuilder buildCaseMaintenanceQuery() {
+        return QueryBuilders.boolQuery()
+            .filter(QueryBuilders.matchQuery(CASE_STATE_JSON_KEY, String.join(SPACE, AOS_AWAITING, AOS_STARTED, AOS_DRAFTED))
+                .operator(Operator.OR))
+            .filter(QueryBuilders.rangeQuery("data." + DUE_DATE)
+                .lt(buildDateForTodayMinusGivenPeriod(TEST_CONFIGURED_AOS_OVERDUE_GRACE_PERIOD))
+            );
     }
 
     private void verifyCaseWasUpdated(String caseId, String expectedEvent) {
