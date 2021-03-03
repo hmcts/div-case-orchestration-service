@@ -10,13 +10,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeValue;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
@@ -24,9 +23,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountP
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentItem;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentStatus;
-import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPaymentTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.payment.PbaErrorMessage;
+import uk.gov.service.notify.NotificationClientException;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -41,8 +40,10 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -57,8 +58,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_D
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_VERSION;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_ACCOUNT_NUMBER;
@@ -97,9 +100,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_STATEMENT_OF_TRUTH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.STATEMENT_OF_TRUTH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmailTask.AMEND_DESC;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmailTask.AMEND_SOL_DESC;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmailTask.SUBMITTED_DESC;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.buildPaymentClientResponse;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.formatMessage;
@@ -113,8 +113,13 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
     private static final String FORMAT_REMOVE_PETITION_DOCUMENTS_CONTEXT_PATH = "/caseformatter/version/1/remove-all-petition-documents";
     private static final String EAST_MIDLANDS_RDC = "East Midlands Regional Divorce Centre";
 
+    private static final String SOL_APPLICANT_APPLICATION_SUBMITTED_TEMPLATE_ID = "93c79e53-e638-42a6-8584-7d19604e7697";
+    private static final String APPLIC_SUBMISSION_TEMPLATE_ID = "c323844c-5fb9-4ba4-8290-b84139eb033c";
+    private static final String APPLIC_SUBMISSION_AMEND_SOLICITOR_TEMPLATE_ID = "643525d3-9543-4e17-a07e-15f8aa9b1732";
+    private static final String APPLIC_SUBMISSION_AMEND_TEMPLATE_ID = "dafe6549-3b6d-4dca-a7bc-1ab2b1b1b9d6";
+
     @MockBean
-    private EmailService emailService;
+    private EmailClient mockEmailClient;
 
     @Autowired
     private MockMvc webClient;
@@ -124,6 +129,8 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
     private CcdCallbackRequest ccdCallbackRequest;
     private CreditAccountPaymentRequest request;
     private CreditAccountPaymentResponse basicFailedResponse;
+
+    protected abstract void setPbaNumber();
 
     @Before
     public void setUp() {
@@ -179,8 +186,6 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
         request.setFees(Collections.singletonList(paymentItem));
     }
 
-    protected abstract void setPbaNumber();
-
     @Test
     public void givenCaseData_whenProcessPbaPayment_thenMakePaymentAndReturn_PetitionerNewCase() throws Exception {
         caseData.put(STATEMENT_OF_TRUTH, YES_VALUE);
@@ -190,20 +195,7 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
 
         makePaymentAndReturn();
 
-        verify(emailService).sendEmail(
-            eq(TEST_PETITIONER_EMAIL),
-            eq(EmailTemplateNames.APPLIC_SUBMISSION.name()),
-            eq(
-                ImmutableMap.of(
-                    NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_PETITIONER_LAST_NAME,
-                    NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_PETITIONER_FIRST_NAME,
-                    NOTIFICATION_RDC_NAME_KEY, EAST_MIDLANDS_RDC,
-                    NOTIFICATION_CCD_REFERENCE_KEY, formatCaseIdToReferenceNumber(TEST_CASE_ID)
-                )
-            ),
-            eq(SUBMITTED_DESC),
-            eq(LanguagePreference.ENGLISH)
-        );
+        verifyApplicationSubmittedEmailWasSent();
     }
 
     @Test
@@ -216,20 +208,20 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
 
         makePaymentAndReturn();
 
-        verify(emailService).sendEmail(
-            eq(TEST_PETITIONER_EMAIL),
-            eq(EmailTemplateNames.APPLIC_SUBMISSION_AMEND.name()),
-            eq(
-                ImmutableMap.of(
-                    NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_PETITIONER_LAST_NAME,
-                    NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_PETITIONER_FIRST_NAME,
-                    NOTIFICATION_RDC_NAME_KEY, EAST_MIDLANDS_RDC,
-                    NOTIFICATION_CCD_REFERENCE_KEY, formatCaseIdToReferenceNumber(TEST_CASE_ID)
-                )
-            ),
-            eq(AMEND_DESC),
-            eq(LanguagePreference.ENGLISH)
-        );
+        verifyAmendedApplicationSubmittedEmailWasSent();
+    }
+
+    @Test
+    public void makePaymentAndSendEmailToPetitionerSolicitor_whenPetitionerRepresentedAndCaseNotAmended() throws Exception {
+        caseData.put(STATEMENT_OF_TRUTH, YES_VALUE);
+        caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, YES_VALUE);
+        caseData.put(PREVIOUS_CASE_ID_CCD_KEY, null);
+        caseData.put(PETITIONER_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL);
+
+        makePaymentAndReturn();
+
+        verifyApplicationSubmittedEmailWasSent();
+        verifySolicitorApplicationSubmittedEmailWasSent();
     }
 
     @Test
@@ -242,9 +234,9 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
 
         makePaymentAndReturn();
 
-        verify(emailService).sendEmail(
+        verify(mockEmailClient).sendEmail(
+            eq(APPLIC_SUBMISSION_AMEND_SOLICITOR_TEMPLATE_ID),
             eq(TEST_SOLICITOR_EMAIL),
-            eq(EmailTemplateNames.APPLIC_SUBMISSION_AMEND_SOLICITOR.name()),
             eq(
                 ImmutableMap.of(
                     NOTIFICATION_PET_NAME, TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME,
@@ -254,8 +246,7 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
                     NOTIFICATION_CCD_REFERENCE_KEY, TEST_CASE_ID
                 )
             ),
-            eq(AMEND_SOL_DESC),
-            eq(LanguagePreference.ENGLISH)
+            anyString()
         );
     }
 
@@ -289,6 +280,8 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expected)));
+
+        verifyApplicationSubmittedEmailWasSent();
     }
 
     @Test
@@ -328,6 +321,8 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expected)));
+
+        verifyApplicationSubmittedEmailWasSent();
     }
 
     @Test
@@ -367,6 +362,8 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expected)));
+
+        verifyApplicationSubmittedEmailWasSent();
     }
 
     @Test
@@ -397,6 +394,8 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expected)));
+
+        verifyNoInteractions(mockEmailClient);
     }
 
     @Test
@@ -407,7 +406,8 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
             HttpStatus.FORBIDDEN,
             expectedErrorMessage(PbaErrorMessage.CAE0001),
             buildValidCaseData(),
-            failedResponse);
+            failedResponse
+        );
     }
 
     @Test
@@ -418,7 +418,8 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
             HttpStatus.FORBIDDEN,
             expectedErrorMessage(PbaErrorMessage.CAE0004),
             buildValidCaseData(),
-            failedResponse);
+            failedResponse
+        );
     }
 
     @Test
@@ -428,7 +429,8 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
             HttpStatus.NOT_FOUND,
             expectedErrorMessage(PbaErrorMessage.NOTFOUND),
             buildValidCaseData(),
-            basicFailedResponse);
+            basicFailedResponse
+        );
     }
 
     @Test
@@ -438,7 +440,8 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
             HttpStatus.UNPROCESSABLE_ENTITY,
             expectedErrorMessage(PbaErrorMessage.GENERAL),
             buildValidCaseData(),
-            basicFailedResponse);
+            basicFailedResponse
+        );
     }
 
     @Test
@@ -448,7 +451,8 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
             HttpStatus.GATEWAY_TIMEOUT,
             expectedErrorMessage(PbaErrorMessage.GENERAL),
             buildValidCaseData(),
-            basicFailedResponse);
+            basicFailedResponse
+        );
     }
 
     @Test
@@ -458,7 +462,8 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
             HttpStatus.BAD_REQUEST,
             expectedErrorMessage(PbaErrorMessage.GENERAL),
             buildValidCaseData(),
-            basicFailedResponse);
+            basicFailedResponse
+        );
     }
 
     private String expectedErrorMessage(PbaErrorMessage pbaErrorMessage) {
@@ -523,6 +528,8 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
         ccdCallbackRequest = buildCcdCallbackRequest();
         setupStubs(httpStatus, caseData, errorPaymentResponse);
         performRequestAndVerifyExpectations(expectedErrorMessage);
+
+        verifyNoInteractions(mockEmailClient);
     }
 
     private void performRequestAndVerifyExpectations(String expectedErrorMessage) throws Exception {
@@ -568,5 +575,52 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
                 .withStatus(HttpStatus.OK.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                 .withBody(convertObjectToJsonString(data))));
+    }
+
+    private void verifySolicitorApplicationSubmittedEmailWasSent() throws NotificationClientException {
+        verify(mockEmailClient).sendEmail(
+            eq(SOL_APPLICANT_APPLICATION_SUBMITTED_TEMPLATE_ID),
+            eq(TEST_SOLICITOR_EMAIL),
+            eq(ImmutableMap.<String, Object>builder()
+                .put(NOTIFICATION_PET_NAME, TEST_PETITIONER_FULL_NAME)
+                .put(NOTIFICATION_RESP_NAME, TEST_RESPONDENT_FULL_NAME)
+                .put(NOTIFICATION_CCD_REFERENCE_KEY, TEST_CASE_ID)
+                .put(NOTIFICATION_SOLICITOR_NAME, TEST_SOLICITOR_NAME)
+                .build()
+            ),
+            anyString()
+        );
+    }
+
+    private void verifyApplicationSubmittedEmailWasSent() throws NotificationClientException {
+        verify(mockEmailClient).sendEmail(
+            eq(APPLIC_SUBMISSION_TEMPLATE_ID),
+            eq(TEST_PETITIONER_EMAIL),
+            eq(
+                ImmutableMap.of(
+                    NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_PETITIONER_LAST_NAME,
+                    NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_PETITIONER_FIRST_NAME,
+                    NOTIFICATION_RDC_NAME_KEY, EAST_MIDLANDS_RDC,
+                    NOTIFICATION_CCD_REFERENCE_KEY, formatCaseIdToReferenceNumber(TEST_CASE_ID)
+                )
+            ),
+            anyString()
+        );
+    }
+
+    private void verifyAmendedApplicationSubmittedEmailWasSent() throws NotificationClientException {
+        verify(mockEmailClient).sendEmail(
+            eq(APPLIC_SUBMISSION_AMEND_TEMPLATE_ID),
+            eq(TEST_PETITIONER_EMAIL),
+            eq(
+                ImmutableMap.of(
+                    NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_PETITIONER_LAST_NAME,
+                    NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_PETITIONER_FIRST_NAME,
+                    NOTIFICATION_RDC_NAME_KEY, EAST_MIDLANDS_RDC,
+                    NOTIFICATION_CCD_REFERENCE_KEY, formatCaseIdToReferenceNumber(TEST_CASE_ID)
+                )
+            ),
+            anyString()
+        );
     }
 }

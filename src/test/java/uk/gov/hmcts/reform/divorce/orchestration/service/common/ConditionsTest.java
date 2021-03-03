@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.service.common;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceServiceApplication;
@@ -8,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_GRANTED;
@@ -15,11 +17,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.S
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_CCD_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.BAILIFF;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DEEMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DISPENSED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isAwaitingServiceConsideration;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isPetitionAmended;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationBailiff;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDeemed;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDeemedOrDispensed;
@@ -130,6 +134,19 @@ public class ConditionsTest {
             .build();
 
         assertThat(isAwaitingServiceConsideration(caseDetails), is(false));
+    }
+
+    @Test
+    public void isPetitionAmendedShouldReturnFalse() {
+        assertThat(isPetitionAmended(emptyMap()), is(false));
+        assertThat(isPetitionAmended(buildCaseData(PREVIOUS_CASE_ID_CCD_KEY, null)), is(false));
+
+    }
+
+    @Test
+    public void isPetitionAmendedShouldReturnTrue() {
+        assertThat(isPetitionAmended(ImmutableMap.of(PREVIOUS_CASE_ID_CCD_KEY, new HashMap<>())), is(true));
+
     }
 
     private static void assertApplicationIsNotDeemedForValue(String value) {
