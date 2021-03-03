@@ -24,7 +24,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_D8_CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FULL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RELATIONSHIP_HUSBAND;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FULL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESP_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESP_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_CLAIM_GRANTED;
@@ -59,15 +68,6 @@ public class CaseLinkedForHearingTest extends MockedFunctionalTest {
     private static final String TEST_COURT_NAME = "Liverpool Civil and Family Court Hearing Centre";
     private static final String TEST_DATE_OF_HEARING = "21 April 2019";
     private static final String TEST_LIMIT_DATE_TO_CONTACT_COURT = "7 April 2019";
-    private static final String TEST_CASE_NUMBER = "HR290831";
-    private static final String TEST_PETITIONER_EMAIL = "petitioner@justice.uk";
-    private static final String TEST_PETITIONER_FIRST_NAME = "James";
-    private static final String TEST_PETITIONER_LAST_NAME = "Johnson";
-    private static final String TEST_PETITIONER_FULL_NAME = TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME;
-    private static final String TEST_RESPONDENT_EMAIL = "respondent@justice.uk";
-    private static final String TEST_RESPONDENT_FIRST_NAME = "Jane";
-    private static final String TEST_RESPONDENT_LAST_NAME = "Jamed";
-    private static final String TEST_RESPONDENT_FULL_NAME = TEST_RESPONDENT_FIRST_NAME + " " + TEST_RESPONDENT_LAST_NAME;
     private static final String TEST_CCD_REFERENCE = "0123456789012345";
 
     @Autowired
@@ -103,7 +103,7 @@ public class CaseLinkedForHearingTest extends MockedFunctionalTest {
             eq(RESPONDENT_COE_NOTIFICATION_EMAIL_TEMPLATE_ID),
             eq(TEST_RESPONDENT_EMAIL),
             eq(ImmutableMap.<String, Object>builder()
-                .put(NOTIFICATION_CASE_NUMBER_KEY, TEST_CASE_NUMBER)
+                .put(NOTIFICATION_CASE_NUMBER_KEY, TEST_D8_CASE_REFERENCE)
                 .put(NOTIFICATION_HUSBAND_OR_WIFE, TEST_RELATIONSHIP_HUSBAND)
                 .put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_RESPONDENT_LAST_NAME)
                 .put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_RESPONDENT_FIRST_NAME)
@@ -165,7 +165,7 @@ public class CaseLinkedForHearingTest extends MockedFunctionalTest {
             eq(PETITIONER_COE_NOTIFICATION_EMAIL_TEMPLATE_ID),
             eq(TEST_PETITIONER_EMAIL),
             eq(ImmutableMap.<String, Object>builder()
-                .put(NOTIFICATION_CASE_NUMBER_KEY, TEST_CASE_NUMBER)
+                .put(NOTIFICATION_CASE_NUMBER_KEY, TEST_D8_CASE_REFERENCE)
                 .put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_PETITIONER_LAST_NAME)
                 .put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_PETITIONER_FIRST_NAME)
                 .put(LIMIT_DATE_TO_CONTACT_COURT, TEST_LIMIT_DATE_TO_CONTACT_COURT)
