@@ -1718,6 +1718,7 @@ public class CallbackControllerTest {
 
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody(), is(expectedResponse));
+        verify(serviceJourneyService).setupAddBailiffReturnEvent(caseDetails, AUTH_TOKEN);
     }
 
     @Test

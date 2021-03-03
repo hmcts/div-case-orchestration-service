@@ -6,7 +6,6 @@ import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.Map;
 
 public abstract class DueDateSetterTask extends DateFieldSetupTask {
 
@@ -18,7 +17,7 @@ public abstract class DueDateSetterTask extends DateFieldSetupTask {
     }
 
     @Override
-    protected String getFormattedDate(Map<String, Object> caseData) {
+    protected String getFormattedDate() {
         return DateUtils.formatDateFromLocalDate(LocalDate.now().plus(getDueDateOffsetInDays(), ChronoUnit.DAYS));
     }
 }
