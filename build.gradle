@@ -69,7 +69,7 @@ def versions = [
         serviceTokenGenerator        : '3.1.1',
         sonarPitest                  : '0.5',
         springfoxSwagger             : '2.9.2',
-        springSecurityCrypto         : '5.2.4.RELEASE',
+        springSecurityCrypto         : '5.4.5',
         springSecurityRsa            : '1.0.8.RELEASE',
         springBoot                   : '2.3.4.RELEASE',
         tomcat                       : '9.0.40',
