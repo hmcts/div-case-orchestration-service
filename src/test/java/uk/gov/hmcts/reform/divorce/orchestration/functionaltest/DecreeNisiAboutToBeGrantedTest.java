@@ -48,6 +48,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.A
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PRONOUNCEMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.DN_REFUSED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
@@ -150,11 +151,14 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
 
     @Test
     public void shouldReturnCaseDataPlusDnGrantedDate_AndState_WhenDN_NotGranted() throws Exception {
-        String inputJson = JSONObject.valueToString(singletonMap(CASE_DETAILS_JSON_KEY,
-            singletonMap(CCD_CASE_DATA_FIELD,
-                singletonMap(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE)
+        String inputJson = JSONObject.valueToString(
+            singletonMap(CASE_DETAILS_JSON_KEY,
+                ImmutableMap.of(
+                    "id", TEST_CASE_ID,
+                    CCD_CASE_DATA_FIELD, singletonMap(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE)
+                )
             )
-        ));
+        );
 
         webClient.perform(post(API_URL).header(AUTHORIZATION, AUTH_TOKEN).content(inputJson).contentType(APPLICATION_JSON))
             .andExpect(status().isOk())
