@@ -307,7 +307,6 @@ public class CallbackController {
             CcdCallbackResponse.builder()
                 .data(caseOrchestrationService.sendPetitionerSubmissionNotificationEmail(ccdCallbackRequest))
                 .build());
-
     }
 
     @PostMapping(path = "/petition-updated", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)

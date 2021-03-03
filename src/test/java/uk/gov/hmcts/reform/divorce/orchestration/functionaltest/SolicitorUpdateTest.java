@@ -1,13 +1,11 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
-import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -18,7 +16,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil;
-import uk.gov.service.notify.NotificationClientException;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -31,9 +28,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -41,10 +35,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_EMAIL;
@@ -60,10 +52,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
@@ -77,16 +65,12 @@ public class SolicitorUpdateTest extends IdamTestSupport {
 
     private static final String API_URL = "/solicitor-update";
     private static final String DRAFT_MINI_PETITION_TEMPLATE_NAME = "divorcedraftminipetition";
-    private static final String SOL_APPLICANT_APPLICATION_SUBMITTED_TEMPLATE_ID = "93c79e53-e638-42a6-8584-7d19604e7697";
 
     @Autowired
     private CcdUtil ccdUtil;
 
     @Autowired
     private MockMvc webClient;
-
-    @MockBean
-    private EmailClient mockEmailClient;
 
     @MockBean
     private FeatureToggleService featureToggleService;
@@ -98,8 +82,6 @@ public class SolicitorUpdateTest extends IdamTestSupport {
         stubDgsCall(ccdCallbackRequest);
 
         callCallbackEndpointSuccessfully(ccdCallbackRequest);
-
-        verifySolicitorApplicationSubmittedEmailWasSent();
     }
 
     @Test
@@ -127,8 +109,6 @@ public class SolicitorUpdateTest extends IdamTestSupport {
                 hasJsonPath("$.data.RespondentOrganisationPolicy.OrgPolicyReference", nullValue())
             )
         );
-
-        verifySolicitorApplicationSubmittedEmailWasSent();
     }
 
     @Test
@@ -156,8 +136,6 @@ public class SolicitorUpdateTest extends IdamTestSupport {
                 hasJsonPath("$.data.RespondentOrganisationPolicy.OrgPolicyReference", is(TEST_RESPONDENT_SOLICITOR_REFERENCE))
             )
         );
-
-        verifySolicitorApplicationSubmittedEmailWasSent();
     }
 
     @Test
@@ -183,8 +161,6 @@ public class SolicitorUpdateTest extends IdamTestSupport {
                 hasNoJsonPath("$.data.RespondentOrganisationPolicy")
             )
         );
-
-        verifySolicitorApplicationSubmittedEmailWasSent();
     }
 
     @Test
@@ -210,8 +186,6 @@ public class SolicitorUpdateTest extends IdamTestSupport {
                 hasNoJsonPath("$.data.RespondentOrganisationPolicy")
             )
         );
-
-        verifySolicitorApplicationSubmittedEmailWasSent();
     }
 
     @Test
@@ -232,8 +206,6 @@ public class SolicitorUpdateTest extends IdamTestSupport {
                 hasNoJsonPath("$.data.RespondentOrganisationPolicy")
             )
         );
-
-        verifySolicitorApplicationSubmittedEmailWasSent();
     }
 
     @Test
@@ -254,8 +226,6 @@ public class SolicitorUpdateTest extends IdamTestSupport {
                 hasNoJsonPath("$.data.RespondentOrganisationPolicy")
             )
         );
-
-        verifySolicitorApplicationSubmittedEmailWasSent();
     }
 
     private void setRespondentJourneyFeatureToggleOn() {
@@ -319,20 +289,5 @@ public class SolicitorUpdateTest extends IdamTestSupport {
 
     private String getResponseContent(MvcResult mvcResult) throws UnsupportedEncodingException {
         return mvcResult.getResponse().getContentAsString();
-    }
-
-    private void verifySolicitorApplicationSubmittedEmailWasSent() throws NotificationClientException {
-        verify(mockEmailClient).sendEmail(
-            eq(SOL_APPLICANT_APPLICATION_SUBMITTED_TEMPLATE_ID),
-            eq(TEST_SOLICITOR_EMAIL),
-            eq(ImmutableMap.<String, Object>builder()
-                .put(NOTIFICATION_PET_NAME, TEST_PETITIONER_FULL_NAME)
-                .put(NOTIFICATION_RESP_NAME, TEST_RESPONDENT_FULL_NAME)
-                .put(NOTIFICATION_CCD_REFERENCE_KEY, TEST_CASE_ID)
-                .put(NOTIFICATION_SOLICITOR_NAME, TEST_SOLICITOR_NAME)
-                .build()
-            ),
-            anyString()
-        );
     }
 }
