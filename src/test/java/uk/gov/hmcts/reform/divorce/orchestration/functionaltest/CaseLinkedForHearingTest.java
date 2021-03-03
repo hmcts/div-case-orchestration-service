@@ -40,6 +40,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_HUSBAND_OR_WIFE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_OPTIONAL_TEXT_NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_OPTIONAL_TEXT_YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
@@ -49,9 +51,25 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class CaseLinkedForHearingTest extends MockedFunctionalTest {
 
     private static final String API_URL = "/case-linked-for-hearing";
+
     private static final String PETITIONER_COE_NOTIFICATION_EMAIL_TEMPLATE_ID = "9937c8bc-dc7a-4210-a25b-20aceb82d48d";
     private static final String RESPONDENT_COE_NOTIFICATION_EMAIL_TEMPLATE_ID = "80b986e1-056b-4577-a343-bb2e72e2a3f0";
     private static final String SOL_RESP_COE_NOTIFICATION_TEMPLATE_ID = "e7117ed4-83ff-43f9-8521-e70d31063c7e";
+
+    private static final String TEST_COURT_NAME = "Liverpool Civil and Family Court Hearing Centre";
+    private static final String TEST_DATE_OF_HEARING = "21 April 2019";
+    private static final String TEST_LIMIT_DATE_TO_CONTACT_COURT = "7 April 2019";
+    private static final String TEST_CASE_NUMBER = "HR290831";
+    private static final String TEST_PETITIONER_EMAIL = "petitioner@justice.uk";
+    private static final String TEST_PETITIONER_FIRST_NAME = "James";
+    private static final String TEST_PETITIONER_LAST_NAME = "Johnson";
+    private static final String TEST_PETITIONER_FULL_NAME = TEST_PETITIONER_FIRST_NAME + " " + TEST_PETITIONER_LAST_NAME;
+    private static final String TEST_RESPONDENT_EMAIL = "respondent@justice.uk";
+    private static final String TEST_RESPONDENT_FIRST_NAME = "Jane";
+    private static final String TEST_RESPONDENT_LAST_NAME = "Jamed";
+    private static final String TEST_RESPONDENT_FULL_NAME = TEST_RESPONDENT_FIRST_NAME + " " + TEST_RESPONDENT_LAST_NAME;
+    private static final String TEST_CCD_REFERENCE = "0123456789012345";
+
 
     @Autowired
     private MockMvc webClient;
@@ -84,17 +102,17 @@ public class CaseLinkedForHearingTest extends MockedFunctionalTest {
 
         verify(mockClient).sendEmail(
             eq(RESPONDENT_COE_NOTIFICATION_EMAIL_TEMPLATE_ID),
-            eq("respondent@justice.uk"),
+            eq(TEST_RESPONDENT_EMAIL),
             eq(ImmutableMap.<String, Object>builder()
-                .put(NOTIFICATION_CASE_NUMBER_KEY, "HR290831")
+                .put(NOTIFICATION_CASE_NUMBER_KEY, TEST_CASE_NUMBER)
                 .put(NOTIFICATION_HUSBAND_OR_WIFE, TEST_RELATIONSHIP_HUSBAND)
-                .put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, "Jamed")
-                .put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, "Jane")
-                .put(LIMIT_DATE_TO_CONTACT_COURT, "7 April 2019")
-                .put(COSTS_CLAIM_GRANTED, "yes")
-                .put(DATE_OF_HEARING, "21 April 2019")
-                .put(NOTIFICATION_EMAIL, "respondent@justice.uk")
-                .put(COURT_NAME_TEMPLATE_ID, "Liverpool Civil and Family Court Hearing Centre")
+                .put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_RESPONDENT_LAST_NAME)
+                .put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_RESPONDENT_FIRST_NAME)
+                .put(LIMIT_DATE_TO_CONTACT_COURT, TEST_LIMIT_DATE_TO_CONTACT_COURT)
+                .put(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_YES_VALUE)
+                .put(DATE_OF_HEARING, TEST_DATE_OF_HEARING)
+                .put(NOTIFICATION_EMAIL, TEST_RESPONDENT_EMAIL)
+                .put(COURT_NAME_TEMPLATE_ID, TEST_COURT_NAME)
                 .build()),
             any()
         );
@@ -130,14 +148,14 @@ public class CaseLinkedForHearingTest extends MockedFunctionalTest {
             eq(TEST_RESP_SOLICITOR_EMAIL),
             eq(ImmutableMap.<String, Object>builder()
                 .put(NOTIFICATION_SOLICITOR_NAME, TEST_RESP_SOLICITOR_NAME)
-                .put(LIMIT_DATE_TO_CONTACT_COURT, "7 April 2019")
-                .put(COSTS_CLAIM_GRANTED, "yes")
-                .put(DATE_OF_HEARING, "21 April 2019")
+                .put(LIMIT_DATE_TO_CONTACT_COURT, TEST_LIMIT_DATE_TO_CONTACT_COURT)
+                .put(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_YES_VALUE)
+                .put(DATE_OF_HEARING, TEST_DATE_OF_HEARING)
                 .put(NOTIFICATION_EMAIL, TEST_RESP_SOLICITOR_EMAIL)
-                .put(COURT_NAME_TEMPLATE_ID, "Liverpool Civil and Family Court Hearing Centre")
-                .put(NOTIFICATION_PET_NAME, "James Johnson")
-                .put(NOTIFICATION_CCD_REFERENCE_KEY, "0123456789012345")
-                .put(NOTIFICATION_RESP_NAME, "Jane Jamed")
+                .put(COURT_NAME_TEMPLATE_ID, TEST_COURT_NAME)
+                .put(NOTIFICATION_PET_NAME, TEST_PETITIONER_FULL_NAME)
+                .put(NOTIFICATION_CCD_REFERENCE_KEY, TEST_CCD_REFERENCE)
+                .put(NOTIFICATION_RESP_NAME, TEST_RESPONDENT_FULL_NAME)
                 .build()),
             any()
         );
@@ -146,17 +164,17 @@ public class CaseLinkedForHearingTest extends MockedFunctionalTest {
     private void verifyPetitionerCoENotificationEmailWasSent() throws Exception {
         verify(mockClient).sendEmail(
             eq(PETITIONER_COE_NOTIFICATION_EMAIL_TEMPLATE_ID),
-            eq("petitioner@justice.uk"),
+            eq(TEST_PETITIONER_EMAIL),
             eq(ImmutableMap.<String, Object>builder()
-                .put(NOTIFICATION_CASE_NUMBER_KEY, "HR290831")
-                .put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, "Johnson")
-                .put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, "James")
-                .put(LIMIT_DATE_TO_CONTACT_COURT, "7 April 2019")
-                .put(COSTS_CLAIM_GRANTED, "yes")
-                .put(DATE_OF_HEARING, "21 April 2019")
-                .put(NOTIFICATION_EMAIL, "petitioner@justice.uk")
-                .put(COSTS_CLAIM_NOT_GRANTED, "no")
-                .put(COURT_NAME_TEMPLATE_ID, "Liverpool Civil and Family Court Hearing Centre")
+                .put(NOTIFICATION_CASE_NUMBER_KEY, TEST_CASE_NUMBER)
+                .put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_PETITIONER_LAST_NAME)
+                .put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_PETITIONER_FIRST_NAME)
+                .put(LIMIT_DATE_TO_CONTACT_COURT, TEST_LIMIT_DATE_TO_CONTACT_COURT)
+                .put(COSTS_CLAIM_GRANTED, NOTIFICATION_OPTIONAL_TEXT_YES_VALUE)
+                .put(DATE_OF_HEARING, TEST_DATE_OF_HEARING)
+                .put(NOTIFICATION_EMAIL, TEST_PETITIONER_EMAIL)
+                .put(COSTS_CLAIM_NOT_GRANTED, NOTIFICATION_OPTIONAL_TEXT_NO_VALUE)
+                .put(COURT_NAME_TEMPLATE_ID, TEST_COURT_NAME)
                 .build()),
             any()
         );
