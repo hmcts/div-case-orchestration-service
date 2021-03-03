@@ -184,6 +184,32 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
         verifyTasksWereNeverCalled(orderToDispenseGenerationTask, serviceRefusalDraftRemovalTask);
     }
 
+    @Test
+    public void shouldNotMoveServiceApplicationDataToCollection_whenBailiffApplicationGranted() throws WorkflowException {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(CcdFields.SERVICE_APPLICATION_GRANTED, YES_VALUE);
+        caseData.put(CcdFields.SERVICE_APPLICATION_TYPE, ApplicationServiceTypes.BAILIFF);
+
+        mockTasksExecution(
+            caseData,
+            makeServiceDecisionDateTask
+        );
+
+        makeServiceDecisionWorkflow.run(CaseDetails.builder().caseData(caseData).build(), AUTH_TOKEN);
+
+        verifyTasksCalledInOrder(
+            caseData,
+            makeServiceDecisionDateTask
+        );
+        verifyTasksWereNeverCalled(
+            orderToDispenseGenerationTask,
+            deemedServiceOrderGenerationTask,
+            dispensedServiceRefusalOrderTask,
+            deemedServiceRefusalOrderTask,
+            serviceRefusalDraftRemovalTask
+        );
+    }
+
     private void runExpectingDecisionDateServiceApplicationDataAndDraftRemovalWillBeCalled(Map<String, Object> caseData)
         throws WorkflowException {
         mockTasksExecution(caseData,

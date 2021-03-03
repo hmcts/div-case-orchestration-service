@@ -23,6 +23,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationBailiff;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDeemed;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDispensed;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationGranted;
@@ -77,10 +78,14 @@ public class MakeServiceDecisionWorkflow extends DefaultWorkflow<Map<String, Obj
             tasks.add(serviceRefusalDraftRemovalTask);
         }
 
-        log.info("CaseID: {}, Adding task to move all service application temp data to collection.", caseId);
-        tasks.add(serviceApplicationDataTask);
-        log.info("CaseID: {}, Adding task to remove all service application temp data from case data.", caseId);
-        tasks.add(serviceApplicationRemovalTask);
+        // for "bailiff service application granted" case the application should not be moved into previous
+        // applications collection until the end of bailiff workflow
+        if (!(isServiceApplicationGranted(caseDetails.getCaseData()) && isServiceApplicationBailiff(caseDetails.getCaseData()))) {
+            log.info("CaseID: {}, Adding task to move all service application temp data to collection.", caseId);
+            tasks.add(serviceApplicationDataTask);
+            log.info("CaseID: {}, Adding task to remove all service application temp data from case data.", caseId);
+            tasks.add(serviceApplicationRemovalTask);
+        }
 
         return this.execute(
             tasks.toArray(new Task[0]),
