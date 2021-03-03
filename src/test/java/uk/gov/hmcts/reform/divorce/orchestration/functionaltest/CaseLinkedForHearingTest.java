@@ -70,7 +70,6 @@ public class CaseLinkedForHearingTest extends MockedFunctionalTest {
     private static final String TEST_RESPONDENT_FULL_NAME = TEST_RESPONDENT_FIRST_NAME + " " + TEST_RESPONDENT_LAST_NAME;
     private static final String TEST_CCD_REFERENCE = "0123456789012345";
 
-
     @Autowired
     private MockMvc webClient;
 
