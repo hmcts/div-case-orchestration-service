@@ -12,13 +12,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
+import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
 import uk.gov.hmcts.reform.divorce.orchestration.service.BulkPrintService;
-import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -31,7 +31,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -106,7 +105,7 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
     private MockMvc webClient;
 
     @MockBean
-    private EmailService mockEmailService;
+    private EmailClient emailClient;
 
     @MockBean
     private BulkPrintService bulkPrintService;
@@ -122,6 +121,7 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
             .build();
 
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(BASE_CASE_DATA).build();
+
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
@@ -133,8 +133,20 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
-        verify(mockEmailService).sendEmailAndReturnExceptionIfFails(eq(TEST_PETITIONER_EMAIL), anyString(), anyMap(), anyString(),any());
-        verify(mockEmailService).sendEmailAndReturnExceptionIfFails(eq(TEST_RESPONDENT_EMAIL), anyString(), anyMap(), anyString(),any());
+
+        verify(emailClient).sendEmail(
+            anyString(),
+            eq(TEST_PETITIONER_EMAIL),
+            anyMap(),
+            anyString()
+        );
+
+        verify(emailClient).sendEmail(
+            anyString(),
+            eq(TEST_RESPONDENT_EMAIL),
+            anyMap(),
+            anyString()
+        );
     }
 
     @Test
@@ -147,7 +159,7 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         byte[] decreeAbsoluteLetterBytes = new byte[] {1, 2, 3};
         String daGrantedLetterDocumentId =
             stubDocumentGeneratorService(DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER.getTemplateByLanguage(ENGLISH),
-                    DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_DOCUMENT_TYPE);
+                DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_DOCUMENT_TYPE);
         stubDMStore(daGrantedLetterDocumentId, decreeAbsoluteLetterBytes);
 
         //Existing document
@@ -181,7 +193,7 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         assertThat(documentsSentToBulkPrint, hasSize(2));
         assertThat(documentsSentToBulkPrint.get(0).getBytes(), is(decreeAbsoluteLetterBytes));
         assertThat(documentsSentToBulkPrint.get(1).getBytes(), is(decreeAbsoluteBytes));
-        verifyNoInteractions(mockEmailService);
+        verifyNoInteractions(emailClient);
     }
 
     @Test
@@ -230,13 +242,13 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         assertThat(documentsSentToBulkPrint, hasSize(2));
         assertThat(documentsSentToBulkPrint.get(0).getBytes(), is(decreeAbsoluteLetterBytes));
         assertThat(documentsSentToBulkPrint.get(1).getBytes(), is(decreeAbsoluteBytes));
-        verifyNoInteractions(mockEmailService);
+        verifyNoInteractions(emailClient);
     }
 
     @Test
     public void responseShouldContainErrorsIfServiceFails() throws Exception {
         doThrow(new NotificationClientException("This has failed."))
-            .when(mockEmailService).sendEmailAndReturnExceptionIfFails(anyString(), anyString(), anyMap(), anyString(),any());
+            .when(emailClient).sendEmail(anyString(), anyString(), anyMap(), anyString());
 
         Map<String, Object> caseData = ImmutableMap.<String, Object>builder()
             .putAll(BASE_CASE_DATA)
@@ -276,5 +288,4 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
     }
-
 }
