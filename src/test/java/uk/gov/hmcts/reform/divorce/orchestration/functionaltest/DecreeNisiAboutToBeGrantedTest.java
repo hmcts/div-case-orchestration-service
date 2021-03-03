@@ -83,7 +83,6 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
     private static final String DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00088.docx";
     private static final String DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00098.docx";
 
-
     @Autowired
     private MockMvc webClient;
 
