@@ -2,10 +2,10 @@
   "case_details": {
     "id": "0123456789012345",
     "case_data": {
-      "D8PetitionerEmail": "petitioner@justice.uk",
-      "D8caseReference": "HR290831",
-      "D8PetitionerFirstName": "James",
-      "D8PetitionerLastName": "Johnson",
+      "D8PetitionerEmail": "testPetitioner@email.com",
+      "D8caseReference": "LV17D80102",
+      "D8PetitionerFirstName": "Clark",
+      "D8PetitionerLastName": "Kent",
       "D8DivorceCostsClaim": "YES",
       "D8InferredPetitionerGender": "male",
       "CostsClaimGranted": "YES",
@@ -19,9 +19,9 @@
           }
         }
       ],
-      "D8RespondentFirstName":"Jane",
-      "D8RespondentLastName":"Jamed",
-      "RespEmailAddress": "respondent@justice.uk",
+      "D8RespondentFirstName":"Diana",
+      "D8RespondentLastName":"Prince",
+      "RespEmailAddress": "testRespondent@email.com",
       "RespContactMethodIsDigital": "Yes"
     }
   }
