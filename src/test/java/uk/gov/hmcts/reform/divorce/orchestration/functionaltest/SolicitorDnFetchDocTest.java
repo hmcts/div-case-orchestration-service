@@ -26,6 +26,7 @@ import static org.hamcrest.core.Is.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DEEMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
@@ -162,7 +163,7 @@ public class SolicitorDnFetchDocTest extends MockedFunctionalTest {
     }
 
     private CcdCallbackRequest buildRequest(Map<String, Object> caseData) {
-        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).caseId(TEST_CASE_ID).build();
 
         return CcdCallbackRequest.builder()
             .caseDetails(caseDetails)

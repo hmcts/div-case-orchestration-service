@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.PopulateDocLinkTask;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_DRAFT_LINK_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ANSWERS_LINK;
@@ -51,6 +52,7 @@ public class SolicitorDnFetchDocWorkflow extends DefaultWorkflow<Map<String, Obj
         return this.execute(
             new Task[] {populateDocLinkTask},
             caseData,
+            ImmutablePair.of(CASE_ID_JSON_KEY, caseDetails.getCaseId()),
             ImmutablePair.of(DOCUMENT_TYPE, ccdDocumentType),
             ImmutablePair.of(DOCUMENT_DRAFT_LINK_FIELD, docLinkFieldName));
     }
