@@ -20,7 +20,7 @@ public abstract class DateFieldSetupTask implements Task<Map<String, Object>> {
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
         final String caseId = getCaseId(context);
         final String fieldName = getFieldName();
-        final String formattedDateValue = getFormattedDate(caseData);
+        final String formattedDateValue = getFormattedDate();
 
         log.info("CaseID: {} setting up date {} for field {}", caseId, formattedDateValue, fieldName);
 
@@ -34,7 +34,7 @@ public abstract class DateFieldSetupTask implements Task<Map<String, Object>> {
     /**
      * Overwrite if you need other date than default CCD date format of today.
      */
-    protected String getFormattedDate(Map<String, Object> caseData) {
+    protected String getFormattedDate() {
         return getFormattedStringDateForTodayAsDefault();
     }
 
