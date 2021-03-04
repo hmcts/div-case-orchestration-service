@@ -27,22 +27,32 @@ public class MigrateChequeTask implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(TaskContext context,  Map<String, Object> payload) {
 
-        String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
+        log.debug("DEBUG Payment Value (should be 'cheque'): {}", payload.get(SOLICITOR_HOW_TO_PAY_JSON_KEY));
 
         payload.replace(SOLICITOR_HOW_TO_PAY_JSON_KEY, FEE_PAY_BY_ACCOUNT);
 
+        log.debug("DEBUG Payment Value (should be 'feePayByAccount'): {}", payload.get(SOLICITOR_HOW_TO_PAY_JSON_KEY));
+
+        String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
+        String authToken = context.getTransientObject(AUTH_TOKEN_JSON_KEY);
+        String eventId = context.getTransientObject(CASE_EVENT_ID_JSON_KEY);
+
+        log.debug("DEBUG Auth Token: {}", authToken);
+        log.debug("DEBUG Case ID: {}", caseId);
+        log.debug("DEBUG Event ID: {}", eventId);
+
         try {
             payload = caseMaintenanceClient.updateCase(
-                context.getTransientObject(AUTH_TOKEN_JSON_KEY),
+                authToken,
                 caseId,
-                context.getTransientObject(CASE_EVENT_ID_JSON_KEY),
+                eventId,
                 payload
             );
         } catch (FeignException e) {
 
-            log.error("Case id {}: Update failed for payment cheque migration", caseId, e);
+            log.error("Case id {}: Update failed for payment cheque migration. Error: {}", caseId, e);
 
-            throw new TaskException("Case update failed!", e);
+            throw new TaskException("Case update failed! - {}", e);
         }
 
         log.info("Case id {}: Migrated payment method", caseId);
