@@ -70,9 +70,9 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
         }
 
         tasks.add(setSolicitorCourtDetailsTask);
+        tasks.add(setNewLegalConnectionPolicyTask);
         tasks.add(addMiniPetitionDraftTask);
         tasks.add(addNewDocumentsToCaseDataTask);
-        tasks.add(setNewLegalConnectionPolicyTask);
 
         if (featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)) {
             log.info("Adding OrganisationPolicyReferenceTasks, REPRESENTED_RESPONDENT_JOURNEY feature toggle is set to true.");

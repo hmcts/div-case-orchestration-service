@@ -55,9 +55,9 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
     private Task<Map<String, Object>>[] getTasks(String caseId) {
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
+        tasks.add(getNewLegalConnectionPolicyTask(caseId));
         tasks.add(getAddMiniPetitionDraftTask(caseId));
         tasks.add(getAddNewDocumentsToCaseDataTask(caseId));
-        tasks.add(getNewLegalConnectionPolicyTask(caseId));
 
 
         if (featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)) {

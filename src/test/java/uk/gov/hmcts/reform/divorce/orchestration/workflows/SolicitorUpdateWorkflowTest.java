@@ -66,18 +66,18 @@ public class SolicitorUpdateWorkflowTest {
     public void runShouldExecuteTasksAndReturnPayload() throws Exception {
         mockTasksExecution(
             caseData,
-            addMiniPetitionDraftTask,
+            setNewLegalConnectionPolicyTask,
             addNewDocumentsToCaseDataTask,
-            setNewLegalConnectionPolicyTask
+            addMiniPetitionDraftTask
         );
 
         executeWorkflow();
 
         verifyTasksCalledInOrder(
             caseData,
+            setNewLegalConnectionPolicyTask,
             addMiniPetitionDraftTask,
-            addNewDocumentsToCaseDataTask,
-            setNewLegalConnectionPolicyTask
+            addNewDocumentsToCaseDataTask
 
         );
     }
@@ -87,9 +87,9 @@ public class SolicitorUpdateWorkflowTest {
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
         mockTasksExecution(
             caseData,
+            setNewLegalConnectionPolicyTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
-            setNewLegalConnectionPolicyTask,
             setPetitionerSolicitorOrganisationPolicyReferenceTask,
             setRespondentSolicitorOrganisationPolicyReferenceTask
         );
@@ -98,9 +98,9 @@ public class SolicitorUpdateWorkflowTest {
 
         verifyTasksCalledInOrder(
             caseData,
+            setNewLegalConnectionPolicyTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
-            setNewLegalConnectionPolicyTask,
             setPetitionerSolicitorOrganisationPolicyReferenceTask,
             setRespondentSolicitorOrganisationPolicyReferenceTask
         );
@@ -111,18 +111,18 @@ public class SolicitorUpdateWorkflowTest {
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(false);
         mockTasksExecution(
             caseData,
+            setNewLegalConnectionPolicyTask,
             addMiniPetitionDraftTask,
-            addNewDocumentsToCaseDataTask,
-            setNewLegalConnectionPolicyTask
+            addNewDocumentsToCaseDataTask
         );
 
         executeWorkflow();
 
         verifyTasksCalledInOrder(
             caseData,
+            setNewLegalConnectionPolicyTask,
             addMiniPetitionDraftTask,
-            addNewDocumentsToCaseDataTask,
-            setNewLegalConnectionPolicyTask
+            addNewDocumentsToCaseDataTask
         );
 
         verifyTasksWereNeverCalled(setPetitionerSolicitorOrganisationPolicyReferenceTask);

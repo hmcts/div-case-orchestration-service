@@ -72,9 +72,9 @@ public class SolicitorCreateWorkflowTest {
             caseDetails.getCaseData(),
             setClaimCostsFromTask,
             setSolicitorCourtDetailsTask,
+            setNewLegalConnectionPolicyTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
-            setNewLegalConnectionPolicyTask,
             setPetitionerSolicitorOrganisationPolicyReferenceTask,
             setRespondentSolicitorOrganisationPolicyReferenceTask
         );
@@ -85,9 +85,9 @@ public class SolicitorCreateWorkflowTest {
             caseDetails.getCaseData(),
             setClaimCostsFromTask,
             setSolicitorCourtDetailsTask,
+            setNewLegalConnectionPolicyTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
-            setNewLegalConnectionPolicyTask,
             setPetitionerSolicitorOrganisationPolicyReferenceTask,
             setRespondentSolicitorOrganisationPolicyReferenceTask
         );
@@ -106,9 +106,9 @@ public class SolicitorCreateWorkflowTest {
             caseDetails.getCaseData(),
             setClaimCostsFromTask,
             setSolicitorCourtDetailsTask,
+            setNewLegalConnectionPolicyTask,
             addMiniPetitionDraftTask,
-            addNewDocumentsToCaseDataTask,
-            setNewLegalConnectionPolicyTask
+            addNewDocumentsToCaseDataTask
         );
 
         assertThat(solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN), is(caseDetails.getCaseData()));
@@ -117,9 +117,9 @@ public class SolicitorCreateWorkflowTest {
             caseDetails.getCaseData(),
             setClaimCostsFromTask,
             setSolicitorCourtDetailsTask,
+            setNewLegalConnectionPolicyTask,
             addMiniPetitionDraftTask,
-            addNewDocumentsToCaseDataTask,
-            setNewLegalConnectionPolicyTask
+            addNewDocumentsToCaseDataTask
         );
 
         verifyTasksWereNeverCalled(setPetitionerSolicitorOrganisationPolicyReferenceTask);
