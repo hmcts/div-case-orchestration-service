@@ -83,7 +83,6 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
     private static final String DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00088.docx";
     private static final String DECREE_NISI_REFUSAL_ORDER_REJECTION_TEMPLATE_ID = "FL-DIV-DEC-ENG-00098.docx";
 
-
     @Autowired
     private MockMvc webClient;
 
@@ -151,11 +150,14 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
 
     @Test
     public void shouldReturnCaseDataPlusDnGrantedDate_AndState_WhenDN_NotGranted() throws Exception {
-        String inputJson = JSONObject.valueToString(singletonMap(CASE_DETAILS_JSON_KEY,
-            singletonMap(CCD_CASE_DATA_FIELD,
-                singletonMap(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE)
+        String inputJson = JSONObject.valueToString(
+            singletonMap(CASE_DETAILS_JSON_KEY,
+                ImmutableMap.of(
+                    "id", TEST_CASE_ID,
+                    CCD_CASE_DATA_FIELD, singletonMap(DECREE_NISI_GRANTED_CCD_FIELD, NO_VALUE)
+                )
             )
-        ));
+        );
 
         webClient.perform(post(API_URL).header(AUTHORIZATION, AUTH_TOKEN).content(inputJson).contentType(APPLICATION_JSON))
             .andExpect(status().isOk())
