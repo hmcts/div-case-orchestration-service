@@ -14,6 +14,8 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_DRAFT_LINK_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
@@ -31,6 +33,8 @@ public class PopulateDocLinkTaskTest {
         populateDocLinkTask = new PopulateDocLinkTask(getObjectMapperInstance());
 
         taskContext = new DefaultTaskContext();
+
+        taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
         taskContext.setTransientObject(DOCUMENT_TYPE, DOCUMENT_TYPE_PETITION);
         taskContext.setTransientObject(DOCUMENT_DRAFT_LINK_FIELD, MINI_PETITION_LINK);
     }
