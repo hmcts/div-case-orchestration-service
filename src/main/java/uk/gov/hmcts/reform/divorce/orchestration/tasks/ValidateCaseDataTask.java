@@ -24,8 +24,9 @@ public class ValidateCaseDataTask implements Task<Map<String, Object>> {
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         log.info("Mapping: caseData, CoreCaseData.class");
         CoreCaseData coreCaseData = mapper.convertValue(caseData, CoreCaseData.class);
-        log.info("Calling Validation Service");
+        log.info("Validating case data");
         ValidationResponse validationResponse = validationService.validate(coreCaseData);
+        log.info("Finished Validation case data");
 
         if (!validationResponse.isValid()) {
             context.setTaskFailed(true);

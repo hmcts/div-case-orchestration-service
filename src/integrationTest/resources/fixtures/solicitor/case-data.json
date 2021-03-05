@@ -27,6 +27,15 @@
   ],
   "D8RespondentLastName": "Respondent Last Name",
   "D8PetitionerNameDifferentToMarriageCert": "Yes",
+  "D8JurisdictionConnection": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G"
+  ],
   "D8JurisdictionConnectionNewPolicy": [
     "A",
     "B",

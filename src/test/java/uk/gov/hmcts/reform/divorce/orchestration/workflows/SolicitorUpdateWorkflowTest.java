@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CopyD8JurisdictionConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetNewLegalConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
@@ -48,6 +49,9 @@ public class SolicitorUpdateWorkflowTest {
     @Mock
     private SetNewLegalConnectionPolicyTask setNewLegalConnectionPolicyTask;
 
+    @Mock
+    private CopyD8JurisdictionConnectionPolicyTask copyD8JurisdictionConnectionPolicyTask;
+
     @InjectMocks
     private SolicitorUpdateWorkflow solicitorUpdateWorkflow;
 
@@ -67,6 +71,7 @@ public class SolicitorUpdateWorkflowTest {
         mockTasksExecution(
             caseData,
             setNewLegalConnectionPolicyTask,
+            copyD8JurisdictionConnectionPolicyTask,
             addNewDocumentsToCaseDataTask,
             addMiniPetitionDraftTask
         );
@@ -76,6 +81,7 @@ public class SolicitorUpdateWorkflowTest {
         verifyTasksCalledInOrder(
             caseData,
             setNewLegalConnectionPolicyTask,
+            copyD8JurisdictionConnectionPolicyTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask
 
@@ -88,6 +94,7 @@ public class SolicitorUpdateWorkflowTest {
         mockTasksExecution(
             caseData,
             setNewLegalConnectionPolicyTask,
+            copyD8JurisdictionConnectionPolicyTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
             setPetitionerSolicitorOrganisationPolicyReferenceTask,
@@ -99,6 +106,7 @@ public class SolicitorUpdateWorkflowTest {
         verifyTasksCalledInOrder(
             caseData,
             setNewLegalConnectionPolicyTask,
+            copyD8JurisdictionConnectionPolicyTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
             setPetitionerSolicitorOrganisationPolicyReferenceTask,
@@ -112,6 +120,7 @@ public class SolicitorUpdateWorkflowTest {
         mockTasksExecution(
             caseData,
             setNewLegalConnectionPolicyTask,
+            copyD8JurisdictionConnectionPolicyTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask
         );
@@ -121,6 +130,7 @@ public class SolicitorUpdateWorkflowTest {
         verifyTasksCalledInOrder(
             caseData,
             setNewLegalConnectionPolicyTask,
+            copyD8JurisdictionConnectionPolicyTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask
         );

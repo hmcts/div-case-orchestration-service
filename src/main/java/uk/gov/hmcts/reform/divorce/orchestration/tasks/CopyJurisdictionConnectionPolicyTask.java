@@ -20,6 +20,17 @@ public class CopyJurisdictionConnectionPolicyTask implements Task<Map<String, Ob
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
 
+        /*
+         * Instead of updating petitioner-frontend to juggle two jurisdiction variables we decided to copy the contents of the jurisdictionConnection
+         * into the new jurisdictionConnectionNewPolicy. jurisdictionConnectionNewPolicy has new wording, we couldn't simply update
+         * jurisdictionConnection because this would be reflected in older cases and for legal reasons older cases are still entitled
+         * to the older policies.
+         *
+         * NEW_LEGAL_CONNECTION_POLICY_DIV_SESSION "NewLegalConnectionPolicy" is used in CCD petition tab, respondent frontend, decree nisi frontend
+         * and d8minipetition/d8minidraftpetition documents to toggle between showing old jurisdiction vs new jurisdiction
+         *
+         * Jira Tickets: RPET-664, RPET-694, RPET-701, RPET-702, RPET-758, RPET-780
+         */
         if (caseData.get(OLD_JURISDICTION_CONNECTION_POLICY_DIV_SESSION ) != null) {
             log.info("Setting newLegalConnectionPolicy and copying over jurisdiction connection");
             caseData.put(NEW_LEGAL_CONNECTION_POLICY_DIV_SESSION, YES_VALUE);

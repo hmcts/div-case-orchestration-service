@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CopyD8JurisdictionConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetNewLegalConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
@@ -34,6 +35,7 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
     private final SetPetitionerSolicitorOrganisationPolicyReferenceTask setPetitionerSolicitorOrganisationPolicyReferenceTask;
     private final SetRespondentSolicitorOrganisationPolicyReferenceTask setRespondentSolicitorOrganisationPolicyReferenceTask;
     private final SetNewLegalConnectionPolicyTask setNewLegalConnectionPolicyTask;
+    private final CopyD8JurisdictionConnectionPolicyTask copyD8JurisdictionConnectionPolicyTask;
 
     private final FeatureToggleService featureToggleService;
 
@@ -56,6 +58,7 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
         tasks.add(getNewLegalConnectionPolicyTask(caseId));
+        tasks.add(copyD8JurisdictionConnectionPolicyTask(caseId));
         tasks.add(getAddMiniPetitionDraftTask(caseId));
         tasks.add(getAddNewDocumentsToCaseDataTask(caseId));
 
@@ -82,5 +85,10 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
     private Task<Map<String, Object>> getNewLegalConnectionPolicyTask(String caseId) {
         log.info("CaseId: {} Adding task to set new legal connection policy.", caseId);
         return setNewLegalConnectionPolicyTask;
+    }
+
+    private Task<Map<String, Object>> copyD8JurisdictionConnectionPolicyTask(String caseId) {
+        log.info("CaseId: {} Adding task to copy new legal connection policy.", caseId);
+        return copyD8JurisdictionConnectionPolicyTask;
     }
 }

@@ -30,16 +30,16 @@ public class CopyJurisdictionConnectionPolicyTaskTest {
     @InjectMocks
     private CopyJurisdictionConnectionPolicyTask copyJurisdictionConnectionPolicyTask;
 
-    private static final String D8JURISDICTION_CONNECTION_PAYLOAD = "/jsonExamples/payloads/d8JurisdictionConnection.json";
-    private static final String D8JURISDICTION_CONNECTION_NEW_POLICY_PAYLOAD = "/jsonExamples/payloads/d8JurisdictionConnectionNewPolicy.json";
+    private static final String JURISDICTION_CONNECTION_PAYLOAD = "/jsonExamples/payloads/jurisdictionConnection.json";
+    private static final String JURISDICTION_CONNECTION_NEW_POLICY_PAYLOAD = "/jsonExamples/payloads/jurisdictionConnectionNewPolicy.json";
     private Map<String, Object> originalOldPolicyData;
     private Map<String, Object> originalNewPolicyData;
     private TaskContext context;
 
     @Before
     public void setup() throws IOException {
-        originalOldPolicyData = getJsonFromResourceFile(D8JURISDICTION_CONNECTION_PAYLOAD, CcdCallbackRequest.class).getCaseDetails().getCaseData();
-        originalNewPolicyData = getJsonFromResourceFile(D8JURISDICTION_CONNECTION_NEW_POLICY_PAYLOAD, CcdCallbackRequest.class)
+        originalOldPolicyData = getJsonFromResourceFile(JURISDICTION_CONNECTION_PAYLOAD, CcdCallbackRequest.class).getCaseDetails().getCaseData();
+        originalNewPolicyData = getJsonFromResourceFile(JURISDICTION_CONNECTION_NEW_POLICY_PAYLOAD, CcdCallbackRequest.class)
             .getCaseDetails().getCaseData();
 
         context = new DefaultTaskContext();
@@ -47,7 +47,7 @@ public class CopyJurisdictionConnectionPolicyTaskTest {
 
     @Test
     public void executeShouldCopyOldJurisdictionConnectionToNewJurisdictionConnection() throws IOException {
-        Map<String, Object> testData = getJsonFromResourceFile(D8JURISDICTION_CONNECTION_PAYLOAD, CcdCallbackRequest.class)
+        Map<String, Object> testData = getJsonFromResourceFile(JURISDICTION_CONNECTION_PAYLOAD, CcdCallbackRequest.class)
             .getCaseDetails().getCaseData();
 
         copyJurisdictionConnectionPolicyTask.execute(context, testData);
@@ -60,7 +60,7 @@ public class CopyJurisdictionConnectionPolicyTaskTest {
 
     @Test
     public void executeShouldCopyOldJurisdictionConnectionToReplaceExistingNewJurisdictionConnection() throws IOException {
-        Map<String, Object> testData = getJsonFromResourceFile(D8JURISDICTION_CONNECTION_NEW_POLICY_PAYLOAD, CcdCallbackRequest.class)
+        Map<String, Object> testData = getJsonFromResourceFile(JURISDICTION_CONNECTION_NEW_POLICY_PAYLOAD, CcdCallbackRequest.class)
             .getCaseDetails().getCaseData();
 
         copyJurisdictionConnectionPolicyTask.execute(context, testData);
@@ -70,5 +70,27 @@ public class CopyJurisdictionConnectionPolicyTaskTest {
             equalTo(originalNewPolicyData.get(OLD_JURISDICTION_CONNECTION_POLICY_DIV_SESSION)));
         assertThat(testData.get(NEW_JURISDICTION_CONNECTION_POLICY_DIV_SESSION),
             is(not(equalTo(originalNewPolicyData.get(NEW_JURISDICTION_CONNECTION_POLICY_DIV_SESSION)))));
+    }
+
+    @Test
+    public void executeShouldNotCopyOldJurisdictionIfNull() throws IOException {
+        Map<String, Object> testData = getJsonFromResourceFile(JURISDICTION_CONNECTION_PAYLOAD, CcdCallbackRequest.class)
+            .getCaseDetails().getCaseData();
+        testData.put(OLD_JURISDICTION_CONNECTION_POLICY_DIV_SESSION, null);
+
+        copyJurisdictionConnectionPolicyTask.execute(context, testData);
+
+        assertThat(testData, not(hasKey(NEW_JURISDICTION_CONNECTION_POLICY_DIV_SESSION)));
+    }
+
+    @Test
+    public void executeShouldNotCopyOldJurisdictionIfNotPresent() throws IOException {
+        Map<String, Object> testData = getJsonFromResourceFile(JURISDICTION_CONNECTION_PAYLOAD, CcdCallbackRequest.class)
+            .getCaseDetails().getCaseData();
+        testData.remove(OLD_JURISDICTION_CONNECTION_POLICY_DIV_SESSION);
+
+        copyJurisdictionConnectionPolicyTask.execute(context, testData);
+
+        assertThat(testData, not(hasKey(NEW_JURISDICTION_CONNECTION_POLICY_DIV_SESSION)));
     }
 }

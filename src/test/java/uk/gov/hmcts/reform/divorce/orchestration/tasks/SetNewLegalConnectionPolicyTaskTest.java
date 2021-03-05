@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NEW_LEGAL_CONNECTION_POLICY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NEW_LEGAL_CONNECTION_POLICY_CCD_DATA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -34,7 +34,7 @@ public class SetNewLegalConnectionPolicyTaskTest {
     @Test
     public void executeShouldSetNewLegalConnectionPolicyToYes() {
         Map<String, Object> resultData = new HashMap<>();
-        resultData.put(NEW_LEGAL_CONNECTION_POLICY, YES_VALUE);
+        resultData.put(NEW_LEGAL_CONNECTION_POLICY_CCD_DATA, YES_VALUE);
 
         assertEquals(resultData, setNewLegalConnectionPolicyTask.execute(context, testData));
     }
