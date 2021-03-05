@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AlternativeServiceService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.BailiffPackService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CourtOrderDocumentsUpdateService;
@@ -84,6 +85,7 @@ public class CallbackController {
     private final GeneralReferralService generalReferralService;
     private final AlternativeServiceService alternativeServiceService;
     private final CourtOrderDocumentsUpdateService courtOrderDocumentsUpdateService;
+    private final BailiffPackService bailiffPackService;
 
     @PostMapping(path = "/request-clarification-petitioner")
     @ApiOperation(value = "Trigger notification email to request clarification from Petitioner")
@@ -305,7 +307,6 @@ public class CallbackController {
             CcdCallbackResponse.builder()
                 .data(caseOrchestrationService.sendPetitionerSubmissionNotificationEmail(ccdCallbackRequest))
                 .build());
-
     }
 
     @PostMapping(path = "/petition-updated", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
@@ -1490,6 +1491,28 @@ public class CallbackController {
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
         Map<String, Object> returnedPayload = courtOrderDocumentsUpdateService.updateExistingCourtOrderDocuments(
+            authorizationToken,
+            ccdCallbackRequest.getCaseDetails()
+        );
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(returnedPayload)
+                .build()
+        );
+    }
+
+    @PostMapping(path = "/issue-bailiff-pack", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback for generating new versions of existing court order documents")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> issueBailiffPack(
+        @RequestHeader(value = AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        Map<String, Object> returnedPayload = bailiffPackService.issueCertificateOfServiceDocument(
             authorizationToken,
             ccdCallbackRequest.getCaseDetails()
         );

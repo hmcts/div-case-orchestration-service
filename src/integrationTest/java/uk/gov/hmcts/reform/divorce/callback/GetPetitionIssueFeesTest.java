@@ -28,9 +28,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.SOLICITOR_SUBMIT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_CCD_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_SUBMIT_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_APPLICATION_FEE_IN_POUNDS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 
@@ -114,7 +114,7 @@ public class GetPetitionIssueFeesTest extends IntegrationTest {
         uk.gov.hmcts.reform.ccd.client.model.CaseDetails caseDetails,
         String endpoint) {
         final CcdCallbackRequest callbackData = CcdCallbackRequest.builder()
-            .eventId(SOLICITOR_SUBMIT_EVENT)
+            .eventId(SOLICITOR_SUBMIT)
             .caseDetails(CaseDetails.builder()
                 .caseId(String.valueOf(caseDetails.getId()))
                 .state(caseDetails.getState())
