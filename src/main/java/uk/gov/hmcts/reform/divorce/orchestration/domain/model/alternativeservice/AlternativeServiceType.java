@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservic
 public enum AlternativeServiceType {
 
     SERVED_BY_ALTERNATIVE_METHOD,
-    SERVED_BY_PROCESS_SERVER
+    SERVED_BY_PROCESS_SERVER,
+    SERVED_BY_BAILIFF
 
 }

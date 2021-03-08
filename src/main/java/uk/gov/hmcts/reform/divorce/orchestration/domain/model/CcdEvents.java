@@ -13,6 +13,7 @@ public class CcdEvents {
     public static final String AOS_NOMINATE_SOLICITOR = "aosNominateSol";
     public static final String AOS_NOT_RECEIVED_FOR_PROCESS_SERVER = "aosNotReceivedForProcessServer";
     public static final String AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD = "aosNotReceivedForAltMethod";
+    public static final String AOS_NOT_RECEIVED_FOR_BAILIFF_APPLICATION = "aosNotReceivedForBailiff";
     public static final String AOS_START_FROM_OVERDUE = "startAosFromOverdue";
     public static final String AOS_START_FROM_REISSUE = "startAosFromReissue";
     public static final String AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED = "startAosFromServiceAppRejected";
@@ -48,7 +49,6 @@ public class CcdEvents {
     public static final String MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER = "MakeEligibleForDA_Petitioner";
     public static final String NOT_RECEIVED_AOS = "aosNotReceived";
     public static final String NOT_RECEIVED_AOS_STARTED = "aosNotReceivedStarted";
-    public static final String NOT_RECEIVED_AOS_BAILIFF_APPLICATION = "aosNotReceivedForBailiff";
     public static final String PAYMENT_MADE = "paymentMade";
     public static final String START_AOS = "startAos";
     public static final String SOL_AOS_SUBMITTED_DEFENDED = "solAosSubmittedDefended";

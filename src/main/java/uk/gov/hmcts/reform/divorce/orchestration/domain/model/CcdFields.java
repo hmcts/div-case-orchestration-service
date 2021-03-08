@@ -80,4 +80,6 @@ public class CcdFields {
     public static final String PETITIONER_SOLICITOR_ORGANISATION_POLICY = "PetitionerOrganisationPolicy";
     public static final String RESPONDENT_SOLICITOR_ORGANISATION_POLICY = "RespondentOrganisationPolicy";
 
+    public static final String BAILIFF_SERVICE_SUCCESSFUL = "SuccessfulServedByBailiff";
+
 }
