@@ -48,6 +48,7 @@ public class CcdEvents {
     public static final String MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER = "MakeEligibleForDA_Petitioner";
     public static final String NOT_RECEIVED_AOS = "aosNotReceived";
     public static final String NOT_RECEIVED_AOS_STARTED = "aosNotReceivedStarted";
+    public static final String NOT_RECEIVED_AOS_BAILIFF_APPLICATION = "aosNotReceivedForBailiff";
     public static final String PAYMENT_MADE = "paymentMade";
     public static final String START_AOS = "startAos";
     public static final String SOL_AOS_SUBMITTED_DEFENDED = "solAosSubmittedDefended";
