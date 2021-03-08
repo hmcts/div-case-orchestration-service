@@ -23,4 +23,6 @@ public interface AosService {
 
     void markAosNotReceivedForAlternativeMethodCase(String authToken, String caseId) throws CaseOrchestrationServiceException;
 
+    void markAosNotReceivedForSuccessfulBailiffCase(String authToken, String caseId) throws CaseOrchestrationServiceException;
+
 }

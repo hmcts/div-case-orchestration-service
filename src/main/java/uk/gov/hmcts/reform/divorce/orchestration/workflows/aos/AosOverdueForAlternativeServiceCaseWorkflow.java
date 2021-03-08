@@ -21,8 +21,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_ALTERNATIVE_METHOD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_BAILIFF;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_PROCESS_SERVER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_SUCCESSFUL_BAILIFF;
 
 @Slf4j
 @Component
@@ -44,7 +44,7 @@ public class AosOverdueForAlternativeServiceCaseWorkflow extends DefaultWorkflow
     }
 
     private String getEventIdForGivenAlternativeServiceType(String caseId, AlternativeServiceType alternativeServiceType) throws WorkflowException {
-        if (SERVED_BY_BAILIFF.equals(alternativeServiceType)) {
+        if (SERVED_BY_SUCCESSFUL_BAILIFF.equals(alternativeServiceType)) {
             return AOS_NOT_RECEIVED_FOR_BAILIFF_APPLICATION;
         } else if (SERVED_BY_PROCESS_SERVER.equals(alternativeServiceType)) {
             return AOS_NOT_RECEIVED_FOR_PROCESS_SERVER;
