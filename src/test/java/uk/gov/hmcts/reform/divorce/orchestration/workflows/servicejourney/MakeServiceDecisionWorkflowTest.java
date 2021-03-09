@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bailiff.BailiffApplicationApprovedDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceOrderGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceRefusalOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderTask;
@@ -32,29 +33,15 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.ve
 @RunWith(MockitoJUnitRunner.class)
 public class MakeServiceDecisionWorkflowTest extends TestCase {
 
-    @Mock
-    private MakeServiceDecisionDateTask makeServiceDecisionDateTask;
-
-    @Mock
-    private OrderToDispenseGenerationTask orderToDispenseGenerationTask;
-
-    @Mock
-    private DeemedServiceOrderGenerationTask deemedServiceOrderGenerationTask;
-
-    @Mock
-    private DeemedServiceRefusalOrderTask deemedServiceRefusalOrderTask;
-
-    @Mock
-    private DispensedServiceRefusalOrderTask dispensedServiceRefusalOrderTask;
-
-    @Mock
-    private ServiceRefusalDraftRemovalTask serviceRefusalDraftRemovalTask;
-
-    @Mock
-    private ServiceApplicationDataTask serviceApplicationDataTask;
-
-    @Mock
-    private ServiceApplicationRemovalTask serviceApplicationRemovalTask;
+    @Mock private MakeServiceDecisionDateTask makeServiceDecisionDateTask;
+    @Mock private OrderToDispenseGenerationTask orderToDispenseGenerationTask;
+    @Mock private DeemedServiceOrderGenerationTask deemedServiceOrderGenerationTask;
+    @Mock private DeemedServiceRefusalOrderTask deemedServiceRefusalOrderTask;
+    @Mock private DispensedServiceRefusalOrderTask dispensedServiceRefusalOrderTask;
+    @Mock private ServiceRefusalDraftRemovalTask serviceRefusalDraftRemovalTask;
+    @Mock private ServiceApplicationDataTask serviceApplicationDataTask;
+    @Mock private ServiceApplicationRemovalTask serviceApplicationRemovalTask;
+    @Mock private BailiffApplicationApprovedDataTask bailiffApplicationApprovedDataTask;
 
     @InjectMocks
     private MakeServiceDecisionWorkflow makeServiceDecisionWorkflow;
@@ -182,6 +169,34 @@ public class MakeServiceDecisionWorkflowTest extends TestCase {
             serviceApplicationRemovalTask
         );
         verifyTasksWereNeverCalled(orderToDispenseGenerationTask, serviceRefusalDraftRemovalTask);
+    }
+
+    @Test
+    public void shouldNotMoveServiceApplicationDataToCollection_whenBailiffApplicationGranted() throws WorkflowException {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(CcdFields.SERVICE_APPLICATION_GRANTED, YES_VALUE);
+        caseData.put(CcdFields.SERVICE_APPLICATION_TYPE, ApplicationServiceTypes.BAILIFF);
+
+        mockTasksExecution(
+            caseData,
+            makeServiceDecisionDateTask,
+            bailiffApplicationApprovedDataTask
+        );
+
+        makeServiceDecisionWorkflow.run(CaseDetails.builder().caseData(caseData).build(), AUTH_TOKEN);
+
+        verifyTasksCalledInOrder(
+            caseData,
+            makeServiceDecisionDateTask,
+            bailiffApplicationApprovedDataTask
+        );
+        verifyTasksWereNeverCalled(
+            orderToDispenseGenerationTask,
+            deemedServiceOrderGenerationTask,
+            dispensedServiceRefusalOrderTask,
+            deemedServiceRefusalOrderTask,
+            serviceRefusalDraftRemovalTask
+        );
     }
 
     private void runExpectingDecisionDateServiceApplicationDataAndDraftRemovalWillBeCalled(Map<String, Object> caseData)
