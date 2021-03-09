@@ -72,7 +72,7 @@ def versions = [
         springSecurityCrypto         : '5.4.5',
         springSecurityRsa            : '1.0.8.RELEASE',
         springBoot                   : '2.3.4.RELEASE',
-        tomcat                       : '9.0.40',
+        tomcat                       : '9.0.43',
         unirest                      : '1.4.9',
         embeddedPostgres             : '1.5.5',
         pact_version                 : '4.1.11',
