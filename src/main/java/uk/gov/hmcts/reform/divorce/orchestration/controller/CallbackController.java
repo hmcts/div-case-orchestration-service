@@ -1319,6 +1319,21 @@ public class CallbackController {
         );
     }
 
+    @PostMapping(path = "/add-bailiff-return")
+    @ApiOperation(value = "Setup Add Bailiff Return event")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Setup Add Bailiff Return event")})
+    public ResponseEntity<CcdCallbackResponse> setupAddBailiffReturnEvent(
+            @RequestHeader(AUTHORIZATION_HEADER)
+            @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+                serviceJourneyService
+                        .setupAddBailiffReturnEvent(ccdCallbackRequest.getCaseDetails(), authorizationToken)
+        );
+    }
+
     @PostMapping(path = "/set-up-order-summary/without-notice-fee")
     @ApiOperation(value = "Return service payment fee. Starting from state AwaitingGeneralReferralPayment")
     @ApiResponses(value = {

@@ -48,6 +48,10 @@ public class Conditions {
         return ApplicationServiceTypes.BAILIFF.equalsIgnoreCase((String) caseData.get(CcdFields.SERVICE_APPLICATION_TYPE));
     }
 
+    public static boolean isBailiffServiceSuccessful(Map<String, Object> caseData) {
+        return YES_VALUE.equalsIgnoreCase((String) caseData.get(CcdFields.BAILIFF_SERVICE_SUCCESSFUL));
+    }
+
     public static boolean isAwaitingServiceConsideration(CaseDetails caseDetails) {
         return CcdStates.AWAITING_SERVICE_CONSIDERATION.equalsIgnoreCase(caseDetails.getState());
     }
