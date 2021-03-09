@@ -163,6 +163,12 @@ ccd:
 bulk-print:
   dueDate: 30
 
+bailiff:
+  successful:
+    dueDate: 7
+  unsuccessful:
+    dueDate: 30
+
 bulk-action:
   page-size: 50
   retries:
