@@ -22,4 +22,7 @@ public interface ServiceJourneyService {
 
     CcdCallbackResponse confirmServicePaymentEvent(CaseDetails caseDetails, String authorisation)
         throws ServiceJourneyServiceException;
+
+    CcdCallbackResponse setupAddBailiffReturnEvent(CaseDetails caseDetails, String authorisation)
+        throws ServiceJourneyServiceException;
 }

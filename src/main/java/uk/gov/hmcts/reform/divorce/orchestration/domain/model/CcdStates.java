@@ -40,4 +40,5 @@ public class CcdStates {
     public static final String AWAITING_ALTERNATIVE_SERVICE = "AwaitingAlternativeService";
     public static final String AWAITING_PROCESS_SERVER_SERVICE = "AwaitingProcessServerService";
     public static final String AWAITING_DWP_RESPONSE = "AwaitingDWPResponse";
+    public static final String ISSUED_TO_BAILIFF = "IssuedToBailiff";
 }

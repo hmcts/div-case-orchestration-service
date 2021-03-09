@@ -1705,6 +1705,23 @@ public class CallbackControllerTest {
     }
 
     @Test
+    public void shouldReturnOK_WhenAddBailiffReturnEventIsCalled() throws CaseOrchestrationServiceException {
+        final Map<String, Object> caseData = Collections.emptyMap();
+        final CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+        final CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+
+        when(serviceJourneyService.setupAddBailiffReturnEvent(caseDetails, AUTH_TOKEN))
+                .thenReturn(CcdCallbackResponse.builder().data(caseData).build());
+
+        final ResponseEntity<CcdCallbackResponse> response = classUnderTest.setupAddBailiffReturnEvent(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody(), is(expectedResponse));
+        verify(serviceJourneyService).setupAddBailiffReturnEvent(caseDetails, AUTH_TOKEN);
+    }
+
+    @Test
     public void shouldCallRightServiceMethod_ForPreparingAosNotReceivedForSubmission() throws CaseOrchestrationServiceException {
         when(aosService.prepareAosNotReceivedEventForSubmission(any(), any())).thenReturn(TEST_PAYLOAD_TO_RETURN);
 

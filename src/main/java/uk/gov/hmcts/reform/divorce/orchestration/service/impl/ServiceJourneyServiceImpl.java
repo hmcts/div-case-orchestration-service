@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.BailiffOutcomeWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.FurtherPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
@@ -39,6 +40,7 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
     private final ServiceDecisionMakingWorkflow serviceDecisionMakingWorkflow;
     private final SetupConfirmServicePaymentWorkflow setupConfirmServicePaymentWorkflow;
     private final FurtherPaymentWorkflow furtherPaymentWorkflow;
+    private final BailiffOutcomeWorkflow bailiffOutcomeWorkflow;
 
     @Override
     public CcdCallbackResponse makeServiceDecision(CaseDetails caseDetails, String authorisation) throws ServiceJourneyServiceException {
@@ -123,5 +125,16 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
         }
 
         return builder.build();
+    }
+
+    @Override
+    public CcdCallbackResponse setupAddBailiffReturnEvent(CaseDetails caseDetails, String authorisation) throws ServiceJourneyServiceException {
+        try {
+            return CcdCallbackResponse.builder()
+                    .data(bailiffOutcomeWorkflow.run(caseDetails, authorisation))
+                    .build();
+        } catch (WorkflowException exception) {
+            throw new ServiceJourneyServiceException(exception, caseDetails.getCaseId());
+        }
     }
 }
