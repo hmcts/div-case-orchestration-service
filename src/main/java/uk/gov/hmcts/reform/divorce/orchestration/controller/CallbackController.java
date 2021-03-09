@@ -151,6 +151,32 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
+    @PostMapping(path = "/dn-pronounced-manual", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Trigger notification email to Petitioner and Respondent when the Decree Nisi has been pronounced")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "An email notification has been generated and dispatched",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> dnPronouncedManual(
+        @RequestHeader(value = AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            callbackResponseBuilder.data(caseOrchestrationService.sendDnPronouncedNotification(ccdCallbackRequest, authorizationToken));
+            log.info("DN pronounced for case ID: {}.", caseId);
+        } catch (WorkflowException exception) {
+            log.error("DN pronounced handling has failed for case ID: {}", caseId, exception);
+            callbackResponseBuilder.errors(singletonList(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(callbackResponseBuilder.build());
+    }
+
+
     @PostMapping(path = "/clarification-submitted", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Trigger notification email to Petitioner when their clarification has been submitted")
     @ApiResponses(value = {
@@ -704,6 +730,31 @@ public class CallbackController {
 
         try {
             callbackResponseBuilder.data(caseOrchestrationService.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, authorizationToken));
+            log.info("Generated DN documents for Case ID: {}.", caseId);
+        } catch (WorkflowException exception) {
+            log.error("DN document generation failed for Case ID: {}", caseId, exception);
+            callbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
+        }
+
+        return ResponseEntity.ok(callbackResponseBuilder.build());
+    }
+
+    @PostMapping(path = "/generate-manual-dn-pronouncement-documents", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Generate the documents for Decree Nisi Pronouncement and attach them to the case")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "DN Pronouncement documents have been attached to the case", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 500, message = "Internal Server Error")})
+    public ResponseEntity<CcdCallbackResponse> generateManualDnDocuments(
+        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
+
+        try {
+            callbackResponseBuilder.data(caseOrchestrationService.handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, authorizationToken));
             log.info("Generated DN documents for Case ID: {}.", caseId);
         } catch (WorkflowException exception) {
             log.error("DN document generation failed for Case ID: {}", caseId, exception);

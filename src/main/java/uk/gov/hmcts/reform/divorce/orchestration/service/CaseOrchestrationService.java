@@ -96,6 +96,8 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> sendDnPronouncedNotification(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
+    Map<String, Object> sendDnPronouncedManualNotification(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
+
     Map<String, Object> processCaseLinkedForHearingEvent(CcdCallbackRequest ccdCallbackRequest, String authToken)
         throws CaseOrchestrationServiceException;
 
@@ -124,6 +126,8 @@ public interface CaseOrchestrationService {
     Map<String, Object> validateBulkCaseListingData(Map<String, Object> caseData) throws WorkflowException;
 
     Map<String, Object> handleDnPronouncementDocumentGeneration(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
+
+    Map<String, Object> handleManualDnPronouncementDocumentGeneration(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
     Map<String, Object> processAosSolicitorLinkCase(CcdCallbackRequest request, String authToken) throws CaseOrchestrationServiceException;
 

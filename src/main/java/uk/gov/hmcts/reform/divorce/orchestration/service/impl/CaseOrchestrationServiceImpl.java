@@ -60,6 +60,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendEmailNotification
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerClarificationRequestNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetDNGrantedDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnFetchDocWorkflow;
@@ -144,6 +145,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final DNSubmittedWorkflow dnSubmittedWorkflow;
     private final DnSubmittedEmailNotificationWorkflow dnSubmittedEmailNotificationWorkflow;
     private final SendDnPronouncedNotificationWorkflow sendDnPronouncedNotificationWorkflow;
+    private final SetDNGrantedDateWorkflow setDNGrantedDateWorkflow;
     private final GetCaseWorkflow getCaseWorkflow;
     private final AuthUtil authUtil;
     private final AmendPetitionWorkflow amendPetitionWorkflow;
@@ -469,6 +471,11 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
+    public Map<String, Object> sendDnPronouncedManualNotification(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
+        return setDNGrantedDateWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
+    }
+
+    @Override
     public CcdCallbackResponse sendClarificationSubmittedNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         Map<String, Object> workflowResponse = sendClarificationSubmittedNotificationWorkflow.run(ccdCallbackRequest);
 
@@ -767,6 +774,29 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
         return caseData;
     }
+
+    @Override
+    public Map<String, Object> handleManualDnPronouncementDocumentGeneration(final CcdCallbackRequest ccdCallbackRequest, final String authToken)
+        throws WorkflowException {
+
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        Map<String, Object> caseData = caseDetails.getCaseData();
+        String caseID = caseDetails.getCaseId();
+
+        if (Objects.nonNull(caseData.get(caseID))) {
+            caseData.putAll(
+                documentGenerationWorkflow.run(caseDetails, authToken, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME));
+
+            if (isPetitionerClaimingCosts(caseData)) {
+                // DocumentType is clear enough to use as the file name
+                caseData.putAll(
+                    documentGenerationWorkflow.run(caseDetails, authToken, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE));
+            }
+        }
+
+        return caseData;
+    }
+
 
     @Override
     public Map<String, Object> handleGrantDACallback(final CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {

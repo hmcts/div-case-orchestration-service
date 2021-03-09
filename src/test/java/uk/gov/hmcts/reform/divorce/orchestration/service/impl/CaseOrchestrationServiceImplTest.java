@@ -1054,6 +1054,15 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
+    public void shouldCallTheRightWorkflow_ForManualDnPronouncementDocumentGeneration() throws WorkflowException {
+        final Map<String, Object> result = classUnderTest
+            .handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
+
+        assertThat(result, is(requestPayload));
+    }
+
+
+    @Test
     public void shouldGenerateNoDocuments_whenBulkCaseLinkIdIsNull() throws WorkflowException {
         Map<String, Object> caseData = new HashMap<String, Object>();
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "No");
