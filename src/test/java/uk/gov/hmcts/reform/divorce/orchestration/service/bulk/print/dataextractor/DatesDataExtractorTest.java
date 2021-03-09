@@ -23,6 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.TIME_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.COSTS_CLAIM_GRANTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor.CaseDataKeys.CERTIFICATE_OF_SERVICE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor.CaseDataKeys.DA_GRANTED_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor.CaseDataKeys.RECEIVED_SERVICE_ADDED_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor.CaseDataKeys.RECEIVED_SERVICE_APPLICATION_DATE;
@@ -91,6 +92,17 @@ public class DatesDataExtractorTest {
     @Test(expected = InvalidDataForTaskException.class)
     public void getReceivedServiceAddedDateUnformattedThrowsInvalidDataForTaskExceptionWhenNoFieldFound() {
         DatesDataExtractor.getReceivedServiceAddedDateUnformatted(emptyMap());
+    }
+
+    @Test
+    public void getCertificateOfServiceDateUnformattedDateReturnsValidValueWhenItExists() {
+        Map<String, Object> caseData = buildCaseDataWithField(CERTIFICATE_OF_SERVICE_DATE, VALID_DATE_FROM_CCD);
+        assertThat(DatesDataExtractor.getCertificateOfServiceDateUnformatted(caseData), is(VALID_DATE_FROM_CCD));
+    }
+
+    @Test(expected = InvalidDataForTaskException.class)
+    public void getCertificateOfServiceDateUnformattedThrowsInvalidDataForTaskExceptionWhenNoFieldFound() {
+        DatesDataExtractor.getCertificateOfServiceDateUnformatted(emptyMap());
     }
 
     @Test

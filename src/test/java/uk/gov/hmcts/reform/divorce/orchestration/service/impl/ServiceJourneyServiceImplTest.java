@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRes
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.BailiffOutcomeWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.FurtherPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
@@ -66,6 +67,9 @@ public class ServiceJourneyServiceImplTest {
 
     @Mock
     private FurtherPaymentWorkflow furtherPaymentWorkflow;
+
+    @Mock
+    private BailiffOutcomeWorkflow bailiffOutcomeWorkflow;
 
     @InjectMocks
     private ServiceJourneyServiceImpl classUnderTest;
@@ -169,6 +173,26 @@ public class ServiceJourneyServiceImplTest {
         classUnderTest.serviceDecisionRefusal(input.getCaseDetails(), AUTH_TOKEN);
     }
 
+    @Test
+    public void addBailiffReturnShouldCallWorkflow()
+            throws ServiceJourneyServiceException, WorkflowException {
+        CcdCallbackRequest input = buildCcdCallbackRequest();
+
+        classUnderTest.setupAddBailiffReturnEvent(input.getCaseDetails(), AUTH_TOKEN);
+
+        verify(bailiffOutcomeWorkflow).run(input.getCaseDetails(), AUTH_TOKEN);
+    }
+
+    @Test(expected = ServiceJourneyServiceException.class)
+    public void addBailiffReturnShouldThrowServiceJourneyServiceException()
+            throws ServiceJourneyServiceException, WorkflowException {
+        CcdCallbackRequest input = buildCcdCallbackRequest();
+
+        when(bailiffOutcomeWorkflow.run(any(CaseDetails.class), anyString()))
+                .thenThrow(WorkflowException.class);
+
+        classUnderTest.setupAddBailiffReturnEvent(input.getCaseDetails(), AUTH_TOKEN);
+    }
 
     @Test
     public void givenCaseData_whenSetupConfirmServicePaymentEvent_thenReturnPayload() throws Exception {
