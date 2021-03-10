@@ -127,7 +127,8 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> handleDnPronouncementDocumentGeneration(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
-    Map<String, Object> handleManualDnPronouncementDocumentGeneration(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
+    Map<String, Object> handleManualDnPronouncementDocumentGeneration(CcdCallbackRequest ccdCallbackRequest, String authToken)
+        throws WorkflowException;
 
     Map<String, Object> processAosSolicitorLinkCase(CcdCallbackRequest request, String authToken) throws CaseOrchestrationServiceException;
 
