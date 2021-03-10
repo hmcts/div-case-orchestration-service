@@ -340,9 +340,6 @@ public class OrchestrationConstants {
     public static final String CASES_ELIGIBLE_FOR_DA_PROCESSED_COUNT = "casesEligibleForDAProcessedCount";
     public static final String CASES_OVERDUE_FOR_DA_PROCESSED_COUNT = "casesOverdueForDAProcessedCount";
 
-    // Bailiff
-    public static final String CERTIFICATE_OF_SERVICE_DOCUMENT = "CertificateOfServiceDocument";
-
     // Validation
     public static final String ERROR_STATUS = "error";
     public static final String UPDATE_RESPONDENT_DATA_ERROR_KEY = "respondent.data.not.updated_Error";
