@@ -152,27 +152,24 @@ public class CallbackController {
     }
 
     @PostMapping(path = "/dn-pronounced-manual", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
-    @ApiOperation(value = "Trigger notification email to Petitioner and Respondent when the Decree Nisi has been pronounced")
+    @ApiOperation(value = "Trigger notification email to Petitioner and Respondent when the Decree Nisi has been pronounced for one case")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "An email notification has been generated and dispatched",
+        @ApiResponse(code = 200, message = "An email notification has been generated and dispatched to the petitioner and respondent",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> dnPronouncedManual(
         @RequestHeader(value = AUTHORIZATION_HEADER)
-        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-
+        @ApiParam(value = "JWT auth token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
-
         try {
             callbackResponseBuilder.data(caseOrchestrationService.sendDnPronouncedNotification(ccdCallbackRequest, authorizationToken));
-            log.info("DN pronounced for case ID: {}.", caseId);
+            log.info("DN pronounced for case with ID: {}.", caseId);
         } catch (WorkflowException exception) {
-            log.error("DN pronounced handling has failed for case ID: {}", caseId, exception);
+            log.error("DN pronounced handling has failed for case with ID: {}", caseId, exception);
             callbackResponseBuilder.errors(singletonList(exception.getMessage()));
         }
-
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
