@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.bailiff.BailiffApplicationApprovedDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceOrderGenerationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DeemedServiceRefusalOrderTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.DispensedServiceRefusalOrderTask;
@@ -23,6 +24,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationBailiff;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDeemed;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDispensed;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationGranted;
@@ -40,6 +42,7 @@ public class MakeServiceDecisionWorkflow extends DefaultWorkflow<Map<String, Obj
     private final ServiceApplicationDataTask serviceApplicationDataTask;
     private final ServiceRefusalDraftRemovalTask serviceRefusalDraftRemovalTask;
     private final ServiceApplicationRemovalTask serviceApplicationRemovalTask;
+    private final BailiffApplicationApprovedDataTask bailiffApplicationApprovedDataTask;
 
     public Map<String, Object> run(CaseDetails caseDetails, String auth) throws WorkflowException {
 
@@ -77,10 +80,17 @@ public class MakeServiceDecisionWorkflow extends DefaultWorkflow<Map<String, Obj
             tasks.add(serviceRefusalDraftRemovalTask);
         }
 
-        log.info("CaseID: {}, Adding task to move all service application temp data to collection.", caseId);
-        tasks.add(serviceApplicationDataTask);
-        log.info("CaseID: {}, Adding task to remove all service application temp data from case data.", caseId);
-        tasks.add(serviceApplicationRemovalTask);
+        if (isServiceApplicationGranted(caseDetails.getCaseData()) && isServiceApplicationBailiff(caseDetails.getCaseData())) {
+            // for "bailiff service application granted" case the application should not be moved into previous
+            // applications collection until the end of bailiff workflow; instead need to copy ServiceApplicationGranted CCD field
+            // into BailiffApplicationGranted - the latter field is required to display custom label for service application of "bailiff" type
+            tasks.add(bailiffApplicationApprovedDataTask);
+        } else {
+            log.info("CaseID: {}, Adding task to move all service application temp data to collection.", caseId);
+            tasks.add(serviceApplicationDataTask);
+            log.info("CaseID: {}, Adding task to remove all service application temp data from case data.", caseId);
+            tasks.add(serviceApplicationRemovalTask);
+        }
 
         return this.execute(
             tasks.toArray(new Task[0]),
