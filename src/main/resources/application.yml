@@ -167,6 +167,12 @@ ccd:
 bulk-print:
   dueDate: 30
 
+bailiff:
+  successful:
+    dueDate: 7
+  unsuccessful:
+    dueDate: 30
+
 uk:
   gov:
     notify:
