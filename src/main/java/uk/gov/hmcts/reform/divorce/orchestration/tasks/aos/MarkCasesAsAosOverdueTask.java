@@ -133,9 +133,9 @@ public class MarkCasesAsAosOverdueTask extends SelfPublishingAsyncTask<Void> {
             .orElse(false);
     }
 
-    private Boolean isSuccessfulBailiffApplication(CaseDetails caseDetails, String serviceType) {
+    private Boolean isSuccessfulBailiffApplication(CaseDetails caseDetails, String isBailiffSuccessful) {
         return Optional.ofNullable(caseDetails.getCaseData())
-            .map(caseData -> caseData.get(serviceType))
+            .map(caseData -> caseData.get(isBailiffSuccessful))
             .map(String.class::cast)
             .map(YES_VALUE::equalsIgnoreCase)
             .orElse(false);

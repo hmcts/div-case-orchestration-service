@@ -102,8 +102,8 @@ public class AosOverdueTest extends MockedFunctionalTest {
             verifyCaseWasUpdated("4", AOS_NOT_RECEIVED_FOR_PROCESS_SERVER);
             verifyCaseWasUpdated("5", AOS_NOT_RECEIVED_FOR_PROCESS_SERVER);
             verifyCaseWasUpdated("6", AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD);
-            verifyCaseWasUpdated("8", AOS_NOT_RECEIVED_FOR_BAILIFF_APPLICATION);
             verifyCaseWasUpdated("7", AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD);
+            verifyCaseWasUpdated("8", AOS_NOT_RECEIVED_FOR_BAILIFF_APPLICATION);
         });
         verifyCaseWasNotUpdated("1", NOT_RECEIVED_AOS);
     }
