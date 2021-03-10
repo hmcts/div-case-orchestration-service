@@ -4,11 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.divorce.model.ccd.roles.CaseRoles;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseRoleClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseUser;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.RemoveUserRolesRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseRoles;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
