@@ -164,7 +164,7 @@ public class CallbackController {
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
         try {
-            callbackResponseBuilder.data(caseOrchestrationService.sendDnPronouncedNotification(ccdCallbackRequest, authorizationToken));
+            callbackResponseBuilder.data(caseOrchestrationService.sendDnPronouncedManualNotification(ccdCallbackRequest, authorizationToken));
             log.info("DN pronounced for case with ID: {}.", caseId);
         } catch (WorkflowException exception) {
             log.error("DN pronounced handling has failed for case with ID: {}", caseId, exception);
