@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.loadResourceAsString;
@@ -19,6 +20,9 @@ public class SetDNGrantedDateITest extends IdamTestSupport {
 
     private static final String API_URL = "/dn-pronounced-manual";
     private static final String MISSING_JUDGE_REQUEST_JSON_PATH = "jsonExamples/payloads/bulkCaseCcdCallbackRequestNoJudge.json";
+    private static final String REQUEST_JSON_PATH = "jsonExamples/payloads/dnGrantedCcdCallbackRequest.json";
+    private static final String TEST_AUTH_TOKEN = "testAuthToken";
+
 
 
     @Autowired
@@ -37,17 +41,18 @@ public class SetDNGrantedDateITest extends IdamTestSupport {
 
 
         // Matching request json
-        String courtHearingDate = "2000-01-01";
-        String eligibleDate = "2000-02-13";
+        String dnGrantedDate = "2000-01-01";
+        String daEligibleDate = "2000-02-13";
         String pronouncementJudge = "District Judge";
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
-                .content(loadResourceAsString("jsonExamples/payloads/bulkCaseCcdCallbackRequest.json"))
+                .header(AUTHORIZATION, TEST_AUTH_TOKEN)
+                .content(loadResourceAsString(REQUEST_JSON_PATH))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.DecreeNisiGrantedDate", equalTo(courtHearingDate)))
-                .andExpect(jsonPath("$.data.DAEligibleFromDate", equalTo(eligibleDate)))
+                .andExpect(jsonPath("$.data.DNApprovalDate", equalTo(dnGrantedDate)))
+                .andExpect(jsonPath("$.data.DAEligibleFromDate", equalTo(daEligibleDate)))
                 .andExpect(jsonPath("$.data.PronouncementJudge", equalTo(pronouncementJudge)))
                 .andExpect(jsonPath("$.errors", nullValue()));
     }
@@ -55,6 +60,7 @@ public class SetDNGrantedDateITest extends IdamTestSupport {
     @Test
     public void givenCallbackRequestWithNoJudgeCaseData_thenReturnCallbackResponseWithError() throws Exception {
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
+                .header(AUTHORIZATION, TEST_AUTH_TOKEN)
                 .content(loadResourceAsString(MISSING_JUDGE_REQUEST_JSON_PATH))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
