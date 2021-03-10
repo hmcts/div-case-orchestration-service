@@ -52,7 +52,7 @@ public class SetDNGrantedDateITest extends IdamTestSupport {
     }
 
     @Test
-    public void givenCallbackRequestWithDnPronouncementDateBulkCaseData_thenReturnCallbackResponse() throws Exception {
+    public void givenCallbackRequestWithDnPronouncementDateCaseData_thenReturnCallbackResponse() throws Exception {
         String updateCasePath = String.format(CMS_UPDATE_CASE_PATH, CASE_ID, UPDATE_BULK_DN_PRONOUNCEMENT_DETAILS_EVENT);
         stubCmsServerEndpoint(updateCasePath, HttpStatus.OK, "{}", POST);
 
