@@ -50,9 +50,9 @@ public class MigrateChequeTask implements Task<Map<String, Object>> {
             );
         } catch (FeignException e) {
 
-            log.error("Case id {}: Update failed for payment cheque migration. Error: {}", caseId, e);
+            log.error("Case id {}: Update failed for payment cheque migration. Error: {}", caseId, e.getMessage());
 
-            throw new TaskException("Case update failed! - {}", e);
+            throw new TaskException("Case update failed!");
         }
 
         log.info("Case id {}: Migrated payment method", caseId);
