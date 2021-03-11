@@ -2,12 +2,12 @@ package uk.gov.hmcts.reform.divorce.orchestration;
 
 import com.google.common.collect.ImmutableMap;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseRoles;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
 
 import java.util.Map;
 
 import static java.util.Collections.singletonMap;
+import static uk.gov.hmcts.reform.divorce.model.ccd.roles.CaseRoles.PETITIONER_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.buildOrganisationPolicy;
 
 public class TestConstants {
@@ -131,7 +131,7 @@ public class TestConstants {
 
     public static final String TEST_ORGANISATION_POLICY_NAME = "organisationName";
     public static final String TEST_ORGANISATION_POLICY_ID = "organisationID";
-    public static final String TEST_PETITIONER_SOLICITOR_CASE_ROLE = CaseRoles.PETITIONER_SOLICITOR;
+    public static final String TEST_PETITIONER_SOLICITOR_CASE_ROLE = PETITIONER_SOLICITOR;
     public static final OrganisationPolicy TEST_ORGANISATION_POLICY = buildOrganisationPolicy();
 
 }
