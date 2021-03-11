@@ -56,9 +56,6 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
     @Value("${case.orchestration.maintenance.submit-co-respondent-aos.context-path}")
     private String submitCoRespondentAosContextPath;
 
-    @Value("${case.orchestration.maintenance.submit.context-path}")
-    private String caseCreationContextPath;
-
     @Value("${case.orchestration.maintenance.submit-dn.context-path}")
     private String submitDnContextPath;
 
