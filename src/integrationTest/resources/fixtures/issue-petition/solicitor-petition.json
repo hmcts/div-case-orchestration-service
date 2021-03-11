@@ -18,15 +18,6 @@
   "D8FinancialOrder": "No",
   "D8InferredPetitionerGender": "male",
   "D8InferredRespondentGender": "female",
-  "D8JurisdictionConnection": [
-    "E",
-    "G",
-    "F",
-    "D",
-    "C",
-    "B",
-    "A"
-  ],
   "D8JurisdictionConnectionNewPolicy": [
     "E",
     "G",
