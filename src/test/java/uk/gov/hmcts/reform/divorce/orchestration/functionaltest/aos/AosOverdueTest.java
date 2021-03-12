@@ -37,8 +37,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_NOT_RECEIVED_FOR_BAILIFF_APPLICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_NOT_RECEIVED_FOR_PROCESS_SERVER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.NOT_RECEIVED_AOS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.BAILIFF_SERVICE_SUCCESSFUL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVED_BY_ALTERNATIVE_METHOD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVED_BY_PROCESS_SERVER;
@@ -68,7 +70,8 @@ public class AosOverdueTest extends MockedFunctionalTest {
 
         stubUpdateCaseEndpointForGivenEvents(NOT_RECEIVED_AOS,
             AOS_NOT_RECEIVED_FOR_PROCESS_SERVER,
-            AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD);
+            AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD,
+            AOS_NOT_RECEIVED_FOR_BAILIFF_APPLICATION);
     }
 
     @After
@@ -86,7 +89,8 @@ public class AosOverdueTest extends MockedFunctionalTest {
             CaseDetails.builder().state(AOS_STARTED).caseId("4").caseData(Map.of(SERVED_BY_PROCESS_SERVER, YES_VALUE)).build(),
             CaseDetails.builder().state(AOS_AWAITING).caseId("5").caseData(Map.of(SERVED_BY_PROCESS_SERVER, YES_VALUE)).build(),
             CaseDetails.builder().state(AOS_STARTED).caseId("6").caseData(Map.of(SERVED_BY_ALTERNATIVE_METHOD, YES_VALUE)).build(),
-            CaseDetails.builder().state(AOS_AWAITING).caseId("7").caseData(Map.of(SERVED_BY_ALTERNATIVE_METHOD, YES_VALUE)).build()
+            CaseDetails.builder().state(AOS_AWAITING).caseId("7").caseData(Map.of(SERVED_BY_ALTERNATIVE_METHOD, YES_VALUE)).build(),
+            CaseDetails.builder().state(AOS_AWAITING).caseId("8").caseData(Map.of(BAILIFF_SERVICE_SUCCESSFUL, YES_VALUE)).build()
         ), expectedQuery);
 
         mockMvc.perform(post("/cases/aos/make-overdue").header(AUTHORIZATION, AUTH_TOKEN))
@@ -99,6 +103,7 @@ public class AosOverdueTest extends MockedFunctionalTest {
             verifyCaseWasUpdated("5", AOS_NOT_RECEIVED_FOR_PROCESS_SERVER);
             verifyCaseWasUpdated("6", AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD);
             verifyCaseWasUpdated("7", AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD);
+            verifyCaseWasUpdated("8", AOS_NOT_RECEIVED_FOR_BAILIFF_APPLICATION);
         });
         verifyCaseWasNotUpdated("1", NOT_RECEIVED_AOS);
     }
