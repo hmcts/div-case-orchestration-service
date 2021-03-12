@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_ALTERNATIVE_METHOD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_PROCESS_SERVER;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_SUCCESSFUL_BAILIFF;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_BAILIFF;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AosOverdueForAlternativeServiceCaseWorkflowTest {
@@ -40,7 +40,7 @@ public class AosOverdueForAlternativeServiceCaseWorkflowTest {
 
     @Test
     public void shouldCallAppropriateTaskForCaseServedByBailiffApplication() throws WorkflowException {
-        classUnderTest.run(AUTH_TOKEN, TEST_CASE_ID, SERVED_BY_SUCCESSFUL_BAILIFF);
+        classUnderTest.run(AUTH_TOKEN, TEST_CASE_ID, SERVED_BY_BAILIFF);
 
         verify(updateCaseInCCD).execute(contextArgumentCaptor.capture(), eq(emptyMap()));
         TaskContext taskContext = contextArgumentCaptor.getValue();

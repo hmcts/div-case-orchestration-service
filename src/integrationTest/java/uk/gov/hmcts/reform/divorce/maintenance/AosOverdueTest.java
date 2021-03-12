@@ -45,7 +45,7 @@ public class AosOverdueTest extends RetrieveCaseSupport {
     private String aosStartedCaseId;
     private String servedByProcessServerCaseId;
     private String servedByAlternativeMethodCaseId;
-    private String servedBySuccessfulBailiffCaseId;
+    private String servedByBailiffCaseId;
     private String aosDraftedCaseId;
     private String aosDraftedServedByProcessServerCaseId;
     private String aosDraftedServedByAlternativeMethodCaseId;
@@ -65,7 +65,7 @@ public class AosOverdueTest extends RetrieveCaseSupport {
         aosStartedCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_STARTED_EVENT);
         servedByProcessServerCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_STARTED_EVENT, Pair.of(SERVED_BY_PROCESS_SERVER, YES_VALUE));
         servedByAlternativeMethodCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_STARTED_EVENT, Pair.of(SERVED_BY_ALTERNATIVE_METHOD, YES_VALUE));
-        servedBySuccessfulBailiffCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_AWAITING_EVENT, Pair.of(BAILIFF_SERVICE_SUCCESSFUL, YES_VALUE));
+        servedByBailiffCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_AWAITING_EVENT, Pair.of(BAILIFF_SERVICE_SUCCESSFUL, YES_VALUE));
 
         aosDraftedCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_DRAFTED_EVENT);
         aosDraftedServedByProcessServerCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_DRAFTED_EVENT,
@@ -77,7 +77,7 @@ public class AosOverdueTest extends RetrieveCaseSupport {
         elasticSearchTestHelper.ensureCaseIsSearchable(aosStartedCaseId, caseworkerUser.getAuthToken(), AOS_STARTED);
         elasticSearchTestHelper.ensureCaseIsSearchable(servedByProcessServerCaseId, caseworkerUser.getAuthToken(), AOS_STARTED);
         elasticSearchTestHelper.ensureCaseIsSearchable(servedByAlternativeMethodCaseId, caseworkerUser.getAuthToken(), AOS_STARTED);
-        elasticSearchTestHelper.ensureCaseIsSearchable(servedBySuccessfulBailiffCaseId, caseworkerUser.getAuthToken(), AOS_AWAITING);
+        elasticSearchTestHelper.ensureCaseIsSearchable(servedByBailiffCaseId, caseworkerUser.getAuthToken(), AOS_AWAITING);
 
         elasticSearchTestHelper.ensureCaseIsSearchable(aosDraftedCaseId, caseworkerUser.getAuthToken(), AOS_DRAFTED);
         elasticSearchTestHelper.ensureCaseIsSearchable(aosDraftedServedByProcessServerCaseId, caseworkerUser.getAuthToken(), AOS_DRAFTED);
@@ -108,7 +108,7 @@ public class AosOverdueTest extends RetrieveCaseSupport {
             assertCaseIsInExpectedState(aosStartedCaseId, AOS_STARTED);
             assertCaseIsInExpectedState(servedByProcessServerCaseId, AWAITING_DECREE_NISI);
             assertCaseIsInExpectedState(servedByAlternativeMethodCaseId, AWAITING_DECREE_NISI);
-            assertCaseIsInExpectedState(servedBySuccessfulBailiffCaseId, AWAITING_DECREE_NISI);
+            assertCaseIsInExpectedState(servedByBailiffCaseId, AWAITING_DECREE_NISI);
             assertCaseIsInExpectedState(aosDraftedCaseId, AOS_OVERDUE);
             assertCaseIsInExpectedState(aosDraftedServedByProcessServerCaseId, AWAITING_DECREE_NISI);
             assertCaseIsInExpectedState(aosDraftedServedByAlternativeMethodCaseId, AWAITING_DECREE_NISI);
