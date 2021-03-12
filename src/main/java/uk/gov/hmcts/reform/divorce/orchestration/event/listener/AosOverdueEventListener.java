@@ -6,6 +6,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.event.domain.AosOverdueEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.domain.AosOverdueForAlternativeMethodCaseEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.event.domain.AosOverdueForBailiffApplicationCaseEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.domain.AosOverdueForProcessServerCaseEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
@@ -28,7 +29,9 @@ public class AosOverdueEventListener implements ApplicationListener<AosOverdueEv
         log.info("Listened to {} event to make case [{}] overdue.", eventClassName, caseId);
 
         try {
-            if (aosOverdueEvent instanceof AosOverdueForAlternativeMethodCaseEvent) {
+            if (aosOverdueEvent instanceof AosOverdueForBailiffApplicationCaseEvent) {
+                processAosOverdueForCaseServedByBailiff(aosOverdueEvent);
+            } else if (aosOverdueEvent instanceof AosOverdueForAlternativeMethodCaseEvent) {
                 processAosOverdueForAlternativeMethodCaseEvent(aosOverdueEvent);
             } else if (aosOverdueEvent instanceof AosOverdueForProcessServerCaseEvent) {
                 processAosOverdueForProcessServerCaseEvent(aosOverdueEvent);
@@ -40,6 +43,10 @@ public class AosOverdueEventListener implements ApplicationListener<AosOverdueEv
             log.error(runtimeException.getMessage(), runtimeException);
             throw runtimeException;
         }
+    }
+
+    private void processAosOverdueForCaseServedByBailiff(AosOverdueEvent event) throws CaseOrchestrationServiceException {
+        aosService.markAosNotReceivedForCaseServedByBailiff(authUtil.getCaseworkerToken(), event.getCaseId());
     }
 
     private void processAosOverdueForAlternativeMethodCaseEvent(AosOverdueEvent event) throws CaseOrchestrationServiceException {
