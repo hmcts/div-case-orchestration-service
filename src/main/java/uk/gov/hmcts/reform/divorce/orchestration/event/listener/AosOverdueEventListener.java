@@ -30,7 +30,7 @@ public class AosOverdueEventListener implements ApplicationListener<AosOverdueEv
 
         try {
             if (aosOverdueEvent instanceof AosOverdueForBailiffApplicationCaseEvent) {
-                processAosOverdueForSuccessfulBailiffCaseEvent(aosOverdueEvent);
+                processAosOverdueForCaseServedByBailiff(aosOverdueEvent);
             } else if (aosOverdueEvent instanceof AosOverdueForAlternativeMethodCaseEvent) {
                 processAosOverdueForAlternativeMethodCaseEvent(aosOverdueEvent);
             } else if (aosOverdueEvent instanceof AosOverdueForProcessServerCaseEvent) {
@@ -45,7 +45,7 @@ public class AosOverdueEventListener implements ApplicationListener<AosOverdueEv
         }
     }
 
-    private void processAosOverdueForSuccessfulBailiffCaseEvent(AosOverdueEvent event) throws CaseOrchestrationServiceException {
+    private void processAosOverdueForCaseServedByBailiff(AosOverdueEvent event) throws CaseOrchestrationServiceException {
         aosService.markAosNotReceivedForCaseServedByBailiff(authUtil.getCaseworkerToken(), event.getCaseId());
     }
 
