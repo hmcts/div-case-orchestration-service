@@ -1,83 +1,108 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
-import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.http.RequestMethod;
-import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
+import com.google.common.collect.ImmutableMap;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.utils.DateUtils;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static org.awaitility.Awaitility.await;
-import static org.hamcrest.Matchers.equalTo;
+import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Map;
+
+import static java.time.ZoneOffset.UTC;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
-import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UPDATE_BULK_DN_PRONOUNCEMENT_DETAILS_EVENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_DECREE_NISI_GRANTED_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PRONOUNCEMENT_JUDGE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.loadResourceAsString;
 
-public class SetDNGrantedDateITest extends IdamTestSupport {
 
-    private static final String CMS_UPDATE_CASE_PATH = "/casemaintenance/version/1/updateCase/%s/%s";
+@Slf4j
+public class SetDNGrantedDateITest  extends MockedFunctionalTest {
+
     private static final String API_URL = "/dn-pronounced-manual";
     private static final String MISSING_JUDGE_REQUEST_JSON_PATH = "jsonExamples/payloads/bulkCaseCcdCallbackRequestNoJudge.json";
     private static final String REQUEST_JSON_PATH = "jsonExamples/payloads/dnGrantedCcdCallbackRequest.json";
-    private static final String EXPECTED_CASE_UPDATE_JSON_PATH = "jsonExamples/payloads/singleCasePronouncementDate.json";
     private static final String TEST_AUTH_TOKEN = "testAuthToken";
 
-    private static final String CASE_ID = "1558711395612316";
+    private static final Map<String, Object> CASE_DATA = ImmutableMap.<String, Object>builder()
+        .put(PRONOUNCEMENT_JUDGE_CCD_FIELD, TEST_PRONOUNCEMENT_JUDGE)
+        .put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL)
+        .put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME)
+        .put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME)
+        .put(RESPONDENT_EMAIL_ADDRESS, TEST_RESPONDENT_EMAIL)
+        .put(RESP_FIRST_NAME_CCD_FIELD, TEST_RESPONDENT_FIRST_NAME)
+        .put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME)
+        .put(D_8_CASE_REFERENCE, TEST_CASE_ID)
+        .put(DECREE_NISI_GRANTED_DATE_CCD_FIELD, TEST_DECREE_NISI_GRANTED_DATE)
+        .build();
 
-
-
-    @Autowired
-    ThreadPoolTaskExecutor asyncTaskExecutor;
+    private static final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+        .caseDetails(CaseDetails.builder().caseData(CASE_DATA).caseId(TEST_CASE_ID).build())
+        .build();
 
     @Autowired
     private MockMvc webClient;
 
+    @MockBean
+    private Clock clock;
+
     @Before
-    public void setup() {
-        maintenanceServiceServer.resetAll();
+    public void setUp() {
+        LocalDateTime grantedDate = LocalDateTime.parse(TEST_DECREE_NISI_GRANTED_DATE);
+        when(clock.instant()).thenReturn(grantedDate.toInstant(ZoneOffset.UTC));
+        when(clock.getZone()).thenReturn(UTC);
+        when(clock.withZone(DateUtils.Settings.ZONE_ID)).thenReturn(clock);
     }
+
 
     @Test
     public void givenCallbackRequestWithDnPronouncementDateCaseData_thenReturnCallbackResponse() throws Exception {
-        String updateCasePath = String.format(CMS_UPDATE_CASE_PATH, CASE_ID, UPDATE_BULK_DN_PRONOUNCEMENT_DETAILS_EVENT);
-        stubCmsServerEndpoint(updateCasePath, HttpStatus.OK, "{}", POST);
+
+        String inputJson = convertObjectToJsonString(ccdCallbackRequest);
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(CASE_DATA).build();
 
 
-        // Matching request json
-        String dnGrantedDate = "2000-01-01";
-        String daEligibleDate = "2000-02-13";
-        String pronouncementJudge = "District Judge";
-
-        webClient.perform(MockMvcRequestBuilders.post(API_URL)
-                .header(AUTHORIZATION, TEST_AUTH_TOKEN)
-                .content(loadResourceAsString(REQUEST_JSON_PATH))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.DecreeNisiGrantedDate", equalTo(dnGrantedDate)))
-                .andExpect(jsonPath("$.data.DAEligibleFromDate", equalTo(daEligibleDate)))
-                .andExpect(jsonPath("$.data.PronouncementJudge", equalTo(pronouncementJudge)))
-                .andExpect(jsonPath("$.errors", nullValue()));
-
-        waitAsyncCompleted();
-
-        verifyCmsServerEndpoint(1, updateCasePath, RequestMethod.POST, loadResourceAsString(EXPECTED_CASE_UPDATE_JSON_PATH));
+        webClient.perform(post("/dn-pronounced-manual")
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(inputJson)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(MockMvcResultMatchers.content().json(convertObjectToJsonString(expectedResponse)));
     }
 
     @Test
@@ -91,21 +116,22 @@ public class SetDNGrantedDateITest extends IdamTestSupport {
                 .andExpect(jsonPath("$.errors", notNullValue()));
     }
 
-    private void waitAsyncCompleted() {
-        await().until(() -> asyncTaskExecutor.getThreadPoolExecutor().getActiveCount() == 0);
+    @Test
+    public void givenBodyIsNull_whenEndpointInvoked_thenReturnBadRequest() throws Exception {
+        webClient.perform(post(API_URL)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
     }
 
-    private void stubCmsServerEndpoint(String path, HttpStatus status, String body, HttpMethod method) {
-        maintenanceServiceServer.stubFor(WireMock.request(method.name(),urlEqualTo(path))
-            .willReturn(aResponse()
-                .withStatus(status.value())
-                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-                .withBody(body)));
-    }
-
-    private void verifyCmsServerEndpoint(int times, String path, RequestMethod method, String body) {
-        maintenanceServiceServer.verify(times, new RequestPatternBuilder(method, urlEqualTo(path))
-            .withHeader(CONTENT_TYPE, WireMock.equalTo(APPLICATION_JSON_VALUE))
-            .withRequestBody(equalToJson(body)));
+    @Test
+    public void givenAuthHeaderIsNull_whenEndpointInvoked_thenReturnBadRequest() throws Exception {
+        String inputJson = convertObjectToJsonString(ccdCallbackRequest);
+        webClient.perform(post(API_URL)
+            .content(convertObjectToJsonString(inputJson))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest());
     }
 }
