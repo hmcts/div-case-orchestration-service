@@ -13,6 +13,7 @@ public class CcdEvents {
     public static final String AOS_NOMINATE_SOLICITOR = "aosNominateSol";
     public static final String AOS_NOT_RECEIVED_FOR_PROCESS_SERVER = "aosNotReceivedForProcessServer";
     public static final String AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD = "aosNotReceivedForAltMethod";
+    public static final String AOS_NOT_RECEIVED_FOR_BAILIFF_APPLICATION = "aosNotReceivedForBailiff";
     public static final String AOS_START_FROM_OVERDUE = "startAosFromOverdue";
     public static final String AOS_START_FROM_REISSUE = "startAosFromReissue";
     public static final String AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED = "startAosFromServiceAppRejected";
