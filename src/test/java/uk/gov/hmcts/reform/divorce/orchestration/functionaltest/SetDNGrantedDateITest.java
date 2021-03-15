@@ -37,6 +37,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PRONO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_HEARING_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
@@ -55,8 +56,6 @@ public class SetDNGrantedDateITest  extends MockedFunctionalTest {
 
     private static final String API_URL = "/dn-pronounced-manual";
     private static final String MISSING_JUDGE_REQUEST_JSON_PATH = "jsonExamples/payloads/bulkCaseCcdCallbackRequestNoJudge.json";
-    private static final String REQUEST_JSON_PATH = "jsonExamples/payloads/dnGrantedCcdCallbackRequest.json";
-    private static final String TEST_AUTH_TOKEN = "testAuthToken";
 
     private static final Map<String, Object> CASE_DATA = ImmutableMap.<String, Object>builder()
         .put(PRONOUNCEMENT_JUDGE_CCD_FIELD, TEST_PRONOUNCEMENT_JUDGE)
@@ -68,11 +67,28 @@ public class SetDNGrantedDateITest  extends MockedFunctionalTest {
         .put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME)
         .put(D_8_CASE_REFERENCE, TEST_CASE_ID)
         .put(DECREE_NISI_GRANTED_DATE_CCD_FIELD, TEST_DECREE_NISI_GRANTED_DATE)
+        .put(COURT_HEARING_DATE_CCD_FIELD, TEST_DECREE_NISI_GRANTED_DATE)
         .build();
 
-    private static final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
-        .caseDetails(CaseDetails.builder().caseData(CASE_DATA).caseId(TEST_CASE_ID).build())
+    private static final Map<String, Object> EXPECTED_CASE_DATA = ImmutableMap.<String, Object>builder()
+        .put(PRONOUNCEMENT_JUDGE_CCD_FIELD, TEST_PRONOUNCEMENT_JUDGE)
+        .put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL)
+        .put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME)
+        .put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME)
+        .put(RESPONDENT_EMAIL_ADDRESS, TEST_RESPONDENT_EMAIL)
+        .put(RESP_FIRST_NAME_CCD_FIELD, TEST_RESPONDENT_FIRST_NAME)
+        .put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME)
+        .put(D_8_CASE_REFERENCE, TEST_CASE_ID)
+        .put(DECREE_NISI_GRANTED_DATE_CCD_FIELD, "2019-06-30")
+        .put(COURT_HEARING_DATE_CCD_FIELD, TEST_DECREE_NISI_GRANTED_DATE)
         .build();
+
+    private static final CcdCallbackRequest ccdCallbackRequest =
+        CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .caseData(CASE_DATA)
+                .caseId(TEST_CASE_ID).build())
+            .build();
 
     @Autowired
     private MockMvc webClient;
@@ -88,13 +104,11 @@ public class SetDNGrantedDateITest  extends MockedFunctionalTest {
         when(clock.withZone(DateUtils.Settings.ZONE_ID)).thenReturn(clock);
     }
 
-
     @Test
     public void givenCallbackRequestWithDnPronouncementDateCaseData_thenReturnCallbackResponse() throws Exception {
 
         String inputJson = convertObjectToJsonString(ccdCallbackRequest);
-        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(CASE_DATA).build();
-
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(EXPECTED_CASE_DATA).build();
 
         webClient.perform(post("/dn-pronounced-manual")
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -108,7 +122,7 @@ public class SetDNGrantedDateITest  extends MockedFunctionalTest {
     @Test
     public void givenCallbackRequestWithNoJudgeCaseData_thenReturnCallbackResponseWithError() throws Exception {
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
-                .header(AUTHORIZATION, TEST_AUTH_TOKEN)
+                .header(AUTHORIZATION, AUTH_TOKEN)
                 .content(loadResourceAsString(MISSING_JUDGE_REQUEST_JSON_PATH))
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))

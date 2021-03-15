@@ -165,9 +165,9 @@ public class CallbackController {
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
         try {
             callbackResponseBuilder.data(caseOrchestrationService.sendDnPronouncedManualNotification(ccdCallbackRequest, authorizationToken));
-            log.info("DN pronounced for case with ID: {}.", caseId);
+            log.info("DN pronounced email sent for case with ID: {}.", caseId);
         } catch (WorkflowException exception) {
-            log.error("DN pronounced handling has failed for case with ID: {}", caseId, exception);
+            log.error("DN pronounced email has failed for case with ID: {}", caseId, exception);
             callbackResponseBuilder.errors(singletonList(exception.getMessage()));
         }
         return ResponseEntity.ok(callbackResponseBuilder.build());
