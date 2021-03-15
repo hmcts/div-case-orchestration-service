@@ -23,6 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_ALTERNATIVE_METHOD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_BAILIFF;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_PROCESS_SERVER;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -36,6 +37,17 @@ public class AosOverdueForAlternativeServiceCaseWorkflowTest {
 
     @Captor
     private ArgumentCaptor<TaskContext> contextArgumentCaptor;
+
+    @Test
+    public void shouldCallAppropriateTaskForCaseServedByBailiffApplication() throws WorkflowException {
+        classUnderTest.run(AUTH_TOKEN, TEST_CASE_ID, SERVED_BY_BAILIFF);
+
+        verify(updateCaseInCCD).execute(contextArgumentCaptor.capture(), eq(emptyMap()));
+        TaskContext taskContext = contextArgumentCaptor.getValue();
+        assertThat(taskContext.getTransientObject(AUTH_TOKEN_JSON_KEY), is(AUTH_TOKEN));
+        assertThat(taskContext.getTransientObject(CASE_ID_JSON_KEY), is(TEST_CASE_ID));
+        assertThat(taskContext.getTransientObject(CASE_EVENT_ID_JSON_KEY), is("aosNotReceivedForBailiff"));
+    }
 
     @Test
     public void shouldCallAppropriateTaskForCaseServedByProcessServer() throws WorkflowException {

@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.event.domain.AosOverdueEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.domain.AosOverdueForAlternativeMethodCaseEvent;
+import uk.gov.hmcts.reform.divorce.orchestration.event.domain.AosOverdueForBailiffApplicationCaseEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.domain.AosOverdueForProcessServerCaseEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.SelfPublishingAsyncTask;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -26,6 +27,7 @@ import java.util.function.Function;
 import javax.annotation.PostConstruct;
 
 import static org.apache.commons.lang3.StringUtils.SPACE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.BAILIFF_SERVICE_SUCCESSFUL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.DUE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVED_BY_ALTERNATIVE_METHOD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVED_BY_PROCESS_SERVER;
@@ -82,11 +84,15 @@ public class MarkCasesAsAosOverdueTask extends SelfPublishingAsyncTask<Void> {
     private final Function<CaseDetails, Optional<ApplicationEvent>> caseDetailsTransformationFunction = caseDetails -> {
         ApplicationEvent eventToRaise;
 
+        boolean caseServedByBailiff = isSuccessfulBailiffApplication(caseDetails, BAILIFF_SERVICE_SUCCESSFUL);
         boolean caseServedByAlternativeMethod = isAlternativeService(caseDetails, SERVED_BY_ALTERNATIVE_METHOD);
         boolean caseServedByProcessServer = isAlternativeService(caseDetails, SERVED_BY_PROCESS_SERVER);
 
         String caseId = caseDetails.getCaseId();
-        if (caseServedByAlternativeMethod) {
+        if (caseServedByBailiff) {
+            log.info("Case {} will be marked as AOS overdue (served by bailiff process).", caseId);
+            eventToRaise = new AosOverdueForBailiffApplicationCaseEvent(this, caseId);
+        } else if (caseServedByAlternativeMethod) {
             log.info("Case {} will be marked as AOS overdue (served by alternative process).", caseId);
             eventToRaise = new AosOverdueForAlternativeMethodCaseEvent(this, caseId);
         } else if (caseServedByProcessServer) {
@@ -122,6 +128,14 @@ public class MarkCasesAsAosOverdueTask extends SelfPublishingAsyncTask<Void> {
     private Boolean isAlternativeService(CaseDetails caseDetails, String serviceType) {
         return Optional.ofNullable(caseDetails.getCaseData())
             .map(caseData -> caseData.get(serviceType))
+            .map(String.class::cast)
+            .map(YES_VALUE::equalsIgnoreCase)
+            .orElse(false);
+    }
+
+    private Boolean isSuccessfulBailiffApplication(CaseDetails caseDetails, String isBailiffSuccessful) {
+        return Optional.ofNullable(caseDetails.getCaseData())
+            .map(caseData -> caseData.get(isBailiffSuccessful))
             .map(String.class::cast)
             .map(YES_VALUE::equalsIgnoreCase)
             .orElse(false);

@@ -21,6 +21,7 @@ import java.util.Map;
 import static java.lang.String.format;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_ALTERNATIVE_METHOD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_BAILIFF;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_PROCESS_SERVER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.ADULTERY;
 
@@ -117,6 +118,11 @@ public class AosServiceImpl implements AosService {
     @Override
     public void markAosNotReceivedForAlternativeMethodCase(String authToken, String caseId) throws CaseOrchestrationServiceException {
         markAlternativeServiceCaseAsAosOverdue(authToken, caseId, SERVED_BY_ALTERNATIVE_METHOD);
+    }
+
+    @Override
+    public void markAosNotReceivedForCaseServedByBailiff(String authToken, String caseId) throws CaseOrchestrationServiceException {
+        markAlternativeServiceCaseAsAosOverdue(authToken, caseId, SERVED_BY_BAILIFF);
     }
 
     private void markAlternativeServiceCaseAsAosOverdue(String authToken,
