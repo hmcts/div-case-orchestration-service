@@ -28,7 +28,6 @@ import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.emptyOrNullString;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.core.Is.is;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -41,7 +40,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_OVERDUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.DN_PRONOUNCED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_PAY_BY_ACCOUNT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_PAYMENT_CHEQUE_VALUE;
@@ -60,8 +58,6 @@ public class MigrateChequePaymentTest extends IdamTestSupport {
     private static final String IDAM_USER_DETAILS_CONTEXT_PATH = "/details";
     private static final String EVENT_ID = "MigrateChequePayment";
 
-
-
     @Autowired
     private MockMvc webClient;
 
@@ -69,66 +65,6 @@ public class MigrateChequePaymentTest extends IdamTestSupport {
     public void setUp() {
         stubSignInForCaseworker();
         stubUserDetailsEndpoint(OK, AUTH_TOKEN, USER_DETAILS_JSON);
-    }
-
-    @Test
-    public void givenNoPaymentMethod_thenResponseContainsErrors() throws Exception {
-
-        final Map<String, Object> caseData = new HashMap<>();
-
-        final CaseDetails caseDetails = CaseDetails.builder()
-            .caseId(TEST_CASE_ID)
-            .caseData(caseData)
-            .state(DN_PRONOUNCED)
-            .build();
-
-        CcdCallbackRequest request = CcdCallbackRequest.builder()
-            .caseDetails(caseDetails)
-            .build();
-
-        webClient.perform(post(API_URL)
-            .content(convertObjectToJsonString(request))
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
-            .header(AUTHORIZATION, AUTH_TOKEN))
-            .andExpect(status().isOk())
-            .andExpect(content().string(allOf(
-                isJson(),
-                hasJsonPath("$.errors",
-                    hasItem("No payment method defined!")
-                )
-            )));
-    }
-
-    @Test
-    public void givenPaymentMethodIsNotCheque_thenResponseContainsErrors() throws Exception {
-
-        final Map<String, Object> caseData = new HashMap<>();
-
-        caseData.put(SOLICITOR_HOW_TO_PAY_JSON_KEY, FEE_PAY_BY_ACCOUNT);
-
-        final CaseDetails caseDetails = CaseDetails.builder()
-            .caseId(TEST_CASE_ID)
-            .caseData(caseData)
-            .state(DN_PRONOUNCED)
-            .build();
-
-        CcdCallbackRequest request = CcdCallbackRequest.builder()
-            .caseDetails(caseDetails)
-            .build();
-
-        webClient.perform(post(API_URL)
-            .content(convertObjectToJsonString(request))
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
-            .header(AUTHORIZATION, AUTH_TOKEN))
-            .andExpect(status().isOk())
-            .andExpect(content().string(allOf(
-                isJson(),
-                hasJsonPath("$.errors",
-                    hasItem("Validation for payment method failed!")
-                )
-            )));
     }
 
     @Test
