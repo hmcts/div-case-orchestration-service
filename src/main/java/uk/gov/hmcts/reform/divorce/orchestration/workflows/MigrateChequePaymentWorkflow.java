@@ -32,8 +32,9 @@ public class MigrateChequePaymentWorkflow extends DefaultWorkflow<Map<String, Ob
     }
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
-
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+
+        log.info("CaseID: {} MigrateChequePaymentWorkflow is going to be executed.", caseId);
 
         return this.execute(
             new Task[] {

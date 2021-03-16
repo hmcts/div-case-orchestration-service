@@ -1031,15 +1031,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     @Override
     public Map<String, Object> migrateChequePayment(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        Map<String, Object> response = migrateChequePaymentWorkflow.run(ccdCallbackRequest, authUtil.getCaseworkerToken());
-
-        if (migrateChequePaymentWorkflow.errors().isEmpty()) {
-            return response;
-        } else {
-            Map<String, Object> workflowErrors = migrateChequePaymentWorkflow.errors();
-            log.error("CASE ID: {} failed {}. ",
-                ccdCallbackRequest.getCaseDetails().getCaseId(), workflowErrors);
-            return migrateChequePaymentWorkflow.errors();
-        }
+        return migrateChequePaymentWorkflow.run(ccdCallbackRequest, authUtil.getCaseworkerToken());
     }
 }
