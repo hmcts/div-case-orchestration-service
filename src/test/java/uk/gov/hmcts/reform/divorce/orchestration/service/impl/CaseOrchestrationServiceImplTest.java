@@ -136,6 +136,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.controller.util.CallbackControllerTestUtils.assertCaseOrchestrationServiceExceptionIsSetProperly;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PAYMENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
@@ -1073,6 +1074,21 @@ public class CaseOrchestrationServiceImplTest {
 
         classUnderTest
             .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
+
+        verifyNoInteractions(documentGenerationWorkflow);
+    }
+
+    @Test
+    public void shouldGenerateNoDocuments_whenCaseIdIsNull() throws WorkflowException {
+        Map<String, Object> caseData = new HashMap<String, Object>();
+        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "No");
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
+            CaseDetails.builder().caseData(caseData).build())
+            .build();
+
+        classUnderTest
+            .handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
         verifyNoInteractions(documentGenerationWorkflow);
     }

@@ -471,7 +471,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> sendDnPronouncedManualNotification(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
+    public Map<String, Object> setDNGrantedManual(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
         return setDNGrantedDateWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
     }
 

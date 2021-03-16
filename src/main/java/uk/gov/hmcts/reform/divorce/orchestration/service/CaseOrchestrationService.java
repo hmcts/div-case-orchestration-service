@@ -96,7 +96,7 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> sendDnPronouncedNotification(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
-    Map<String, Object> sendDnPronouncedManualNotification(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
+    Map<String, Object> setDNGrantedManual(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
     Map<String, Object> processCaseLinkedForHearingEvent(CcdCallbackRequest ccdCallbackRequest, String authToken)
         throws CaseOrchestrationServiceException;
