@@ -43,7 +43,7 @@ resource "azurerm_key_vault_secret" "postgresql-password" {
 
 data "azurerm_key_vault" "sendgrid" {
   name                = "sendgrid${local.sendgrid_env[var.env]}"
-  resource_group_name = "sendgrid${local.sendgrid_env[var.env]}"
+  resource_group_name = "sendgrid-${local.sendgrid_env[var.env]}"
 }
 
 data "azurerm_key_vault_secret" "sendgrid-api-key" {
