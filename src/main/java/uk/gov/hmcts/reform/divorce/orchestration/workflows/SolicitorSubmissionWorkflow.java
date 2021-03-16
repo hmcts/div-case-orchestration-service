@@ -15,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionerSolicitorApplic
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPaymentTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RemoveMiniPetitionDraftDocumentsTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateRespondentDigitalDetailsTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSolicitorCaseDataTask;
 
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isPetitionAmended;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerRepresented;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
 
 @RequiredArgsConstructor
 @Component
@@ -36,6 +38,7 @@ public class SolicitorSubmissionWorkflow extends DefaultWorkflow<Map<String, Obj
     private final RemoveMiniPetitionDraftDocumentsTask removeMiniPetitionDraftDocumentsTask;
     private final SendPetitionerSubmissionNotificationEmailTask sendPetitionerSubmissionNotificationEmailTask;
     private final PetitionerSolicitorApplicationSubmittedEmailTask petitionerSolicitorApplicationSubmittedEmailTask;
+    private final UpdateRespondentDigitalDetailsTask updateRespondentDigitalDetailsTask;
 
     private final FeatureToggleService featureToggleService;
 
@@ -69,6 +72,12 @@ public class SolicitorSubmissionWorkflow extends DefaultWorkflow<Map<String, Obj
             tasks.add(petitionerSolicitorApplicationSubmittedEmailTask);
         } else {
             log.info("CaseId: {} no email to petitioner solicitor", caseId);
+        }
+
+        if (isRespondentJourneyFeatureToggleEnabled()
+            && isRespondentSolicitorDigital(caseDetails.getCaseData())) {
+            log.info("CaseId: {} adding updateRespondentDigitalDetailsTask", caseDetails.getCaseId());
+            tasks.add(updateRespondentDigitalDetailsTask);
         }
 
         return tasks.toArray(new Task[0]);
