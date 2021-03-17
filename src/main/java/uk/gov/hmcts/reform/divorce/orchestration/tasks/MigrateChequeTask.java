@@ -34,12 +34,8 @@ public class MigrateChequeTask implements Task<Map<String, Object>> {
             throw new TaskException("Validation for payment method failed!");
         }
 
-
-        log.info("DEBUG Payment Value (should be 'cheque'): {}", payload.get(SOLICITOR_HOW_TO_PAY_JSON_KEY));
-
         payload.replace(SOLICITOR_HOW_TO_PAY_JSON_KEY, FEE_PAY_BY_ACCOUNT);
 
-        log.info("DEBUG Payment Value (should be 'feePayByAccount'): {}", payload.get(SOLICITOR_HOW_TO_PAY_JSON_KEY));
         log.info("Case id {}: Migrated payment method", getCaseId(context));
 
         return payload;
