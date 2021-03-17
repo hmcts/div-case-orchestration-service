@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MigrateChequeTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateChequePaymentTask;
 
 import java.util.Map;
 
@@ -23,11 +22,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class MigrateChequePaymentWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final MigrateChequeTask migrateChequeTask;
-    private final ValidateChequePaymentTask validateChequePaymentTask;
 
     @Autowired
-    public MigrateChequePaymentWorkflow(ValidateChequePaymentTask validateChequePaymentTask, MigrateChequeTask migrateChequeTask) {
-        this.validateChequePaymentTask = validateChequePaymentTask;
+    public MigrateChequePaymentWorkflow(MigrateChequeTask migrateChequeTask) {
         this.migrateChequeTask = migrateChequeTask;
     }
 
@@ -38,7 +35,6 @@ public class MigrateChequePaymentWorkflow extends DefaultWorkflow<Map<String, Ob
 
         return this.execute(
             new Task[] {
-                validateChequePaymentTask,
                 migrateChequeTask
             },
             ccdCallbackRequest.getCaseDetails().getCaseData(),

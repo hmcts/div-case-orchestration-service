@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -11,13 +10,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.MigrateChequeTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateChequePaymentTask;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
@@ -38,16 +36,13 @@ public class MigrateChequePaymentWorkflowTest {
     private static final String MIGRATE_CHEQUE_PAYMENT_EVENT_ID = "MigrateChequePayment";
 
     @Mock
-    ValidateChequePaymentTask validateChequePaymentTask;
-
-    @Mock
     MigrateChequeTask migrateChequeTask;
 
     @InjectMocks
     MigrateChequePaymentWorkflow migrateChequePaymentWorkflow;
 
     @Test
-    public void testTasksAreCalledInCorrectOrder() throws WorkflowException {
+    public void testTaskCalledCorrectly() throws WorkflowException {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(SOLICITOR_HOW_TO_PAY_JSON_KEY, SOL_PAYMENT_CHEQUE_VALUE);
 
@@ -72,18 +67,14 @@ public class MigrateChequePaymentWorkflowTest {
         Map<String, Object> migratedCaseData = new HashMap<>();
         migratedCaseData.put(SOLICITOR_HOW_TO_PAY_JSON_KEY, FEE_PAY_BY_ACCOUNT);
 
-        when(validateChequePaymentTask.execute(context, caseData))
-            .thenReturn(caseData);
-
         when(migrateChequeTask.execute(context, caseData))
             .thenReturn(migratedCaseData);
 
         Map<String, Object> returnedPayload = migrateChequePaymentWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
         assertEquals(returnedPayload.get(SOLICITOR_HOW_TO_PAY_JSON_KEY), FEE_PAY_BY_ACCOUNT);
 
-        InOrder inOrder = inOrder(validateChequePaymentTask, migrateChequeTask);
-        inOrder.verify(validateChequePaymentTask).execute(context, caseData);
-        inOrder.verify(migrateChequeTask).execute(context, caseData);
+
+        verify(migrateChequeTask).execute(context, caseData);
 
     }
 
