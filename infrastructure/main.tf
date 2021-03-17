@@ -51,12 +51,6 @@ data "azurerm_key_vault_secret" "sendgrid-api-key" {
   key_vault_id = data.azurerm_key_vault.sendgrid.id
 }
 
-resource "azurerm_key_vault_secret" "spring-mail-username" {
-  name         = "spring-mail-username"
-  value        = "apikey"
-  key_vault_id = data.azurerm_key_vault.div_key_vault.id
-}
-
 resource "azurerm_key_vault_secret" "spring-mail-password" {
   name         = "spring-mail-password"
   value        = data.azurerm_key_vault_secret.sendgrid-api-key.value
