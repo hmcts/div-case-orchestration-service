@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -11,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -28,7 +28,7 @@ public class UpdateRespondentDigitalDetailsTaskTest {
 
         target.execute(context, caseData);
 
-        Assert.assertEquals(caseData.get(RESP_IS_USING_DIGITAL_CHANNEL), YES_VALUE);
-        Assert.assertEquals(caseData.get(RESP_SOL_REPRESENTED), YES_VALUE);
+        assertEquals(caseData.get(RESP_IS_USING_DIGITAL_CHANNEL), YES_VALUE);
+        assertEquals(caseData.get(RESP_SOL_REPRESENTED), YES_VALUE);
     }
 }

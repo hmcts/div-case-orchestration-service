@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -13,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskCon
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ORGANISATION_POLICY_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.NOTICE_OF_PROCEEDINGS_DIGITAL;
@@ -37,9 +37,9 @@ public class UpdateNoticeOfProceedingsDetailsTaskTest {
 
         target.execute(context, caseData);
 
-        Assert.assertEquals(caseData.get(NOTICE_OF_PROCEEDINGS_DIGITAL), YES_VALUE);
-        Assert.assertEquals(caseData.get(NOTICE_OF_PROCEEDINGS_EMAIL), TEST_USER_EMAIL);
-        Assert.assertEquals(caseData.get(NOTICE_OF_PROCEEDINGS_FIRM), TEST_ORGANISATION_POLICY_NAME);
+        assertEquals(caseData.get(NOTICE_OF_PROCEEDINGS_DIGITAL), YES_VALUE);
+        assertEquals(caseData.get(NOTICE_OF_PROCEEDINGS_EMAIL), TEST_USER_EMAIL);
+        assertEquals(caseData.get(NOTICE_OF_PROCEEDINGS_FIRM), TEST_ORGANISATION_POLICY_NAME);
     }
 
     private OrganisationPolicy buildOrganisationPolicyData() {
