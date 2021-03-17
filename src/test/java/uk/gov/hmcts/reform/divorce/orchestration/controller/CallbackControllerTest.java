@@ -1868,7 +1868,6 @@ public class CallbackControllerTest {
         verify(courtOrderDocumentsUpdateService).updateExistingCourtOrderDocuments(AUTH_TOKEN, TEST_INCOMING_CASE_DETAILS);
     }
 
-
     @Test
     public void shouldCallAdequateServiceWhenIssuingBailiffPack() throws CaseOrchestrationServiceException {
         when(bailiffPackService.issueCertificateOfServiceDocument(AUTH_TOKEN, TEST_INCOMING_CASE_DETAILS))
@@ -1881,5 +1880,19 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getErrors(), is(nullValue()));
         assertThat(response.getBody().getData(), is(TEST_PAYLOAD_TO_RETURN));
         verify(bailiffPackService).issueCertificateOfServiceDocument(AUTH_TOKEN, TEST_INCOMING_CASE_DETAILS);
+    }
+
+    @Test
+    public void shouldCallAdequateServiceForJudgeCostsDecision() throws CaseOrchestrationServiceException {
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(TEST_INCOMING_CASE_DETAILS).build();
+
+        when(caseOrchestrationService.judgeCostsDecision(ccdCallbackRequest)).thenReturn(TEST_PAYLOAD_TO_RETURN);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.judgeCostsDecision(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
+        assertThat(response.getBody().getData(), is(TEST_PAYLOAD_TO_RETURN));
+        verify(caseOrchestrationService).judgeCostsDecision(eq(ccdCallbackRequest));
     }
 }

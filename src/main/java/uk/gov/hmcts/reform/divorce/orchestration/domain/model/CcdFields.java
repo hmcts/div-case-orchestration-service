@@ -84,4 +84,6 @@ public class CcdFields {
     public static final String CERTIFICATE_OF_SERVICE_DOCUMENT = "CertificateOfServiceDocument";
     public static final String CERTIFICATE_OF_SERVICE_DATE = "CertificateOfServiceDate";
     public static final String BAILIFF_SERVICE_SUCCESSFUL = "SuccessfulServedByBailiff";
+
+    public static final String JUDGE_COSTS_DECISION = "JudgeCostsDecision";
 }
