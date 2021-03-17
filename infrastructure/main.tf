@@ -2,11 +2,17 @@ provider "azurerm" {
   features {}
 }
 
+provider "azurerm" {
+  alias = "sendgrid"
+  features {}
+  subscription_id = var.env != "prod" ? local.sendgrid_subscription.nonprod : local.sendgrid_subscription.prod
+}
+
 locals {
   vaultName = "${var.product}-${var.env}"
-  sendgrid_env = {
-    prod = "prod"
-    aat  = "nonprod"
+  sendgrid_subscription = {
+    prod = "8999dec3-0104-4a27-94ee-6588559729d1"
+    nonprod = "1c4f0704-a29e-403d-b719-b90c34ef14c9"
   }
 }
 
@@ -42,11 +48,15 @@ resource "azurerm_key_vault_secret" "postgresql-password" {
 }
 
 data "azurerm_key_vault" "sendgrid" {
-  name                = "sendgrid${local.sendgrid_env[var.env]}"
-  resource_group_name = "sendgrid-${local.sendgrid_env[var.env]}"
+  provider = azurerm.sendgrid
+
+  name                = var.env != "prod" ? "sendgridnonprod" : "sendgridprod"
+  resource_group_name = var.env != "prod" ? "SendGrid-nonprod" : "SendGrid-prod"
 }
 
 data "azurerm_key_vault_secret" "sendgrid-api-key" {
+  provider = azurerm.sendgrid
+  
   name         = "hmcts-divorce-api-key"
   key_vault_id = data.azurerm_key_vault.sendgrid.id
 }
