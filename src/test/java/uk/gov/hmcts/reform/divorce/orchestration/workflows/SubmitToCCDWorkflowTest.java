@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -23,20 +22,19 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseDataTask;
 import java.util.Arrays;
 import java.util.Map;
 
-import static java.util.Collections.singletonMap;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.ALLOCATED_COURT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.REASON_FOR_DIVORCE_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SubmitToCCDWorkflow.SELECTED_COURT;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -71,6 +69,8 @@ public class SubmitToCCDWorkflowTest {
 
     private static final String testCourtId = "randomlySelectedCourt";
 
+    private Map<String, Object> incomingPayload;
+
     @Test
     public void runShouldExecuteTasks_AddCourtToContext_AndReturnPayloadWithAllocatedCourt() throws Exception {
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
@@ -78,7 +78,7 @@ public class SubmitToCCDWorkflowTest {
         Court testCourt = new Court();
         testCourt.setCourtId(testCourtId);
 
-        Map<String, Object> incomingPayload = Map.of(
+        incomingPayload = Map.of(
             REASON_FOR_DIVORCE_KEY, "adultery",
             RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicyData());
         when(courtAllocationTask.execute(any(), eq(incomingPayload))).thenAnswer(invocation -> {
@@ -90,24 +90,23 @@ public class SubmitToCCDWorkflowTest {
 
             return incomingPayload;
         });
-        when(duplicateCaseValidationTask.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
-        when(formatDivorceSessionToCaseDataTask.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
-        when(validateCaseDataTask.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
-        when(submitCaseToCCD.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
-        when(deleteDraftTask.execute(any(), eq(incomingPayload))).thenReturn(singletonMap("Hello", "World"));
-        when(updateRespondentDigitalDetailsTask.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
+
+        mockTaskExecution();
 
         Map<String, Object> actual = submitToCCDWorkflow.run(incomingPayload, AUTH_TOKEN);
 
-        assertThat(actual, hasEntry(equalTo("Hello"), equalTo("World")));
         assertThat(actual, hasEntry(equalTo(ALLOCATED_COURT_KEY), equalTo(testCourt)));
-        verify(duplicateCaseValidationTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
-        verify(courtAllocationTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
-        verify(formatDivorceSessionToCaseDataTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
-        verify(validateCaseDataTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
-        verify(submitCaseToCCD).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
-        verify(deleteDraftTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
-        verify(updateRespondentDigitalDetailsTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
+
+        verifyTasksCalledInOrder(
+            incomingPayload,
+            duplicateCaseValidationTask,
+            courtAllocationTask,
+            formatDivorceSessionToCaseDataTask,
+            validateCaseDataTask,
+            updateRespondentDigitalDetailsTask,
+            submitCaseToCCD,
+            deleteDraftTask
+        );
     }
 
     @Test
@@ -117,7 +116,7 @@ public class SubmitToCCDWorkflowTest {
         Court testCourt = new Court();
         testCourt.setCourtId(testCourtId);
 
-        Map<String, Object> incomingPayload = Map.of(
+        incomingPayload = Map.of(
             REASON_FOR_DIVORCE_KEY, "adultery",
             RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicyData());
         when(courtAllocationTask.execute(any(), eq(incomingPayload))).thenAnswer(invocation -> {
@@ -129,22 +128,22 @@ public class SubmitToCCDWorkflowTest {
 
             return incomingPayload;
         });
-        when(duplicateCaseValidationTask.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
-        when(formatDivorceSessionToCaseDataTask.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
-        when(validateCaseDataTask.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
-        when(submitCaseToCCD.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
-        when(deleteDraftTask.execute(any(), eq(incomingPayload))).thenReturn(singletonMap("Hello", "World"));
+
+        mockTaskExecution();
 
         Map<String, Object> actual = submitToCCDWorkflow.run(incomingPayload, AUTH_TOKEN);
 
-        assertThat(actual, hasEntry(equalTo("Hello"), equalTo("World")));
         assertThat(actual, hasEntry(equalTo(ALLOCATED_COURT_KEY), equalTo(testCourt)));
-        verify(duplicateCaseValidationTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
-        verify(courtAllocationTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
-        verify(formatDivorceSessionToCaseDataTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
-        verify(validateCaseDataTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
-        verify(submitCaseToCCD).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
-        verify(deleteDraftTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
+
+        verifyTasksCalledInOrder(
+            incomingPayload,
+            duplicateCaseValidationTask,
+            courtAllocationTask,
+            formatDivorceSessionToCaseDataTask,
+            validateCaseDataTask,
+            submitCaseToCCD,
+            deleteDraftTask
+        );
 
         verifyNoInteractions(updateRespondentDigitalDetailsTask);
     }
@@ -154,7 +153,7 @@ public class SubmitToCCDWorkflowTest {
         Court testCourt = new Court();
         testCourt.setCourtId(testCourtId);
 
-        Map<String, Object> incomingPayload = Map.of(
+        incomingPayload = Map.of(
             REASON_FOR_DIVORCE_KEY, "adultery");
         when(courtAllocationTask.execute(any(), eq(incomingPayload))).thenAnswer(invocation -> {
             Arrays.stream(invocation.getArguments())
@@ -165,31 +164,24 @@ public class SubmitToCCDWorkflowTest {
 
             return incomingPayload;
         });
-        when(duplicateCaseValidationTask.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
-        when(formatDivorceSessionToCaseDataTask.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
-        when(validateCaseDataTask.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
-        when(submitCaseToCCD.execute(any(), eq(incomingPayload))).thenReturn(incomingPayload);
-        when(deleteDraftTask.execute(any(), eq(incomingPayload))).thenReturn(singletonMap("Hello", "World"));
+
+        mockTaskExecution();
 
         Map<String, Object> actual = submitToCCDWorkflow.run(incomingPayload, AUTH_TOKEN);
 
-        assertThat(actual, hasEntry(equalTo("Hello"), equalTo("World")));
         assertThat(actual, hasEntry(equalTo(ALLOCATED_COURT_KEY), equalTo(testCourt)));
-        verify(duplicateCaseValidationTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
-        verify(courtAllocationTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
-        verify(formatDivorceSessionToCaseDataTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
-        verify(validateCaseDataTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
-        verify(submitCaseToCCD).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
-        verify(deleteDraftTask).execute(argThat(isContextContainingCourtInfo()), eq(incomingPayload));
+
+        verifyTasksCalledInOrder(
+            incomingPayload,
+            duplicateCaseValidationTask,
+            courtAllocationTask,
+            formatDivorceSessionToCaseDataTask,
+            validateCaseDataTask,
+            submitCaseToCCD,
+            deleteDraftTask
+        );
 
         verifyNoInteractions(updateRespondentDigitalDetailsTask);
-    }
-
-    private static ArgumentMatcher<TaskContext> isContextContainingCourtInfo() {
-        return cxt -> {
-            Court selectedCourt = cxt.getTransientObject(SELECTED_COURT);
-            return testCourtId.equals(selectedCourt.getCourtId());
-        };
     }
 
     private OrganisationPolicy buildOrganisationPolicyData() {
@@ -197,5 +189,17 @@ public class SubmitToCCDWorkflowTest {
             .orgPolicyReference("ref")
             .organisation(Organisation.builder().organisationID("id").build())
             .build();
+    }
+
+    private void mockTaskExecution() {
+        mockTasksExecution(
+            incomingPayload,
+            duplicateCaseValidationTask,
+            formatDivorceSessionToCaseDataTask,
+            validateCaseDataTask,
+            submitCaseToCCD,
+            deleteDraftTask,
+            updateRespondentDigitalDetailsTask
+        );
     }
 }
