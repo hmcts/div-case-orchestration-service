@@ -1518,7 +1518,7 @@ public class CallbackController {
     }
 
     @PostMapping(path = "/issue-bailiff-pack", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
-    @ApiOperation(value = "Callback for generating new versions of existing court order documents")
+    @ApiOperation(value = "Callback for generating certificate of service document")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
@@ -1537,6 +1537,21 @@ public class CallbackController {
                 .data(returnedPayload)
                 .build()
         );
+    }
+
+    @PostMapping(path = "/judge-costs-decision", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback for setting fields related to judge costs decision")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> judgeCostsDecision(
+        @RequestHeader(value = AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(CcdCallbackResponse.builder()
+            .data(caseOrchestrationService.judgeCostsDecision(ccdCallbackRequest))
+            .build());
     }
 
     @ExceptionHandler(CaseOrchestrationServiceException.class)
