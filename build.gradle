@@ -327,6 +327,8 @@ dependencies {
     }
     testImplementation group: 'io.zonky.test', name: 'embedded-database-spring-test', version: versions.embeddedPostgres
 
+    testRuntimeOnly "com.vladsch.flexmark:flexmark-all:0.35.10"
+
     //integration test
     integrationTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
     integrationTestImplementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: versions.jacksonDatatypeJsr
