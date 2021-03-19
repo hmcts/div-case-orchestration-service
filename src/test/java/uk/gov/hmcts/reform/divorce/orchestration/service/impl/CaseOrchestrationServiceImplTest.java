@@ -137,6 +137,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.controller.util.Callback
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_DOCUMENT_TYPE;
@@ -1216,6 +1217,109 @@ public class CaseOrchestrationServiceImplTest {
             .thenThrow(new WorkflowException("This operation threw an exception"));
 
         classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
+    }
+
+    @Test
+    public void shouldGenerateOnlyManualDnDocuments_WhenPetitionerCostsClaimIsNo() throws WorkflowException {
+        Map<String, Object> caseData = new HashMap<String, Object>();
+        caseData.put(CASE_ID_JSON_KEY, CaseLink.builder().caseReference(TEST_CASE_ID).build());
+        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "No");
+
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        classUnderTest.handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
+
+        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME);
+        verify(documentGenerationWorkflow, never()).run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE);
+        verifyNoMoreInteractions(documentGenerationWorkflow);
+    }
+
+    @Test
+    public void shouldGenerateOnlyManualDnDocuments_WhenPetitionerCostsClaimIsYesButThenPetitionerEndsClaim() throws WorkflowException {
+        Map<String, Object> caseData = new HashMap<String, Object>();
+        caseData.put(CASE_ID_JSON_KEY, CaseLink.builder().caseReference(TEST_CASE_ID).build());
+        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
+        caseData.put(DN_COSTS_OPTIONS_CCD_FIELD, DN_COSTS_ENDCLAIM_VALUE);
+        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
+
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        classUnderTest.handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
+
+        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME);
+        verify(documentGenerationWorkflow, never()).run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE);
+        verifyNoMoreInteractions(documentGenerationWorkflow);
+    }
+
+    @Test
+    public void shouldGenerateBothManualDocuments_WhenCostsClaimContinues() throws WorkflowException {
+        Map<String, Object> caseData = new HashMap<String, Object>();
+        caseData.put(CASE_ID_JSON_KEY, CaseLink.builder().caseReference(TEST_CASE_ID).build());
+        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
+        caseData.put(DN_COSTS_OPTIONS_CCD_FIELD, "Continue");
+        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
+
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        classUnderTest.handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
+
+        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME);
+        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE);
+        verifyNoMoreInteractions(documentGenerationWorkflow);
+    }
+
+    @Test
+    public void shouldGenerateBothManualDocuments_WhenCostsClaimGrantedIsNo() throws WorkflowException {
+        Map<String, Object> caseData = new HashMap<String, Object>();
+        caseData.put(CASE_ID_JSON_KEY, CaseLink.builder().caseReference(TEST_CASE_ID).build());
+        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
+        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, NO_VALUE);
+
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        classUnderTest.handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
+
+        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME);
+        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE);
+        verifyNoMoreInteractions(documentGenerationWorkflow);
+    }
+
+    @Test
+    public void shouldGenerateBothManDocuments_WhenCostsClaimGrantedIsYes() throws WorkflowException {
+        Map<String, Object> caseData = new HashMap<String, Object>();
+        caseData.put(CASE_ID_JSON_KEY, CaseLink.builder().caseReference(TEST_CASE_ID).build());
+        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
+        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
+
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        classUnderTest.handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
+
+        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME);
+        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE);
+        verifyNoMoreInteractions(documentGenerationWorkflow);
+    }
+
+    @Test(expected = WorkflowException.class)
+    public void shouldThrowException_ForManualDnPronouncedDocumentsGeneration_WhenWorkflowExceptionIsCaught() throws WorkflowException {
+
+        Map<String, Object> caseData = new HashMap<String, Object>();
+        caseData.put(CASE_ID_JSON_KEY, CaseLink.builder().caseReference(TEST_CASE_ID).build());
+        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
+        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
+
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        when(documentGenerationWorkflow.run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE))
+            .thenThrow(new WorkflowException("This operation threw an exception"));
+
+        classUnderTest.handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
     }
 
     @Test
