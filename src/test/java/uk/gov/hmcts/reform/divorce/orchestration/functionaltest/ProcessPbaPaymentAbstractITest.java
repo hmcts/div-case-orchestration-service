@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,6 +16,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Organisation;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeValue;
@@ -56,6 +59,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_A
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_DESCRIPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_VERSION;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ORGANISATION_POLICY_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FULL_NAME;
@@ -70,6 +74,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLIC
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CURRENCY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_CENTRE_SITEID_JSON_KEY;
@@ -91,7 +96,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_CCD_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_AUTHORIZATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_FIRM_JSON_KEY;
@@ -106,6 +113,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorT
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.getBasicFailedResponse;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.formatCaseIdToReferenceNumber;
 
+@SpringBootTest(properties = {"feature-toggle.toggle.represented_respondent_journey=true"})
 public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTest {
 
     private static final String API_URL = "/process-pba-payment";
@@ -193,7 +201,7 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
 
         caseData.remove(PETITIONER_SOLICITOR_EMAIL);
 
-        makePaymentAndReturn();
+        makePaymentAndReturn(caseData);
 
         verifyApplicationSubmittedEmailWasSent();
     }
@@ -206,7 +214,7 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
 
         caseData.remove(PETITIONER_SOLICITOR_EMAIL);
 
-        makePaymentAndReturn();
+        makePaymentAndReturn(caseData);
 
         verifyAmendedApplicationSubmittedEmailWasSent();
     }
@@ -218,10 +226,24 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
         caseData.put(PREVIOUS_CASE_ID_CCD_KEY, null);
         caseData.put(PETITIONER_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL);
 
-        makePaymentAndReturn();
+        makePaymentAndReturn(caseData);
 
         verifyApplicationSubmittedEmailWasSent();
         verifySolicitorApplicationSubmittedEmailWasSent();
+    }
+
+    @Test
+    public void makePaymentAndUpdateRespDigitalDetails_whenRespSolDigital() throws Exception {
+        caseData.put(STATEMENT_OF_TRUTH, YES_VALUE);
+        caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, YES_VALUE);
+        caseData.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicyData());
+
+        Map<String, Object> expectedCaseData = new HashMap<>();
+        expectedCaseData.putAll(caseData);
+        expectedCaseData.put(RESP_IS_USING_DIGITAL_CHANNEL, YES_VALUE);
+        expectedCaseData.put(RESP_SOL_REPRESENTED, YES_VALUE);
+
+        makePaymentAndReturn(expectedCaseData);
     }
 
     @Test
@@ -232,7 +254,7 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
 
         caseData.put(PETITIONER_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL);
 
-        makePaymentAndReturn();
+        makePaymentAndReturn(caseData);
 
         verify(mockEmailClient).sendEmail(
             eq(APPLIC_SUBMISSION_AMEND_SOLICITOR_TEMPLATE_ID),
@@ -486,7 +508,7 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
             .build();
     }
 
-    private void makePaymentAndReturn() throws Exception {
+    private void makePaymentAndReturn(Map<String, Object> expectedCaseData) throws Exception {
         caseDetails = CaseDetails.builder()
             .caseData(caseData)
             .caseId(TEST_CASE_ID)
@@ -508,7 +530,7 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
 
         final CcdCallbackResponse expected = CcdCallbackResponse.builder()
             .state(CcdStates.SUBMITTED)
-            .data(caseData)
+            .data(expectedCaseData)
             .build();
 
         webClient.perform(post(API_URL)
@@ -622,5 +644,16 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
             ),
             anyString()
         );
+    }
+
+    private OrganisationPolicy buildOrganisationPolicyData() {
+        return OrganisationPolicy.builder()
+            .orgPolicyReference("ref")
+            .organisation(Organisation
+                .builder()
+                .organisationID("id")
+                .organisationName(TEST_ORGANISATION_POLICY_NAME)
+                .build())
+            .build();
     }
 }

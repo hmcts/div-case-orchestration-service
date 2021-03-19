@@ -6,8 +6,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Organisation;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
@@ -30,7 +28,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_SESSION_RESPONDENT_SOLICITOR_REFERENCE_DATA_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.ALLOCATED_COURT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.REASON_FOR_DIVORCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
@@ -80,7 +78,7 @@ public class SubmitToCCDWorkflowTest {
 
         incomingPayload = Map.of(
             REASON_FOR_DIVORCE_KEY, "adultery",
-            RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicyData());
+            DIVORCE_SESSION_RESPONDENT_SOLICITOR_REFERENCE_DATA_ID, "123");
         when(courtAllocationTask.execute(any(), eq(incomingPayload))).thenAnswer(invocation -> {
             Arrays.stream(invocation.getArguments())
                 .filter(TaskContext.class::isInstance)
@@ -118,7 +116,7 @@ public class SubmitToCCDWorkflowTest {
 
         incomingPayload = Map.of(
             REASON_FOR_DIVORCE_KEY, "adultery",
-            RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicyData());
+            DIVORCE_SESSION_RESPONDENT_SOLICITOR_REFERENCE_DATA_ID, "123");
         when(courtAllocationTask.execute(any(), eq(incomingPayload))).thenAnswer(invocation -> {
             Arrays.stream(invocation.getArguments())
                 .filter(TaskContext.class::isInstance)
@@ -182,13 +180,6 @@ public class SubmitToCCDWorkflowTest {
         );
 
         verifyNoInteractions(updateRespondentDigitalDetailsTask);
-    }
-
-    private OrganisationPolicy buildOrganisationPolicyData() {
-        return OrganisationPolicy.builder()
-            .orgPolicyReference("ref")
-            .organisation(Organisation.builder().organisationID("id").build())
-            .build();
     }
 
     private void mockTaskExecution() {

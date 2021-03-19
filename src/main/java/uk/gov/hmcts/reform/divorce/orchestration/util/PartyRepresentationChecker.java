@@ -11,6 +11,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.G
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_SESSION_RESPONDENT_SOLICITOR_REFERENCE_DATA_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
@@ -68,6 +69,12 @@ public class PartyRepresentationChecker {
         String otherPartyName = (String) caseData.get(OTHER_PARTY_NAME);
 
         return (!Strings.isNullOrEmpty(otherPartyEmail) && !Strings.isNullOrEmpty(otherPartyName));
+    }
+
+    public static boolean isRespondentSolicitorDigitalDivorceSession(Map<String, Object> divorceSession) {
+        String respondentSolicitorReferenceDataId = (String) divorceSession.get(DIVORCE_SESSION_RESPONDENT_SOLICITOR_REFERENCE_DATA_ID);
+
+        return !Strings.isNullOrEmpty(respondentSolicitorReferenceDataId);
     }
 
     public static String getGeneralEmailParties(Map<String, Object> caseData) {

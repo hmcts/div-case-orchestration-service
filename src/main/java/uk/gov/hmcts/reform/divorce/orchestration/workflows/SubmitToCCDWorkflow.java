@@ -26,7 +26,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.ALLOCATED_COURT_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigitalDivorceSession;
 
 @Slf4j
 @Component
@@ -78,7 +78,7 @@ public class SubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
         return featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY);
     }
 
-    private Task<Map<String, Object>>[] getTasks(Map<String, Object> caseData) {
+    private Task<Map<String, Object>>[] getTasks(Map<String, Object> payload) {
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
         tasks.add(duplicateCaseValidationTask);
@@ -86,7 +86,7 @@ public class SubmitToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
         tasks.add(formatDivorceSessionToCaseDataTask);
         tasks.add(validateCaseDataTask);
         if (isRepresentedRespondentJourneyEnabled()
-            && isRespondentSolicitorDigital(caseData)) {
+            && isRespondentSolicitorDigitalDivorceSession(payload)) {
             tasks.add(updateRespondentDigitalDetailsTask);
         }
         tasks.add(submitCaseToCCD);
