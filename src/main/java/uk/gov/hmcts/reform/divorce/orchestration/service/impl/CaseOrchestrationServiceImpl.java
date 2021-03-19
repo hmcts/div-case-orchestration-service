@@ -62,6 +62,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmiss
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetDNGrantedDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SingleCaseDocumentGenerationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnFetchDocWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorSubmissionWorkflow;
@@ -100,7 +101,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.A
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_DATA_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_FILENAME;
@@ -160,6 +160,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SolicitorDnFetchDocWorkflow solicitorDnFetchDocWorkflow;
     private final GenerateCoRespondentAnswersWorkflow generateCoRespondentAnswersWorkflow;
     private final DocumentGenerationWorkflow documentGenerationWorkflow;
+    private final SingleCaseDocumentGenerationWorkflow singleCaseDocumentGenerationWorkflow;
     private final RespondentSolicitorNominatedWorkflow respondentSolicitorNominatedWorkflow;
     private final SeparationFieldsWorkflow separationFieldsWorkflow;
     private final BulkCaseUpdateHearingDetailsEventWorkflow bulkCaseUpdateHearingDetailsEventWorkflow;
@@ -781,22 +782,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> handleManualDnPronouncementDocumentGeneration(final CcdCallbackRequest ccdCallbackRequest, final String authToken)
         throws WorkflowException {
-
-        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
-        Map<String, Object> caseData = caseDetails.getCaseData();
-
-        if (Objects.nonNull(caseDetails.getCaseData().get(CASE_ID_JSON_KEY))) {
-            caseData.putAll(
-                documentGenerationWorkflow.run(caseDetails, authToken, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME));
-
-            if (isPetitionerClaimingCosts(caseData)) {
-                // DocumentType is clear enough to use as the file name
-                caseData.putAll(
-                    documentGenerationWorkflow.run(caseDetails, authToken, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE));
-            }
-        }
-
-        return caseData;
+        return singleCaseDocumentGenerationWorkflow.run(ccdCallbackRequest.getCaseDetails(), authToken);
     }
 
 

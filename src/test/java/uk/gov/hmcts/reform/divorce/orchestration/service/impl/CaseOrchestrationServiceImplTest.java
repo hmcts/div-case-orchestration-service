@@ -37,6 +37,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DecreeNisiAboutToBeGrantedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DeleteDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DocumentGenerationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SingleCaseDocumentGenerationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GenerateCoRespondentAnswersWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWithIdWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
@@ -258,6 +259,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private DocumentGenerationWorkflow documentGenerationWorkflow;
+
+    @Mock
+    private SingleCaseDocumentGenerationWorkflow singleCaseDocumentGenerationWorkflow;
 
     @Mock
     private RespondentSolicitorNominatedWorkflow respondentSolicitorNominatedWorkflow;
@@ -1313,11 +1317,10 @@ public class CaseOrchestrationServiceImplTest {
         caseData.put(CASE_ID_JSON_KEY, CaseLink.builder().caseReference(TEST_CASE_ID).build());
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
-
         CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
-        when(documentGenerationWorkflow.run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE))
+        when(singleCaseDocumentGenerationWorkflow.run(caseDetails, AUTH_TOKEN))
             .thenThrow(new WorkflowException("This operation threw an exception"));
 
         classUnderTest.handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
