@@ -71,18 +71,6 @@ public class SingleCaseDocumentGenerationWorkflow extends DefaultWorkflow<Map<St
         return DocumentTypeHelper.getLanguageAppropriateTemplate(caseDetails.getCaseData(), documentType);
     }
 
-    private String deduceTemplateFromLogicalName(String templateLogicalName, CaseDetails caseDetails, String defaultTemplate) {
-        return DocumentType.getDocumentTypeByTemplateLogicalName(templateLogicalName)
-            .map(documentType -> {
-                log.info("Found registered document type for {}", templateLogicalName);
-                return getLanguageAppropriateTemplate(caseDetails, documentType);
-            }).orElseGet(() -> {
-                log.warn("Did not find registered document type for {}. Returning the given defaultTemplate [{}]",
-                    templateLogicalName, defaultTemplate);
-                return defaultTemplate;
-            });
-    }
-
     public static boolean isPetitionerClaimingCosts(Map<String, Object> caseData) {
         return YES_VALUE.equalsIgnoreCase(String.valueOf(caseData.get(DIVORCE_COSTS_CLAIM_CCD_FIELD)))
             && !DN_COSTS_ENDCLAIM_VALUE.equalsIgnoreCase(String.valueOf(caseData.get(DN_COSTS_OPTIONS_CCD_FIELD)))
