@@ -1061,10 +1061,12 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void shouldCallTheRightWorkflow_ForManualDnPronouncementDocumentGeneration() throws WorkflowException {
-        final Map<String, Object> result = classUnderTest
-            .handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
+        Map<String, Object> caseData = new HashMap<String, Object>();
+        caseData.put(CASE_ID_JSON_KEY, CaseLink.builder().caseReference(TEST_CASE_ID).build());
+        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
 
-        assertThat(result, is(requestPayload));
+        when(singleCaseDocumentGenerationWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN)).thenReturn(caseData);
+        assertThat(classUnderTest.handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN), is(equalTo(caseData)));
     }
 
 
