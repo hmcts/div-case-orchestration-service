@@ -17,6 +17,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ORGAN
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_SESSION_RESPONDENT_SOLICITOR_REFERENCE_DATA_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
@@ -33,6 +34,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentation
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentDigital;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigitalDivorceSession;
 
 public class PartyRepresentationCheckerTest {
 
@@ -158,6 +160,23 @@ public class PartyRepresentationCheckerTest {
         assertThat(isCoRespondentLiableForCosts(caseData), is(true));
     }
 
+    @Test
+    public void isRespondentSolicitorDigitalDivorceSessionReturnsTrue() {
+        Map<String, Object> caseData = createCaseData(DIVORCE_SESSION_RESPONDENT_SOLICITOR_REFERENCE_DATA_ID, "123");
+        assertThat(isRespondentSolicitorDigitalDivorceSession(caseData), is(true));
+    }
+
+    @Test
+    public void isRespondentSolicitorDigitalDivorceSessionReturnsFalse_IdNull() {
+        Map<String, Object> caseData = createCaseData(DIVORCE_SESSION_RESPONDENT_SOLICITOR_REFERENCE_DATA_ID, null);
+        assertThat(isRespondentSolicitorDigitalDivorceSession(caseData), is(false));
+    }
+
+    @Test
+    public void isRespondentSolicitorDigitalDivorceSessionReturnsFalse_IdEmpty() {
+        Map<String, Object> caseData = new HashMap<>();
+        assertThat(isRespondentSolicitorDigitalDivorceSession(caseData), is(false));
+    }
 
     private static Map<String, Object> createCaseData(String field, Object value) {
         Map<String, Object> caseData = new HashMap<>();
