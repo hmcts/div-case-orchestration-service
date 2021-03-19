@@ -154,7 +154,7 @@ public class CallbackController {
     @PostMapping(path = "/dn-pronounced-manual", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Task to set Decree Nisi as pronounced for one case")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "An email notification has been generated and dispatched to the petitioner and respondent",
+        @ApiResponse(code = 200, message = "DN has been pronounced for this case",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> dnPronouncedManual(
@@ -165,9 +165,9 @@ public class CallbackController {
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
         try {
             callbackResponseBuilder.data(caseOrchestrationService.setDNGrantedManual(ccdCallbackRequest, authorizationToken));
-            log.info("DN pronounced email sent for case with ID: {}.", caseId);
+            log.info("DN pronounced for case with ID: {}.", caseId);
         } catch (WorkflowException exception) {
-            log.error("DN pronounced email has failed for case with ID: {}", caseId, exception);
+            log.error("DN pronouncement has failed for case with ID: {}", caseId, exception);
             callbackResponseBuilder.errors(singletonList(exception.getMessage()));
         }
         return ResponseEntity.ok(callbackResponseBuilder.build());
