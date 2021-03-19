@@ -148,6 +148,8 @@ public class SubmitToCCDWorkflowTest {
 
     @Test
     public void runShouldExecuteAllTasks_ExceptUpdateRespDigital_RespSolNotDigital() throws Exception {
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
+
         Court testCourt = new Court();
         testCourt.setCourtId(testCourtId);
 
