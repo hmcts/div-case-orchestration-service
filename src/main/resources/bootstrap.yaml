@@ -16,4 +16,4 @@ spring:
         div.cos-postgresql-password: DIV_SCHEDULER_DB_PASSWORD
         div.uk-gov-notify-api-key: UK_GOV_NOTIFY_API_KEY
         div.AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key        
-        div.sping-mail-password: spring.mail.password
+        div.spring-mail-password: spring.mail.password
