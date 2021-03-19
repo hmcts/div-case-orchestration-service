@@ -1235,9 +1235,8 @@ public class CaseOrchestrationServiceImplTest {
 
         classUnderTest.handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
-        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME);
-        verify(documentGenerationWorkflow, never()).run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE);
-        verifyNoMoreInteractions(documentGenerationWorkflow);
+        verify(singleCaseDocumentGenerationWorkflow).run(caseDetails, AUTH_TOKEN);
+        verifyNoMoreInteractions(singleCaseDocumentGenerationWorkflow);
     }
 
     @Test
@@ -1253,9 +1252,8 @@ public class CaseOrchestrationServiceImplTest {
 
         classUnderTest.handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
-        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME);
-        verify(documentGenerationWorkflow, never()).run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE);
-        verifyNoMoreInteractions(documentGenerationWorkflow);
+        verify(singleCaseDocumentGenerationWorkflow).run(caseDetails, AUTH_TOKEN);
+        verifyNoMoreInteractions(singleCaseDocumentGenerationWorkflow);
     }
 
     @Test
@@ -1271,9 +1269,8 @@ public class CaseOrchestrationServiceImplTest {
 
         classUnderTest.handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
-        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME);
-        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE);
-        verifyNoMoreInteractions(documentGenerationWorkflow);
+        verify(singleCaseDocumentGenerationWorkflow).run(caseDetails, AUTH_TOKEN);
+        verifyNoMoreInteractions(singleCaseDocumentGenerationWorkflow);
     }
 
     @Test
@@ -1288,9 +1285,8 @@ public class CaseOrchestrationServiceImplTest {
 
         classUnderTest.handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
-        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME);
-        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE);
-        verifyNoMoreInteractions(documentGenerationWorkflow);
+        verify(singleCaseDocumentGenerationWorkflow).run(caseDetails, AUTH_TOKEN);
+        verifyNoMoreInteractions(singleCaseDocumentGenerationWorkflow);
     }
 
     @Test
@@ -1305,9 +1301,8 @@ public class CaseOrchestrationServiceImplTest {
 
         classUnderTest.handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
-        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME);
-        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE);
-        verifyNoMoreInteractions(documentGenerationWorkflow);
+        verify(singleCaseDocumentGenerationWorkflow).run(caseDetails, AUTH_TOKEN);
+        verifyNoMoreInteractions(singleCaseDocumentGenerationWorkflow);
     }
 
     @Test(expected = WorkflowException.class)
