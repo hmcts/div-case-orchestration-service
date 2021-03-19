@@ -40,9 +40,9 @@ public class SolicitorCallbackController {
 
     @PostMapping(path = "/personal-service-pack",
         consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Generates the petitioner's solicitor personal service pack to be served to the respondent")
+    @ApiOperation(value = "Validates case to be issued with personal service")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Document generated and emailed to the petitioner's solicitor",
+        @ApiResponse(code = 200, message = "Case validation successful",
             response = CaseResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> issuePersonalServicePack(
@@ -52,7 +52,7 @@ public class SolicitorCallbackController {
         Map<String, Object> response;
 
         try {
-            response = solicitorService.issuePersonalServicePack(ccdCallbackRequest, authorizationToken);
+            response = solicitorService.validateForPersonalServicePack(ccdCallbackRequest, authorizationToken);
         } catch (Exception e) {
             return ResponseEntity.ok(
                 CcdCallbackResponse.builder()

@@ -55,7 +55,7 @@ public class SolicitorCallbackControllerTest {
                 .caseDetails(CaseDetails.builder().caseData(divorceSession).build())
                 .build();
 
-        when(solicitorService.issuePersonalServicePack(request, AUTH_TOKEN))
+        when(solicitorService.validateForPersonalServicePack(request, AUTH_TOKEN))
                 .thenReturn(divorceSession);
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.issuePersonalServicePack(AUTH_TOKEN, request);
@@ -64,7 +64,7 @@ public class SolicitorCallbackControllerTest {
         assertThat(response.getBody().getData(), is(divorceSession));
         assertThat(response.getBody().getErrors(), is(nullValue()));
 
-        verify(solicitorService).issuePersonalServicePack(request, AUTH_TOKEN);
+        verify(solicitorService).validateForPersonalServicePack(request, AUTH_TOKEN);
     }
 
     @Test
@@ -74,7 +74,7 @@ public class SolicitorCallbackControllerTest {
                 .caseDetails(CaseDetails.builder().caseData(divorceSession).build())
                 .build();
 
-        when(solicitorService.issuePersonalServicePack(request, AUTH_TOKEN))
+        when(solicitorService.validateForPersonalServicePack(request, AUTH_TOKEN))
                 .thenThrow(new RuntimeException("test"));
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.issuePersonalServicePack(AUTH_TOKEN, request);
@@ -83,7 +83,7 @@ public class SolicitorCallbackControllerTest {
         assertThat(response.getBody().getErrors().size(), is(1));
         assertThat(response.getBody().getErrors(), contains("Failed to issue solicitor personal service - test"));
 
-        verify(solicitorService).issuePersonalServicePack(request, AUTH_TOKEN);
+        verify(solicitorService).validateForPersonalServicePack(request, AUTH_TOKEN);
     }
 
     @Test
