@@ -95,6 +95,9 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.JUDGE_COSTS_DECISION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING_SOLICITOR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_DRAFTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_DATA_JSON_KEY;
@@ -673,6 +676,20 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         } catch (WorkflowException e) {
             throw new CaseOrchestrationServiceException(e);
         }
+    }
+
+    @Override
+    public CcdCallbackResponse confirmSolDnReviewPetition(CaseDetails caseDetails) {
+        String currentState = caseDetails.getState();
+
+        CcdCallbackResponse.CcdCallbackResponseBuilder builder = CcdCallbackResponse.builder();
+        builder.data(caseDetails.getCaseData());
+
+        if (currentState.equals(AOS_AWAITING_SOLICITOR) || currentState.equals(AOS_AWAITING)) {
+            builder.state(AOS_DRAFTED);
+        }
+
+        return builder.build();
     }
 
     @Override
