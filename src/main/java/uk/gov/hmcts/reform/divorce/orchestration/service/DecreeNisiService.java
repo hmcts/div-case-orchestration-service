@@ -16,18 +16,18 @@ public interface DecreeNisiService {
      * @param ccdCallbackRequest Callback request containing CCD Case Data
      * @param authToken Authorisation token
      * @return Map of String and Object containing CCD Case Data
-     * @throws WorkflowException if any exception occurs
+     * @throws CaseOrchestrationServiceException if any exception occurs
      */
-    Map<String, Object> setDNGrantedManual(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
+    Map<String, Object> setDNGrantedManual(CcdCallbackRequest ccdCallbackRequest, String authToken) throws CaseOrchestrationServiceException;
 
     /**
      * Event to generate Decree Nisi documentation when pronounced by manual event.
      *
      * @param ccdCallbackRequest Callback request containing CCD Case Data
      * @param authToken Authorisation token
-     * @throws WorkflowException if any exception occurs
+     * @throws CaseOrchestrationServiceException if any exception occurs
      */
     Map<String, Object> handleManualDnPronouncementDocumentGeneration(CcdCallbackRequest ccdCallbackRequest, String authToken)
-        throws WorkflowException;
+        throws CaseOrchestrationServiceException;
 
 }

@@ -51,6 +51,7 @@ public class SingleCaseDocumentGenerationWorkflow extends DefaultWorkflow<Map<St
             return executeTasks(caseDetails, authToken, COSTS_ORDER_DOCUMENT_TYPE, template, COSTS_ORDER_DOCUMENT_TYPE);
         }
 
+        log.info("Returning appropriate template for case with ID: {}", caseDetails.getCaseId());
         template = getLanguageAppropriateTemplate(caseDetails, DECREE_NISI);
         return executeTasks(caseDetails, authToken, DECREE_NISI_DOCUMENT_TYPE, template, DECREE_NISI_FILENAME);
     }

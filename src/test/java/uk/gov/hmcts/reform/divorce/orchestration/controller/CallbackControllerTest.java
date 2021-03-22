@@ -875,7 +875,6 @@ public class CallbackControllerTest {
         assertThat(response.getStatusCode(), is(OK));
     }
 
-
     @Test
     public void whenGenerateDaPronouncedDocuments_thenExecuteService() throws WorkflowException {
         Map<String, Object> payload = singletonMap("testKey", "testValue");

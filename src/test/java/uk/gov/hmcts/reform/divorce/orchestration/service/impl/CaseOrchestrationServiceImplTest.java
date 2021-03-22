@@ -1054,7 +1054,6 @@ public class CaseOrchestrationServiceImplTest {
         assertThat(result, is(requestPayload));
     }
 
-
     @Test
     public void shouldGenerateNoDocuments_whenBulkCaseLinkIdIsNull() throws WorkflowException {
         Map<String, Object> caseData = new HashMap<String, Object>();

@@ -23,7 +23,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE
 @RunWith(MockitoJUnitRunner.class)
 public class SetDNGrantedDateWorkflowTest {
 
-
     @Mock
     SetDnPronouncementDetailsTask setDnPronouncementDetailsTask;
 

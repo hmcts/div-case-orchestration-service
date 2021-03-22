@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.DecreeNisiService;
 
 import java.util.Collections;
@@ -44,7 +45,7 @@ public class DecreeNisiController {
         try {
             callbackResponseBuilder.data(decreeNisiService.setDNGrantedManual(ccdCallbackRequest, authorizationToken));
             log.info("DN pronounced for case with ID: {}.", caseId);
-        } catch (WorkflowException exception) {
+        } catch (CaseOrchestrationServiceException exception) {
             log.error("DN pronouncement has failed for case with ID: {}", caseId, exception);
             callbackResponseBuilder.errors(singletonList(exception.getMessage()));
         }
@@ -69,7 +70,7 @@ public class DecreeNisiController {
             callbackResponseBuilder.data(
                 decreeNisiService.handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, authorizationToken));
             log.info("Generated DN documents for Case ID: {}.", caseId);
-        } catch (WorkflowException exception) {
+        } catch (CaseOrchestrationServiceException exception) {
             log.error("DN document generation failed for Case ID: {}", caseId, exception);
             callbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
         }
