@@ -177,24 +177,6 @@ public class CallbackController {
         return ResponseEntity.ok(caseOrchestrationService.setOrderSummaryAssignRole(ccdCallbackRequest, authorizationToken));
     }
 
-    @PostMapping(path = "/allow-share-a-case",
-        consumes = APPLICATION_JSON,
-        produces = APPLICATION_JSON)
-    @ApiOperation(value = "Allows Share a Case")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Petition issue fee amount is sent to CCD as callback response",
-            response = CcdCallbackResponse.class),
-        @ApiResponse(code = 400, message = "Bad Request")})
-    public ResponseEntity<CcdCallbackResponse> allowShareACase(
-        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
-        return ResponseEntity.ok(
-            CcdCallbackResponse.builder()
-                .data(caseOrchestrationService.allowShareACase(ccdCallbackRequest, authorizationToken))
-                .build()
-        );
-    }
-
     @SuppressWarnings("unchecked")
     @PostMapping(path = "/process-pba-payment", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Callback to receive payment from the Solicitor")

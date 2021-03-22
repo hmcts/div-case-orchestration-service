@@ -34,7 +34,7 @@ public class CcdDataStoreService {
         String userId = userDetails.getId();
         String caseId = caseDetails.getCaseId();
 
-        log.info("CaseID: {} removing [CREATOR] and [PETSOLICITOR] case roles from user {}", caseId, userId);
+        log.info("CaseID: {} removing [CREATOR] case roles from user {}", caseId, userId);
 
         caseRoleClient.removeCaseRoles(
             authorisationToken,
@@ -42,7 +42,7 @@ public class CcdDataStoreService {
             buildRemoveUserRolesRequest(caseId, userId)
         );
 
-        log.info("CaseID: {} removed  [CREATOR] and [PETSOLICITOR] case roles from user {}", caseId, userId);
+        log.info("CaseID: {} removed [CREATOR] case roles from user {}", caseId, userId);
     }
 
     private RemoveUserRolesRequest buildRemoveUserRolesRequest(String caseId, String userId) {
@@ -62,8 +62,7 @@ public class CcdDataStoreService {
 
     private List<CaseUser> getCaseUsers(String caseId, String userId) {
         return asList(
-            buildCaseUser(caseId, CaseRoles.CREATOR, userId),
-            buildCaseUser(caseId, CaseRoles.PETITIONER_SOLICITOR, userId)
+            buildCaseUser(caseId, CaseRoles.CREATOR, userId)
         );
     }
 }

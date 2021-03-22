@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.AllowShareACaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionForRefusalWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
@@ -131,7 +130,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SetOrderSummaryWorkflow setOrderSummaryWorkflow;
     private final SolicitorSubmissionWorkflow solicitorSubmissionWorkflow;
     private final SolicitorCreateWorkflow solicitorCreateWorkflow;
-    private final AllowShareACaseWorkflow allowShareACaseWorkflow;
     private final SolicitorUpdateWorkflow solicitorUpdateWorkflow;
     private final SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow;
     private final SendEmailNotificationWorkflow sendEmailNotificationWorkflow;
@@ -537,19 +535,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
             return solicitorCreateWorkflow.run(ccdCallbackRequest.getCaseDetails(), authorizationToken);
         } catch (WorkflowException e) {
             throw new CaseOrchestrationServiceException(e);
-        }
-    }
-
-    @Override
-    public Map<String, Object> allowShareACase(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
-        throws CaseOrchestrationServiceException {
-
-        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
-
-        try {
-            return allowShareACaseWorkflow.run(caseDetails, authorizationToken);
-        } catch (WorkflowException workflowException) {
-            throw new CaseOrchestrationServiceException(workflowException, caseDetails.getCaseId());
         }
     }
 
