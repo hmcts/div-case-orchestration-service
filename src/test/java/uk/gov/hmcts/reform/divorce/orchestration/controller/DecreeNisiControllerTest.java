@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.DecreeNisiService;
 
 import java.util.Map;
@@ -31,7 +31,7 @@ public class DecreeNisiControllerTest {
     private DecreeNisiController classUnderTest;
 
     @Test
-    public void whenGenerateManualDnPronouncedDocuments_thenExecuteService() throws WorkflowException {
+    public void whenGenerateManualDnPronouncedDocuments_thenExecuteService() throws CaseOrchestrationServiceException {
         Map<String, Object> payload = singletonMap("testKey", "testValue");
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
