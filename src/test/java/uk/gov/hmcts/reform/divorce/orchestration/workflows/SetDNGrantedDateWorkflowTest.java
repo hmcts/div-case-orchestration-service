@@ -48,7 +48,7 @@ public class SetDNGrantedDateWorkflowTest {
     public void runShouldExecuteTasksAndReturnPayload() throws Exception {
         when(setDnPronouncementDetailsTask.execute(context, testData)).thenReturn(testData);
 
-        assertEquals(testData, setDNGrantedDateWorkflow.run(caseDetails.getCaseData()));
+        assertEquals(testData, setDNGrantedDateWorkflow.run(caseDetails));
 
         verify(setDnPronouncementDetailsTask).execute(context, testData);
     }
