@@ -148,7 +148,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final DNSubmittedWorkflow dnSubmittedWorkflow;
     private final DnSubmittedEmailNotificationWorkflow dnSubmittedEmailNotificationWorkflow;
     private final SendDnPronouncedNotificationWorkflow sendDnPronouncedNotificationWorkflow;
-    private final SetDNGrantedDateWorkflow setDNGrantedDateWorkflow;
     private final GetCaseWorkflow getCaseWorkflow;
     private final AuthUtil authUtil;
     private final AmendPetitionWorkflow amendPetitionWorkflow;
@@ -160,7 +159,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SolicitorDnFetchDocWorkflow solicitorDnFetchDocWorkflow;
     private final GenerateCoRespondentAnswersWorkflow generateCoRespondentAnswersWorkflow;
     private final DocumentGenerationWorkflow documentGenerationWorkflow;
-    private final SingleCaseDocumentGenerationWorkflow singleCaseDocumentGenerationWorkflow;
     private final RespondentSolicitorNominatedWorkflow respondentSolicitorNominatedWorkflow;
     private final SeparationFieldsWorkflow separationFieldsWorkflow;
     private final BulkCaseUpdateHearingDetailsEventWorkflow bulkCaseUpdateHearingDetailsEventWorkflow;
@@ -475,11 +473,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> setDNGrantedManual(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
-        return setDNGrantedDateWorkflow.run(ccdCallbackRequest.getCaseDetails().getCaseData());
-    }
-
-    @Override
     public CcdCallbackResponse sendClarificationSubmittedNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         Map<String, Object> workflowResponse = sendClarificationSubmittedNotificationWorkflow.run(ccdCallbackRequest);
 
@@ -778,13 +771,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
         return caseData;
     }
-
-    @Override
-    public Map<String, Object> handleManualDnPronouncementDocumentGeneration(final CcdCallbackRequest ccdCallbackRequest, final String authToken)
-        throws WorkflowException {
-        return singleCaseDocumentGenerationWorkflow.run(ccdCallbackRequest.getCaseDetails(), authToken);
-    }
-
 
     @Override
     public Map<String, Object> handleGrantDACallback(final CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {

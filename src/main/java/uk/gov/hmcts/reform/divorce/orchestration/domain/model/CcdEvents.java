@@ -30,6 +30,7 @@ public class CcdEvents {
     public static final String DN_RECEIVED = "dnReceived";
     public static final String DN_RECEIVED_AOS_COMPLETE = "dnReceivedAosCompleted";
     public static final String DN_RECEIVED_CLARIFICATION = "submitDnClarification";
+    public static final String DN_PRONOUNCED_EVENT = "dnPronounced";
     public static final String COMPLETED_AOS = "aosReceivedNoAdConStarted";
     public static final String CO_RESP_SUBMISSION_AWAITING_ALTERNATIVE_SERVICE = "co-RespAOSReceivedFromAwaitingAlternativeService";
     public static final String CO_RESP_SUBMISSION_AWAITING_PROCESS_SERVER_SERVICE = "co-RespAOSReceivedFromAwaitingProcessServerService";

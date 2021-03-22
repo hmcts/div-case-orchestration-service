@@ -875,24 +875,6 @@ public class CallbackControllerTest {
         assertThat(response.getStatusCode(), is(OK));
     }
 
-    @Test
-    public void whenGenerateManualDnPronouncedDocuments_thenExecuteService() throws WorkflowException {
-        Map<String, Object> payload = singletonMap("testKey", "testValue");
-        CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .caseData(payload)
-                .build())
-            .build();
-
-        when(caseOrchestrationService
-            .handleManualDnPronouncementDocumentGeneration(incomingRequest, AUTH_TOKEN))
-            .thenReturn(payload);
-
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.generateManualDnDocuments(AUTH_TOKEN, incomingRequest);
-
-        assertThat(response.getStatusCode(), is(OK));
-    }
-
 
     @Test
     public void whenGenerateDaPronouncedDocuments_thenExecuteService() throws WorkflowException {

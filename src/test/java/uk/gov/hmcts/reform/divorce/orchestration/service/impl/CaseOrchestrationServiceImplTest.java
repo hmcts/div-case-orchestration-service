@@ -1059,16 +1059,6 @@ public class CaseOrchestrationServiceImplTest {
         assertThat(result, is(requestPayload));
     }
 
-    @Test
-    public void shouldCallTheRightWorkflow_ForManualDnPronouncementDocumentGeneration() throws WorkflowException {
-        Map<String, Object> caseData = new HashMap<String, Object>();
-        caseData.put(CASE_ID_JSON_KEY, CaseLink.builder().caseReference(TEST_CASE_ID).build());
-        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
-
-        when(singleCaseDocumentGenerationWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN)).thenReturn(caseData);
-        assertThat(classUnderTest.handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN), is(equalTo(caseData)));
-    }
-
 
     @Test
     public void shouldGenerateNoDocuments_whenBulkCaseLinkIdIsNull() throws WorkflowException {
@@ -1081,21 +1071,6 @@ public class CaseOrchestrationServiceImplTest {
 
         classUnderTest
             .handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
-
-        verifyNoInteractions(documentGenerationWorkflow);
-    }
-
-    @Test
-    public void shouldGenerateNoDocuments_whenCaseIdIsNull() throws WorkflowException {
-        Map<String, Object> caseData = new HashMap<String, Object>();
-        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "No");
-
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
-            CaseDetails.builder().caseData(caseData).build())
-            .build();
-
-        classUnderTest
-            .handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
         verifyNoInteractions(documentGenerationWorkflow);
     }
@@ -1224,103 +1199,6 @@ public class CaseOrchestrationServiceImplTest {
             .thenThrow(new WorkflowException("This operation threw an exception"));
 
         classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
-    }
-
-    @Test
-    public void shouldGenerateOnlyManualDnDocuments_WhenPetitionerCostsClaimIsNo() throws WorkflowException {
-        Map<String, Object> caseData = new HashMap<String, Object>();
-        caseData.put(CASE_ID_JSON_KEY, CaseLink.builder().caseReference(TEST_CASE_ID).build());
-        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "No");
-
-        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
-
-        classUnderTest.handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
-
-        verify(singleCaseDocumentGenerationWorkflow).run(caseDetails, AUTH_TOKEN);
-        verifyNoMoreInteractions(singleCaseDocumentGenerationWorkflow);
-    }
-
-    @Test
-    public void shouldGenerateOnlyManualDnDocuments_WhenPetitionerCostsClaimIsYesButThenPetitionerEndsClaim() throws WorkflowException {
-        Map<String, Object> caseData = new HashMap<String, Object>();
-        caseData.put(CASE_ID_JSON_KEY, CaseLink.builder().caseReference(TEST_CASE_ID).build());
-        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
-        caseData.put(DN_COSTS_OPTIONS_CCD_FIELD, DN_COSTS_ENDCLAIM_VALUE);
-        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
-
-        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
-
-        classUnderTest.handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
-
-        verify(singleCaseDocumentGenerationWorkflow).run(caseDetails, AUTH_TOKEN);
-        verifyNoMoreInteractions(singleCaseDocumentGenerationWorkflow);
-    }
-
-    @Test
-    public void shouldGenerateBothManualDocuments_WhenCostsClaimContinues() throws WorkflowException {
-        Map<String, Object> caseData = new HashMap<String, Object>();
-        caseData.put(CASE_ID_JSON_KEY, CaseLink.builder().caseReference(TEST_CASE_ID).build());
-        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
-        caseData.put(DN_COSTS_OPTIONS_CCD_FIELD, "Continue");
-        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
-
-        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
-
-        classUnderTest.handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
-
-        verify(singleCaseDocumentGenerationWorkflow).run(caseDetails, AUTH_TOKEN);
-        verifyNoMoreInteractions(singleCaseDocumentGenerationWorkflow);
-    }
-
-    @Test
-    public void shouldGenerateBothManualDocuments_WhenCostsClaimGrantedIsNo() throws WorkflowException {
-        Map<String, Object> caseData = new HashMap<String, Object>();
-        caseData.put(CASE_ID_JSON_KEY, CaseLink.builder().caseReference(TEST_CASE_ID).build());
-        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
-        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, NO_VALUE);
-
-        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
-
-        classUnderTest.handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
-
-        verify(singleCaseDocumentGenerationWorkflow).run(caseDetails, AUTH_TOKEN);
-        verifyNoMoreInteractions(singleCaseDocumentGenerationWorkflow);
-    }
-
-    @Test
-    public void shouldGenerateBothManDocuments_WhenCostsClaimGrantedIsYes() throws WorkflowException {
-        Map<String, Object> caseData = new HashMap<String, Object>();
-        caseData.put(CASE_ID_JSON_KEY, CaseLink.builder().caseReference(TEST_CASE_ID).build());
-        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
-        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
-
-        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
-
-        classUnderTest.handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
-
-        verify(singleCaseDocumentGenerationWorkflow).run(caseDetails, AUTH_TOKEN);
-        verifyNoMoreInteractions(singleCaseDocumentGenerationWorkflow);
-    }
-
-    @Test(expected = WorkflowException.class)
-    public void shouldThrowException_ForManualDnPronouncedDocumentsGeneration_WhenWorkflowExceptionIsCaught() throws WorkflowException {
-
-        Map<String, Object> caseData = new HashMap<String, Object>();
-        caseData.put(CASE_ID_JSON_KEY, CaseLink.builder().caseReference(TEST_CASE_ID).build());
-        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
-        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
-        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
-
-        when(singleCaseDocumentGenerationWorkflow.run(caseDetails, AUTH_TOKEN))
-            .thenThrow(new WorkflowException("This operation threw an exception"));
-
-        classUnderTest.handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
     }
 
     @Test
