@@ -62,7 +62,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerClarifi
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SingleCaseDocumentGenerationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorCreateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorSubmissionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorUpdateWorkflow;
@@ -258,9 +257,6 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private DocumentGenerationWorkflow documentGenerationWorkflow;
-
-    @Mock
-    private SingleCaseDocumentGenerationWorkflow singleCaseDocumentGenerationWorkflow;
 
     @Mock
     private RespondentSolicitorNominatedWorkflow respondentSolicitorNominatedWorkflow;

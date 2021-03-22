@@ -48,7 +48,7 @@ public class DecreeNisiServiceImplTest {
     private SingleCaseDocumentGenerationWorkflow singleCaseDocumentGenerationWorkflow;
 
     @InjectMocks
-    private DecreeNisiService classUnderTest;
+    private DecreeNisiServiceImpl classUnderTest;
 
     @Mock
     private CcdCallbackRequest ccdCallbackRequest;
@@ -77,16 +77,15 @@ public class DecreeNisiServiceImplTest {
     @Test
     public void shouldGenerateNoDocuments_whenCaseIdIsNull() throws WorkflowException {
         Map<String, Object> caseData = new HashMap<String, Object>();
-        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "No");
+        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "No");
 
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(
-            CaseDetails.builder().caseData(caseData).build())
-            .build();
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
-        classUnderTest
-            .handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
+        classUnderTest.handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
-        verifyNoInteractions(singleCaseDocumentGenerationWorkflow);
+        verify(singleCaseDocumentGenerationWorkflow).run(caseDetails, AUTH_TOKEN);
+        verifyNoMoreInteractions(singleCaseDocumentGenerationWorkflow);
     }
 
     @Test
