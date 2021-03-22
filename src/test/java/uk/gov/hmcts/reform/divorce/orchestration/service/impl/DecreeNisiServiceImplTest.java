@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SingleCaseDocumentGenerationWorkflow;
 
 import java.util.Collections;
@@ -63,7 +64,9 @@ public class DecreeNisiServiceImplTest {
     }
 
     @Test
-    public void shouldCallTheRightWorkflow_ForManualDnPronouncementDocumentGeneration() throws WorkflowException {
+    public void shouldCallTheRightWorkflow_ForManualDnPronouncementDocumentGeneration()
+        throws WorkflowException, CaseOrchestrationServiceException {
+
         Map<String, Object> caseData = new HashMap<String, Object>();
         caseData.put(CASE_ID_JSON_KEY, CaseLink.builder().caseReference(TEST_CASE_ID).build());
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
@@ -73,7 +76,9 @@ public class DecreeNisiServiceImplTest {
     }
 
     @Test
-    public void shouldGenerateNoDocuments_whenCaseIdIsNull() throws WorkflowException {
+    public void shouldGenerateNoDocuments_whenCaseIdIsNull()
+        throws WorkflowException, CaseOrchestrationServiceException {
+
         Map<String, Object> caseData = new HashMap<String, Object>();
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "No");
 
@@ -87,7 +92,9 @@ public class DecreeNisiServiceImplTest {
     }
 
     @Test
-    public void shouldGenerateOnlyManualDnDocuments_WhenPetitionerCostsClaimIsNo() throws WorkflowException {
+    public void shouldGenerateOnlyManualDnDocuments_WhenPetitionerCostsClaimIsNo()
+        throws WorkflowException, CaseOrchestrationServiceException {
+
         Map<String, Object> caseData = new HashMap<String, Object>();
         caseData.put(CASE_ID_JSON_KEY, CaseLink.builder().caseReference(TEST_CASE_ID).build());
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "No");
@@ -102,7 +109,9 @@ public class DecreeNisiServiceImplTest {
     }
 
     @Test
-    public void shouldGenerateOnlyManualDnDocuments_WhenPetitionerCostsClaimIsYesButThenPetitionerEndsClaim() throws WorkflowException {
+    public void shouldGenerateOnlyManualDnDocuments_WhenPetitionerCostsClaimIsYesButThenPetitionerEndsClaim()
+        throws WorkflowException, CaseOrchestrationServiceException {
+
         Map<String, Object> caseData = new HashMap<String, Object>();
         caseData.put(CASE_ID_JSON_KEY, CaseLink.builder().caseReference(TEST_CASE_ID).build());
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
@@ -119,7 +128,9 @@ public class DecreeNisiServiceImplTest {
     }
 
     @Test
-    public void shouldGenerateBothManualDocuments_WhenCostsClaimContinues() throws WorkflowException {
+    public void shouldGenerateBothManualDocuments_WhenCostsClaimContinues()
+        throws WorkflowException, CaseOrchestrationServiceException {
+
         Map<String, Object> caseData = new HashMap<String, Object>();
         caseData.put(CASE_ID_JSON_KEY, CaseLink.builder().caseReference(TEST_CASE_ID).build());
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "Yes");
@@ -136,7 +147,9 @@ public class DecreeNisiServiceImplTest {
     }
 
     @Test
-    public void shouldGenerateBothManualDocuments_WhenCostsClaimGrantedIsNo() throws WorkflowException {
+    public void shouldGenerateBothManualDocuments_WhenCostsClaimGrantedIsNo()
+        throws WorkflowException, CaseOrchestrationServiceException {
+
         Map<String, Object> caseData = new HashMap<String, Object>();
         caseData.put(CASE_ID_JSON_KEY, CaseLink.builder().caseReference(TEST_CASE_ID).build());
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
@@ -152,7 +165,9 @@ public class DecreeNisiServiceImplTest {
     }
 
     @Test
-    public void shouldGenerateBothManDocuments_WhenCostsClaimGrantedIsYes() throws WorkflowException {
+    public void shouldGenerateBothManDocuments_WhenCostsClaimGrantedIsYes()
+        throws WorkflowException, CaseOrchestrationServiceException {
+
         Map<String, Object> caseData = new HashMap<String, Object>();
         caseData.put(CASE_ID_JSON_KEY, CaseLink.builder().caseReference(TEST_CASE_ID).build());
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
@@ -168,7 +183,8 @@ public class DecreeNisiServiceImplTest {
     }
 
     @Test(expected = WorkflowException.class)
-    public void shouldThrowException_ForManualDnPronouncedDocumentsGeneration_WhenWorkflowExceptionIsCaught() throws WorkflowException {
+    public void shouldThrowException_ForManualDnPronouncedDocumentsGeneration_WhenWorkflowExceptionIsCaught()
+        throws WorkflowException, CaseOrchestrationServiceException {
 
         Map<String, Object> caseData = new HashMap<String, Object>();
         caseData.put(CASE_ID_JSON_KEY, CaseLink.builder().caseReference(TEST_CASE_ID).build());
