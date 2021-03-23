@@ -2,7 +2,7 @@ import org.springframework.boot.gradle.tasks.run.BootRun
 
 buildscript {
     ext {
-        springBootVersion = '2.3.4.RELEASE'
+        springBootVersion = '2.3.9.RELEASE'
     }
     repositories {
         mavenCentral()
@@ -56,7 +56,7 @@ def versions = [
         jsonAssert                   : '1.2.3',
         jsonPathAssert               : '2.2.0',
         junit                        : '4.13.1',
-        lombok                       : '1.18.12',
+        lombok                       : '1.18.18',
         postgresql                   : '42.2.13',
         puppyCrawl                   : '8.29',
         reformPropertiesVolume       : '0.0.4',
@@ -68,7 +68,7 @@ def versions = [
         springfoxSwagger             : '2.9.2',
         springSecurityCrypto         : '5.4.5',
         springSecurityRsa            : '1.0.8.RELEASE',
-        springBoot                   : '2.3.4.RELEASE',
+        springBoot                   : '2.3.9.RELEASE',
         tomcat                       : '9.0.43',
         unirest                      : '1.4.9',
         embeddedPostgres             : '1.5.5',
@@ -78,7 +78,7 @@ def versions = [
 
 allprojects {
 
-    def springBootVersion = '2.3.4.RELEASE'
+    def springBootVersion = '2.3.9.RELEASE'
 
     apply plugin: 'checkstyle'
     apply plugin: 'com.github.ben-manes.versions'
@@ -374,7 +374,7 @@ dependencies {
 
     contractTestCompile group: 'org.apache.httpcomponents', name: 'httpclient', version: versions.httpComponents
     contractTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-    contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.3.2")
+    contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.7.0")
     contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.7.0")
     contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.7.0')
 
@@ -393,16 +393,11 @@ task smoke(type: Test, description: 'Runs the smoke tests.', group: 'Verificatio
 }
 
 task bootRunAat(type: BootRun, description: 'Runs the app using AAT config', dependsOn: 'classes', group: 'Application') {
-    environment "http_proxy", "http://proxyout.reform.hmcts.net:8080"
     main = bootJar.mainClassName
     doFirst() {
         classpath = sourceSets.main.runtimeClasspath
         systemProperties = System.properties
         systemProperty 'spring.profiles.active', 'aat'
-        systemProperty 'http.proxyHost', 'proxyout.reform.hmcts.net'
-        systemProperty 'http.proxyPort', '8080'
-        systemProperty 'https.proxyHost', 'proxyout.reform.hmcts.net'
-        systemProperty 'https.proxyPort', '8080'
     }
 }
 
