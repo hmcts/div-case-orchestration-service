@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
 import com.google.common.collect.ImmutableMap;
+import org.hamcrest.core.Is;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +15,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceService
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PopulateDocLinkTask;
 
 import java.util.Collections;
@@ -23,6 +25,7 @@ import java.util.Optional;
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -153,13 +156,48 @@ public class SolicitorDnFetchDocWorkflowTest {
     }
 
     @Test
-    public void shouldNotExecuteTasksWhenIsBailiffServiceSuccessfulAndRespondentAnswersIsRequested() throws WorkflowException {
+    public void shouldExecuteTasksWhenIsBailiffServiceSuccessfulAndRespondentAnswersIsRequested() throws WorkflowException {
         Map<String, Object> caseData = buildBailiffServiceSuccessfulCaseData();
         taskContext.setTransientObject(DOCUMENT_DRAFT_LINK_FIELD, RESP_ANSWERS_LINK);
 
+        when(populateDocLinkTask.execute(taskContext, caseData)).thenReturn(caseData);
+
         executeWorkflow(caseData, RESP_ANSWERS_LINK);
 
-        verify(populateDocLinkTask, never()).execute(taskContext, caseData);
+        verify(populateDocLinkTask).execute(taskContext, caseData);
+    }
+
+    @Test
+    public void shouldReturnCaseDataWhenIsBailiffServiceSuccessfulAndRespondentAnswersIsRequestedButNotPresent() throws WorkflowException {
+        Map<String, Object> caseData = buildBailiffServiceSuccessfulCaseData();
+        taskContext.setTransientObject(DOCUMENT_DRAFT_LINK_FIELD, RESP_ANSWERS_LINK);
+
+        when(populateDocLinkTask.execute(taskContext, caseData)).thenThrow(new TaskException("error"));
+
+        executeWorkflow(caseData, RESP_ANSWERS_LINK);
+
+        verify(populateDocLinkTask).execute(taskContext, caseData);
+    }
+
+    @Test
+    public void shouldExecuteTasksAndThrowErrorWhenBailiffServiceNotSuccessfulAndRespondentAnswersIsRequestedAndMissing() throws WorkflowException {
+        Map<String, Object> caseData = buildBailiffServiceNotSuccessfulCaseData();
+        taskContext.setTransientObject(DOCUMENT_DRAFT_LINK_FIELD, RESP_ANSWERS_LINK);
+
+        when(populateDocLinkTask.execute(taskContext, caseData)).thenThrow(new TaskException("error"));
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .caseData(caseData)
+            .build();
+
+        WorkflowException exception = assertThrows(
+            WorkflowException.class,
+            () -> solicitorDnFetchDocWorkflow.run(caseDetails, DOCUMENT_TYPE_PETITION, RESP_ANSWERS_LINK)
+        );
+
+        assertThat(exception.getCause().getMessage(), Is.is("error"));
+        verify(populateDocLinkTask).execute(taskContext, caseData);
     }
 
     @Test
@@ -216,6 +254,10 @@ public class SolicitorDnFetchDocWorkflowTest {
 
     public static Map<String, Object> buildBailiffServiceSuccessfulCaseData() {
         return ImmutableMap.of(CcdFields.BAILIFF_SERVICE_SUCCESSFUL, YES_VALUE);
+    }
+
+    public static Map<String, Object> buildBailiffServiceNotSuccessfulCaseData() {
+        return ImmutableMap.of(CcdFields.BAILIFF_SERVICE_SUCCESSFUL, NO_VALUE);
     }
 
     private void executeWorkflow(Map<String, Object> caseData, String respAnswersLink)
