@@ -1,14 +1,12 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import com.google.common.collect.ImmutableMap;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -48,13 +46,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.loadResourceAsString;
 
-@Slf4j
 public class SetDNGrantedDateITest  extends MockedFunctionalTest {
 
     private static final String API_URL = "/dn-pronounced-manual";
-    private static final String MISSING_JUDGE_REQUEST_JSON_PATH = "jsonExamples/payloads/bulkCaseCcdCallbackRequestNoJudge.json";
 
     private static final Map<String, Object> CASE_DATA = ImmutableMap.<String, Object>builder()
         .put(PRONOUNCEMENT_JUDGE_CCD_FIELD, TEST_PRONOUNCEMENT_JUDGE)
@@ -87,6 +82,7 @@ public class SetDNGrantedDateITest  extends MockedFunctionalTest {
             .caseDetails(CaseDetails.builder()
                 .caseData(CASE_DATA)
                 .caseId(TEST_CASE_ID).build())
+                .token(AUTH_TOKEN)
             .build();
 
     @Autowired
@@ -109,7 +105,7 @@ public class SetDNGrantedDateITest  extends MockedFunctionalTest {
         String inputJson = convertObjectToJsonString(ccdCallbackRequest);
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(EXPECTED_CASE_DATA).build();
 
-        webClient.perform(post("/dn-pronounced-manual")
+        webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .content(inputJson)
             .contentType(MediaType.APPLICATION_JSON)
@@ -120,13 +116,34 @@ public class SetDNGrantedDateITest  extends MockedFunctionalTest {
 
     @Test
     public void givenCallbackRequestWithNoJudgeCaseData_thenReturnCallbackResponseWithError() throws Exception {
-        webClient.perform(MockMvcRequestBuilders.post(API_URL)
-                .header(AUTHORIZATION, AUTH_TOKEN)
-                .content(loadResourceAsString(MISSING_JUDGE_REQUEST_JSON_PATH))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.errors", notNullValue()));
+        Map<String, Object> MISSING_JUDGE_REQUEST = ImmutableMap.<String, Object>builder()
+            .put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL)
+            .put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME)
+            .put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME)
+            .put(RESPONDENT_EMAIL_ADDRESS, TEST_RESPONDENT_EMAIL)
+            .put(RESP_FIRST_NAME_CCD_FIELD, TEST_RESPONDENT_FIRST_NAME)
+            .put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME)
+            .put(D_8_CASE_REFERENCE, TEST_CASE_ID)
+            .put(DECREE_NISI_GRANTED_DATE_CCD_FIELD, TEST_DECREE_NISI_GRANTED_DATE)
+            .put(COURT_HEARING_DATE_CCD_FIELD, TEST_DECREE_NISI_GRANTED_DATE)
+            .build();
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder()
+                .caseData(MISSING_JUDGE_REQUEST)
+                .caseId(TEST_CASE_ID).build())
+                .token(AUTH_TOKEN)
+            .build();
+
+        String inputJson = convertObjectToJsonString(ccdCallbackRequest);
+
+        webClient.perform(post(API_URL)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(inputJson)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.errors", notNullValue()));
     }
 
     @Test
