@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -16,6 +17,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.BULK_CASE_DETAILS_CONTEXT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 
+@Slf4j
 @Component
 @AllArgsConstructor
 public class BulkCaseUpdateDnPronounceDatesWorkflow extends DefaultWorkflow<Map<String, Object>> {
@@ -27,7 +29,8 @@ public class BulkCaseUpdateDnPronounceDatesWorkflow extends DefaultWorkflow<Map<
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
 
         Map<String, Object> bulkCaseDetailsAsMap = objectMapper.convertValue(caseDetails, Map.class);
-
+        String caseId = caseDetails.getCaseId();
+        log.info("About to run {} workflow for case id {}", this.getClass().getSimpleName(), caseId);
         return this.execute(
                 new Task[] {
                     setDnPronouncementDetailsTask,
