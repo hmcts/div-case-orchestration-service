@@ -36,8 +36,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_HEARING_DATE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
@@ -59,7 +59,7 @@ public class SetDNGrantedDateITest  extends MockedFunctionalTest {
         .put(RESPONDENT_EMAIL_ADDRESS, TEST_RESPONDENT_EMAIL)
         .put(RESP_FIRST_NAME_CCD_FIELD, TEST_RESPONDENT_FIRST_NAME)
         .put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME)
-        .put(D_8_CASE_REFERENCE, TEST_CASE_ID)
+        .put(CCD_CASE_ID, TEST_CASE_ID)
         .put(DECREE_NISI_GRANTED_DATE_CCD_FIELD, TEST_DECREE_NISI_GRANTED_DATE)
         .put(COURT_HEARING_DATE_CCD_FIELD, TEST_DECREE_NISI_GRANTED_DATE)
         .build();
@@ -72,7 +72,7 @@ public class SetDNGrantedDateITest  extends MockedFunctionalTest {
         .put(RESPONDENT_EMAIL_ADDRESS, TEST_RESPONDENT_EMAIL)
         .put(RESP_FIRST_NAME_CCD_FIELD, TEST_RESPONDENT_FIRST_NAME)
         .put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME)
-        .put(D_8_CASE_REFERENCE, TEST_CASE_ID)
+        .put(CCD_CASE_ID, TEST_CASE_ID)
         .put(DECREE_NISI_GRANTED_DATE_CCD_FIELD, "2019-06-30")
         .put(COURT_HEARING_DATE_CCD_FIELD, TEST_DECREE_NISI_GRANTED_DATE)
         .build();
@@ -123,7 +123,7 @@ public class SetDNGrantedDateITest  extends MockedFunctionalTest {
             .put(RESPONDENT_EMAIL_ADDRESS, TEST_RESPONDENT_EMAIL)
             .put(RESP_FIRST_NAME_CCD_FIELD, TEST_RESPONDENT_FIRST_NAME)
             .put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME)
-            .put(D_8_CASE_REFERENCE, TEST_CASE_ID)
+            .put(CCD_CASE_ID, TEST_CASE_ID)
             .put(DECREE_NISI_GRANTED_DATE_CCD_FIELD, TEST_DECREE_NISI_GRANTED_DATE)
             .put(COURT_HEARING_DATE_CCD_FIELD, TEST_DECREE_NISI_GRANTED_DATE)
             .build();

@@ -19,6 +19,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SetDNGrantedDateWorkflowTest {
@@ -42,6 +43,8 @@ public class SetDNGrantedDateWorkflowTest {
                 .caseData(testData).build();
 
         context = new DefaultTaskContext();
+        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
+        context.setTransientObject("caseId", TEST_CASE_ID);
     }
 
     @Test

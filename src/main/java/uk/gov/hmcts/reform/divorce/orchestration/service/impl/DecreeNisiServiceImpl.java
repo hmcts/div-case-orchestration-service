@@ -26,7 +26,7 @@ public class DecreeNisiServiceImpl implements DecreeNisiService {
         try {
             return setDNGrantedDateWorkflow.run(ccdCallbackRequest.getCaseDetails());
         } catch (WorkflowException workflowException) {
-            throw new CaseOrchestrationServiceException(workflowException, ccdCallbackRequest.getCaseDetails().getCaseData().toString());
+            throw new CaseOrchestrationServiceException(workflowException, ccdCallbackRequest.getCaseDetails().getCaseId());
         }
     }
 
@@ -36,7 +36,7 @@ public class DecreeNisiServiceImpl implements DecreeNisiService {
         try {
             return singleCaseDocumentGenerationWorkflow.run(ccdCallbackRequest.getCaseDetails(), authToken);
         } catch (WorkflowException workflowException) {
-            throw new CaseOrchestrationServiceException(workflowException, ccdCallbackRequest.getCaseDetails().getCaseData().toString());
+            throw new CaseOrchestrationServiceException(workflowException, ccdCallbackRequest.getCaseDetails().getCaseId());
         }
     }
 }
