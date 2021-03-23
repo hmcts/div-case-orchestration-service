@@ -30,6 +30,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DEEMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnFetchDocWorkflowTest.buildBailiffServiceSuccessfulCaseData;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnFetchDocWorkflowTest.buildServedByAlternativeMethodCaseData;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnFetchDocWorkflowTest.buildServedByProcessServerCaseData;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnFetchDocWorkflowTest.buildServiceApplicationCaseData;
@@ -116,6 +117,25 @@ public class SolicitorDnFetchDocTest extends MockedFunctionalTest {
             .andExpect(content().string(allOf(
                 isJson(),
                 hasJsonPath("$.data.ServedByAlternativeMethod", is("Yes")),
+                hasNoJsonPath("$.errors")
+            )));
+    }
+
+    @Test
+    public void givenIsBailiffServiceSuccessful_thenResponseIsWithoutRespondentAnswersDocumentLink() throws Exception {
+        CcdCallbackRequest request = buildRequest(
+            buildBailiffServiceSuccessfulCaseData()
+        );
+
+        webClient.perform(post(API_URL_RESP_ANSWERS)
+            .content(convertObjectToJsonString(request))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(
+                isJson(),
+                hasJsonPath("$.data.SuccessfulServedByBailiff", is("Yes")),
+                hasNoJsonPath("$.data.respondentanswerslink"),
                 hasNoJsonPath("$.errors")
             )));
     }
