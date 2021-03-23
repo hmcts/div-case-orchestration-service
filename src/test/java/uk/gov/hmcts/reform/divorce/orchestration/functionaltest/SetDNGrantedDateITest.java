@@ -116,7 +116,7 @@ public class SetDNGrantedDateITest  extends MockedFunctionalTest {
 
     @Test
     public void givenCallbackRequestWithNoJudgeCaseData_thenReturnCallbackResponseWithError() throws Exception {
-        Map<String, Object> MISSING_JUDGE_REQUEST = ImmutableMap.<String, Object>builder()
+        Map<String, Object> missingJudgeRequest = ImmutableMap.<String, Object>builder()
             .put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL)
             .put(D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME)
             .put(D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME)
@@ -130,7 +130,7 @@ public class SetDNGrantedDateITest  extends MockedFunctionalTest {
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
             .caseDetails(CaseDetails.builder()
-                .caseData(MISSING_JUDGE_REQUEST)
+                .caseData(missingJudgeRequest)
                 .caseId(TEST_CASE_ID).build())
                 .token(AUTH_TOKEN)
             .build();
