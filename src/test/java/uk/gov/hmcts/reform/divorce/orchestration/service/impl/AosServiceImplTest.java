@@ -9,7 +9,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendEmailNotificationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosNotReceivedWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOfflineTriggerRequestWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueEligibilityWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueForAlternativeServiceCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosOverdueWorkflow;
@@ -19,6 +22,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline.Issue
 import java.util.Map;
 
 import static java.lang.String.format;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -31,6 +35,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -38,10 +43,14 @@ import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.CO_RESPONDE
 import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INCOMING_PAYLOAD;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PAYLOAD_TO_RETURN;
 import static uk.gov.hmcts.reform.divorce.orchestration.controller.util.CallbackControllerTestUtils.assertCaseOrchestrationServiceExceptionIsSetProperly;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_ALTERNATIVE_METHOD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_PROCESS_SERVER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.ADULTERY;
@@ -49,6 +58,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.Divor
 
 @RunWith(MockitoJUnitRunner.class)
 public class AosServiceImplTest {
+
+    private static final String ISSUE_AOS_OFFLINE_RESPONDENT_FROM_AOS_AWAITING = "IssueAOSOffline_Respondent_fromAosAwaiting";
 
     @Mock
     private IssueAosPackOfflineWorkflow issueAosPackOfflineWorkflow;
@@ -67,6 +78,15 @@ public class AosServiceImplTest {
 
     @Mock
     private AosNotReceivedWorkflow aosNotReceivedWorkflow;
+
+    @Mock
+    private AosOfflineTriggerRequestWorkflow aosOfflineTriggerRequestWorkflow;
+
+    @Mock
+    private SendEmailNotificationWorkflow sendEmailNotificationWorkflow;
+
+    @Mock
+    private UpdateCaseWorkflow updateCaseWorkflow;
 
     @InjectMocks
     private AosServiceImpl classUnderTest;
@@ -261,4 +281,92 @@ public class AosServiceImplTest {
         assertThat(exception.getCause(), isA(WorkflowException.class));
     }
 
+    @Test
+    public void shouldCallAosOfflineTriggerRequestWorkflow_WhenAosHasBeenIssued_AndRespondentIsRepresentedByNonRegisteredSolicitor()
+        throws WorkflowException, CaseOrchestrationServiceException {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .caseData(Map.of(RESP_SOL_REPRESENTED, YES_VALUE))
+            .build();
+
+        classUnderTest.runActionsAfterAosHasBeenIssued(TEST_EVENT_ID, caseDetails);
+
+        verify(sendEmailNotificationWorkflow).run(TEST_EVENT_ID, caseDetails);
+        verify(aosOfflineTriggerRequestWorkflow).requestAosOfflineToBeTriggered(TEST_CASE_ID);
+    }
+
+    @Test
+    public void shouldNotCallAosOfflineTriggerRequestWorkflow_WhenAosHasBeenIssued_AndRespondentIsNotRepresented()
+        throws WorkflowException, CaseOrchestrationServiceException {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .caseData(Map.of())
+            .build();
+
+        classUnderTest.runActionsAfterAosHasBeenIssued(TEST_EVENT_ID, caseDetails);
+
+        verify(sendEmailNotificationWorkflow).run(TEST_EVENT_ID, caseDetails);
+        verify(aosOfflineTriggerRequestWorkflow, never()).requestAosOfflineToBeTriggered(TEST_CASE_ID);
+    }
+
+    @Test
+    public void shouldNotCallAosOfflineTriggerRequestWorkflow_WhenAosHasBeenIssued_AndRespondentIsRepresentedByRegisteredSolicitor()
+        throws WorkflowException, CaseOrchestrationServiceException {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .caseData(Map.of(
+                RESP_SOL_REPRESENTED, YES_VALUE,
+                RESPONDENT_SOLICITOR_ORGANISATION_POLICY, Map.of("Organisation", Map.of("OrganisationID", "testRegisteredSolicitorOrganisationId"))
+            ))
+            .build();
+
+        classUnderTest.runActionsAfterAosHasBeenIssued(TEST_EVENT_ID, caseDetails);
+
+        verify(sendEmailNotificationWorkflow).run(TEST_EVENT_ID, caseDetails);
+        verify(aosOfflineTriggerRequestWorkflow, never()).requestAosOfflineToBeTriggered(TEST_CASE_ID);
+    }
+
+    @Test
+    public void shouldEncapsulateWorkflowExceptionInServiceException_WhenAosHasBeenIssued_WhenSendingNotifications() throws WorkflowException {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .caseData(Map.of(RESP_SOL_REPRESENTED, YES_VALUE))
+            .build();
+
+        when(sendEmailNotificationWorkflow.run(TEST_EVENT_ID, caseDetails)).thenThrow(WorkflowException.class);
+
+        CaseOrchestrationServiceException serviceException = assertThrows(CaseOrchestrationServiceException.class,
+            () -> classUnderTest.runActionsAfterAosHasBeenIssued(TEST_EVENT_ID, caseDetails));
+        assertThat(serviceException.getCaseId().get(), equalTo(TEST_CASE_ID));
+        assertThat(serviceException.getCause(), isA(WorkflowException.class));
+
+        verify(sendEmailNotificationWorkflow).run(TEST_EVENT_ID, caseDetails);
+        verify(aosOfflineTriggerRequestWorkflow, never()).requestAosOfflineToBeTriggered(TEST_CASE_ID);
+    }
+
+    @Test
+    public void shouldEncapsulateWorkflowExceptionInServiceException_WhenAosHasBeenIssued_AndRespondentIsRepresentedByNonRegisteredSolicitor()
+        throws WorkflowException {
+        doThrow(WorkflowException.class).when(aosOfflineTriggerRequestWorkflow).requestAosOfflineToBeTriggered(TEST_CASE_ID);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .caseData(Map.of(RESP_SOL_REPRESENTED, YES_VALUE))
+            .build();
+
+        CaseOrchestrationServiceException serviceException = assertThrows(CaseOrchestrationServiceException.class,
+            () -> classUnderTest.runActionsAfterAosHasBeenIssued(TEST_EVENT_ID, caseDetails));
+        assertThat(serviceException.getCaseId().get(), equalTo(TEST_CASE_ID));
+        assertThat(serviceException.getCause(), isA(WorkflowException.class));
+
+        verify(sendEmailNotificationWorkflow).run(TEST_EVENT_ID, caseDetails);
+        verify(aosOfflineTriggerRequestWorkflow).requestAosOfflineToBeTriggered(TEST_CASE_ID);
+    }
+
+    @Test
+    public void shouldCallAppropriateWorkflowForTriggeringAosOffline() throws WorkflowException, CaseOrchestrationServiceException {
+        classUnderTest.triggerAosOfflineForCase(AUTH_TOKEN, TEST_CASE_ID);
+
+        verify(updateCaseWorkflow).run(eq(emptyMap()), eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(ISSUE_AOS_OFFLINE_RESPONDENT_FROM_AOS_AWAITING));
+    }
 }

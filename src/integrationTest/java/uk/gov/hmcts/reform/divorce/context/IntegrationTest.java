@@ -29,6 +29,7 @@ import javax.annotation.PostConstruct;
 @RunWith(SerenityRunner.class)
 @ContextConfiguration(classes = {ServiceContextConfiguration.class})
 public abstract class IntegrationTest {
+
     private static final String CASE_WORKER_USERNAME = "TEST_CASE_WORKER_USER";
     private static final String CASE_WORKER_SUPERUSER = "TEST_CASE_WORKER_SUPERUSER";
     private static final String SOLICITOR_USER_NAME = "TEST_SOLICITOR";
