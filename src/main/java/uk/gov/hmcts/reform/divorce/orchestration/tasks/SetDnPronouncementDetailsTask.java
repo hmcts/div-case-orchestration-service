@@ -29,9 +29,11 @@ public class SetDnPronouncementDetailsTask implements Task<Map<String,Object>> {
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
 
-        final String caseId = caseData.get(D_8_CASE_REFERENCE).toString();
-
-        log.info("Executing SetDnPronouncementDetails task for case with ID: {}", caseId);
+        //Check for single case ID rather than bulk
+        if (isSingleCase(caseData)) {
+            String caseId = caseData.get(D_8_CASE_REFERENCE).toString();
+            log.info("Executing SetDnPronouncementDetails task for case with ID: {}", caseId);
+        }
 
         if (!isJudgeAssigned(caseData)) {
             throw new TaskException("Judge who pronounced field must be set.");
@@ -54,5 +56,9 @@ public class SetDnPronouncementDetailsTask implements Task<Map<String,Object>> {
 
     private boolean isJudgeAssigned(Map<String, Object> caseData) {
         return nonNull(caseData.get(PRONOUNCEMENT_JUDGE_CCD_FIELD));
+    }
+
+    private boolean isSingleCase(Map<String, Object> caseData) {
+        return caseData.containsKey((D_8_CASE_REFERENCE));
     }
 }
