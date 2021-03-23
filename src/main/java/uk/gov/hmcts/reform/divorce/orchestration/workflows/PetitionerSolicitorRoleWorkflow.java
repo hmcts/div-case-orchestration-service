@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.AllowShareACaseTask;
 import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @Component
@@ -40,6 +41,7 @@ public class PetitionerSolicitorRoleWorkflow extends DefaultWorkflow<Map<String,
                 },
                 ccdCallbackRequest.getCaseDetails().getCaseData(),
                 ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
+                ImmutablePair.of(CASE_DETAILS_JSON_KEY, ccdCallbackRequest.getCaseDetails()),
                 ImmutablePair.of(CASE_ID_JSON_KEY, caseId)
             );
         } else {

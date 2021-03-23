@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AssignCaseAccessService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CcdDataStoreService;
 
@@ -36,7 +35,9 @@ public class AllowShareACaseTask implements Task<Map<String, Object>> {
             log.info("CaseId: {}, Assigning case access successful", caseId);
         } catch (Exception e) {
             log.error("CaseId: {}, Failed to assign case access: {}", caseId, e.getMessage());
-            throw new TaskException("Failed to assign case access");
+            context.setTaskFailed(true);
+            context.setTransientObject("AssignCaseAccess_Error",
+                "Problem calling assign case access API to set the [PETSOLICITOR] role to the case");
         }
 
         return caseData;
