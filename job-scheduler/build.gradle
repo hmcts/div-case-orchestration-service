@@ -22,7 +22,7 @@ def versions = [
   assertj           : '3.16.1',
   flyway            : '6.5.5',
   jacksonDatabind   : '2.11.1',
-  lombok            : '1.18.12',
+  lombok            : '1.18.18',
   postgresql        : '42.2.13',
   reformJavaLogging : '5.0.1'
 ]
