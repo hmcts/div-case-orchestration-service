@@ -687,6 +687,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
         if (currentState.equals(AOS_AWAITING_SOLICITOR) || currentState.equals(AOS_AWAITING)) {
             builder.state(AOS_DRAFTED);
+        } else {
+            builder.state(currentState);
         }
 
         return builder.build();

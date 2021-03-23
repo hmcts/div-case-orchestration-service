@@ -136,7 +136,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.controller.util.CallbackControllerTestUtils.assertCaseOrchestrationServiceExceptionIsSetProperly;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.JUDGE_COSTS_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING_SOLICITOR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_DRAFTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_REFERRAL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_SERVICE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PAYMENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.ISSUED_TO_BAILIFF;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
@@ -1765,6 +1771,61 @@ public class CaseOrchestrationServiceImplTest {
             .eventId(TEST_EVENT_ID)
             .token(TEST_TOKEN)
             .build();
+    }
+
+    @Test
+    public void givenDraftAOSEvent_shouldChangeToAosDraftedState_whenAOSAwaitingSolicitor() {
+        CaseDetails caseDetails = CaseDetails.builder()
+                .state(AOS_AWAITING_SOLICITOR)
+                .build();
+
+        CcdCallbackResponse response = classUnderTest.confirmSolDnReviewPetition(caseDetails);
+
+        assertThat(response.getState(), is(AOS_DRAFTED));
+    }
+
+    @Test
+    public void givenDraftAOSEvent_shouldChangeToAosDraftedState_whenAOSAwaiting() {
+        CaseDetails caseDetails = CaseDetails.builder()
+                .state(AOS_AWAITING)
+                .build();
+
+        CcdCallbackResponse response = classUnderTest.confirmSolDnReviewPetition(caseDetails);
+
+        assertThat(response.getState(), is(AOS_DRAFTED));
+    }
+
+    @Test
+    public void givenDraftAOSEvent_shouldNotChangeState_whenAwaitingBailiffService() {
+        CaseDetails caseDetails = CaseDetails.builder()
+                .state(AWAITING_BAILIFF_SERVICE)
+                .build();
+
+        CcdCallbackResponse response = classUnderTest.confirmSolDnReviewPetition(caseDetails);
+
+        assertThat(response.getState(), is(AWAITING_BAILIFF_SERVICE));
+    }
+
+    @Test
+    public void givenDraftAOSEvent_shouldNotChangeState_whenIssuedToBailiff() {
+        CaseDetails caseDetails = CaseDetails.builder()
+                .state(ISSUED_TO_BAILIFF)
+                .build();
+
+        CcdCallbackResponse response = classUnderTest.confirmSolDnReviewPetition(caseDetails);
+
+        assertThat(response.getState(), is(ISSUED_TO_BAILIFF));
+    }
+
+    @Test
+    public void givenDraftAOSEvent_shouldNotChangeState__whenAwaitingBailiffReferral() {
+        CaseDetails caseDetails = CaseDetails.builder()
+                .state(AWAITING_BAILIFF_REFERRAL)
+                .build();
+
+        CcdCallbackResponse response = classUnderTest.confirmSolDnReviewPetition(caseDetails);
+
+        assertThat(response.getState(), is(AWAITING_BAILIFF_REFERRAL));
     }
 
     private Map<String, Object> buildCaseDataWithOrganisationPolicy() {
