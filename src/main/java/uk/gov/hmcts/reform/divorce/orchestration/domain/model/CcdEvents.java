@@ -55,4 +55,6 @@ public class CcdEvents {
     public static final String SOL_AOS_RECEIVED_NO_ADCON_STARTED = "solAosReceivedNoAdConStarted";
     public static final String SOL_AOS_SUBMITTED_UNDEFENDED = "solAosSubmittedUndefended";
     public static final String SOLICITOR_SUBMIT = "solicitorStatementOfTruthPaySubmit";
+    public static final String ISSUE_AOS_OFFLINE_RESPONDENT_FROM_AOS_AWAITING = "IssueAOSOffline_Respondent_fromAosAwaiting";
+
 }

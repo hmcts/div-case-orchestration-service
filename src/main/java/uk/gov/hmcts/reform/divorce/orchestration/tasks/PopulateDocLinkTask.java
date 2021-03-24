@@ -59,7 +59,7 @@ public class PopulateDocLinkTask implements Task<Map<String, Object>> {
                 .orElse(null);
 
             if (petitionDocument == null) {
-                if (isDocumentNotFoundAllowedFor(payload, docLinkFieldName, caseId)) {
+                if (isDocumentNotFoundAllowed(payload, docLinkFieldName, caseId)) {
                     return payload;
                 }
 
@@ -79,11 +79,15 @@ public class PopulateDocLinkTask implements Task<Map<String, Object>> {
         return payload;
     }
 
-    private boolean isDocumentNotFoundAllowedFor(Map<String, Object> caseData, String docLink, String caseId) {
-        if (isBailiffServiceSuccessful(caseData) && docLink.equals(RESP_ANSWERS_LINK)) {
+    private boolean isDocumentNotFoundAllowed(Map<String, Object> caseData, String docLink, String caseId) {
+        if (isBailiffServiceSuccessful(caseData) && isRespondentAnswers(docLink)) {
             log.info("caseID: {} Proceed with document not found. Reason: Bailiff successful and document requested is respondent answers.", caseId);
             return true;
         }
         return false;
+    }
+
+    private boolean isRespondentAnswers(String docLink) {
+        return docLink.equals(RESP_ANSWERS_LINK);
     }
 }
