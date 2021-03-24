@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctional
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -39,6 +40,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETIT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RELATIONSHIP;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH_FEMALE_GENDER_IN_RELATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS_OFFLINE_RESPONDENT_FROM_AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
@@ -46,6 +48,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL_ADDRESS_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RELATIONSHIP_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_RELATIONSHIP_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
@@ -53,6 +61,8 @@ public class AosPackIssuedCallbackTest extends MockedFunctionalTest {
 
     private static final String TEST_CMS_UPDATE_URL =
         "/casemaintenance/version/1/updateCase/" + TEST_CASE_ID + "/" + ISSUE_AOS_OFFLINE_RESPONDENT_FROM_AOS_AWAITING;
+
+    private static final String GENERIC_UPDATE_TEMPLATE_ID = "6ee6ec29-5e88-4516-99cb-2edc30256575";
 
     @MockBean
     private AuthUtil authUtil;
@@ -97,8 +107,12 @@ public class AosPackIssuedCallbackTest extends MockedFunctionalTest {
             .content(ObjectMapperTestUtil.convertObjectToJsonString(payload))
         ).andExpect(status().isOk());
 
-        //Make sure notification is sent
-        verify(emailClient).sendEmail(any(), eq(TEST_PETITIONER_EMAIL), any(), any());
+        verify(emailClient).sendEmail(
+            eq(GENERIC_UPDATE_TEMPLATE_ID),
+            eq(TEST_PETITIONER_EMAIL),
+            eq(expectedEmailVars()),
+            any()
+        );
 
         await().untilAsserted(() -> {
             maintenanceServiceServer.verify(
@@ -109,4 +123,15 @@ public class AosPackIssuedCallbackTest extends MockedFunctionalTest {
         });
     }
 
+    private static Map<String, String> expectedEmailVars() {
+        Map<String, String> vars = new HashMap<>();
+        vars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_PETITIONER_LAST_NAME);
+        vars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_PETITIONER_FIRST_NAME);
+        vars.put(NOTIFICATION_EMAIL_ADDRESS_KEY, TEST_PETITIONER_EMAIL);
+        vars.put(NOTIFICATION_WELSH_RELATIONSHIP_KEY, TEST_WELSH_FEMALE_GENDER_IN_RELATION);
+        vars.put(NOTIFICATION_RELATIONSHIP_KEY, TEST_RELATIONSHIP);
+        vars.put(NOTIFICATION_CCD_REFERENCE_KEY, D8_CASE_ID);
+
+        return vars;
+    }
 }
