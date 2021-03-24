@@ -1818,7 +1818,7 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void givenDraftAOSEvent_shouldNotChangeState__whenAwaitingBailiffReferral() {
+    public void givenDraftAOSEvent_shouldNotChangeState_whenAwaitingBailiffReferral() {
         CaseDetails caseDetails = CaseDetails.builder()
                 .state(AWAITING_BAILIFF_REFERRAL)
                 .build();
