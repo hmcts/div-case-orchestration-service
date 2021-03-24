@@ -71,6 +71,7 @@ import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.DUMMY_CASE_DATA;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INCOMING_CASE_DETAILS;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PAYLOAD_TO_RETURN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
@@ -322,7 +323,7 @@ public class CallbackControllerTest {
             .build();
         final CcdCallbackRequest ccdCallbackRequest = new CcdCallbackRequest();
         ccdCallbackRequest.setCaseDetails(caseDetails);
-        when(caseOrchestrationService.sendNotificationEmail(ccdCallbackRequest)).thenReturn(caseData);
+        when(caseOrchestrationService.sendNotificationEmail(ccdCallbackRequest.getEventId(), caseDetails)).thenReturn(caseData);
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.petitionUpdated(ccdCallbackRequest);
         CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
         assertEquals(OK, response.getStatusCode());
@@ -330,7 +331,7 @@ public class CallbackControllerTest {
     }
 
     @Test
-    public void whenRespondentSubmittedCallback_thenReturnCcdResponse() throws Exception {
+    public void whenRespondentSubmittedCallback_thenReturnCcdResponse() {
         final Map<String, Object> caseData = Collections.emptyMap();
         final CaseDetails caseDetails = CaseDetails.builder()
             .caseData(caseData)
@@ -1713,7 +1714,7 @@ public class CallbackControllerTest {
         final CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
         when(serviceJourneyService.confirmServicePaymentEvent(caseDetails, AUTH_TOKEN))
-                .thenReturn(CcdCallbackResponse.builder().data(caseData).build());
+            .thenReturn(CcdCallbackResponse.builder().data(caseData).build());
 
         final ResponseEntity<CcdCallbackResponse> response = classUnderTest.confirmServicePaymentEvent(AUTH_TOKEN, ccdCallbackRequest);
 
@@ -1729,7 +1730,7 @@ public class CallbackControllerTest {
         final CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
         when(serviceJourneyService.setupAddBailiffReturnEvent(caseDetails, AUTH_TOKEN))
-                .thenReturn(CcdCallbackResponse.builder().data(caseData).build());
+            .thenReturn(CcdCallbackResponse.builder().data(caseData).build());
 
         final ResponseEntity<CcdCallbackResponse> response = classUnderTest.setupAddBailiffReturnEvent(AUTH_TOKEN, ccdCallbackRequest);
 
@@ -1912,4 +1913,14 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getData(), is(TEST_PAYLOAD_TO_RETURN));
         verify(caseOrchestrationService).judgeCostsDecision(eq(ccdCallbackRequest));
     }
+
+    @Test
+    public void shouldCallAdequateService_ForPostAosIssueEndpoint() throws CaseOrchestrationServiceException {
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.aosPackIssued(AUTH_TOKEN,
+            CcdCallbackRequest.builder().eventId(TEST_EVENT_ID).caseDetails(TEST_INCOMING_CASE_DETAILS).build());
+
+        verify(aosService).runActionsAfterAosHasBeenIssued(TEST_EVENT_ID, TEST_INCOMING_CASE_DETAILS);
+        assertThat(response.getStatusCode(), equalTo(OK));
+    }
+
 }

@@ -31,13 +31,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.events.CcdTestEvents.TEST_AOS_AWAITING_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.util.DateConstants.CCD_DATE_FORMAT;
 
 public class LinkRespondentTest extends RetrieveAosCaseSupport {
     private static final String PIN_USER_FIRST_NAME = "pinuserfirstname";
     private static final String PIN_USER_LAST_NAME = "pinuserfirstname";
     private static final String PAYMENT_REFERENCE_EVENT = "paymentReferenceGenerated";
-    private static final String TEST_AOS_AWAITING_EVENT = "testAosAwaiting";
     private static final String AOS_LETTER_HOLDER_ID = "AosLetterHolderId";
     private static final String SUBMIT_COMPLETE_CASE_JSON_FILE_PATH = "submit-complete-case.json";
     private static final String SUBMIT_UNLINKED_CASE_JSON_FILE_PATH = "submit-unlinked-case.json";
@@ -84,7 +84,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
             null,
-            TEST_AOS_AWAITING_EVENT,
+            TEST_AOS_AWAITING_EVENT_ID,
             petitionerUserDetails);
 
         final UserDetails respondentUserDetails = createCitizenUser();
@@ -122,7 +122,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
             null,
-            TEST_AOS_AWAITING_EVENT,
+            TEST_AOS_AWAITING_EVENT_ID,
             petitionerUserDetails);
 
         updateCase(String.valueOf(caseDetails.getId()), null, "aosNotReceived");
@@ -161,7 +161,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
             null,
-            TEST_AOS_AWAITING_EVENT,
+            TEST_AOS_AWAITING_EVENT_ID,
             petitionerUserDetails);
 
         final UserDetails coRespondentUserDetails = createCitizenUser();
@@ -199,7 +199,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
             null,
-            TEST_AOS_AWAITING_EVENT,
+            TEST_AOS_AWAITING_EVENT_ID,
             petitionerUserDetails);
 
         final UserDetails coRespondentUserDetails = createCitizenUser();
