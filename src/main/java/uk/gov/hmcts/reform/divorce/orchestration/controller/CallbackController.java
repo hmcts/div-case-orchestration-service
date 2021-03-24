@@ -316,19 +316,11 @@ public class CallbackController {
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> petitionUpdated(
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         log.info("/petition-updated endpoint called for caseId {}", caseId);
 
-        try {
-            caseOrchestrationService.sendNotificationEmail(ccdCallbackRequest);
-        } catch (WorkflowException e) {
-            log.error("Failed to complete service for caseId {}", caseId, e);
-            return ResponseEntity.ok(CcdCallbackResponse.builder()
-                .data(ccdCallbackRequest.getCaseDetails().getCaseData())
-                .errors(singletonList(e.getMessage()))
-                .build());
-        }
+        caseOrchestrationService.sendNotificationEmail(ccdCallbackRequest.getEventId(), ccdCallbackRequest.getCaseDetails());
 
         return ResponseEntity.ok(CcdCallbackResponse.builder()
             .data(ccdCallbackRequest.getCaseDetails().getCaseData())
@@ -1568,6 +1560,23 @@ public class CallbackController {
         return ResponseEntity.ok(CcdCallbackResponse.builder()
             .data(caseOrchestrationService.judgeCostsDecision(ccdCallbackRequest))
             .build());
+    }
+
+    @PostMapping(path = "/aos-pack-issued", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Performs final actions after aos pack is issued (or reissued)")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> aosPackIssued(
+        @RequestHeader(value = AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        log.info("/aos-pack-issued called for case id [{}]", caseDetails.getCaseId());
+
+        aosService.runActionsAfterAosHasBeenIssued(ccdCallbackRequest.getEventId(), caseDetails);
+
+        return ResponseEntity.ok(CcdCallbackResponse.builder().build());
     }
 
     @ExceptionHandler(CaseOrchestrationServiceException.class)

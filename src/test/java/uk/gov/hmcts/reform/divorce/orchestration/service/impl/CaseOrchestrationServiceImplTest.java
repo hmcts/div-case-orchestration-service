@@ -707,14 +707,26 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void givenCaseData_whenSendPetitionerGenericEmailNotification_thenReturnPayload() throws Exception {
-        when(sendEmailNotificationWorkflow.run(ccdCallbackRequest))
-            .thenReturn(requestPayload);
+    public void givenCaseData_whenSendPetitionerGenericEmailNotification_thenReturnPayload() throws WorkflowException, CaseOrchestrationServiceException {
+        when(sendEmailNotificationWorkflow.run(ccdCallbackRequest.getEventId(), ccdCallbackRequest.getCaseDetails())).thenReturn(requestPayload);
 
-        Map<String, Object> actual = classUnderTest.sendNotificationEmail(ccdCallbackRequest);
+        Map<String, Object> actual = classUnderTest.sendNotificationEmail(ccdCallbackRequest.getEventId(), ccdCallbackRequest.getCaseDetails());
 
-        assertEquals(requestPayload, actual);
-        verify(sendEmailNotificationWorkflow).run(ccdCallbackRequest);
+        assertThat(actual, equalTo(requestPayload));
+        verify(sendEmailNotificationWorkflow).run(ccdCallbackRequest.getEventId(), ccdCallbackRequest.getCaseDetails());
+    }
+
+    @Test
+    public void shouldEncapsulateException_whenSendPetitionerGenericEmailNotification_ThrowsWorkflowException() throws WorkflowException {
+        String eventId = ccdCallbackRequest.getEventId();
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        when(sendEmailNotificationWorkflow.run(eventId, caseDetails)).thenThrow(WorkflowException.class);
+
+        CaseOrchestrationServiceException serviceException = assertThrows(CaseOrchestrationServiceException.class,
+            () -> classUnderTest.sendNotificationEmail(eventId, caseDetails));
+
+        assertThat(serviceException.getCause(), isA(WorkflowException.class));
+        assertThat(serviceException.getCaseId().get(), equalTo(TEST_CASE_ID));
     }
 
     @Test
