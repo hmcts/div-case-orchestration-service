@@ -43,9 +43,9 @@ public class DecreeNisiController {
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
         try {
             callbackResponseBuilder.data(decreeNisiService.setDNGrantedManual(ccdCallbackRequest, authorizationToken));
-            log.info("DN pronounced for case with ID: {}.", caseId);
+            log.info("CaseID: {}. DN pronounced for case", caseId);
         } catch (CaseOrchestrationServiceException exception) {
-            log.error("DN pronouncement has failed for case with ID: {}", caseId, exception);
+            log.error("CaseID: {}. DN pronouncement has failed", caseId, exception);
             callbackResponseBuilder.errors(singletonList(exception.getMessage()));
         }
         return ResponseEntity.ok(callbackResponseBuilder.build());
@@ -68,9 +68,9 @@ public class DecreeNisiController {
         try {
             callbackResponseBuilder.data(
                 decreeNisiService.handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, authorizationToken));
-            log.info("Generated DN documents for Case ID: {}.", caseId);
+            log.info("CaseID: {}. Generated DN documents", caseId);
         } catch (CaseOrchestrationServiceException exception) {
-            log.error("DN document generation failed for Case ID: {}", caseId, exception);
+            log.error("CaseID: {}. DN document generation failed", caseId, exception);
             callbackResponseBuilder.errors(Collections.singletonList(exception.getMessage()));
         }
 
