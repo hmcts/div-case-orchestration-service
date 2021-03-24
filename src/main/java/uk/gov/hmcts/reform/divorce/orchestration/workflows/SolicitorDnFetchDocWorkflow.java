@@ -18,7 +18,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ANSWERS_LINK;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getLastServiceApplication;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isBailiffServiceSuccessful;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDeemedOrDispensed;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationGranted;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.alternativeservice.AlternativeServiceHelper.isServedByAlternativeMethod;
@@ -50,19 +49,12 @@ public class SolicitorDnFetchDocWorkflow extends DefaultWorkflow<Map<String, Obj
 
         log.info("CaseID: {} populateDocLink task is going to be executed.", caseId);
 
-        try {
-            return this.execute(
-                new Task[]{populateDocLinkTask},
-                caseData,
-                ImmutablePair.of(CASE_ID_JSON_KEY, caseDetails.getCaseId()),
-                ImmutablePair.of(DOCUMENT_TYPE, ccdDocumentType),
-                ImmutablePair.of(DOCUMENT_DRAFT_LINK_FIELD, docLinkFieldName));
-        } catch (WorkflowException workflowException) {
-            if (isBailiffServiceSuccessful(caseData)) {
-                return caseData;
-            }
-            throw workflowException;
-        }
+        return this.execute(
+            new Task[]{populateDocLinkTask},
+            caseData,
+            ImmutablePair.of(CASE_ID_JSON_KEY, caseDetails.getCaseId()),
+            ImmutablePair.of(DOCUMENT_TYPE, ccdDocumentType),
+            ImmutablePair.of(DOCUMENT_DRAFT_LINK_FIELD, docLinkFieldName));
     }
 
     private boolean isRespondentAnswersRequested(String docLinkFieldName) {

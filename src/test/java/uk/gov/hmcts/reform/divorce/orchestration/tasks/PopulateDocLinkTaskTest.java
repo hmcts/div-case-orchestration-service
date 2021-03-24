@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.model.ccd.DocumentLink;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -19,7 +21,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_DRAFT_LINK_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_ANSWERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MINI_PETITION_LINK;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ANSWERS_LINK;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getObjectMapperInstance;
 
 public class PopulateDocLinkTaskTest {
@@ -61,4 +66,15 @@ public class PopulateDocLinkTaskTest {
         assertThat(miniPetitionLink.getDocumentBinaryUrl(), is("https://localhost:8080/documents/1234/binary"));
     }
 
+    @Test
+    public void returnPayloadIfBailiffIsSuccessfulAndRespondentAnswersIsNotPresent() throws TaskException {
+        taskContext.setTransientObject(DOCUMENT_TYPE, DOCUMENT_TYPE_RESPONDENT_ANSWERS);
+        taskContext.setTransientObject(DOCUMENT_DRAFT_LINK_FIELD, RESP_ANSWERS_LINK);
+
+        Map<String, Object> payload =  ImmutableMap.of(
+            "D8DocumentsGenerated", new ArrayList<>(),
+            CcdFields.BAILIFF_SERVICE_SUCCESSFUL, YES_VALUE);
+
+        assertThat(populateDocLinkTask.execute(taskContext, payload), is(payload));
+    }
 }
