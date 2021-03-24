@@ -1913,7 +1913,6 @@ public class CallbackControllerTest {
         assertThat(response.getBody().getData(), is(TEST_PAYLOAD_TO_RETURN));
         verify(caseOrchestrationService).judgeCostsDecision(eq(ccdCallbackRequest));
     }
-}
 
     @Test
     public void shouldCallAdequateService_ForPostAosIssueEndpoint() throws CaseOrchestrationServiceException {

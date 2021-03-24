@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.UpdateCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aos.AosNotReceivedWorkflow;
@@ -20,19 +21,16 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline.AosPa
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline.IssueAosPackOfflineWorkflow;
 
 import java.util.Map;
-import java.util.Optional;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyMap;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS_OFFLINE_RESPONDENT_FROM_AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_ALTERNATIVE_METHOD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_BAILIFF;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_PROCESS_SERVER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.ADULTERY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.helper.DigitalSolicitorOrganisationHelper.isSolicitorRegistered;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
 
 @Slf4j
 @Service
@@ -149,11 +147,8 @@ public class AosServiceImpl implements AosService {
 
         //AOS Offline
         Map<String, Object> caseData = caseDetails.getCaseData();
-        boolean respondentSolicitorRepresented = Optional.ofNullable(caseData)
-            .map(m -> m.get(RESP_SOL_REPRESENTED))
-            .filter(YES_VALUE::equals)
-            .isPresent();
-        if (respondentSolicitorRepresented && !isSolicitorRegistered(caseData)) {
+        boolean respondentSolicitorRepresented = PartyRepresentationChecker.isRespondentRepresented(caseData);
+        if (respondentSolicitorRepresented && !isRespondentSolicitorDigital(caseData)) {
             try {
                 aosOfflineTriggerRequestWorkflow.requestAosOfflineToBeTriggered(caseId);
             } catch (WorkflowException e) {
