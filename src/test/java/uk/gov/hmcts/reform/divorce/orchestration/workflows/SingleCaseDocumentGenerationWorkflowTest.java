@@ -116,5 +116,4 @@ public class SingleCaseDocumentGenerationWorkflowTest {
             assertThat(context.getTransientObject(AUTH_TOKEN_JSON_KEY), equalTo(AUTH_TOKEN));
         });
     }
-
 }
