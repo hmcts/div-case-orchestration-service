@@ -20,4 +20,9 @@ public class DataTransformationTestHelper {
         return coreCaseData;
     }
 
+    public static CoreCaseData getExpectedTranslatedCoreCaseDataRepresentedRespondentJourneyEnabled() throws IOException {
+        CoreCaseData coreCaseData = getJsonFromResourceFile("/jsonExamples/payloads/transformations/ccd/case-data-rep-resp.json", CoreCaseData.class);
+        coreCaseData.setCreatedDate(LocalDate.now().toString());
+        return coreCaseData;
+    }
 }

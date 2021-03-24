@@ -16,7 +16,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.divorce.model.ccd.CoreCaseData;
 import uk.gov.hmcts.reform.divorce.model.response.ValidationResponse;
 import uk.gov.hmcts.reform.divorce.model.usersession.DivorceSession;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.impl.CourtLookupService;
 import uk.gov.hmcts.reform.divorce.validation.service.ValidationService;
 
@@ -51,6 +53,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SUCCESS_STATUS;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.DataTransformationTestHelper.getExpectedTranslatedCoreCaseData;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.DataTransformationTestHelper.getExpectedTranslatedCoreCaseDataRepresentedRespondentJourneyEnabled;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.DataTransformationTestHelper.getTestDivorceSessionData;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
@@ -64,6 +67,7 @@ public class SubmitCaseTest extends MockedFunctionalTest {
 
     private DivorceSession testDivorceSessionData;
     private CoreCaseData expectedTranslatedCcdSessionData;
+    private CoreCaseData expectedTranslatedCcdSessionDataRepresentedRespondentJourneyEnabled;
 
     private static final ValidationResponse validationResponseOk = ValidationResponse.builder().build();
     private static final ValidationResponse validationResponseFail = ValidationResponse.builder()
@@ -80,10 +84,15 @@ public class SubmitCaseTest extends MockedFunctionalTest {
     @MockBean
     private ValidationService validationService;
 
+    @MockBean
+    private FeatureToggleService featureToggleService;
+
     @Before
     public void setUp() throws IOException {
         testDivorceSessionData = getTestDivorceSessionData();
         expectedTranslatedCcdSessionData = getExpectedTranslatedCoreCaseData();
+        expectedTranslatedCcdSessionDataRepresentedRespondentJourneyEnabled =
+            getExpectedTranslatedCoreCaseDataRepresentedRespondentJourneyEnabled();
     }
 
     @Test
@@ -117,6 +126,24 @@ public class SubmitCaseTest extends MockedFunctionalTest {
         Court expectedAllocatedCourt = courtLookupService.getCourtByKey(allocatedCourtId);
 
         JSONAssert.assertEquals(convertObjectToJsonString(expectedAllocatedCourt), convertObjectToJsonString(actualAllocatedCourt), true);
+    }
+
+    @Test
+    public void givenCaseDataAndAuth_whenRespSolDigital_thenUpdateRespDigitalDetails() throws Exception {
+        stubMaintenanceServerEndpointForRetrieve(HttpStatus.NOT_FOUND, null);
+        stubMaintenanceServerEndpointForSubmitRepResp(Collections.singletonMap(ID, TEST_CASE_ID));
+        stubMaintenanceServerEndpointForDeleteDraft(HttpStatus.OK);
+        when(validationService.validate(any())).thenReturn(validationResponseOk);
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
+
+        webClient.perform(post(API_URL)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(testDivorceSessionData))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().is2xxSuccessful())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+            .andReturn();
     }
 
     @Test
@@ -179,6 +206,17 @@ public class SubmitCaseTest extends MockedFunctionalTest {
 
     private void stubMaintenanceServerEndpointForSubmit(Map<String, Object> response) {
         String testCcdTranslatedData = convertObjectToJsonString(expectedTranslatedCcdSessionData);
+        maintenanceServiceServer.stubFor(WireMock.post(SUBMISSION_CONTEXT_PATH)
+            .withRequestBody(equalToJson(testCcdTranslatedData))
+            .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
+            .willReturn(aResponse()
+                .withStatus(HttpStatus.OK.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .withBody(convertObjectToJsonString(response))));
+    }
+
+    private void stubMaintenanceServerEndpointForSubmitRepResp(Map<String, Object> response) {
+        String testCcdTranslatedData = convertObjectToJsonString(expectedTranslatedCcdSessionDataRepresentedRespondentJourneyEnabled);
         maintenanceServiceServer.stubFor(WireMock.post(SUBMISSION_CONTEXT_PATH)
             .withRequestBody(equalToJson(testCcdTranslatedData))
             .withHeader(AUTHORIZATION, new EqualToPattern(AUTH_TOKEN))
