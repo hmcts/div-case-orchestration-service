@@ -28,5 +28,4 @@ public interface DecreeNisiService {
      */
     Map<String, Object> handleManualDnPronouncementDocumentGeneration(CcdCallbackRequest ccdCallbackRequest, String authToken)
         throws CaseOrchestrationServiceException;
-
 }
