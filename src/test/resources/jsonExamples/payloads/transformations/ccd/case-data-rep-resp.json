@@ -225,5 +225,7 @@
     "OrgPolicyReference" : "resp.ref",
     "PreviousOrganisations" : [ ],
     "OrgPolicyCaseAssignedRole" : "[RESPSOLICITOR]"
-  }
+  },
+  "RespContactMethodIsDigital" : "Yes",
+  "respondentSolicitorRepresented" : "Yes"
 }
