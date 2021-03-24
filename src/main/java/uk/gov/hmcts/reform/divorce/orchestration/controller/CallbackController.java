@@ -539,6 +539,22 @@ public class CallbackController {
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
 
+    @PostMapping(path = "/confirm-sol-dn-review", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback to set state after Solicitor reviews DN petition")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Callback processed",
+                    response = CcdCallbackResponse.class),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 500, message = "Internal Server Error")})
+    public ResponseEntity<CcdCallbackResponse> confirmSolDnReviewPetition(
+            @RequestBody CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+                caseOrchestrationService
+                        .confirmSolDnReviewPetition(ccdCallbackRequest.getCaseDetails())
+        );
+    }
+
     @PostMapping(path = "/sol-dn-resp-answers-doc", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Populates Respondent Answers doc for solicitor DN journey")
     @ApiResponses(value = {

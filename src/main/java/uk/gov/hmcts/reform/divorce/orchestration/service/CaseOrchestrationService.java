@@ -104,6 +104,8 @@ public interface CaseOrchestrationService {
     Map<String, Object> processSolDnDoc(CcdCallbackRequest ccdCallbackRequest, String ccdDocumentType, String docLinkFieldName)
         throws CaseOrchestrationServiceException;
 
+    CcdCallbackResponse confirmSolDnReviewPetition(CaseDetails caseDetails) throws CaseOrchestrationServiceException;
+
     Map<String, Object> generateCoRespondentAnswers(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
     Map<String, Object> generateBulkCaseForListing() throws WorkflowException;
