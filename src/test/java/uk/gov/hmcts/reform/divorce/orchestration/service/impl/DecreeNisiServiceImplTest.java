@@ -200,8 +200,6 @@ public class DecreeNisiServiceImplTest {
         classUnderTest.handleManualDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
     }
 
-
-
     private CcdCallbackRequest buildCcdCallbackRequest(Map<String, Object> requestPayload) {
         return CcdCallbackRequest.builder()
             .caseDetails(

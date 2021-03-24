@@ -30,7 +30,7 @@ public class DecreeNisiController {
     private final DecreeNisiService decreeNisiService;
 
     @PostMapping(path = "/dn-pronounced-manual", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
-    @ApiOperation(value = "Task to set Decree Nisi as pronounced for one case")
+    @ApiOperation(value = "Callback to set Decree Nisi as pronounced for one case")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "DN has been pronounced for this case",
             response = CcdCallbackResponse.class),
@@ -76,5 +76,4 @@ public class DecreeNisiController {
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
-
 }

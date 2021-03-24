@@ -39,8 +39,7 @@ public class SingleCaseDocumentGenerationWorkflow extends DefaultWorkflow<Map<St
 
     private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
-    public Map<String, Object> run(final CaseDetails caseDetails,
-                                   final String authToken) throws WorkflowException {
+    public Map<String, Object> run(final CaseDetails caseDetails, final String authToken) throws WorkflowException {
 
         String template;
 
