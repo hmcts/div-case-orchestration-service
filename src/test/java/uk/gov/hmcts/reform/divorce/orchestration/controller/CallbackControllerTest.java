@@ -621,6 +621,23 @@ public class CallbackControllerTest {
             .processSolDnDoc(incomingRequest, OrchestrationConstants.DOCUMENT_TYPE_PETITION, OrchestrationConstants.MINI_PETITION_LINK);
     }
 
+
+    @Test
+    public void confirmSolDnReviewPetition() throws CaseOrchestrationServiceException {
+        final Map<String, Object> caseData = Collections.emptyMap();
+        final CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+        final CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
+
+        when(caseOrchestrationService.confirmSolDnReviewPetition(caseDetails))
+                .thenReturn(CcdCallbackResponse.builder().data(caseData).build());
+
+        final ResponseEntity<CcdCallbackResponse> response = classUnderTest.confirmSolDnReviewPetition(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), is(OK));
+        assertThat(response.getBody(), is(expectedResponse));
+    }
+
     @Test
     public void testSolDnReviewPetitionPopulatesErrorsIfExceptionIsThrown() throws CaseOrchestrationServiceException {
         CcdCallbackRequest incomingRequest = CcdCallbackRequest.builder()
