@@ -34,9 +34,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isPet
 public class SingleCaseDocumentGenerationWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final SetFormattedDnCourtDetails setFormattedDnCourtDetails;
-
     private final DocumentGenerationTask documentGenerationTask;
-
     private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
 
     public Map<String, Object> run(final CaseDetails caseDetails, final String authToken) throws WorkflowException {
@@ -44,12 +42,12 @@ public class SingleCaseDocumentGenerationWorkflow extends DefaultWorkflow<Map<St
         String template;
 
         if (isPetitionerClaimingCosts(caseDetails.getCaseData())) {
-            log.info("Costs are being claimed for case ID: {}", caseDetails.getCaseId());
+            log.info("CaseID: {}. Costs are being claimed", caseDetails.getCaseId());
             template = getLanguageAppropriateTemplate(caseDetails, COSTS_ORDER);
             return executeTasks(caseDetails, authToken, COSTS_ORDER_DOCUMENT_TYPE, template, COSTS_ORDER_DOCUMENT_TYPE);
         }
 
-        log.info("Returning appropriate template for case with ID: {}", caseDetails.getCaseId());
+        log.info("CaseID: {}. Returning appropriate template for case", caseDetails.getCaseId());
         template = getLanguageAppropriateTemplate(caseDetails, DECREE_NISI);
         return executeTasks(caseDetails, authToken, DECREE_NISI_DOCUMENT_TYPE, template, DECREE_NISI_FILENAME);
     }

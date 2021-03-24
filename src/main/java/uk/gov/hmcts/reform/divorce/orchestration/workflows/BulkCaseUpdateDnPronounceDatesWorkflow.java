@@ -30,7 +30,9 @@ public class BulkCaseUpdateDnPronounceDatesWorkflow extends DefaultWorkflow<Map<
 
         Map<String, Object> bulkCaseDetailsAsMap = objectMapper.convertValue(caseDetails, Map.class);
         String caseId = caseDetails.getCaseId();
-        log.info("About to run {} workflow for case id {}", this.getClass().getSimpleName(), caseId);
+
+        log.info("CaseID: {}. BulkCaseUpdateDnPronounceDatesWorkflow is going to be executed.", caseId);
+
         return this.execute(
                 new Task[] {
                     setDnPronouncementDetailsTask,
