@@ -86,4 +86,5 @@ public class CcdFields {
     public static final String BAILIFF_SERVICE_SUCCESSFUL = "SuccessfulServedByBailiff";
 
     public static final String JUDGE_COSTS_DECISION = "JudgeCostsDecision";
+
 }
