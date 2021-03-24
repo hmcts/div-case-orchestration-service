@@ -24,7 +24,7 @@ public class AOSOfflineTriggerRequestListener implements ApplicationListener<AOS
 
         try {
             aosService.triggerAosOfflineForCase(authUtil.getCaseworkerToken(), caseId);
-            log.info("AOS offline issued for Case {}", caseId);
+            log.info("CaseID: {} AOS offline issued", caseId);
         } catch (CaseOrchestrationServiceException exception) {
             RuntimeException runtimeException = new RuntimeException("CaseID: " + caseId + " Error issuing AOS offline.", exception);
             log.error(runtimeException.getMessage(), runtimeException);
