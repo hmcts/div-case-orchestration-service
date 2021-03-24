@@ -161,6 +161,7 @@ public class OrchestrationConstants {
     public static final String CO_RESPONDENT_PIN = "coRespondentPin";
     public static final String SUCCESS_STATUS = "success";
     public static final String DOCUMENT_TYPE_RESPONDENT_ANSWERS = "respondentAnswers";
+    public static final String DIVORCE_SESSION_RESPONDENT_SOLICITOR_REFERENCE_DATA_ID = "respondentSolicitorReferenceDataId";
     /*
        Unfortunately, "court" is the name that is already used in the Divorce session format in many places, although it holds a list of courts.
        Changing it now would probably be more trouble than it's worth. At least our constant can be called the right thing.

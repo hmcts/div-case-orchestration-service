@@ -10,6 +10,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.Applicati
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_CCD_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
@@ -54,6 +56,11 @@ public class Conditions {
 
     public static boolean isAwaitingServiceConsideration(CaseDetails caseDetails) {
         return CcdStates.AWAITING_SERVICE_CONSIDERATION.equalsIgnoreCase(caseDetails.getState());
+    }
+
+    public static boolean isAOSDraftedCandidate(CaseDetails caseDetails) {
+        return caseDetails.getState().equals(AOS_AWAITING_SOLICITOR)
+                || caseDetails.getState().equals(AOS_AWAITING);
     }
 
     public static boolean isPetitionAmended(Map<String, Object> caseData) {

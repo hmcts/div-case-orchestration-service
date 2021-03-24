@@ -50,8 +50,8 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> sendPetitionerSubmissionNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 
-    Map<String, Object> sendNotificationEmail(CcdCallbackRequest ccdCallbackRequest)
-        throws WorkflowException;
+    Map<String, Object> sendNotificationEmail(String eventId, CaseDetails caseDetails)
+        throws CaseOrchestrationServiceException;
 
     Map<String, Object> aosSubmission(CcdCallbackRequest ccdCallbackRequest, String authorizationToken) throws WorkflowException;
 
@@ -101,6 +101,8 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> processSolDnDoc(CcdCallbackRequest ccdCallbackRequest, String ccdDocumentType, String docLinkFieldName)
         throws CaseOrchestrationServiceException;
+
+    CcdCallbackResponse confirmSolDnReviewPetition(CaseDetails caseDetails) throws CaseOrchestrationServiceException;
 
     Map<String, Object> generateCoRespondentAnswers(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 

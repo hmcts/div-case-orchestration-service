@@ -241,10 +241,16 @@ public interface CosApiClient {
         @RequestBody CcdCallbackRequest ccdCallbackRequest
     );
 
-
     @ApiOperation("Handle callback for Fee lookup")
     @PostMapping(value = "/set-up-confirm-service-payment")
     CcdCallbackResponse setupConfirmServicePayment(@RequestBody CcdCallbackRequest ccdCallbackRequest);
+
+    @ApiOperation("Performs final operations when AOS is issued")
+    @PostMapping(value = "/aos-pack-issued")
+    CcdCallbackResponse aosPackIssued(
+        @RequestHeader(AUTHORIZATION) String authorisation,
+        @RequestBody CcdCallbackRequest ccdCallbackRequest
+    );
 
     @ApiOperation("Validate bulk scanned fields")
     @PostMapping(value = "/forms/{form-type}/validate-ocr")
@@ -267,4 +273,5 @@ public interface CosApiClient {
         @RequestHeader(SERVICE_AUTHORIZATION_HEADER) String s2sAuthToken,
         @RequestBody BulkScanCaseUpdateRequest request
     );
+
 }
