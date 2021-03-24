@@ -9,12 +9,15 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Organisation;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionerSolicitorApplicationSubmittedEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPaymentTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RemoveMiniPetitionDraftDocumentsTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendPetitionerSubmissionNotificationEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateRespondentDigitalDetailsTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSolicitorCaseDataTask;
 
 import java.util.HashMap;
@@ -26,9 +29,11 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ORGANISATION_POLICY_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_CCD_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
@@ -52,6 +57,9 @@ public class SolicitorSubmissionWorkflowTest {
 
     @Mock
     private PetitionerSolicitorApplicationSubmittedEmailTask petitionerSolicitorApplicationSubmittedEmailTask;
+
+    @Mock
+    private UpdateRespondentDigitalDetailsTask updateRespondentDigitalDetailsTask;
 
     @Mock
     private FeatureToggleService featureToggleService;
@@ -79,18 +87,21 @@ public class SolicitorSubmissionWorkflowTest {
     @Test
     public void executeNonFeatureToggledTasksAndReturnPayloadWhenRespondentJourneyToggledOff() throws Exception {
         disabledRespondentJourney();
-        runTestExecuteAllTasksButPetSolEmailAreCalled();
+        givenRespondentSolicitorDigital();
+        runTestExecuteAllTasksButPetSolEmailAndRespDigAreCalled();
     }
 
     @Test
     public void executeTasksButNotPetSolEmailAndReturnPayloadWhenPetitionerIsNotRepresented() throws Exception {
         enabledRespondentJourney();
+        givenRespondentSolicitorDigital();
         runTestExecuteAllTasksButPetSolEmailAreCalled();
     }
 
     @Test
     public void executeTasksButNotPetSolEmailAndReturnPayloadWhenCaseIsAmended() throws Exception {
         enabledRespondentJourney();
+        givenRespondentSolicitorDigital();
         givenAmendedCase();
 
         runTestExecuteAllTasksButPetSolEmailAreCalled();
@@ -100,8 +111,17 @@ public class SolicitorSubmissionWorkflowTest {
     public void executeAllTasksAndReturnPayloadWhenRespondentJourneyEnabledAndPetRepresentedAndCaseNotAmended() throws Exception {
         enabledRespondentJourney();
         givenPetitionerRepresented();
+        givenRespondentSolicitorDigital();
 
         runTestAllTasksAreCalled();
+    }
+
+    @Test
+    public void executeAllTasksButNotUpdateRespDigAndReturnPayloadWhenRespSolNotDigital() throws Exception {
+        enabledRespondentJourney();
+        givenPetitionerRepresented();
+
+        runTestExecuteAllTasksButUpdateRespDigAreCalled();
     }
 
     private void runTestAllTasksAreCalled() throws WorkflowException {
@@ -111,7 +131,8 @@ public class SolicitorSubmissionWorkflowTest {
             processPbaPaymentTask,
             removeMiniPetitionDraftDocumentsTask,
             sendPetitionerSubmissionNotificationEmailTask,
-            petitionerSolicitorApplicationSubmittedEmailTask
+            petitionerSolicitorApplicationSubmittedEmailTask,
+            updateRespondentDigitalDetailsTask
         );
 
         assertThat(solicitorSubmissionWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN), is(caseData));
@@ -122,7 +143,8 @@ public class SolicitorSubmissionWorkflowTest {
             processPbaPaymentTask,
             removeMiniPetitionDraftDocumentsTask,
             sendPetitionerSubmissionNotificationEmailTask,
-            petitionerSolicitorApplicationSubmittedEmailTask
+            petitionerSolicitorApplicationSubmittedEmailTask,
+            updateRespondentDigitalDetailsTask
         );
     }
 
@@ -130,11 +152,50 @@ public class SolicitorSubmissionWorkflowTest {
         caseData.put(PREVIOUS_CASE_ID_CCD_KEY, new Object());
     }
 
+    private void givenRespondentSolicitorDigital() {
+        caseData.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicyData());
+    }
+
+    private OrganisationPolicy buildOrganisationPolicyData() {
+        return OrganisationPolicy.builder()
+            .orgPolicyReference("ref")
+            .organisation(Organisation
+                .builder()
+                .organisationID("id")
+                .organisationName(TEST_ORGANISATION_POLICY_NAME)
+                .build())
+            .build();
+    }
+
     private void givenPetitionerRepresented() {
         caseData.put(PETITIONER_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL);
     }
 
     private void runTestExecuteAllTasksButPetSolEmailAreCalled() throws WorkflowException {
+        mockTasksExecution(
+            caseData,
+            validateSolicitorCaseDataTask,
+            processPbaPaymentTask,
+            removeMiniPetitionDraftDocumentsTask,
+            sendPetitionerSubmissionNotificationEmailTask,
+            updateRespondentDigitalDetailsTask
+        );
+
+        assertThat(solicitorSubmissionWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN), is(caseData));
+
+        verifyTasksCalledInOrder(
+            caseData,
+            validateSolicitorCaseDataTask,
+            processPbaPaymentTask,
+            removeMiniPetitionDraftDocumentsTask,
+            sendPetitionerSubmissionNotificationEmailTask,
+            updateRespondentDigitalDetailsTask
+        );
+
+        verifyTaskWasNeverCalled(petitionerSolicitorApplicationSubmittedEmailTask);
+    }
+
+    private void runTestExecuteAllTasksButPetSolEmailAndRespDigAreCalled() throws WorkflowException {
         mockTasksExecution(
             caseData,
             validateSolicitorCaseDataTask,
@@ -154,6 +215,31 @@ public class SolicitorSubmissionWorkflowTest {
         );
 
         verifyTaskWasNeverCalled(petitionerSolicitorApplicationSubmittedEmailTask);
+        verifyTaskWasNeverCalled(updateRespondentDigitalDetailsTask);
+    }
+
+    private void runTestExecuteAllTasksButUpdateRespDigAreCalled() throws WorkflowException {
+        mockTasksExecution(
+            caseData,
+            validateSolicitorCaseDataTask,
+            processPbaPaymentTask,
+            removeMiniPetitionDraftDocumentsTask,
+            sendPetitionerSubmissionNotificationEmailTask,
+            petitionerSolicitorApplicationSubmittedEmailTask
+        );
+
+        assertThat(solicitorSubmissionWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN), is(caseData));
+
+        verifyTasksCalledInOrder(
+            caseData,
+            validateSolicitorCaseDataTask,
+            processPbaPaymentTask,
+            removeMiniPetitionDraftDocumentsTask,
+            sendPetitionerSubmissionNotificationEmailTask,
+            petitionerSolicitorApplicationSubmittedEmailTask
+        );
+
+        verifyTaskWasNeverCalled(updateRespondentDigitalDetailsTask);
     }
 
     private void enabledRespondentJourney() {
