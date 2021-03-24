@@ -10,9 +10,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Organisation;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.DateCalculator;
 
 import java.util.Arrays;
@@ -28,6 +32,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -35,10 +40,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.PERSONAL_SERVICE_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.SOL_SERVICE_METHOD_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ORGANISATION_POLICY_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_INVITATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.CaseDataKeys.RESPONDENT_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocument;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
@@ -54,6 +65,9 @@ public class BulkPrintTest extends IdamTestSupport {
 
     @MockBean
     private EmailClient emailClient;
+
+    @MockBean
+    private FeatureToggleService featureToggleService;
 
     private String testDocumentId;
 
@@ -93,6 +107,34 @@ public class BulkPrintTest extends IdamTestSupport {
     }
 
     @Test
+    public void givenCaseDataWithRespSolDigital_whenCalledBulkPrint_thenExpectNoticeOfResponseDetailsInCCDResponse() throws Exception {
+        setRespondentJourneyFeatureToggleOn();
+
+        stubSendLetterService(HttpStatus.OK);
+
+        Map<String, Object> expectedCaseData = caseDataWithDocuments();
+        expectedCaseData.put(CcdFields.NOTICE_OF_PROCEEDINGS_DIGITAL, YES_VALUE);
+        expectedCaseData.put(CcdFields.NOTICE_OF_PROCEEDINGS_EMAIL, TEST_EMAIL);
+        expectedCaseData.put(CcdFields.NOTICE_OF_PROCEEDINGS_FIRM, TEST_ORGANISATION_POLICY_NAME);
+
+        CcdCallbackResponse expected = CcdCallbackResponse.builder()
+            .data(expectedCaseData)
+            .errors(Collections.emptyList())
+            .warnings(Collections.emptyList())
+            .build();
+
+        webClient.perform(post(API_URL)
+            .content(convertObjectToJsonString(callbackWithDigitalRespSol()))
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(expected)));
+
+        verifyNoInteractions(emailClient);
+    }
+
+    @Test
     public void givenValidCaseDataWithSendLetterApiDown_whenCalledBulkPrint_thenExpectErrorInCCDResponse() throws Exception {
         stubSendLetterService(HttpStatus.INTERNAL_SERVER_ERROR);
 
@@ -117,6 +159,29 @@ public class BulkPrintTest extends IdamTestSupport {
             .caseData(caseData)
             .caseId("12345")
             .state("AOSPackGenerated").build());
+    }
+
+    private CcdCallbackRequest callbackWithDigitalRespSol() {
+        final Map<String, Object> caseData = caseDataWithDocuments();
+        caseData.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicyData());
+        caseData.put(RESPONDENT_SOLICITOR_EMAIL, TEST_EMAIL);
+
+        return new CcdCallbackRequest("abacccd", ISSUE_AOS, CaseDetails.builder()
+            .caseData(caseData)
+            .caseId("12345")
+            .state("Issued")
+            .build());
+    }
+
+    private OrganisationPolicy buildOrganisationPolicyData() {
+        return OrganisationPolicy.builder()
+            .orgPolicyReference("ref")
+            .organisation(Organisation
+                .builder()
+                .organisationID("id")
+                .organisationName(TEST_ORGANISATION_POLICY_NAME)
+                .build())
+            .build();
     }
 
     private Map<String, Object> caseDataWithDocuments() {
@@ -160,4 +225,7 @@ public class BulkPrintTest extends IdamTestSupport {
             )));
     }
 
+    private void setRespondentJourneyFeatureToggleOn() {
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
+    }
 }
