@@ -218,6 +218,8 @@
     },
     "respondentSolicitorName": "Justin",
     "respondentSolicitorCompany": "Case",
+    "respondentSolicitorReference": "resp.ref",
+    "respondentSolicitorReferenceDataId": "resp.ref.data.id",
     "respondentSolicitorEmail": "justin@example.com",
     "respondentSolicitorPhoneNumber": "01234567890",
     "respondentSolicitorAddress": {
