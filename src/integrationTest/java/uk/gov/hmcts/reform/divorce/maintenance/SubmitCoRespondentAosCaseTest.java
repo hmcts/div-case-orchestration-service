@@ -30,6 +30,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.events.CcdTestEvents.TEST_AOS_AWAITING_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.util.DateConstants.CCD_DATE_FORMATTER;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 
@@ -39,7 +40,6 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
 
     private static final String CO_RESPONDENT_PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/co-respondent/";
     private static final String RESPONDENT_PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/submit-aos/";
-    private static final String TEST_AOS_AWAITING_EVENT_ID = "testAosAwaiting";
     private static final String TEST_AOS_STARTED_EVENT_ID = "testAosStarted";
     private static final String TEST_AWAITING_DECREE_ABSOLUTE = "testAwaitingDecreeAbsolute";
     private static final String SUBMIT_COMPLETE_CASE_JSON_FILE_PATH = "submit-complete-case.json";

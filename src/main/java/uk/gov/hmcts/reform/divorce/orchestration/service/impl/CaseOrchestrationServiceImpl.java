@@ -95,6 +95,7 @@ import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.JUDGE_COSTS_DECISION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_DRAFTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_DATA_JSON_KEY;
@@ -107,6 +108,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COSTS_ORDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DECREE_NISI;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isAOSDraftedCandidate;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isPetitionerClaimingCosts;
 
 @Slf4j
@@ -456,8 +458,12 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> sendNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        return sendEmailNotificationWorkflow.run(ccdCallbackRequest);
+    public Map<String, Object> sendNotificationEmail(String eventId, CaseDetails caseDetails) throws CaseOrchestrationServiceException {
+        try {
+            return sendEmailNotificationWorkflow.run(eventId, caseDetails);
+        } catch (WorkflowException exception) {
+            throw new CaseOrchestrationServiceException(exception, caseDetails.getCaseId());
+        }
     }
 
     @Override
@@ -673,6 +679,20 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         } catch (WorkflowException e) {
             throw new CaseOrchestrationServiceException(e);
         }
+    }
+
+    @Override
+    public CcdCallbackResponse confirmSolDnReviewPetition(CaseDetails caseDetails) {
+        CcdCallbackResponse.CcdCallbackResponseBuilder builder = CcdCallbackResponse.builder();
+        builder.data(caseDetails.getCaseData());
+
+        if (isAOSDraftedCandidate(caseDetails)) {
+            builder.state(AOS_DRAFTED);
+        } else {
+            builder.state(caseDetails.getState());
+        }
+
+        return builder.build();
     }
 
     @Override

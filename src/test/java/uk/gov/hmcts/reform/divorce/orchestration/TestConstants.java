@@ -126,7 +126,7 @@ public class TestConstants {
     public static final String TEST_GENERAL_EMAIL_DETAILS = "Leverage agile frameworks to provide a robust synopsis for high level overviews.";
 
     public static final Map<String, Object> TEST_INCOMING_PAYLOAD = singletonMap("incomingKey", "incomingValue");
-    public static final CaseDetails TEST_INCOMING_CASE_DETAILS = CaseDetails.builder().caseData(TEST_INCOMING_PAYLOAD).build();
+    public static final CaseDetails TEST_INCOMING_CASE_DETAILS = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(TEST_INCOMING_PAYLOAD).build();
     public static final Map<String, Object> TEST_PAYLOAD_TO_RETURN = singletonMap("returnedKey", "returnedValue");
 
     public static final String TEST_ORGANISATION_POLICY_NAME = "organisationName";

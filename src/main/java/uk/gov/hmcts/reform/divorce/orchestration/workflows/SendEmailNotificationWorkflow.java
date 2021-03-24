@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -34,10 +34,9 @@ public class SendEmailNotificationWorkflow extends DefaultWorkflow<Map<String, O
 
     private final FeatureToggleService featureToggleService;
 
-    public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        final String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
-        final String eventId = ccdCallbackRequest.getEventId();
-        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+    public Map<String, Object> run(String eventId, CaseDetails caseDetails) throws WorkflowException {
+        final String caseId = caseDetails.getCaseId();
+        final Map<String, Object> caseData = caseDetails.getCaseData();
 
         log.info(
             "CaseId: {} send petitioner email task is going to be executed for event {}",

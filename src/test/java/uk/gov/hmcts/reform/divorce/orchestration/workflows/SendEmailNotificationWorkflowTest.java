@@ -113,7 +113,7 @@ public class SendEmailNotificationWorkflowTest {
         mockTasksExecution(testData, task);
 
         Map<String, Object> returnedCaseData = sendEmailNotificationWorkflow
-            .run(buildCcdCallbackRequest(testData, eventId));
+            .run(buildCcdCallbackRequest(testData, eventId).getEventId(), buildCcdCallbackRequest(testData, eventId).getCaseDetails());
 
         assertThat(returnedCaseData, is(testData));
 

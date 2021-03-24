@@ -25,4 +25,8 @@ public interface AosService {
 
     void markAosNotReceivedForCaseServedByBailiff(String authToken, String caseId) throws CaseOrchestrationServiceException;
 
+    void runActionsAfterAosHasBeenIssued(String eventId, CaseDetails caseDetails) throws CaseOrchestrationServiceException;
+
+    void triggerAosOfflineForCase(String authToken, String caseId) throws CaseOrchestrationServiceException;
+
 }
