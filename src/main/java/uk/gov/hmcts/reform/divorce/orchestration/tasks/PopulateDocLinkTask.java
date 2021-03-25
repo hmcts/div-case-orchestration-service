@@ -21,6 +21,8 @@ import static java.util.Optional.ofNullable;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_DRAFT_LINK_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ANSWERS_LINK;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isBailiffServiceSuccessful;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
 
 @Component
@@ -54,7 +56,16 @@ public class PopulateDocLinkTask implements Task<Map<String, Object>> {
                 .stream()
                 .filter(document -> ccdDocumentType.equals(document.getValue().getDocumentType()))
                 .findFirst()
-                .orElseThrow(() -> new TaskException(ccdDocumentType + " document not found"));
+                .orElse(null);
+
+            if (petitionDocument == null) {
+                if (isDocumentNotFoundAllowed(payload, docLinkFieldName, caseId)) {
+                    return payload;
+                }
+
+                log.error("caseID: {} document not found", caseId);
+                throw new TaskException(ccdDocumentType + " document not found");
+            }
 
             DocumentLink document = petitionDocument.getValue().getDocumentLink();
 
@@ -66,5 +77,17 @@ public class PopulateDocLinkTask implements Task<Map<String, Object>> {
         }
 
         return payload;
+    }
+
+    private boolean isDocumentNotFoundAllowed(Map<String, Object> caseData, String docLink, String caseId) {
+        if (isBailiffServiceSuccessful(caseData) && isRespondentAnswers(docLink)) {
+            log.info("caseID: {} Proceed with document not found. Reason: Bailiff successful and document requested is respondent answers.", caseId);
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isRespondentAnswers(String docLink) {
+        return docLink.equals(RESP_ANSWERS_LINK);
     }
 }
