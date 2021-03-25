@@ -160,7 +160,7 @@ send-letter:
 
 aca:
   api:
-    url: ${ACA_SERVICE_API_BASEURL:http://localhost:4454}
+    url: ${ACA_SERVICE_API_BASEURL:http://aac-manage-case-assignment-aat.service.core-compute-aat.internal}
 
 ccd:
   data-store:
@@ -497,7 +497,7 @@ document:
         baseurl: ${DOCUMENT_GENERATOR_SERVICE_API_BASEURL:http://div-dgs-aat.service.core-compute-aat.internal}
   management:
     store:
-      url: ${DOCUMENT_MANAGEMENT_STORE_URL:http://localhost:5006}
+      url: ${DOCUMENT_MANAGEMENT_STORE_URL:http://dm-store-aat.service.core-compute-aat.internal}
 
 cohort: onlineSubmissionPrivateBeta
 
