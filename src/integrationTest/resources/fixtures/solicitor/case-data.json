@@ -1,9 +1,10 @@
 {
   "PetitionerOrganisationPolicy": {
     "Organisation": {
-      "OrganisationID": null,
-      "OrganisationName": null
+      "OrganisationID": "A31PTVA",
+      "OrganisationName": "FRApplicantSolicitorFirm"
     },
+    "OrgPolicyReference": "FRApplicant",
     "OrgPolicyCaseAssignedRole": "[PETSOLICITOR]"
   },
   "PetitionerSolicitorEmail": "pet_sol@example.local",
