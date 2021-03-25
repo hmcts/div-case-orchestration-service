@@ -165,7 +165,7 @@ aca:
 ccd:
   data-store:
     api:
-      url: ${CCD_DATA_STORE_API_BASEURL:http://localhost:4452}
+      url: ${CCD_DATA_STORE_API_BASEURL:http://ccd-data-store-api-aat.service.core-compute-aat.internal}
 
 bulk-print:
   dueDate: 30
