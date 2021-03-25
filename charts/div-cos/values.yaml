@@ -32,7 +32,6 @@ java:
         SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: true
         SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: true
         SPRING_MAIL_USERNAME: apikey
-        DATAEXTRACTION_EMAILFROM: noreply@mail-divorce-nonprod.platform.hmcts.net
     keyVaults:
         "div":
             resourceGroup: div

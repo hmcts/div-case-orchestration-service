@@ -549,7 +549,7 @@ documentation:
     enabled: true
 
 dataExtraction:
-  emailFrom: ${DATAEXTRACTION_EMAILFROM}
+  emailFrom: noreply@mail-divorce-nonprod.platform.hmcts.net
   status:
     DA:
       emailTo:
