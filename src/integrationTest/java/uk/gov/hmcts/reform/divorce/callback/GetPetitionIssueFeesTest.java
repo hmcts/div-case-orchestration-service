@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.callback;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.restassured.response.Response;
+import net.serenitybdd.rest.SerenityRest;
 import org.apache.http.entity.ContentType;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import org.springframework.http.MediaType;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.model.idam.UserDetails;
@@ -44,8 +45,8 @@ public class GetPetitionIssueFeesTest extends IntegrationTest {
     @Value("${case.orchestration.solicitor.petition-issue-fees.context-path}")
     private String petitionIssueFeesContextPath;
 
-    @Autowired
-    protected AuthTokenGenerator serviceAuthGenerator;
+    @Value("${idam.s2s-auth.url}")
+    private String idamS2sAuthUrl;
 
     @Autowired
     protected CcdClientSupport ccdClientSupport;
@@ -109,7 +110,7 @@ public class GetPetitionIssueFeesTest extends IntegrationTest {
         Map<String, Object> requestHeaders = new HashMap<>();
         requestHeaders.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
         requestHeaders.put(HttpHeaders.AUTHORIZATION, solicitorUser.getAuthToken());
-        requestHeaders.put(SERVICE_AUTHORIZATION_HEADER, serviceAuthGenerator.generate());
+        requestHeaders.put(SERVICE_AUTHORIZATION_HEADER, getS2sAuth());
         return requestHeaders;
     }
 
@@ -130,5 +131,17 @@ public class GetPetitionIssueFeesTest extends IntegrationTest {
             getRequestHeaders(),
             ObjectMapperTestUtil.convertObjectToJsonString(callbackData)
         );
+    }
+
+    private String getS2sAuth() {
+        Response response = SerenityRest.given()
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .relaxedHTTPSValidation()
+            .body(String.format("{\"microservice\": \"divorce_frontend\"}"))
+            .post(idamS2sAuthUrl + "/testing-support/lease");
+
+        String token = response.getBody().asString();
+
+        return "Bearer " + token;
     }
 }
