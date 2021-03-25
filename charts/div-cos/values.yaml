@@ -26,7 +26,6 @@ java:
         DIV_SCHEDULER_DB_NAME : "div_scheduler"
         DIV_SCHEDULER_DB_USER_NAME : "div_scheduler@div-cos-{{ .Values.global.environment }}"
         FLYWAY_URL : "jdbc:postgresql://div-cos-{{ .Values.global.environment }}.postgres.database.azure.com:5432/div_scheduler"
-        SCHEDULER_SEND_UPDATED_CASES_TO_ROBOTICS_CRON: "0 0 4 ? * * *"
         SPRING_MAIL_HOST: smtp.sendgrid.net
         SPRING_MAIL_PORT: 587
         SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: smtp.sendgrid.net
