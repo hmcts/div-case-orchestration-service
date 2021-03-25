@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.divorce.context.IntegrationTest;
 import uk.gov.hmcts.reform.divorce.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.model.idam.UserDetails;
@@ -46,7 +45,7 @@ public class GetPetitionIssueFeesTest extends IntegrationTest {
     private String petitionIssueFeesContextPath;
 
     @Autowired
-    protected AuthTokenGenerator serviceAuthGenerator;
+    private IdamUtils idamUtilsS2SAuthorization;
 
     @Autowired
     protected CcdClientSupport ccdClientSupport;
@@ -110,7 +109,8 @@ public class GetPetitionIssueFeesTest extends IntegrationTest {
         Map<String, Object> requestHeaders = new HashMap<>();
         requestHeaders.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
         requestHeaders.put(HttpHeaders.AUTHORIZATION, solicitorUser.getAuthToken());
-        requestHeaders.put(SERVICE_AUTHORIZATION_HEADER, serviceAuthGenerator.generate());
+        requestHeaders.put(SERVICE_AUTHORIZATION_HEADER,
+            idamUtilsS2SAuthorization.generateUserTokenWithValidMicroService("divorce_frontend"));
         return requestHeaders;
     }
 
