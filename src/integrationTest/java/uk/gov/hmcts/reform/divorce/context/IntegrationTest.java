@@ -32,10 +32,10 @@ public abstract class IntegrationTest {
 
     private static final String CASE_WORKER_USERNAME = "TEST_CASE_WORKER_USER";
     private static final String CASE_WORKER_SUPERUSER = "TEST_CASE_WORKER_SUPERUSER";
-    private static final String SOLICITOR_USER_NAME = "divorce_as_petitioner_solicitor_01";
+    private static final String SOLICITOR_USER_NAME = "divorce_as_petitioner_solicitor_02";
     private static final String EMAIL_DOMAIN = "@mailinator.com";
     private static final String CITIZEN_ROLE = "citizen";
-    private static final String PASSWORD = "genericPassword123";
+    private static final String PASSWORD = "Testing1234";
     private static final String CITIZEN_USERGROUP = "citizens";
 
     protected static final String ERRORS = "errors";
