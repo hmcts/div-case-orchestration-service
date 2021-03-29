@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_CCD_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_APPLICATION_FEE_IN_POUNDS_JSON_KEY;
@@ -24,7 +25,10 @@ public class GetPetitionIssueFeesTestFeatureSwitchedOnTest extends GetPetitionIs
 
     @Test
     public void givenCaseData_whenGetPetitionIssueFee_thenReturnUpdatedResponseWithFees() throws Exception {
-        stubMaintenanceServerEndpointForAddPetitionerSolicitorRole(HttpStatus.OK);
+        stubUserDetailsEndpoint(HttpStatus.OK, AUTH_TOKEN, USER_DETAILS_PIN_USER_JSON);
+        stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
+        stubRemoveCaseRoleServerEndpoint(AUTH_TOKEN, TEST_SERVICE_AUTH_TOKEN, HttpStatus.OK);
+        stubAssignCaseAccessServerEndpoint(AUTH_TOKEN, TEST_SERVICE_AUTH_TOKEN, HttpStatus.OK);
 
         OrderSummary orderSummary = new OrderSummary();
         orderSummary.add(issueFeeResponse);
@@ -48,7 +52,11 @@ public class GetPetitionIssueFeesTestFeatureSwitchedOnTest extends GetPetitionIs
     @Test
     public void givenCaseAmendment_whenGetPetitionIssueFee_thenReturnUpdatedResponseWithFees() throws Exception {
         callbackRequest.getCaseDetails().getCaseData().put(PREVIOUS_CASE_ID_CCD_KEY, CaseLink.builder().caseReference("1234567890123456").build());
-        stubMaintenanceServerEndpointForAddPetitionerSolicitorRole(HttpStatus.OK);
+
+        stubUserDetailsEndpoint(HttpStatus.OK, AUTH_TOKEN, USER_DETAILS_PIN_USER_JSON);
+        stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
+        stubRemoveCaseRoleServerEndpoint(AUTH_TOKEN, TEST_SERVICE_AUTH_TOKEN, HttpStatus.OK);
+        stubAssignCaseAccessServerEndpoint(AUTH_TOKEN, TEST_SERVICE_AUTH_TOKEN, HttpStatus.OK);
 
         OrderSummary orderSummary = new OrderSummary();
         orderSummary.add(amendFeeResponse);
