@@ -551,7 +551,7 @@ documentation:
     enabled: true
 
 dataExtraction:
-  emailFrom: noreply@reform.hmcts.net
+  emailFrom: noreply@mail-divorce.platform.hmcts.net
   status:
     DA:
       emailTo: da-extraction@divorce.gov.uk
