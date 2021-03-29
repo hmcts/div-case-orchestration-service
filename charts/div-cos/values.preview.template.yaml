@@ -33,6 +33,7 @@ java:
         - idam-caseworker-username
         - idam-caseworker-password
         - uk-gov-notify-api-key
+        - spring-mail-password
 
   # Don't modify these properties
   image: ${IMAGE_NAME}
