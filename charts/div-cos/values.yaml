@@ -26,11 +26,12 @@ java:
         DIV_SCHEDULER_DB_NAME : "div_scheduler"
         DIV_SCHEDULER_DB_USER_NAME : "div_scheduler@div-cos-{{ .Values.global.environment }}"
         FLYWAY_URL : "jdbc:postgresql://div-cos-{{ .Values.global.environment }}.postgres.database.azure.com:5432/div_scheduler"
-        SPRING_MAIL_HOST: mta.reform.hmcts.net
-        SPRING_MAIL_PORT: 25
-        SPRING_MAIL_TEST_CONNECTION: false
+        SPRING_MAIL_HOST: smtp.sendgrid.net
+        SPRING_MAIL_PORT: 587
+        SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: smtp.sendgrid.net
         SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: true
-        SPRING_MAIL_PROPERTIES_MAIL_SMTP_SSL_TRUST: mta.reform.hmcts.net
+        SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: true
+        SPRING_MAIL_USERNAME: apikey
     keyVaults:
         "div":
             resourceGroup: div
@@ -46,3 +47,4 @@ java:
                 - uk-gov-notify-api-key
                 - cos-postgresql-password
                 - AppInsightsInstrumentationKey
+                - spring-mail-password

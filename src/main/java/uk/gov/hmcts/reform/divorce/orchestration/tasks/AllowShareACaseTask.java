@@ -29,8 +29,16 @@ public class AllowShareACaseTask implements Task<Map<String, Object>> {
         final String caseId = caseDetails.getCaseId();
 
         log.info("CaseId: {}, Assigning case access", caseId);
-        ccdDataStoreService.removeCreatorRole(caseDetails, authToken);
-        assignCaseAccessService.assignCaseAccess(caseDetails, authToken);
+        try {
+            assignCaseAccessService.assignCaseAccess(caseDetails, authToken);
+            ccdDataStoreService.removeCreatorRole(caseDetails, authToken);
+            log.info("CaseId: {}, Assigning case access successful", caseId);
+        } catch (Exception e) {
+            log.error("CaseId: {}, Failed to assign case access: {}", caseId, e.getMessage());
+            context.setTaskFailed(true);
+            context.setTransientObject("AssignCaseAccess_Error",
+                "Problem calling assign case access API to set the [PETSOLICITOR] role to the case");
+        }
 
         return caseData;
     }

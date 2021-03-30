@@ -22,7 +22,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpd
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.AllowShareACaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionForRefusalWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
@@ -350,9 +349,6 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private WelshSetPreviousStateWorkflow welshSetPreviousStateWorkflow;
-
-    @Mock
-    private AllowShareACaseWorkflow allowShareACaseWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -1752,17 +1748,6 @@ public class CaseOrchestrationServiceImplTest {
 
         List<String> errors = workflowErrors.values().stream().map(String.class::cast).collect(Collectors.toList());
         assertThat(ccdCallbackResponse.getErrors(), is(errors));
-    }
-
-    @Test
-    public void shouldThrowCaseOrchestrationException_IfWorkflowExceptionIsThrow_WhenAllowingShareACase() throws WorkflowException {
-        when(allowShareACaseWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN)).thenThrow(WorkflowException.class);
-
-        CaseOrchestrationServiceException exception = assertThrows(CaseOrchestrationServiceException.class,
-            () -> classUnderTest.allowShareACase(ccdCallbackRequest, AUTH_TOKEN));
-
-        assertThat(exception.getCause(), isA(WorkflowException.class));
-        assertThat(exception.getCaseId().get(), is(TEST_CASE_ID));
     }
 
     @Test
