@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.EventHelper.isIssueAosEvent;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPopulatedRespondentSolicitorOrganisation;
 
 @Component
 @RequiredArgsConstructor
@@ -59,7 +59,7 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
         tasks.add(aosPackDueDateSetterTask);
         if (isRepresentedRespondentJourneyEnabled()
             && isIssueAosEvent(ccdCallbackRequest.getEventId())
-            && isRespondentSolicitorDigital(caseDetails.getCaseData())) {
+            && isPopulatedRespondentSolicitorOrganisation(caseDetails.getCaseData())) {
             log.info("CaseId: {} adding updateNoticeOfProceedingsDetailsTask", caseDetails.getCaseId());
             tasks.add(updateNoticeOfProceedingsDetailsTask);
         }

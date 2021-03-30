@@ -42,9 +42,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentation
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentLiableForCosts;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentRepresented;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerRepresented;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPopulatedRespondentSolicitorOrganisation;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentDigital;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
 
 @Component
 @RequiredArgsConstructor
@@ -183,7 +183,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
 
         if (isRespondentRepresentedJourneyEnabled()
             && isRespondentRepresented(caseData)
-            && isRespondentSolicitorDigital(caseData)) {
+            && isPopulatedRespondentSolicitorOrganisation(caseData)) {
             addDecreeNisiGrantedRespondentSolicitorEmailTask(caseId, tasks);
         } else {
             if (respondentDigital) {

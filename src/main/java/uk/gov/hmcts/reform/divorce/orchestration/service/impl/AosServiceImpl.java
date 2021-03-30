@@ -30,7 +30,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternative
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_BAILIFF;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_PROCESS_SERVER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.ADULTERY;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPopulatedRespondentSolicitorOrganisation;
 
 @Slf4j
 @Service
@@ -148,7 +148,7 @@ public class AosServiceImpl implements AosService {
         //AOS Offline
         Map<String, Object> caseData = caseDetails.getCaseData();
         boolean respondentSolicitorRepresented = PartyRepresentationChecker.isRespondentRepresented(caseData);
-        if (respondentSolicitorRepresented && !isRespondentSolicitorDigital(caseData)) {
+        if (respondentSolicitorRepresented && !isPopulatedRespondentSolicitorOrganisation(caseData)) {
             try {
                 aosOfflineTriggerRequestWorkflow.requestAosOfflineToBeTriggered(caseId);
             } catch (WorkflowException e) {

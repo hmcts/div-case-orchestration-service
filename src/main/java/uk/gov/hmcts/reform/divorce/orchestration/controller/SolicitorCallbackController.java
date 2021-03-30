@@ -20,16 +20,24 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRes
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.SolicitorService;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javax.ws.rs.core.MediaType;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PBA_NUMBERS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isSolicitorPaymentMethodPba;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.responseWithData;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.responseWithErrors;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPopulatedPetitionerSolicitorOrganisation;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPopulatedRespondentSolicitorOrganisation;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -102,5 +110,39 @@ public class SolicitorCallbackController {
             return responseWithErrors(asList("No PBA number found for this account, please contact your organisation."));
         }
         return responseWithData(response);
+    }
+
+    @PostMapping(path = "/validate-organisation-policy-fields")
+    @ApiOperation(value = "Callback to validate organisation policy fields are populated")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed")})
+    public ResponseEntity<CcdCallbackResponse> validateOrganisationPolicyFields(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        Map<String, Object> caseData = caseDetails.getCaseData();
+        String caseId = caseDetails.getCaseId();
+        List<String> errors = new ArrayList<>();
+
+        if (!isPopulatedPetitionerSolicitorOrganisation(caseData)) {
+            String errorMessage = String.format("Mandatory field \"%s\" is missing", PETITIONER_SOLICITOR_ORGANISATION_POLICY);
+            log.info("Case ID: {}. {}", caseId, errorMessage);
+            errors.add(errorMessage);
+        }
+
+        if (isRespondentRepresented(caseData) && isRespondentSolicitorDigital(caseData)) {
+            log.info("Case ID: {}. Respondent solicitor is digital", caseId);
+            if (!isPopulatedRespondentSolicitorOrganisation(caseData)) {
+                String errorMessage = String.format("Mandatory field \"%s\" is missing", RESPONDENT_SOLICITOR_ORGANISATION_POLICY);
+                log.info("Case ID: {}. {}", caseId, errorMessage);
+                errors.add(errorMessage);
+            }
+        }
+
+        if (!errors.isEmpty()) {
+            return responseWithErrors(errors);
+        }
+
+        return responseWithData(caseData);
     }
 }

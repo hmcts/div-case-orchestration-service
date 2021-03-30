@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.SolicitorService;
 import java.util.Collections;
 import java.util.Map;
 
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
@@ -33,9 +34,15 @@ import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PBA_NUMBERS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESP_SOL_DIGITAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_PAY_BY_ACCOUNT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DynamicList.asDynamicList;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.buildOrganisationPolicy;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.ccdRequestWithData;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.ccdResponseWithData;
 
@@ -140,6 +147,52 @@ public class SolicitorCallbackControllerTest {
             .build();
 
         whenRetrievePbaNumbersExpect(expectedResponse, caseDataReturnedFromService);
+    }
+
+    @Test
+    public void givenEmptyPetOrgPolicy_whenValidateOrganisationPolicyFields_thenReturnError() {
+
+        final CcdCallbackRequest ccdCallbackRequest = ccdRequestWithData(emptyMap());
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.validateOrganisationPolicyFields(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody().getErrors().size(), is(1));
+        assertThat(response.getBody().getErrors(), contains("Mandatory field \"" + PETITIONER_SOLICITOR_ORGANISATION_POLICY + "\" is missing"));
+    }
+
+    @Test
+    public void givenEmptyRespOrgPolicyWhenRequired_whenValidateOrganisationPolicyFields_thenReturnError() {
+        final Map<String, Object> caseData = ImmutableMap.of(
+            RESP_SOL_REPRESENTED, YES_VALUE,
+            RESP_SOL_DIGITAL, YES_VALUE
+        );
+        final CcdCallbackRequest ccdCallbackRequest = ccdRequestWithData(caseData);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.validateOrganisationPolicyFields(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody().getErrors().size(), is(2));
+        assertThat(response.getBody().getErrors(), contains(
+            "Mandatory field \"" + PETITIONER_SOLICITOR_ORGANISATION_POLICY + "\" is missing",
+            "Mandatory field \"" + RESPONDENT_SOLICITOR_ORGANISATION_POLICY + "\" is missing"));
+    }
+
+    @Test
+    public void givenPopulatedOrgPolicyFields_whenValidateOrganisationPolicyFields_thenReturnCcdRespondentWithCaseData() {
+        final Map<String, Object> caseData = ImmutableMap.of(
+            PETITIONER_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy(),
+            RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy(),
+            RESP_SOL_REPRESENTED, YES_VALUE,
+            RESP_SOL_DIGITAL, YES_VALUE
+        );
+        final CcdCallbackRequest ccdCallbackRequest = ccdRequestWithData(caseData);
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.validateOrganisationPolicyFields(ccdCallbackRequest);
+
+        assertThat(response.getStatusCode(), is(HttpStatus.OK));
+        assertThat(response.getBody().getData(), is(caseData));
+        assertThat(response.getBody().getErrors(), is(nullValue()));
     }
 
     private void whenRetrievePbaNumbersExpect(CcdCallbackResponse expectedResponse, Map<String, Object> caseData) throws WorkflowException {

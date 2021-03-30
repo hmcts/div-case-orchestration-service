@@ -26,7 +26,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isPetitionAmended;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerRepresented;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPopulatedRespondentSolicitorOrganisation;
 
 @RequiredArgsConstructor
 @Component
@@ -75,7 +75,7 @@ public class SolicitorSubmissionWorkflow extends DefaultWorkflow<Map<String, Obj
         }
 
         if (isRespondentJourneyFeatureToggleEnabled()
-            && isRespondentSolicitorDigital(caseDetails.getCaseData())) {
+            && isPopulatedRespondentSolicitorOrganisation(caseDetails.getCaseData())) {
             log.info("CaseId: {} adding updateRespondentDigitalDetailsTask", caseDetails.getCaseId());
             tasks.add(updateRespondentDigitalDetailsTask);
         }

@@ -21,7 +21,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.EventHelper.isIssueAosEvent;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPopulatedRespondentSolicitorOrganisation;
 
 @Component
 @RequiredArgsConstructor
@@ -55,7 +55,7 @@ public class SendEmailNotificationWorkflow extends DefaultWorkflow<Map<String, O
     private Task<Map<String, Object>>[] getTasks(String caseId, String eventId, Map<String, Object> caseData) {
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
-        if (isRepresentedRespondentJourneyEnabled() && isIssueAosEvent(eventId) && isRespondentSolicitorDigital(caseData)) {
+        if (isRepresentedRespondentJourneyEnabled() && isIssueAosEvent(eventId) && isPopulatedRespondentSolicitorOrganisation(caseData)) {
             log.info("CaseId: {} adding sendRespondentNoticeOfProceedingsEmailTask", caseId);
             tasks.add(sendRespondentNoticeOfProceedingsEmailTask);
         }
