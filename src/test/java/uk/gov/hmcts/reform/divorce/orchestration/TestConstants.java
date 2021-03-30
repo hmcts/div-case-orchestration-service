@@ -106,6 +106,7 @@ public class TestConstants {
     public static final String TEST_CO_RESPONDENT_EMAIL = "corespondent@email.com";
     public static final String TEST_OTHER_PARTY_EMAIL = "OtherPartyEmail@address.com";
     public static final String TEST_OTHER_PARTY_NAME = "Otto Martie";
+    public static final String TEST_DOCUMENT_ID = "123f1234-1234-1f1e-123e-12a12a1fa123";
 
     public static final String TEST_PETITIONER_FIRST_NAME = "Clark";
     public static final String TEST_PETITIONER_LAST_NAME = "Kent";

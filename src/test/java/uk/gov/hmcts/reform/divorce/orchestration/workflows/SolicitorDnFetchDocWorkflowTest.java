@@ -153,13 +153,15 @@ public class SolicitorDnFetchDocWorkflowTest {
     }
 
     @Test
-    public void shouldNotExecuteTasksWhenIsBailiffServiceSuccessfulAndRespondentAnswersIsRequested() throws WorkflowException {
+    public void shouldExecuteTasksWhenIsBailiffServiceSuccessfulAndRespondentAnswersIsRequested() throws WorkflowException {
         Map<String, Object> caseData = buildBailiffServiceSuccessfulCaseData();
         taskContext.setTransientObject(DOCUMENT_DRAFT_LINK_FIELD, RESP_ANSWERS_LINK);
 
+        when(populateDocLinkTask.execute(taskContext, caseData)).thenReturn(caseData);
+
         executeWorkflow(caseData, RESP_ANSWERS_LINK);
 
-        verify(populateDocLinkTask, never()).execute(taskContext, caseData);
+        verify(populateDocLinkTask).execute(taskContext, caseData);
     }
 
     @Test

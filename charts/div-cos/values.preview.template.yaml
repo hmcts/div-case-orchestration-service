@@ -7,7 +7,6 @@ java:
     FEATURE_SHARE_A_CASE: "true"
     FEATURE_REPRESENTED_RESPONDENT_JOURNEY: "true"
     PAY_BY_ACCOUNT: "true"
-    SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: false
     DATAEXTRACTION_STATUS_DA_EMAILTO: da_data_extraction@sharklasers.com
     DATAEXTRACTION_STATUS_AOS_EMAILTO: aos_data_extraction@sharklasers.com
     DATAEXTRACTION_STATUS_DN_EMAILTO: dn_data_extraction@sharklasers.com
@@ -34,6 +33,7 @@ java:
         - idam-caseworker-username
         - idam-caseworker-password
         - uk-gov-notify-api-key
+        - spring-mail-password
 
   # Don't modify these properties
   image: ${IMAGE_NAME}
