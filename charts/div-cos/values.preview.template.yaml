@@ -15,6 +15,7 @@ java:
     DIV_SCHEDULER_DB_USER_NAME: "{{ .Values.postgresql.postgresqlUsername}}"
     DIV_SCHEDULER_DB_PASSWORD: "{{ .Values.postgresql.postgresqlPassword}}"
     FLYWAY_URL: "jdbc:postgresql://{{ .Release.Name }}-postgresql:5432/{{ .Values.postgresql.postgresqlDatabase}}"
+    DOCUMENT_GENERATOR_SERVICE_API_BASEURL: "http://div-dgs-pr-426.service.core-compute-preview.internal"
     #Scheduler parameters
     SCHEDULER_ENABLED: false
     SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_ENABLED: false
