@@ -6,7 +6,6 @@ java:
         SOLICITOR_DN_REJECT_AND_AMEND: "true"
         PAY_BY_ACCOUNT: "true"
         FEATURE_REPRESENTED_RESPONDENT_JOURNEY: "true"
-        SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: false
         DATAEXTRACTION_STATUS_DA_EMAILTO: da_data_extraction@sharklasers.com
         DATAEXTRACTION_STATUS_AOS_EMAILTO: aos_data_extraction@sharklasers.com
         DATAEXTRACTION_STATUS_DN_EMAILTO: dn_data_extraction@sharklasers.com
