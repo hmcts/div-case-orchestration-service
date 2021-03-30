@@ -10,6 +10,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.BailiffSuccessServiceDueDateSetterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.BailiffUnsuccessServiceDueDateSetterTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceApplicationDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceApplicationRemovalTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +28,8 @@ public class BailiffOutcomeWorkflow extends DefaultWorkflow<Map<String, Object>>
 
     private final BailiffSuccessServiceDueDateSetterTask bailiffSuccessServiceDueDateSetterTask;
     private final BailiffUnsuccessServiceDueDateSetterTask bailiffUnsuccessServiceDueDateSetterTask;
+    private final ServiceApplicationDataTask serviceApplicationDataTask;
+    private final ServiceApplicationRemovalTask serviceApplicationRemovalTask;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authorisation) throws WorkflowException {
         String caseId = caseDetails.getCaseId();
@@ -53,6 +57,11 @@ public class BailiffOutcomeWorkflow extends DefaultWorkflow<Map<String, Object>>
             log.info("CaseID: {}. Setting Certificate of service due date after Bailiff Service unsuccessful", caseId);
             tasks.add(bailiffUnsuccessServiceDueDateSetterTask);
         }
+
+        log.info("CaseID: {}, Adding task to move all service application temp data to collection.", caseId);
+        tasks.add(serviceApplicationDataTask);
+        log.info("CaseID: {}, Adding task to remove all service application temp data from case data.", caseId);
+        tasks.add(serviceApplicationRemovalTask);
 
         return tasks.toArray(new Task[] {});
     }
