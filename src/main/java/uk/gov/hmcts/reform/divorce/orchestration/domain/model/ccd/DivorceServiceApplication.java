@@ -30,4 +30,19 @@ public class DivorceServiceApplication {
 
     @JsonProperty("RefusalReason")
     private String refusalReason;
+
+    @JsonProperty("LocalCourtAddress")
+    private String localCourtAddress;
+
+    @JsonProperty("LocalCourtEmail")
+    private String localCourtEmail;
+
+    @JsonProperty("CertificateOfServiceDate")
+    private String certificateOfServiceDate;
+
+    @JsonProperty("SuccessfulServedByBailiff")
+    private String successfulServedByBailiff;
+
+    @JsonProperty("ReasonFailureToServe")
+    private String reasonFailureToServe;
 }

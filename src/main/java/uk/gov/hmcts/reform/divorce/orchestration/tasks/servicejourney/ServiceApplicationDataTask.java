@@ -59,6 +59,12 @@ public class ServiceApplicationDataTask implements Task<Map<String, Object>> {
             .decisionDate(DatesDataExtractor.getServiceApplicationDecisionDateUnformatted(caseData))
             .payment(ServiceApplicationDataExtractor.getServiceApplicationPayment(caseData))
             .refusalReason(ServiceApplicationDataExtractor.getServiceApplicationRefusalReasonOrEmpty(caseData))
+            .localCourtAddress(ServiceApplicationDataExtractor.getServiceApplicationFieldOrEmpty(caseData, "LocalCourtAddress"))
+            .localCourtEmail(ServiceApplicationDataExtractor.getServiceApplicationFieldOrEmpty(caseData, "LocalCourtEmail"))
+            .certificateOfServiceDate((String) caseData.get(CcdFields.DUE_DATE))
+            .successfulServedByBailiff(ServiceApplicationDataExtractor.getServiceApplicationFieldOrEmpty(caseData,
+                CcdFields.BAILIFF_SERVICE_SUCCESSFUL))
+            .reasonFailureToServe(ServiceApplicationDataExtractor.getServiceApplicationFieldOrEmpty(caseData, "ReasonFailureToServe"))
             .build();
     }
 }

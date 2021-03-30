@@ -52,6 +52,10 @@ public class ServiceApplicationDataExtractor {
         return getOptionalPropertyValueAsString(caseData, CaseDataKeys.REFUSAL_REASON, "");
     }
 
+    public static String getServiceApplicationFieldOrEmpty(Map<String, Object> caseData, String field) {
+        return getOptionalPropertyValueAsString(caseData, field, "");
+    }
+
     public static String getServiceApplicationGranted(Map<String, Object> caseData) {
         return getMandatoryStringValue(caseData, CaseDataKeys.SERVICE_APPLICATION_GRANTED);
     }
