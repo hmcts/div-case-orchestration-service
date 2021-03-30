@@ -9,6 +9,8 @@ import uk.gov.hmcts.reform.divorce.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
 
+import java.util.Collections;
+
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -22,8 +24,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_APPLICATION_FEE_IN_POUNDS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
-@SpringBootTest(properties = {"feature-toggle.toggle.solicitor_dn_reject_and_amend=false"})
-public class GetPetitionIssueFeesTestFeatureSwitchedOffTest extends GetPetitionIssueFeesAbstractTest {
+@SpringBootTest(properties = {"feature-toggle.toggle.share_a_case=true"})
+public class GetPetitionIssueFeesTestShareCaseFeatureSwitchedOnTest extends GetPetitionIssueFeesAbstractTest {
 
     @Test
     public void givenCaseData_whenGetPetitionIssueFee_thenReturnUpdatedResponseWithFees() throws Exception {
@@ -75,5 +77,45 @@ public class GetPetitionIssueFeesTestFeatureSwitchedOffTest extends GetPetitionI
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expectedResponse)))
             .andExpect(content().string(hasNoJsonPath("data." + SOL_APPLICATION_FEE_IN_POUNDS_JSON_KEY)));
+    }
+
+    @Test
+    public void givenCaseData_whenRemovingCaseRoleFails_thenReturnErrorResponse() throws Exception {
+        stubUserDetailsEndpoint(HttpStatus.OK, AUTH_TOKEN, USER_DETAILS_PIN_USER_JSON);
+        stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
+        stubRemoveCaseRoleServerEndpoint(AUTH_TOKEN, TEST_SERVICE_AUTH_TOKEN, HttpStatus.BAD_GATEWAY);
+        stubAssignCaseAccessServerEndpoint(AUTH_TOKEN, TEST_SERVICE_AUTH_TOKEN, HttpStatus.OK);
+
+        CcdCallbackResponse expected = CcdCallbackResponse.builder()
+            .errors(Collections.singletonList("Problem calling assign case access API to set the [PETSOLICITOR] role to the case"))
+            .build();
+
+        webClient.perform(post(API_URL)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(callbackRequest))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(expected)));
+    }
+
+    @Test
+    public void givenCaseData_whenAddingCaseRoleFails_thenReturnErrorResponse() throws Exception {
+        stubUserDetailsEndpoint(HttpStatus.OK, AUTH_TOKEN, USER_DETAILS_PIN_USER_JSON);
+        stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
+        stubRemoveCaseRoleServerEndpoint(AUTH_TOKEN, TEST_SERVICE_AUTH_TOKEN, HttpStatus.OK);
+        stubAssignCaseAccessServerEndpoint(AUTH_TOKEN, TEST_SERVICE_AUTH_TOKEN, HttpStatus.BAD_GATEWAY);
+
+        CcdCallbackResponse expected = CcdCallbackResponse.builder()
+            .errors(Collections.singletonList("Problem calling assign case access API to set the [PETSOLICITOR] role to the case"))
+            .build();
+
+        webClient.perform(post(API_URL)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(callbackRequest))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(expected)));
     }
 }
