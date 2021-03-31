@@ -1,7 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import feign.FeignException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -24,9 +24,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.S
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_OVERDUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_ALTERNATIVE_SERVICE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_REFERRAL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_SERVICE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DWP_RESPONSE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PROCESS_SERVER_SERVICE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_REISSUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.ISSUED_TO_BAILIFF;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
@@ -40,19 +43,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
+@RequiredArgsConstructor
 public class UpdateRespondentDetails implements Task<UserDetails> {
 
-    @Autowired
-    private CaseMaintenanceClient caseMaintenanceClient;
-
-    @Autowired
-    private IdamClient idamClient;
-
-    @Autowired
-    private AuthUtil authUtil;
-
-    @Autowired
-    private CcdUtil ccdUtil;
+    private final CaseMaintenanceClient caseMaintenanceClient;
+    private final IdamClient idamClient;
+    private final AuthUtil authUtil;
+    private final CcdUtil ccdUtil;
 
     @Override
     public UserDetails execute(TaskContext context, UserDetails payload) throws TaskException {
@@ -99,6 +96,9 @@ public class UpdateRespondentDetails implements Task<UserDetails> {
             case AWAITING_ALTERNATIVE_SERVICE:
             case AWAITING_PROCESS_SERVER_SERVICE:
             case AWAITING_DWP_RESPONSE:
+            case AWAITING_BAILIFF_REFERRAL:
+            case AWAITING_BAILIFF_SERVICE:
+            case ISSUED_TO_BAILIFF:
                 return START_AOS;
             case AOS_OVERDUE:
                 return AOS_START_FROM_OVERDUE;

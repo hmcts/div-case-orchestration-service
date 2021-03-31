@@ -8,7 +8,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -37,7 +36,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.A
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.LINK_RESPONDENT_GENERIC;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.START_AOS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_OVERDUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_REISSUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
@@ -76,26 +74,6 @@ public class UpdateRespondentDetailsTest {
     public void setup() {
         when(ccdUtil.getCurrentDateCcdFormat()).thenReturn(FIXED_DATE);
         when(authUtil.getBearerToken(AUTH_TOKEN)).thenCallRealMethod();
-    }
-
-    @Test
-    public void whenAosAwaiting_thenTriggerStartAosEvent() throws TaskException {
-        whenGivenState_thenTriggerStartAosEvent(AOS_AWAITING_STATE);
-    }
-
-    @Test
-    public void whenAwaitingAlternativeService_thenTriggerStartAosEvent() throws TaskException {
-        whenGivenState_thenTriggerStartAosEvent(CcdStates.AWAITING_ALTERNATIVE_SERVICE);
-    }
-
-    @Test
-    public void whenAwaitingProcessServerService_thenTriggerStartAosEvent() throws TaskException {
-        whenGivenState_thenTriggerStartAosEvent(CcdStates.AWAITING_PROCESS_SERVER_SERVICE);
-    }
-
-    @Test
-    public void whenAwaitingDWPResponse_thenTriggerStartAosEvent() throws TaskException {
-        whenGivenState_thenTriggerStartAosEvent(CcdStates.AWAITING_DWP_RESPONSE);
     }
 
     @Test
@@ -248,44 +226,6 @@ public class UpdateRespondentDetailsTest {
         assertEquals(payload, result);
 
         verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, AOS_START_FROM_SERVICE_APPLICATION_NOT_APPROVED, dataToUpdate);
-    }
-
-    private void whenGivenState_thenTriggerStartAosEvent(String state) throws TaskException {
-        final UserDetails payload = UserDetails.builder().build();
-
-        final UserDetails respondentDetails =
-            UserDetails.builder()
-                .id(TEST_USER_ID)
-                .email(TEST_EMAIL)
-                .build();
-
-        final Map<String, Object> caseData = Collections.singletonMap(D_8_DIVORCE_UNIT, TEST_COURT);
-        final CaseDetails caseDetails =
-            CaseDetails.builder()
-                .caseId(TEST_CASE_ID)
-                .state(state)
-                .caseData(caseData)
-                .build();
-
-        final Map<String, Object> dataToUpdate =
-            ImmutableMap.of(
-                RESPONDENT_EMAIL_ADDRESS, TEST_EMAIL
-            );
-
-        final TaskContext taskContext = new DefaultTaskContext();
-        taskContext.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        taskContext.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
-        taskContext.setTransientObject(IS_RESPONDENT, true);
-        taskContext.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
-
-        when(idamClient.getUserDetails(BEARER_AUTH_TOKEN)).thenReturn(respondentDetails);
-        when(caseMaintenanceClient.updateCase(AUTH_TOKEN, TEST_CASE_ID, START_AOS, dataToUpdate))
-            .thenReturn(null);
-
-        assertEquals(payload, classUnderTest.execute(taskContext, payload));
-
-        verify(idamClient).getUserDetails(BEARER_AUTH_TOKEN);
-        verify(caseMaintenanceClient).updateCase(AUTH_TOKEN, TEST_CASE_ID, START_AOS, dataToUpdate);
     }
 
     private UserDetails createTestUserDetails() {
