@@ -9,8 +9,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Organisation;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
@@ -60,6 +58,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.buildOrganisationPolicy;
 
 public class SolicitorUpdateTest extends IdamTestSupport {
 
@@ -278,12 +277,6 @@ public class SolicitorUpdateTest extends IdamTestSupport {
         return CcdCallbackRequest.builder()
             .eventId(CREATE_EVENT)
             .caseDetails(fullCase)
-            .build();
-    }
-
-    private OrganisationPolicy buildOrganisationPolicy() {
-        return OrganisationPolicy.builder()
-            .organisation(Organisation.builder().build())
             .build();
     }
 

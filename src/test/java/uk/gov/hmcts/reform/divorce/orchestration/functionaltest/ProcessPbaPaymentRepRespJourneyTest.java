@@ -13,8 +13,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Organisation;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeValue;
@@ -43,7 +41,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_A
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_DESCRIPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_VERSION;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ORGANISATION_POLICY_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
@@ -79,6 +76,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_STATEMENT_OF_TRUTH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.STATEMENT_OF_TRUTH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.buildOrganisationPolicy;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.getBasicFailedResponse;
 
@@ -157,7 +155,7 @@ public class ProcessPbaPaymentRepRespJourneyTest extends MockedFunctionalTest {
 
     @Test
     public void makePaymentAndUpdateRespDigitalDetails_whenRespSolDigital() throws Exception {
-        caseData.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicyData());
+        caseData.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
 
         Map<String, Object> expectedCaseData = new HashMap<>();
         expectedCaseData.putAll(caseData);
@@ -228,14 +226,4 @@ public class ProcessPbaPaymentRepRespJourneyTest extends MockedFunctionalTest {
                 .withBody(convertObjectToJsonString(data))));
     }
 
-    private OrganisationPolicy buildOrganisationPolicyData() {
-        return OrganisationPolicy.builder()
-            .orgPolicyReference("ref")
-            .organisation(Organisation
-                .builder()
-                .organisationID("id")
-                .organisationName(TEST_ORGANISATION_POLICY_NAME)
-                .build())
-            .build();
-    }
 }
