@@ -5,10 +5,14 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.BailiffSuccessServiceDueDateSetterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.BailiffUnsuccessServiceDueDateSetterTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceApplicationDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.ServiceApplicationRemovalTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +20,12 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ADDED_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_DECISION_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_MY_REASON;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RECEIVED_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_APPLICATION_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.BAILIFF_SERVICE_SUCCESSFUL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.ISSUED_TO_BAILIFF;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
@@ -37,15 +46,29 @@ public class BailiffOutcomeWorkflowTest {
     @Mock
     private BailiffUnsuccessServiceDueDateSetterTask bailiffUnsuccessServiceDueDateSetterTask;
 
+    @Mock private ServiceApplicationDataTask serviceApplicationDataTask;
+    @Mock private ServiceApplicationRemovalTask serviceApplicationRemovalTask;
+
     @Test
     public void shouldRunCorrectTask_whenBailiffServiceSuccessful() throws WorkflowException {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(BAILIFF_SERVICE_SUCCESSFUL, YES_VALUE);
+
+        caseData.put(CcdFields.RECEIVED_SERVICE_APPLICATION_DATE, TEST_RECEIVED_DATE);
+        caseData.put(CcdFields.SERVICE_APPLICATION_DECISION_DATE, TEST_DECISION_DATE);
+        caseData.put(CcdFields.RECEIVED_SERVICE_ADDED_DATE, TEST_ADDED_DATE);
+        caseData.put(CcdFields.SERVICE_APPLICATION_TYPE, ApplicationServiceTypes.DEEMED);
+        caseData.put(CcdFields.SERVICE_APPLICATION_PAYMENT, TEST_SERVICE_APPLICATION_PAYMENT);
+        caseData.put(CcdFields.SERVICE_APPLICATION_REFUSAL_REASON, TEST_MY_REASON);
+        caseData.put(CcdFields.SERVICE_APPLICATION_GRANTED, YES_VALUE);
+
         CaseDetails caseDetails = buildCaseDetails(caseData, ISSUED_TO_BAILIFF);
 
         mockTasksExecution(
                 caseData,
-                bailiffSuccessServiceDueDateSetterTask
+                bailiffSuccessServiceDueDateSetterTask,
+                serviceApplicationDataTask,
+                serviceApplicationRemovalTask
         );
 
         Map<String, Object> returnedData = executeWorkflow(caseDetails);
@@ -66,7 +89,9 @@ public class BailiffOutcomeWorkflowTest {
 
         mockTasksExecution(
                 caseData,
-                bailiffUnsuccessServiceDueDateSetterTask
+                bailiffUnsuccessServiceDueDateSetterTask,
+                serviceApplicationDataTask,
+                serviceApplicationRemovalTask
         );
 
         Map<String, Object> returnedData = executeWorkflow(caseDetails);
