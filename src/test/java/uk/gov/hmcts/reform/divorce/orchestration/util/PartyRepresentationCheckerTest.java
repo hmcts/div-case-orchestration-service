@@ -214,4 +214,5 @@ public class PartyRepresentationCheckerTest {
                 .build())
             .build();
     }
+
 }

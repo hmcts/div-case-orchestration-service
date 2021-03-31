@@ -14,8 +14,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Organisation;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.DateCalculator;
 
@@ -50,6 +48,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.CaseDataKeys.RESPONDENT_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.buildOrganisationPolicy;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocument;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
@@ -163,7 +162,7 @@ public class BulkPrintTest extends IdamTestSupport {
 
     private CcdCallbackRequest callbackWithDigitalRespSol() {
         final Map<String, Object> caseData = caseDataWithDocuments();
-        caseData.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicyData());
+        caseData.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
         caseData.put(RESPONDENT_SOLICITOR_EMAIL, TEST_EMAIL);
 
         return new CcdCallbackRequest("abacccd", ISSUE_AOS, CaseDetails.builder()
@@ -171,17 +170,6 @@ public class BulkPrintTest extends IdamTestSupport {
             .caseId("12345")
             .state("Issued")
             .build());
-    }
-
-    private OrganisationPolicy buildOrganisationPolicyData() {
-        return OrganisationPolicy.builder()
-            .orgPolicyReference("ref")
-            .organisation(Organisation
-                .builder()
-                .organisationID("id")
-                .organisationName(TEST_ORGANISATION_POLICY_NAME)
-                .build())
-            .build();
     }
 
     private Map<String, Object> caseDataWithDocuments() {

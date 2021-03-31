@@ -4,8 +4,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Organisation;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
@@ -21,6 +19,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.N
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.EmailDataExtractor.CaseDataKeys.RESPONDENT_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.SolicitorDataExtractor.CaseDataKeys.RESPONDENT_SOLICITOR_ORGANISATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.buildOrganisationPolicy;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UpdateNoticeOfProceedingsDetailsTaskTest {
@@ -33,7 +32,7 @@ public class UpdateNoticeOfProceedingsDetailsTaskTest {
         final TaskContext context = new DefaultTaskContext();
         Map<String, Object> caseData = new HashMap();
         caseData.put(RESPONDENT_SOLICITOR_EMAIL, TEST_USER_EMAIL);
-        caseData.put(RESPONDENT_SOLICITOR_ORGANISATION, buildOrganisationPolicyData());
+        caseData.put(RESPONDENT_SOLICITOR_ORGANISATION, buildOrganisationPolicy());
 
         target.execute(context, caseData);
 
@@ -42,14 +41,4 @@ public class UpdateNoticeOfProceedingsDetailsTaskTest {
         assertEquals(caseData.get(NOTICE_OF_PROCEEDINGS_FIRM), TEST_ORGANISATION_POLICY_NAME);
     }
 
-    private OrganisationPolicy buildOrganisationPolicyData() {
-        return OrganisationPolicy.builder()
-            .orgPolicyReference("ref")
-            .organisation(Organisation
-                .builder()
-                .organisationID("id")
-                .organisationName(TEST_ORGANISATION_POLICY_NAME)
-                .build())
-            .build();
-    }
 }
