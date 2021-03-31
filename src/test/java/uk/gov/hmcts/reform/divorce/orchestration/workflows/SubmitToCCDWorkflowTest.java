@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CopyJurisdictionConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CourtAllocationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DeleteDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.DuplicateCaseValidationTask;
@@ -43,6 +44,9 @@ public class SubmitToCCDWorkflowTest {
 
     @Mock
     private FormatDivorceSessionToCaseDataTask formatDivorceSessionToCaseDataTask;
+
+    @Mock
+    private CopyJurisdictionConnectionPolicyTask copyJurisdictionConnectionPolicyTask;
 
     @Mock
     private ValidateCaseDataTask validateCaseDataTask;
@@ -99,6 +103,7 @@ public class SubmitToCCDWorkflowTest {
             incomingPayload,
             duplicateCaseValidationTask,
             courtAllocationTask,
+            copyJurisdictionConnectionPolicyTask,
             formatDivorceSessionToCaseDataTask,
             validateCaseDataTask,
             updateRespondentDigitalDetailsTask,
@@ -137,6 +142,7 @@ public class SubmitToCCDWorkflowTest {
             incomingPayload,
             duplicateCaseValidationTask,
             courtAllocationTask,
+            copyJurisdictionConnectionPolicyTask,
             formatDivorceSessionToCaseDataTask,
             validateCaseDataTask,
             submitCaseToCCD,
@@ -175,6 +181,7 @@ public class SubmitToCCDWorkflowTest {
             incomingPayload,
             duplicateCaseValidationTask,
             courtAllocationTask,
+            copyJurisdictionConnectionPolicyTask,
             formatDivorceSessionToCaseDataTask,
             validateCaseDataTask,
             submitCaseToCCD,
@@ -188,6 +195,7 @@ public class SubmitToCCDWorkflowTest {
         mockTasksExecution(
             incomingPayload,
             duplicateCaseValidationTask,
+            copyJurisdictionConnectionPolicyTask,
             formatDivorceSessionToCaseDataTask,
             validateCaseDataTask,
             submitCaseToCCD,
