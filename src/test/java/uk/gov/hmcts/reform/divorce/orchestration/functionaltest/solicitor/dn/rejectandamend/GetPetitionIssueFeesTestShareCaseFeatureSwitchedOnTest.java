@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.solicitor.dn.rejectandamend;
 
 import com.google.common.collect.ImmutableMap;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRes
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
 
 import java.util.Collections;
+import java.util.Map;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -19,13 +21,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_CCD_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_APPLICATION_FEE_IN_POUNDS_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.buildOrganisationPolicy;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 @SpringBootTest(properties = {"feature-toggle.toggle.share_a_case=true"})
 public class GetPetitionIssueFeesTestShareCaseFeatureSwitchedOnTest extends GetPetitionIssueFeesAbstractTest {
+
+    @Before
+    public void modifySetUp() {
+        Map<String, Object> caseData = callbackRequest.getCaseDetails().getCaseData();
+        caseData.put(PETITIONER_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
+        callbackRequest.getCaseDetails().setCaseData(caseData);
+    }
 
     @Test
     public void givenCaseData_whenGetPetitionIssueFee_thenReturnUpdatedResponseWithFees() throws Exception {
