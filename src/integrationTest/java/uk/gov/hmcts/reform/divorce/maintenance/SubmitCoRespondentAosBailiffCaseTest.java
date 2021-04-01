@@ -130,28 +130,6 @@ public class SubmitCoRespondentAosBailiffCaseTest extends RetrieveAosCaseSupport
 
     @Test
     @Category(ExtendedTest.class)
-    public void givenCaseIsAosSubmittedAwaitingAnswer_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() throws Exception {
-        final UserDetails userDetails = createCitizenUser();
-        final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
-            Pair.of(CO_RESP_EMAIL_ADDRESS, userDetails.getEmailAddress()));
-        log.info("Case " + caseDetails.getId() + " created.");
-
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_ISSUED_TO_BAILIFF_EVENT, userDetails);
-
-        final String respondentJson = loadJson(RESPONDENT_PAYLOAD_CONTEXT_PATH + AOS_DEFEND_CONSENT_JSON_FILE_PATH);
-        submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(), respondentJson);
-
-        submitCoRespondentAosCase(userDetails, CO_RESPONDENT_ANSWERS_JSON);
-
-        final Response caseRetrieval = retrieveAosCase(userDetails.getAuthToken());
-        assertThat(caseRetrieval.getStatusCode(), is(OK.value()));
-        assertThat(caseRetrieval.path(CASE_ID_JSON_KEY), is(String.valueOf(caseDetails.getId())));
-        assertThat("The state should never change on co-respondent submission",
-            caseRetrieval.path(CASE_STATE_JSON_KEY), is(ISSUED_TO_BAILIFF));
-    }
-
-    @Test
-    @Category(ExtendedTest.class)
     public void givenCaseIsAosOverdue_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() {
         final UserDetails userDetails = createCitizenUser();
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
@@ -160,7 +138,6 @@ public class SubmitCoRespondentAosBailiffCaseTest extends RetrieveAosCaseSupport
 
         updateCase(String.valueOf(caseDetails.getId()), null, NOT_RECEIVED_AOS);
         updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_ISSUED_TO_BAILIFF_EVENT, userDetails);
-
 
         submitCoRespondentAosCase(userDetails, CO_RESPONDENT_ANSWERS_JSON);
 
