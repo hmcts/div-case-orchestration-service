@@ -12,9 +12,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.springframework.http.HttpStatus.OK;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_COMPLETED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_SUBMITTED_AWAITING_ANSWER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
@@ -172,27 +170,6 @@ public class SubmitRespondentAosBailiffCaseTest extends CcdSubmissionSupport {
         assertEquals(caseDetails.getId(), cosResponse.path(CCD_CASE_ID));
         assertEquals(AOS_COMPLETED, cosResponse.path(CASE_STATE_JSON_KEY));
         assertAosSubmittedData(userDetails, caseDetails.getId().toString());
-    }
-
-    @Test
-    public void givenRespondentSolicitorRepresented_whenSubmitAos_thenProceedAsExpected() throws Exception {
-        final UserDetails userDetails = createCitizenUser();
-
-        CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
-
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()),
-            null,
-            TEST_ISSUED_TO_BAILIFF_EVENT,
-            userDetails);
-
-        Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
-            loadJson(PAYLOAD_CONTEXT_PATH + AOS_SOLICITOR_REPRESENTATION_JSON));
-
-        assertEquals(OK.value(), cosResponse.getStatusCode());
-        assertEquals(caseDetails.getId(), cosResponse.path(CCD_CASE_ID));
-        assertEquals(AOS_AWAITING_SOLICITOR, cosResponse.path(CASE_STATE_JSON_KEY));
-        assertNull(caseDetails.getData().get(RECEIVED_AOS_FROM_RESP));
-        assertNull(caseDetails.getData().get(RECEIVED_AOS_FROM_RESP_DATE));
     }
 
     private void assertAosSubmittedData(UserDetails userDetails, String caseId) {

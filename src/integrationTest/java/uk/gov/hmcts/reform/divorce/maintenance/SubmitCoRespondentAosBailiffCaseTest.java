@@ -25,6 +25,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.A
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_STARTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_SUBMITTED_AWAITING_ANSWER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.DEFENDED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.ISSUED_TO_BAILIFF;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
@@ -109,7 +110,7 @@ public class SubmitCoRespondentAosBailiffCaseTest extends RetrieveAosCaseSupport
         final Response caseRetrieval = retrieveAosCase(userDetails.getAuthToken());
         assertThat(caseRetrieval.getStatusCode(), is(OK.value()));
         assertThat(caseRetrieval.path(CASE_ID_JSON_KEY), is(String.valueOf(caseDetails.getId())));
-        assertThat("The state should never change on co-respondent submission", caseRetrieval.path(CASE_STATE_JSON_KEY), is(AOS_AWAITING));
+        assertThat("The state should never change on co-respondent submission", caseRetrieval.path(CASE_STATE_JSON_KEY), is(ISSUED_TO_BAILIFF));
     }
 
     @Test
@@ -128,7 +129,7 @@ public class SubmitCoRespondentAosBailiffCaseTest extends RetrieveAosCaseSupport
         final Response caseRetrieval = retrieveAosCase(userDetails.getAuthToken());
         assertThat(caseRetrieval.getStatusCode(), is(OK.value()));
         assertThat(caseRetrieval.path(CASE_ID_JSON_KEY), is(String.valueOf(caseDetails.getId())));
-        assertThat("The state should never change on co-respondent submission", caseRetrieval.path(CASE_STATE_JSON_KEY), is(AOS_STARTED));
+        assertThat("The state should never change on co-respondent submission", caseRetrieval.path(CASE_STATE_JSON_KEY), is(ISSUED_TO_BAILIFF));
     }
 
     @Test
@@ -150,7 +151,7 @@ public class SubmitCoRespondentAosBailiffCaseTest extends RetrieveAosCaseSupport
         assertThat(caseRetrieval.getStatusCode(), is(OK.value()));
         assertThat(caseRetrieval.path(CASE_ID_JSON_KEY), is(String.valueOf(caseDetails.getId())));
         assertThat("The state should never change on co-respondent submission",
-            caseRetrieval.path(CASE_STATE_JSON_KEY), is(AOS_SUBMITTED_AWAITING_ANSWER));
+            caseRetrieval.path(CASE_STATE_JSON_KEY), is(ISSUED_TO_BAILIFF));
     }
 
     @Test
@@ -161,8 +162,8 @@ public class SubmitCoRespondentAosBailiffCaseTest extends RetrieveAosCaseSupport
             Pair.of(RESPONDENT_EMAIL_ADDRESS, userDetails.getEmailAddress()));
         log.info("Case " + caseDetails.getId() + " created.");
 
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_ISSUED_TO_BAILIFF_EVENT, userDetails);
         updateCase(String.valueOf(caseDetails.getId()), null, NOT_RECEIVED_AOS);
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_ISSUED_TO_BAILIFF_EVENT, userDetails);
 
 
         submitCoRespondentAosCase(userDetails, CO_RESPONDENT_ANSWERS_JSON);
@@ -170,7 +171,7 @@ public class SubmitCoRespondentAosBailiffCaseTest extends RetrieveAosCaseSupport
         final Response caseRetrieval = retrieveAosCase(userDetails.getAuthToken());
         assertThat(caseRetrieval.getStatusCode(), is(OK.value()));
         assertThat(caseRetrieval.path(CASE_ID_JSON_KEY), is(String.valueOf(caseDetails.getId())));
-        assertThat("The state should never change on co-respondent submission", caseRetrieval.path(CASE_STATE_JSON_KEY), is(AOS_OVERDUE));
+        assertThat("The state should never change on co-respondent submission", caseRetrieval.path(CASE_STATE_JSON_KEY), is(ISSUED_TO_BAILIFF));
     }
 
     @Test
