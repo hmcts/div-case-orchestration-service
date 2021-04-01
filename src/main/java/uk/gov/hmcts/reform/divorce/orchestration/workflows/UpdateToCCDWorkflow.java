@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CopyJurisdictionConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PopulateExistingCollections;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
@@ -27,6 +28,9 @@ public class UpdateToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
     private FormatDivorceSessionToCaseDataTask formatDivorceSessionToCaseDataTask;
 
     @Autowired
+    private CopyJurisdictionConnectionPolicyTask copyJurisdictionConnectionPolicyTask;
+
+    @Autowired
     private UpdateCaseInCCD updateCaseInCCD;
 
     @SuppressWarnings("unchecked")
@@ -40,6 +44,7 @@ public class UpdateToCCDWorkflow extends DefaultWorkflow<Map<String, Object>> {
         return this.execute(
             new Task[] {
                 populateExistingCollections,
+                copyJurisdictionConnectionPolicyTask,
                 formatDivorceSessionToCaseDataTask,
                 updateCaseInCCD
             },
