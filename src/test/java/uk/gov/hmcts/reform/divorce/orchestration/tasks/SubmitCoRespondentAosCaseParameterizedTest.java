@@ -68,7 +68,7 @@ public class SubmitCoRespondentAosCaseParameterizedTest {
     @Rule
     public MockitoRule rule = MockitoJUnit.rule();
 
-    @Mock()
+    @Mock
     private CaseMaintenanceClient caseMaintenanceClient;
 
     @Mock
