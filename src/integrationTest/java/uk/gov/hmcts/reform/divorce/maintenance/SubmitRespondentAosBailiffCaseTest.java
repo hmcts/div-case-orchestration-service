@@ -23,11 +23,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.events.CcdTestEvents.TEST_AOS_STARTED_EVENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.events.CcdTestEvents.TEST_ISSUED_TO_BAILIFF_EVENT;
 import static uk.gov.hmcts.reform.divorce.util.DateConstants.CCD_DATE_FORMAT;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 
-public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
+public class SubmitRespondentAosBailiffCaseTest extends CcdSubmissionSupport {
     private static final String PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/submit-aos/";
     private static final String AOS_DEFEND_CONSENT_JSON = "aos-defend-consent.json";
     private static final String AOS_DEFEND_NO_CONSENT_JSON = "aos-defend-no-consent.json";
@@ -54,7 +54,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
             null,
-            TEST_AOS_STARTED_EVENT,
+            TEST_ISSUED_TO_BAILIFF_EVENT,
             userDetails);
 
         Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
@@ -75,7 +75,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
             null,
-            TEST_AOS_STARTED_EVENT,
+            TEST_ISSUED_TO_BAILIFF_EVENT,
             userDetails);
 
         Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
@@ -96,7 +96,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
             null,
-            TEST_AOS_STARTED_EVENT,
+            TEST_ISSUED_TO_BAILIFF_EVENT,
             userDetails);
 
         Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
@@ -117,7 +117,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
             null,
-            TEST_AOS_STARTED_EVENT,
+            TEST_ISSUED_TO_BAILIFF_EVENT,
             userDetails);
 
         Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
@@ -139,7 +139,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
             null,
-            TEST_AOS_STARTED_EVENT,
+            TEST_ISSUED_TO_BAILIFF_EVENT,
             petitioner);
 
         Response cosResponse = submitRespondentAosCase(petitioner.getAuthToken(), caseDetails.getId(),
@@ -162,7 +162,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
             null,
-            TEST_AOS_STARTED_EVENT,
+            TEST_ISSUED_TO_BAILIFF_EVENT,
             userDetails);
 
         Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
@@ -182,7 +182,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
             null,
-            TEST_AOS_STARTED_EVENT,
+            TEST_ISSUED_TO_BAILIFF_EVENT,
             userDetails);
 
         Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),

@@ -31,14 +31,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.events.CcdTestEvents.TEST_AOS_AWAITING_EVENT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.events.CcdTestEvents.TEST_AOS_STARTED_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.events.CcdTestEvents.TEST_AWAITING_DECREE_ABSOLUTE_EVENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.events.CcdTestEvents.TEST_ISSUED_TO_BAILIFF_EVENT;
 import static uk.gov.hmcts.reform.divorce.util.DateConstants.CCD_DATE_FORMATTER;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 
 @Slf4j
 @SuppressWarnings("Duplicates")
-public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
+public class SubmitCoRespondentAosBailiffCaseTest extends RetrieveAosCaseSupport {
 
     private static final String CO_RESPONDENT_PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/co-respondent/";
     private static final String RESPONDENT_PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/submit-aos/";
@@ -84,7 +84,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
             Pair.of(CO_RESP_EMAIL_ADDRESS, userDetails.getEmailAddress()));
         log.info("Case " + caseDetails.getId() + " created.");
 
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_AWAITING_EVENT, userDetails);
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_ISSUED_TO_BAILIFF_EVENT, userDetails);
 
         final Response coRespondentSubmissionResponse = submitCoRespondentAosCase(userDetails, CO_RESPONDENT_ANSWERS_JSON);
 
@@ -103,7 +103,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
             Pair.of(CO_RESP_EMAIL_ADDRESS, userDetails.getEmailAddress()));
         log.info("Case " + caseDetails.getId() + " created.");
 
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_AWAITING_EVENT, userDetails);
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_ISSUED_TO_BAILIFF_EVENT, userDetails);
 
         submitCoRespondentAosCase(userDetails, CO_RESPONDENT_ANSWERS_JSON);
 
@@ -122,7 +122,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
             Pair.of(CO_RESP_EMAIL_ADDRESS, userDetails.getEmailAddress()));
         log.info("Case " + caseDetails.getId() + " created.");
 
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_STARTED_EVENT, userDetails);
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_ISSUED_TO_BAILIFF_EVENT, userDetails);
 
         submitCoRespondentAosCase(userDetails, CO_RESPONDENT_ANSWERS_JSON);
 
@@ -140,7 +140,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
             Pair.of(CO_RESP_EMAIL_ADDRESS, userDetails.getEmailAddress()));
         log.info("Case " + caseDetails.getId() + " created.");
 
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_STARTED_EVENT, userDetails);
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_ISSUED_TO_BAILIFF_EVENT, userDetails);
 
         final String respondentJson = loadJson(RESPONDENT_PAYLOAD_CONTEXT_PATH + AOS_DEFEND_CONSENT_JSON_FILE_PATH);
         submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(), respondentJson);
@@ -162,7 +162,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
             Pair.of(RESPONDENT_EMAIL_ADDRESS, userDetails.getEmailAddress()));
         log.info("Case " + caseDetails.getId() + " created.");
 
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_AWAITING_EVENT, userDetails);
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_ISSUED_TO_BAILIFF_EVENT, userDetails);
         updateCase(String.valueOf(caseDetails.getId()), null, NOT_RECEIVED_AOS);
 
 
@@ -183,7 +183,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
 
         log.info("Case " + caseDetails.getId() + " created.");
 
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_STARTED_EVENT, userDetails);
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_ISSUED_TO_BAILIFF_EVENT, userDetails);
 
         final String respondentJson = loadJson(RESPONDENT_PAYLOAD_CONTEXT_PATH + AOS_DEFEND_CONSENT_JSON_FILE_PATH);
         submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(), respondentJson);
@@ -212,7 +212,7 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
 
         log.info("Case " + caseDetails.getId() + " created.");
 
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_STARTED_EVENT, userDetails);
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_ISSUED_TO_BAILIFF_EVENT, userDetails);
 
         final String coRespondentAnswersJson = loadJson(CO_RESPONDENT_PAYLOAD_CONTEXT_PATH + CO_RESP_DEFENDED_ANSWERS_JSON_FILE_PATH);
         submitCoRespondentAosCase(userDetails, coRespondentAnswersJson);
