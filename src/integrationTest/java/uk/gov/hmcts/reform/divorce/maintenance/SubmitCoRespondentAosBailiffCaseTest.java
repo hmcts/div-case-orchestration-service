@@ -31,11 +31,8 @@ import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 public class SubmitCoRespondentAosBailiffCaseTest extends RetrieveAosCaseSupport {
 
     private static final String CO_RESPONDENT_PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/co-respondent/";
-    private static final String RESPONDENT_PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/submit-aos/";
     private static final String SUBMIT_COMPLETE_CASE_JSON_FILE_PATH = "submit-complete-case.json";
-    private static final String AOS_DEFEND_CONSENT_JSON_FILE_PATH = "aos-defend-consent.json";
     private static final String CO_RESP_ANSWERS_JSON_FILE_PATH = "co-respondent-answers.json";
-    private static final String CO_RESP_DEFENDED_ANSWERS_JSON_FILE_PATH = "co-respondent-defended-answers.json";
     private static final String CO_RESPONDENT_ANSWERS_JSON;
 
     static {
