@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -27,13 +28,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.events.CcdT
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 
 @Slf4j
-@SuppressWarnings("Duplicates")
 public class SubmitCoRespondentAosBailiffCaseTest extends RetrieveAosCaseSupport {
 
     private static final String CO_RESPONDENT_PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/co-respondent/";
     private static final String SUBMIT_COMPLETE_CASE_JSON_FILE_PATH = "submit-complete-case.json";
     private static final String CO_RESP_ANSWERS_JSON_FILE_PATH = "co-respondent-answers.json";
     private static final String CO_RESPONDENT_ANSWERS_JSON;
+    private UserDetails userDetails;
+    private CaseDetails caseDetails;
 
     static {
         try {
@@ -46,15 +48,15 @@ public class SubmitCoRespondentAosBailiffCaseTest extends RetrieveAosCaseSupport
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Before
+    public void setup() {
+        userDetails = createCitizenUser();
+    }
+
     @Test
     @Category(ExtendedTest.class)
     public void givenCaseIsDisallowedState_whenSubmittingCoRespondentAnswers_thenReturnBadRequest() throws Exception {
-        final UserDetails userDetails = createCitizenUser();
-
-        final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
-            Pair.of(CO_RESP_EMAIL_ADDRESS, userDetails.getEmailAddress()));
-        log.info("Case " + caseDetails.getId() + " created.");
-
+        caseDetails = getCaseDetailsAfterSubmitCase();
         updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AWAITING_DECREE_ABSOLUTE_EVENT, userDetails);
 
         final String coRespondentAnswersJson = loadJson(CO_RESPONDENT_PAYLOAD_CONTEXT_PATH + CO_RESP_ANSWERS_JSON_FILE_PATH);
@@ -65,12 +67,7 @@ public class SubmitCoRespondentAosBailiffCaseTest extends RetrieveAosCaseSupport
 
     @Test
     public void canSubmitAndRetrieveCoRespondentAnswers() throws Exception {
-        final UserDetails userDetails = createCitizenUser();
-
-        final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
-            Pair.of(CO_RESP_EMAIL_ADDRESS, userDetails.getEmailAddress()));
-        log.info("Case " + caseDetails.getId() + " created.");
-
+        caseDetails = getCaseDetailsAfterSubmitCase();
         updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_ISSUED_TO_BAILIFF_EVENT, userDetails);
 
         final Response coRespondentSubmissionResponse = submitCoRespondentAosCase(userDetails, CO_RESPONDENT_ANSWERS_JSON);
@@ -84,12 +81,7 @@ public class SubmitCoRespondentAosBailiffCaseTest extends RetrieveAosCaseSupport
     @Test
     @Category(ExtendedTest.class)
     public void givenCaseIsIssuedToBailiff_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() {
-        final UserDetails userDetails = createCitizenUser();
-
-        final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
-            Pair.of(CO_RESP_EMAIL_ADDRESS, userDetails.getEmailAddress()));
-        log.info("Case " + caseDetails.getId() + " created.");
-
+        caseDetails = getCaseDetailsAfterSubmitCase();
         updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_ISSUED_TO_BAILIFF_EVENT, userDetails);
 
         submitCoRespondentAosCase(userDetails, CO_RESPONDENT_ANSWERS_JSON);
@@ -100,10 +92,17 @@ public class SubmitCoRespondentAosBailiffCaseTest extends RetrieveAosCaseSupport
         assertThat("The state should never change on co-respondent submission", caseRetrieval.path(CASE_STATE_JSON_KEY), is(ISSUED_TO_BAILIFF));
     }
 
+    private CaseDetails getCaseDetailsAfterSubmitCase() {
+        CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
+            Pair.of(CO_RESP_EMAIL_ADDRESS, userDetails.getEmailAddress()));
+        log.info("Case " + caseDetails.getId() + " created.");
+        return caseDetails;
+    }
+
     private void checkCaseAfterSuccessfulCoRespondentSubmission(final UserDetails userDetails, final String caseId, final String expectedAnswers)
         throws Exception {
 
-        final Response cosResponse = retrieveAosCase(userDetails.getAuthToken());
+        Response cosResponse = retrieveAosCase(userDetails.getAuthToken());
         assertThat(cosResponse.getStatusCode(), is(OK.value()));
         assertThat(cosResponse.path(CASE_ID_JSON_KEY), is(caseId));
 

@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.maintenance;
 
 import io.restassured.response.Response;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import uk.gov.hmcts.reform.ccd.client.model.CaseDetails;
@@ -11,7 +12,8 @@ import uk.gov.hmcts.reform.divorce.support.CcdSubmissionSupport;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 import static org.springframework.http.HttpStatus.OK;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_COMPLETED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_SUBMITTED_AWAITING_ANSWER;
@@ -30,11 +32,12 @@ public class SubmitRespondentAosBailiffCaseTest extends CcdSubmissionSupport {
     private static final String AOS_DEFEND_CONSENT_JSON = "aos-defend-consent.json";
     private static final String AOS_DEFEND_NO_CONSENT_JSON = "aos-defend-no-consent.json";
     private static final String AOS_NO_DEFEND_CONSENT_JSON = "aos-no-defend-consent.json";
-    private static final String AOS_SOLICITOR_REPRESENTATION_JSON = "aos-solicitor-representation.json";
     private static final String SUBMIT_COMPLETE_CASE_JSON = "submit-unlinked-case.json";
     private static final String SUBMIT_COMPLETE_CASE_REASON_ADULTERY_JSON = "submit-complete-case-reason-adultery.json";
     private static final String SUBMIT_COMPLETE_CASE_REASON_2_YEAR_SEP_JSON = "submit-complete-case-reason-2yearSep.json";
     private static final String AOS_NO_DEFEND_NO_CONSENT_JSON;
+    private UserDetails userDetails;
+    private CaseDetails caseDetails;
 
     static {
         try {
@@ -44,12 +47,14 @@ public class SubmitRespondentAosBailiffCaseTest extends CcdSubmissionSupport {
         }
     }
 
+    @Before
+    public void setup() {
+        userDetails = createCitizenUser();
+    }
+
     @Test
     public void givenConsentAndDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
-        final UserDetails userDetails = createCitizenUser();
-
-        CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
-
+        caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
             null,
             TEST_ISSUED_TO_BAILIFF_EVENT,
@@ -58,19 +63,13 @@ public class SubmitRespondentAosBailiffCaseTest extends CcdSubmissionSupport {
         Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
             loadJson(PAYLOAD_CONTEXT_PATH + AOS_DEFEND_CONSENT_JSON));
 
-        assertEquals(OK.value(), cosResponse.getStatusCode());
-        assertEquals(caseDetails.getId(), cosResponse.path(CCD_CASE_ID));
-        assertEquals(AOS_SUBMITTED_AWAITING_ANSWER, cosResponse.path(CASE_STATE_JSON_KEY));
-        assertAosSubmittedData(userDetails, caseDetails.getId().toString());
+        runCommonAssertions(userDetails, caseDetails, cosResponse, AOS_SUBMITTED_AWAITING_ANSWER);
     }
 
     @Test
     @Category(ExtendedTest.class)
     public void givenNoConsentAndDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
-        final UserDetails userDetails = createCitizenUser();
-
-        final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
-
+        caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
             null,
             TEST_ISSUED_TO_BAILIFF_EVENT,
@@ -79,19 +78,13 @@ public class SubmitRespondentAosBailiffCaseTest extends CcdSubmissionSupport {
         Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
             loadJson(PAYLOAD_CONTEXT_PATH + AOS_DEFEND_NO_CONSENT_JSON));
 
-        assertEquals(OK.value(), cosResponse.getStatusCode());
-        assertEquals(caseDetails.getId(), cosResponse.path(CCD_CASE_ID));
-        assertEquals(AOS_SUBMITTED_AWAITING_ANSWER, cosResponse.path(CASE_STATE_JSON_KEY));
-        assertAosSubmittedData(userDetails, caseDetails.getId().toString());
+        runCommonAssertions(userDetails, caseDetails, cosResponse, AOS_SUBMITTED_AWAITING_ANSWER);
     }
 
     @Test
     @Category(ExtendedTest.class)
     public void givenConsentAndNoDefend_whenSubmitAos_thenProceedAsExpected() throws Exception {
-        final UserDetails userDetails = createCitizenUser();
-
-        final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
-
+        caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
             null,
             TEST_ISSUED_TO_BAILIFF_EVENT,
@@ -100,19 +93,13 @@ public class SubmitRespondentAosBailiffCaseTest extends CcdSubmissionSupport {
         Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
             loadJson(PAYLOAD_CONTEXT_PATH + AOS_NO_DEFEND_CONSENT_JSON));
 
-        assertEquals(OK.value(), cosResponse.getStatusCode());
-        assertEquals(caseDetails.getId(), cosResponse.path(CCD_CASE_ID));
-        assertEquals(AWAITING_DECREE_NISI, cosResponse.path(CASE_STATE_JSON_KEY));
-        assertAosSubmittedData(userDetails, caseDetails.getId().toString());
+        runCommonAssertions(userDetails, caseDetails, cosResponse, AWAITING_DECREE_NISI);
     }
 
     @Test
     @Category(ExtendedTest.class)
     public void givenNoConsentAndNoDefendAndReasonIsNotAdultery_thenProceedAsExpected() {
-        final UserDetails userDetails = createCitizenUser();
-
-        final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
-
+        caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON, userDetails);
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
             null,
             TEST_ISSUED_TO_BAILIFF_EVENT,
@@ -121,43 +108,13 @@ public class SubmitRespondentAosBailiffCaseTest extends CcdSubmissionSupport {
         Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
             AOS_NO_DEFEND_NO_CONSENT_JSON);
 
-        assertEquals(OK.value(), cosResponse.getStatusCode());
-        assertEquals(caseDetails.getId(), cosResponse.path(CCD_CASE_ID));
-        assertEquals(AWAITING_DECREE_NISI, cosResponse.path(CASE_STATE_JSON_KEY));
-        assertAosSubmittedData(userDetails, caseDetails.getId().toString());
-
+        runCommonAssertions(userDetails, caseDetails, cosResponse, AWAITING_DECREE_NISI);
     }
 
     @Test
     @Category(ExtendedTest.class)
     public void givenNoConsentAndNoDefendAndReasonIsAdultery_thenProceedAsExpected() {
-        final UserDetails petitioner = createCitizenUser();
-
-        final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_REASON_ADULTERY_JSON, petitioner);
-
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()),
-            null,
-            TEST_ISSUED_TO_BAILIFF_EVENT,
-            petitioner);
-
-        Response cosResponse = submitRespondentAosCase(petitioner.getAuthToken(), caseDetails.getId(),
-            AOS_NO_DEFEND_NO_CONSENT_JSON);
-
-        assertEquals(OK.value(), cosResponse.getStatusCode());
-        assertEquals(caseDetails.getId(), cosResponse.path(CCD_CASE_ID));
-        assertEquals(AOS_COMPLETED, cosResponse.path(CASE_STATE_JSON_KEY));
-
-        assertAosSubmittedData(petitioner, caseDetails.getId().toString());
-
-    }
-
-    @Test
-    @Category(ExtendedTest.class)
-    public void givenNoConsentAndNoDefendAndReasonIs2YearSeparation_thenProceedAsExpected() {
-        final UserDetails userDetails = createCitizenUser();
-
-        final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_REASON_2_YEAR_SEP_JSON, userDetails);
-
+        caseDetails = submitCase(SUBMIT_COMPLETE_CASE_REASON_ADULTERY_JSON, userDetails);
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
             null,
             TEST_ISSUED_TO_BAILIFF_EVENT,
@@ -166,15 +123,34 @@ public class SubmitRespondentAosBailiffCaseTest extends CcdSubmissionSupport {
         Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
             AOS_NO_DEFEND_NO_CONSENT_JSON);
 
-        assertEquals(OK.value(), cosResponse.getStatusCode());
-        assertEquals(caseDetails.getId(), cosResponse.path(CCD_CASE_ID));
-        assertEquals(AOS_COMPLETED, cosResponse.path(CASE_STATE_JSON_KEY));
+        runCommonAssertions(userDetails, caseDetails, cosResponse, AOS_COMPLETED);
+    }
+
+    @Test
+    @Category(ExtendedTest.class)
+    public void givenNoConsentAndNoDefendAndReasonIs2YearSeparation_thenProceedAsExpected() {
+        caseDetails = submitCase(SUBMIT_COMPLETE_CASE_REASON_2_YEAR_SEP_JSON, userDetails);
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()),
+            null,
+            TEST_ISSUED_TO_BAILIFF_EVENT,
+            userDetails);
+
+        Response cosResponse = submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(),
+            AOS_NO_DEFEND_NO_CONSENT_JSON);
+
+        runCommonAssertions(userDetails, caseDetails, cosResponse, AOS_COMPLETED);
+    }
+
+    private void runCommonAssertions(UserDetails userDetails, CaseDetails caseDetails, Response cosResponse, String expectedCaseState) {
+        assertThat(cosResponse.getStatusCode(), is(OK.value()));
+        assertThat(cosResponse.path(CCD_CASE_ID), is(caseDetails.getId()));
+        assertThat(cosResponse.path(CASE_STATE_JSON_KEY), is(expectedCaseState));
         assertAosSubmittedData(userDetails, caseDetails.getId().toString());
     }
 
     private void assertAosSubmittedData(UserDetails userDetails, String caseId) {
         CaseDetails caseDetails = this.retrieveCase(userDetails, caseId);
-        assertEquals(YES_VALUE, caseDetails.getData().get(RECEIVED_AOS_FROM_RESP));
-        assertEquals(LocalDate.now().format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT)), caseDetails.getData().get(RECEIVED_AOS_FROM_RESP_DATE));
+        assertThat(caseDetails.getData().get(RECEIVED_AOS_FROM_RESP), is(YES_VALUE));
+        assertThat(caseDetails.getData().get(RECEIVED_AOS_FROM_RESP_DATE), is(LocalDate.now().format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT))));
     }
 }
