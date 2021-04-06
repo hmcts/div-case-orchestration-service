@@ -57,6 +57,11 @@ public class SolicitorCreateTest extends IdamTestSupport {
     @Test
     public void givenCaseData_whenSolicitorCreate_thenReturnServiceCentreCourtAllocation() throws Exception {
         CcdCallbackRequest ccdCallbackRequest = buildRequest();
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+        caseData.put(SOLICITOR_REFERENCE_JSON_KEY, TEST_SOLICITOR_REFERENCE);
+        caseData.put(PETITIONER_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
+
+        stubGetMyOrganisationServerEndpoint(AUTH_TOKEN);
 
         stubDraftDocumentGeneratorService(
             DRAFT_MINI_PETITION_TEMPLATE_NAME,
@@ -81,6 +86,8 @@ public class SolicitorCreateTest extends IdamTestSupport {
         caseData.put(D8_RESPONDENT_SOLICITOR_REFERENCE, TEST_RESPONDENT_SOLICITOR_REFERENCE);
         caseData.put(RESP_SOL_REPRESENTED, YES_VALUE);
         caseData.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
+
+        stubGetMyOrganisationServerEndpoint(AUTH_TOKEN);
 
         stubDraftDocumentGeneratorService(
             DRAFT_MINI_PETITION_TEMPLATE_NAME,
@@ -113,6 +120,8 @@ public class SolicitorCreateTest extends IdamTestSupport {
         caseData.put(PETITIONER_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
         caseData.put(D8_RESPONDENT_SOLICITOR_REFERENCE, TEST_RESPONDENT_SOLICITOR_REFERENCE);
         caseData.put(RESP_SOL_REPRESENTED, NO_VALUE);
+
+        stubGetMyOrganisationServerEndpoint(AUTH_TOKEN);
 
         stubDraftDocumentGeneratorService(
             DRAFT_MINI_PETITION_TEMPLATE_NAME,
