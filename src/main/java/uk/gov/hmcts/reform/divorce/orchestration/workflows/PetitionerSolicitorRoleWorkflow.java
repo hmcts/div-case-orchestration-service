@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddPetitionerSolicitorRoleTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AllowShareACaseTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSelectedOrganisationTask;
 
 import java.util.Map;
 
@@ -27,7 +26,6 @@ public class PetitionerSolicitorRoleWorkflow extends DefaultWorkflow<Map<String,
 
     private final AddPetitionerSolicitorRoleTask addPetitionerSolicitorRoleTask;
     private final AllowShareACaseTask allowShareACaseTask;
-    private final ValidateSelectedOrganisationTask validateSelectedOrganisationTask;
 
     private final FeatureToggleService featureToggleService;
 
@@ -40,7 +38,6 @@ public class PetitionerSolicitorRoleWorkflow extends DefaultWorkflow<Map<String,
 
             return this.execute(
                 new Task[] {
-                    validateSelectedOrganisationTask,
                     allowShareACaseTask
                 },
                 ccdCallbackRequest.getCaseDetails().getCaseData(),

@@ -12,7 +12,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddPetitionerSolicitorRoleTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AllowShareACaseTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSelectedOrganisationTask;
 
 import java.util.Map;
 
@@ -41,9 +40,6 @@ public class PetitionerSolicitorRoleWorkflowTest {
     private AllowShareACaseTask allowShareACaseTask;
 
     @Mock
-    private ValidateSelectedOrganisationTask validateSelectedOrganisationTask;
-
-    @Mock
     private FeatureToggleService featureToggleService;
 
     @InjectMocks
@@ -69,7 +65,6 @@ public class PetitionerSolicitorRoleWorkflowTest {
         );
 
         verifyTasksWereNeverCalled(
-            validateSelectedOrganisationTask,
             allowShareACaseTask
         );
     }
@@ -80,7 +75,6 @@ public class PetitionerSolicitorRoleWorkflowTest {
 
         mockTasksExecution(
             caseData,
-            validateSelectedOrganisationTask,
             allowShareACaseTask
         );
 
@@ -88,7 +82,6 @@ public class PetitionerSolicitorRoleWorkflowTest {
 
         verifyTasksCalledInOrder(
             caseData,
-            validateSelectedOrganisationTask,
             allowShareACaseTask
         );
 

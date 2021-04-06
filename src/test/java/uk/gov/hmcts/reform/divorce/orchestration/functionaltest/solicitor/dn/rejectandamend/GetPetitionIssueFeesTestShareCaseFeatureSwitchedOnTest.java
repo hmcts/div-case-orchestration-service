@@ -44,7 +44,6 @@ public class GetPetitionIssueFeesTestShareCaseFeatureSwitchedOnTest extends GetP
 
         stubUserDetailsEndpoint(HttpStatus.OK, AUTH_TOKEN, USER_DETAILS_PIN_USER_JSON);
         stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
-        stubGetMyOrganisationServerEndpoint(AUTH_TOKEN);
         stubRemoveCaseRoleServerEndpoint(AUTH_TOKEN, TEST_SERVICE_AUTH_TOKEN, HttpStatus.OK);
         stubAssignCaseAccessServerEndpoint(AUTH_TOKEN, TEST_SERVICE_AUTH_TOKEN, HttpStatus.OK);
 
@@ -71,7 +70,6 @@ public class GetPetitionIssueFeesTestShareCaseFeatureSwitchedOnTest extends GetP
 
         stubUserDetailsEndpoint(HttpStatus.OK, AUTH_TOKEN, USER_DETAILS_PIN_USER_JSON);
         stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
-        stubGetMyOrganisationServerEndpoint(AUTH_TOKEN);
         stubRemoveCaseRoleServerEndpoint(AUTH_TOKEN, TEST_SERVICE_AUTH_TOKEN, HttpStatus.OK);
         stubAssignCaseAccessServerEndpoint(AUTH_TOKEN, TEST_SERVICE_AUTH_TOKEN, HttpStatus.OK);
 
@@ -96,7 +94,6 @@ public class GetPetitionIssueFeesTestShareCaseFeatureSwitchedOnTest extends GetP
     public void givenCaseData_whenRemovingCaseRoleFails_thenReturnErrorResponse() throws Exception {
         stubUserDetailsEndpoint(HttpStatus.OK, AUTH_TOKEN, USER_DETAILS_PIN_USER_JSON);
         stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
-        stubGetMyOrganisationServerEndpoint(AUTH_TOKEN);
         stubRemoveCaseRoleServerEndpoint(AUTH_TOKEN, TEST_SERVICE_AUTH_TOKEN, HttpStatus.BAD_GATEWAY);
         stubAssignCaseAccessServerEndpoint(AUTH_TOKEN, TEST_SERVICE_AUTH_TOKEN, HttpStatus.OK);
 
@@ -116,7 +113,6 @@ public class GetPetitionIssueFeesTestShareCaseFeatureSwitchedOnTest extends GetP
     @Test
     public void givenCaseData_whenAddingCaseRoleFails_thenReturnErrorResponse() throws Exception {
         stubUserDetailsEndpoint(HttpStatus.OK, AUTH_TOKEN, USER_DETAILS_PIN_USER_JSON);
-        stubGetMyOrganisationServerEndpoint(AUTH_TOKEN);
         stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
         stubRemoveCaseRoleServerEndpoint(AUTH_TOKEN, TEST_SERVICE_AUTH_TOKEN, HttpStatus.OK);
         stubAssignCaseAccessServerEndpoint(AUTH_TOKEN, TEST_SERVICE_AUTH_TOKEN, HttpStatus.BAD_GATEWAY);
