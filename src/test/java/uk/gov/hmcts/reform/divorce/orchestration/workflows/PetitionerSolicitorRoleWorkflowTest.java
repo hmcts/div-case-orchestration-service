@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddPetitionerSolicitorRoleTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AllowShareACaseTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSelectedOrganisationTask;
 
 import java.util.Map;
 
@@ -28,6 +29,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksWereNeverCalled;
 
 @RunWith(MockitoJUnitRunner.class)
 public class PetitionerSolicitorRoleWorkflowTest {
@@ -39,6 +41,9 @@ public class PetitionerSolicitorRoleWorkflowTest {
     private AllowShareACaseTask allowShareACaseTask;
 
     @Mock
+    private ValidateSelectedOrganisationTask validateSelectedOrganisationTask;
+
+    @Mock
     private FeatureToggleService featureToggleService;
 
     @InjectMocks
@@ -48,7 +53,7 @@ public class PetitionerSolicitorRoleWorkflowTest {
     private final Map<String, Object> caseData = request.getCaseDetails().getCaseData();
 
     @Test
-    public void givenCaseSubmitted_whenShareACaseIsOff_thenCallOnlyAddPetitionerSolicitorRoleTask() throws Exception {
+    public void whenShareACaseIsOff_thenCallOnlyAddPetitionerSolicitorRoleTask() throws Exception {
         when(featureToggleService.isFeatureEnabled(Features.SHARE_A_CASE)).thenReturn(false);
 
         mockTasksExecution(
@@ -62,14 +67,20 @@ public class PetitionerSolicitorRoleWorkflowTest {
             caseData,
             addPetitionerSolicitorRoleTask
         );
+
+        verifyTasksWereNeverCalled(
+            validateSelectedOrganisationTask,
+            allowShareACaseTask
+        );
     }
 
     @Test
-    public void givenCaseSubmitted_whenShareACaseIsOOn_thenCallOnlyAllowShareCaseTask() throws Exception {
+    public void whenShareACaseIsOOn_thenCallShareCaseTask() throws Exception {
         when(featureToggleService.isFeatureEnabled(Features.SHARE_A_CASE)).thenReturn(true);
 
         mockTasksExecution(
             caseData,
+            validateSelectedOrganisationTask,
             allowShareACaseTask
         );
 
@@ -77,7 +88,12 @@ public class PetitionerSolicitorRoleWorkflowTest {
 
         verifyTasksCalledInOrder(
             caseData,
+            validateSelectedOrganisationTask,
             allowShareACaseTask
+        );
+
+        verifyTasksWereNeverCalled(
+            addPetitionerSolicitorRoleTask
         );
     }
 

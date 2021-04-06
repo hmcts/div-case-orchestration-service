@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.CopyD8JurisdictionConnect
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetNewLegalConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSelectedOrganisationTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,9 +37,9 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
     private final SetRespondentSolicitorOrganisationPolicyReferenceTask setRespondentSolicitorOrganisationPolicyReferenceTask;
     private final SetNewLegalConnectionPolicyTask setNewLegalConnectionPolicyTask;
     private final CopyD8JurisdictionConnectionPolicyTask copyD8JurisdictionConnectionPolicyTask;
+    private final ValidateSelectedOrganisationTask validateSelectedOrganisationTask;
 
     private final FeatureToggleService featureToggleService;
-
 
     public Map<String, Object> run(CaseDetails caseDetails, final String authToken) throws WorkflowException {
         final String caseId = caseDetails.getCaseId();
@@ -62,9 +63,15 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
         tasks.add(getAddMiniPetitionDraftTask(caseId));
         tasks.add(getAddNewDocumentsToCaseDataTask(caseId));
 
+        if (featureToggleService.isFeatureEnabled(Features.SHARE_A_CASE)) {
+            log.info("CaseId: {}, validate selected organisation", caseId);
+            tasks.add(validateSelectedOrganisationTask);
+        } else {
+            log.info("CaseId: {}, share a case switched OFF", caseId);
+        }
 
         if (featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)) {
-            log.info("Adding OrganisationPolicyReferenceTasks, REPRESENTED_RESPONDENT_JOURNEY feature toggle is set to true.");
+            log.info("CaseId: {}, Adding OrganisationPolicyReferenceTasks", caseId);
             tasks.add(setPetitionerSolicitorOrganisationPolicyReferenceTask);
             tasks.add(setRespondentSolicitorOrganisationPolicyReferenceTask);
         }

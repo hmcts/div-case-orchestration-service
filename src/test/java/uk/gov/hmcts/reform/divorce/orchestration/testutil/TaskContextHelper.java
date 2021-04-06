@@ -30,7 +30,7 @@ public class TaskContextHelper {
     }
 
     public static TaskContext contextWithCaseDetails() {
-        TaskContext context = context();
+        TaskContext context = contextWithToken();
         context.setTransientObject(CASE_DETAILS_JSON_KEY, buildCaseDetailsWithId());
 
         return context;
