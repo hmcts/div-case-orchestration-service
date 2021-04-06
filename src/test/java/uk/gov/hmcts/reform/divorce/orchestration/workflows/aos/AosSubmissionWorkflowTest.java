@@ -23,6 +23,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotificationT
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.QueueAosSolicitorSubmitTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForDefendedDivorceEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForUndefendedDivorceEmail;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.aos.AosReceivedPetitionerSolicitorEmailTask;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -57,28 +58,24 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RELATIONSHIP_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE_VARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.SEPARATION_TWO_YEARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksWereNeverCalled;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AosSubmissionWorkflowTest {
@@ -86,9 +83,9 @@ public class AosSubmissionWorkflowTest {
     private static final String UNFORMATTED_CASE_ID = "0123456789012345";
     private static final String RESP_ACKNOWLEDGES_SERVICE_DEFENDING_DIVORCE_JSON =
         "/jsonExamples/payloads/respondentAcknowledgesServiceDefendingDivorce.json";
-    private static final String RESP_ACKNOWLEDGES_SERVICE__NOT_DEFENDING_DIVORCE_JSON =
+    private static final String RESP_ACKNOWLEDGES_SERVICE_NOT_DEFENDING_DIVORCE_JSON =
         "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingDivorce.json";
-    private static final String RESP_ACKNOWLEDGES_SERVICE__NOT_DEFENDING__NOT_ADMITTING_DIVORCE_JSON =
+    private static final String RESP_ACKNOWLEDGES_SERVICE_NOT_DEFENDING_NOT_ADMITTING_DIVORCE_JSON =
         "/jsonExamples/payloads/respondentAcknowledgesServiceNotDefendingNotAdmittingDivorce.json";
     private static final String UNCLEAR_ACKNOWLEDGEMENT_OF_SERVICE_JSON =
         "/jsonExamples/payloads/unclearAcknowledgementOfService.json";
@@ -106,6 +103,9 @@ public class AosSubmissionWorkflowTest {
     private SendRespondentSubmissionNotificationForUndefendedDivorceEmail undefendedDivorceNotificationEmailTask;
 
     @Mock
+    private AosReceivedPetitionerSolicitorEmailTask aosReceivedPetitionerSolicitorEmailTask;
+
+    @Mock
     private QueueAosSolicitorSubmitTask queueAosSolicitorSubmitTask;
 
     @Mock
@@ -115,7 +115,7 @@ public class AosSubmissionWorkflowTest {
     private ArgumentCaptor<TaskContext> taskContextArgumentCaptor;
 
     @Mock
-    TemplateConfigService templateConfigService;
+    private TemplateConfigService templateConfigService;
 
     @InjectMocks
     private AosSubmissionWorkflow aosSubmissionWorkflow;
@@ -126,6 +126,7 @@ public class AosSubmissionWorkflowTest {
         when(defendedDivorceNotificationEmailTask.execute(any(), any())).thenReturn(returnedPayloadFromTask);
         when(undefendedDivorceNotificationEmailTask.execute(any(), any())).thenReturn(returnedPayloadFromTask);
         when(queueAosSolicitorSubmitTask.execute(any(), any())).thenReturn(returnedPayloadFromTask);
+        when(aosReceivedPetitionerSolicitorEmailTask.execute(any(), any())).thenReturn(returnedPayloadFromTask);
     }
 
     @Test
@@ -148,7 +149,7 @@ public class AosSubmissionWorkflowTest {
     public void testUndefendedTaskIsCalled_WhenRespondentChoosesToNotDefendDivorce() throws IOException,
         WorkflowException, TaskException {
         CcdCallbackRequest callbackRequest = getJsonFromResourceFile(
-            RESP_ACKNOWLEDGES_SERVICE__NOT_DEFENDING_DIVORCE_JSON, CcdCallbackRequest.class);
+            RESP_ACKNOWLEDGES_SERVICE_NOT_DEFENDING_DIVORCE_JSON, CcdCallbackRequest.class);
         Map<String, Object> caseData = callbackRequest.getCaseDetails().getCaseData();
 
         Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(callbackRequest, AUTH_TOKEN);
@@ -165,7 +166,7 @@ public class AosSubmissionWorkflowTest {
     public void testUndefendedTaskIsCalled_WhenRespondentChoosesToNotDefendDivorceButNotAdmitWhatIsSaid()
         throws IOException, WorkflowException, TaskException {
         CcdCallbackRequest callbackRequest = getJsonFromResourceFile(
-            RESP_ACKNOWLEDGES_SERVICE__NOT_DEFENDING__NOT_ADMITTING_DIVORCE_JSON, CcdCallbackRequest.class);
+            RESP_ACKNOWLEDGES_SERVICE_NOT_DEFENDING_NOT_ADMITTING_DIVORCE_JSON, CcdCallbackRequest.class);
         Map<String, Object> caseData = callbackRequest.getCaseDetails().getCaseData();
 
         Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(callbackRequest, AUTH_TOKEN);
@@ -211,7 +212,7 @@ public class AosSubmissionWorkflowTest {
     public void testSolicitorTaskIsNotCalledWhenSolicitorIsNotRepresenting() throws IOException,
         WorkflowException {
         CcdCallbackRequest callbackRequest = getJsonFromResourceFile(
-            RESP_ACKNOWLEDGES_SERVICE__NOT_DEFENDING_DIVORCE_JSON, CcdCallbackRequest.class);
+            RESP_ACKNOWLEDGES_SERVICE_NOT_DEFENDING_DIVORCE_JSON, CcdCallbackRequest.class);
 
         aosSubmissionWorkflow.run(callbackRequest, AUTH_TOKEN);
 
@@ -255,7 +256,7 @@ public class AosSubmissionWorkflowTest {
         Map<String, String> vars = ImmutableMap.of(
             NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TestConstants.TEST_USER_FIRST_NAME,
             NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TestConstants.TEST_USER_LAST_NAME,
-            NOTIFICATION_RELATIONSHIP_KEY, "husband",
+            NOTIFICATION_RELATIONSHIP_KEY, TEST_RELATIONSHIP_HUSBAND,
             NOTIFICATION_REFERENCE_KEY, TestConstants.TEST_CASE_FAMILY_MAN_ID,
             NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TestConstants.TEST_WELSH_MALE_GENDER_IN_RELATION
         );
@@ -333,11 +334,12 @@ public class AosSubmissionWorkflowTest {
 
         TaskContext capturedTask = argument.getValue();
 
-        DefaultTaskContext expectedContext = createdExpectedContext(EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED, false);
+        DefaultTaskContext expectedContext = createdExpectedContext(
+            EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED
+        );
 
         assertThat(expectedContext, equalTo(capturedTask));
     }
-
 
     @Test
     public void givenAdulteryCoRespNotRepliedRespNoAdmitUndefended_whenSendEmail_thenSendRespNoAdmitUndefendedCoRespNoReplyTemplate() throws Exception {
@@ -372,7 +374,8 @@ public class AosSubmissionWorkflowTest {
         TaskContext capturedTask = argument.getValue();
 
         DefaultTaskContext expectedContext = createdExpectedContext(
-            EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED, false);
+            EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED
+        );
 
         assertThat(expectedContext, equalTo(capturedTask));
     }
@@ -407,7 +410,9 @@ public class AosSubmissionWorkflowTest {
 
         TaskContext capturedTask = argument.getValue();
 
-        DefaultTaskContext expectedContext = createdExpectedContext(EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY, false);
+        DefaultTaskContext expectedContext = createdExpectedContext(
+            EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY
+        );
 
         assertThat(expectedContext, equalTo(capturedTask));
     }
@@ -442,7 +447,9 @@ public class AosSubmissionWorkflowTest {
 
         TaskContext capturedTask = argument.getValue();
 
-        DefaultTaskContext expectedContext = createdExpectedContext(EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_CONSENT_2_YEARS, false);
+        DefaultTaskContext expectedContext = createdExpectedContext(
+            EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_CONSENT_2_YEARS
+        );
 
         assertThat(expectedContext, equalTo(capturedTask));
     }
@@ -477,7 +484,7 @@ public class AosSubmissionWorkflowTest {
 
         TaskContext capturedTask = argument.getValue();
 
-        DefaultTaskContext expectedContext = createdExpectedContext(EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT, false);
+        DefaultTaskContext expectedContext = createdExpectedContext(EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT);
 
         assertThat(expectedContext, equalTo(capturedTask));
     }
@@ -485,13 +492,7 @@ public class AosSubmissionWorkflowTest {
     @Test
     public void givenCaseSolicitor_whenRunWorkflow_thenSolEmailNotificationTaskCalled() throws WorkflowException {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(D_8_PETITIONER_FIRST_NAME, TestConstants.TEST_PETITIONER_FIRST_NAME);
-        caseData.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_PETITIONER_LAST_NAME);
         caseData.put(PETITIONER_SOLICITOR_EMAIL, TestConstants.TEST_USER_EMAIL);
-        caseData.put(D_8_CASE_REFERENCE, TestConstants.TEST_CASE_FAMILY_MAN_ID);
-        caseData.put(RESP_FIRST_NAME_CCD_FIELD, TestConstants.TEST_USER_FIRST_NAME);
-        caseData.put(RESP_LAST_NAME_CCD_FIELD, TestConstants.TEST_USER_LAST_NAME);
-        caseData.put(PETITIONER_SOLICITOR_NAME, TestConstants.TEST_SOLICITOR_NAME);
         caseData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
 
         CaseDetails caseDetails = CaseDetails.builder()
@@ -499,50 +500,46 @@ public class AosSubmissionWorkflowTest {
             .caseData(caseData)
             .build();
 
+        mockTasksExecution(
+            caseData,
+            aosReceivedPetitionerSolicitorEmailTask,
+            undefendedDivorceNotificationEmailTask
+        );
+
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
         aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
 
-        ArgumentCaptor<TaskContext> argument = ArgumentCaptor.forClass(TaskContext.class);
-        verify(emailNotificationTask).execute(argument.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
+        verifyTasksCalledInOrder(
+            caseData,
+            aosReceivedPetitionerSolicitorEmailTask,
+            undefendedDivorceNotificationEmailTask
+        );
 
-        TaskContext capturedTask = argument.getValue();
-
-        DefaultTaskContext expectedContext = createdExpectedContext(EmailTemplateNames.SOL_APPLICANT_AOS_RECEIVED, true);
-
-        assertThat(expectedContext, equalTo(capturedTask));
+        verifyTasksWereNeverCalled(
+            defendedDivorceNotificationEmailTask,
+            emailNotificationTask,
+            queueAosSolicitorSubmitTask
+        );
     }
 
-    private DefaultTaskContext createdExpectedContext(EmailTemplateNames template, boolean isSolicitor) {
-        Map<String, Object> expectedTemplateVars = new HashMap<>();
-        DefaultTaskContext expectedContext = new DefaultTaskContext();
-        if (isSolicitor) {
-            expectedTemplateVars.put(NOTIFICATION_EMAIL, TestConstants.TEST_USER_EMAIL);
-            expectedTemplateVars.put(NOTIFICATION_PET_NAME, TestConstants.TEST_PETITIONER_FIRST_NAME + " " + TestConstants.TEST_PETITIONER_LAST_NAME);
-            expectedTemplateVars.put(NOTIFICATION_RESP_NAME, TestConstants.TEST_USER_FIRST_NAME + " " + TestConstants.TEST_USER_LAST_NAME);
-            expectedTemplateVars.put(NOTIFICATION_SOLICITOR_NAME, TestConstants.TEST_SOLICITOR_NAME);
-            expectedTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, TestConstants.TEST_CASE_ID);
+    private DefaultTaskContext createdExpectedContext(EmailTemplateNames template) {
+        final Map<String, Object> expectedTemplateVars = new HashMap<>();
+        final DefaultTaskContext expectedContext = new DefaultTaskContext();
 
-            expectedContext.setTransientObjects(ImmutableMap
-                .of(CASE_ID_JSON_KEY, TestConstants.TEST_CASE_ID,
-                    NOTIFICATION_EMAIL, TestConstants.TEST_USER_EMAIL,
-                    NOTIFICATION_TEMPLATE_VARS, expectedTemplateVars,
-                    NOTIFICATION_TEMPLATE, template
-                ));
-        } else {
-            expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TestConstants.TEST_USER_FIRST_NAME);
-            expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TestConstants.TEST_USER_LAST_NAME);
-            expectedTemplateVars.put(NOTIFICATION_RELATIONSHIP_KEY, "husband");
-            expectedTemplateVars.put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TestConstants.TEST_WELSH_MALE_GENDER_IN_RELATION);
-            expectedTemplateVars.put(NOTIFICATION_REFERENCE_KEY, TestConstants.TEST_CASE_FAMILY_MAN_ID);
+        expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TestConstants.TEST_USER_FIRST_NAME);
+        expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TestConstants.TEST_USER_LAST_NAME);
+        expectedTemplateVars.put(NOTIFICATION_RELATIONSHIP_KEY, TestConstants.TEST_RELATIONSHIP_HUSBAND);
+        expectedTemplateVars.put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TestConstants.TEST_WELSH_MALE_GENDER_IN_RELATION);
+        expectedTemplateVars.put(NOTIFICATION_REFERENCE_KEY, TestConstants.TEST_CASE_FAMILY_MAN_ID);
 
-            expectedContext.setTransientObjects(ImmutableMap
-                .of(CASE_ID_JSON_KEY, TestConstants.TEST_CASE_ID,
-                    NOTIFICATION_EMAIL, TestConstants.TEST_USER_EMAIL,
-                    NOTIFICATION_TEMPLATE_VARS, expectedTemplateVars,
-                    NOTIFICATION_TEMPLATE, template
-                ));
-        }
+        expectedContext.setTransientObjects(ImmutableMap
+            .of(CASE_ID_JSON_KEY, TestConstants.TEST_CASE_ID,
+                NOTIFICATION_EMAIL, TestConstants.TEST_USER_EMAIL,
+                NOTIFICATION_TEMPLATE_VARS, expectedTemplateVars,
+                NOTIFICATION_TEMPLATE, template
+            ));
+
         return expectedContext;
     }
 }

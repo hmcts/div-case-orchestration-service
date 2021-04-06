@@ -62,6 +62,9 @@ public class CcdFields {
     public static final String PETITIONER_LAST_NAME = OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
     public static final String PETITIONER_EMAIL = OrchestrationConstants.D_8_PETITIONER_EMAIL;
 
+    public static final String RESPONDENT_FIRST_NAME = OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
+    public static final String RESPONDENT_LAST_NAME = OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
+
     public static final String PBA_NUMBERS = "PbaNumbers";
     public static final String FURTHER_HWF_REFERENCE = "HelpWithFeesReferenceNumber";
     public static final String FURTHER_PBA_REFERENCE = "FeeAccountReferenceNumber";
@@ -75,5 +78,17 @@ public class CcdFields {
     public static final String SERVED_BY_ALTERNATIVE_METHOD = "ServedByAlternativeMethod";
 
     public static final String PETITIONER_SOLICITOR_ORGANISATION_POLICY = "PetitionerOrganisationPolicy";
+    public static final String RESPONDENT_SOLICITOR_ORGANISATION_POLICY = "RespondentOrganisationPolicy";
+
+    public static final String BAILIFF_APPLICATION_GRANTED = "BailiffApplicationGranted";
+    public static final String CERTIFICATE_OF_SERVICE_DOCUMENT = "CertificateOfServiceDocument";
+    public static final String CERTIFICATE_OF_SERVICE_DATE = "CertificateOfServiceDate";
+    public static final String BAILIFF_SERVICE_SUCCESSFUL = "SuccessfulServedByBailiff";
+
+    public static final String NOTICE_OF_PROCEEDINGS_DIGITAL = "DigitalNoticeOfProceedings";
+    public static final String NOTICE_OF_PROCEEDINGS_EMAIL = "NoticeOfProceedingsEmail";
+    public static final String NOTICE_OF_PROCEEDINGS_FIRM = "NoticeOfProceedingsSolicitorFirm";
+
+    public static final String JUDGE_COSTS_DECISION = "JudgeCostsDecision";
 
 }

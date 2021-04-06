@@ -1073,5 +1073,16 @@
   "marriageCertificateFiles":[
 
   ],
+  "respondentSolicitorName": "abc",
+  "respondentSolicitorReference": "sol-123",
+  "respondentSolicitorEmail": "sol@email.com",
+  "respondentSolicitorCompany": "company ltd.",
+  "respondentSolicitorAddress": {
+    "address": [
+      "10 Solicitor Road",
+      "Solicitorshire"
+    ]
+  },
+  "respondentSolicitorReferenceDataId": "123",
   "confirmPrayer":"Yes"
 }

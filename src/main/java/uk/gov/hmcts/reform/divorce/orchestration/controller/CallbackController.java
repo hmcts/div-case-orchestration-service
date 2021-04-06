@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AlternativeServiceService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.BailiffPackService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CourtOrderDocumentsUpdateService;
@@ -64,8 +65,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.te
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COE;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.getPbaUpdatedState;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.getResponseErrors;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.hasErrorKeyInResponse;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.isPaymentSuccess;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.isResponseErrors;
 
 @RestController
 @Slf4j
@@ -84,6 +85,7 @@ public class CallbackController {
     private final GeneralReferralService generalReferralService;
     private final AlternativeServiceService alternativeServiceService;
     private final CourtOrderDocumentsUpdateService courtOrderDocumentsUpdateService;
+    private final BailiffPackService bailiffPackService;
 
     @PostMapping(path = "/request-clarification-petitioner")
     @ApiOperation(value = "Trigger notification email to request clarification from Petitioner")
@@ -175,24 +177,6 @@ public class CallbackController {
         return ResponseEntity.ok(caseOrchestrationService.setOrderSummaryAssignRole(ccdCallbackRequest, authorizationToken));
     }
 
-    @PostMapping(path = "/allow-share-a-case",
-        consumes = APPLICATION_JSON,
-        produces = APPLICATION_JSON)
-    @ApiOperation(value = "Allows Share a Case")
-    @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Petition issue fee amount is sent to CCD as callback response",
-            response = CcdCallbackResponse.class),
-        @ApiResponse(code = 400, message = "Bad Request")})
-    public ResponseEntity<CcdCallbackResponse> allowShareACase(
-        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        return ResponseEntity.ok(
-            CcdCallbackResponse.builder()
-                .data(caseOrchestrationService.allowShareACase(ccdCallbackRequest, authorizationToken))
-                .build()
-            );
-    }
-
     @SuppressWarnings("unchecked")
     @PostMapping(path = "/process-pba-payment", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Callback to receive payment from the Solicitor")
@@ -204,12 +188,13 @@ public class CallbackController {
         @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
+        log.info("About to process PBA payment for case id {}", ccdCallbackRequest.getCaseDetails().getCaseId());
         Map<String, Object> response = caseOrchestrationService.solicitorSubmission(ccdCallbackRequest, authorizationToken);
 
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         CcdCallbackResponse.CcdCallbackResponseBuilder responseBuilder = CcdCallbackResponse.builder();
 
-        if (isResponseErrors(SOLICITOR_PBA_PAYMENT_ERROR_KEY, response)) {
+        if (hasErrorKeyInResponse(SOLICITOR_PBA_PAYMENT_ERROR_KEY, response)) {
             responseBuilder.errors(getResponseErrors(SOLICITOR_PBA_PAYMENT_ERROR_KEY, response));
         } else if (isPaymentSuccess(response)) {
             responseBuilder.state(getPbaUpdatedState(caseId, response));
@@ -304,7 +289,6 @@ public class CallbackController {
             CcdCallbackResponse.builder()
                 .data(caseOrchestrationService.sendPetitionerSubmissionNotificationEmail(ccdCallbackRequest))
                 .build());
-
     }
 
     @PostMapping(path = "/petition-updated", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
@@ -314,19 +298,11 @@ public class CallbackController {
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> petitionUpdated(
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         log.info("/petition-updated endpoint called for caseId {}", caseId);
 
-        try {
-            caseOrchestrationService.sendPetitionerGenericUpdateNotificationEmail(ccdCallbackRequest);
-        } catch (WorkflowException e) {
-            log.error("Failed to complete service for caseId {}", caseId, e);
-            return ResponseEntity.ok(CcdCallbackResponse.builder()
-                .data(ccdCallbackRequest.getCaseDetails().getCaseData())
-                .errors(singletonList(e.getMessage()))
-                .build());
-        }
+        caseOrchestrationService.sendNotificationEmail(ccdCallbackRequest.getEventId(), ccdCallbackRequest.getCaseDetails());
 
         return ResponseEntity.ok(CcdCallbackResponse.builder()
             .data(ccdCallbackRequest.getCaseDetails().getCaseData())
@@ -535,6 +511,22 @@ public class CallbackController {
         }
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
+    }
+
+    @PostMapping(path = "/confirm-sol-dn-review", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback to set state after Solicitor reviews DN petition")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Callback processed",
+                    response = CcdCallbackResponse.class),
+            @ApiResponse(code = 400, message = "Bad Request"),
+            @ApiResponse(code = 500, message = "Internal Server Error")})
+    public ResponseEntity<CcdCallbackResponse> confirmSolDnReviewPetition(
+            @RequestBody CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+                caseOrchestrationService
+                        .confirmSolDnReviewPetition(ccdCallbackRequest.getCaseDetails())
+        );
     }
 
     @PostMapping(path = "/sol-dn-resp-answers-doc", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
@@ -1307,12 +1299,29 @@ public class CallbackController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Service payment confirmation callback")})
     public ResponseEntity<CcdCallbackResponse> confirmServicePaymentEvent(
+            @RequestHeader(AUTHORIZATION_HEADER)
+            @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
         return ResponseEntity.ok(
-            CcdCallbackResponse.builder()
-                .data(serviceJourneyService.confirmServicePaymentEvent(ccdCallbackRequest.getCaseDetails()))
-                .build());
+                serviceJourneyService
+                        .confirmServicePaymentEvent(ccdCallbackRequest.getCaseDetails(), authorizationToken)
+        );
+    }
+
+    @PostMapping(path = "/add-bailiff-return")
+    @ApiOperation(value = "Setup Add Bailiff Return event")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Setup Add Bailiff Return event")})
+    public ResponseEntity<CcdCallbackResponse> setupAddBailiffReturnEvent(
+            @RequestHeader(AUTHORIZATION_HEADER)
+            @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+            @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+                serviceJourneyService
+                        .setupAddBailiffReturnEvent(ccdCallbackRequest.getCaseDetails(), authorizationToken)
+        );
     }
 
     @PostMapping(path = "/set-up-order-summary/without-notice-fee")
@@ -1496,6 +1505,60 @@ public class CallbackController {
                 .data(returnedPayload)
                 .build()
         );
+    }
+
+    @PostMapping(path = "/issue-bailiff-pack", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback for generating certificate of service document")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> issueBailiffPack(
+        @RequestHeader(value = AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        Map<String, Object> returnedPayload = bailiffPackService.issueCertificateOfServiceDocument(
+            authorizationToken,
+            ccdCallbackRequest.getCaseDetails()
+        );
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(returnedPayload)
+                .build()
+        );
+    }
+
+    @PostMapping(path = "/judge-costs-decision", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback for setting fields related to judge costs decision")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> judgeCostsDecision(
+        @RequestHeader(value = AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(CcdCallbackResponse.builder()
+            .data(caseOrchestrationService.judgeCostsDecision(ccdCallbackRequest))
+            .build());
+    }
+
+    @PostMapping(path = "/aos-pack-issued", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Performs final actions after aos pack is issued (or reissued)")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> aosPackIssued(
+        @RequestHeader(value = AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        log.info("/aos-pack-issued called for case id [{}]", caseDetails.getCaseId());
+
+        aosService.runActionsAfterAosHasBeenIssued(ccdCallbackRequest.getEventId(), caseDetails);
+
+        return ResponseEntity.ok(CcdCallbackResponse.builder().build());
     }
 
     @ExceptionHandler(CaseOrchestrationServiceException.class)

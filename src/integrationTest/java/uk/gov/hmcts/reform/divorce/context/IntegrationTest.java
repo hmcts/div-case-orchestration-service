@@ -29,11 +29,13 @@ import javax.annotation.PostConstruct;
 @RunWith(SerenityRunner.class)
 @ContextConfiguration(classes = {ServiceContextConfiguration.class})
 public abstract class IntegrationTest {
+
     private static final String CASE_WORKER_USERNAME = "TEST_CASE_WORKER_USER";
     private static final String CASE_WORKER_SUPERUSER = "TEST_CASE_WORKER_SUPERUSER";
-    private static final String SOLICITOR_USER_NAME = "TEST_SOLICITOR";
+    private static final String SOLICITOR_USER_NAME = "divorce_as_petitioner_solicitor_02";
     private static final String EMAIL_DOMAIN = "@mailinator.com";
     private static final String CITIZEN_ROLE = "citizen";
+    private static final String SOLICITOR_PASSWORD = "Testing1234";
     private static final String PASSWORD = "genericPassword123";
     private static final String CITIZEN_USERGROUP = "citizens";
 
@@ -109,8 +111,8 @@ public abstract class IntegrationTest {
         synchronized (this) {
             if (caseWorkerUser == null) {
                 caseWorkerUser = wrapInRetry(() -> getCreatedUserDetails(
-                    CASE_WORKER_USERNAME +  EMAIL_DOMAIN
-                ));
+                    CASE_WORKER_USERNAME +  EMAIL_DOMAIN,
+                    PASSWORD));
             }
             return caseWorkerUser;
         }
@@ -120,8 +122,8 @@ public abstract class IntegrationTest {
         synchronized (this) {
             if (caseWorkerSuperUser == null) {
                 caseWorkerSuperUser = wrapInRetry(() -> getCreatedUserDetails(
-                    CASE_WORKER_SUPERUSER +  EMAIL_DOMAIN
-                ));
+                    CASE_WORKER_SUPERUSER +  EMAIL_DOMAIN,
+                    PASSWORD));
             }
             return caseWorkerSuperUser;
         }
@@ -141,7 +143,7 @@ public abstract class IntegrationTest {
     protected UserDetails createSolicitorUser() {
 
         final String username = SOLICITOR_USER_NAME + EMAIL_DOMAIN;
-        return getCreatedUserDetails(username);
+        return getCreatedUserDetails(username, SOLICITOR_PASSWORD);
     }
 
     private UserDetails getUserDetails(String username, String userGroup,boolean keepUser, String... role) {
@@ -171,16 +173,16 @@ public abstract class IntegrationTest {
         return getUserDetails(username, userGroup, false, role);
     }
 
-    private UserDetails getCreatedUserDetails(String username) {
+    private UserDetails getCreatedUserDetails(String username, String password) {
         synchronized (this) {
-            final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, PASSWORD);
+            final String authToken = idamTestSupportUtil.generateUserTokenWithNoRoles(username, password);
 
             final String userId = idamTestSupportUtil.getUserId(authToken);
 
             return UserDetails.builder()
                 .username(username)
                 .emailAddress(username)
-                .password(PASSWORD)
+                .password(password)
                 .authToken(authToken)
                 .id(userId)
                 .build();

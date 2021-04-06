@@ -22,13 +22,13 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.PAYMENT_MADE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_LETTER_HOLDER_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_LINKED_TO_CASE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PAYMENT_MADE_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP;
@@ -66,7 +66,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_SERVICE_CENTRE_CASE, petitionerUserDetails);
 
         // make payment
-        updateCase(caseDetails.getId().toString(), PAYMENT_MADE_JSON, PAYMENT_MADE_EVENT);
+        updateCase(caseDetails.getId().toString(), PAYMENT_MADE_JSON, PAYMENT_MADE);
         final CaseDetails issuedCase = fireEvent(caseDetails.getId().toString(), ISSUE_EVENT_ID);
 
         assertGeneratedDocumentsExists(issuedCase, true, false);
@@ -79,7 +79,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_SERVICE_CENTRE_CO_RESPONDENT_CASE, petitionerUserDetails);
 
         // make payment
-        updateCase(caseDetails.getId().toString(), PAYMENT_MADE_JSON, PAYMENT_MADE_EVENT);
+        updateCase(caseDetails.getId().toString(), PAYMENT_MADE_JSON, PAYMENT_MADE);
         final CaseDetails issuedCase = fireEvent(caseDetails.getId().toString(), ISSUE_EVENT_ID);
 
         assertGeneratedDocumentsExists(issuedCase, true, true);
@@ -92,7 +92,7 @@ public class PetitionIssueCallBackE2ETest extends CcdSubmissionSupport {
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_SERVICE_CENTRE_CO_RESPONDENT_CASE, petitionerUserDetails);
 
         // make payment
-        updateCase(caseDetails.getId().toString(), null, PAYMENT_MADE_EVENT);
+        updateCase(caseDetails.getId().toString(), null, PAYMENT_MADE);
         fireEvent(caseDetails.getId().toString(), ISSUE_EVENT_ID);
 
         log.info("case {}", caseDetails.getId().toString());

@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +16,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.core.Is.is;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.CERTIFICATE_OF_SERVICE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.context;
 
 @RunWith(SpringRunner.class)
@@ -37,6 +39,7 @@ public abstract class DueDateSetterTaskTest {
     @Test
     public void executeShouldAddPopulatedField() throws TaskException {
         Map<String, Object> caseData = new HashMap<>();
+        caseData.put(CERTIFICATE_OF_SERVICE_DATE, LocalDate.now().toString());
         Map<String, Object> returnedCaseData = dueDateSetterTask.execute(context(), caseData);
 
         assertThat(returnedCaseData.isEmpty(), is(false));

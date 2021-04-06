@@ -10,6 +10,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.Applicati
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING_SOLICITOR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_CCD_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
@@ -47,7 +50,22 @@ public class Conditions {
         return ApplicationServiceTypes.BAILIFF.equalsIgnoreCase((String) caseData.get(CcdFields.SERVICE_APPLICATION_TYPE));
     }
 
+    public static boolean isBailiffServiceSuccessful(Map<String, Object> caseData) {
+        return YES_VALUE.equalsIgnoreCase((String) caseData.get(CcdFields.BAILIFF_SERVICE_SUCCESSFUL));
+    }
+
     public static boolean isAwaitingServiceConsideration(CaseDetails caseDetails) {
         return CcdStates.AWAITING_SERVICE_CONSIDERATION.equalsIgnoreCase(caseDetails.getState());
+    }
+
+    public static boolean isAOSDraftedCandidate(CaseDetails caseDetails) {
+        return caseDetails.getState().equals(AOS_AWAITING_SOLICITOR)
+                || caseDetails.getState().equals(AOS_AWAITING);
+    }
+
+    public static boolean isPetitionAmended(Map<String, Object> caseData) {
+        Map<String, Object> previousCaseId = (Map<String, Object>) caseData.get(PREVIOUS_CASE_ID_CCD_KEY);
+
+        return previousCaseId != null;
     }
 }

@@ -1,4 +1,11 @@
 {
+  "PetitionerOrganisationPolicy": {
+    "Organisation": {
+      "OrganisationID": null,
+      "OrganisationName": null
+    },
+    "OrgPolicyCaseAssignedRole": "[PETSOLICITOR]"
+  },
   "D8DerivedPetitionerHomeAddress": "123 some road\nSW2 2SW",
   "D8DerivedRespondentCorrespondenceAddr": "123 Resp Road\nSW3 3SW",
   "D8DerivedRespondentHomeAddress": null,
@@ -11,7 +18,7 @@
   "D8FinancialOrder": "No",
   "D8InferredPetitionerGender": "male",
   "D8InferredRespondentGender": "female",
-  "D8JurisdictionConnection": [
+  "D8JurisdictionConnectionNewPolicy": [
     "E",
     "G",
     "F",

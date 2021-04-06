@@ -4,11 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
+import uk.gov.hmcts.reform.divorce.model.ccd.roles.CaseRoles;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseRoleClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseUser;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.RemoveUserRolesRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseRoles;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -34,7 +34,7 @@ public class CcdDataStoreService {
         String userId = userDetails.getId();
         String caseId = caseDetails.getCaseId();
 
-        log.info("CaseID: {} removing [CREATOR] and [PETSOLICITOR] case roles from user {}", caseId, userId);
+        log.info("CaseID: {} removing [CREATOR] case roles from user {}", caseId, userId);
 
         caseRoleClient.removeCaseRoles(
             authorisationToken,
@@ -42,7 +42,7 @@ public class CcdDataStoreService {
             buildRemoveUserRolesRequest(caseId, userId)
         );
 
-        log.info("CaseID: {} removed  [CREATOR] and [PETSOLICITOR] case roles from user {}", caseId, userId);
+        log.info("CaseID: {} removed [CREATOR] case roles from user {}", caseId, userId);
     }
 
     private RemoveUserRolesRequest buildRemoveUserRolesRequest(String caseId, String userId) {
@@ -62,8 +62,7 @@ public class CcdDataStoreService {
 
     private List<CaseUser> getCaseUsers(String caseId, String userId) {
         return asList(
-            buildCaseUser(caseId, CaseRoles.CREATOR, userId),
-            buildCaseUser(caseId, CaseRoles.PETITIONER_SOLICITOR, userId)
+            buildCaseUser(caseId, CaseRoles.CREATOR, userId)
         );
     }
 }

@@ -160,15 +160,21 @@ send-letter:
 
 aca:
   api:
-    url: ${ACA_SERVICE_API_BASEURL:http://localhost:4454}
+    url: ${ACA_SERVICE_API_BASEURL:http://aac-manage-case-assignment-aat.service.core-compute-aat.internal}
 
 ccd:
   data-store:
     api:
-      url: ${CCD_DATA_STORE_API_BASEURL:http://localhost:4452}
+      url: ${CCD_DATA_STORE_API_BASEURL:http://ccd-data-store-api-aat.service.core-compute-aat.internal}
 
 bulk-print:
   dueDate: 30
+
+bailiff:
+  successful:
+    dueDate: 7
+  unsuccessful:
+    dueDate: 30
 
 uk:
   gov:
@@ -225,7 +231,9 @@ uk:
             PETITIONER_RESP_NOT_RESPONDED: 6a5261d3-1ab9-4b13-bede-61db4587b871
             PETITIONER_NOTICE_OF_PROCEEDINGS: fcc7ea62-5e70-4adf-a5b8-f5e2e7bec35c
             SOL_PETITIONER_NOTICE_OF_PROCEEDINGS: 96950c76-9b1e-4017-a56b-0e5d3bf4f0b9
+            SOL_RESPONDENT_NOTICE_OF_PROCEEDINGS: e58a8af8-3086-4b13-99f6-0b1425ecd464
             SOL_APPLICANT_AOS_RECEIVED: 162ffa54-b008-470e-92b2-a3f2ecb6d30c
+            SOL_APPLICANT_APPLICATION_SUBMITTED: 93c79e53-e638-42a6-8584-7d19604e7697
             SOL_APPLICANT_COE_NOTIFICATION: 620c982f-a1d9-4645-8c69-d3187a91a826
             SOL_APPLICANT_CORESP_RESPONDED: cff97b35-fcf7-40b7-ac10-87d34369d15e
             SOL_APPLICANT_DA_ELIGIBLE: f1ab390c-7d28-4ba1-8003-1ae42c677fdf
@@ -249,6 +257,8 @@ uk:
             PET_SOL_AWAITING_DN_SERVED_BY_PROCESS: 0560da04-0c7b-460a-8909-1e693ae78fe5
             CITIZEN_APPLY_FOR_DN_ALTERNATIVE_SERVICE: 7e13370b-ab0f-47f2-8ff6-99262b37cc1b
             PET_SOL_APPLY_FOR_DN_ALTERNATIVE_SERVICE: 3acafb26-695a-4cc1-b7c9-6ee48ed8aab9
+            SOL_PETITIONER_DECREE_NISI_GRANTED: 54ffe09d-fd13-4dc4-9804-0a96484704e7
+            SOL_RESPONDENT_DECREE_NISI_GRANTED: b8160a7b-3fe9-4036-8110-6759ce090193
           welsh:
             AOS_RECEIVED_NO_ADMIT_ADULTERY: e0791556-a202-45e5-9b55-7d1bb61415db
             AOS_RECEIVED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED: bf8945dc-f6e5-48fa-adb6-5f277441584c
@@ -293,7 +303,9 @@ uk:
             PETITIONER_RESP_NOT_RESPONDED: a8bfc951-9682-49cb-95f0-47ba92ac0b2c
             PETITIONER_NOTICE_OF_PROCEEDINGS: fcc7ea62-5e70-4adf-a5b8-f5e2e7bec35c
             SOL_PETITIONER_NOTICE_OF_PROCEEDINGS: 96950c76-9b1e-4017-a56b-0e5d3bf4f0b9
+            SOL_RESPONDENT_NOTICE_OF_PROCEEDINGS: e58a8af8-3086-4b13-99f6-0b1425ecd464
             SOL_APPLICANT_AOS_RECEIVED: 162ffa54-b008-470e-92b2-a3f2ecb6d30c
+            SOL_APPLICANT_APPLICATION_SUBMITTED: 93c79e53-e638-42a6-8584-7d19604e7697
             SOL_APPLICANT_COE_NOTIFICATION: 620c982f-a1d9-4645-8c69-d3187a91a826
             SOL_APPLICANT_CORESP_RESPONDED: cff97b35-fcf7-40b7-ac10-87d34369d15e
             SOL_APPLICANT_DA_ELIGIBLE: f1ab390c-7d28-4ba1-8003-1ae42c677fdf
@@ -316,6 +328,8 @@ uk:
             PET_SOL_AWAITING_DN_SERVED_BY_PROCESS: 0560da04-0c7b-460a-8909-1e693ae78fe5
             CITIZEN_APPLY_FOR_DN_ALTERNATIVE_SERVICE: 7e13370b-ab0f-47f2-8ff6-99262b37cc1b
             PET_SOL_APPLY_FOR_DN_ALTERNATIVE_SERVICE: 3acafb26-695a-4cc1-b7c9-6ee48ed8aab9
+            SOL_PETITIONER_DECREE_NISI_GRANTED: 54ffe09d-fd13-4dc4-9804-0a96484704e7
+            SOL_RESPONDENT_DECREE_NISI_GRANTED: b8160a7b-3fe9-4036-8110-6759ce090193
 
 court-distribution-config:
   distribution:
@@ -483,7 +497,7 @@ document:
         baseurl: ${DOCUMENT_GENERATOR_SERVICE_API_BASEURL:http://div-dgs-aat.service.core-compute-aat.internal}
   management:
     store:
-      url: ${DOCUMENT_MANAGEMENT_STORE_URL:http://localhost:5006}
+      url: ${DOCUMENT_MANAGEMENT_STORE_URL:http://dm-store-aat.service.core-compute-aat.internal}
 
 cohort: onlineSubmissionPrivateBeta
 

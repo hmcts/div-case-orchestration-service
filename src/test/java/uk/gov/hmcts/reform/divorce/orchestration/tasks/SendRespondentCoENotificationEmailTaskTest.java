@@ -37,6 +37,12 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_D8_CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FULL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FULL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_CLAIM_GRANTED;
@@ -214,13 +220,13 @@ public class SendRespondentCoENotificationEmailTaskTest {
     private void verifyEmailParameters(Matcher<Map<? extends String, ?>> optionalTextParametersMatcher) throws TaskException {
         verify(taskCommons).sendEmail(eq(RESPONDENT_CERTIFICATE_OF_ENTITLEMENT_NOTIFICATION),
             notNull(),
-            eq("respondent@justice.uk"),
+            eq(TEST_RESPONDENT_EMAIL),
             argThat(new HamcrestArgumentMatcher<>(
                 allOf(
-                    hasEntry(NOTIFICATION_EMAIL, "respondent@justice.uk"),
-                    hasEntry(NOTIFICATION_CASE_NUMBER_KEY, "HR290831"),
-                    hasEntry(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, "Jane"),
-                    hasEntry(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, "Jamed"),
+                    hasEntry(NOTIFICATION_EMAIL, TEST_RESPONDENT_EMAIL),
+                    hasEntry(NOTIFICATION_CASE_NUMBER_KEY, TEST_D8_CASE_REFERENCE),
+                    hasEntry(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_RESPONDENT_FIRST_NAME),
+                    hasEntry(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_RESPONDENT_LAST_NAME),
                     optionalTextParametersMatcher,
                     hasEntry(NOTIFICATION_HUSBAND_OR_WIFE, "husband"),
                     hasEntry(DATE_OF_HEARING, "21 April 2019"),
@@ -238,8 +244,8 @@ public class SendRespondentCoENotificationEmailTaskTest {
                 allOf(
                     hasEntry(NOTIFICATION_EMAIL, "respsolicitor@justice.uk"),
                     hasEntry(NOTIFICATION_CCD_REFERENCE_KEY, "test.case.id"),
-                    hasEntry(NOTIFICATION_PET_NAME, "James Johnson"),
-                    hasEntry(NOTIFICATION_RESP_NAME, "Resp First Name Resp Last Name"),
+                    hasEntry(NOTIFICATION_PET_NAME, TEST_PETITIONER_FULL_NAME),
+                    hasEntry(NOTIFICATION_RESP_NAME, TEST_RESPONDENT_FULL_NAME),
                     hasEntry(NOTIFICATION_SOLICITOR_NAME, "Respondent Solicitor name"),
                     optionalTextParametersMatcher,
                     hasEntry(DATE_OF_HEARING, "21 April 2019"),
@@ -248,5 +254,4 @@ public class SendRespondentCoENotificationEmailTaskTest {
                 )
             )), any());
     }
-
 }

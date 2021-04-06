@@ -9,7 +9,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
+import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.IdamTestSupport;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_V
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
-public abstract class GetPetitionIssueFeesAbstractTest extends MockedFunctionalTest {
+public abstract class GetPetitionIssueFeesAbstractTest extends IdamTestSupport {
 
     static final String API_URL = "/petition-issue-fees";
     private static final String PETITION_ISSUE_FEE_CONTEXT_PATH = "/fees-and-payments/version/1/petition-issue-fee";

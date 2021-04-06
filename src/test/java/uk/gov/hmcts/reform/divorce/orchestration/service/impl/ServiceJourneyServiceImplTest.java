@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRes
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.BailiffOutcomeWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.FurtherPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
@@ -32,13 +33,19 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_APPLICATION_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_REFERRAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_SERVICE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.BAILIFF;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DEEMED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DISPENSED;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ServiceJourneyServiceImplTest {
@@ -61,19 +68,22 @@ public class ServiceJourneyServiceImplTest {
     @Mock
     private FurtherPaymentWorkflow furtherPaymentWorkflow;
 
+    @Mock
+    private BailiffOutcomeWorkflow bailiffOutcomeWorkflow;
+
     @InjectMocks
     private ServiceJourneyServiceImpl classUnderTest;
 
     @Test
     public void whenServiceApplicationIsNotGrantedThenReturnServiceApplicationNotApproved()
         throws ServiceJourneyServiceException, WorkflowException {
-        runTestMakeServiceDecision(NO_VALUE, SERVICE_APPLICATION_NOT_APPROVED, ApplicationServiceTypes.BAILIFF);
+        runTestMakeServiceDecision(NO_VALUE, SERVICE_APPLICATION_NOT_APPROVED, BAILIFF);
     }
 
     @Test
     public void whenBailiffServiceApplicationGrantedThenReturnAwaitingBailiffService()
         throws ServiceJourneyServiceException, WorkflowException {
-        runTestMakeServiceDecision(YES_VALUE, AWAITING_BAILIFF_SERVICE, ApplicationServiceTypes.BAILIFF);
+        runTestMakeServiceDecision(YES_VALUE, AWAITING_BAILIFF_SERVICE, BAILIFF);
     }
 
     @Test
@@ -163,6 +173,26 @@ public class ServiceJourneyServiceImplTest {
         classUnderTest.serviceDecisionRefusal(input.getCaseDetails(), AUTH_TOKEN);
     }
 
+    @Test
+    public void addBailiffReturnShouldCallWorkflow()
+            throws ServiceJourneyServiceException, WorkflowException {
+        CcdCallbackRequest input = buildCcdCallbackRequest();
+
+        classUnderTest.setupAddBailiffReturnEvent(input.getCaseDetails(), AUTH_TOKEN);
+
+        verify(bailiffOutcomeWorkflow).run(input.getCaseDetails(), AUTH_TOKEN);
+    }
+
+    @Test(expected = ServiceJourneyServiceException.class)
+    public void addBailiffReturnShouldThrowServiceJourneyServiceException()
+            throws ServiceJourneyServiceException, WorkflowException {
+        CcdCallbackRequest input = buildCcdCallbackRequest();
+
+        when(bailiffOutcomeWorkflow.run(any(CaseDetails.class), anyString()))
+                .thenThrow(WorkflowException.class);
+
+        classUnderTest.setupAddBailiffReturnEvent(input.getCaseDetails(), AUTH_TOKEN);
+    }
 
     @Test
     public void givenCaseData_whenSetupConfirmServicePaymentEvent_thenReturnPayload() throws Exception {
@@ -180,16 +210,60 @@ public class ServiceJourneyServiceImplTest {
 
     @Test
     public void givenCaseData_whenConfirmServicePaymentEvent_thenReturnPayload() throws Exception {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(SERVICE_APPLICATION_TYPE, TEST_SERVICE_APPLICATION_TYPE);
+
         CaseDetails caseDetails = CaseDetails.builder()
-            .caseId(TEST_CASE_ID)
-            .state(TEST_STATE)
+            .caseData(caseData)
             .build();
 
         when(furtherPaymentWorkflow.run(eq(caseDetails), anyString())).thenReturn(new HashMap<>());
 
-        classUnderTest.confirmServicePaymentEvent(caseDetails);
+        classUnderTest.confirmServicePaymentEvent(caseDetails, AUTH_TOKEN);
 
         verify(furtherPaymentWorkflow).run(eq(caseDetails), anyString());
+    }
+
+    @Test
+    public void shouldChangeToAwaitingServiceConsiderationState_whenDispensedApplicationIsPaid() throws Exception {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(SERVICE_APPLICATION_TYPE, DISPENSED);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+                .caseData(caseData)
+                .build();
+
+        CcdCallbackResponse response = classUnderTest.confirmServicePaymentEvent(caseDetails, AUTH_TOKEN);
+
+        assertThat(response.getState(), is(AWAITING_SERVICE_CONSIDERATION));
+    }
+
+    @Test
+    public void shouldChangeToAwaitingServiceConsiderationState_whenDeemedApplicationIsPaid() throws Exception {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(SERVICE_APPLICATION_TYPE, DEEMED);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+                .caseData(caseData)
+                .build();
+
+        CcdCallbackResponse response = classUnderTest.confirmServicePaymentEvent(caseDetails, AUTH_TOKEN);
+
+        assertThat(response.getState(), is(AWAITING_SERVICE_CONSIDERATION));
+    }
+
+    @Test
+    public void shouldChangeToAwaitingBailiffReferralState_whenBailiffApplicationIsPaid() throws Exception {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(SERVICE_APPLICATION_TYPE, BAILIFF);
+
+        CaseDetails caseDetails = CaseDetails.builder()
+                .caseData(caseData)
+                .build();
+
+        CcdCallbackResponse response = classUnderTest.confirmServicePaymentEvent(caseDetails, AUTH_TOKEN);
+
+        assertThat(response.getState(), is(AWAITING_BAILIFF_REFERRAL));
     }
 
     @Test(expected = ServiceJourneyServiceException.class)

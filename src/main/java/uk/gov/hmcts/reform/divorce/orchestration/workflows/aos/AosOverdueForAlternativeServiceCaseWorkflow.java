@@ -14,12 +14,14 @@ import java.util.Map;
 
 import static java.lang.String.format;
 import static java.util.Collections.emptyMap;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD_EVENT_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_NOT_RECEIVED_FOR_PROCESS_SERVER_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_NOT_RECEIVED_FOR_BAILIFF_APPLICATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_NOT_RECEIVED_FOR_PROCESS_SERVER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_ALTERNATIVE_METHOD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_BAILIFF;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.alternativeservice.AlternativeServiceType.SERVED_BY_PROCESS_SERVER;
 
 @Slf4j
@@ -42,10 +44,12 @@ public class AosOverdueForAlternativeServiceCaseWorkflow extends DefaultWorkflow
     }
 
     private String getEventIdForGivenAlternativeServiceType(String caseId, AlternativeServiceType alternativeServiceType) throws WorkflowException {
-        if (SERVED_BY_PROCESS_SERVER.equals(alternativeServiceType)) {
-            return AOS_NOT_RECEIVED_FOR_PROCESS_SERVER_EVENT_ID;
+        if (SERVED_BY_BAILIFF.equals(alternativeServiceType)) {
+            return AOS_NOT_RECEIVED_FOR_BAILIFF_APPLICATION;
+        } else if (SERVED_BY_PROCESS_SERVER.equals(alternativeServiceType)) {
+            return AOS_NOT_RECEIVED_FOR_PROCESS_SERVER;
         } else if (SERVED_BY_ALTERNATIVE_METHOD.equals(alternativeServiceType)) {
-            return AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD_EVENT_ID;
+            return AOS_NOT_RECEIVED_FOR_ALTERNATIVE_METHOD;
         } else {
             throw new WorkflowException(format("Case id %s. Unexpected value for alternative service type [%s]", caseId, alternativeServiceType));
         }

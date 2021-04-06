@@ -56,8 +56,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveDraftWorkflow
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SaveDraftWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendClarificationSubmittedNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendCoRespondSubmissionNotificationWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerClarificationRequestNotificationWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerEmailNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SendPetitionerSubmissionNotificationWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SeparationFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.SetOrderSummaryWorkflow;
@@ -99,6 +99,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
+import static org.hamcrest.Matchers.isA;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.fail;
@@ -111,6 +112,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.model.ccd.roles.CaseRoles.PETITIONER_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.DUMMY_CASE_DATA;
@@ -131,8 +133,15 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLIC
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.controller.util.CallbackControllerTestUtils.assertCaseOrchestrationServiceExceptionIsSetProperly;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.JUDGE_COSTS_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING_SOLICITOR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_DRAFTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_REFERRAL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_SERVICE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PAYMENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.ISSUED_TO_BAILIFF;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
@@ -153,7 +162,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseRoles.PETITIONER_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.ALLOCATED_COURT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.CASE_LIST_FOR_PRONOUNCEMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COSTS_ORDER;
@@ -190,7 +198,7 @@ public class CaseOrchestrationServiceImplTest {
     private SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow;
 
     @Mock
-    private SendPetitionerEmailNotificationWorkflow sendPetitionerEmailNotificationWorkflow;
+    private SendEmailNotificationWorkflow sendEmailNotificationWorkflow;
 
     @Mock
     private SendPetitionerClarificationRequestNotificationWorkflow sendPetitionerClarificationRequestNotificationWorkflow;
@@ -695,14 +703,26 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void givenCaseData_whenSendPetitionerGenericEmailNotification_thenReturnPayload() throws Exception {
-        when(sendPetitionerEmailNotificationWorkflow.run(ccdCallbackRequest))
-            .thenReturn(requestPayload);
+    public void givenCaseData_whenSendPetitionerGenericEmailNotification_thenReturnPayload() throws WorkflowException, CaseOrchestrationServiceException {
+        when(sendEmailNotificationWorkflow.run(ccdCallbackRequest.getEventId(), ccdCallbackRequest.getCaseDetails())).thenReturn(requestPayload);
 
-        Map<String, Object> actual = classUnderTest.sendPetitionerGenericUpdateNotificationEmail(ccdCallbackRequest);
+        Map<String, Object> actual = classUnderTest.sendNotificationEmail(ccdCallbackRequest.getEventId(), ccdCallbackRequest.getCaseDetails());
 
-        assertEquals(requestPayload, actual);
-        verify(sendPetitionerEmailNotificationWorkflow).run(ccdCallbackRequest);
+        assertThat(actual, equalTo(requestPayload));
+        verify(sendEmailNotificationWorkflow).run(ccdCallbackRequest.getEventId(), ccdCallbackRequest.getCaseDetails());
+    }
+
+    @Test
+    public void shouldEncapsulateException_whenSendPetitionerGenericEmailNotification_ThrowsWorkflowException() throws WorkflowException {
+        String eventId = ccdCallbackRequest.getEventId();
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        when(sendEmailNotificationWorkflow.run(eventId, caseDetails)).thenThrow(WorkflowException.class);
+
+        CaseOrchestrationServiceException serviceException = assertThrows(CaseOrchestrationServiceException.class,
+            () -> classUnderTest.sendNotificationEmail(eventId, caseDetails));
+
+        assertThat(serviceException.getCause(), isA(WorkflowException.class));
+        assertThat(serviceException.getCaseId().get(), equalTo(TEST_CASE_ID));
     }
 
     @Test
@@ -1730,6 +1750,13 @@ public class CaseOrchestrationServiceImplTest {
         assertThat(ccdCallbackResponse.getErrors(), is(errors));
     }
 
+    @Test
+    public void shouldSetExpectedField_WhenJudgeCostsDecision() {
+        Map<String, Object> result = classUnderTest.judgeCostsDecision(buildCcdCallbackRequest(new HashMap<>()));
+
+        assertThat(result.get(JUDGE_COSTS_DECISION), is(YES_VALUE));
+    }
+
     private CcdCallbackRequest buildCcdCallbackRequest(Map<String, Object> requestPayload) {
         return CcdCallbackRequest.builder()
             .caseDetails(
@@ -1741,6 +1768,61 @@ public class CaseOrchestrationServiceImplTest {
             .eventId(TEST_EVENT_ID)
             .token(TEST_TOKEN)
             .build();
+    }
+
+    @Test
+    public void givenDraftAOSEvent_shouldChangeToAosDraftedState_whenAOSAwaitingSolicitor() {
+        CaseDetails caseDetails = CaseDetails.builder()
+                .state(AOS_AWAITING_SOLICITOR)
+                .build();
+
+        CcdCallbackResponse response = classUnderTest.confirmSolDnReviewPetition(caseDetails);
+
+        assertThat(response.getState(), is(AOS_DRAFTED));
+    }
+
+    @Test
+    public void givenDraftAOSEvent_shouldChangeToAosDraftedState_whenAOSAwaiting() {
+        CaseDetails caseDetails = CaseDetails.builder()
+                .state(AOS_AWAITING)
+                .build();
+
+        CcdCallbackResponse response = classUnderTest.confirmSolDnReviewPetition(caseDetails);
+
+        assertThat(response.getState(), is(AOS_DRAFTED));
+    }
+
+    @Test
+    public void givenDraftAOSEvent_shouldNotChangeState_whenAwaitingBailiffService() {
+        CaseDetails caseDetails = CaseDetails.builder()
+                .state(AWAITING_BAILIFF_SERVICE)
+                .build();
+
+        CcdCallbackResponse response = classUnderTest.confirmSolDnReviewPetition(caseDetails);
+
+        assertThat(response.getState(), is(AWAITING_BAILIFF_SERVICE));
+    }
+
+    @Test
+    public void givenDraftAOSEvent_shouldNotChangeState_whenIssuedToBailiff() {
+        CaseDetails caseDetails = CaseDetails.builder()
+                .state(ISSUED_TO_BAILIFF)
+                .build();
+
+        CcdCallbackResponse response = classUnderTest.confirmSolDnReviewPetition(caseDetails);
+
+        assertThat(response.getState(), is(ISSUED_TO_BAILIFF));
+    }
+
+    @Test
+    public void givenDraftAOSEvent_shouldNotChangeState_whenAwaitingBailiffReferral() {
+        CaseDetails caseDetails = CaseDetails.builder()
+                .state(AWAITING_BAILIFF_REFERRAL)
+                .build();
+
+        CcdCallbackResponse response = classUnderTest.confirmSolDnReviewPetition(caseDetails);
+
+        assertThat(response.getState(), is(AWAITING_BAILIFF_REFERRAL));
     }
 
     private Map<String, Object> buildCaseDataWithOrganisationPolicy() {

@@ -10,9 +10,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CopyD8JurisdictionConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetClaimCostsFromTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetNewLegalConnectionPolicyTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorOrganisationPolicyDetailsTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,7 +49,16 @@ public class SolicitorCreateWorkflowTest {
     SetClaimCostsFromTask setClaimCostsFromTask;
 
     @Mock
-    SetSolicitorOrganisationPolicyDetailsTask setSolicitorOrganisationPolicyDetailsTask;
+    SetPetitionerSolicitorOrganisationPolicyReferenceTask setPetitionerSolicitorOrganisationPolicyReferenceTask;
+
+    @Mock
+    SetRespondentSolicitorOrganisationPolicyReferenceTask setRespondentSolicitorOrganisationPolicyReferenceTask;
+
+    @Mock
+    SetNewLegalConnectionPolicyTask setNewLegalConnectionPolicyTask;
+
+    @Mock
+    CopyD8JurisdictionConnectionPolicyTask copyD8JurisdictionConnectionPolicyTask;
 
     @InjectMocks
     SolicitorCreateWorkflow solicitorCreateWorkflow;
@@ -64,9 +76,12 @@ public class SolicitorCreateWorkflowTest {
             caseDetails.getCaseData(),
             setClaimCostsFromTask,
             setSolicitorCourtDetailsTask,
+            setNewLegalConnectionPolicyTask,
+            copyD8JurisdictionConnectionPolicyTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
-            setSolicitorOrganisationPolicyDetailsTask
+            setPetitionerSolicitorOrganisationPolicyReferenceTask,
+            setRespondentSolicitorOrganisationPolicyReferenceTask
         );
 
         assertThat(solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN), is(caseDetails.getCaseData()));
@@ -75,14 +90,17 @@ public class SolicitorCreateWorkflowTest {
             caseDetails.getCaseData(),
             setClaimCostsFromTask,
             setSolicitorCourtDetailsTask,
+            setNewLegalConnectionPolicyTask,
+            copyD8JurisdictionConnectionPolicyTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
-            setSolicitorOrganisationPolicyDetailsTask
+            setPetitionerSolicitorOrganisationPolicyReferenceTask,
+            setRespondentSolicitorOrganisationPolicyReferenceTask
         );
     }
 
     @Test
-    public void runShouldNotRunSetSolicitorOrganisationPolicyDetailsTaskWhenFeatureIsOff() throws Exception {
+    public void runShouldNotRunSetPetitionerSolicitorOrganisationPolicyReferenceDetailTaskWhenFeatureIsOff() throws Exception {
         Map<String, Object> payload = new HashMap<>();
         payload.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
 
@@ -94,6 +112,8 @@ public class SolicitorCreateWorkflowTest {
             caseDetails.getCaseData(),
             setClaimCostsFromTask,
             setSolicitorCourtDetailsTask,
+            setNewLegalConnectionPolicyTask,
+            copyD8JurisdictionConnectionPolicyTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask
         );
@@ -104,10 +124,13 @@ public class SolicitorCreateWorkflowTest {
             caseDetails.getCaseData(),
             setClaimCostsFromTask,
             setSolicitorCourtDetailsTask,
+            setNewLegalConnectionPolicyTask,
+            copyD8JurisdictionConnectionPolicyTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask
         );
 
-        verifyTasksWereNeverCalled(setSolicitorOrganisationPolicyDetailsTask);
+        verifyTasksWereNeverCalled(setPetitionerSolicitorOrganisationPolicyReferenceTask);
+        verifyTasksWereNeverCalled(setRespondentSolicitorOrganisationPolicyReferenceTask);
     }
 }

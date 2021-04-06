@@ -11,13 +11,14 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_CASE_ROLE;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_POLICY_ORGANISATION_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_POLICY_ORGANISATION_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ORGANISATION_POLICY_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ORGANISATION_POLICY_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_SOLICITOR_CASE_ROLE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_ACCOUNT_NUMBER;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PBA_NUMBERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_PAY_BY_ACCOUNT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
@@ -78,13 +79,25 @@ public class SolicitorDataExtractorTest {
 
     @Test
     public void getPetitionerOrganisationPolicyReturnsValidValue() {
-        Map<String, Object> caseData = buildCaseDataWithOrganisationPolicy();
+        Map<String, Object> caseData = buildCaseDataWithOrganisationPolicy(PETITIONER_SOLICITOR_ORGANISATION_POLICY);
 
-        OrganisationPolicy organisationPolicy = SolicitorDataExtractor.getPetitionerOrganisationPolicy(caseData);
+        OrganisationPolicy organisationPolicy = SolicitorDataExtractor
+            .getSolicitorOrganisationPolicy(caseData, PETITIONER_SOLICITOR_ORGANISATION_POLICY);
 
         assertThat(organisationPolicy, notNullValue());
         assertThat(organisationPolicy.getOrgPolicyReference(), is(TEST_SOLICITOR_REFERENCE));
-        assertThat(organisationPolicy.getOrgPolicyCaseAssignedRole(), is(TEST_PETITIONER_CASE_ROLE));
+        assertThat(organisationPolicy.getOrgPolicyCaseAssignedRole(), is(TEST_PETITIONER_SOLICITOR_CASE_ROLE));
+    }
+
+    @Test
+    public void getRespondentSolicitorOrganisationReturnsValidValue() {
+        Map<String, Object> caseData = buildCaseDataWithOrganisationPolicy(RESPONDENT_SOLICITOR_ORGANISATION_POLICY);
+
+        OrganisationPolicy organisationPolicy = SolicitorDataExtractor.getRespondentSolicitorOrganisation(caseData);
+
+        assertThat(organisationPolicy, notNullValue());
+        assertThat(organisationPolicy.getOrgPolicyReference(), is(TEST_SOLICITOR_REFERENCE));
+        assertThat(organisationPolicy.getOrgPolicyCaseAssignedRole(), is(TEST_PETITIONER_SOLICITOR_CASE_ROLE));
     }
 
     @Test(expected = TaskException.class)
@@ -120,18 +133,18 @@ public class SolicitorDataExtractorTest {
         return caseData;
     }
 
-    private Map<String, Object> buildCaseDataWithOrganisationPolicy() {
+    private Map<String, Object> buildCaseDataWithOrganisationPolicy(String orgPolicyField) {
         OrganisationPolicy organisationPolicy = OrganisationPolicy.builder()
-            .orgPolicyCaseAssignedRole(TEST_PETITIONER_CASE_ROLE)
+            .orgPolicyCaseAssignedRole(TEST_PETITIONER_SOLICITOR_CASE_ROLE)
             .orgPolicyReference(TEST_SOLICITOR_REFERENCE)
             .organisation(Organisation.builder()
-                .organisationName(TEST_POLICY_ORGANISATION_NAME)
-                .organisationID(TEST_POLICY_ORGANISATION_ID)
+                .organisationName(TEST_ORGANISATION_POLICY_NAME)
+                .organisationID(TEST_ORGANISATION_POLICY_ID)
                 .build())
             .build();
 
         Map<String, Object> caseData = buildCaseDataWith(SOLICITOR_REFERENCE_JSON_KEY, TEST_SOLICITOR_REFERENCE);
-        caseData.put(PETITIONER_SOLICITOR_ORGANISATION_POLICY, organisationPolicy);
+        caseData.put(orgPolicyField, organisationPolicy);
 
         return caseData;
     }

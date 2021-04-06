@@ -27,10 +27,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.DECREE_ABSOLUTE_REQUESTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.DN_PRONOUNCED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_REQUESTED_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class SubmitDaCaseITest extends MockedFunctionalTest {
@@ -84,7 +84,7 @@ public class SubmitDaCaseITest extends MockedFunctionalTest {
         caseDetails.put(CCD_CASE_DATA_FIELD, caseData);
 
         stubFormatterServerEndpoint(OK, caseData, convertObjectToJsonString(caseData));
-        stubMaintenanceServerEndpointForUpdate(BAD_REQUEST, DECREE_ABSOLUTE_REQUESTED_EVENT_ID, caseData, TEST_ERROR);
+        stubMaintenanceServerEndpointForUpdate(BAD_REQUEST, DECREE_ABSOLUTE_REQUESTED, caseData, TEST_ERROR);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -105,7 +105,7 @@ public class SubmitDaCaseITest extends MockedFunctionalTest {
         caseDetails.put(CCD_CASE_DATA_FIELD, caseData);
 
         stubFormatterServerEndpoint(OK, caseData, convertObjectToJsonString(caseData));
-        stubMaintenanceServerEndpointForUpdate(OK, DECREE_ABSOLUTE_REQUESTED_EVENT_ID, Collections.emptyMap(), caseDataString);
+        stubMaintenanceServerEndpointForUpdate(OK, DECREE_ABSOLUTE_REQUESTED, Collections.emptyMap(), caseDataString);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)

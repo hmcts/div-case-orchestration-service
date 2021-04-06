@@ -10,10 +10,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
 import java.util.Map;
 
 import static java.util.Collections.emptyMap;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER_EVENT_ID;
 
 @Component
 public class MakeCaseEligibleForDecreeAbsoluteWorkflow extends DefaultWorkflow<Map<String, Object>> {
@@ -32,7 +32,7 @@ public class MakeCaseEligibleForDecreeAbsoluteWorkflow extends DefaultWorkflow<M
             emptyMap(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseId),
-            ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER_EVENT_ID)
+            ImmutablePair.of(CASE_EVENT_ID_JSON_KEY, MAKE_CASE_ELIGIBLE_FOR_DA_PETITIONER)
         );
     }
 

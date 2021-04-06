@@ -2,17 +2,20 @@ package uk.gov.hmcts.reform.divorce.orchestration;
 
 import com.google.common.collect.ImmutableMap;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.utils.DateUtils;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
 
 import java.util.Map;
 
 import static java.util.Collections.singletonMap;
+import static uk.gov.hmcts.reform.divorce.model.ccd.roles.CaseRoles.PETITIONER_SOLICITOR;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.buildOrganisationPolicy;
 
 public class TestConstants {
     public static final String TEST_BULK_CASE_ID = "test.bulk.case.id";
     public static final String TEST_CASE_ID = "test.case.id";
     public static final String TEST_CASE_FAMILY_MAN_ID = "test.family.man.id";
     public static final String TEST_STATE = "test.state";
+    public static final String TEST_SERVICE_APPLICATION_TYPE = "test.service.application.type";
     public static final String TEST_PIN = "abcd1234";
     public static final String TEST_EXPECTED_DUE_DATE = "2020-10-20";
     public static final String TEST_EXPECTED_DUE_DATE_FORMATTED = "20 October 2020";
@@ -21,7 +24,7 @@ public class TestConstants {
     public static final String TEST_DECREE_ABSOLUTE_GRANTED_DATE = "2019-06-30T10:00:00.000";
     public static final String TEST_NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE = "2021-10-20";
     public static final String TEST_CUSTOMER_FACING_NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE = "30 June 2020";
-    public static final String TEST_URL = "http://example.com";
+    public static final String TEST_WELSH_CUSTOMER_FACING_NOTIFICATION_LIMIT_DATE_TO_DOWNLOAD_CERTIFICATE = "30 Mehefin 2020";
     public static final String TEST_USER_ID = "test.user.id";
     public static final String TEST_COURT = "serviceCentre";
     public static final String TEST_COURT_ID = "birmingham";
@@ -42,6 +45,7 @@ public class TestConstants {
     public static final String TEST_SOLICITOR_FIRM_NAME = "test.solicitor.firm";
     public static final String TEST_SOLICITOR_COMPANY = "Awesome Solicitors LLP";
     public static final String TEST_SOLICITOR_REFERENCE = "test.solicitor.reference";
+    public static final String TEST_RESPONDENT_SOLICITOR_REFERENCE = "test.resp.solicitor.reference";
     public static final String TEST_SOLICITOR_PHONE = "test.solicitor.phone";
     public static final String TEST_SOLICITOR_ADDRESS = "123 Solicitor Str\nSolicitor\nCounty\nRE3 P0T";
     public static final String TEST_SERVICE_AUTH_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9."
@@ -101,6 +105,7 @@ public class TestConstants {
     public static final String TEST_CO_RESPONDENT_EMAIL = "corespondent@email.com";
     public static final String TEST_OTHER_PARTY_EMAIL = "OtherPartyEmail@address.com";
     public static final String TEST_OTHER_PARTY_NAME = "Otto Martie";
+    public static final String TEST_DOCUMENT_ID = "123f1234-1234-1f1e-123e-12a12a1fa123";
 
     public static final String TEST_PETITIONER_FIRST_NAME = "Clark";
     public static final String TEST_PETITIONER_LAST_NAME = "Kent";
@@ -115,7 +120,6 @@ public class TestConstants {
     public static final String TEST_RECEIVED_DATE = "2020-05-05";
     public static final String TEST_DECISION_DATE = "2030-10-10";
     public static final String TEST_ADDED_DATE = "2000-01-01";
-    public static final String TEST_ADDED_DATE_FORMATTED = DateUtils.formatDateWithCustomerFacingFormat(TEST_ADDED_DATE);
     public static final String TEST_SERVICE_APPLICATION_PAYMENT = "feeAccount";
 
     public static final String TEST_MY_REASON = "this is my reason";
@@ -123,11 +127,12 @@ public class TestConstants {
     public static final String TEST_GENERAL_EMAIL_DETAILS = "Leverage agile frameworks to provide a robust synopsis for high level overviews.";
 
     public static final Map<String, Object> TEST_INCOMING_PAYLOAD = singletonMap("incomingKey", "incomingValue");
-    public static final CaseDetails TEST_INCOMING_CASE_DETAILS = CaseDetails.builder().caseData(TEST_INCOMING_PAYLOAD).build();
+    public static final CaseDetails TEST_INCOMING_CASE_DETAILS = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(TEST_INCOMING_PAYLOAD).build();
     public static final Map<String, Object> TEST_PAYLOAD_TO_RETURN = singletonMap("returnedKey", "returnedValue");
 
-    public static final String TEST_POLICY_ORGANISATION_NAME = "organisationName";
-    public static final String TEST_POLICY_ORGANISATION_ID = "organisationID";
-    public static final String TEST_PETITIONER_CASE_ROLE = "[PETSOLICITOR]";
+    public static final String TEST_ORGANISATION_POLICY_NAME = "organisationName";
+    public static final String TEST_ORGANISATION_POLICY_ID = "organisationID";
+    public static final String TEST_PETITIONER_SOLICITOR_CASE_ROLE = PETITIONER_SOLICITOR;
+    public static final OrganisationPolicy TEST_ORGANISATION_POLICY = buildOrganisationPolicy();
 
 }

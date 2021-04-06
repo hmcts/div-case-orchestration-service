@@ -177,6 +177,22 @@
         ]
       },
       "D8SolicitorReference" : "SolicitorReference",
+      "PetitionerOrganisationPolicy": {
+        "Organisation": {
+          "OrganisationID": null,
+          "OrganisationName": null
+        },
+        "OrgPolicyCaseAssignedRole": "[PETSOLICITOR]"
+      },
+      "respondentSolicitorReference": "RespondentSolicitorReference",
+      "respondentSolicitorRepresented": "Yes",
+      "RespondentOrganisationPolicy": {
+        "Organisation": {
+          "OrganisationID": null,
+          "OrganisationName": null
+        },
+        "OrgPolicyCaseAssignedRole": "[RESPSOLICITOR]"
+      },
       "D8SelectedDivorceCentreSiteId" : "AA01",
       "PetitionerSolicitorFirm" : "Solicitor",
       "PetitionerSolicitorPhone" : "01234567890",

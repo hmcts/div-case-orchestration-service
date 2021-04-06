@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DynamicList;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Organisation;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
 
 import java.util.Map;
@@ -28,6 +27,7 @@ public class SolicitorDataExtractor {
         public static final String SOLICITOR_PAYMENT_METHOD = OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
         public static final String SOLICITOR_PBA_NUMBER_V1 = OrchestrationConstants.SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY;
         public static final String SOLICITOR_PBA_NUMBER_V2 = CcdFields.PBA_NUMBERS;
+        public static final String RESPONDENT_SOLICITOR_ORGANISATION = CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
     }
 
     public static String getSolicitorReference(Map<String, Object> caseData) {
@@ -46,20 +46,15 @@ public class SolicitorDataExtractor {
         return getMandatoryPropertyValueAsString(caseData, CaseDataKeys.SOLICITOR_PBA_NUMBER_V1);
     }
 
-    public static OrganisationPolicy getPetitionerOrganisationPolicy(Map<String, Object> caseData) {
-        Optional<Object> organisationPolicy = Optional.ofNullable(caseData.get(CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY));
+    public static OrganisationPolicy getSolicitorOrganisationPolicy(Map<String, Object> caseData, String organisationPolicyCaseField) {
+        Optional<Object> organisationPolicy = Optional.ofNullable(caseData.get(organisationPolicyCaseField));
 
-        if (organisationPolicy.isEmpty()) {
-            return buildPetitionerOrganisationPolicy();
-        }
-
-        return new ObjectMapper().convertValue(organisationPolicy.get(),new TypeReference<>() {});
+        return organisationPolicy.<OrganisationPolicy>map(orgPolicy -> new ObjectMapper().convertValue(orgPolicy, new TypeReference<>() {
+        })).orElse(null);
     }
 
-    private static OrganisationPolicy buildPetitionerOrganisationPolicy() {
-        return OrganisationPolicy.builder()
-            .organisation(Organisation.builder()
-                .build())
-            .build();
+    public static OrganisationPolicy getRespondentSolicitorOrganisation(Map<String, Object> caseData) {
+        return getSolicitorOrganisationPolicy(caseData, CaseDataKeys.RESPONDENT_SOLICITOR_ORGANISATION);
     }
+
 }

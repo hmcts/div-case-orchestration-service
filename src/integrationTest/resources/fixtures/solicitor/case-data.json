@@ -1,4 +1,12 @@
 {
+  "PetitionerOrganisationPolicy": {
+    "Organisation": {
+      "OrganisationID": "M2ZT9Q2",
+      "OrganisationName": "DivPetitionerSolicitorFirm"
+    },
+    "OrgPolicyReference": "DivPetitionerSolicitorFirm",
+    "OrgPolicyCaseAssignedRole": "[PETSOLICITOR]"
+  },
   "PetitionerSolicitorEmail": "pet_sol@example.local",
   "D8DerivedRespondentHomeAddress": "51 Bass Buildings,\n38 Alfred Street",
   "D8PetitionerNameChangedHow": [
@@ -20,7 +28,7 @@
   ],
   "D8RespondentLastName": "Respondent Last Name",
   "D8PetitionerNameDifferentToMarriageCert": "Yes",
-  "D8JurisdictionConnection": [
+  "D8JurisdictionConnectionNewPolicy": [
     "A",
     "B",
     "C",

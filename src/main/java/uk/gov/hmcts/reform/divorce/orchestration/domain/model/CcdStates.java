@@ -15,12 +15,14 @@ public class CcdStates {
     public static final String AOS_COMPLETED = "AosCompleted";
     public static final String AOS_OVERDUE = "AosOverdue";
     public static final String AOS_STARTED = "AosStarted";
+    public static final String AOS_DRAFTED = "AosDrafted";
     public static final String AOS_SUBMITTED_AWAITING_ANSWER = "AosSubmittedAwaitingAnswer";
     public static final String AWAITING_DECREE_NISI = "AwaitingDecreeNisi";
     public static final String AWAITING_LEGAL_ADVISOR_REFERRAL = "AwaitingLegalAdvisorReferral";
     public static final String AWAITING_PRONOUNCEMENT = "AwaitingPronouncement";
     public static final String AWAITING_CLARIFICATION = "AwaitingClarification";
     public static final String AWAITING_SERVICE_CONSIDERATION = "AwaitingServiceConsideration";
+    public static final String AWAITING_BAILIFF_REFERRAL = "AwaitingBailiffReferral";
     public static final String AWAITING_REISSUE = "AwaitingReissue";
     public static final String DEFENDED = "DefendedDivorce";
     public static final String DN_PRONOUNCED = "DNPronounced";
@@ -38,4 +40,5 @@ public class CcdStates {
     public static final String AWAITING_ALTERNATIVE_SERVICE = "AwaitingAlternativeService";
     public static final String AWAITING_PROCESS_SERVER_SERVICE = "AwaitingProcessServerService";
     public static final String AWAITING_DWP_RESPONSE = "AwaitingDWPResponse";
+    public static final String ISSUED_TO_BAILIFF = "IssuedToBailiff";
 }

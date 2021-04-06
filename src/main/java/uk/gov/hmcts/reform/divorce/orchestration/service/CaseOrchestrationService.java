@@ -50,8 +50,8 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> sendPetitionerSubmissionNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException;
 
-    Map<String, Object> sendPetitionerGenericUpdateNotificationEmail(CcdCallbackRequest ccdCallbackRequest)
-        throws WorkflowException;
+    Map<String, Object> sendNotificationEmail(String eventId, CaseDetails caseDetails)
+        throws CaseOrchestrationServiceException;
 
     Map<String, Object> aosSubmission(CcdCallbackRequest ccdCallbackRequest, String authorizationToken) throws WorkflowException;
 
@@ -63,9 +63,6 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> solicitorCreate(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
         throws CaseOrchestrationServiceException;
-
-    Map<String, Object> allowShareACase(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
-        throws WorkflowException;
 
     Map<String, Object> solicitorUpdate(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
         throws WorkflowException;
@@ -104,6 +101,8 @@ public interface CaseOrchestrationService {
 
     Map<String, Object> processSolDnDoc(CcdCallbackRequest ccdCallbackRequest, String ccdDocumentType, String docLinkFieldName)
         throws CaseOrchestrationServiceException;
+
+    CcdCallbackResponse confirmSolDnReviewPetition(CaseDetails caseDetails) throws CaseOrchestrationServiceException;
 
     Map<String, Object> generateCoRespondentAnswers(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException;
 
@@ -178,4 +177,6 @@ public interface CaseOrchestrationService {
     Map<String, Object> sendAmendApplicationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
     CcdCallbackResponse welshSetPreviousState(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
+
+    Map<String, Object> judgeCostsDecision(CcdCallbackRequest ccdCallbackRequest);
 }

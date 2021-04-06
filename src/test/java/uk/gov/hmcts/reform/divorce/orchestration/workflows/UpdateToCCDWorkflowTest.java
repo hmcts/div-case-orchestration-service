@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CopyJurisdictionConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FormatDivorceSessionToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PopulateExistingCollections;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.UpdateCaseInCCD;
@@ -37,6 +38,9 @@ public class UpdateToCCDWorkflowTest {
     private FormatDivorceSessionToCaseDataTask formatDivorceSessionToCaseDataTask;
 
     @Mock
+    private CopyJurisdictionConnectionPolicyTask copyJurisdictionConnectionPolicyTask;
+
+    @Mock
     private UpdateCaseInCCD updateCaseInCCD;
 
     @InjectMocks
@@ -64,12 +68,14 @@ public class UpdateToCCDWorkflowTest {
         Map<String, Object> resultData = Collections.singletonMap("Hello", "World");
 
         when(populateExistingCollections.execute(context, testData)).thenReturn(testData);
+        when(copyJurisdictionConnectionPolicyTask.execute(context, testData)).thenReturn(testData);
         when(formatDivorceSessionToCaseDataTask.execute(context, testData)).thenReturn(testData);
         when(updateCaseInCCD.execute(context, testData)).thenReturn(resultData);
 
         assertEquals(resultData, updateToCCDWorkflow.run(eventData, AUTH_TOKEN, TEST_CASE_ID));
 
         verify(populateExistingCollections).execute(context, testData);
+        verify(copyJurisdictionConnectionPolicyTask).execute(context, testData);
         verify(formatDivorceSessionToCaseDataTask).execute(context, testData);
         verify(updateCaseInCCD).execute(context, testData);
     }

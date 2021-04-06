@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotificationT
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.QueueAosSolicitorSubmitTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForDefendedDivorceEmail;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForUndefendedDivorceEmail;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.aos.AosReceivedPetitionerSolicitorEmailTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,29 +38,22 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CCD_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_PET_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_REFERENCE_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RELATIONSHIP_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_TEMPLATE_VARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_HUSBAND_OR_WIFE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOT_DEFENDING_NOT_ADMITTING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.CCD_CASE_DATA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.SEPARATION_TWO_YEARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerRepresented;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
 
 @Component
@@ -68,12 +62,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentation
 public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final GenericEmailNotificationTask emailNotificationTask;
-
     private final SendRespondentSubmissionNotificationForDefendedDivorceEmail
         sendRespondentSubmissionNotificationForDefendedDivorceEmailTask;
-
     private final SendRespondentSubmissionNotificationForUndefendedDivorceEmail
         sendRespondentSubmissionNotificationForUndefendedDivorceEmailTask;
+    private final AosReceivedPetitionerSolicitorEmailTask aosReceivedPetitionerSolicitorEmailTask;
 
     private final QueueAosSolicitorSubmitTask queueAosSolicitorSubmitTask;
     private final TemplateConfigService templateConfigService;
@@ -83,6 +76,10 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         final Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
         final String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         final String caseState = ccdCallbackRequest.getCaseDetails().getState();
+
+        if (isPetitionerRepresented(caseData)) {
+            tasks.add(aosReceivedPetitionerSolicitorEmailTask);
+        }
 
         if (usingRespondentSolicitor(caseData)) {
             log.info("Attempting to queue solicitor AoS submission for case {}, case state: {}", caseId, caseState);
@@ -96,6 +93,9 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
                 ImmutablePair.of(CCD_CASE_DATA, caseData)
             );
         } else {
+
+            log.info("Attempting to process AoS submission tasks for case {}, case state: {}", caseId, caseState);
+
             GenericEmailContext notificationContext = processAosSubmissionTasks(ccdCallbackRequest, tasks);
 
             return execute(
@@ -117,12 +117,11 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         final String relationship = getRespondentRelationship(caseDetails);
         final String welshRelationship = getWelshRespondentRelationship(caseDetails);
 
-        String petSolicitorEmail = getFieldAsStringOrNull(caseDetails, PETITIONER_SOLICITOR_EMAIL);
-        String petitionerEmail = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_EMAIL);
-        String ref = getFieldAsStringOrNull(caseDetails, D_8_CASE_REFERENCE);
+        final String petitionerEmail = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_EMAIL);
+        final String ref = getFieldAsStringOrNull(caseDetails, D_8_CASE_REFERENCE);
 
-        String petitionerFirstName = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_FIRST_NAME);
-        String petitionerLastName = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_LAST_NAME);
+        final String petitionerFirstName = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_FIRST_NAME);
+        final String petitionerLastName = getFieldAsStringOrNull(caseDetails, D_8_PETITIONER_LAST_NAME);
 
         EmailTemplateNames template = null;
         String emailToBeSentTo = null;
@@ -132,21 +131,10 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         if (respondentIsDefending(caseDetails)) {
             tasks.add(sendRespondentSubmissionNotificationForDefendedDivorceEmailTask);
         } else if (respondentIsNotDefending(caseDetails)) {
-            if (StringUtils.isNotEmpty(petSolicitorEmail)) {
-                String respFirstName = getFieldAsStringOrNull(caseDetails, RESP_FIRST_NAME_CCD_FIELD);
-                String respLastName = getFieldAsStringOrNull(caseDetails, RESP_LAST_NAME_CCD_FIELD);
-                String solicitorName = getFieldAsStringOrNull(caseDetails, PETITIONER_SOLICITOR_NAME);
 
-                notificationTemplateVars.put(NOTIFICATION_EMAIL, petSolicitorEmail);
-                notificationTemplateVars.put(NOTIFICATION_PET_NAME, petitionerFirstName + " " + petitionerLastName);
-                notificationTemplateVars.put(NOTIFICATION_RESP_NAME, respFirstName + " " + respLastName);
-                notificationTemplateVars.put(NOTIFICATION_SOLICITOR_NAME, solicitorName);
-                notificationTemplateVars.put(NOTIFICATION_CCD_REFERENCE_KEY, caseDetails.getCaseId());
+            log.info("Respondent is not defending for case {}, case state: {}", caseDetails.getCaseId(), caseDetails.getState());
 
-                tasks.add(emailNotificationTask);
-                template = findTemplateNameToBeSent(caseDetails, true);
-                emailToBeSentTo = petSolicitorEmail;
-            } else if (StringUtils.isNotEmpty(petitionerEmail)) {
+            if (!isPetitionerRepresented(caseData) && StringUtils.isNotEmpty(petitionerEmail)) {
                 notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, petitionerFirstName);
                 notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, petitionerLastName);
                 notificationTemplateVars.put(NOTIFICATION_RELATIONSHIP_KEY, relationship);
@@ -154,7 +142,7 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
                 notificationTemplateVars.put(NOTIFICATION_REFERENCE_KEY, ref);
 
                 tasks.add(emailNotificationTask);
-                template = findTemplateNameToBeSent(caseDetails, false);
+                template = findTemplateNameToBeSent(caseDetails);
                 emailToBeSentTo = petitionerEmail;
             }
 
@@ -207,11 +195,9 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         return fieldValue.toString();
     }
 
-    private EmailTemplateNames findTemplateNameToBeSent(CaseDetails caseDetails, boolean isSolicitor) {
+    private EmailTemplateNames findTemplateNameToBeSent(CaseDetails caseDetails) {
         EmailTemplateNames template = EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT;
-        if (isSolicitor) {
-            template = EmailTemplateNames.SOL_APPLICANT_AOS_RECEIVED;
-        } else if (isAdulteryAndNoConsent(caseDetails)) {
+        if (isAdulteryAndNoConsent(caseDetails)) {
             if (isCoRespNamedAndNotReplied(caseDetails)) {
                 template = EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED;
             } else {
@@ -230,7 +216,7 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         String reasonForDivorce = getFieldAsStringOrNull(caseDetails, D_8_REASON_FOR_DIVORCE);
         String respAdmitOrConsentToFact = getFieldAsStringOrNull(caseDetails, RESP_ADMIT_OR_CONSENT_TO_FACT);
         return StringUtils.equalsIgnoreCase(ADULTERY.getValue(), reasonForDivorce) && StringUtils.equalsIgnoreCase(NO_VALUE,
-                respAdmitOrConsentToFact);
+            respAdmitOrConsentToFact);
     }
 
     private boolean isSep2YrAndNoConsent(CaseDetails caseDetails) {

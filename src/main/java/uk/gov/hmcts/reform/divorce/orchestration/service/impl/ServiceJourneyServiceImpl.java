@@ -9,6 +9,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRes
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.BailiffOutcomeWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.FurtherPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
@@ -18,8 +20,10 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.SetupC
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_REFERRAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_SERVICE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationBailiff;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationGranted;
@@ -36,6 +40,7 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
     private final ServiceDecisionMakingWorkflow serviceDecisionMakingWorkflow;
     private final SetupConfirmServicePaymentWorkflow setupConfirmServicePaymentWorkflow;
     private final FurtherPaymentWorkflow furtherPaymentWorkflow;
+    private final BailiffOutcomeWorkflow bailiffOutcomeWorkflow;
 
     @Override
     public CcdCallbackResponse makeServiceDecision(CaseDetails caseDetails, String authorisation) throws ServiceJourneyServiceException {
@@ -104,9 +109,30 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
     }
 
     @Override
-    public Map<String, Object> confirmServicePaymentEvent(CaseDetails caseDetails) throws ServiceJourneyServiceException {
+    public CcdCallbackResponse confirmServicePaymentEvent(CaseDetails caseDetails, String authorisation) throws ServiceJourneyServiceException {
+        CcdCallbackResponse.CcdCallbackResponseBuilder builder = CcdCallbackResponse.builder();
+
+        if (Conditions.isServiceApplicationBailiff(caseDetails.getCaseData())) {
+            builder.state(AWAITING_BAILIFF_REFERRAL);
+        } else {
+            builder.state(AWAITING_SERVICE_CONSIDERATION);
+        }
+
         try {
-            return furtherPaymentWorkflow.run(caseDetails, getServiceApplicationPaymentType());
+            builder.data(furtherPaymentWorkflow.run(caseDetails, getServiceApplicationPaymentType()));
+        } catch (WorkflowException exception) {
+            throw new ServiceJourneyServiceException(exception, caseDetails.getCaseId());
+        }
+
+        return builder.build();
+    }
+
+    @Override
+    public CcdCallbackResponse setupAddBailiffReturnEvent(CaseDetails caseDetails, String authorisation) throws ServiceJourneyServiceException {
+        try {
+            return CcdCallbackResponse.builder()
+                    .data(bailiffOutcomeWorkflow.run(caseDetails, authorisation))
+                    .build();
         } catch (WorkflowException exception) {
             throw new ServiceJourneyServiceException(exception, caseDetails.getCaseId());
         }
