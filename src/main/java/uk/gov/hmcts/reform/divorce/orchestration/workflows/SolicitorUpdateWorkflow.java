@@ -63,20 +63,28 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
         tasks.add(getAddMiniPetitionDraftTask(caseId));
         tasks.add(getAddNewDocumentsToCaseDataTask(caseId));
 
-        if (featureToggleService.isFeatureEnabled(Features.SHARE_A_CASE)) {
-            log.info("CaseId: {}, validate selected organisation", caseId);
+        if (isShareACaseEnabled()) {
+            log.info("CaseId: {}, validate selected petitioner organisation", caseId);
             tasks.add(validateSelectedOrganisationTask);
         } else {
-            log.info("CaseId: {}, share a case switched OFF", caseId);
+            log.info("CaseId: {}, share a case switched OFF, no tasks added", caseId);
         }
 
-        if (featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)) {
-            log.info("CaseId: {}, Adding OrganisationPolicyReferenceTasks", caseId);
+        if (isRepresentedRespondentJourneyEnabled()) {
+            log.info("CaseId: {}, Adding OrganisationPolicyReference tasks", caseId);
             tasks.add(setPetitionerSolicitorOrganisationPolicyReferenceTask);
             tasks.add(setRespondentSolicitorOrganisationPolicyReferenceTask);
         }
 
         return tasks.toArray(new Task[] {});
+    }
+
+    private boolean isRepresentedRespondentJourneyEnabled() {
+        return featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY);
+    }
+
+    private boolean isShareACaseEnabled() {
+        return featureToggleService.isFeatureEnabled(Features.SHARE_A_CASE);
     }
 
     private Task<Map<String, Object>> getAddNewDocumentsToCaseDataTask(String caseId) {
