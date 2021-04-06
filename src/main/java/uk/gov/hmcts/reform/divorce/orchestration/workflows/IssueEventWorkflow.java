@@ -30,6 +30,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.OrganisationPolicyHelper.isOrganisationPopulated;
 
 @Component
 @Slf4j
@@ -49,7 +50,7 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
     private final ResetCoRespondentLinkingFields resetCoRespondentLinkingFields;
     private final CaseDataUtils caseDataUtils;
 
-    public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest,
+    public Map<String, Object>  run(CcdCallbackRequest ccdCallbackRequest,
                                    String authToken, boolean generateAosInvitation) throws WorkflowException {
 
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
@@ -60,6 +61,21 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
         final CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         final Map<String, Object> caseData = caseDetails.getCaseData();
+
+        /*
+            Issue when there is a digital respondent solicitor (where there is no co-respondent)
+            GIVEN the field 'OrganisationID' from the 'respondentsolicitorpolicy' complex type is populated with any value i.e. exists and not 'null'
+            AND the fact is '2 years consent', '5 years', 'behaviour' or 'desertion'
+            WHEN the event 'Issue' is submitted
+            THEN then the 'respondent 'AOS letter' is generated
+            AND includes the conditional solicitor text
+
+            Add Task:
+
+                if (isOrganisationPopulated(x) && !isAdultery(y)){
+                    tasks.add(respondentAOSLetterGeneratorTask);
+                }
+         */
 
         if (generateAosInvitation && isServiceCentreOrNottinghamDivorceUnit(caseData)) {
             tasks.add(respondentPinGenerator);
