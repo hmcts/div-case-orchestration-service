@@ -36,9 +36,9 @@ public class TaskContextHelper {
         return context;
     }
 
-    public static TaskContext contextWithCommonValues() {
+    public static TaskContext contextWithCaseDetails(CaseDetails caseDetails) {
         TaskContext context = contextWithToken();
-        context.setTransientObject(CASE_DETAILS_JSON_KEY, buildCaseDetailsWithId());
+        context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
 
         return context;
     }

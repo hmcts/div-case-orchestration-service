@@ -151,6 +151,10 @@ feature-toggle:
 send-letter:
   url: ${SEND_LETTER_SERIVCE_BASEURL:http://localhost:4021}
 
+prd:
+  api:
+    url: ${PRD_SERVICE_API_BASEURL:http://localhost:4451}
+
 aca:
   api:
     url: ${ACA_SERVICE_API_BASEURL:http://localhost:4454}
