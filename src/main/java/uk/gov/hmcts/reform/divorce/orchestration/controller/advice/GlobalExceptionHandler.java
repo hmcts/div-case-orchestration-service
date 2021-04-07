@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.bsp.common.error.InvalidDataException;
 import uk.gov.hmcts.reform.bsp.common.model.shared.out.BspErrorResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.AuthenticationError;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.CaseNotFoundException;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.ForbiddenException;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.ValidationException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -94,5 +95,19 @@ class GlobalExceptionHandler {
         warn.addAll(errors);
 
         return warn;
+    }
+
+    @ExceptionHandler(AuthenticationError.class)
+    ResponseEntity<Object> handleUnauthenticatedException(AuthenticationError exception) {
+        log.warn(exception.getMessage(), exception);
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(exception.getMessage());
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    ResponseEntity<Object> handleForbiddenException(ForbiddenException exception) {
+        log.warn(exception.getMessage(), exception);
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exception.getMessage());
     }
 }
