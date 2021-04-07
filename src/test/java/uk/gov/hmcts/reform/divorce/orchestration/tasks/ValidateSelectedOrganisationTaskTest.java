@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.client.OrganisationClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
@@ -23,6 +25,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ORGANISATION_POLICY_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.buildOrganisationPolicy;
@@ -34,8 +37,16 @@ public class ValidateSelectedOrganisationTaskTest {
     @Mock
     private OrganisationClient organisationClient;
 
+    @Mock
+    private AuthTokenGenerator authTokenGenerator;
+
     @InjectMocks
     private ValidateSelectedOrganisationTask validateSelectedOrganisationTask;
+
+    @Before
+    public void setup() {
+        when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_TOKEN);
+    }
 
     @Test
     public void shouldCallPrdApiSuccessfully() {
@@ -50,7 +61,8 @@ public class ValidateSelectedOrganisationTaskTest {
 
         verify(organisationClient)
             .getMyOrganisation(
-                context.getTransientObject(AUTH_TOKEN_JSON_KEY)
+                context.getTransientObject(AUTH_TOKEN_JSON_KEY),
+                TEST_SERVICE_TOKEN
             );
     }
 
@@ -88,7 +100,7 @@ public class ValidateSelectedOrganisationTaskTest {
             () -> validateSelectedOrganisationTask.execute(context, input)
         );
 
-        verify(organisationClient).getMyOrganisation(AUTH_TOKEN);
+        verify(organisationClient).getMyOrganisation(AUTH_TOKEN, TEST_SERVICE_TOKEN);
         assertThat(taskException.getMessage(), is("Please select an organisation you belong to"));
     }
 
@@ -103,12 +115,12 @@ public class ValidateSelectedOrganisationTaskTest {
             () -> validateSelectedOrganisationTask.execute(context, input)
         );
 
-        verify(organisationClient).getMyOrganisation(AUTH_TOKEN);
+        verify(organisationClient).getMyOrganisation(AUTH_TOKEN, TEST_SERVICE_TOKEN);
         assertThat(taskException.getMessage(), is("PRD API call failed"));
     }
 
     private void mockMyOrganisationFound() {
-        when(organisationClient.getMyOrganisation(AUTH_TOKEN)).thenReturn(
+        when(organisationClient.getMyOrganisation(AUTH_TOKEN, TEST_SERVICE_TOKEN)).thenReturn(
             OrganisationsResponse.builder()
                 .organisationIdentifier(TEST_ORGANISATION_POLICY_ID)
                 .build()

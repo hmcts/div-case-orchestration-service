@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.client.OrganisationClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
@@ -24,6 +25,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentation
 public class ValidateSelectedOrganisationTask implements Task<Map<String, Object>> {
 
     private final OrganisationClient organisationClient;
+    private final AuthTokenGenerator authTokenGenerator;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
@@ -61,7 +63,10 @@ public class ValidateSelectedOrganisationTask implements Task<Map<String, Object
         String userOrgId;
 
         try {
-            userOrgId = organisationClient.getMyOrganisation(authToken).getOrganisationIdentifier();
+            userOrgId = organisationClient
+                .getMyOrganisation(authToken, authTokenGenerator.generate())
+                .getOrganisationIdentifier();
+
         } catch (Exception exception) {
             log.error("CaseId: {}, problem with getting organisation details", caseId);
             throw new TaskException("PRD API call failed", exception);
