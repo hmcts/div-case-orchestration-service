@@ -55,7 +55,7 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final FeatureToggleService featureToggleService;
 
-    public Map<String, Object>  run(CcdCallbackRequest ccdCallbackRequest,
+    public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest,
                                    String authToken, boolean generateAosInvitation) throws WorkflowException {
 
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
@@ -71,8 +71,12 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
             tasks.add(respondentPinGenerator);
 
             if (featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)) {
+                log.info("Represented respondent journey toggled on,"
+                    + "adding respondentAOSLetterGeneratorTask to task for case ID: {}", caseDetails.getCaseId());
                 tasks.add(respondentAOSLetterGeneratorTask);
             } else {
+                log.info("Represented respondent journey toggled off,"
+                    + "adding respondentLetterGenerator to task for case ID: {}", caseDetails.getCaseId());
                 tasks.add(respondentLetterGenerator);
             }
 
