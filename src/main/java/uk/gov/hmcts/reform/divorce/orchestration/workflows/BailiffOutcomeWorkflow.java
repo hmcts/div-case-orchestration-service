@@ -60,7 +60,7 @@ public class BailiffOutcomeWorkflow extends DefaultWorkflow<Map<String, Object>>
 
         log.info("CaseID: {}. Adding bailiff service application data task", caseId);
         tasks.add(bailiffServiceApplicationDataTask);
-        log.info("CaseID: {}. Adding bailiff service application data task", caseId);
+        log.info("CaseID: {}. Adding bailiff service application removal task", caseId);
         tasks.add(bailiffServiceApplicationRemovalTask);
 
         return tasks.toArray(new Task[] {});
