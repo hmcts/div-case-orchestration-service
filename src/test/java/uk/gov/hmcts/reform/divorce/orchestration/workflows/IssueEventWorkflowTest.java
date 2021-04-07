@@ -27,6 +27,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetIssueDateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.helper.RepresentedRespondentJourneyHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -88,6 +89,9 @@ public class IssueEventWorkflowTest {
     private CaseDataUtils caseDataUtils;
 
     @Mock
+    private RepresentedRespondentJourneyHelper representedRespondentJourneyHelper;
+
+    @Mock
     private FeatureToggleService featureToggleService;
 
     @InjectMocks
@@ -120,11 +124,12 @@ public class IssueEventWorkflowTest {
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
 
+        when(representedRespondentJourneyHelper.shouldGenerateRespondentAosInvitation(payload)).thenReturn(true);
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(false);
     }
 
     @Test
-    public void givenCaseIsAdulteryWithNamedCoRespondent_AndRespondentLetterCanBeGenerated_whenRun_thenProceedAsExpected() throws WorkflowException {
+    public void givenCaseIsAdulteryWithNamedCoRespondent_AndAosInvitationCanBeGenerated_whenRun_thenProceedAsExpected() throws WorkflowException {
         payload.put(D_8_DIVORCE_UNIT, CourtEnum.SERVICE_CENTER.getId());
 
         //Given
@@ -174,6 +179,34 @@ public class IssueEventWorkflowTest {
         //Then
         assertThat(response, is(payload));
 
+        verifyNoInteractions(respondentLetterGenerator);
+    }
+
+    @Test
+    public void givenCaseIsAdulteryWithNamedCoRespondent_AndAosInvitationCanBeGenerated_ButRespondentAosInvitationShouldNot_whenRun_thenProceedAsExpected() throws WorkflowException {
+        payload.put(D_8_DIVORCE_UNIT, CourtEnum.SERVICE_CENTER.getId());
+
+        when(representedRespondentJourneyHelper.shouldGenerateRespondentAosInvitation(payload)).thenReturn(false);
+
+        //Given
+        when(validateCaseDataTask.execute(context, payload)).thenReturn(payload);
+        when(setIssueDateTask.execute(context, payload)).thenReturn(payload);
+        when(petitionGenerator.execute(context, payload)).thenReturn(payload);
+        when(getPetitionIssueFeeTask.execute(context, payload)).thenReturn(payload);
+        when(coRespondentPinGeneratorTask.execute(context, payload)).thenReturn(payload);
+        when(coRespondentLetterGeneratorTask.execute(context, payload)).thenReturn(payload);
+        when(addNewDocumentsToCaseDataTask.execute(context, payload)).thenReturn(payload);
+        when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
+        when(resetCoRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
+        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(true);
+
+        //When
+        Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, true);
+
+        //Then
+        assertThat(response, is(payload));
+
+        verifyNoInteractions(respondentPinGenerator);
         verifyNoInteractions(respondentLetterGenerator);
     }
 
