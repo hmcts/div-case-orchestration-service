@@ -15,6 +15,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
+import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.Collections;
@@ -41,8 +43,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Cour
 @RunWith(MockitoJUnitRunner.class)
 public class OrchestrationControllerTest {
 
-    @Mock
-    private CaseOrchestrationService caseOrchestrationService;
+    @Mock private CaseOrchestrationService caseOrchestrationService;
+    @Mock private AuthUtil authUtil;
+    @Mock private FeatureToggleService featureToggleService;
 
     @InjectMocks
     private OrchestrationController classUnderTest;
@@ -160,7 +163,7 @@ public class OrchestrationControllerTest {
             .thenReturn(submissionData);
 
         ResponseEntity<CaseResponse> response = classUnderTest
-            .paymentUpdate(paymentUpdate);
+            .paymentUpdate(AUTH_TOKEN, paymentUpdate);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
     }
