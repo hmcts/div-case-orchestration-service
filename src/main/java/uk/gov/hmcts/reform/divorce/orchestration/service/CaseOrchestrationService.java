@@ -16,10 +16,10 @@ public interface CaseOrchestrationService {
     Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest, String authToken,
                                                  boolean generateAosInvitation) throws WorkflowException;
 
-    Map<String, Object> ccdCallbackConfirmPersonalService(CcdCallbackRequest ccdCallbackRequest, String authToken)
+    Map<String, Object> ccdCallbackConfirmPersonalService(String authToken, CaseDetails caseDetails, String eventId)
         throws WorkflowException;
 
-    Map<String, Object> ccdCallbackBulkPrintHandler(CcdCallbackRequest ccdCallbackRequest, String authToken)
+    Map<String, Object> ccdCallbackBulkPrintHandler(String authToken, CaseDetails caseDetails, String eventId)
         throws WorkflowException;
 
     Boolean authenticateRespondent(String authToken) throws WorkflowException;

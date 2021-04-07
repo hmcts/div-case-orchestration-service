@@ -412,8 +412,9 @@ public class CallbackControllerTest {
             CcdCallbackResponse.builder().errors(Collections.emptyList()).warnings(Collections.emptyList())
                 .data(Collections.emptyMap()).build();
 
-        when(caseOrchestrationService.ccdCallbackConfirmPersonalService(ccdCallbackRequest, AUTH_TOKEN))
-            .thenReturn(Collections.emptyMap());
+        when(caseOrchestrationService.ccdCallbackConfirmPersonalService(
+            AUTH_TOKEN, ccdCallbackRequest.getCaseDetails(), ccdCallbackRequest.getEventId()
+        )).thenReturn(Collections.emptyMap());
         ResponseEntity<CcdCallbackResponse> actual = classUnderTest.confirmPersonalService(AUTH_TOKEN, ccdCallbackRequest);
 
         assertEquals(OK, actual.getStatusCode());
@@ -437,8 +438,9 @@ public class CallbackControllerTest {
             .errors(singletonList("Failed to bulk print documents"))
             .build();
 
-        when(caseOrchestrationService.ccdCallbackConfirmPersonalService(ccdCallbackRequest, AUTH_TOKEN))
-            .thenReturn(caseData);
+        when(caseOrchestrationService.ccdCallbackConfirmPersonalService(
+            AUTH_TOKEN, ccdCallbackRequest.getCaseDetails(), ccdCallbackRequest.getEventId()
+        )).thenReturn(caseData);
 
         ResponseEntity<CcdCallbackResponse> actual = classUnderTest.confirmPersonalService(AUTH_TOKEN, ccdCallbackRequest);
 
@@ -455,7 +457,7 @@ public class CallbackControllerTest {
                 .build())
             .build();
         String errorString = "Unable to bulk print the documents";
-        when(caseOrchestrationService.ccdCallbackConfirmPersonalService(incomingRequest, AUTH_TOKEN))
+        when(caseOrchestrationService.ccdCallbackConfirmPersonalService(AUTH_TOKEN, incomingRequest.getCaseDetails(), incomingRequest.getEventId()))
             .thenThrow(new WorkflowException(errorString));
 
         WorkflowException workflowException = assertThrows(WorkflowException.class,
@@ -488,7 +490,7 @@ public class CallbackControllerTest {
             CcdCallbackResponse.builder().errors(Collections.emptyList()).warnings(Collections.emptyList())
                 .data(Collections.emptyMap()).build();
 
-        when(caseOrchestrationService.ccdCallbackBulkPrintHandler(ccdCallbackRequest, AUTH_TOKEN))
+        when(caseOrchestrationService.ccdCallbackBulkPrintHandler(AUTH_TOKEN, ccdCallbackRequest.getCaseDetails(), ccdCallbackRequest.getEventId()))
             .thenReturn(Collections.emptyMap());
         ResponseEntity<CcdCallbackResponse> actual = classUnderTest.bulkPrint(AUTH_TOKEN, ccdCallbackRequest);
 
@@ -498,8 +500,7 @@ public class CallbackControllerTest {
 
     @Test
     public void givenErrors_whenBulkPrintIssued_thenRespondWithOkAndReturnErrors() throws WorkflowException {
-        when(caseOrchestrationService.ccdCallbackBulkPrintHandler(any(), any()))
-            .thenThrow(new WorkflowException("Error message"));
+        when(caseOrchestrationService.ccdCallbackBulkPrintHandler(any(), any(), any())).thenThrow(new WorkflowException("Error message"));
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
