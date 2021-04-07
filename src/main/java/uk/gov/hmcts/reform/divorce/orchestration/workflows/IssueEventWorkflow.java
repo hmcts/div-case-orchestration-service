@@ -70,8 +70,7 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
         final Map<String, Object> caseData = caseDetails.getCaseData();
 
         if (generateAosInvitation && isServiceCentreOrNottinghamDivorceUnit(caseData)) {
-            boolean shouldGenerateRespondentAosLetter = representedRespondentJourneyHelper.shouldGenerateRespondentAosInvitation(caseData);
-            if (shouldGenerateRespondentAosLetter) {
+            if (representedRespondentJourneyHelper.shouldGenerateRespondentAosInvitation(caseData)) {
                 tasks.add(respondentPinGenerator);
 
                 if (featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)) {

@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.workflows.helper;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 
@@ -18,6 +19,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentation
  */
 @AllArgsConstructor
 @Slf4j
+@Component
 public class RepresentedRespondentJourneyHelper {
 
     private final FeatureToggleService featureToggleService;
