@@ -30,6 +30,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.buildOrganisationPolicy;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
@@ -71,6 +74,7 @@ public class AosIssueBulkPrintWorkflowTest {
     @Before
     public void setUp() {
         payload = new HashMap<>();
+        payload.put(RESP_SOL_REPRESENTED, YES_VALUE);
 
         caseDetails = CaseDetails.builder()
             .caseId(TEST_CASE_ID)
@@ -143,7 +147,47 @@ public class AosIssueBulkPrintWorkflowTest {
     }
 
     @Test
-    public void whenWorkflowRuns_AndRespSolIsNotDigital_allTasksRunExceptForUpdateNoticeDetails() throws WorkflowException, TaskException {
+    public void whenRespIsRepresented_AndRespSolIsNotDigital_someTasksRun() throws WorkflowException, TaskException {
+        Map<String, Object> response = classUnderTest.run(AUTH_TOKEN, caseDetails);
+        assertThat(response, is(payload));
+
+        verifyTasksCalledInOrder(
+            payload,
+            serviceMethodValidationTask,
+            fetchPrintDocsFromDmStoreTask,
+            coRespondentAosPackPrinterTask,
+            aosPackDueDateSetterTask
+        );
+
+        verifyNoInteractions(respondentAosPackPrinterTask);
+        verifyNoInteractions(updateRespondentDigitalDetailsTask);
+    }
+
+    @Test
+    public void whenToggleIsOff_RespIsRepresented_AndRespSolIsNotDigital_someTasksRun() throws WorkflowException, TaskException {
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(false);
+
+        Map<String, Object> response = classUnderTest.run(AUTH_TOKEN, caseDetails);
+        assertThat(response, is(payload));
+
+        verifyTasksCalledInOrder(
+            payload,
+            serviceMethodValidationTask,
+            fetchPrintDocsFromDmStoreTask,
+            respondentAosPackPrinterTask,
+            coRespondentAosPackPrinterTask,
+            aosPackDueDateSetterTask
+        );
+
+        verifyNoInteractions(updateRespondentDigitalDetailsTask);
+    }
+
+    @Test
+    public void whenRespIsNotRepresented_RespSolIsNotDigital_allTasksRunExceptForUpdateNoticeDetails() throws WorkflowException, TaskException {
+        Map<String, Object> caseData = caseDetails.getCaseData();
+        caseData.put(RESP_SOL_REPRESENTED, NO_VALUE);
+        caseDetails.setCaseData(caseData);
+
         Map<String, Object> response = classUnderTest.run(AUTH_TOKEN, caseDetails);
         assertThat(response, is(payload));
 
