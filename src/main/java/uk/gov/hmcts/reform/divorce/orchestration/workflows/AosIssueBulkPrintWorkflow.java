@@ -26,6 +26,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
 
 @Component
@@ -48,18 +49,29 @@ public class AosIssueBulkPrintWorkflow extends DefaultWorkflow<Map<String, Objec
 
         tasks.add(serviceMethodValidationTask);
         tasks.add(fetchPrintDocsFromDmStoreTask);
-        tasks.add(respondentAosPackPrinterTask);
 
+        boolean representedRespondentJourneyEnabled = isRepresentedRespondentJourneyEnabled();
         Map<String, Object> caseData = caseDetails.getCaseData();
+        boolean respondentSolicitorDigital = isRespondentSolicitorDigital(caseData);
+        String caseId = caseDetails.getCaseId();
+        if (representedRespondentJourneyEnabled) {
+            boolean respondentRepresented = isRespondentRepresented(caseData);
+            if (respondentRepresented && !respondentSolicitorDigital) {
+                log.info("Case id {}: Not sending respondent AOS pack to bulk print", caseId);
+            } else {
+                log.info("Case id {}: Sending respondent AOS pack to bulk print", caseId);
+                tasks.add(respondentAosPackPrinterTask);
+            }
+        } else {
+            tasks.add(respondentAosPackPrinterTask);
+        }
+
         if (caseDataUtils.isAdulteryCaseWithNamedCoRespondent(caseData)) {
             tasks.add(coRespondentAosPackPrinterTask);
         }
 
         tasks.add(aosPackDueDateSetterTask);
 
-        boolean representedRespondentJourneyEnabled = isRepresentedRespondentJourneyEnabled();
-        String caseId = caseDetails.getCaseId();
-        boolean respondentSolicitorDigital = isRespondentSolicitorDigital(caseData);
         if (representedRespondentJourneyEnabled
             && respondentSolicitorDigital) {
             log.info("CaseId: {} adding updateNoticeOfProceedingsDetailsTask", caseId);
