@@ -14,7 +14,8 @@ public interface OrganisationClient {
 
     @GetMapping(
         value = "/refdata/external/v1/organisations",
-        consumes = MediaType.APPLICATION_JSON_VALUE
+        consumes = MediaType.APPLICATION_JSON_VALUE,
+        produces = MediaType.APPLICATION_JSON_VALUE
     )
     OrganisationsResponse getMyOrganisation(
         @RequestHeader(AUTHORIZATION) String authorisation,

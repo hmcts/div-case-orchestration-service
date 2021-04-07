@@ -173,9 +173,10 @@ public abstract class MockedFunctionalTest {
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)));
     }
 
-    public void stubGetMyOrganisationServerEndpoint(String authToken) {
+    public void stubGetMyOrganisationServerEndpoint(String authToken, String s2sToken) {
         prdServer.stubFor(WireMock.get("/refdata/external/v1/organisations")
             .withHeader(AUTHORIZATION, new EqualToPattern(authToken))
+            .withHeader(SERVICE_AUTHORIZATION_HEADER, new EqualToPattern("Bearer " + s2sToken))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
