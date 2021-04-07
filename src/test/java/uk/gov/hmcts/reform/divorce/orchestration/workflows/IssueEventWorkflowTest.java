@@ -6,12 +6,14 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentLetterGeneratorTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentPinGeneratorTask;
@@ -19,6 +21,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetPetitionIssueFeeTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetCoRespondentLinkingFields;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetRespondentLinkingFields;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentAosLetterGeneratorTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetIssueDateTask;
@@ -58,6 +61,9 @@ public class IssueEventWorkflowTest {
     private RespondentLetterGenerator respondentLetterGenerator;
 
     @Mock
+    private RespondentAosLetterGeneratorTask respondentAosLetterGeneratorTask;
+
+    @Mock
     private CoRespondentLetterGeneratorTask coRespondentLetterGeneratorTask;
 
     @Mock
@@ -80,6 +86,9 @@ public class IssueEventWorkflowTest {
 
     @Mock
     private CaseDataUtils caseDataUtils;
+
+    @Mock
+    private FeatureToggleService featureToggleService;
 
     @InjectMocks
     private IssueEventWorkflow issueEventWorkflow;
@@ -110,6 +119,8 @@ public class IssueEventWorkflowTest {
         context = new DefaultTaskContext();
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(CASE_DETAILS_JSON_KEY, caseDetails);
+
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(false);
     }
 
     @Test
@@ -135,6 +146,35 @@ public class IssueEventWorkflowTest {
 
         //Then
         assertThat(response, is(payload));
+    }
+
+    @Test
+    public void givenRespondentLetterCanBeGenerated_andRepRespJourneyToggledOn_thenInvokeCorrectTask() throws WorkflowException {
+        payload.put(D_8_DIVORCE_UNIT, CourtEnum.SERVICE_CENTER.getId());
+
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
+
+        //Given
+        when(validateCaseDataTask.execute(context, payload)).thenReturn(payload);
+        when(setIssueDateTask.execute(context, payload)).thenReturn(payload);
+        when(petitionGenerator.execute(context, payload)).thenReturn(payload);
+        when(respondentPinGenerator.execute(context, payload)).thenReturn(payload);
+        when(respondentAosLetterGeneratorTask.execute(context, payload)).thenReturn(payload);
+        when(getPetitionIssueFeeTask.execute(context, payload)).thenReturn(payload);
+        when(coRespondentPinGeneratorTask.execute(context, payload)).thenReturn(payload);
+        when(coRespondentLetterGeneratorTask.execute(context, payload)).thenReturn(payload);
+        when(addNewDocumentsToCaseDataTask.execute(context, payload)).thenReturn(payload);
+        when(resetRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
+        when(resetCoRespondentLinkingFields.execute(context, payload)).thenReturn(payload);
+        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(true);
+
+        //When
+        Map<String, Object> response = issueEventWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN, true);
+
+        //Then
+        assertThat(response, is(payload));
+
+        verifyNoInteractions(respondentLetterGenerator);
     }
 
     @Test
