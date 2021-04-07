@@ -39,7 +39,7 @@ public class PaymentUpdateCallbackTest extends IntegrationTest {
     protected IdamUtils idamTestSupportUtil;
 
     @Test
-    public void givenValidPaymentRequest_whenPaymentUpdate_thenReturnStatusOkWithNoErrors() throws Exception {
+    public void givenValidPaymentRequest_whenPaymentUpdate_thenReturnStatusOkWithNoErrors() {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
         headers.put(SERVICE_AUTHORIZATION_HEADER, idamTestSupportUtil.generateUserTokenWithValidMicroService(allowedService));

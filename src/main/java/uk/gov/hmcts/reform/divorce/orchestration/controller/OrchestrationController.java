@@ -4,9 +4,9 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +28,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.Authenti
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
@@ -35,6 +36,7 @@ import java.util.Map;
 import javax.validation.constraints.NotNull;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features.FEE_PAY_S2S_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_AUTHORIZATION_HEADER;
@@ -44,13 +46,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Cour
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 public class OrchestrationController {
 
-    @Autowired
-    private CaseOrchestrationService orchestrationService;
-
-    @Autowired
-    private AuthUtil authUtil;
+    private final CaseOrchestrationService orchestrationService;
+    private final AuthUtil authUtil;
+    private final FeatureToggleService featureToggleService;
 
     @PutMapping(path = "/payment-update", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Handles Payment Update callbacks")
@@ -65,7 +66,9 @@ public class OrchestrationController {
         @RequestHeader(value = SERVICE_AUTHORIZATION_HEADER) String s2sAuthToken,
         @RequestBody PaymentUpdate paymentUpdate) throws WorkflowException, AuthenticationError {
 
-        authUtil.assertIsServiceAllowedToPaymentUpdate(s2sAuthToken);
+        if (featureToggleService.isFeatureEnabled(FEE_PAY_S2S_TOKEN)) {
+            authUtil.assertIsServiceAllowedToPaymentUpdate(s2sAuthToken);
+        }
 
         orchestrationService.update(paymentUpdate);
         return ResponseEntity.ok().build();
