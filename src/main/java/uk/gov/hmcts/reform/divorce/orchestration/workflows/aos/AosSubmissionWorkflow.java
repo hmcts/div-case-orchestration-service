@@ -93,6 +93,9 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
                 ImmutablePair.of(CCD_CASE_DATA, caseData)
             );
         } else {
+
+            log.info("Attempting to process AoS submission tasks for case {}, case state: {}", caseId, caseState);
+
             GenericEmailContext notificationContext = processAosSubmissionTasks(ccdCallbackRequest, tasks);
 
             return execute(
@@ -128,6 +131,9 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         if (respondentIsDefending(caseDetails)) {
             tasks.add(sendRespondentSubmissionNotificationForDefendedDivorceEmailTask);
         } else if (respondentIsNotDefending(caseDetails)) {
+
+            log.info("Respondent is not defending for case {}, case state: {}", caseDetails.getCaseId(), caseDetails.getState());
+
             if (!isPetitionerRepresented(caseData) && StringUtils.isNotEmpty(petitionerEmail)) {
                 notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, petitionerFirstName);
                 notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, petitionerLastName);

@@ -1,0 +1,26 @@
+{
+  "case_details": {
+    "id": "0123456789012345",
+    "case_data": {
+      "D8JurisdictionConnectionNewPolicy": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "I"
+      ],
+      "D8JurisdictionConnection": [
+        "A",
+        "C",
+        "D",
+        "G",
+        "H",
+        "I"
+      ]
+    }
+  }
+}

@@ -1,0 +1,236 @@
+{
+  "D8legalProcess": null,
+  "D8caseReference": null,
+  "createdDate": null,
+  "D8ScreenHasMarriageBroken": "YES",
+  "D8ScreenHasRespondentAddress": "YES",
+  "D8ScreenHasMarriageCert": "YES",
+  "D8ScreenHasPrinter": "YES",
+  "D8DivorceWho": "husband",
+  "D8MarriageIsSameSexCouple": "NO",
+  "D8MarriageDate": "2001-02-02",
+  "D8MarriedInUk": null,
+  "D8CertificateInEnglish": null,
+  "D8CertifiedTranslation": null,
+  "D8MarriagePlaceOfMarriage": null,
+  "D8CountryName": null,
+  "D8RejectMarriageDetails": null,
+  "D8PetitionerNameDifferentToMarriageCert": "YES",
+  "D8PetitionerEmail": "simulate-delivered@notifications.service.gov.uk",
+  "D8PetitionerPhoneNumber": "01234567890",
+  "D8PetitionerFirstName": "John",
+  "D8PetitionerLastName": "Smith",
+  "D8DerivedPetitionerCurrentFullName": "John Smith",
+  "D8PetitionerNameChangedHow": [
+    "marriageCertificate"
+  ],
+  "D8PetitionerNameChangedHowOtherDetails": null,
+  "D8PetitionerContactDetailsConfidential": "share",
+  "D8PetitionerHomeAddress": {
+    "County": null,
+    "PostCode": "SW9 9PE"
+  },
+  "D8DerivedPetitionerHomeAddress": "82 Landor Road\nLondon\nSW9 9PE",
+  "D8PetitionerCorrespondenceAddress": {
+    "County": null,
+    "PostCode": "AB24 232"
+  },
+  "D8DerivedPetitionerCorrespondenceAddr": "84 Landor Road\nLondon\nSW9 9PE",
+  "D8PetitionerCorrespondenceUseHomeAddress": "NO",
+  "D8RespondentNameAsOnMarriageCertificate": null,
+  "D8RespondentFirstName": "Jane",
+  "D8RespondentLastName": "Jamed",
+  "D8DerivedRespondentCurrentName": "Jane Jamed",
+  "D8DerivedRespondentSolicitorDetails": "Justin\nCase\n90 Landor Road\nLondon\nSW9 9PE",
+  "D8RespondentHomeAddress": {
+    "County": null,
+    "PostCode": "SS SSS"
+  },
+  "D8DerivedRespondentHomeAddress": "88 Landor Road\nLondon\nSW9 9PE",
+  "D8RespondentCorrespondenceAddress": {
+    "County": null,
+    "PostCode": "SW9 9PE"
+  },
+  "D8JurisdictionPath": [
+    "JurisdictionHabitualResidence",
+    "JurisdictionInterstitial"
+  ],
+  "D8DerivedRespondentCorrespondenceAddr": "82 Landor Road\nLondon\nSW9 9PE",
+  "D8RespondentSolicitorName": "Justin",
+  "D8RespondentSolicitorCompany": "Case",
+  "D8RespondentSolicitorEmail": "justin@example.com",
+  "D8RespondentSolicitorPhone": "01234567890",
+  "respondentSolicitorReference" : "resp.ref",
+  "D8RespondentSolicitorAddress": null,
+  "D8RespondentCorrespondenceUseHomeAddress": "Solicitor",
+  "D8RespondentKnowsHomeAddress": null,
+  "D8RespondentLivesAtLastAddress": "NO",
+  "D8RejectRespondentAddress": null,
+  "D8LivingArrangementsTogetherSeparated": null,
+  "D8LivingArrangementsLastLivedTogether": "NO",
+  "D8LivingArrangementsLiveTogether": "NO",
+  "D8LivingArrangementsLastLivedTogethAddr": {
+    "AddressLine1": null,
+    "AddressLine2": null,
+    "AddressLine3": null,
+    "PostTown": null,
+    "PostCode": "AB22 222",
+    "County": null,
+    "Country": null
+  },
+  "D8LegalProceedings": "YES",
+  "D8LegalProceedingsRelated": [
+    "children"
+  ],
+  "D8LegalProceedingsDetails": "The legal proceeding details",
+  "D8ReasonForDivorce": "unreasonable-behaviour",
+  "D8DerivedStatementOfCase": "My wife is having an affair this week.",
+  "D8RejectStatementOfCase": null,
+  "D8ReasonForDivorceBehaviourDetails": "My wife is having an affair this week.",
+  "D8ReasonForDivorceDesertionDate": null,
+  "D8ReasonForDivorceDesertionAgreed": null,
+  "D8ReasonForDivorceDesertionDetails": null,
+  "D8ReasonForDivorceSeperationDate": null,
+  "D8ReasonForDivorceAdultery3rdPartyFName": null,
+  "D8ReasonForDivorceAdultery3rdPartyLName": null,
+  "D8ReasonForDivorceAdulteryDetails": null,
+  "D8ReasonForDivorceAdulteryKnowWhen": null,
+  "D8ReasonForDivorceAdulteryWishToName": null,
+  "D8ReasonForDivorceAdulteryKnowWhere": null,
+  "D8ReasonForDivorceAdulteryWhereDetails": null,
+  "D8ReasonForDivorceAdulteryWhenDetails": null,
+  "D8ReasonForDivorceAdulteryIsNamed": "NO",
+  "D8ReasonForDivorceAdultery3rdAddress": {
+    "County": null,
+    "PostCode": "A AAA"
+  },
+  "D8FinancialOrder": "YES",
+  "D8FinancialOrderFor": [
+    "petitioner",
+    "children"
+  ],
+  "D8HelpWithFeesNeedHelp": "YES",
+  "D8HelpWithFeesAppliedForFees": "YES",
+  "D8HelpWithFeesReferenceNumber": "HWF-123-456",
+  "D8PaymentMethod": null,
+  "D8DivorceCostsClaim": "YES",
+  "D8DivorceIsNamed": null,
+  "D8DivorceClaimFrom": [
+    "respondent"
+  ],
+  "D8JurisdictionConfidentLegal": "YES",
+  "D8JurisdictionConnection": [
+    "A",
+    "C"
+  ],
+  "D8JurisdictionConnectionNewPolicy": [
+    "A",
+    "C"
+  ],
+  "D8JurisdictionLastTwelveMonths": null,
+  "D8JurisdictionPetitionerDomicile": null,
+  "D8JurisdictionPetitionerResidence": "YES",
+  "D8JurisdictionRespondentDomicile": null,
+  "D8JurisdictionRespondentResidence": "YES",
+  "D8JurisdictionHabituallyResLast6Months": null,
+  "D8ResidualJurisdictionEligible": null,
+  "Payments": null,
+  "D8DocumentsUploaded": [
+    {
+      "id": null,
+      "value": {
+        "DocumentType": "other",
+        "DocumentLink": {
+          "document_url": "http://localhost:5006/documents/7f63ca9b-c361-49ab-aa8c-8fbdb6bc2936",
+          "document_binary_url": null,
+          "document_filename": null
+        },
+        "DocumentDateAdded": "2017-12-11",
+        "DocumentComment": "",
+        "DocumentFileName": "govuklogo.png",
+        "DocumentEmailContent": ""
+      }
+    },
+    {
+      "id": null,
+      "value": {
+        "DocumentType": "other",
+        "DocumentLink": {
+          "document_url": "http://localhost:5006/documents/560f4bd1-fcf2-4dc5-80d1-d7e00d861683",
+          "document_binary_url": null,
+          "document_filename": null
+        },
+        "DocumentDateAdded": "2017-12-11",
+        "DocumentComment": "",
+        "DocumentFileName": "d8-eng.pdf",
+        "DocumentEmailContent": ""
+      }
+    }
+  ],
+  "D8RejectDocumentsUploaded": null,
+  "D8StatementOfTruth": null,
+  "D8SolicitorReference": null,
+  "D8DivorceUnit": "serviceCentre",
+  "D8ReasonForDivorceShowAdultery": "YES",
+  "D8ReasonForDivorceShowUnreasonableBehavi": "YES",
+  "D8ReasonForDivorceShowTwoYearsSeparation": "YES",
+  "D8ReasonForDivorceShowDesertion": "YES",
+  "D8ReasonForDivorceLimitReasons": "NO",
+  "D8ReasonForDivorceEnableAdultery": "YES",
+  "D8ReasonForDivorceDesertionAlright": null,
+  "D8ClaimsCostsAppliedForFees": "YES",
+  "D8ReasonForDivorceClaimingAdultery": "NO",
+  "D8ReasonForDivorceSeperationIsSameOrAftr": null,
+  "D8ReasonForDivorceSeperationInFuture": null,
+  "D8ReasonForDivorceDesertionInFuture": null,
+  "D8MarriageCanDivorce": "YES",
+  "D8MarriageIsFuture": null,
+  "D8MarriageMoreThan100": null,
+  "D8MarriagePetitionerName": "John Doe",
+  "D8MarriageRespondentName": "Jenny Benny",
+  "D8ReasonForDivorceDesertionDay": null,
+  "D8ReasonForDivorceDesertionMonth": null,
+  "D8ReasonForDivorceDesertionYear": null,
+  "D8ReasonForDivorceDesertionBeforeMarriag": null,
+  "D8ReasonForDivorceSeperationDay": null,
+  "D8ReasonForDivorceSeperationMonth": null,
+  "D8ReasonForDivorceSeperationYear": null,
+  "D8DerivedReasonForDivorceAdultery3dPtyNm": null,
+  "D8DerivedRespondentSolicitorAddr": "90 Landor Road\nLondon\nSW9 9PE",
+  "D8DerivedLivingArrangementsLastLivedAddr": "Flat A-B\n86 Landor Road\nLondon\nSW9 9PE",
+  "D8Connections": {
+    "A": "The Petitioner and the Respondent are habitually resident in England and Wales",
+    "B": null,
+    "C": "The Respondent is habitually resident in England and Wales",
+    "D": null,
+    "E": null,
+    "F": null,
+    "G": null
+  },
+  "D8DocumentsGenerated": null,
+  "D8ConnectionSummary": null,
+  "D8ReasonForDivorceHasMarriage": "YES",
+  "D8ReasonForDivorceShowFiveYearsSeparatio": "YES",
+  "D8ReasonForDivorceClaiming5YearSeparatio": "NO",
+  "D8ReasonForDivorceSeperation": null,
+  "D8ReasonForDivorceSeperationBeforeMarria": null,
+  "D8ReasonForDivorceDesertion": null,
+  "D8DerivedReasonForDivorceAdultery3rdAddr": "90 Landor Road\nLondon\nSW9 9PE",
+  "D8Cohort": "onlineSubmissionPrivateBeta",
+  "D8InferredPetitionerGender": "female",
+  "D8InferredRespondentGender": "male",
+  "D8PetitionerConsent": "YES",
+  "RespondentContactDetailsConfidential": "share",
+  "NewLegalConnectionPolicy" : "Yes",
+  "RespondentOrganisationPolicy" : {
+    "Organisation" : {
+      "OrganisationID" : "resp.ref.data.id",
+      "OrganisationName" : "Case"
+    },
+    "OrgPolicyReference" : "resp.ref",
+    "PreviousOrganisations" : [ ],
+    "OrgPolicyCaseAssignedRole" : "[RESPSOLICITOR]"
+  },
+  "RespContactMethodIsDigital" : "Yes",
+  "respondentSolicitorRepresented" : "Yes"
+}

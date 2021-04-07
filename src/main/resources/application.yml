@@ -151,6 +151,7 @@ feature-toggle:
     pay_by_account: ${PAY_BY_ACCOUNT:false}
     share_a_case: ${FEATURE_SHARE_A_CASE:false}
     represented_respondent_journey: ${FEATURE_REPRESENTED_RESPONDENT_JOURNEY:false}
+    feature_fee_pay_s2s_token: ${FEATURE_FEE_PAY_S2S_TOKEN:false}
 
 send-letter:
   url: ${SEND_LETTER_SERIVCE_BASEURL:http://localhost:4021}
@@ -491,6 +492,7 @@ idam:
     secret: ${SERVICE_AUTH_SECRET:dummysecret}
     services-allowed-to-update: ${BSP_SERVICES_ALLOWED_TO_UPDATE:bulk_scan_orchestrator}
     services-allowed-to-validate: ${BSP_SERVICES_ALLOWED_TO_VALIDATE:bulk_scan_processor}
+    services-allowed-to-payment-update: ${SERVICES_ALLOWED_TO_PAYMENT_UPDATE:payment_app}
   api:
     url: ${IDAM_API_URL:http://localhost:4503}
 
@@ -554,7 +556,7 @@ documentation:
     enabled: true
 
 dataExtraction:
-  emailFrom: noreply@reform.hmcts.net
+  emailFrom: noreply@mail-divorce-nonprod.platform.hmcts.net
   status:
     DA:
       emailTo:

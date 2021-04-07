@@ -16,16 +16,16 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.AllowShareACaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionForRefusalWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.AosIssueBulkPrintWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseCancelPronouncementEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseRemoveCasesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateDnPronounceDatesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateHearingDetailsEventWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkPrintWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForHearingWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackBulkPrintWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CleanStatusCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CoRespondentAnswerReceivedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CreateNewAmendedCaseAndSubmitToCCDWorkflow;
@@ -94,6 +94,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.JUDGE_COSTS_DECISION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_DRAFTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_DATA_JSON_KEY;
@@ -103,8 +105,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COSTS_ORDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DECREE_NISI;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.EventHelper.isIssueAosEvent;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isAOSDraftedCandidate;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isPetitionerClaimingCosts;
 
 @Slf4j
@@ -117,7 +122,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private static final String PAYMENT = "payment";
 
     private final IssueEventWorkflow issueEventWorkflow;
-    private final CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow;
+    private final BulkPrintWorkflow bulkPrintWorkflow;
+    private final AosIssueBulkPrintWorkflow aosIssueBulkPrintWorkflow;
     private final RetrieveDraftWorkflow retrieveDraftWorkflow;
     private final SaveDraftWorkflow saveDraftWorkflow;
     private final DeleteDraftWorkflow deleteDraftWorkflow;
@@ -129,7 +135,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SetOrderSummaryWorkflow setOrderSummaryWorkflow;
     private final SolicitorSubmissionWorkflow solicitorSubmissionWorkflow;
     private final SolicitorCreateWorkflow solicitorCreateWorkflow;
-    private final AllowShareACaseWorkflow allowShareACaseWorkflow;
     private final SolicitorUpdateWorkflow solicitorUpdateWorkflow;
     private final SendPetitionerSubmissionNotificationWorkflow sendPetitionerSubmissionNotificationWorkflow;
     private final SendEmailNotificationWorkflow sendEmailNotificationWorkflow;
@@ -203,33 +208,35 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> ccdCallbackConfirmPersonalService(CcdCallbackRequest ccdCallbackRequest, String authToken)
-        throws WorkflowException {
-
-        Map<String, Object> payLoad = ccdCallbackRequest.getCaseDetails().getCaseData();
+    public Map<String, Object> ccdCallbackConfirmPersonalService(String authToken, CaseDetails caseDetails, String eventId) throws WorkflowException {
+        Map<String, Object> payLoad = caseDetails.getCaseData();
         String sendViaEmailOrPost = (String) payLoad.get(OrchestrationConstants.SEND_VIA_EMAIL_OR_POST);
         if (StringUtils.equalsIgnoreCase(sendViaEmailOrPost, OrchestrationConstants.SEND_VIA_POST)) {
-            log.info("Confirm personal service callback for case with CASE ID: {} calling bulk print service",
-                ccdCallbackRequest.getCaseDetails().getCaseId());
-            payLoad = ccdCallbackBulkPrintHandler(ccdCallbackRequest, authToken);
+            log.info("Confirm personal service callback for case with CASE ID: {} calling bulk print service", caseDetails.getCaseId());
+            payLoad = ccdCallbackBulkPrintHandler(authToken, caseDetails, eventId);
         }
         return payLoad;
     }
 
     @Override
-    public Map<String, Object> ccdCallbackBulkPrintHandler(CcdCallbackRequest ccdCallbackRequest, String authToken)
-        throws WorkflowException {
-
-        Map<String, Object> payLoad = ccdCallbackBulkPrintWorkflow.run(ccdCallbackRequest, authToken);
-
-        if (ccdCallbackBulkPrintWorkflow.errors().isEmpty()) {
-            log.info("Bulk print callback for case with CASE ID: {} successfully completed",
-                ccdCallbackRequest.getCaseDetails().getCaseId());
-            return payLoad;
+    public Map<String, Object> ccdCallbackBulkPrintHandler(String authToken, CaseDetails caseDetails, String eventId) throws WorkflowException {
+        Map<String, Object> payload;
+        Map<String, Object> errors;
+        if (isIssueAosEvent(eventId)) { //This should be moved to the controller, or better yet, become an entirely new endpoint
+            payload = aosIssueBulkPrintWorkflow.run(authToken, caseDetails);
+            errors = aosIssueBulkPrintWorkflow.errors();
         } else {
-            log.error("Bulk print callback for case with CASE ID: {} failed",
-                ccdCallbackRequest.getCaseDetails().getCaseId());
-            return ccdCallbackBulkPrintWorkflow.errors();
+            payload = bulkPrintWorkflow.run(authToken, caseDetails);
+            errors = bulkPrintWorkflow.errors();
+        }
+
+        String caseId = caseDetails.getCaseId();
+        if (errors.isEmpty()) {
+            log.info("Bulk print callback for case with CASE ID: {} successfully completed", caseId);
+            return payload;
+        } else {
+            log.error("Bulk print callback for case with CASE ID: {} failed", caseId);
+            return errors;
         }
     }
 
@@ -454,8 +461,12 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     @Override
-    public Map<String, Object> sendNotificationEmail(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        return sendEmailNotificationWorkflow.run(ccdCallbackRequest);
+    public Map<String, Object> sendNotificationEmail(String eventId, CaseDetails caseDetails) throws CaseOrchestrationServiceException {
+        try {
+            return sendEmailNotificationWorkflow.run(eventId, caseDetails);
+        } catch (WorkflowException exception) {
+            throw new CaseOrchestrationServiceException(exception, caseDetails.getCaseId());
+        }
     }
 
     @Override
@@ -535,19 +546,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
             return solicitorCreateWorkflow.run(ccdCallbackRequest.getCaseDetails(), authorizationToken);
         } catch (WorkflowException e) {
             throw new CaseOrchestrationServiceException(e);
-        }
-    }
-
-    @Override
-    public Map<String, Object> allowShareACase(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
-        throws CaseOrchestrationServiceException {
-
-        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
-
-        try {
-            return allowShareACaseWorkflow.run(caseDetails, authorizationToken);
-        } catch (WorkflowException workflowException) {
-            throw new CaseOrchestrationServiceException(workflowException, caseDetails.getCaseId());
         }
     }
 
@@ -671,6 +669,20 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         } catch (WorkflowException e) {
             throw new CaseOrchestrationServiceException(e);
         }
+    }
+
+    @Override
+    public CcdCallbackResponse confirmSolDnReviewPetition(CaseDetails caseDetails) {
+        CcdCallbackResponse.CcdCallbackResponseBuilder builder = CcdCallbackResponse.builder();
+        builder.data(caseDetails.getCaseData());
+
+        if (isAOSDraftedCandidate(caseDetails)) {
+            builder.state(AOS_DRAFTED);
+        } else {
+            builder.state(caseDetails.getState());
+        }
+
+        return builder.build();
     }
 
     @Override
@@ -990,5 +1002,14 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                 .errors(workflowErrors.values().stream().map(String.class::cast).collect(Collectors.toList()))
                 .build();
         }
+    }
+
+    @Override
+    public Map<String, Object> judgeCostsDecision(CcdCallbackRequest ccdCallbackRequest) {
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+
+        caseData.put(JUDGE_COSTS_DECISION, YES_VALUE);
+
+        return caseData;
     }
 }

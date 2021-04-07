@@ -160,12 +160,12 @@ send-letter:
 
 aca:
   api:
-    url: ${ACA_SERVICE_API_BASEURL:http://localhost:4454}
+    url: ${ACA_SERVICE_API_BASEURL:http://aac-manage-case-assignment-aat.service.core-compute-aat.internal}
 
 ccd:
   data-store:
     api:
-      url: ${CCD_DATA_STORE_API_BASEURL:http://localhost:4452}
+      url: ${CCD_DATA_STORE_API_BASEURL:http://ccd-data-store-api-aat.service.core-compute-aat.internal}
 
 bulk-print:
   dueDate: 30
@@ -502,7 +502,7 @@ document:
         baseurl: ${DOCUMENT_GENERATOR_SERVICE_API_BASEURL:http://div-dgs-aat.service.core-compute-aat.internal}
   management:
     store:
-      url: ${DOCUMENT_MANAGEMENT_STORE_URL:http://localhost:5006}
+      url: ${DOCUMENT_MANAGEMENT_STORE_URL:http://dm-store-aat.service.core-compute-aat.internal}
 
 cohort: onlineSubmissionPrivateBeta
 

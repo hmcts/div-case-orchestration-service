@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 public enum Features {
 
+    FEE_PAY_S2S_TOKEN("feature_fee_pay_s2s_token"),
     RESPONDENT_SOLICITOR_DETAILS("feature_resp_solicitor_details"),
     DN_REFUSAL("dn_refusal"),
     PAPER_UPDATE("paper_update"),

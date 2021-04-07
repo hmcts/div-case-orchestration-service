@@ -16,6 +16,7 @@ public enum DocumentType {
     DIVORCE_MINI_PETITION("divorceMiniPetition", "divorceminipetition", "FL-DIV-GNO-WEL-00256.docx"),
     DIVORCE_DRAFT_MINI_PETITION("divorceDraftMiniPetition", "divorcedraftminipetition", "FL-DIV-GNO-WEL-00256.docx"),
     AOS_INVITATION("aosInvitation", "aosinvitation", "FL-DIV-LET-WEL-00257.docx"),
+    AOS_INVITATION_REP_RESP("aosInvitation", "aosinvitation-rep-resp-journey", "FL-DIV-LET-WEL-00257.docx"),
     RESPONDENT_ANSWERS("respondentAnswers", "respondentAnswers", "FL-DIV-LET-WEL-00260.docx"),
     CO_RESPONDENT_ANSWERS("coRespondentAnswers", "co-respondent-answers", "FL-DIV-LET-WEL-00258.docx"),
     CO_RESPONDENT_INVITATION("coRespondentInvitation", "co-respondentinvitation", "FL-DIV-LET-WEL-00259.docx"),

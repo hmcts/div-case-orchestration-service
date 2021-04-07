@@ -161,6 +161,7 @@ public class OrchestrationConstants {
     public static final String CO_RESPONDENT_PIN = "coRespondentPin";
     public static final String SUCCESS_STATUS = "success";
     public static final String DOCUMENT_TYPE_RESPONDENT_ANSWERS = "respondentAnswers";
+    public static final String DIVORCE_SESSION_RESPONDENT_SOLICITOR_REFERENCE_DATA_ID = "respondentSolicitorReferenceDataId";
     /*
        Unfortunately, "court" is the name that is already used in the Divorce session format in many places, although it holds a list of courts.
        Changing it now would probably be more trouble than it's worth. At least our constant can be called the right thing.
@@ -366,5 +367,13 @@ public class OrchestrationConstants {
 
     // Bulk Scan
     public static final String CASE_TYPE_ID = "DIVORCE";
+
+    // New legal connection policy
+    public static final String NEW_LEGAL_CONNECTION_POLICY_DIV_SESSION = "newLegalConnectionPolicy";
+    public static final String NEW_LEGAL_CONNECTION_POLICY_CCD_DATA = "NewLegalConnectionPolicy";
+    public static final String OLD_JURISDICTION_CONNECTION_POLICY_DIV_SESSION = "jurisdictionConnection";
+    public static final String OLD_JURISDICTION_CONNECTION_POLICY_CCD_DATA = "D8JurisdictionConnection";
+    public static final String NEW_JURISDICTION_CONNECTION_POLICY_DIV_SESSION = "jurisdictionConnectionNewPolicy";
+    public static final String NEW_JURISDICTION_CONNECTION_POLICY_CCD_DATA = "D8JurisdictionConnectionNewPolicy";
 
 }

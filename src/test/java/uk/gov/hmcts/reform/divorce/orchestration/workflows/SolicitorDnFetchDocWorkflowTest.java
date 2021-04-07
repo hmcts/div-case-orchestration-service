@@ -153,6 +153,18 @@ public class SolicitorDnFetchDocWorkflowTest {
     }
 
     @Test
+    public void shouldExecuteTasksWhenIsBailiffServiceSuccessfulAndRespondentAnswersIsRequested() throws WorkflowException {
+        Map<String, Object> caseData = buildBailiffServiceSuccessfulCaseData();
+        taskContext.setTransientObject(DOCUMENT_DRAFT_LINK_FIELD, RESP_ANSWERS_LINK);
+
+        when(populateDocLinkTask.execute(taskContext, caseData)).thenReturn(caseData);
+
+        executeWorkflow(caseData, RESP_ANSWERS_LINK);
+
+        verify(populateDocLinkTask).execute(taskContext, caseData);
+    }
+
+    @Test
     public void shouldExecuteTasksWhenIsServedByAlternativeMethodAndRespondentAnswersIsNotRequested() throws WorkflowException {
         Map<String, Object> caseData = buildServedByAlternativeMethodCaseData();
         when(populateDocLinkTask.execute(taskContext, caseData)).thenReturn(caseData);
@@ -202,6 +214,10 @@ public class SolicitorDnFetchDocWorkflowTest {
             CcdFields.SERVED_BY_ALTERNATIVE_METHOD, YES_VALUE,
             CcdFields.SERVED_BY_PROCESS_SERVER, NO_VALUE
         );
+    }
+
+    public static Map<String, Object> buildBailiffServiceSuccessfulCaseData() {
+        return ImmutableMap.of(CcdFields.BAILIFF_SERVICE_SUCCESSFUL, YES_VALUE);
     }
 
     private void executeWorkflow(Map<String, Object> caseData, String respAnswersLink)

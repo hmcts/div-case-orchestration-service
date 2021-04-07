@@ -60,7 +60,7 @@
   "D8RespondentSolicitorCompany": "Case",
   "D8RespondentSolicitorEmail": "justin@example.com",
   "D8RespondentSolicitorPhone": "01234567890",
-  "respondentSolicitorRepresented": null,
+  "respondentSolicitorReference" : "resp.ref",
   "D8RespondentSolicitorAddress": null,
   "D8RespondentCorrespondenceUseHomeAddress": "Solicitor",
   "D8RespondentKnowsHomeAddress": null,
@@ -120,6 +120,10 @@
   ],
   "D8JurisdictionConfidentLegal": "YES",
   "D8JurisdictionConnection": [
+    "A",
+    "C"
+  ],
+  "D8JurisdictionConnectionNewPolicy": [
     "A",
     "C"
   ],
@@ -216,5 +220,15 @@
   "D8InferredPetitionerGender": "female",
   "D8InferredRespondentGender": "male",
   "D8PetitionerConsent": "YES",
-  "RespondentContactDetailsConfidential": "share"
+  "RespondentContactDetailsConfidential": "share",
+  "RespondentOrganisationPolicy" : {
+    "Organisation" : {
+      "OrganisationID" : "resp.ref.data.id",
+      "OrganisationName" : "Case"
+    },
+    "OrgPolicyReference" : "resp.ref",
+    "PreviousOrganisations" : [ ],
+    "OrgPolicyCaseAssignedRole" : "[RESPSOLICITOR]"
+  },
+  "NewLegalConnectionPolicy": "Yes"
 }

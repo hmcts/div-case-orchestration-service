@@ -183,8 +183,7 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
         String templateName = PETITIONER_RESP_NOT_RESPONDED.name();
         setUpEmailClientMockThrowsExceptionWith(templateName, testTemplateVars);
 
-        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
-            .data(testData).errors(Collections.singletonList("test exception")).build();
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().errors(Collections.singletonList("test exception")).build();
         expect(status().isOk(), expectedResponse);
         verifySendEmailIsCalledWithUserDataAnd(templateName);
     }
@@ -196,8 +195,7 @@ public class AosOverdueNotificationTest extends MockedFunctionalTest {
         String templateName = SOL_APPLICANT_RESP_NOT_RESPONDED.name();
         setUpEmailClientMockThrowsExceptionWith(templateName, testTemplateVars);
 
-        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder()
-            .data(testData).errors(Collections.singletonList("test exception")).build();
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().errors(Collections.singletonList("test exception")).build();
         expect(status().isOk(), expectedResponse);
         verifySendEmailIsCalledWithUserDataAnd(templateName);
     }

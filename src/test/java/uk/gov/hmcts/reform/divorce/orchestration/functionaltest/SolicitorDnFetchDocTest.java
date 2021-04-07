@@ -1,10 +1,14 @@
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
+import com.google.common.collect.ImmutableMap;
 import org.hamcrest.Matcher;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.model.ccd.Document;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
@@ -18,6 +22,7 @@ import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
@@ -27,9 +32,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_DOCUMENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_RESPONDENT_ANSWERS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DEEMED;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocument;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnFetchDocWorkflowTest.buildBailiffServiceSuccessfulCaseData;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnFetchDocWorkflowTest.buildServedByAlternativeMethodCaseData;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnFetchDocWorkflowTest.buildServedByProcessServerCaseData;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.SolicitorDnFetchDocWorkflowTest.buildServiceApplicationCaseData;
@@ -120,6 +130,44 @@ public class SolicitorDnFetchDocTest extends MockedFunctionalTest {
             )));
     }
 
+    @Test
+    public void givenIsBailiffServiceSuccessful_thenResponseIsWithoutErrorsWhenMissingRespondentAnswersDocument() throws Exception {
+        CcdCallbackRequest request = buildRequest(
+            buildBailiffServiceSuccessfulCaseData()
+        );
+
+        webClient.perform(post(API_URL_RESP_ANSWERS)
+            .content(convertObjectToJsonString(request))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(
+                isJson(),
+                hasJsonPath("$.data.SuccessfulServedByBailiff", is("Yes")),
+                hasNoJsonPath("$.data.respondentanswerslink"),
+                hasNoJsonPath("$.errors")
+            )));
+    }
+
+    @Test
+    public void givenIsBailiffServiceSuccessful_thenResponseIsWithRespondentAnswersDocumentLink() throws Exception {
+        CcdCallbackRequest request = buildRequest(
+            buildBailiffServiceSuccessfulWithRespondentAnswersCaseData()
+        );
+
+        webClient.perform(post(API_URL_RESP_ANSWERS)
+            .content(convertObjectToJsonString(request))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(
+                isJson(),
+                hasJsonPath("$.data.SuccessfulServedByBailiff", is("Yes")),
+                hasJsonPath("$.data.respondentanswerslink.document_url", is(getDocumentStoreTestUrl(TEST_DOCUMENT_ID))),
+                hasNoJsonPath("$.errors")
+            )));
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void givenCaseData_whenSolicitorDnJourneyBegins_thenSetPetitionUrlField() throws Exception {
@@ -167,6 +215,17 @@ public class SolicitorDnFetchDocTest extends MockedFunctionalTest {
 
         return CcdCallbackRequest.builder()
             .caseDetails(caseDetails)
+            .build();
+    }
+
+    private Map<String, Object> buildBailiffServiceSuccessfulWithRespondentAnswersCaseData() {
+        CollectionMember<Document> respAnswersDoc = createCollectionMemberDocument(getDocumentStoreTestUrl(TEST_DOCUMENT_ID),
+            DOCUMENT_TYPE_RESPONDENT_ANSWERS,
+            DOCUMENT_TYPE_RESPONDENT_ANSWERS);
+
+        return new ImmutableMap.Builder<String, Object>()
+            .put(CcdFields.BAILIFF_SERVICE_SUCCESSFUL, YES_VALUE)
+            .put(D8DOCUMENTS_GENERATED, asList(respAnswersDoc))
             .build();
     }
 }

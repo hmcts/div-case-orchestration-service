@@ -1,9 +1,10 @@
 {
   "PetitionerOrganisationPolicy": {
     "Organisation": {
-      "OrganisationID": null,
-      "OrganisationName": null
+      "OrganisationID": "M2ZT9Q2",
+      "OrganisationName": "DivPetitionerSolicitorFirm"
     },
+    "OrgPolicyReference": "DivPetitionerSolicitorFirm",
     "OrgPolicyCaseAssignedRole": "[PETSOLICITOR]"
   },
   "PetitionerSolicitorEmail": "pet_sol@example.local",
@@ -27,7 +28,7 @@
   ],
   "D8RespondentLastName": "Respondent Last Name",
   "D8PetitionerNameDifferentToMarriageCert": "Yes",
-  "D8JurisdictionConnection": [
+  "D8JurisdictionConnectionNewPolicy": [
     "A",
     "B",
     "C",

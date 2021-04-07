@@ -50,7 +50,7 @@ public class SolicitorDnFetchDocWorkflow extends DefaultWorkflow<Map<String, Obj
         log.info("CaseID: {} populateDocLink task is going to be executed.", caseId);
 
         return this.execute(
-            new Task[] {populateDocLinkTask},
+            new Task[]{populateDocLinkTask},
             caseData,
             ImmutablePair.of(CASE_ID_JSON_KEY, caseDetails.getCaseId()),
             ImmutablePair.of(DOCUMENT_TYPE, ccdDocumentType),

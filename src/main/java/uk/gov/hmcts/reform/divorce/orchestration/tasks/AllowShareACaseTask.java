@@ -13,6 +13,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getAuthToken;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerSolicitorDigital;
 
 @Slf4j
 @Component
@@ -28,9 +29,22 @@ public class AllowShareACaseTask implements Task<Map<String, Object>> {
         final CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
         final String caseId = caseDetails.getCaseId();
 
-        log.info("CaseId: {}, Assigning case access", caseId);
-        ccdDataStoreService.removeCreatorRole(caseDetails, authToken);
-        assignCaseAccessService.assignCaseAccess(caseDetails, authToken);
+        boolean petitionerSolicitorIsDigital = isPetitionerSolicitorDigital(caseData);
+        if (petitionerSolicitorIsDigital) {
+            log.info("CaseId: {}, Assigning case access", caseId);
+            try {
+                assignCaseAccessService.assignCaseAccess(caseDetails, authToken);
+                ccdDataStoreService.removeCreatorRole(caseDetails, authToken);
+                log.info("CaseId: {}, Assigning case access successful", caseId);
+            } catch (Exception exception) {
+                log.error("CaseId: {}, Failed to assign case access: {}", caseId, exception.getMessage(), exception);
+                context.setTaskFailed(true);
+                context.setTransientObject("AssignCaseAccess_Error",
+                    "Problem calling assign case access API to set the [PETSOLICITOR] role to the case");
+            }
+        } else {
+            log.info("CaseId: {}. Petitioner solicitor is not digital, so we will not attempt to allow this case to be shared.", caseId);
+        }
 
         return caseData;
     }

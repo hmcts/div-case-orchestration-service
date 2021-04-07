@@ -15,4 +15,5 @@ spring:
         div.idam-caseworker-password: IDAM_CASEWORKER_PASSWORD
         div.cos-postgresql-password: DIV_SCHEDULER_DB_PASSWORD
         div.uk-gov-notify-api-key: UK_GOV_NOTIFY_API_KEY
-        div.AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key
+        div.AppInsightsInstrumentationKey: azure.application-insights.instrumentation-key        
+        div.spring-mail-password: spring.mail.password

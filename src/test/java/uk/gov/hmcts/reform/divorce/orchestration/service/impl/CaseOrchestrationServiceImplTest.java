@@ -22,15 +22,15 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpd
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.AllowShareACaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionForRefusalWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.AosIssueBulkPrintWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseCancelPronouncementEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateDnPronounceDatesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateHearingDetailsEventWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkPrintWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForHearingWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackBulkPrintWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CleanStatusCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CreateNewAmendedCaseAndSubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
@@ -134,8 +134,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLIC
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.controller.util.CallbackControllerTestUtils.assertCaseOrchestrationServiceExceptionIsSetProperly;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.JUDGE_COSTS_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING_SOLICITOR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_DRAFTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_REFERRAL;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_SERVICE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PAYMENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.ISSUED_TO_BAILIFF;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
@@ -306,7 +314,10 @@ public class CaseOrchestrationServiceImplTest {
     private RemoveLegalAdvisorMakeDecisionFieldsWorkflow removeLegalAdvisorMakeDecisionFieldsWorkflow;
 
     @Mock
-    private CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow;
+    private BulkPrintWorkflow bulkPrintWorkflow;
+
+    @Mock
+    private AosIssueBulkPrintWorkflow aosIssueBulkPrintWorkflow;
 
     @Mock
     private NotifyForRefusalOrderWorkflow notifyForRefusalOrderWorkflow;
@@ -343,9 +354,6 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private WelshSetPreviousStateWorkflow welshSetPreviousStateWorkflow;
-
-    @Mock
-    private AllowShareACaseWorkflow allowShareACaseWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -700,14 +708,26 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void givenCaseData_whenSendPetitionerGenericEmailNotification_thenReturnPayload() throws Exception {
-        when(sendEmailNotificationWorkflow.run(ccdCallbackRequest))
-            .thenReturn(requestPayload);
+    public void givenCaseData_whenSendPetitionerGenericEmailNotification_thenReturnPayload() throws WorkflowException, CaseOrchestrationServiceException {
+        when(sendEmailNotificationWorkflow.run(ccdCallbackRequest.getEventId(), ccdCallbackRequest.getCaseDetails())).thenReturn(requestPayload);
 
-        Map<String, Object> actual = classUnderTest.sendNotificationEmail(ccdCallbackRequest);
+        Map<String, Object> actual = classUnderTest.sendNotificationEmail(ccdCallbackRequest.getEventId(), ccdCallbackRequest.getCaseDetails());
 
-        assertEquals(requestPayload, actual);
-        verify(sendEmailNotificationWorkflow).run(ccdCallbackRequest);
+        assertThat(actual, equalTo(requestPayload));
+        verify(sendEmailNotificationWorkflow).run(ccdCallbackRequest.getEventId(), ccdCallbackRequest.getCaseDetails());
+    }
+
+    @Test
+    public void shouldEncapsulateException_whenSendPetitionerGenericEmailNotification_ThrowsWorkflowException() throws WorkflowException {
+        String eventId = ccdCallbackRequest.getEventId();
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        when(sendEmailNotificationWorkflow.run(eventId, caseDetails)).thenThrow(WorkflowException.class);
+
+        CaseOrchestrationServiceException serviceException = assertThrows(CaseOrchestrationServiceException.class,
+            () -> classUnderTest.sendNotificationEmail(eventId, caseDetails));
+
+        assertThat(serviceException.getCause(), isA(WorkflowException.class));
+        assertThat(serviceException.getCaseId().get(), equalTo(TEST_CASE_ID));
     }
 
     @Test
@@ -1583,41 +1603,85 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void shouldCallRightWorkflow_WhenCcdCallbackConfirmPersonalServiceCalled()
-        throws WorkflowException {
+    public void shouldCallRightWorkflow_WhenCcdCallbackConfirmPersonalServiceCalled() throws WorkflowException {
         requestPayload = singletonMap(OrchestrationConstants.SEND_VIA_EMAIL_OR_POST, OrchestrationConstants.SEND_VIA_POST);
         ccdCallbackRequest = buildCcdCallbackRequest(requestPayload);
 
-        when(ccdCallbackBulkPrintWorkflow.run(any(), any())).thenReturn(requestPayload);
+        when(bulkPrintWorkflow.run(any(), any())).thenReturn(requestPayload);
 
-        Map<String, Object> returnedPayload = classUnderTest.ccdCallbackConfirmPersonalService(ccdCallbackRequest, AUTH_TOKEN);
+        Map<String, Object> returnedPayload = classUnderTest.ccdCallbackConfirmPersonalService(
+            AUTH_TOKEN, ccdCallbackRequest.getCaseDetails(), ccdCallbackRequest.getEventId()
+        );
 
         assertThat(returnedPayload, equalTo(requestPayload));
-        verify(ccdCallbackBulkPrintWorkflow).run(ccdCallbackRequest, AUTH_TOKEN);
+        verify(bulkPrintWorkflow).run(AUTH_TOKEN, ccdCallbackRequest.getCaseDetails());
     }
 
     @Test(expected = WorkflowException.class)
-    public void shouldThrowException_IfExceptionIsThrown_WhenProcessingCcdCallbackConfirmPersonalService()
-        throws WorkflowException {
+    public void shouldThrowException_IfExceptionIsThrown_WhenProcessingCcdCallbackConfirmPersonalService() throws WorkflowException {
         requestPayload = singletonMap(OrchestrationConstants.SEND_VIA_EMAIL_OR_POST, OrchestrationConstants.SEND_VIA_POST);
         ccdCallbackRequest = buildCcdCallbackRequest(requestPayload);
 
         WorkflowException testFailureCause = new WorkflowException("Unable to generate bulk print...");
-        when(ccdCallbackBulkPrintWorkflow.run(any(), any())).thenThrow(testFailureCause);
-        classUnderTest.ccdCallbackConfirmPersonalService(ccdCallbackRequest, AUTH_TOKEN);
+        when(bulkPrintWorkflow.run(any(), any())).thenThrow(testFailureCause);
+        classUnderTest.ccdCallbackConfirmPersonalService(AUTH_TOKEN, ccdCallbackRequest.getCaseDetails(), ccdCallbackRequest.getEventId());
     }
 
     @Test
-    public void shouldNotCallBulkPrint_IfNotSendViaPost_WhenProcessingCcdCallbackConfirmPersonalService()
-        throws WorkflowException {
-
+    public void shouldNotCallBulkPrint_IfNotSendViaPost_WhenProcessingCcdCallbackConfirmPersonalService() throws WorkflowException {
         requestPayload = singletonMap(OrchestrationConstants.SEND_VIA_EMAIL_OR_POST, OrchestrationConstants.SEND_VIA_EMAIL_OR_POST);
         ccdCallbackRequest = buildCcdCallbackRequest(requestPayload);
 
-        Map<String, Object> returnedPayload = classUnderTest.ccdCallbackConfirmPersonalService(ccdCallbackRequest, AUTH_TOKEN);
+        Map<String, Object> returnedPayload = classUnderTest.ccdCallbackConfirmPersonalService(
+            AUTH_TOKEN, ccdCallbackRequest.getCaseDetails(), ccdCallbackRequest.getEventId()
+        );
 
         assertThat(returnedPayload, equalTo(requestPayload));
-        verifyNoInteractions(ccdCallbackBulkPrintWorkflow);
+        verifyNoInteractions(aosIssueBulkPrintWorkflow);
+    }
+
+    @Test
+    public void shouldCallAdequateWorkflow_WhenEventIsNotOfAosIssueFamily() throws WorkflowException {
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        when(bulkPrintWorkflow.run(AUTH_TOKEN, caseDetails)).thenReturn(TEST_PAYLOAD_TO_RETURN);
+
+        Map<String, Object> returnedPayload = classUnderTest.ccdCallbackBulkPrintHandler(AUTH_TOKEN, caseDetails, TEST_EVENT_ID);
+
+        assertThat(returnedPayload, is(TEST_PAYLOAD_TO_RETURN));
+        verify(bulkPrintWorkflow).run(AUTH_TOKEN, caseDetails);
+    }
+
+    @Test
+    public void shouldCallAdequateWorkflow_AndReturnErrors_WhenEventIsNotOfAosIssueFamily() throws WorkflowException {
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        when(bulkPrintWorkflow.errors()).thenReturn(Map.of("errorName", "errorValue"));
+
+        Map<String, Object> returnedPayload = classUnderTest.ccdCallbackBulkPrintHandler(AUTH_TOKEN, caseDetails, TEST_EVENT_ID);
+
+        assertThat(returnedPayload, hasEntry("errorName", "errorValue"));
+        verify(bulkPrintWorkflow).run(AUTH_TOKEN, caseDetails);
+    }
+
+    @Test
+    public void shouldCallAdequateWorkflow_WhenEventIsOfAosIssueFamily() throws WorkflowException {
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        when(aosIssueBulkPrintWorkflow.run(AUTH_TOKEN, caseDetails)).thenReturn(TEST_PAYLOAD_TO_RETURN);
+
+        Map<String, Object> returnedPayload = classUnderTest.ccdCallbackBulkPrintHandler(AUTH_TOKEN, caseDetails, ISSUE_AOS);
+
+        assertThat(returnedPayload, is(TEST_PAYLOAD_TO_RETURN));
+        verify(aosIssueBulkPrintWorkflow).run(AUTH_TOKEN, caseDetails);
+    }
+
+    @Test
+    public void shouldCallAdequateWorkflow_AndReturnErrors_WhenEventIsOfAosIssueFamily() throws WorkflowException {
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        when(aosIssueBulkPrintWorkflow.errors()).thenReturn(Map.of("errorName", "errorValue"));
+
+        Map<String, Object> returnedPayload = classUnderTest.ccdCallbackBulkPrintHandler(AUTH_TOKEN, caseDetails, ISSUE_AOS);
+
+        assertThat(returnedPayload, hasEntry("errorName", "errorValue"));
+        verify(aosIssueBulkPrintWorkflow).run(AUTH_TOKEN, caseDetails);
     }
 
     @Test
@@ -1736,14 +1800,10 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void shouldThrowCaseOrchestrationException_IfWorkflowExceptionIsThrow_WhenAllowingShareACase() throws WorkflowException {
-        when(allowShareACaseWorkflow.run(ccdCallbackRequest.getCaseDetails(), AUTH_TOKEN)).thenThrow(WorkflowException.class);
+    public void shouldSetExpectedField_WhenJudgeCostsDecision() {
+        Map<String, Object> result = classUnderTest.judgeCostsDecision(buildCcdCallbackRequest(new HashMap<>()));
 
-        CaseOrchestrationServiceException exception = assertThrows(CaseOrchestrationServiceException.class,
-            () -> classUnderTest.allowShareACase(ccdCallbackRequest, AUTH_TOKEN));
-
-        assertThat(exception.getCause(), isA(WorkflowException.class));
-        assertThat(exception.getCaseId().get(), is(TEST_CASE_ID));
+        assertThat(result.get(JUDGE_COSTS_DECISION), is(YES_VALUE));
     }
 
     private CcdCallbackRequest buildCcdCallbackRequest(Map<String, Object> requestPayload) {
@@ -1757,6 +1817,61 @@ public class CaseOrchestrationServiceImplTest {
             .eventId(TEST_EVENT_ID)
             .token(TEST_TOKEN)
             .build();
+    }
+
+    @Test
+    public void givenDraftAOSEvent_shouldChangeToAosDraftedState_whenAOSAwaitingSolicitor() {
+        CaseDetails caseDetails = CaseDetails.builder()
+                .state(AOS_AWAITING_SOLICITOR)
+                .build();
+
+        CcdCallbackResponse response = classUnderTest.confirmSolDnReviewPetition(caseDetails);
+
+        assertThat(response.getState(), is(AOS_DRAFTED));
+    }
+
+    @Test
+    public void givenDraftAOSEvent_shouldChangeToAosDraftedState_whenAOSAwaiting() {
+        CaseDetails caseDetails = CaseDetails.builder()
+                .state(AOS_AWAITING)
+                .build();
+
+        CcdCallbackResponse response = classUnderTest.confirmSolDnReviewPetition(caseDetails);
+
+        assertThat(response.getState(), is(AOS_DRAFTED));
+    }
+
+    @Test
+    public void givenDraftAOSEvent_shouldNotChangeState_whenAwaitingBailiffService() {
+        CaseDetails caseDetails = CaseDetails.builder()
+                .state(AWAITING_BAILIFF_SERVICE)
+                .build();
+
+        CcdCallbackResponse response = classUnderTest.confirmSolDnReviewPetition(caseDetails);
+
+        assertThat(response.getState(), is(AWAITING_BAILIFF_SERVICE));
+    }
+
+    @Test
+    public void givenDraftAOSEvent_shouldNotChangeState_whenIssuedToBailiff() {
+        CaseDetails caseDetails = CaseDetails.builder()
+                .state(ISSUED_TO_BAILIFF)
+                .build();
+
+        CcdCallbackResponse response = classUnderTest.confirmSolDnReviewPetition(caseDetails);
+
+        assertThat(response.getState(), is(ISSUED_TO_BAILIFF));
+    }
+
+    @Test
+    public void givenDraftAOSEvent_shouldNotChangeState_whenAwaitingBailiffReferral() {
+        CaseDetails caseDetails = CaseDetails.builder()
+                .state(AWAITING_BAILIFF_REFERRAL)
+                .build();
+
+        CcdCallbackResponse response = classUnderTest.confirmSolDnReviewPetition(caseDetails);
+
+        assertThat(response.getState(), is(AWAITING_BAILIFF_REFERRAL));
     }
 
     private Map<String, Object> buildCaseDataWithOrganisationPolicy() {
