@@ -24,12 +24,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionForRefusalWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.AosIssueBulkPrintWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AuthenticateRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseCancelPronouncementEventWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateDnPronounceDatesWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkCaseUpdateHearingDetailsEventWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.BulkPrintWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CaseLinkedForHearingWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.CcdCallbackBulkPrintWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CleanStatusCallbackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.CreateNewAmendedCaseAndSubmitToCCDWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DNSubmittedWorkflow;
@@ -133,6 +134,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLIC
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.controller.util.CallbackControllerTestUtils.assertCaseOrchestrationServiceExceptionIsSetProperly;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.JUDGE_COSTS_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
@@ -312,7 +314,10 @@ public class CaseOrchestrationServiceImplTest {
     private RemoveLegalAdvisorMakeDecisionFieldsWorkflow removeLegalAdvisorMakeDecisionFieldsWorkflow;
 
     @Mock
-    private CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow;
+    private BulkPrintWorkflow bulkPrintWorkflow;
+
+    @Mock
+    private AosIssueBulkPrintWorkflow aosIssueBulkPrintWorkflow;
 
     @Mock
     private NotifyForRefusalOrderWorkflow notifyForRefusalOrderWorkflow;
@@ -1598,41 +1603,85 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void shouldCallRightWorkflow_WhenCcdCallbackConfirmPersonalServiceCalled()
-        throws WorkflowException {
+    public void shouldCallRightWorkflow_WhenCcdCallbackConfirmPersonalServiceCalled() throws WorkflowException {
         requestPayload = singletonMap(OrchestrationConstants.SEND_VIA_EMAIL_OR_POST, OrchestrationConstants.SEND_VIA_POST);
         ccdCallbackRequest = buildCcdCallbackRequest(requestPayload);
 
-        when(ccdCallbackBulkPrintWorkflow.run(any(), any())).thenReturn(requestPayload);
+        when(bulkPrintWorkflow.run(any(), any())).thenReturn(requestPayload);
 
-        Map<String, Object> returnedPayload = classUnderTest.ccdCallbackConfirmPersonalService(ccdCallbackRequest, AUTH_TOKEN);
+        Map<String, Object> returnedPayload = classUnderTest.ccdCallbackConfirmPersonalService(
+            AUTH_TOKEN, ccdCallbackRequest.getCaseDetails(), ccdCallbackRequest.getEventId()
+        );
 
         assertThat(returnedPayload, equalTo(requestPayload));
-        verify(ccdCallbackBulkPrintWorkflow).run(ccdCallbackRequest, AUTH_TOKEN);
+        verify(bulkPrintWorkflow).run(AUTH_TOKEN, ccdCallbackRequest.getCaseDetails());
     }
 
     @Test(expected = WorkflowException.class)
-    public void shouldThrowException_IfExceptionIsThrown_WhenProcessingCcdCallbackConfirmPersonalService()
-        throws WorkflowException {
+    public void shouldThrowException_IfExceptionIsThrown_WhenProcessingCcdCallbackConfirmPersonalService() throws WorkflowException {
         requestPayload = singletonMap(OrchestrationConstants.SEND_VIA_EMAIL_OR_POST, OrchestrationConstants.SEND_VIA_POST);
         ccdCallbackRequest = buildCcdCallbackRequest(requestPayload);
 
         WorkflowException testFailureCause = new WorkflowException("Unable to generate bulk print...");
-        when(ccdCallbackBulkPrintWorkflow.run(any(), any())).thenThrow(testFailureCause);
-        classUnderTest.ccdCallbackConfirmPersonalService(ccdCallbackRequest, AUTH_TOKEN);
+        when(bulkPrintWorkflow.run(any(), any())).thenThrow(testFailureCause);
+        classUnderTest.ccdCallbackConfirmPersonalService(AUTH_TOKEN, ccdCallbackRequest.getCaseDetails(), ccdCallbackRequest.getEventId());
     }
 
     @Test
-    public void shouldNotCallBulkPrint_IfNotSendViaPost_WhenProcessingCcdCallbackConfirmPersonalService()
-        throws WorkflowException {
-
+    public void shouldNotCallBulkPrint_IfNotSendViaPost_WhenProcessingCcdCallbackConfirmPersonalService() throws WorkflowException {
         requestPayload = singletonMap(OrchestrationConstants.SEND_VIA_EMAIL_OR_POST, OrchestrationConstants.SEND_VIA_EMAIL_OR_POST);
         ccdCallbackRequest = buildCcdCallbackRequest(requestPayload);
 
-        Map<String, Object> returnedPayload = classUnderTest.ccdCallbackConfirmPersonalService(ccdCallbackRequest, AUTH_TOKEN);
+        Map<String, Object> returnedPayload = classUnderTest.ccdCallbackConfirmPersonalService(
+            AUTH_TOKEN, ccdCallbackRequest.getCaseDetails(), ccdCallbackRequest.getEventId()
+        );
 
         assertThat(returnedPayload, equalTo(requestPayload));
-        verifyNoInteractions(ccdCallbackBulkPrintWorkflow);
+        verifyNoInteractions(aosIssueBulkPrintWorkflow);
+    }
+
+    @Test
+    public void shouldCallAdequateWorkflow_WhenEventIsNotOfAosIssueFamily() throws WorkflowException {
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        when(bulkPrintWorkflow.run(AUTH_TOKEN, caseDetails)).thenReturn(TEST_PAYLOAD_TO_RETURN);
+
+        Map<String, Object> returnedPayload = classUnderTest.ccdCallbackBulkPrintHandler(AUTH_TOKEN, caseDetails, TEST_EVENT_ID);
+
+        assertThat(returnedPayload, is(TEST_PAYLOAD_TO_RETURN));
+        verify(bulkPrintWorkflow).run(AUTH_TOKEN, caseDetails);
+    }
+
+    @Test
+    public void shouldCallAdequateWorkflow_AndReturnErrors_WhenEventIsNotOfAosIssueFamily() throws WorkflowException {
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        when(bulkPrintWorkflow.errors()).thenReturn(Map.of("errorName", "errorValue"));
+
+        Map<String, Object> returnedPayload = classUnderTest.ccdCallbackBulkPrintHandler(AUTH_TOKEN, caseDetails, TEST_EVENT_ID);
+
+        assertThat(returnedPayload, hasEntry("errorName", "errorValue"));
+        verify(bulkPrintWorkflow).run(AUTH_TOKEN, caseDetails);
+    }
+
+    @Test
+    public void shouldCallAdequateWorkflow_WhenEventIsOfAosIssueFamily() throws WorkflowException {
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        when(aosIssueBulkPrintWorkflow.run(AUTH_TOKEN, caseDetails)).thenReturn(TEST_PAYLOAD_TO_RETURN);
+
+        Map<String, Object> returnedPayload = classUnderTest.ccdCallbackBulkPrintHandler(AUTH_TOKEN, caseDetails, ISSUE_AOS);
+
+        assertThat(returnedPayload, is(TEST_PAYLOAD_TO_RETURN));
+        verify(aosIssueBulkPrintWorkflow).run(AUTH_TOKEN, caseDetails);
+    }
+
+    @Test
+    public void shouldCallAdequateWorkflow_AndReturnErrors_WhenEventIsOfAosIssueFamily() throws WorkflowException {
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        when(aosIssueBulkPrintWorkflow.errors()).thenReturn(Map.of("errorName", "errorValue"));
+
+        Map<String, Object> returnedPayload = classUnderTest.ccdCallbackBulkPrintHandler(AUTH_TOKEN, caseDetails, ISSUE_AOS);
+
+        assertThat(returnedPayload, hasEntry("errorName", "errorValue"));
+        verify(aosIssueBulkPrintWorkflow).run(AUTH_TOKEN, caseDetails);
     }
 
     @Test

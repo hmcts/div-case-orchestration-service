@@ -8,10 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AosPackDueDateSetterTask;
@@ -31,21 +28,14 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.buildOrganisationPolicy;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CcdCallbackBulkPrintWorkflowTest {
+public class AosIssueBulkPrintWorkflowTest {
 
     @Mock
     private ServiceMethodValidationTask serviceMethodValidationTask;
@@ -72,48 +62,33 @@ public class CcdCallbackBulkPrintWorkflowTest {
     private CaseDataUtils caseDataUtils;
 
     @InjectMocks
-    private CcdCallbackBulkPrintWorkflow ccdCallbackBulkPrintWorkflow;
-
-    private CcdCallbackRequest ccdCallbackRequestRequest;
+    private AosIssueBulkPrintWorkflow classUnderTest;
 
     private Map<String, Object> payload;
 
-    private TaskContext context;
+    private CaseDetails caseDetails;
 
     @Before
     public void setUp() {
         payload = new HashMap<>();
-        payload.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
 
-        CaseDetails caseDetails = CaseDetails.builder()
+        caseDetails = CaseDetails.builder()
             .caseId(TEST_CASE_ID)
             .state(TEST_STATE)
             .caseData(payload)
             .build();
 
-        ccdCallbackRequestRequest =
-            CcdCallbackRequest.builder()
-                .eventId(ISSUE_AOS)
-                .token(TEST_TOKEN)
-                .caseDetails(caseDetails)
-                .build();
-
-        context = new DefaultTaskContext();
-        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        context.setTransientObject(CASE_DETAILS_JSON_KEY, ccdCallbackRequestRequest.getCaseDetails());
-        context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
-        context.setTransientObject(CASE_STATE_JSON_KEY, TEST_STATE);
-
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
+        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(true);
 
         mockTaskExecution();
     }
 
     @Test
-    public void whenWorkflowRunsForAdulteryCase_WithNamedCoRespondent_allTasksRun_payloadReturned() throws WorkflowException, TaskException {
-        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(true);
+    public void whenWorkflowRuns_WithDigitalRespSol_AndNamedCoRespondent_allTasksRun_payloadReturned() throws WorkflowException, TaskException {
+        payload.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
 
-        Map<String, Object> response = ccdCallbackBulkPrintWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN);
+        Map<String, Object> response = classUnderTest.run(AUTH_TOKEN, caseDetails);
         assertThat(response, is(payload));
 
         verifyTasksCalledInOrder(
@@ -128,10 +103,31 @@ public class CcdCallbackBulkPrintWorkflowTest {
     }
 
     @Test
-    public void whenWorkflowRunsForNonAdulteryCase_allTasksRunExceptForCoRespondent_payloadReturned() throws WorkflowException, TaskException {
-        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(false);
+    public void whenWorkflowRunsForNonAdulteryCase_allTasksRunExceptForUpdateNoticeDetails_ToggledOff() throws WorkflowException, TaskException {
+        payload.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(false);
 
-        Map<String, Object> response = ccdCallbackBulkPrintWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN);
+        Map<String, Object> response = classUnderTest.run(AUTH_TOKEN, caseDetails);
+        assertThat(response, is(payload));
+
+        verifyTasksCalledInOrder(
+            payload,
+            serviceMethodValidationTask,
+            fetchPrintDocsFromDmStoreTask,
+            respondentAosPackPrinterTask,
+            coRespondentAosPackPrinterTask,
+            aosPackDueDateSetterTask
+        );
+
+        verifyNoInteractions(updateRespondentDigitalDetailsTask);
+    }
+
+    @Test
+    public void whenWorkflowRunsForNonAdulteryCase_WithDigitalRespSol_allTasksButCoRespondentRun() throws WorkflowException, TaskException {
+        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(false);
+        payload.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
+
+        Map<String, Object> response = classUnderTest.run(AUTH_TOKEN, caseDetails);
         assertThat(response, is(payload));
 
         verifyTasksCalledInOrder(
@@ -147,80 +143,8 @@ public class CcdCallbackBulkPrintWorkflowTest {
     }
 
     @Test
-    public void whenWorkflowRunsForNonAdulteryCase_allTasksRunExceptForUpdateNoticeDetails_ToggledOff() throws WorkflowException, TaskException {
-        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(false);
-        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(true);
-
-        Map<String, Object> response = ccdCallbackBulkPrintWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN);
-        assertThat(response, is(payload));
-
-        verifyTasksCalledInOrder(
-            payload,
-            serviceMethodValidationTask,
-            fetchPrintDocsFromDmStoreTask,
-            respondentAosPackPrinterTask,
-            coRespondentAosPackPrinterTask,
-            aosPackDueDateSetterTask
-        );
-
-        verifyNoInteractions(updateRespondentDigitalDetailsTask);
-    }
-
-    @Test
-    public void whenWorkflowRunsForNonAdulteryCase_allTasksRunExceptForUpdateNoticeDetails_NotAosEvent() throws WorkflowException, TaskException {
-        CaseDetails caseDetails = CaseDetails.builder()
-            .caseId(TEST_CASE_ID)
-            .state(TEST_STATE)
-            .caseData(payload)
-            .build();
-
-        ccdCallbackRequestRequest =
-            CcdCallbackRequest.builder()
-                .eventId(TEST_EVENT_ID)
-                .token(TEST_TOKEN)
-                .caseDetails(caseDetails)
-                .build();
-
-        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(true);
-
-        Map<String, Object> response = ccdCallbackBulkPrintWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN);
-        assertThat(response, is(payload));
-
-        verifyTasksCalledInOrder(
-            payload,
-            serviceMethodValidationTask,
-            fetchPrintDocsFromDmStoreTask,
-            respondentAosPackPrinterTask,
-            coRespondentAosPackPrinterTask,
-            aosPackDueDateSetterTask
-        );
-
-        verifyNoInteractions(updateRespondentDigitalDetailsTask);
-    }
-
-    @Test
-    public void whenWorkflowRunsForNonAdulteryCase_allTasksRunExceptForUpdateNoticeDetails_RespSolNotDigital()
-        throws WorkflowException, TaskException {
-        payload = new HashMap<>();
-
-        CaseDetails caseDetails = CaseDetails.builder()
-            .caseId(TEST_CASE_ID)
-            .state(TEST_STATE)
-            .caseData(payload)
-            .build();
-
-        ccdCallbackRequestRequest =
-            CcdCallbackRequest.builder()
-                .eventId(ISSUE_AOS)
-                .token(TEST_TOKEN)
-                .caseDetails(caseDetails)
-                .build();
-
-        context.setTransientObject(CASE_DETAILS_JSON_KEY, ccdCallbackRequestRequest.getCaseDetails());
-
-        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(true);
-
-        Map<String, Object> response = ccdCallbackBulkPrintWorkflow.run(ccdCallbackRequestRequest, AUTH_TOKEN);
+    public void whenWorkflowRuns_AndRespSolIsNotDigital_allTasksRunExceptForUpdateNoticeDetails() throws WorkflowException, TaskException {
+        Map<String, Object> response = classUnderTest.run(AUTH_TOKEN, caseDetails);
         assertThat(response, is(payload));
 
         verifyTasksCalledInOrder(
@@ -246,4 +170,5 @@ public class CcdCallbackBulkPrintWorkflowTest {
             updateRespondentDigitalDetailsTask
         );
     }
+
 }
