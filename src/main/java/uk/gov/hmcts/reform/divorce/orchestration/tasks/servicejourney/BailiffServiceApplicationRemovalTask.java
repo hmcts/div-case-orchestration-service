@@ -17,6 +17,7 @@ public class BailiffServiceApplicationRemovalTask extends FieldsRemovalTask {
     protected List<String> getFieldsToRemove() {
         return asList(
             CcdFields.RECEIVED_SERVICE_APPLICATION_DATE,
+            CcdFields.RECEIVED_SERVICE_ADDED_DATE,
             CcdFields.SERVICE_APPLICATION_TYPE,
             CcdFields.SERVICE_APPLICATION_PAYMENT,
             CcdFields.SERVICE_APPLICATION_GRANTED,
