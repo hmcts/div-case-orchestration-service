@@ -58,9 +58,9 @@ public class PaymentUpdateCallbackTest extends IntegrationTest {
         paymentUpdate.setCcdCaseNumber(caseId);
 
         Response response = RestUtil.putToRestService(
-                serverUrl + contextPath,
-                headers,
-                paymentUpdate
+            serverUrl + contextPath,
+            headers,
+            paymentUpdate
         );
 
         assertEquals(HttpStatus.OK.value(), response.getStatusCode());
