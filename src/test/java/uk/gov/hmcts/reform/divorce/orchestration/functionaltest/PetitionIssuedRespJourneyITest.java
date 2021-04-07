@@ -64,13 +64,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
-@SpringBootTest(properties = {"feature-toggle.toggle.represented_respondent_journey=false"})
-public class PetitionIssuedITest extends IdamTestSupport {
+@SpringBootTest(properties = {"feature-toggle.toggle.represented_respondent_journey=true"})
+public class PetitionIssuedRespJourneyITest extends IdamTestSupport {
 
     private static final String API_URL = "/petition-issued";
     private static final String PETITION_ISSUE_FEE_CONTEXT_PATH = "/fees-and-payments/version/1/petition-issue-fee";
     private static final String MINI_PETITION_TEMPLATE_NAME = "divorceminipetition";
-    private static final String RESPONDENT_INVITATION_TEMPLATE_NAME = "aosinvitation";
+    private static final String RESPONDENT_INVITATION_TEMPLATE_NAME = "aosinvitation-rep-resp-journey";
     public static final String CO_RESPONDENT_INVITATION_TEMPLATE_NAME = "co-respondentinvitation";
 
     private static final Map<String, Object> CASE_DATA = new HashMap<>();
