@@ -6,7 +6,6 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -27,13 +26,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.EventHelper.isIssueAosEvent;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Object>> {
+public class AosIssueBulkPrintWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final ServiceMethodValidationTask serviceMethodValidationTask;
     private final FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask;
@@ -45,30 +43,34 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
     private final CaseDataUtils caseDataUtils;
     private final FeatureToggleService featureToggleService;
 
-    public Map<String, Object> run(final CcdCallbackRequest ccdCallbackRequest, final String authToken) throws WorkflowException {
-        final CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
-
+    public Map<String, Object> run(final String authToken, CaseDetails caseDetails) throws WorkflowException {
         final List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
         tasks.add(serviceMethodValidationTask);
         tasks.add(fetchPrintDocsFromDmStoreTask);
         tasks.add(respondentAosPackPrinterTask);
-        if (caseDataUtils.isAdulteryCaseWithNamedCoRespondent(caseDetails.getCaseData())) {
+
+        Map<String, Object> caseData = caseDetails.getCaseData();
+        if (caseDataUtils.isAdulteryCaseWithNamedCoRespondent(caseData)) {
             tasks.add(coRespondentAosPackPrinterTask);
         }
+
         tasks.add(aosPackDueDateSetterTask);
-        if (isRepresentedRespondentJourneyEnabled()
-            && isIssueAosEvent(ccdCallbackRequest.getEventId())
-            && isRespondentSolicitorDigital(caseDetails.getCaseData())) {
-            log.info("CaseId: {} adding updateNoticeOfProceedingsDetailsTask", caseDetails.getCaseId());
+
+        boolean representedRespondentJourneyEnabled = isRepresentedRespondentJourneyEnabled();
+        String caseId = caseDetails.getCaseId();
+        boolean respondentSolicitorDigital = isRespondentSolicitorDigital(caseData);
+        if (representedRespondentJourneyEnabled
+            && respondentSolicitorDigital) {
+            log.info("CaseId: {} adding updateNoticeOfProceedingsDetailsTask", caseId);
             tasks.add(updateNoticeOfProceedingsDetailsTask);
         }
 
         return this.execute(tasks.toArray(new Task[0]),
-            caseDetails.getCaseData(),
+            caseData,
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
-            ImmutablePair.of(CASE_ID_JSON_KEY, caseDetails.getCaseId()),
+            ImmutablePair.of(CASE_ID_JSON_KEY, caseId),
             ImmutablePair.of(CASE_STATE_JSON_KEY, caseDetails.getState())
         );
     }
@@ -76,4 +78,5 @@ public class CcdCallbackBulkPrintWorkflow extends DefaultWorkflow<Map<String, Ob
     private boolean isRepresentedRespondentJourneyEnabled() {
         return featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY);
     }
+
 }
