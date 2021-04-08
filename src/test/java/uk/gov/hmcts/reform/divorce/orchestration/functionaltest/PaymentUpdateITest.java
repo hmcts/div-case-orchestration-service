@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import uk.gov.hmcts.reform.divorce.model.payment.Payment;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Fee;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
@@ -25,9 +26,11 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN_1;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_AUTHORIZATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class PaymentUpdateITest extends IdamTestSupport {
@@ -36,6 +39,9 @@ public class PaymentUpdateITest extends IdamTestSupport {
     private static final String EVENT_ID = "paymentMade";
 
     private static final String API_URL = "/payment-update";
+
+    private static final String ALLOWED_SERVICE = "test_service_allowed";
+    private static final String NOT_ALLOWED_SERVICE = "test_service_not_allowed";
 
     private static final String RETRIEVE_CASE_CONTEXT_PATH = String.format(
             "/casemaintenance/version/1/case/%s",
@@ -46,6 +52,7 @@ public class PaymentUpdateITest extends IdamTestSupport {
             CASE_ID,
             EVENT_ID
     );
+    private static final String AUTH_SERVICE_PATH = "/details";
 
     @Autowired
     private MockMvc webClient;
@@ -79,21 +86,48 @@ public class PaymentUpdateITest extends IdamTestSupport {
             .build();
 
         caseData.put("payment", payment);
-    }
 
-    @Test
-    public void givenEventDataAndAuth_whenEventDataIsSubmitted_thenReturnSuccess() throws Exception {
         stubSignInForCaseworker();
         stubMaintenanceServerEndpointForRetrieveCaseById();
 
         Map<String, Object> responseData = Collections.singletonMap(ID, TEST_CASE_ID);
         stubMaintenanceServerEndpointForUpdate(responseData);
 
+        stubAuthProviderServerEndpoint();
+        stubForbiddenAuthProviderServerEndpoint();
+    }
+
+    @Test
+    public void givenEventDataAndAuth_whenEventDataIsSubmitted_thenReturnSuccess() throws Exception {
         webClient.perform(put(API_URL)
-                .content(convertObjectToJsonString(paymentUpdate))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().is2xxSuccessful());
+                    .header(SERVICE_AUTHORIZATION_HEADER, BEARER_AUTH_TOKEN_1)
+                    .content(convertObjectToJsonString(paymentUpdate))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andDo(MockMvcResultHandlers.print())
+                    .andExpect(status().is2xxSuccessful());
+    }
+
+    @Test
+    public void givenEventDataAndForbiddenAuth_whenEventDataIsSubmitted_thenReturnError() throws Exception {
+        webClient.perform(put(API_URL)
+            .header(SERVICE_AUTHORIZATION_HEADER, BEARER_AUTH_TOKEN)
+            .content(convertObjectToJsonString(paymentUpdate))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    public void givenEventDataAndNoAuth_whenEventDataIsSubmitted_thenReturnError() throws Exception {
+        webClient.perform(put(API_URL)
+            .header(SERVICE_AUTHORIZATION_HEADER, "")
+            .content(convertObjectToJsonString(paymentUpdate))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andDo(MockMvcResultHandlers.print())
+            .andExpect(status().is4xxClientError());
     }
 
     private void stubMaintenanceServerEndpointForRetrieveCaseById() {
@@ -113,5 +147,23 @@ public class PaymentUpdateITest extends IdamTestSupport {
                         .withStatus(HttpStatus.OK.value())
                         .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
                         .withBody(convertObjectToJsonString(response))));
+    }
+
+    private void stubAuthProviderServerEndpoint() {
+        serviceAuthProviderServer.stubFor(WireMock.get(AUTH_SERVICE_PATH)
+            .withHeader(AUTHORIZATION, new EqualToPattern(BEARER_AUTH_TOKEN_1))
+            .willReturn(aResponse()
+                .withStatus(HttpStatus.OK.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .withBody(ALLOWED_SERVICE)));
+    }
+
+    private void stubForbiddenAuthProviderServerEndpoint() {
+        serviceAuthProviderServer.stubFor(WireMock.get(AUTH_SERVICE_PATH)
+            .withHeader(AUTHORIZATION, new EqualToPattern(BEARER_AUTH_TOKEN))
+            .willReturn(aResponse()
+                .withStatus(HttpStatus.OK.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .withBody(NOT_ALLOWED_SERVICE)));
     }
 }
