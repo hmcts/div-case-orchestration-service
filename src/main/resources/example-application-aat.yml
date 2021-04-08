@@ -158,6 +158,10 @@ feature-toggle:
 send-letter:
   url: ${SEND_LETTER_SERIVCE_BASEURL:http://rpe-send-letter-service-aat.service.core-compute-aat.internal}
 
+prd:
+  api:
+    url: ${PRD_SERVICE_API_BASEURL:http://rd-professional-api-aat.service.core-compute-aat.internal}
+
 aca:
   api:
     url: ${ACA_SERVICE_API_BASEURL:http://aac-manage-case-assignment-aat.service.core-compute-aat.internal}
