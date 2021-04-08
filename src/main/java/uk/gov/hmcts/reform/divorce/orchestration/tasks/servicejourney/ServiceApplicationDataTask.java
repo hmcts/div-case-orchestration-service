@@ -34,6 +34,7 @@ public class ServiceApplicationDataTask implements Task<Map<String, Object>> {
 
     private void persistLastServiceApplication(Map<String, Object> caseData, DivorceServiceApplication serviceApplication) {
         caseData.put(CcdFields.LAST_SERVICE_APPLICATION, serviceApplication);
+        caseData.put(CcdFields.LAST_SERVICE_APPLICATION_TYPE, serviceApplication.getType());
     }
 
     private Map<String, Object> addNewServiceApplicationToCaseData(

@@ -125,6 +125,7 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
                         hasLastServiceApplicationInfo(TEST_TYPE, true),
                         hasNoCcdFieldsThatShouldBeRemoved(),
                         hasJsonPath("$.data.ServiceApplications", hasSize(1)),
+                        hasJsonPath("$.data.LastServiceApplicationType", is(TEST_TYPE)),
                         assertServiceApplicationElement(0, TEST_TYPE, true),
                         hasNoJsonPath("$.data.ServiceApplicationDocuments")
                     )
@@ -271,6 +272,7 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
         return content().string(allOf(
             isJson(),
             hasLastServiceApplicationInfo(applicationType, granted),
+            hasJsonPath("$.data.LastServiceApplicationType", is(applicationType)),
             hasNoCcdFieldsThatShouldBeRemoved(),
             hasJsonPath("$.data.ServiceApplications", hasSize(1)),
             assertServiceApplicationElement(0, applicationType, granted),
@@ -285,6 +287,7 @@ public class MakeServiceDecisionTest extends IdamTestSupport {
         return content().string(allOf(
             isJson(),
             hasLastServiceApplicationInfo(applicationType, granted),
+            hasJsonPath("$.data.LastServiceApplicationType", is(applicationType)),
             hasNoCcdFieldsThatShouldBeRemoved(),
             hasJsonPath("$.data.ServiceApplications", hasSize(2)),
             assertServiceApplicationElement(1, applicationType, granted),
