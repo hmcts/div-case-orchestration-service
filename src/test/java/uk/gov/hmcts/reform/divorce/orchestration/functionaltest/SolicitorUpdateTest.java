@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -37,6 +38,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETIT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_SOLICITOR_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_REFERENCE;
@@ -80,13 +82,15 @@ public class SolicitorUpdateTest extends IdamTestSupport {
         CcdCallbackRequest ccdCallbackRequest = buildRequest();
 
         stubDgsCall(ccdCallbackRequest);
+        stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
+        stubGetMyOrganisationServerEndpoint(AUTH_TOKEN, TEST_SERVICE_AUTH_TOKEN);
 
         callCallbackEndpointSuccessfully(ccdCallbackRequest);
     }
 
     @Test
     public void givenCaseData_whenSolicitorUpdate_andRRJourneyIsOff_thenReturnWithMappedOrgPolicyReferences() throws Exception {
-        setRespondentJourneyFeatureToggleOff();
+        switchFeatureTogglesOff();
 
         CcdCallbackRequest ccdCallbackRequest = buildRequest();
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
@@ -113,7 +117,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
 
     @Test
     public void givenCaseData_whenSolicitorUpdate_andRRJourneyIsOn_thenReturnWithMappedOrgPolicyReferences() throws Exception {
-        setRespondentJourneyFeatureToggleOn();
+        switchFeatureTogglesOn();
 
         CcdCallbackRequest ccdCallbackRequest = buildRequest();
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
@@ -140,7 +144,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
 
     @Test
     public void givenCaseData_whenSolicitorUpdate_andRRJourneyIsOff_andNotRepresented_thenReturnWithUnMappedRespondentOrgPolicyReference() throws Exception {
-        setRespondentJourneyFeatureToggleOff();
+        switchFeatureTogglesOff();
 
         CcdCallbackRequest ccdCallbackRequest = buildRequest();
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
@@ -165,7 +169,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
 
     @Test
     public void givenCaseData_whenSolicitorUpdate_andRRJourneyIsOn_andNotRepresented_thenRetWithUnMappedRespOrgPolicyReference() throws Exception {
-        setRespondentJourneyFeatureToggleOn();
+        switchFeatureTogglesOn();
 
         CcdCallbackRequest ccdCallbackRequest = buildRequest();
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
@@ -173,6 +177,9 @@ public class SolicitorUpdateTest extends IdamTestSupport {
         caseData.put(PETITIONER_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
         caseData.put(D8_RESPONDENT_SOLICITOR_REFERENCE, TEST_RESPONDENT_SOLICITOR_REFERENCE);
         caseData.put(RESP_SOL_REPRESENTED, NO_VALUE);
+
+        stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
+        stubGetMyOrganisationServerEndpoint(AUTH_TOKEN, TEST_SERVICE_AUTH_TOKEN);
 
         stubDgsCall(ccdCallbackRequest);
 
@@ -190,7 +197,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
 
     @Test
     public void givenCaseData_whenSolicitorUpdate_andRRJourneyIsOff_andNoSolicitorReferences_thenRetWithNoOrgPolicyReferences() throws Exception {
-        setRespondentJourneyFeatureToggleOff();
+        switchFeatureTogglesOff();
 
         CcdCallbackRequest ccdCallbackRequest = buildRequest();
 
@@ -208,32 +215,18 @@ public class SolicitorUpdateTest extends IdamTestSupport {
         );
     }
 
-    @Test
-    public void givenCaseData_whenSolicitorUpdate_andRRJourneyIsOn_andNoSolicitorReferences_thenRetWithNoOrgPolicyReferences() throws Exception {
-        setRespondentJourneyFeatureToggleOn();
-
-        CcdCallbackRequest ccdCallbackRequest = buildRequest();
-
-        stubDgsCall(ccdCallbackRequest);
-
-        MvcResult mvcResult = callCallbackEndpointSuccessfully(ccdCallbackRequest);
-
-        assertThat(getResponseContent(mvcResult),
-            allOf(
-                hasNoJsonPath("$.data.D8SolicitorReference"),
-                hasNoJsonPath("$.data.PetitionerOrganisationPolicy"),
-                hasNoJsonPath("$.data.respondentSolicitorReference"),
-                hasNoJsonPath("$.data.RespondentOrganisationPolicy")
-            )
-        );
+    private void switchFeatureTogglesOn() {
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY))
+            .thenReturn(true);
+        when(featureToggleService.isFeatureEnabled(Features.SHARE_A_CASE))
+            .thenReturn(true);
     }
 
-    private void setRespondentJourneyFeatureToggleOn() {
-        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
-    }
-
-    private void setRespondentJourneyFeatureToggleOff() {
-        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(false);
+    private void switchFeatureTogglesOff() {
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY))
+            .thenReturn(false);
+        when(featureToggleService.isFeatureEnabled(Features.SHARE_A_CASE))
+            .thenReturn(false);
     }
 
     private void stubDgsCall(CcdCallbackRequest ccdCallbackRequest) {

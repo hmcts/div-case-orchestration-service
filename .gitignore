@@ -25,4 +25,7 @@ application-*.yml
 application-*.yaml
 application-local.properties
 
+# PACT files
+pacts/
+
  *.swp
