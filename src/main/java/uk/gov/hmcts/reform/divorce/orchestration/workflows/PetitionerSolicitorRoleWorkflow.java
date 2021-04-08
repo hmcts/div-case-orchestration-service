@@ -26,6 +26,7 @@ public class PetitionerSolicitorRoleWorkflow extends DefaultWorkflow<Map<String,
 
     private final AddPetitionerSolicitorRoleTask addPetitionerSolicitorRoleTask;
     private final AllowShareACaseTask allowShareACaseTask;
+
     private final FeatureToggleService featureToggleService;
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest,

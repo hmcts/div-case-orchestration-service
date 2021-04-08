@@ -160,6 +160,10 @@ aca:
   api:
     url: ${ACA_SERVICE_API_BASEURL:http://localhost:4454}
 
+prd:
+  api:
+    url: ${PRD_SERVICE_API_BASEURL:http://localhost:4451}
+
 ccd:
   data-store:
     api:

@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.OrchestrationServiceApplication
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.prd.OrganisationsResponse;
 import uk.gov.hmcts.reform.sendletter.api.SendLetterResponse;
 
 import java.util.List;
@@ -35,6 +36,7 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.ALL_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ORGANISATION_POLICY_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_AUTHORIZATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
@@ -91,6 +93,9 @@ public abstract class MockedFunctionalTest {
 
     @ClassRule
     public static WireMockClassRule caseRoleServer = new WireMockClassRule(buildWireMockConfig(4452));
+
+    @ClassRule
+    public static WireMockClassRule prdServer = new WireMockClassRule(buildWireMockConfig(4451));
 
     private static WireMockConfiguration buildWireMockConfig(int port) {
         return WireMockSpring
@@ -166,6 +171,23 @@ public abstract class MockedFunctionalTest {
             .willReturn(aResponse()
                 .withStatus(status.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)));
+    }
+
+    public void stubGetMyOrganisationServerEndpoint(String authToken, String s2sToken) {
+        prdServer.stubFor(WireMock.get("/refdata/external/v1/organisations")
+            .withHeader(AUTHORIZATION, new EqualToPattern(authToken))
+            .withHeader(SERVICE_AUTHORIZATION_HEADER, new EqualToPattern("Bearer " + s2sToken))
+            .willReturn(aResponse()
+                .withStatus(HttpStatus.OK.value())
+                .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+                .withBody(convertObjectToJsonString(
+                    OrganisationsResponse.builder()
+                        .organisationIdentifier(TEST_ORGANISATION_POLICY_ID)
+                        .build()
+                    )
+                )
+            )
+        );
     }
 
     protected void stubServiceAuthProvider(HttpStatus status, String response) {
