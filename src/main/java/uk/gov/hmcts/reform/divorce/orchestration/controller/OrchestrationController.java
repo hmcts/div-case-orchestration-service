@@ -4,9 +4,9 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,27 +24,34 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseCreationRe
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.Court;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.exception.AuthenticationError;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
+import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
 
 import java.util.Map;
 import javax.validation.constraints.NotNull;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features.FEE_PAY_S2S_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_AUTHORIZATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SUCCESS_STATUS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.VALIDATION_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.ALLOCATED_COURT_KEY;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 public class OrchestrationController {
 
-    @Autowired
-    private CaseOrchestrationService orchestrationService;
+    private final CaseOrchestrationService orchestrationService;
+    private final AuthUtil authUtil;
+    private final FeatureToggleService featureToggleService;
 
     @PutMapping(path = "/payment-update", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Handles Payment Update callbacks")
@@ -52,8 +59,16 @@ public class OrchestrationController {
         @ApiResponse(code = 200, message = "Payment update callback was processed successfully and updated to the case",
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 401, message = "Provided S2S token is missing or invalid"),
+        @ApiResponse(code = 403, message = "Calling service is not authorised to use the endpoint"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
-    public ResponseEntity paymentUpdate(@RequestBody PaymentUpdate paymentUpdate) throws WorkflowException {
+    public ResponseEntity<CaseResponse> paymentUpdate(
+        @RequestHeader(value = SERVICE_AUTHORIZATION_HEADER) String s2sAuthToken,
+        @RequestBody PaymentUpdate paymentUpdate) throws WorkflowException, AuthenticationError {
+
+        if (featureToggleService.isFeatureEnabled(FEE_PAY_S2S_TOKEN)) {
+            authUtil.assertIsServiceAllowedToPaymentUpdate(s2sAuthToken);
+        }
 
         orchestrationService.update(paymentUpdate);
         return ResponseEntity.ok().build();

@@ -13,7 +13,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CopyD8JurisdictionConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetClaimCostsFromTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetNewLegalConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
@@ -41,6 +43,8 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
     private final SetPetitionerSolicitorOrganisationPolicyReferenceTask setPetitionerSolicitorOrganisationPolicyReferenceTask;
     private final SetRespondentSolicitorOrganisationPolicyReferenceTask setRespondentSolicitorOrganisationPolicyReferenceTask;
     private final FeatureToggleService featureToggleService;
+    private final SetNewLegalConnectionPolicyTask setNewLegalConnectionPolicyTask;
+    private final CopyD8JurisdictionConnectionPolicyTask copyD8JurisdictionConnectionPolicyTask;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
         return this.execute(
@@ -68,6 +72,8 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
         }
 
         tasks.add(setSolicitorCourtDetailsTask);
+        tasks.add(setNewLegalConnectionPolicyTask);
+        tasks.add(copyD8JurisdictionConnectionPolicyTask);
         tasks.add(addMiniPetitionDraftTask);
         tasks.add(addNewDocumentsToCaseDataTask);
 

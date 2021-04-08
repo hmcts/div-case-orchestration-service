@@ -35,6 +35,7 @@ public class CcdEvents {
     public static final String CO_RESP_SUBMISSION_AWAITING_PROCESS_SERVER_SERVICE = "co-RespAOSReceivedFromAwaitingProcessServerService";
     public static final String CO_RESP_SUBMISSION_AWAITING_DWP_RESPONSE = "co-RespAOSReceivedFromAwaitingDWPResponse";
     public static final String CO_RESPONDENT_SUBMISSION_AOS_AWAITING = "co-RespAOSReceivedAwaiting";
+    public static final String CO_RESPONDENT_SUBMISSION_AOS_BAILIFF = "co-RespAOSReceivedBailiff";
     public static final String CO_RESPONDENT_SUBMISSION_AOS_STARTED = "co-RespAOSReceivedStarted";
     public static final String CO_RESPONDENT_SUBMISSION_AOS_SUBMIT_AWAIT = "co-RespAOSReceivedAwaitingAnswer";
     public static final String CO_RESPONDENT_SUBMISSION_AOS_OVERDUE = "co-RespAOSReceivedOverdue";
