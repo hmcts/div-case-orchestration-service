@@ -179,9 +179,10 @@
       "D8SolicitorReference" : "SolicitorReference",
       "PetitionerOrganisationPolicy": {
         "Organisation": {
-          "OrganisationID": null,
-          "OrganisationName": null
+          "OrganisationID": "M2ZT9Q2",
+          "OrganisationName": "DivPetitionerSolicitorFirm"
         },
+        "OrgPolicyReference": "DivPetitionerSolicitorFirm",
         "OrgPolicyCaseAssignedRole": "[PETSOLICITOR]"
       },
       "respondentSolicitorReference": "RespondentSolicitorReference",

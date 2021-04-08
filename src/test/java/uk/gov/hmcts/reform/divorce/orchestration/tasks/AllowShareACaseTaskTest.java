@@ -24,7 +24,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.P
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.buildOrganisationPolicy;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithCommonValues;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithCaseDetails;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AllowShareACaseTaskTest {
@@ -41,7 +41,7 @@ public class AllowShareACaseTaskTest {
     @Test
     public void shouldAssignAccessToCaseAndRemoveCaseRole() {
         Map<String, Object> input = Map.of(PETITIONER_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
-        TaskContext context = contextWithCommonValues();
+        TaskContext context = contextWithCaseDetails();
 
         Map<String, Object> result = allowShareACaseTask.execute(context, input);
 
@@ -61,7 +61,7 @@ public class AllowShareACaseTaskTest {
     @Test
     public void shouldNotAssignAccessToCaseNorRemoveCaseRole_WhenPetitionerSolicitorIsNotDigital() {
         Map<String, Object> input = new HashMap<>();
-        TaskContext context = contextWithCommonValues();
+        TaskContext context = contextWithCaseDetails();
 
         Map<String, Object> result = allowShareACaseTask.execute(context, input);
 
@@ -73,7 +73,7 @@ public class AllowShareACaseTaskTest {
     @Test
     public void givenAssignCaseAccessFailure_shouldNotRemoveCaseRoleAndReturnError() {
         Map<String, Object> input = Map.of(PETITIONER_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
-        TaskContext context = contextWithCommonValues();
+        TaskContext context = contextWithCaseDetails();
 
         doThrow(FeignException.class).when(assignCaseAccessService).assignCaseAccess(
             context.getTransientObject(CASE_DETAILS_JSON_KEY),
@@ -93,5 +93,4 @@ public class AllowShareACaseTaskTest {
         assertThat(context.getTransientObject("AssignCaseAccess_Error"),
             is("Problem calling assign case access API to set the [PETSOLICITOR] role to the case"));
     }
-
 }

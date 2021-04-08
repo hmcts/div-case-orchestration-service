@@ -16,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.CopyD8JurisdictionConnect
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetNewLegalConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSelectedOrganisationTask;
 
 import java.util.Collections;
 import java.util.Map;
@@ -44,6 +45,9 @@ public class SolicitorUpdateWorkflowTest {
     private SetRespondentSolicitorOrganisationPolicyReferenceTask setRespondentSolicitorOrganisationPolicyReferenceTask;
 
     @Mock
+    private ValidateSelectedOrganisationTask validateSelectedOrganisationTask;
+
+    @Mock
     private FeatureToggleService featureToggleService;
 
     @Mock
@@ -67,7 +71,10 @@ public class SolicitorUpdateWorkflowTest {
     }
 
     @Test
-    public void runShouldExecuteTasksAndReturnPayload() throws Exception {
+    public void runShouldExecuteTasksAndReturnPayloadFeatureTogglesOff() throws Exception {
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(false);
+        when(featureToggleService.isFeatureEnabled(Features.SHARE_A_CASE)).thenReturn(false);
+
         mockTasksExecution(
             caseData,
             setNewLegalConnectionPolicyTask,
@@ -84,19 +91,27 @@ public class SolicitorUpdateWorkflowTest {
             copyD8JurisdictionConnectionPolicyTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask
+        );
 
+        verifyTasksWereNeverCalled(
+            validateSelectedOrganisationTask,
+            setPetitionerSolicitorOrganisationPolicyReferenceTask,
+            setRespondentSolicitorOrganisationPolicyReferenceTask
         );
     }
 
     @Test
     public void runShouldRunSetSolicitorOrganisationPolicyReferenceTaskWhenFeatureIsOn() throws Exception {
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
+        when(featureToggleService.isFeatureEnabled(Features.SHARE_A_CASE)).thenReturn(true);
+
         mockTasksExecution(
             caseData,
             setNewLegalConnectionPolicyTask,
             copyD8JurisdictionConnectionPolicyTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
+            validateSelectedOrganisationTask,
             setPetitionerSolicitorOrganisationPolicyReferenceTask,
             setRespondentSolicitorOrganisationPolicyReferenceTask
         );
@@ -109,6 +124,7 @@ public class SolicitorUpdateWorkflowTest {
             copyD8JurisdictionConnectionPolicyTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
+            validateSelectedOrganisationTask,
             setPetitionerSolicitorOrganisationPolicyReferenceTask,
             setRespondentSolicitorOrganisationPolicyReferenceTask
         );
@@ -116,7 +132,7 @@ public class SolicitorUpdateWorkflowTest {
 
     @Test
     public void runShouldNotRunSetSolicitorOrganisationPolicyReferenceTaskWhenFeatureIsOff() throws Exception {
-        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(false);
+
         mockTasksExecution(
             caseData,
             setNewLegalConnectionPolicyTask,

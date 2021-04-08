@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetNewLegalConnectionPoli
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSelectedOrganisationTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -64,6 +65,9 @@ public class SolicitorCreateWorkflowTest {
 
     @Mock
     RespondentOrganisationPolicyRemovalTask respondentOrganisationPolicyRemovalTask;
+
+    @Mock
+    private ValidateSelectedOrganisationTask validateSelectedOrganisationTask;
 
     @InjectMocks
     SolicitorCreateWorkflow solicitorCreateWorkflow;
@@ -114,6 +118,7 @@ public class SolicitorCreateWorkflowTest {
         payload.put(CcdFields.RESPONDENT_SOLICITOR_DIGITAL, YES_VALUE);
 
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
+        when(featureToggleService.isFeatureEnabled(Features.SHARE_A_CASE)).thenReturn(true);
 
         CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
 
@@ -125,6 +130,7 @@ public class SolicitorCreateWorkflowTest {
             copyD8JurisdictionConnectionPolicyTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
+            validateSelectedOrganisationTask,
             setPetitionerSolicitorOrganisationPolicyReferenceTask,
             setRespondentSolicitorOrganisationPolicyReferenceTask
         );
@@ -139,6 +145,7 @@ public class SolicitorCreateWorkflowTest {
             copyD8JurisdictionConnectionPolicyTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
+            validateSelectedOrganisationTask,
             setPetitionerSolicitorOrganisationPolicyReferenceTask,
             setRespondentSolicitorOrganisationPolicyReferenceTask
         );
@@ -178,6 +185,7 @@ public class SolicitorCreateWorkflowTest {
         );
 
         verifyTasksWereNeverCalled(
+            validateSelectedOrganisationTask,
             setPetitionerSolicitorOrganisationPolicyReferenceTask,
             setRespondentSolicitorOrganisationPolicyReferenceTask,
             respondentOrganisationPolicyRemovalTask

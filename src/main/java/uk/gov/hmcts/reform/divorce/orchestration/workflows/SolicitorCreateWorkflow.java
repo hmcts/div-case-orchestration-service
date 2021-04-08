@@ -21,6 +21,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetNewLegalConnectionPoli
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSelectedOrganisationTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +49,7 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
     private final RespondentOrganisationPolicyRemovalTask respondentOrganisationPolicyRemovalTask;
     private final SetNewLegalConnectionPolicyTask setNewLegalConnectionPolicyTask;
     private final CopyD8JurisdictionConnectionPolicyTask copyD8JurisdictionConnectionPolicyTask;
+    private final ValidateSelectedOrganisationTask validateSelectedOrganisationTask;
 
     private final FeatureToggleService featureToggleService;
 
@@ -84,8 +86,15 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
         tasks.add(addMiniPetitionDraftTask);
         tasks.add(addNewDocumentsToCaseDataTask);
 
+        if (featureToggleService.isFeatureEnabled(Features.SHARE_A_CASE)) {
+            log.info("CaseId: {}, validate selected organisation", caseId);
+            tasks.add(validateSelectedOrganisationTask);
+        } else {
+            log.info("CaseId: {}, share a case switched OFF", caseId);
+        }
+
         if (featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)) {
-            log.info("CaseId: {} Adding OrganisationPolicyReferenceTasks", caseId);
+            log.info("CaseId: {}, Adding OrganisationPolicyReferenceTasks", caseId);
             tasks.add(setPetitionerSolicitorOrganisationPolicyReferenceTask);
 
             if (isRespondentSolicitorDigital(caseDetails.getCaseData())) {
