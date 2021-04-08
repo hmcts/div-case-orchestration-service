@@ -187,6 +187,7 @@
       },
       "respondentSolicitorReference": "RespondentSolicitorReference",
       "respondentSolicitorRepresented": "Yes",
+      "RespSolDigital": "Yes",
       "RespondentOrganisationPolicy": {
         "Organisation": {
           "OrganisationID": null,
