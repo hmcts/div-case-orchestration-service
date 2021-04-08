@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AosPackDueDateSetterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStoreTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ServiceMethodValidationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoRespondentAosPackPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.RespondentAosPackPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
@@ -29,9 +28,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.ve
 
 @RunWith(MockitoJUnitRunner.class)
 public class BulkPrintWorkflowTest {
-
-    @Mock
-    private ServiceMethodValidationTask serviceMethodValidationTask;
 
     @Mock
     private FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask;
@@ -59,7 +55,6 @@ public class BulkPrintWorkflowTest {
 
         mockTasksExecution(
             caseDetails.getCaseData(),
-            serviceMethodValidationTask,
             fetchPrintDocsFromDmStoreTask,
             aosPackDueDateSetterTask,
             respondentAosPackPrinterTask,
@@ -77,7 +72,6 @@ public class BulkPrintWorkflowTest {
 
         verifyTasksCalledInOrder(
             payload,
-            serviceMethodValidationTask,
             fetchPrintDocsFromDmStoreTask,
             respondentAosPackPrinterTask,
             coRespondentAosPackPrinterTask,
@@ -95,7 +89,6 @@ public class BulkPrintWorkflowTest {
 
         verifyTasksCalledInOrder(
             payload,
-            serviceMethodValidationTask,
             fetchPrintDocsFromDmStoreTask,
             respondentAosPackPrinterTask,
             aosPackDueDateSetterTask

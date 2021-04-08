@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrievePbaNumbersWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.SolConfirmServiceWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.ValidateForPersonalServicePackWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.notification.SendSolicitorPersonalServiceEmailWorkflow;
 
@@ -28,6 +29,9 @@ public class SolicitorServiceImplTest {
 
     @Mock
     SendSolicitorPersonalServiceEmailWorkflow sendSolicitorPersonalServiceEmailWorkflow;
+
+    @Mock
+    SolConfirmServiceWorkflow solConfirmServiceWorkflow;
 
     @Mock
     RetrievePbaNumbersWorkflow retrievePbaNumbersWorkflow;
@@ -72,5 +76,19 @@ public class SolicitorServiceImplTest {
         solicitorService.retrievePbaNumbers(request, TEST_TOKEN);
 
         verify(retrievePbaNumbersWorkflow).run(request, TEST_TOKEN);
+    }
+
+    @Test
+    public void shouldCallTheRightWorkflow_forSolConfirmPersonalService() throws WorkflowException {
+        Map<String, Object> caseData = Collections.emptyMap();
+        CcdCallbackRequest request = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build())
+            .build();
+
+        when(solConfirmServiceWorkflow.run(request)).thenReturn(caseData);
+
+        solicitorService.solicitorConfirmPersonalService(request);
+
+        verify(solConfirmServiceWorkflow).run(request);
     }
 }

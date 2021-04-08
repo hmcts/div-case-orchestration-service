@@ -142,6 +142,20 @@ public class SolicitorCallbackControllerTest {
         whenRetrievePbaNumbersExpect(expectedResponse, caseDataReturnedFromService);
     }
 
+    @Test
+    public void testServiceMethodIsCalled_WhenSolicitorConfirmPersonalService() throws WorkflowException {
+        when(solicitorService.solicitorConfirmPersonalService(any())).thenReturn(singletonMap("testKey", "testValue"));
+
+        CcdCallbackRequest callbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder().caseData(singletonMap("testKey", "testValue")).build())
+            .build();
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorConfirmPersonalService(callbackRequest);
+
+        assertThat(response.getStatusCode(), CoreMatchers.is(OK));
+        assertThat(response.getBody().getData(), hasEntry("testKey", "testValue"));
+        verify(solicitorService).solicitorConfirmPersonalService(callbackRequest);
+    }
+
     private void whenRetrievePbaNumbersExpect(CcdCallbackResponse expectedResponse, Map<String, Object> caseData) throws WorkflowException {
         final CaseDetails caseDetails = CaseDetails.builder()
             .caseData(caseData)
