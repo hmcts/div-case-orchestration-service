@@ -71,7 +71,6 @@ def versions = [
         springBoot                   : '2.3.4.RELEASE',//Upgrading to 2.3.9 makes build break because of embeddedPG and Flyway
         tomcat                       : '9.0.43',
         unirest                      : '1.4.9',
-        embeddedPostgres             : '1.5.5',
         pact_version                 : '4.1.11',
         httpComponents               : '4.5.13',
 ]
@@ -325,7 +324,6 @@ dependencies {
         exclude(module: 'commons-logging')
         exclude(module: 'android-json')
     }
-    testImplementation group: 'io.zonky.test', name: 'embedded-database-spring-test', version: versions.embeddedPostgres
 
     //integration test
     integrationTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
