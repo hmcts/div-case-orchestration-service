@@ -160,7 +160,7 @@ send-letter:
 
 prd:
   api:
-    url: ${PRD_SERVICE_API_BASEURL:http://localhost:4451}
+    url: ${PRD_SERVICE_API_BASEURL:http://rd-professional-api-aat.service.core-compute-aat.internal}
 
 aca:
   api:

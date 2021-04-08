@@ -38,7 +38,7 @@ public class ValidateSelectedOrganisationTask implements Task<Map<String, Object
             throw new TaskException("Please select an organisation");
         }
 
-        log.info("CaseId: {}, Petitioner solicitor organisation selected - try to share a case", caseId);
+        log.info("CaseId: {}, Petitioner solicitor organisation selected", caseId);
         assertUserBelongsToSelectedOrganisation(caseDetails, authToken);
 
         return caseData;
