@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.event.listener;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.event.domain.DataExtractionRequest;
@@ -20,13 +19,8 @@ import static java.lang.String.format;
 @RequiredArgsConstructor
 public class DataExtractionRequestListener implements ApplicationListener<DataExtractionRequest> {
 
-    @Autowired
     private final DataExtractionService dataExtractionService;
-
-    @Autowired
     private final CSVExtractorFactory csvExtractorFactory;
-
-    @Autowired
     private final AuthUtil authUtil;
 
     @Override
@@ -48,5 +42,4 @@ public class DataExtractionRequestListener implements ApplicationListener<DataEx
             log.warn("Ignoring data extraction request for status {}. This data extraction status is not yet implemented.", status);
         }
     }
-
 }
