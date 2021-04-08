@@ -23,13 +23,11 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
@@ -80,16 +78,14 @@ public class AosIssueBulkPrintWorkflowTest {
             .caseData(payload)
             .build();
 
-        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(true);
-        when(representedRespondentJourneyHelper.shouldUpdateNoticeOfProceedingsDetails(payload)).thenReturn(false);
-        when(representedRespondentJourneyHelper.shouldGenerateRespondentAosInvitation(payload)).thenReturn(true);
-
         mockTaskExecution();
     }
 
     @Test
-    public void whenWorkflowRuns_WithDigitalRespSol_AndNamedCoRespondent_allTasksRun_payloadReturned() throws WorkflowException, TaskException {
+    public void shouldCallAllTasksWhenAppropriate() throws WorkflowException, TaskException {
+        when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(true);
         when(representedRespondentJourneyHelper.shouldUpdateNoticeOfProceedingsDetails(payload)).thenReturn(true);
+        when(representedRespondentJourneyHelper.shouldGenerateRespondentAosInvitation(payload)).thenReturn(true);
 
         Map<String, Object> response = classUnderTest.run(AUTH_TOKEN, caseDetails);
         assertThat(response, is(payload));
@@ -106,26 +102,10 @@ public class AosIssueBulkPrintWorkflowTest {
     }
 
     @Test
-    public void whenWorkflowRunsForNonAdulteryCase_allTasksRunExceptForUpdateNoticeDetails_ToggledOff() throws WorkflowException, TaskException {
-        Map<String, Object> response = classUnderTest.run(AUTH_TOKEN, caseDetails);
-        assertThat(response, is(payload));
-
-        verifyTasksCalledInOrder(
-            payload,
-            serviceMethodValidationTask,
-            fetchPrintDocsFromDmStoreTask,
-            respondentAosPackPrinterTask,
-            coRespondentAosPackPrinterTask,
-            aosPackDueDateSetterTask
-        );
-
-        verifyNoInteractions(updateRespondentDigitalDetailsTask);
-    }
-
-    @Test
-    public void whenWorkflowRunsForNonAdulteryCase_WithDigitalRespSol_allTasksButCoRespondentRun() throws WorkflowException, TaskException {
+    public void shouldCallMinimumTasksWhenAppropriate() throws WorkflowException, TaskException {
         when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(false);
-        when(representedRespondentJourneyHelper.shouldUpdateNoticeOfProceedingsDetails(payload)).thenReturn(true);
+        when(representedRespondentJourneyHelper.shouldUpdateNoticeOfProceedingsDetails(payload)).thenReturn(false);
+        when(representedRespondentJourneyHelper.shouldGenerateRespondentAosInvitation(payload)).thenReturn(false);
 
         Map<String, Object> response = classUnderTest.run(AUTH_TOKEN, caseDetails);
         assertThat(response, is(payload));
@@ -134,71 +114,13 @@ public class AosIssueBulkPrintWorkflowTest {
             payload,
             serviceMethodValidationTask,
             fetchPrintDocsFromDmStoreTask,
-            respondentAosPackPrinterTask,
-            aosPackDueDateSetterTask,
-            updateRespondentDigitalDetailsTask
-        );
-
-        verifyNoInteractions(coRespondentAosPackPrinterTask);
-    }
-
-    @Test
-    public void whenRespIsRepresented_AndRespSolIsNotDigital_someTasksRun() throws WorkflowException, TaskException {
-        when(representedRespondentJourneyHelper.shouldGenerateRespondentAosInvitation(any())).thenReturn(false);
-
-        Map<String, Object> response = classUnderTest.run(AUTH_TOKEN, caseDetails);
-        assertThat(response, is(payload));
-
-        verifyTasksCalledInOrder(
-            payload,
-            serviceMethodValidationTask,
-            fetchPrintDocsFromDmStoreTask,
-            coRespondentAosPackPrinterTask,
             aosPackDueDateSetterTask
         );
 
         verifyNoInteractions(respondentAosPackPrinterTask);
+        verifyNoInteractions(coRespondentAosPackPrinterTask);
         verifyNoInteractions(updateRespondentDigitalDetailsTask);
     }
-
-    @Test
-    public void whenToggleIsOff_RespIsRepresented_AndRespSolIsNotDigital_someTasksRun() throws WorkflowException, TaskException {
-        Map<String, Object> response = classUnderTest.run(AUTH_TOKEN, caseDetails);
-        assertThat(response, is(payload));
-
-        verifyTasksCalledInOrder(
-            payload,
-            serviceMethodValidationTask,
-            fetchPrintDocsFromDmStoreTask,
-            respondentAosPackPrinterTask,
-            coRespondentAosPackPrinterTask,
-            aosPackDueDateSetterTask
-        );
-
-        verifyNoInteractions(updateRespondentDigitalDetailsTask);
-    }
-
-    @Test
-    public void whenRespIsNotRepresented_RespSolIsNotDigital_allTasksRunExceptForUpdateNoticeDetails() throws WorkflowException, TaskException {
-        Map<String, Object> caseData = caseDetails.getCaseData();//TODO - potential duplicate
-        caseData.put(RESP_SOL_REPRESENTED, NO_VALUE);//todo - no more need for this?
-        caseDetails.setCaseData(caseData);
-
-        Map<String, Object> response = classUnderTest.run(AUTH_TOKEN, caseDetails);
-        assertThat(response, is(payload));
-
-        verifyTasksCalledInOrder(
-            payload,
-            serviceMethodValidationTask,
-            fetchPrintDocsFromDmStoreTask,
-            respondentAosPackPrinterTask,
-            coRespondentAosPackPrinterTask,
-            aosPackDueDateSetterTask
-        );
-
-        verifyNoInteractions(updateRespondentDigitalDetailsTask);
-    }
-    //TODO - look for duplicate scenarios when I'm finished
 
     private void mockTaskExecution() {
         mockTasksExecution(
