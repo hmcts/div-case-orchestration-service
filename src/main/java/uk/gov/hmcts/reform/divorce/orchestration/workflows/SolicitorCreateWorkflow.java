@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetNewLegalConnectionPoli
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSelectedOrganisationTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,9 +43,11 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
     private final SetClaimCostsFromTask setClaimCostsFromTask;
     private final SetPetitionerSolicitorOrganisationPolicyReferenceTask setPetitionerSolicitorOrganisationPolicyReferenceTask;
     private final SetRespondentSolicitorOrganisationPolicyReferenceTask setRespondentSolicitorOrganisationPolicyReferenceTask;
-    private final FeatureToggleService featureToggleService;
     private final SetNewLegalConnectionPolicyTask setNewLegalConnectionPolicyTask;
     private final CopyD8JurisdictionConnectionPolicyTask copyD8JurisdictionConnectionPolicyTask;
+    private final ValidateSelectedOrganisationTask validateSelectedOrganisationTask;
+
+    private final FeatureToggleService featureToggleService;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
         return this.execute(
@@ -65,6 +68,7 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
     }
 
     private Task<Map<String, Object>>[] getTasks(CaseDetails caseDetails) {
+        final String caseId = caseDetails.getCaseId();
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
         if (isPetitionerClaimingCostsAndClaimCostsFromIsEmptyIn(caseDetails)) {
@@ -77,8 +81,15 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
         tasks.add(addMiniPetitionDraftTask);
         tasks.add(addNewDocumentsToCaseDataTask);
 
+        if (featureToggleService.isFeatureEnabled(Features.SHARE_A_CASE)) {
+            log.info("CaseId: {}, validate selected organisation", caseId);
+            tasks.add(validateSelectedOrganisationTask);
+        } else {
+            log.info("CaseId: {}, share a case switched OFF", caseId);
+        }
+
         if (featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)) {
-            log.info("Adding OrganisationPolicyReferenceTasks, REPRESENTED_RESPONDENT_JOURNEY feature toggle is set to true.");
+            log.info("CaseId: {}, Adding OrganisationPolicyReferenceTasks", caseId);
             tasks.add(setPetitionerSolicitorOrganisationPolicyReferenceTask);
             tasks.add(setRespondentSolicitorOrganisationPolicyReferenceTask);
         }

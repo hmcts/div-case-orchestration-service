@@ -49,4 +49,3 @@ public class AllowShareACaseTask implements Task<Map<String, Object>> {
         return caseData;
     }
 }
-

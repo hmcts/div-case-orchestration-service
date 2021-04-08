@@ -38,10 +38,14 @@ public class CaseDataTestHelper {
     }
 
     public static OrganisationPolicy buildOrganisationPolicy() {
+        return buildOrganisationPolicy(TEST_ORGANISATION_POLICY_ID);
+    }
+
+    public static OrganisationPolicy buildOrganisationPolicy(String orgId) {
         return OrganisationPolicy.builder()
             .organisation(
                 Organisation.builder()
-                    .organisationID(TEST_ORGANISATION_POLICY_ID)
+                    .organisationID(orgId)
                     .organisationName(TEST_ORGANISATION_POLICY_NAME)
                     .build())
             .build();
