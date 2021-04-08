@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -30,7 +31,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.events.CcdTestEvents.TEST_AOS_AWAITING_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.events.CcdTestEvents.TEST_AOS_AWAITING_EVENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.events.CcdTestEvents.TEST_AOS_STARTED_EVENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.events.CcdTestEvents.TEST_AWAITING_DECREE_ABSOLUTE_EVENT;
 import static uk.gov.hmcts.reform.divorce.util.DateConstants.CCD_DATE_FORMATTER;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.loadJson;
 
@@ -40,13 +43,12 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
 
     private static final String CO_RESPONDENT_PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/co-respondent/";
     private static final String RESPONDENT_PAYLOAD_CONTEXT_PATH = "fixtures/maintenance/submit-aos/";
-    private static final String TEST_AOS_STARTED_EVENT_ID = "testAosStarted";
-    private static final String TEST_AWAITING_DECREE_ABSOLUTE = "testAwaitingDecreeAbsolute";
     private static final String SUBMIT_COMPLETE_CASE_JSON_FILE_PATH = "submit-complete-case.json";
     private static final String AOS_DEFEND_CONSENT_JSON_FILE_PATH = "aos-defend-consent.json";
     private static final String CO_RESP_ANSWERS_JSON_FILE_PATH = "co-respondent-answers.json";
     private static final String CO_RESP_DEFENDED_ANSWERS_JSON_FILE_PATH = "co-respondent-defended-answers.json";
     private static final String CO_RESPONDENT_ANSWERS_JSON;
+    private UserDetails userDetails;
 
     static {
         try {
@@ -59,16 +61,19 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Before
+    public void setup() {
+        userDetails = createCitizenUser();
+    }
+
     @Test
     @Category(ExtendedTest.class)
     public void givenCaseIsDisallowedState_whenSubmittingCoRespondentAnswers_thenReturnBadRequest() throws Exception {
-        final UserDetails userDetails = createCitizenUser();
-
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
             Pair.of(CO_RESP_EMAIL_ADDRESS, userDetails.getEmailAddress()));
         log.info("Case " + caseDetails.getId() + " created.");
 
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AWAITING_DECREE_ABSOLUTE, userDetails);
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AWAITING_DECREE_ABSOLUTE_EVENT, userDetails);
 
         final String coRespondentAnswersJson = loadJson(CO_RESPONDENT_PAYLOAD_CONTEXT_PATH + CO_RESP_ANSWERS_JSON_FILE_PATH);
         Response coRespondentSubmissionResponse = submitCoRespondentAosCase(userDetails, coRespondentAnswersJson);
@@ -78,13 +83,11 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
 
     @Test
     public void canSubmitAndRetrieveCoRespondentAnswers() throws Exception {
-        final UserDetails userDetails = createCitizenUser();
-
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
             Pair.of(CO_RESP_EMAIL_ADDRESS, userDetails.getEmailAddress()));
         log.info("Case " + caseDetails.getId() + " created.");
 
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_AWAITING_EVENT_ID, userDetails);
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_AWAITING_EVENT, userDetails);
 
         final Response coRespondentSubmissionResponse = submitCoRespondentAosCase(userDetails, CO_RESPONDENT_ANSWERS_JSON);
 
@@ -97,13 +100,11 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     @Test
     @Category(ExtendedTest.class)
     public void givenCaseIsAosAwaiting_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() {
-        final UserDetails userDetails = createCitizenUser();
-
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
             Pair.of(CO_RESP_EMAIL_ADDRESS, userDetails.getEmailAddress()));
         log.info("Case " + caseDetails.getId() + " created.");
 
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_AWAITING_EVENT_ID, userDetails);
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_AWAITING_EVENT, userDetails);
 
         submitCoRespondentAosCase(userDetails, CO_RESPONDENT_ANSWERS_JSON);
 
@@ -116,13 +117,11 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     @Test
     @Category(ExtendedTest.class)
     public void givenCaseIsAosStarted_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() {
-        final UserDetails userDetails = createCitizenUser();
-
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
             Pair.of(CO_RESP_EMAIL_ADDRESS, userDetails.getEmailAddress()));
         log.info("Case " + caseDetails.getId() + " created.");
 
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_STARTED_EVENT_ID, userDetails);
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_STARTED_EVENT, userDetails);
 
         submitCoRespondentAosCase(userDetails, CO_RESPONDENT_ANSWERS_JSON);
 
@@ -135,12 +134,11 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     @Test
     @Category(ExtendedTest.class)
     public void givenCaseIsAosSubmittedAwaitingAnswer_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() throws Exception {
-        final UserDetails userDetails = createCitizenUser();
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
             Pair.of(CO_RESP_EMAIL_ADDRESS, userDetails.getEmailAddress()));
         log.info("Case " + caseDetails.getId() + " created.");
 
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_STARTED_EVENT_ID, userDetails);
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_STARTED_EVENT, userDetails);
 
         final String respondentJson = loadJson(RESPONDENT_PAYLOAD_CONTEXT_PATH + AOS_DEFEND_CONSENT_JSON_FILE_PATH);
         submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(), respondentJson);
@@ -157,14 +155,12 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     @Test
     @Category(ExtendedTest.class)
     public void givenCaseIsAosOverdue_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() {
-        final UserDetails userDetails = createCitizenUser();
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
             Pair.of(RESPONDENT_EMAIL_ADDRESS, userDetails.getEmailAddress()));
         log.info("Case " + caseDetails.getId() + " created.");
 
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_AWAITING_EVENT_ID, userDetails);
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_AWAITING_EVENT, userDetails);
         updateCase(String.valueOf(caseDetails.getId()), null, NOT_RECEIVED_AOS);
-
 
         submitCoRespondentAosCase(userDetails, CO_RESPONDENT_ANSWERS_JSON);
 
@@ -177,13 +173,12 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     @Test
     @Category(ExtendedTest.class)
     public void givenCaseIsAosDefended_whenSubmittingCoRespondentAnswers_thenStateShouldNotChange() throws Exception {
-        final UserDetails userDetails = createCitizenUser();
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
             Pair.of(CO_RESP_EMAIL_ADDRESS, userDetails.getEmailAddress()));
 
         log.info("Case " + caseDetails.getId() + " created.");
 
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_STARTED_EVENT_ID, userDetails);
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_STARTED_EVENT, userDetails);
 
         final String respondentJson = loadJson(RESPONDENT_PAYLOAD_CONTEXT_PATH + AOS_DEFEND_CONSENT_JSON_FILE_PATH);
         submitRespondentAosCase(userDetails.getAuthToken(), caseDetails.getId(), respondentJson);
@@ -206,13 +201,12 @@ public class SubmitCoRespondentAosCaseTest extends RetrieveAosCaseSupport {
     @Test
     @Category(ExtendedTest.class)
     public void givenCoRespondentIsDefending_whenSubmittingCoRespondentAnswers_thenDueDateIsRecalculated() throws Exception {
-        final UserDetails userDetails = createCitizenUser();
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, userDetails,
             Pair.of(CO_RESP_EMAIL_ADDRESS, userDetails.getEmailAddress()));
 
         log.info("Case " + caseDetails.getId() + " created.");
 
-        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_STARTED_EVENT_ID, userDetails);
+        updateCaseForCitizen(String.valueOf(caseDetails.getId()), null, TEST_AOS_STARTED_EVENT, userDetails);
 
         final String coRespondentAnswersJson = loadJson(CO_RESPONDENT_PAYLOAD_CONTEXT_PATH + CO_RESP_DEFENDED_ANSWERS_JSON_FILE_PATH);
         submitCoRespondentAosCase(userDetails, coRespondentAnswersJson);

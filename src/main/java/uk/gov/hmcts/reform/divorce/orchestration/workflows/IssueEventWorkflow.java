@@ -4,12 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentLetterGeneratorTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CoRespondentPinGeneratorTask;
@@ -17,11 +19,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.GetPetitionIssueFeeTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.PetitionGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetCoRespondentLinkingFields;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ResetRespondentLinkingFields;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentAosLetterGeneratorTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentLetterGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetIssueDateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.helper.RepresentedRespondentJourneyHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,12 +46,16 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
     private final RespondentPinGenerator respondentPinGenerator;
     private final CoRespondentPinGeneratorTask coRespondentPinGeneratorTask;
     private final RespondentLetterGenerator respondentLetterGenerator;
+    private final RespondentAosLetterGeneratorTask respondentAOSLetterGeneratorTask;
     private final CoRespondentLetterGeneratorTask coRespondentLetterGeneratorTask;
     private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
     private final GetPetitionIssueFeeTask getPetitionIssueFeeTask;
     private final ResetRespondentLinkingFields resetRespondentLinkingFields;
     private final ResetCoRespondentLinkingFields resetCoRespondentLinkingFields;
     private final CaseDataUtils caseDataUtils;
+    private final RepresentedRespondentJourneyHelper representedRespondentJourneyHelper;
+
+    private final FeatureToggleService featureToggleService;
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest,
                                    String authToken, boolean generateAosInvitation) throws WorkflowException {
@@ -62,9 +70,19 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
         final Map<String, Object> caseData = caseDetails.getCaseData();
 
         if (generateAosInvitation && isServiceCentreOrNottinghamDivorceUnit(caseData)) {
-            tasks.add(respondentPinGenerator);
-            tasks.add(respondentLetterGenerator);
+            if (representedRespondentJourneyHelper.shouldGenerateRespondentAosInvitation(caseData)) {
+                tasks.add(respondentPinGenerator);
 
+                if (featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)) {
+                    log.info("Represented respondent journey toggled on,"
+                        + "adding respondentAOSLetterGeneratorTask to task for case ID: {}", caseDetails.getCaseId());
+                    tasks.add(respondentAOSLetterGeneratorTask);
+                } else {
+                    log.info("Represented respondent journey toggled off,"
+                        + "adding respondentLetterGenerator to task for case ID: {}", caseDetails.getCaseId());
+                    tasks.add(respondentLetterGenerator);
+                }
+            }
             if (caseDataUtils.isAdulteryCaseWithNamedCoRespondent(caseData)) {
                 log.info("Adultery case with co-respondent: {}. Calculating current petition fee and generating"
                     + " co-respondent letter", caseDetails.getCaseId());
