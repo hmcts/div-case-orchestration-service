@@ -10,7 +10,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CopyD8JurisdictionConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetClaimCostsFromTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetNewLegalConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
@@ -52,6 +54,12 @@ public class SolicitorCreateWorkflowTest {
     @Mock
     SetRespondentSolicitorOrganisationPolicyReferenceTask setRespondentSolicitorOrganisationPolicyReferenceTask;
 
+    @Mock
+    SetNewLegalConnectionPolicyTask setNewLegalConnectionPolicyTask;
+
+    @Mock
+    CopyD8JurisdictionConnectionPolicyTask copyD8JurisdictionConnectionPolicyTask;
+
     @InjectMocks
     SolicitorCreateWorkflow solicitorCreateWorkflow;
 
@@ -68,6 +76,8 @@ public class SolicitorCreateWorkflowTest {
             caseDetails.getCaseData(),
             setClaimCostsFromTask,
             setSolicitorCourtDetailsTask,
+            setNewLegalConnectionPolicyTask,
+            copyD8JurisdictionConnectionPolicyTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
             setPetitionerSolicitorOrganisationPolicyReferenceTask,
@@ -80,6 +90,8 @@ public class SolicitorCreateWorkflowTest {
             caseDetails.getCaseData(),
             setClaimCostsFromTask,
             setSolicitorCourtDetailsTask,
+            setNewLegalConnectionPolicyTask,
+            copyD8JurisdictionConnectionPolicyTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask,
             setPetitionerSolicitorOrganisationPolicyReferenceTask,
@@ -100,6 +112,8 @@ public class SolicitorCreateWorkflowTest {
             caseDetails.getCaseData(),
             setClaimCostsFromTask,
             setSolicitorCourtDetailsTask,
+            setNewLegalConnectionPolicyTask,
+            copyD8JurisdictionConnectionPolicyTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask
         );
@@ -110,6 +124,8 @@ public class SolicitorCreateWorkflowTest {
             caseDetails.getCaseData(),
             setClaimCostsFromTask,
             setSolicitorCourtDetailsTask,
+            setNewLegalConnectionPolicyTask,
+            copyD8JurisdictionConnectionPolicyTask,
             addMiniPetitionDraftTask,
             addNewDocumentsToCaseDataTask
         );

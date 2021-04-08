@@ -340,8 +340,10 @@ public class CallbackController {
         @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
-        Map<String, Object> response = caseOrchestrationService.ccdCallbackConfirmPersonalService(ccdCallbackRequest,
-            authorizationToken);
+        String eventId = ccdCallbackRequest.getEventId();
+        log.info("/confirm-service being called from event id [{}]", eventId);
+        Map<String, Object> response = caseOrchestrationService.ccdCallbackConfirmPersonalService(
+            authorizationToken, ccdCallbackRequest.getCaseDetails(), eventId);
 
         if (response != null && response.containsKey(BULK_PRINT_ERROR_KEY)) {
             return ResponseEntity.ok(
@@ -372,7 +374,7 @@ public class CallbackController {
 
         try {
             Map<String, Object> response = caseOrchestrationService.ccdCallbackBulkPrintHandler(
-                ccdCallbackRequest, authorizationToken
+                authorizationToken, ccdCallbackRequest.getCaseDetails(), ccdCallbackRequest.getEventId()
             );
 
             if (response != null && response.containsKey(BULK_PRINT_ERROR_KEY)) {
@@ -411,6 +413,9 @@ public class CallbackController {
         @RequestParam(value = GENERATE_AOS_INVITATION, required = false)
         @ApiParam(GENERATE_AOS_INVITATION) boolean generateAosInvitation,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        log.info("Received request to /petition-issued endpoint with generateAosInvitation value of {}", generateAosInvitation);
+
         Map<String, Object> response = caseOrchestrationService.handleIssueEventCallback(ccdCallbackRequest, authorizationToken,
             generateAosInvitation);
 

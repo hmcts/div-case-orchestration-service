@@ -14,6 +14,7 @@ import static java.util.Collections.emptyMap;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ORGANISATION_POLICY_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
@@ -31,6 +32,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentation
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentLinkedToCase;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isCoRespondentRepresented;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerRepresented;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerSolicitorDigital;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentDigital;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
@@ -108,6 +110,25 @@ public class PartyRepresentationCheckerTest {
     public void isRespondentDigitalReturnsTrue() {
         Map<String, Object> caseData = createCaseData(RESP_IS_USING_DIGITAL_CHANNEL, YES_VALUE);
         assertThat(isRespondentDigital(caseData), is(true));
+    }
+
+    @Test
+    public void isPetitionerSolicitorDigitalReturnsFalseWhenRespOrgPolicyDoesNotExist() {
+        Map<String, Object> caseData = emptyMap();
+        assertThat(isPetitionerSolicitorDigital(caseData), is(false));
+    }
+
+    @Test
+    public void isPetitionerSolicitorDigitalReturnsFalseWhenRespOrgPolicyIdIsEmptyOrNull() {
+        Map<String, Object> caseData = createCaseData(PETITIONER_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicyWithId(""));
+        assertThat(isPetitionerSolicitorDigital(caseData), is(false));
+    }
+
+    @Test
+    public void isPetitionerSolicitorDigitalReturnsTrue() {
+        Map<String, Object> caseData = createCaseData(PETITIONER_SOLICITOR_ORGANISATION_POLICY,
+            buildOrganisationPolicyWithId(TEST_ORGANISATION_POLICY_ID));
+        assertThat(isPetitionerSolicitorDigital(caseData), is(true));
     }
 
     @Test
@@ -193,4 +214,5 @@ public class PartyRepresentationCheckerTest {
                 .build())
             .build();
     }
+
 }
