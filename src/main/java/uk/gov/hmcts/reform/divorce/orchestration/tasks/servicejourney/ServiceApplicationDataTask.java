@@ -5,9 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor;
 
@@ -20,6 +22,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @Slf4j
 @AllArgsConstructor
 public class ServiceApplicationDataTask implements Task<Map<String, Object>> {
+
+    private final FeatureToggleService featureToggleService;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
@@ -34,7 +38,9 @@ public class ServiceApplicationDataTask implements Task<Map<String, Object>> {
 
     private void persistLastServiceApplication(Map<String, Object> caseData, DivorceServiceApplication serviceApplication) {
         caseData.put(CcdFields.LAST_SERVICE_APPLICATION, serviceApplication);
-        caseData.put(CcdFields.LAST_SERVICE_APPLICATION_TYPE, serviceApplication.getType());
+        if (featureToggleService.isFeatureEnabled(Features.BAILIFF_JOURNEY)) {
+            caseData.put(CcdFields.LAST_SERVICE_APPLICATION_TYPE, serviceApplication.getType());
+        }
     }
 
     private Map<String, Object> addNewServiceApplicationToCaseData(
