@@ -13,10 +13,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CopyD8JurisdictionConnectionPolicyTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentOrganisationPolicyRemovalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetNewLegalConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSelectedOrganisationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.helper.RepresentedRespondentJourneyHelper;
 
 import java.util.Collections;
 import java.util.Map;
@@ -45,7 +47,13 @@ public class SolicitorUpdateWorkflowTest {
     private SetRespondentSolicitorOrganisationPolicyReferenceTask setRespondentSolicitorOrganisationPolicyReferenceTask;
 
     @Mock
+    private RespondentOrganisationPolicyRemovalTask respondentOrganisationPolicyRemovalTask;
+
+    @Mock
     private ValidateSelectedOrganisationTask validateSelectedOrganisationTask;
+
+    @Mock
+    private RepresentedRespondentJourneyHelper representedRespondentJourneyHelper;
 
     @Mock
     private FeatureToggleService featureToggleService;
@@ -101,9 +109,10 @@ public class SolicitorUpdateWorkflowTest {
     }
 
     @Test
-    public void runShouldRunSetSolicitorOrganisationPolicyReferenceTaskWhenFeatureIsOn() throws Exception {
+    public void runShouldRunSetSolicitorOrganisationPolicyReferenceTaskWhenFeatureIsOnAndIsRespSolDigital() throws Exception {
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
         when(featureToggleService.isFeatureEnabled(Features.SHARE_A_CASE)).thenReturn(true);
+        when(representedRespondentJourneyHelper.isRespondentSolicitorDigital(caseDetails.getCaseData())).thenReturn(true);
 
         mockTasksExecution(
             caseData,
@@ -128,6 +137,41 @@ public class SolicitorUpdateWorkflowTest {
             setPetitionerSolicitorOrganisationPolicyReferenceTask,
             setRespondentSolicitorOrganisationPolicyReferenceTask
         );
+
+        verifyTasksWereNeverCalled(respondentOrganisationPolicyRemovalTask);
+    }
+
+    @Test
+    public void runShouldRunSetSolicitorOrganisationPolicyReferenceTaskWhenFeatureIsOnAndNotRespSolDigital() throws Exception {
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
+        when(featureToggleService.isFeatureEnabled(Features.SHARE_A_CASE)).thenReturn(true);
+        when(representedRespondentJourneyHelper.isRespondentSolicitorDigital(caseDetails.getCaseData())).thenReturn(false);
+
+        mockTasksExecution(
+                caseData,
+                setNewLegalConnectionPolicyTask,
+                copyD8JurisdictionConnectionPolicyTask,
+                addMiniPetitionDraftTask,
+                addNewDocumentsToCaseDataTask,
+                validateSelectedOrganisationTask,
+                setPetitionerSolicitorOrganisationPolicyReferenceTask,
+                respondentOrganisationPolicyRemovalTask
+        );
+
+        executeWorkflow();
+
+        verifyTasksCalledInOrder(
+                caseData,
+                setNewLegalConnectionPolicyTask,
+                copyD8JurisdictionConnectionPolicyTask,
+                addMiniPetitionDraftTask,
+                addNewDocumentsToCaseDataTask,
+                validateSelectedOrganisationTask,
+                setPetitionerSolicitorOrganisationPolicyReferenceTask,
+                respondentOrganisationPolicyRemovalTask
+        );
+
+        verifyTasksWereNeverCalled(setRespondentSolicitorOrganisationPolicyReferenceTask);
     }
 
     @Test

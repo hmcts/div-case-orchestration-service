@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrg
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSelectedOrganisationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.helper.RepresentedRespondentJourneyHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +51,7 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
     private final SetNewLegalConnectionPolicyTask setNewLegalConnectionPolicyTask;
     private final CopyD8JurisdictionConnectionPolicyTask copyD8JurisdictionConnectionPolicyTask;
     private final ValidateSelectedOrganisationTask validateSelectedOrganisationTask;
+    private final RepresentedRespondentJourneyHelper representedRespondentJourneyHelper;
 
     private final FeatureToggleService featureToggleService;
 
@@ -76,7 +78,7 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
         if (isPetitionerClaimingCostsAndClaimCostsFromIsEmptyIn(caseDetails)) {
-            log.info("CaseId: {} petitioner claiming costs", caseId);
+            log.info("CaseId: {}, petitioner claiming costs", caseId);
             tasks.add(setClaimCostsFromTask);
         }
 
@@ -97,28 +99,18 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
             log.info("CaseId: {}, Adding OrganisationPolicyReferenceTasks", caseId);
             tasks.add(setPetitionerSolicitorOrganisationPolicyReferenceTask);
 
-            if (isRespondentSolicitorDigital(caseDetails.getCaseData())) {
-                log.info("CaseId: {} respondent solicitor is digital", caseId);
+            if (representedRespondentJourneyHelper.isRespondentSolicitorDigital(caseDetails.getCaseData())) {
+                log.info("CaseId: {}, respondent solicitor is digital", caseId);
                 tasks.add(setRespondentSolicitorOrganisationPolicyReferenceTask);
             } else {
-                log.info("CaseId: {} respondent solicitor is NOT digital", caseId);
+                log.info("CaseId: {}, respondent solicitor is NOT digital", caseId);
                 tasks.add(respondentOrganisationPolicyRemovalTask);
             }
         } else {
-            log.info("CaseId: {} RRJ is OFF", caseId);
+            log.info("CaseId: {}, RRJ is OFF", caseId);
         }
 
         return tasks.toArray(new Task[] {});
     }
 
-    /**
-     * I know there is re-usable method, but that method can (and should) be used after this step of the process.
-     * Here we have an edge case scenario when somebody may select Yes, populate it and then select No.
-     *
-     * <p>We need to cover this scenario and clean up data properly.
-     * */
-    private boolean isRespondentSolicitorDigital(Map<String, Object> caseData) {
-        return getOptionalPropertyValueAsString(caseData, CcdFields.RESPONDENT_SOLICITOR_DIGITAL, "")
-            .equalsIgnoreCase(YES_VALUE);
-    }
 }

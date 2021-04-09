@@ -3,11 +3,14 @@ package uk.gov.hmcts.reform.divorce.orchestration.workflows.helper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
 
@@ -41,6 +44,11 @@ public class RepresentedRespondentJourneyHelper {
         }
 
         return shouldGenerateRespondentAosInvitation;
+    }
+
+    public boolean isRespondentSolicitorDigital(Map<String, Object> caseData) {
+        return getOptionalPropertyValueAsString(caseData, CcdFields.RESPONDENT_SOLICITOR_DIGITAL, "")
+                .equalsIgnoreCase(YES_VALUE);
     }
 
 }

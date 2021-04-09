@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
@@ -13,10 +14,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CopyD8JurisdictionConnectionPolicyTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentOrganisationPolicyRemovalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetNewLegalConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSelectedOrganisationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.helper.RepresentedRespondentJourneyHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +28,8 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 
 @Component
 @Slf4j
@@ -35,9 +40,11 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
     private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
     private final SetPetitionerSolicitorOrganisationPolicyReferenceTask setPetitionerSolicitorOrganisationPolicyReferenceTask;
     private final SetRespondentSolicitorOrganisationPolicyReferenceTask setRespondentSolicitorOrganisationPolicyReferenceTask;
+    private final RespondentOrganisationPolicyRemovalTask respondentOrganisationPolicyRemovalTask;
     private final SetNewLegalConnectionPolicyTask setNewLegalConnectionPolicyTask;
     private final CopyD8JurisdictionConnectionPolicyTask copyD8JurisdictionConnectionPolicyTask;
     private final ValidateSelectedOrganisationTask validateSelectedOrganisationTask;
+    private final RepresentedRespondentJourneyHelper representedRespondentJourneyHelper;
 
     private final FeatureToggleService featureToggleService;
 
@@ -47,7 +54,7 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
         log.info("CaseID: {} SolicitorUpdateWorkflow workflow is going to be executed.", caseId);
 
         return this.execute(
-            getTasks(caseId),
+            getTasks(caseDetails),
             caseDetails.getCaseData(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
@@ -55,7 +62,8 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
         );
     }
 
-    private Task<Map<String, Object>>[] getTasks(String caseId) {
+    private Task<Map<String, Object>>[] getTasks(CaseDetails caseDetails) {
+        final String caseId = caseDetails.getCaseId();
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
         tasks.add(getNewLegalConnectionPolicyTask(caseId));
@@ -73,7 +81,15 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
         if (isRepresentedRespondentJourneyEnabled()) {
             log.info("CaseId: {}, Adding OrganisationPolicyReference tasks", caseId);
             tasks.add(setPetitionerSolicitorOrganisationPolicyReferenceTask);
-            tasks.add(setRespondentSolicitorOrganisationPolicyReferenceTask);
+
+            if (representedRespondentJourneyHelper.isRespondentSolicitorDigital(caseDetails.getCaseData())) {
+                log.info("CaseId: {}, respondent solicitor is digital", caseId);
+                tasks.add(setRespondentSolicitorOrganisationPolicyReferenceTask);
+            } else {
+                log.info("CaseId: {}, respondent solicitor is NOT digital", caseId);
+                tasks.add(respondentOrganisationPolicyRemovalTask);
+            }
+
         }
 
         return tasks.toArray(new Task[] {});
