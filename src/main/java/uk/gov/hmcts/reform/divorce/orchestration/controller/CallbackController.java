@@ -413,6 +413,9 @@ public class CallbackController {
         @RequestParam(value = GENERATE_AOS_INVITATION, required = false)
         @ApiParam(GENERATE_AOS_INVITATION) boolean generateAosInvitation,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
+
+        log.info("Received request to /petition-issued endpoint with generateAosInvitation value of {}", generateAosInvitation);
+
         Map<String, Object> response = caseOrchestrationService.handleIssueEventCallback(ccdCallbackRequest, authorizationToken,
             generateAosInvitation);
 

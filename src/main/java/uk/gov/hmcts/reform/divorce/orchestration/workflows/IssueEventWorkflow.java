@@ -25,6 +25,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentPinGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetIssueDateTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.helper.RepresentedRespondentJourneyHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +53,7 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
     private final ResetRespondentLinkingFields resetRespondentLinkingFields;
     private final ResetCoRespondentLinkingFields resetCoRespondentLinkingFields;
     private final CaseDataUtils caseDataUtils;
+    private final RepresentedRespondentJourneyHelper representedRespondentJourneyHelper;
 
     private final FeatureToggleService featureToggleService;
 
@@ -68,18 +70,19 @@ public class IssueEventWorkflow extends DefaultWorkflow<Map<String, Object>> {
         final Map<String, Object> caseData = caseDetails.getCaseData();
 
         if (generateAosInvitation && isServiceCentreOrNottinghamDivorceUnit(caseData)) {
-            tasks.add(respondentPinGenerator);
+            if (representedRespondentJourneyHelper.shouldGenerateRespondentAosInvitation(caseData)) {
+                tasks.add(respondentPinGenerator);
 
-            if (featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)) {
-                log.info("Represented respondent journey toggled on,"
-                    + "adding respondentAOSLetterGeneratorTask to task for case ID: {}", caseDetails.getCaseId());
-                tasks.add(respondentAOSLetterGeneratorTask);
-            } else {
-                log.info("Represented respondent journey toggled off,"
-                    + "adding respondentLetterGenerator to task for case ID: {}", caseDetails.getCaseId());
-                tasks.add(respondentLetterGenerator);
+                if (featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)) {
+                    log.info("Represented respondent journey toggled on,"
+                        + "adding respondentAOSLetterGeneratorTask to task for case ID: {}", caseDetails.getCaseId());
+                    tasks.add(respondentAOSLetterGeneratorTask);
+                } else {
+                    log.info("Represented respondent journey toggled off,"
+                        + "adding respondentLetterGenerator to task for case ID: {}", caseDetails.getCaseId());
+                    tasks.add(respondentLetterGenerator);
+                }
             }
-
             if (caseDataUtils.isAdulteryCaseWithNamedCoRespondent(caseData)) {
                 log.info("Adultery case with co-respondent: {}. Calculating current petition fee and generating"
                     + " co-respondent letter", caseDetails.getCaseId());

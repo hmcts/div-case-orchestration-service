@@ -26,7 +26,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.events.CcdTestEvents.TEST_AOS_AWAITING_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.events.CcdTestEvents.TEST_AOS_AWAITING_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getObjectMapperInstance;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil.getCollectionMembersOrEmptyList;
 
@@ -74,7 +74,7 @@ public class AosPackIssuedCallbackTest extends RetrieveCaseSupport {
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, citizenUser, Pair.of(RESP_SOL_REPRESENTED, YES_VALUE));
         String caseId = String.valueOf(caseDetails.getId());
         log.debug("Created case id {}", caseId);
-        return updateCase(caseId, null, TEST_AOS_AWAITING_EVENT_ID, caseworkerUser);
+        return updateCase(caseId, null, TEST_AOS_AWAITING_EVENT, caseworkerUser);
     }
 
 }

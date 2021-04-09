@@ -90,5 +90,4 @@ public abstract class GetPetitionIssueFeesAbstractTest extends IdamTestSupport {
                 .withStatus(status.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)));
     }
-
 }
