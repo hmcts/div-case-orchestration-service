@@ -46,7 +46,7 @@ public class BailiffServiceApplicationRemovalTaskTest {
 
     @Test
     public void getFieldToRemoveIsValid() {
-        assertThat(classUnderTest.getFieldsToRemove().size(), is(14));
+        assertThat(classUnderTest.getFieldsToRemove().size(), is(12));
         assertThat(classUnderTest.getFieldsToRemove().get(0), is(CcdFields.RECEIVED_SERVICE_APPLICATION_DATE));
         assertThat(classUnderTest.getFieldsToRemove().get(1), is(CcdFields.RECEIVED_SERVICE_ADDED_DATE));
         assertThat(classUnderTest.getFieldsToRemove().get(2), is(CcdFields.SERVICE_APPLICATION_TYPE));
