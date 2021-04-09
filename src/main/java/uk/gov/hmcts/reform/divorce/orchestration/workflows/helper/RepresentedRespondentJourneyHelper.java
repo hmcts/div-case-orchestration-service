@@ -12,7 +12,6 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
 
 /**
  * Collection of methods to help implement the logic behind the Represented Respondent Journey epic
@@ -35,7 +34,7 @@ public class RepresentedRespondentJourneyHelper {
         if (featureEnabled) {
             log.info("REPRESENTED_RESPONDENT_JOURNEY enabled.");
             boolean respondentRepresented = isRespondentRepresented(caseData);
-            boolean respondentSolicitorDigital = isRespondentSolicitorDigital(caseData);
+            boolean respondentSolicitorDigital = isRespondentSolicitorDigitalSelectedYes(caseData);
             if (respondentRepresented && !respondentSolicitorDigital) {
                 shouldGenerateRespondentAosInvitation = false;
             }
@@ -46,13 +45,13 @@ public class RepresentedRespondentJourneyHelper {
         return shouldGenerateRespondentAosInvitation;
     }
 
-    public boolean isRespondentSolicitorDigital(Map<String, Object> caseData) {
+    public boolean isRespondentSolicitorDigitalSelectedYes(Map<String, Object> caseData) {
         return getOptionalPropertyValueAsString(caseData, CcdFields.RESPONDENT_SOLICITOR_DIGITAL, "")
                 .equalsIgnoreCase(YES_VALUE);
     }
 
     public boolean shouldUpdateNoticeOfProceedingsDetails(Map<String, Object> caseData) {
-        return isRepresentedRespondentJourneyEnabled() && isRespondentSolicitorDigital(caseData);
+        return isRepresentedRespondentJourneyEnabled() && isRespondentSolicitorDigitalSelectedYes(caseData);
     }
 
     private boolean isRepresentedRespondentJourneyEnabled() {

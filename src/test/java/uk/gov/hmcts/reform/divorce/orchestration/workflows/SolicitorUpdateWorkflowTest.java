@@ -112,7 +112,7 @@ public class SolicitorUpdateWorkflowTest {
     public void runShouldRunSetSolicitorOrganisationPolicyReferenceTaskWhenFeatureIsOnAndIsRespSolDigital() throws Exception {
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
         when(featureToggleService.isFeatureEnabled(Features.SHARE_A_CASE)).thenReturn(true);
-        when(representedRespondentJourneyHelper.isRespondentSolicitorDigital(caseDetails.getCaseData())).thenReturn(true);
+        when(representedRespondentJourneyHelper.isRespondentSolicitorDigitalSelectedYes(caseDetails.getCaseData())).thenReturn(true);
 
         mockTasksExecution(
             caseData,
@@ -145,7 +145,7 @@ public class SolicitorUpdateWorkflowTest {
     public void runShouldRunSetSolicitorOrganisationPolicyReferenceTaskWhenFeatureIsOnAndNotRespSolDigital() throws Exception {
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
         when(featureToggleService.isFeatureEnabled(Features.SHARE_A_CASE)).thenReturn(true);
-        when(representedRespondentJourneyHelper.isRespondentSolicitorDigital(caseDetails.getCaseData())).thenReturn(false);
+        when(representedRespondentJourneyHelper.isRespondentSolicitorDigitalSelectedYes(caseDetails.getCaseData())).thenReturn(false);
 
         mockTasksExecution(
                 caseData,

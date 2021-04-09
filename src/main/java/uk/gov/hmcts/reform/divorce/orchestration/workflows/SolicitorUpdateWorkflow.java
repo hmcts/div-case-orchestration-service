@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
@@ -28,8 +27,6 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 
 @Component
 @Slf4j
@@ -82,7 +79,7 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
             log.info("CaseId: {}, Adding OrganisationPolicyReference tasks", caseId);
             tasks.add(setPetitionerSolicitorOrganisationPolicyReferenceTask);
 
-            if (representedRespondentJourneyHelper.isRespondentSolicitorDigital(caseDetails.getCaseData())) {
+            if (representedRespondentJourneyHelper.isRespondentSolicitorDigitalSelectedYes(caseDetails.getCaseData())) {
                 log.info("CaseId: {}, respondent solicitor is digital", caseId);
                 tasks.add(setRespondentSolicitorOrganisationPolicyReferenceTask);
             } else {
