@@ -91,5 +91,4 @@ public class CcdFields {
 
     public static final String JUDGE_COSTS_DECISION = "JudgeCostsDecision";
 
-    public static final String RESPONDENT_SOLICITOR_DIGITAL = "RespSolDigital";
 }

@@ -5,14 +5,12 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CopyD8JurisdictionConnectionPolicyTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentOrganisationPolicyRemovalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetClaimCostsFromTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetNewLegalConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
@@ -64,9 +62,6 @@ public class SolicitorCreateWorkflowTest {
     CopyD8JurisdictionConnectionPolicyTask copyD8JurisdictionConnectionPolicyTask;
 
     @Mock
-    RespondentOrganisationPolicyRemovalTask respondentOrganisationPolicyRemovalTask;
-
-    @Mock
     private ValidateSelectedOrganisationTask validateSelectedOrganisationTask;
 
     @InjectMocks
@@ -76,46 +71,6 @@ public class SolicitorCreateWorkflowTest {
     public void runShouldSetClaimCostsFromWhenClaimCostsIsYesAndClaimCostsFromIsEmpty() throws Exception {
         Map<String, Object> payload = new HashMap<>();
         payload.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
-
-        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
-
-        CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
-
-        mockTasksExecution(
-            caseDetails.getCaseData(),
-            setClaimCostsFromTask,
-            setSolicitorCourtDetailsTask,
-            setNewLegalConnectionPolicyTask,
-            copyD8JurisdictionConnectionPolicyTask,
-            addMiniPetitionDraftTask,
-            addNewDocumentsToCaseDataTask,
-            setPetitionerSolicitorOrganisationPolicyReferenceTask,
-            respondentOrganisationPolicyRemovalTask
-        );
-
-        assertThat(solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN), is(caseDetails.getCaseData()));
-
-        verifyTasksCalledInOrder(
-            caseDetails.getCaseData(),
-            setClaimCostsFromTask,
-            setSolicitorCourtDetailsTask,
-            setNewLegalConnectionPolicyTask,
-            copyD8JurisdictionConnectionPolicyTask,
-            addMiniPetitionDraftTask,
-            addNewDocumentsToCaseDataTask,
-            setPetitionerSolicitorOrganisationPolicyReferenceTask,
-            respondentOrganisationPolicyRemovalTask
-        );
-
-        verifyTasksWereNeverCalled(setRespondentSolicitorOrganisationPolicyReferenceTask);
-    }
-
-    @Test
-    public void shouldExecuteSetRespondentSolicitorOrganisationPolicyReferenceTaskWhenFtOnAndRespSolDigital()
-        throws Exception {
-        Map<String, Object> payload = new HashMap<>();
-        payload.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
-        payload.put(CcdFields.RESPONDENT_SOLICITOR_DIGITAL, YES_VALUE);
 
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
         when(featureToggleService.isFeatureEnabled(Features.SHARE_A_CASE)).thenReturn(true);
@@ -149,8 +104,6 @@ public class SolicitorCreateWorkflowTest {
             setPetitionerSolicitorOrganisationPolicyReferenceTask,
             setRespondentSolicitorOrganisationPolicyReferenceTask
         );
-
-        verifyTasksWereNeverCalled(respondentOrganisationPolicyRemovalTask);
     }
 
     @Test
@@ -158,6 +111,7 @@ public class SolicitorCreateWorkflowTest {
         Map<String, Object> payload = new HashMap<>();
         payload.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
 
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(false);
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(false);
 
         CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
@@ -187,8 +141,7 @@ public class SolicitorCreateWorkflowTest {
         verifyTasksWereNeverCalled(
             validateSelectedOrganisationTask,
             setPetitionerSolicitorOrganisationPolicyReferenceTask,
-            setRespondentSolicitorOrganisationPolicyReferenceTask,
-            respondentOrganisationPolicyRemovalTask
+            setRespondentSolicitorOrganisationPolicyReferenceTask
         );
     }
 }
