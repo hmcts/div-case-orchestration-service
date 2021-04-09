@@ -39,24 +39,11 @@ spring:
   main:
     allow-bean-definition-overriding: true
   quartz:
-    job-store-type: jdbc
-    properties:
-      org:
-        quartz:
-          scheduler:
-            instanceId: AUTO
-          jobStore:
-            isClustered: true
-            class: org.quartz.impl.jdbcjobstore.JobStoreTX
-            driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
-            dataSource: 'scheduler'
-          threadPool:
-            class: org.quartz.simpl.SimpleThreadPool
-            threadCount: 8
+    job-store-type: memory
     scheduler-name: 'Divorce Job Scheduler'
     auto-startup: ${scheduler.enabled}
   flyway:
-    enabled: ${scheduler.enabled}
+    enabled: false
     schemas: 'public'
 
 feign:
