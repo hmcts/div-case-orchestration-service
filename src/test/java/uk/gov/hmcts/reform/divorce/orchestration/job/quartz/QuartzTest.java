@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.divorce.orchestration.job.quartz;
 
-import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import org.awaitility.core.ConditionTimeoutException;
 import org.awaitility.core.ThrowingRunnable;
 import org.junit.Before;
@@ -29,7 +28,6 @@ import static org.quartz.impl.matchers.GroupMatcher.anyGroup;
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@AutoConfigureEmbeddedDatabase
 @TestPropertySource(properties = {
     "scheduler.enabled=true"
 })
