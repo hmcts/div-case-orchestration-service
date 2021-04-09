@@ -30,7 +30,6 @@ import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasEntry;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.SOLICITOR_SUBMIT;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_CCD_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_AUTHORIZATION_HEADER;
@@ -54,27 +53,7 @@ public class GetPetitionIssueFeesTest extends IntegrationTest {
 
     @Test
     public void givenCallbackRequest_whenGetPetitionIssueFees_thenReturnUpdatedData() throws IOException {
-        uk.gov.hmcts.reform.ccd.client.model.CaseDetails caseDetails = createCaseWithSolicitor(true);
-
-        Response response = prepareAndCallCosEndpoint(caseDetails, serverUrl + petitionIssueFeesContextPath);
-
-        assertThat(response.getStatusCode(), is(HttpStatus.OK.value()));
-        CcdCallbackResponse ccdCallbackResponse = response.getBody().as(CcdCallbackResponse.class);
-        assertThat("Response should not contain errors", ccdCallbackResponse.getErrors(), is(nullValue()));
-        Map<String, Object> responseData = ccdCallbackResponse.getData();
-        OrderSummary orderSummary = ObjectMapperTestUtil
-            .convertObject(responseData.get(PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY), OrderSummary.class);
-        assertThat(orderSummary, is(notNullValue()));
-        assertThat(responseData, hasEntry(SOL_APPLICATION_FEE_IN_POUNDS_JSON_KEY, orderSummary.getPaymentTotalInPounds()));
-        assertThat(responseData, allOf(
-            hasEntry(SOL_APPLICATION_FEE_IN_POUNDS_JSON_KEY, orderSummary.getPaymentTotalInPounds()),
-            hasEntry(SOL_APPLICATION_FEE_IN_POUNDS_JSON_KEY, NEW_CASE_FEE_IN_POUNDS)
-        ));
-    }
-
-    @Test
-    public void givenCallbackRequest_whenGetPetitionIssueFees_AndPetitionerSolicitorIsNotDigital_thenReturnUpdatedData() throws IOException {
-        uk.gov.hmcts.reform.ccd.client.model.CaseDetails caseDetails = createCaseWithSolicitor(false);
+        uk.gov.hmcts.reform.ccd.client.model.CaseDetails caseDetails = createCaseWithSolicitor();
 
         Response response = prepareAndCallCosEndpoint(caseDetails, serverUrl + petitionIssueFeesContextPath);
 
@@ -94,7 +73,7 @@ public class GetPetitionIssueFeesTest extends IntegrationTest {
 
     @Test
     public void givenAmendCaseCallbackRequest_whenGetPetitionIssueFees_thenReturnUpdatedData() throws IOException {
-        uk.gov.hmcts.reform.ccd.client.model.CaseDetails caseDetails = createCaseWithSolicitor(true);
+        uk.gov.hmcts.reform.ccd.client.model.CaseDetails caseDetails = createCaseWithSolicitor();
 
         Map<String, Object> newCaseData = new HashMap<>(caseDetails.getData());
         newCaseData.put(PREVIOUS_CASE_ID_CCD_KEY, CaseLink.builder()
@@ -119,14 +98,11 @@ public class GetPetitionIssueFeesTest extends IntegrationTest {
         ));
     }
 
-    private uk.gov.hmcts.reform.ccd.client.model.CaseDetails createCaseWithSolicitor(boolean petitionerSolicitorIsDigital) throws IOException {
+    private uk.gov.hmcts.reform.ccd.client.model.CaseDetails createCaseWithSolicitor() throws IOException {
         solicitorUser = createSolicitorUser();
 
         Map<String, Object> baseCaseData = getJsonFromResourceFile(BASE_CASE_RESPONSE, new TypeReference<HashMap<String, Object>>() {
         });
-        if (!petitionerSolicitorIsDigital) {
-            baseCaseData.remove(PETITIONER_SOLICITOR_ORGANISATION_POLICY);
-        }
 
         return ccdClientSupport.submitSolicitorCase(baseCaseData, solicitorUser);
     }
