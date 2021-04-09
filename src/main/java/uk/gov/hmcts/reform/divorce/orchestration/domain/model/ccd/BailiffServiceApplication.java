@@ -20,35 +20,25 @@ public class BailiffServiceApplication extends DivorceServiceApplication {
         String decisionDate,
         String payment,
         String refusalReason,
-        String localCourtDetailsLabel,
         String localCourtAddress,
         String localCourtEmail,
-        String bailiffReturnLabel,
         String certificateOfServiceDate,
         String successfulServedByBailiff,
         String reasonFailureToServe) {
         super(addedDate, receivedDate, type, applicationGranted, decisionDate, payment, refusalReason);
 
-        this.localCourtDetailsLabel = localCourtDetailsLabel;
         this.localCourtAddress = localCourtAddress;
         this.localCourtEmail = localCourtEmail;
-        this.bailiffReturnLabel = bailiffReturnLabel;
         this.certificateOfServiceDate = certificateOfServiceDate;
         this.successfulServedByBailiff = successfulServedByBailiff;
         this.reasonFailureToServe = reasonFailureToServe;
     }
-
-    @JsonProperty("LocalCourtDetailsLabel")
-    private String localCourtDetailsLabel;
 
     @JsonProperty("LocalCourtAddress")
     private String localCourtAddress;
 
     @JsonProperty("LocalCourtEmail")
     private String localCourtEmail;
-
-    @JsonProperty("BailiffReturnLabel")
-    private String bailiffReturnLabel;
 
     @JsonProperty("CertificateOfServiceDate")
     private String certificateOfServiceDate;

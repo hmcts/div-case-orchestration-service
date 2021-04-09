@@ -13,17 +13,11 @@ public class BailiffServiceApplicationDataExtractor {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class CaseDataKeys {
-        public static final String LOCAL_COURT_DETAILS_LABEL = CcdFields.LOCAL_COURT_DETAILS_LABEL;
         public static final String LOCAL_COURT_ADDRESS = CcdFields.LOCAL_COURT_ADDRESS;
         public static final String LOCAL_COURT_EMAIL = CcdFields.LOCAL_COURT_EMAIL;
-        public static final String BAILIFF_RETURN_LABEL = CcdFields.BAILIFF_RETURN_LABEL;
         public static final String CERTIFICATE_OF_SERVICE_DATE = CcdFields.CERTIFICATE_OF_SERVICE_DATE;
         public static final String BAILIFF_SERVICE_SUCCESSFUL = CcdFields.BAILIFF_SERVICE_SUCCESSFUL;
         public static final String REASON_FAILURE_TO_SERVE = CcdFields.REASON_FAILURE_TO_SERVE;
-    }
-
-    public static String getLocalCourtDetailsLabel(Map<String, Object> caseData) {
-        return getOptional(caseData, CaseDataKeys.LOCAL_COURT_DETAILS_LABEL);
     }
 
     public static String getLocalCourtAddress(Map<String, Object> caseData) {
@@ -32,10 +26,6 @@ public class BailiffServiceApplicationDataExtractor {
 
     public static String getLocalCourtEmail(Map<String, Object> caseData) {
         return getOptional(caseData, CaseDataKeys.LOCAL_COURT_EMAIL);
-    }
-
-    public static String getBailiffReturnLabel(Map<String, Object> caseData) {
-        return getOptional(caseData, CaseDataKeys.BAILIFF_RETURN_LABEL);
     }
 
     public static String getCertificateOfServiceDate(Map<String, Object> caseData) {

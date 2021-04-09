@@ -23,10 +23,8 @@ public class BailiffServiceApplicationRemovalTask extends FieldsRemovalTask {
             CcdFields.SERVICE_APPLICATION_GRANTED,
             CcdFields.SERVICE_APPLICATION_DECISION_DATE,
             CcdFields.SERVICE_APPLICATION_REFUSAL_REASON,
-            CcdFields.LOCAL_COURT_DETAILS_LABEL,
             CcdFields.LOCAL_COURT_ADDRESS,
             CcdFields.LOCAL_COURT_EMAIL,
-            CcdFields.BAILIFF_RETURN_LABEL,
             CcdFields.CERTIFICATE_OF_SERVICE_DATE,
             CcdFields.BAILIFF_SERVICE_SUCCESSFUL,
             CcdFields.REASON_FAILURE_TO_SERVE

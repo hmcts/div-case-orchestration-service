@@ -121,10 +121,8 @@ public class BailiffServiceApplicationDataTaskTest {
         assertThat(bailiffServiceApplication.getPayment(), is(TEST_SERVICE_APPLICATION_PAYMENT));
         assertThat(bailiffServiceApplication.getType(), is(ApplicationServiceTypes.BAILIFF));
 
-        assertThat(bailiffServiceApplication.getLocalCourtDetailsLabel(), is(TEST_COURT_LABEL));
         assertThat(bailiffServiceApplication.getLocalCourtAddress(), is(TEST_COURT_ADDRESS));
         assertThat(bailiffServiceApplication.getLocalCourtEmail(), is(TEST_COURT_EMAIL));
-        assertThat(bailiffServiceApplication.getBailiffReturnLabel(), is(TEST_BAILIFF_LABEL));
         assertThat(bailiffServiceApplication.getCertificateOfServiceDate(), is(TEST_CERTIFICATE_OF_SERVICE_DATE));
         assertThat(bailiffServiceApplication.getSuccessfulServedByBailiff(), is(YES_VALUE));
         assertThat(bailiffServiceApplication.getReasonFailureToServe(), is(TEST_REASON_FAILURE_TO_SERVE));
@@ -148,10 +146,8 @@ public class BailiffServiceApplicationDataTaskTest {
         caseData.put(CcdFields.SERVICE_APPLICATION_REFUSAL_REASON, TEST_MY_REASON);
         caseData.put(CcdFields.SERVICE_APPLICATION_GRANTED, YES_VALUE);
 
-        caseData.put(CcdFields.LOCAL_COURT_DETAILS_LABEL, TEST_COURT_LABEL);
         caseData.put(CcdFields.LOCAL_COURT_ADDRESS, TEST_COURT_ADDRESS);
         caseData.put(CcdFields.LOCAL_COURT_EMAIL, TEST_COURT_EMAIL);
-        caseData.put(CcdFields.BAILIFF_RETURN_LABEL, TEST_BAILIFF_LABEL);
         caseData.put(CcdFields.CERTIFICATE_OF_SERVICE_DATE, TEST_CERTIFICATE_OF_SERVICE_DATE);
         caseData.put(CcdFields.BAILIFF_SERVICE_SUCCESSFUL, YES_VALUE);
         caseData.put(CcdFields.REASON_FAILURE_TO_SERVE, TEST_REASON_FAILURE_TO_SERVE);

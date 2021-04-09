@@ -36,10 +36,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.B
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.CERTIFICATE_OF_SERVICE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.BailiffServiceApplicationDataTaskTest.TEST_BAILIFF_LABEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.BailiffServiceApplicationDataTaskTest.TEST_COURT_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.BailiffServiceApplicationDataTaskTest.TEST_COURT_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.BailiffServiceApplicationDataTaskTest.TEST_COURT_LABEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.BailiffServiceApplicationDataTaskTest.TEST_REASON_FAILURE_TO_SERVE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
@@ -66,10 +64,8 @@ public class BailiffOutcomeTest extends IdamTestSupport {
         caseData.put(CcdFields.SERVICE_APPLICATION_REFUSAL_REASON, TEST_MY_REASON);
         caseData.put(CcdFields.SERVICE_APPLICATION_GRANTED, YES_VALUE);
 
-        caseData.put(CcdFields.LOCAL_COURT_DETAILS_LABEL, TEST_COURT_LABEL);
         caseData.put(CcdFields.LOCAL_COURT_ADDRESS, TEST_COURT_ADDRESS);
         caseData.put(CcdFields.LOCAL_COURT_EMAIL, TEST_COURT_EMAIL);
-        caseData.put(CcdFields.BAILIFF_RETURN_LABEL, TEST_BAILIFF_LABEL);
         caseData.put(CcdFields.REASON_FAILURE_TO_SERVE, TEST_REASON_FAILURE_TO_SERVE);
 
         return new CcdCallbackRequest(
@@ -144,10 +140,8 @@ public class BailiffOutcomeTest extends IdamTestSupport {
             hasJsonPath(String.format(pattern, "DecisionDate"), is(TEST_DECISION_DATE)),
             hasJsonPath(String.format(pattern, "RefusalReason"), is(TEST_MY_REASON)),
             hasJsonPath(String.format(pattern, "ApplicationGranted"), is(YES_VALUE)),
-            hasJsonPath(String.format(pattern, "LocalCourtDetailsLabel"), is(TEST_COURT_LABEL)),
             hasJsonPath(String.format(pattern, "LocalCourtAddress"), is(TEST_COURT_ADDRESS)),
             hasJsonPath(String.format(pattern, "LocalCourtEmail"), is(TEST_COURT_EMAIL)),
-            hasJsonPath(String.format(pattern, "BailiffReturnLabel"), is(TEST_BAILIFF_LABEL)),
             hasJsonPath(String.format(pattern, "CertificateOfServiceDate"), is(TEST_CERTIFICATE_OF_SERVICE_DATE)),
             hasJsonPath(String.format(pattern, "SuccessfulServedByBailiff"), is(success)),
             hasJsonPath(String.format(pattern, "ReasonFailureToServe"), is(TEST_REASON_FAILURE_TO_SERVE))
@@ -166,10 +160,8 @@ public class BailiffOutcomeTest extends IdamTestSupport {
             hasNoJsonPath(String.format(pathPattern, CcdFields.SERVICE_APPLICATION_GRANTED)),
             hasNoJsonPath(String.format(pathPattern, CcdFields.SERVICE_APPLICATION_DECISION_DATE)),
             hasNoJsonPath(String.format(pathPattern, CcdFields.SERVICE_APPLICATION_REFUSAL_REASON)),
-            hasNoJsonPath(String.format(pathPattern, CcdFields.LOCAL_COURT_DETAILS_LABEL)),
             hasNoJsonPath(String.format(pathPattern, CcdFields.LOCAL_COURT_ADDRESS)),
             hasNoJsonPath(String.format(pathPattern, CcdFields.LOCAL_COURT_EMAIL)),
-            hasNoJsonPath(String.format(pathPattern, CcdFields.BAILIFF_RETURN_LABEL)),
             hasNoJsonPath(String.format(pathPattern, CcdFields.CERTIFICATE_OF_SERVICE_DATE)),
             hasNoJsonPath(String.format(pathPattern, CcdFields.BAILIFF_SERVICE_SUCCESSFUL)),
             hasNoJsonPath(String.format(pathPattern, CcdFields.REASON_FAILURE_TO_SERVE))
