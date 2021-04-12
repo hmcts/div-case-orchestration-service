@@ -33,10 +33,12 @@ public class ServiceApplicationDataTask implements Task<Map<String, Object>> {
         DivorceServiceApplication serviceApplication = buildServiceApplication(caseData);
 
         persistLastServiceApplication(caseData, serviceApplication);
+
         return addNewServiceApplicationToCaseData(caseData, serviceApplication);
     }
 
-    private void persistLastServiceApplication(Map<String, Object> caseData, DivorceServiceApplication serviceApplication) {
+    private void persistLastServiceApplication(
+        Map<String, Object> caseData, DivorceServiceApplication serviceApplication) {
         caseData.put(CcdFields.LAST_SERVICE_APPLICATION, serviceApplication);
         if (featureToggleService.isFeatureEnabled(Features.BAILIFF_JOURNEY)) {
             caseData.put(CcdFields.LAST_SERVICE_APPLICATION_TYPE, serviceApplication.getType());
@@ -46,7 +48,8 @@ public class ServiceApplicationDataTask implements Task<Map<String, Object>> {
     private Map<String, Object> addNewServiceApplicationToCaseData(
         Map<String, Object> caseData, DivorceServiceApplication serviceApplication) {
 
-        List<CollectionMember<DivorceServiceApplication>> collection = ServiceApplicationDataExtractor.getListOfServiceApplications(caseData);
+        List<CollectionMember<DivorceServiceApplication>> collection = ServiceApplicationDataExtractor
+            .getListOfServiceApplications(caseData);
         CollectionMember<DivorceServiceApplication> collectionMember = new CollectionMember<>();
         collectionMember.setValue(serviceApplication);
 
@@ -57,7 +60,7 @@ public class ServiceApplicationDataTask implements Task<Map<String, Object>> {
         return caseData;
     }
 
-    private DivorceServiceApplication buildServiceApplication(Map<String, Object> caseData) {
+    protected DivorceServiceApplication buildServiceApplication(Map<String, Object> caseData) {
         return DivorceServiceApplication.builder()
             .addedDate(DatesDataExtractor.getReceivedServiceAddedDateUnformatted(caseData))
             .receivedDate(DatesDataExtractor.getReceivedServiceApplicationDateUnformatted(caseData))
