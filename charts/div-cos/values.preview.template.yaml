@@ -6,6 +6,7 @@ java:
     SOLICITOR_DN_REJECT_AND_AMEND: "true"
     FEATURE_SHARE_A_CASE: "true"
     FEATURE_REPRESENTED_RESPONDENT_JOURNEY: "true"
+    FEATURE_BAILIFF_JOURNEY: "true"
     PAY_BY_ACCOUNT: "true"
     DATAEXTRACTION_STATUS_DA_EMAILTO: da_data_extraction@sharklasers.com
     DATAEXTRACTION_STATUS_AOS_EMAILTO: aos_data_extraction@sharklasers.com
