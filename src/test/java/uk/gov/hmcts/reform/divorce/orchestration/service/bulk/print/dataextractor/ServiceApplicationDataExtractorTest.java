@@ -185,7 +185,7 @@ public class ServiceApplicationDataExtractorTest {
             .build();
     }
 
-    private static Map<String, Object> buildCaseDataWithField(String field, String value) {
+    public static Map<String, Object> buildCaseDataWithField(String field, String value) {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(field, value);
 
