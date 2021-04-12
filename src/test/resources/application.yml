@@ -136,6 +136,7 @@ feature-toggle:
     paper_update: ${FEATURE_PAPER_UPDATE:false}
     share_a_case: ${FEATURE_SHARE_A_CASE:true}
     represented_respondent_journey: ${FEATURE_REPRESENTED_RESPONDENT_JOURNEY:true}
+    bailiff_journey: ${FEATURE_BAILIFF_JOURNEY:true}
     feature_fee_pay_s2s_token: ${FEATURE_FEE_PAY_S2S_TOKEN:true}
 
 send-letter:

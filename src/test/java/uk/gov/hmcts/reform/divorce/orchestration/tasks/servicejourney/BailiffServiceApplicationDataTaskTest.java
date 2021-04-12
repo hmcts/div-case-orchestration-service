@@ -1,13 +1,16 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.BailiffServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +20,8 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ADDED_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_FAMILY_MAN_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CERTIFICATE_OF_SERVICE_DATE;
@@ -47,8 +52,17 @@ public class BailiffServiceApplicationDataTaskTest {
     public static final String TEST_COURT_ADDRESS = "Court address";
     public static final String TEST_COURT_LABEL = "court label";
 
+    @Mock
+    private FeatureToggleService featureToggleService;
+
     @InjectMocks
     private BailiffServiceApplicationDataTask bailiffServiceApplicationDataTask;
+
+    @Before
+    public void setup() {
+        // feature toggle is not for bailiff logic here
+        when(featureToggleService.isFeatureEnabled(any())).thenReturn(true);
+    }
 
     @Test
     public void shouldExecuteAndAddElementToNewCollection() {
@@ -61,7 +75,7 @@ public class BailiffServiceApplicationDataTaskTest {
         BailiffServiceApplication serviceApplication = collectionMembers.get(0).getValue();
 
         assertLastServiceApplicationIsPersisted(output);
-        assertThat(output.size(), is(originalSize + 2));
+        assertThat(output.size(), is(originalSize + 3));
         assertServiceApplicationIsCorrect(serviceApplication);
     }
 
