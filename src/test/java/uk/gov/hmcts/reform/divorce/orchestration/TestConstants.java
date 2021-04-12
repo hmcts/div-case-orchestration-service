@@ -119,6 +119,7 @@ public class TestConstants {
 
     public static final String TEST_RECEIVED_DATE = "2020-05-05";
     public static final String TEST_DECISION_DATE = "2030-10-10";
+    public static final String TEST_CERTIFICATE_OF_SERVICE_DATE = "2011-11-11";
     public static final String TEST_ADDED_DATE = "2000-01-01";
     public static final String TEST_SERVICE_APPLICATION_PAYMENT = "feeAccount";
 
