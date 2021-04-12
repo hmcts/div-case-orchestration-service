@@ -19,6 +19,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrg
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSelectedOrganisationTask;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.helper.RepresentedRespondentJourneyHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -69,6 +70,9 @@ public class SolicitorCreateWorkflowTest {
     @Mock
     private ValidateSelectedOrganisationTask validateSelectedOrganisationTask;
 
+    @Mock
+    private RepresentedRespondentJourneyHelper representedRespondentJourneyHelper;
+
     @InjectMocks
     SolicitorCreateWorkflow solicitorCreateWorkflow;
 
@@ -117,10 +121,11 @@ public class SolicitorCreateWorkflowTest {
         payload.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
         payload.put(CcdFields.RESPONDENT_SOLICITOR_DIGITAL, YES_VALUE);
 
+        CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
+
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
         when(featureToggleService.isFeatureEnabled(Features.SHARE_A_CASE)).thenReturn(true);
-
-        CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
+        when(representedRespondentJourneyHelper.isRespondentSolicitorDigitalSelectedYes(caseDetails.getCaseData())).thenReturn(true);
 
         mockTasksExecution(
             caseDetails.getCaseData(),
