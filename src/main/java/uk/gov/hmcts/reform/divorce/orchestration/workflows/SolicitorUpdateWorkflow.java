@@ -69,18 +69,21 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
         tasks.add(getAddNewDocumentsToCaseDataTask(caseId));
 
         if (isShareACaseEnabled()) {
-            tasks.add(getValidateSelectedOrganisationTask(caseId));
+            log.info("CaseId: {}, validate selected petitioner organisation", caseId);
+            tasks.add(validateSelectedOrganisationTask);
         } else {
             log.info("CaseId: {}, share a case switched OFF, no tasks added", caseId);
         }
 
         if (isRepresentedRespondentJourneyEnabled()) {
-            tasks.add(getSetPetitionerSolicitorOrganisationPolicyReferenceTask(caseId));
-
+            log.info("CaseId: {}, Adding task to set petSol Organisation Policy Reference details", caseId);
+            tasks.add(setPetitionerSolicitorOrganisationPolicyReferenceTask);
             if (representedRespondentJourneyHelper.isRespondentSolicitorDigitalSelectedYes(caseDetails.getCaseData())) {
-                tasks.add(getSetRespondentSolicitorOrganisationPolicyReferenceTask(caseId));
+                log.info("CaseId: {}, Adding task to set respSol Organisation Policy Reference details", caseId);
+                tasks.add(setRespondentSolicitorOrganisationPolicyReferenceTask);
             } else {
-                tasks.add(getRespondentOrganisationPolicyRemovalTask(caseId));
+                log.info("CaseId: {}, adding task to remove Organisation Policy details when respSol NOT digital", caseId);
+                tasks.add(respondentOrganisationPolicyRemovalTask);
             }
 
         }
@@ -115,25 +118,4 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
         log.info("CaseId: {} Adding task to copy new legal connection policy.", caseId);
         return copyD8JurisdictionConnectionPolicyTask;
     }
-
-    private Task<Map<String, Object>> getValidateSelectedOrganisationTask(String caseId) {
-        log.info("CaseId: {}, validate selected petitioner organisation", caseId);
-        return validateSelectedOrganisationTask;
-    }
-
-    private Task<Map<String, Object>> getSetPetitionerSolicitorOrganisationPolicyReferenceTask(String caseId) {
-        log.info("CaseId: {}, Adding OrganisationPolicyReference tasks", caseId);
-        return setPetitionerSolicitorOrganisationPolicyReferenceTask;
-    }
-
-    private Task<Map<String, Object>> getSetRespondentSolicitorOrganisationPolicyReferenceTask(String caseId) {
-        log.info("CaseId: {}, respondent solicitor is digital", caseId);
-        return setRespondentSolicitorOrganisationPolicyReferenceTask;
-    }
-
-    private Task<Map<String, Object>> getRespondentOrganisationPolicyRemovalTask(String caseId) {
-        log.info("CaseId: {}, respondent solicitor is NOT digital", caseId);
-        return respondentOrganisationPolicyRemovalTask;
-    }
-
 }
