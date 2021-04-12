@@ -195,6 +195,27 @@ public class ServiceJourneyServiceImplTest {
     }
 
     @Test
+    public void purgeBailiffReturnShouldCallWorkflow()
+            throws ServiceJourneyServiceException, WorkflowException {
+        CcdCallbackRequest input = buildCcdCallbackRequest();
+
+        classUnderTest.purgeAddBailiffReturnEvent(input.getCaseDetails(), AUTH_TOKEN);
+
+        verify(bailiffOutcomeWorkflow).run(input.getCaseDetails(), AUTH_TOKEN);
+    }
+
+    @Test(expected = ServiceJourneyServiceException.class)
+    public void purgeBailiffReturnShouldThrowServiceJourneyServiceException()
+            throws ServiceJourneyServiceException, WorkflowException {
+        CcdCallbackRequest input = buildCcdCallbackRequest();
+
+        when(bailiffOutcomeWorkflow.run(any(CaseDetails.class), anyString()))
+                .thenThrow(WorkflowException.class);
+
+        classUnderTest.purgeAddBailiffReturnEvent(input.getCaseDetails(), AUTH_TOKEN);
+    }
+
+    @Test
     public void givenCaseData_whenSetupConfirmServicePaymentEvent_thenReturnPayload() throws Exception {
         CaseDetails caseDetails = CaseDetails.builder()
             .caseId(TEST_CASE_ID)

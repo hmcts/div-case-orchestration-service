@@ -25,4 +25,7 @@ public interface ServiceJourneyService {
 
     CcdCallbackResponse setupAddBailiffReturnEvent(CaseDetails caseDetails, String authorisation)
         throws ServiceJourneyServiceException;
+
+    CcdCallbackResponse purgeAddBailiffReturnEvent(CaseDetails caseDetails, String authorisation)
+        throws ServiceJourneyServiceException;
 }

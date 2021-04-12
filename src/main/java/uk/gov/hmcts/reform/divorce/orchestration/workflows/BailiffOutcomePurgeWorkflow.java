@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkf
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.BailiffServiceApplicationDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.BailiffServiceApplicationRemovalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.BailiffSuccessServiceDueDateSetterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.BailiffUnsuccessServiceDueDateSetterTask;
 
@@ -23,16 +24,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Condition
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class BailiffOutcomeWorkflow extends DefaultWorkflow<Map<String, Object>> {
+public class BailiffOutcomePurgeWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final BailiffSuccessServiceDueDateSetterTask bailiffSuccessServiceDueDateSetterTask;
-    private final BailiffUnsuccessServiceDueDateSetterTask bailiffUnsuccessServiceDueDateSetterTask;
-    private final BailiffServiceApplicationDataTask bailiffServiceApplicationDataTask;
+    private final BailiffServiceApplicationRemovalTask bailiffServiceApplicationRemovalTask;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authorisation) throws WorkflowException {
         String caseId = caseDetails.getCaseId();
 
-        log.info("CaseID: {}. Bailiff outcome workflow is going to be executed.", caseId);
+        log.info("CaseID: {}. Bailiff outcome workflow is being purged.", caseId);
 
         return this.execute(
             getTasks(caseDetails),
@@ -43,21 +42,12 @@ public class BailiffOutcomeWorkflow extends DefaultWorkflow<Map<String, Object>>
     }
 
     private Task<Map<String, Object>>[] getTasks(CaseDetails caseDetails) {
-        Map<String, Object> caseData = caseDetails.getCaseData();
         String caseId = caseDetails.getCaseId();
 
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
-        if (isBailiffServiceSuccessful(caseData)) {
-            log.info("CaseID: {}. Setting Certificate of service due date after Bailiff Service successful", caseId);
-            tasks.add(bailiffSuccessServiceDueDateSetterTask);
-        } else {
-            log.info("CaseID: {}. Setting Certificate of service due date after Bailiff Service unsuccessful", caseId);
-            tasks.add(bailiffUnsuccessServiceDueDateSetterTask);
-        }
-
-        log.info("CaseID: {}. Adding bailiff service application data task", caseId);
-        tasks.add(bailiffServiceApplicationDataTask);
+        log.info("CaseID: {}. Adding bailiff service application removal task", caseId);
+        tasks.add(bailiffServiceApplicationRemovalTask);
 
         return tasks.toArray(new Task[] {});
     }

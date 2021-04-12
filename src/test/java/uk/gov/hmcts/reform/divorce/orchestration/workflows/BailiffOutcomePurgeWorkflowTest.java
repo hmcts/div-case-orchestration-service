@@ -7,10 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.BailiffServiceApplicationDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.BailiffServiceApplicationRemovalTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.BailiffSuccessServiceDueDateSetterTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.BailiffUnsuccessServiceDueDateSetterTask;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,48 +22,15 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
-import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksWereNeverCalled;
 
 @RunWith(MockitoJUnitRunner.class)
-public class BailiffOutcomeWorkflowTest {
+public class BailiffOutcomePurgeWorkflowTest {
 
     @InjectMocks
-    private BailiffOutcomeWorkflow classUnderTest;
-
-    @Mock
-    private BailiffSuccessServiceDueDateSetterTask bailiffSuccessServiceDueDateSetterTask;
-
-    @Mock
-    private BailiffUnsuccessServiceDueDateSetterTask bailiffUnsuccessServiceDueDateSetterTask;
-
-    @Mock
-    private BailiffServiceApplicationDataTask bailiffServiceApplicationDataTask;
+    private BailiffOutcomePurgeWorkflow classUnderTest;
 
     @Mock
     private BailiffServiceApplicationRemovalTask bailiffServiceApplicationRemovalTask;
-
-    @Test
-    public void shouldRunCorrectTask_whenBailiffServiceSuccessful() throws WorkflowException {
-        Map<String, Object> caseData = new HashMap<>();
-        caseData.put(BAILIFF_SERVICE_SUCCESSFUL, YES_VALUE);
-        CaseDetails caseDetails = buildCaseDetails(caseData, ISSUED_TO_BAILIFF);
-
-        mockTasksExecution(
-            caseData,
-            bailiffSuccessServiceDueDateSetterTask,
-            bailiffServiceApplicationDataTask
-        );
-
-        Map<String, Object> returnedData = executeWorkflow(caseDetails);
-
-        verifyTasksCalledInOrder(
-            returnedData,
-            bailiffSuccessServiceDueDateSetterTask,
-            bailiffServiceApplicationDataTask
-        );
-
-        verifyTasksWereNeverCalled(bailiffUnsuccessServiceDueDateSetterTask);
-    }
 
     @Test
     public void shouldRunCorrectTask_whenBailiffServiceUnsuccessful() throws WorkflowException {
@@ -76,19 +40,34 @@ public class BailiffOutcomeWorkflowTest {
 
         mockTasksExecution(
             caseData,
-            bailiffUnsuccessServiceDueDateSetterTask,
-            bailiffServiceApplicationDataTask
+            bailiffServiceApplicationRemovalTask
         );
 
         Map<String, Object> returnedData = executeWorkflow(caseDetails);
 
         verifyTasksCalledInOrder(
             returnedData,
-            bailiffUnsuccessServiceDueDateSetterTask,
-            bailiffServiceApplicationDataTask
+            bailiffServiceApplicationRemovalTask
+        );
+    }
+
+    @Test
+    public void shouldRunCorrectTask_whenBailiffServiceSuccessful() throws WorkflowException {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(BAILIFF_SERVICE_SUCCESSFUL, YES_VALUE);
+        CaseDetails caseDetails = buildCaseDetails(caseData, ISSUED_TO_BAILIFF);
+
+        mockTasksExecution(
+            caseData,
+            bailiffServiceApplicationRemovalTask
         );
 
-        verifyTasksWereNeverCalled(bailiffSuccessServiceDueDateSetterTask);
+        Map<String, Object> returnedData = executeWorkflow(caseDetails);
+
+        verifyTasksCalledInOrder(
+            returnedData,
+            bailiffServiceApplicationRemovalTask
+        );
     }
 
     private CaseDetails buildCaseDetails(Map<String, Object> caseData, String caseState) {

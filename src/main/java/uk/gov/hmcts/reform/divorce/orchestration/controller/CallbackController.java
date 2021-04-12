@@ -1329,6 +1329,21 @@ public class CallbackController {
         );
     }
 
+    @PostMapping(path = "/purge-bailiff-data")
+    @ApiOperation(value = "Purge Add Bailiff Return event to allow for multiple calls")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Purge Add Bailiff Return event to allow for multiple calls")})
+    public ResponseEntity<CcdCallbackResponse> purgeAddBailiffReturnEvent(
+        @RequestHeader(AUTHORIZATION_HEADER)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            serviceJourneyService
+                .purgeAddBailiffReturnEvent(ccdCallbackRequest.getCaseDetails(), authorizationToken)
+        );
+    }
+
     @PostMapping(path = "/set-up-order-summary/without-notice-fee")
     @ApiOperation(value = "Return service payment fee. Starting from state AwaitingGeneralReferralPayment")
     @ApiResponses(value = {

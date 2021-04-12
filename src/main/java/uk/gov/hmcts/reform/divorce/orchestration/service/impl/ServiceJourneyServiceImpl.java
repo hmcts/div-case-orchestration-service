@@ -137,4 +137,15 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
             throw new ServiceJourneyServiceException(exception, caseDetails.getCaseId());
         }
     }
+
+    @Override
+    public CcdCallbackResponse purgeAddBailiffReturnEvent(CaseDetails caseDetails, String authorisation) throws ServiceJourneyServiceException {
+        try {
+            return CcdCallbackResponse.builder()
+                .data(bailiffOutcomeWorkflow.run(caseDetails, authorisation))
+                .build();
+        } catch (WorkflowException exception) {
+            throw new ServiceJourneyServiceException(exception, caseDetails.getCaseId());
+        }
+    }
 }
