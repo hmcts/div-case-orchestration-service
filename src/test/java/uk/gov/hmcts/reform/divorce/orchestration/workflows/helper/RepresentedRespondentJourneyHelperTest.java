@@ -80,4 +80,46 @@ public class RepresentedRespondentJourneyHelperTest {
         assertThat(result, is(true));
     }
 
+    @Test
+    public void shouldUpdateNoticeOfProceedingsDetails_WhenRespondentSolicitorIsDigital_AndToggleIsOn() {
+        Map<String, Object> caseData = Map.of(
+            RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy()
+        );
+
+        boolean result = classUnderTest.shouldUpdateNoticeOfProceedingsDetails(caseData);
+
+        assertThat(result, is(true));
+    }
+
+    @Test
+    public void shouldNotUpdateNoticeOfProceedingsDetails_WhenRespondentSolicitorIsDigital_AndToggleIsOff() {
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(false);
+        Map<String, Object> caseData = Map.of(
+            RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy()
+        );
+
+        boolean result = classUnderTest.shouldUpdateNoticeOfProceedingsDetails(caseData);
+
+        assertThat(result, is(false));
+    }
+
+    @Test
+    public void shouldNotUpdateNoticeOfProceedingsDetails_WhenRespondentSolicitorIsNotDigital_AndToggleIsOn() {
+        Map<String, Object> caseData = Map.of();
+
+        boolean result = classUnderTest.shouldUpdateNoticeOfProceedingsDetails(caseData);
+
+        assertThat(result, is(false));
+    }
+
+    @Test
+    public void shouldNotUpdateNoticeOfProceedingsDetails_WhenRespondentSolicitorIsNotDigital_AndToggleIsOff() {
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(false);
+        Map<String, Object> caseData = Map.of();
+
+        boolean result = classUnderTest.shouldUpdateNoticeOfProceedingsDetails(caseData);
+
+        assertThat(result, is(false));
+    }
+
 }
