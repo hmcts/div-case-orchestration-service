@@ -1,8 +1,8 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney;
 
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.BailiffServiceApplication;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.BailiffServiceApplicationDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor;
@@ -10,8 +10,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextracto
 import java.util.Map;
 
 @Component
-@AllArgsConstructor
 public class BailiffServiceApplicationDataTask extends ServiceApplicationDataTask {
+
+    public BailiffServiceApplicationDataTask(FeatureToggleService featureToggleService) {
+        super(featureToggleService);
+    }
 
     @Override
     protected BailiffServiceApplication buildServiceApplication(Map<String, Object> caseData) {
