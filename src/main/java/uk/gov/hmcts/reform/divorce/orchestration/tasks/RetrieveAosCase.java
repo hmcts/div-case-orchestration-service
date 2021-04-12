@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
@@ -18,6 +19,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.T
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.COURT_KEY;
 
 @Component
+@Slf4j
 public class RetrieveAosCase implements Task<Map<String, Object>> {
 
     private final CaseMaintenanceClient caseMaintenanceClient;
@@ -36,6 +38,8 @@ public class RetrieveAosCase implements Task<Map<String, Object>> {
         if (caseDetails == null) {
             throw new TaskException(new CaseNotFoundException("No case found"));
         }
+
+        log.info("---* Case data retrieve AOS: {}", caseDetails.getCaseData());
 
         Map<String, Object> caseData = caseDetails.getCaseData();
         context.setTransientObject(CASE_ID_KEY, caseDetails.getCaseId());
