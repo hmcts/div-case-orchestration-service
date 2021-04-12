@@ -1324,8 +1324,8 @@ public class CallbackController {
             @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
         return ResponseEntity.ok(
-                serviceJourneyService
-                        .setupAddBailiffReturnEvent(ccdCallbackRequest.getCaseDetails(), authorizationToken)
+            serviceJourneyService
+                .setupAddBailiffReturnEvent(ccdCallbackRequest.getCaseDetails(), authorizationToken)
         );
     }
 
