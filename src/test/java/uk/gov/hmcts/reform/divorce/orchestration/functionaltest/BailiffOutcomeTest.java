@@ -95,7 +95,6 @@ public class BailiffOutcomeTest extends IdamTestSupport {
                     hasJsonPath("$.data.dueDate", is(date)),
                     hasJsonPath("$.data.ServiceApplications", hasSize(1)),
                     hasLastBailiffServiceApplication(YES_VALUE),
-                    hasNoCcdFieldsThatShouldBeRemoved(),
                     hasNoJsonPath("$.errors"),
                     hasNoJsonPath("$.warnings")
                 )
@@ -122,7 +121,6 @@ public class BailiffOutcomeTest extends IdamTestSupport {
                     hasJsonPath("$.data.dueDate", is(date)),
                     hasJsonPath("$.data.ServiceApplications", hasSize(1)),
                     hasLastBailiffServiceApplication(NO_VALUE),
-                    hasNoCcdFieldsThatShouldBeRemoved(),
                     hasNoJsonPath("$.errors"),
                     hasNoJsonPath("$.warnings")
                 )
@@ -148,23 +146,4 @@ public class BailiffOutcomeTest extends IdamTestSupport {
         );
     }
 
-    private Matcher<? super Object> hasNoCcdFieldsThatShouldBeRemoved() {
-        String pathPattern = "$.data.%s";
-
-        return allOf(
-            hasNoJsonPath(String.format(pathPattern, CcdFields.SERVICE_REFUSAL_DRAFT)),
-            hasNoJsonPath(String.format(pathPattern, CcdFields.RECEIVED_SERVICE_APPLICATION_DATE)),
-            hasNoJsonPath(String.format(pathPattern, CcdFields.RECEIVED_SERVICE_ADDED_DATE)),
-            hasNoJsonPath(String.format(pathPattern, CcdFields.SERVICE_APPLICATION_TYPE)),
-            hasNoJsonPath(String.format(pathPattern, CcdFields.SERVICE_APPLICATION_PAYMENT)),
-            hasNoJsonPath(String.format(pathPattern, CcdFields.SERVICE_APPLICATION_GRANTED)),
-            hasNoJsonPath(String.format(pathPattern, CcdFields.SERVICE_APPLICATION_DECISION_DATE)),
-            hasNoJsonPath(String.format(pathPattern, CcdFields.SERVICE_APPLICATION_REFUSAL_REASON)),
-            hasNoJsonPath(String.format(pathPattern, CcdFields.LOCAL_COURT_ADDRESS)),
-            hasNoJsonPath(String.format(pathPattern, CcdFields.LOCAL_COURT_EMAIL)),
-            hasNoJsonPath(String.format(pathPattern, CcdFields.CERTIFICATE_OF_SERVICE_DATE)),
-            hasNoJsonPath(String.format(pathPattern, CcdFields.BAILIFF_SERVICE_SUCCESSFUL)),
-            hasNoJsonPath(String.format(pathPattern, CcdFields.REASON_FAILURE_TO_SERVE))
-        );
-    }
 }
