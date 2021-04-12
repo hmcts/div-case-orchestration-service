@@ -27,7 +27,7 @@ public class RepresentedRespondentJourneyHelper {
     public boolean shouldGenerateRespondentAosInvitation(Map<String, Object> caseData) {
         boolean shouldGenerateRespondentAosInvitation = true;
 
-        boolean featureEnabled = featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY);
+        boolean featureEnabled = isRepresentedRespondentJourneyEnabled();
 
         if (featureEnabled) {
             log.info("REPRESENTED_RESPONDENT_JOURNEY enabled.");
@@ -41,6 +41,14 @@ public class RepresentedRespondentJourneyHelper {
         }
 
         return shouldGenerateRespondentAosInvitation;
+    }
+
+    public boolean shouldUpdateNoticeOfProceedingsDetails(Map<String, Object> caseData) {
+        return isRepresentedRespondentJourneyEnabled() && isRespondentSolicitorDigital(caseData);
+    }
+
+    private boolean isRepresentedRespondentJourneyEnabled() {
+        return featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY);
     }
 
 }
