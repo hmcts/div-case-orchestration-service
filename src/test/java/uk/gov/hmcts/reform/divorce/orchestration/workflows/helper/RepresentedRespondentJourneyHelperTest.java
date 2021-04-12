@@ -14,6 +14,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_DIGITAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
@@ -32,6 +33,28 @@ public class RepresentedRespondentJourneyHelperTest {
     @Before
     public void setUp() {
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
+    }
+
+    @Test
+    public void shouldReturnTrue_WhenRespondentSolicitorDigitalSelectedIsYes() {
+        Map<String, Object> caseData = Map.of(
+                RESPONDENT_SOLICITOR_DIGITAL, YES_VALUE
+        );
+
+        boolean result = classUnderTest.isRespondentSolicitorDigitalSelectedYes(caseData);
+
+        assertThat(result, is(true));
+    }
+
+    @Test
+    public void shouldReturnFalse_WhenRespondentSolicitorDigitalSelectedIsNo() {
+        Map<String, Object> caseData = Map.of(
+                RESPONDENT_SOLICITOR_DIGITAL, NO_VALUE
+        );
+
+        boolean result = classUnderTest.isRespondentSolicitorDigitalSelectedYes(caseData);
+
+        assertThat(result, is(false));
     }
 
     @Test
