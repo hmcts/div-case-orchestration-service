@@ -47,10 +47,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelp
 public class BailiffServiceApplicationDataTaskTest {
 
     public static final String TEST_REASON_FAILURE_TO_SERVE = "reason failure to serve";
-    public static final String TEST_BAILIFF_LABEL = "bailiff label";
     public static final String TEST_COURT_EMAIL = "cour@example.com";
     public static final String TEST_COURT_ADDRESS = "Court address";
-    public static final String TEST_COURT_LABEL = "court label";
 
     @Mock
     private FeatureToggleService featureToggleService;
@@ -131,6 +129,7 @@ public class BailiffServiceApplicationDataTaskTest {
         assertThat(bailiffServiceApplication.getAddedDate(), is(TEST_ADDED_DATE));
         assertThat(bailiffServiceApplication.getDecisionDate(), is(TEST_DECISION_DATE));
         assertThat(bailiffServiceApplication.getApplicationGranted(), is(YES_VALUE));
+        assertThat(bailiffServiceApplication.getBailiffApplicationGranted(), is(YES_VALUE));
         assertThat(bailiffServiceApplication.getRefusalReason(), is(TEST_MY_REASON));
         assertThat(bailiffServiceApplication.getPayment(), is(TEST_SERVICE_APPLICATION_PAYMENT));
         assertThat(bailiffServiceApplication.getType(), is(ApplicationServiceTypes.BAILIFF));
@@ -159,6 +158,7 @@ public class BailiffServiceApplicationDataTaskTest {
         caseData.put(CcdFields.SERVICE_APPLICATION_PAYMENT, TEST_SERVICE_APPLICATION_PAYMENT);
         caseData.put(CcdFields.SERVICE_APPLICATION_REFUSAL_REASON, TEST_MY_REASON);
         caseData.put(CcdFields.SERVICE_APPLICATION_GRANTED, YES_VALUE);
+        caseData.put(CcdFields.BAILIFF_APPLICATION_GRANTED, YES_VALUE);
 
         caseData.put(CcdFields.LOCAL_COURT_ADDRESS, TEST_COURT_ADDRESS);
         caseData.put(CcdFields.LOCAL_COURT_EMAIL, TEST_COURT_EMAIL);
