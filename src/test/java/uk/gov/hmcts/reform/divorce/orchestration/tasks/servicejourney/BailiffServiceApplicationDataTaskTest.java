@@ -129,6 +129,7 @@ public class BailiffServiceApplicationDataTaskTest {
         assertThat(bailiffServiceApplication.getAddedDate(), is(TEST_ADDED_DATE));
         assertThat(bailiffServiceApplication.getDecisionDate(), is(TEST_DECISION_DATE));
         assertThat(bailiffServiceApplication.getApplicationGranted(), is(YES_VALUE));
+        assertThat(bailiffServiceApplication.getBailiffApplicationGranted(), is(YES_VALUE));
         assertThat(bailiffServiceApplication.getRefusalReason(), is(TEST_MY_REASON));
         assertThat(bailiffServiceApplication.getPayment(), is(TEST_SERVICE_APPLICATION_PAYMENT));
         assertThat(bailiffServiceApplication.getType(), is(ApplicationServiceTypes.BAILIFF));
