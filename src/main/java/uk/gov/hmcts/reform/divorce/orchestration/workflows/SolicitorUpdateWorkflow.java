@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetNewLegalConnectionPoli
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSelectedOrganisationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.helper.RepresentedRespondentJourneyHelper;
 
 import java.util.ArrayList;
 import java.util.List;
