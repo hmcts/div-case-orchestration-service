@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.DateCalculator;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.helper.RepresentedRespondentJourneyHelper;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -30,7 +29,6 @@ import static java.util.Collections.emptyMap;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -66,9 +64,6 @@ public class BulkPrintTest extends IdamTestSupport {
 
     @MockBean
     private EmailClient emailClient;
-
-    @MockBean
-    private RepresentedRespondentJourneyHelper representedRespondentJourneyHelper;
 
     @MockBean
     private FeatureToggleService featureToggleService;
@@ -117,9 +112,6 @@ public class BulkPrintTest extends IdamTestSupport {
         stubSendLetterService(HttpStatus.OK);
 
         Map<String, Object> expectedCaseData = caseDataWithDocuments();
-
-        when(representedRespondentJourneyHelper.isRespondentSolicitorDigitalSelectedYes(any())).thenReturn(true);
-        when(representedRespondentJourneyHelper.shouldUpdateNoticeOfProceedingsDetails(any())).thenReturn(true);
 
         expectedCaseData.put(CcdFields.NOTICE_OF_PROCEEDINGS_DIGITAL, YES_VALUE);
         expectedCaseData.put(CcdFields.NOTICE_OF_PROCEEDINGS_EMAIL, TEST_EMAIL);
