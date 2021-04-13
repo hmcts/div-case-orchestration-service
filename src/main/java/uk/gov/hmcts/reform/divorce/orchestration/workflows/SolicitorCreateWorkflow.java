@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrg
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSelectedOrganisationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.helper.RepresentedRespondentJourneyHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +32,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_FROM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
 
 @Component
 @Slf4j
@@ -49,7 +49,6 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
     private final SetNewLegalConnectionPolicyTask setNewLegalConnectionPolicyTask;
     private final CopyD8JurisdictionConnectionPolicyTask copyD8JurisdictionConnectionPolicyTask;
     private final ValidateSelectedOrganisationTask validateSelectedOrganisationTask;
-    private final RepresentedRespondentJourneyHelper representedRespondentJourneyHelper;
 
     private final FeatureToggleService featureToggleService;
 
@@ -97,7 +96,7 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
             log.info("CaseId: {}, Adding OrganisationPolicyReferenceTasks", caseId);
             tasks.add(setPetitionerSolicitorOrganisationPolicyReferenceTask);
 
-            if (representedRespondentJourneyHelper.isRespondentSolicitorDigitalSelectedYes(caseDetails.getCaseData())) {
+            if (isRespondentSolicitorDigital(caseDetails.getCaseData())) {
                 log.info("CaseId: {}, respondent solicitor is digital", caseId);
                 tasks.add(setRespondentSolicitorOrganisationPolicyReferenceTask);
             } else {

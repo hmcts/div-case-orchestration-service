@@ -36,28 +36,6 @@ public class RepresentedRespondentJourneyHelperTest {
     }
 
     @Test
-    public void shouldReturnTrue_WhenRespondentSolicitorDigitalSelectedIsYes() {
-        Map<String, Object> caseData = Map.of(
-                RESPONDENT_SOLICITOR_DIGITAL, YES_VALUE
-        );
-
-        boolean result = classUnderTest.isRespondentSolicitorDigitalSelectedYes(caseData);
-
-        assertThat(result, is(true));
-    }
-
-    @Test
-    public void shouldReturnFalse_WhenRespondentSolicitorDigitalSelectedIsNo() {
-        Map<String, Object> caseData = Map.of(
-                RESPONDENT_SOLICITOR_DIGITAL, NO_VALUE
-        );
-
-        boolean result = classUnderTest.isRespondentSolicitorDigitalSelectedYes(caseData);
-
-        assertThat(result, is(false));
-    }
-
-    @Test
     public void shouldGenerateRespondentAosInvitation_WhenRespondentIsNotRepresented() {
         Map<String, Object> caseData = Map.of(
             RESP_SOL_REPRESENTED, NO_VALUE

@@ -27,6 +27,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
 
 @Component
 @Slf4j
@@ -41,7 +42,6 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
     private final SetNewLegalConnectionPolicyTask setNewLegalConnectionPolicyTask;
     private final CopyD8JurisdictionConnectionPolicyTask copyD8JurisdictionConnectionPolicyTask;
     private final ValidateSelectedOrganisationTask validateSelectedOrganisationTask;
-    private final RepresentedRespondentJourneyHelper representedRespondentJourneyHelper;
 
     private final FeatureToggleService featureToggleService;
 
@@ -78,7 +78,7 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
         if (isRepresentedRespondentJourneyEnabled()) {
             log.info("CaseId: {}, Adding task to set petSol Organisation Policy Reference details", caseId);
             tasks.add(setPetitionerSolicitorOrganisationPolicyReferenceTask);
-            if (representedRespondentJourneyHelper.isRespondentSolicitorDigitalSelectedYes(caseDetails.getCaseData())) {
+            if (isRespondentSolicitorDigital(caseDetails.getCaseData())) {
                 log.info("CaseId: {}, Adding task to set respSol Organisation Policy Reference details", caseId);
                 tasks.add(setRespondentSolicitorOrganisationPolicyReferenceTask);
             } else {

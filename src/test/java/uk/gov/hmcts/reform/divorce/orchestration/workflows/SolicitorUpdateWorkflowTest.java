@@ -18,7 +18,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetNewLegalConnectionPoli
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSelectedOrganisationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.helper.RepresentedRespondentJourneyHelper;
 
 import java.util.Collections;
 import java.util.Map;
@@ -30,6 +29,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksWereNeverCalled;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SolicitorUpdateWorkflowTest {
@@ -51,9 +51,6 @@ public class SolicitorUpdateWorkflowTest {
 
     @Mock
     private ValidateSelectedOrganisationTask validateSelectedOrganisationTask;
-
-    @Mock
-    private RepresentedRespondentJourneyHelper representedRespondentJourneyHelper;
 
     @Mock
     private FeatureToggleService featureToggleService;
@@ -112,7 +109,7 @@ public class SolicitorUpdateWorkflowTest {
     public void runShouldRunSetSolicitorOrganisationPolicyReferenceTaskWhenFeatureIsOnAndIsRespSolDigital() throws Exception {
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
         when(featureToggleService.isFeatureEnabled(Features.SHARE_A_CASE)).thenReturn(true);
-        when(representedRespondentJourneyHelper.isRespondentSolicitorDigitalSelectedYes(caseDetails.getCaseData())).thenReturn(true);
+        when(isRespondentSolicitorDigital(caseDetails.getCaseData())).thenReturn(true);
 
         mockTasksExecution(
             caseData,
@@ -145,7 +142,7 @@ public class SolicitorUpdateWorkflowTest {
     public void runShouldRunSetSolicitorOrganisationPolicyReferenceTaskWhenFeatureIsOnAndNotRespSolDigital() throws Exception {
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
         when(featureToggleService.isFeatureEnabled(Features.SHARE_A_CASE)).thenReturn(true);
-        when(representedRespondentJourneyHelper.isRespondentSolicitorDigitalSelectedYes(caseDetails.getCaseData())).thenReturn(false);
+        when(isRespondentSolicitorDigital(caseDetails.getCaseData())).thenReturn(false);
 
         mockTasksExecution(
                 caseData,

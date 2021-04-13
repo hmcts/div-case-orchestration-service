@@ -19,7 +19,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrg
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSelectedOrganisationTask;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.helper.RepresentedRespondentJourneyHelper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +32,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksWereNeverCalled;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SolicitorCreateWorkflowTest {
@@ -69,9 +69,6 @@ public class SolicitorCreateWorkflowTest {
 
     @Mock
     private ValidateSelectedOrganisationTask validateSelectedOrganisationTask;
-
-    @Mock
-    private RepresentedRespondentJourneyHelper representedRespondentJourneyHelper;
 
     @InjectMocks
     SolicitorCreateWorkflow solicitorCreateWorkflow;
@@ -125,7 +122,7 @@ public class SolicitorCreateWorkflowTest {
 
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
         when(featureToggleService.isFeatureEnabled(Features.SHARE_A_CASE)).thenReturn(true);
-        when(representedRespondentJourneyHelper.isRespondentSolicitorDigitalSelectedYes(caseDetails.getCaseData())).thenReturn(true);
+        when(isRespondentSolicitorDigital(caseDetails.getCaseData())).thenReturn(true);
 
         mockTasksExecution(
             caseDetails.getCaseData(),
