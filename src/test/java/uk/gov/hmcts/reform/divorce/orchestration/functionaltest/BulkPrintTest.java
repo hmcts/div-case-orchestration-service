@@ -167,6 +167,7 @@ public class BulkPrintTest extends IdamTestSupport {
 
     private CcdCallbackRequest callbackWithDigitalRespSol() {
         final Map<String, Object> caseData = caseDataWithDocuments();
+        caseData.put(RESPONDENT_SOLICITOR_DIGITAL, YES_VALUE);
         caseData.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
         caseData.put(RESPONDENT_SOLICITOR_EMAIL, TEST_EMAIL);
 
