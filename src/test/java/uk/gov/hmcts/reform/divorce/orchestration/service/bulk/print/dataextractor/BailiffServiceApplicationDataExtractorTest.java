@@ -10,6 +10,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CERTIFICATE_OF_SERVICE_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.BailiffServiceApplicationDataExtractor.getBailiffApplicationGranted;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.BailiffServiceApplicationDataExtractor.getBailiffServiceSuccessful;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.BailiffServiceApplicationDataExtractor.getCertificateOfServiceDate;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.BailiffServiceApplicationDataExtractor.getLocalCourtAddress;
@@ -59,6 +60,15 @@ public class BailiffServiceApplicationDataExtractorTest {
     }
 
     @Test
+    public void getBailiffApplicationGrantedShouldReturnValidValue() {
+        Map<String, Object> caseData = buildCaseDataWithField(
+            CcdFields.BAILIFF_APPLICATION_GRANTED,
+            YES_VALUE
+        );
+        assertThat(getBailiffApplicationGranted(caseData), is(YES_VALUE));
+    }
+
+    @Test
     public void getReasonFailureToServeShouldReturnValidValue() {
         Map<String, Object> caseData = buildCaseDataWithField(
             CcdFields.REASON_FAILURE_TO_SERVE,
@@ -72,6 +82,7 @@ public class BailiffServiceApplicationDataExtractorTest {
         assertThat(getLocalCourtAddress(emptyMap()), is(""));
         assertThat(getLocalCourtEmail(emptyMap()), is(""));
         assertThat(getBailiffServiceSuccessful(emptyMap()), is(""));
+        assertThat(getBailiffApplicationGranted(emptyMap()), is(""));
         assertThat(getCertificateOfServiceDate(emptyMap()), is(""));
         assertThat(getReasonFailureToServe(emptyMap()), is(""));
     }

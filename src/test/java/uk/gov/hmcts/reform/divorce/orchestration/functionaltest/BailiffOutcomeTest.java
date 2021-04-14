@@ -63,6 +63,7 @@ public class BailiffOutcomeTest extends IdamTestSupport {
         caseData.put(CcdFields.SERVICE_APPLICATION_PAYMENT, TEST_SERVICE_APPLICATION_PAYMENT);
         caseData.put(CcdFields.SERVICE_APPLICATION_REFUSAL_REASON, TEST_MY_REASON);
         caseData.put(CcdFields.SERVICE_APPLICATION_GRANTED, YES_VALUE);
+        caseData.put(CcdFields.BAILIFF_APPLICATION_GRANTED, YES_VALUE);
 
         caseData.put(CcdFields.LOCAL_COURT_ADDRESS, TEST_COURT_ADDRESS);
         caseData.put(CcdFields.LOCAL_COURT_EMAIL, TEST_COURT_EMAIL);
@@ -140,6 +141,7 @@ public class BailiffOutcomeTest extends IdamTestSupport {
             hasJsonPath(String.format(pattern, "DecisionDate"), is(TEST_DECISION_DATE)),
             hasJsonPath(String.format(pattern, "RefusalReason"), is(TEST_MY_REASON)),
             hasJsonPath(String.format(pattern, "ApplicationGranted"), is(YES_VALUE)),
+            hasJsonPath(String.format(pattern, "BailiffApplicationGranted"), is(YES_VALUE)),
             hasJsonPath(String.format(pattern, "LocalCourtAddress"), is(TEST_COURT_ADDRESS)),
             hasJsonPath(String.format(pattern, "LocalCourtEmail"), is(TEST_COURT_EMAIL)),
             hasJsonPath(String.format(pattern, "CertificateOfServiceDate"), is(TEST_CERTIFICATE_OF_SERVICE_DATE)),
@@ -158,6 +160,7 @@ public class BailiffOutcomeTest extends IdamTestSupport {
             hasNoJsonPath(String.format(pathPattern, CcdFields.SERVICE_APPLICATION_TYPE)),
             hasNoJsonPath(String.format(pathPattern, CcdFields.SERVICE_APPLICATION_PAYMENT)),
             hasNoJsonPath(String.format(pathPattern, CcdFields.SERVICE_APPLICATION_GRANTED)),
+            hasNoJsonPath(String.format(pathPattern, CcdFields.BAILIFF_APPLICATION_GRANTED)),
             hasNoJsonPath(String.format(pathPattern, CcdFields.SERVICE_APPLICATION_DECISION_DATE)),
             hasNoJsonPath(String.format(pathPattern, CcdFields.SERVICE_APPLICATION_REFUSAL_REASON)),
             hasNoJsonPath(String.format(pathPattern, CcdFields.LOCAL_COURT_ADDRESS)),
