@@ -52,6 +52,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLIC
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_DIGITAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CURRENCY;
@@ -61,6 +62,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_PAY_BY_ACCOUNT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
@@ -155,6 +157,7 @@ public class ProcessPbaPaymentRepRespJourneyTest extends MockedFunctionalTest {
 
     @Test
     public void makePaymentAndUpdateRespDigitalDetails_whenRespSolDigital() throws Exception {
+        caseData.put(RESPONDENT_SOLICITOR_DIGITAL, YES_VALUE);
         caseData.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
 
         Map<String, Object> expectedCaseData = new HashMap<>();
@@ -165,8 +168,16 @@ public class ProcessPbaPaymentRepRespJourneyTest extends MockedFunctionalTest {
         makePaymentAndReturn(expectedCaseData);
     }
 
+
     @Test
     public void makePaymentAndNotRespDigitalDetails_whenRespSolNotDigital() throws Exception {
+        caseData.put(RESPONDENT_SOLICITOR_DIGITAL, NO_VALUE);
+
+        makePaymentAndReturn(caseData);
+    }
+
+    @Test
+    public void makePaymentAndNotRespDigitalDetails_whenOrgPolicyDetailsNotPopulated() throws Exception {
         caseData.remove(RESPONDENT_SOLICITOR_ORGANISATION_POLICY);
 
         makePaymentAndReturn(caseData);
