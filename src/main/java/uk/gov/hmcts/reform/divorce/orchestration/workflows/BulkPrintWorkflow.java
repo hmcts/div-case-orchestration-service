@@ -10,7 +10,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AosPackDueDateSetterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStoreTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.ServiceMethodValidationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoRespondentAosPackPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.RespondentAosPackPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
@@ -29,7 +28,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @Slf4j
 public class BulkPrintWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
-    private final ServiceMethodValidationTask serviceMethodValidationTask;
     private final FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask;
     private final RespondentAosPackPrinterTask respondentAosPackPrinterTask;
     private final CoRespondentAosPackPrinterTask coRespondentAosPackPrinterTask;
@@ -40,7 +38,6 @@ public class BulkPrintWorkflow extends DefaultWorkflow<Map<String, Object>> {
     public Map<String, Object> run(final String authToken, CaseDetails caseDetails) throws WorkflowException {
         final List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
-        tasks.add(serviceMethodValidationTask);
         tasks.add(fetchPrintDocsFromDmStoreTask);
         tasks.add(respondentAosPackPrinterTask);
 
