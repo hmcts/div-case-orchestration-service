@@ -18,6 +18,7 @@ public class BailiffServiceApplicationDataExtractor {
         public static final String CERTIFICATE_OF_SERVICE_DATE = CcdFields.CERTIFICATE_OF_SERVICE_DATE;
         public static final String BAILIFF_SERVICE_SUCCESSFUL = CcdFields.BAILIFF_SERVICE_SUCCESSFUL;
         public static final String REASON_FAILURE_TO_SERVE = CcdFields.REASON_FAILURE_TO_SERVE;
+        public static final String BAILIFF_APPLICATION_GRANTED = CcdFields.BAILIFF_APPLICATION_GRANTED;
     }
 
     public static String getLocalCourtAddress(Map<String, Object> caseData) {
@@ -34,6 +35,10 @@ public class BailiffServiceApplicationDataExtractor {
 
     public static String getBailiffServiceSuccessful(Map<String, Object> caseData) {
         return getOptional(caseData, CaseDataKeys.BAILIFF_SERVICE_SUCCESSFUL);
+    }
+
+    public static String getBailiffApplicationGranted(Map<String, Object> caseData) {
+        return getOptional(caseData, CaseDataKeys.BAILIFF_APPLICATION_GRANTED);
     }
 
     public static String getReasonFailureToServe(Map<String, Object> caseData) {

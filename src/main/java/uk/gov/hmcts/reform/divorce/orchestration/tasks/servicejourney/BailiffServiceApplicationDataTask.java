@@ -23,6 +23,7 @@ public class BailiffServiceApplicationDataTask extends ServiceApplicationDataTas
             .receivedDate(DatesDataExtractor.getReceivedServiceApplicationDateUnformatted(caseData))
             .type(ServiceApplicationDataExtractor.getServiceApplicationType(caseData))
             .applicationGranted(ServiceApplicationDataExtractor.getServiceApplicationGranted(caseData))
+            .bailiffApplicationGranted(BailiffServiceApplicationDataExtractor.getBailiffApplicationGranted(caseData))
             .decisionDate(DatesDataExtractor.getServiceApplicationDecisionDateUnformatted(caseData))
             .payment(ServiceApplicationDataExtractor.getServiceApplicationPayment(caseData))
             .refusalReason(ServiceApplicationDataExtractor.getServiceApplicationRefusalReasonOrEmpty(caseData))
