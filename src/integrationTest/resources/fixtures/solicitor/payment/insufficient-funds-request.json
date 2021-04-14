@@ -55,7 +55,15 @@
       "SolPaymentHowToPay" : "feePayByAccount",
       "solSignStatementofTruth" : "YES",
       "PetitionerSolicitorToEffectService" : "YES",
-      "SolClaimCostsDetails" : "NO"
+      "SolClaimCostsDetails" : "NO",
+      "PetitionerOrganisationPolicy": {
+        "Organisation": {
+          "OrganisationID": "M2ZT9Q2",
+          "OrganisationName": "DivPetitionerSolicitorFirm"
+        },
+        "OrgPolicyReference": "DivPetitionerSolicitorFirm",
+        "OrgPolicyCaseAssignedRole": "[PETSOLICITOR]"
+      }
     }
   }
 }
