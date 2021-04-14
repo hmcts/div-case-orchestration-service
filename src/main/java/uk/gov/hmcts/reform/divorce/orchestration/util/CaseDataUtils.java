@@ -133,6 +133,14 @@ public class CaseDataUtils {
             && Objects.nonNull(caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD));
     }
 
+    public static boolean isCostClaimGrantedYes(Map<String, Object> caseData) {
+        return YES_VALUE.equalsIgnoreCase(String.valueOf(caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD)));
+    }
+
+    public static boolean isCostClaimGrantedPopulated(Map<String, Object> caseData) {
+        return Objects.nonNull(caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD));
+    }
+
     public boolean isAdulteryCaseWithNamedCoRespondent(Map<String, Object> caseData) {
         final String divorceReason = getOptionalPropertyValueAsString(caseData, D_8_REASON_FOR_DIVORCE, EMPTY);
         final String coRespondentNamed = getOptionalPropertyValueAsString(caseData, D_8_CO_RESPONDENT_NAMED, EMPTY);

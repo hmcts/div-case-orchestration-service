@@ -110,7 +110,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.te
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.EventHelper.isIssueAosEvent;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isAOSDraftedCandidate;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isCostClaimGrantedPopulated;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isPetitionerClaimingCosts;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.JudgeDecisionHelper.isJudgeCostClaimAdjourned;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.JudgeDecisionHelper.isJudgeCostClaimEmpty;
 
 @Slf4j
 @Service
@@ -770,7 +773,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
             caseData.putAll(
                 documentGenerationWorkflow.run(caseDetails, authToken, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME));
 
-            if (isPetitionerClaimingCosts(caseData)) {
+            if (isCostClaimValid(caseData)) {
                 // DocumentType is clear enough to use as the file name
                 caseData.putAll(
                     documentGenerationWorkflow.run(caseDetails, authToken, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE));
@@ -778,6 +781,20 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         }
 
         return caseData;
+    }
+
+    private boolean isCostClaimValid(Map<String, Object> caseData) {
+        if (isJudgeCostClaimEmpty(caseData) && !isCostClaimGrantedPopulated(caseData)) {
+            // TODO: AC2
+            return false;
+        }
+
+        if (isJudgeCostClaimAdjourned(caseData)) {
+            // TODO: AC1
+            return false;
+        }
+
+        return isPetitionerClaimingCosts(caseData);
     }
 
     @Override

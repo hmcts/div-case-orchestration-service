@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.util;
 
+import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,12 @@ public class JudgeDecisionHelper {
 
     public static boolean isJudgeCostClaimAdjourned(Map<String, Object> caseData) {
         return isAdjourned(caseData, JudgeFields.JUDGE_COSTS_CLAIM_GRANTED);
+    }
+
+    public static boolean isJudgeCostClaimEmpty(Map<String, Object> caseData) {
+        String judgeDecision = (String) caseData.get(JudgeFields.JUDGE_COSTS_CLAIM_GRANTED);
+
+        return Strings.isNullOrEmpty(judgeDecision);
     }
 
     private static boolean isGranted(Map<String, Object> caseData, String field) {
