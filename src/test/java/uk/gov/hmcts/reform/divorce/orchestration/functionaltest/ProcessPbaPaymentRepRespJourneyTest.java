@@ -170,14 +170,14 @@ public class ProcessPbaPaymentRepRespJourneyTest extends MockedFunctionalTest {
 
 
     @Test
-    public void makePaymentAndNotRespDigitalDetails_whenRespSolNotDigital2() throws Exception {
+    public void makePaymentAndNotRespDigitalDetails_whenRespSolNotDigital() throws Exception {
         caseData.put(RESPONDENT_SOLICITOR_DIGITAL, NO_VALUE);
 
         makePaymentAndReturn(caseData);
     }
 
     @Test
-    public void makePaymentAndNotRespDigitalDetails_whenRespSolNotDigital() throws Exception {
+    public void makePaymentAndNotRespDigitalDetails_whenOrgPolicyDetailsNotPopulated() throws Exception {
         caseData.remove(RESPONDENT_SOLICITOR_ORGANISATION_POLICY);
 
         makePaymentAndReturn(caseData);
