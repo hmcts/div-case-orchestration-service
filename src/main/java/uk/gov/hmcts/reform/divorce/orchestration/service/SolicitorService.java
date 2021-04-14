@@ -6,7 +6,9 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowExce
 import java.util.Map;
 
 public interface SolicitorService {
-    Map<String, Object> issuePersonalServicePack(CcdCallbackRequest callbackRequest, String authToken) throws WorkflowException;
+    Map<String, Object> validateForPersonalServicePack(CcdCallbackRequest callbackRequest, String authToken) throws WorkflowException;
+
+    Map<String, Object> solicitorConfirmPersonalService(CcdCallbackRequest callbackRequest) throws WorkflowException;
 
     Map<String, Object> sendSolicitorPersonalServiceEmail(CcdCallbackRequest callbackRequest) throws WorkflowException;
 
