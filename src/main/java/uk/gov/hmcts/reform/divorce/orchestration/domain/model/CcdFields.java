@@ -19,6 +19,7 @@ public class CcdFields {
     public static final String SERVICE_APPLICATION_DOCUMENTS = "ServiceApplicationDocuments";
     public static final String SERVICE_APPLICATION_REFUSAL_REASON = "ServiceApplicationRefusalReason";
     public static final String LAST_SERVICE_APPLICATION = "LastServiceApplication";
+    public static final String LAST_SERVICE_APPLICATION_TYPE = "LastServiceApplicationType";
     public static final String HELP_WITH_FEES_REF_NUMBER = "D8HelpWithFeesReferenceNumber";
 
     public static final String JUDGE_TYPE = "JudgeType";
@@ -83,6 +84,9 @@ public class CcdFields {
     public static final String BAILIFF_APPLICATION_GRANTED = "BailiffApplicationGranted";
     public static final String CERTIFICATE_OF_SERVICE_DOCUMENT = "CertificateOfServiceDocument";
     public static final String CERTIFICATE_OF_SERVICE_DATE = "CertificateOfServiceDate";
+    public static final String LOCAL_COURT_ADDRESS = "LocalCourtAddress";
+    public static final String LOCAL_COURT_EMAIL = "LocalCourtEmail";
+    public static final String REASON_FAILURE_TO_SERVE = "ReasonFailureToServe";
     public static final String BAILIFF_SERVICE_SUCCESSFUL = "SuccessfulServedByBailiff";
 
     public static final String NOTICE_OF_PROCEEDINGS_DIGITAL = "DigitalNoticeOfProceedings";

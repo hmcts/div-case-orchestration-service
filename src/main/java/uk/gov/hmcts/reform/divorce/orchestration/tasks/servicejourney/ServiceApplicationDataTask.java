@@ -5,9 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.DatesDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor;
 
@@ -21,6 +23,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @AllArgsConstructor
 public class ServiceApplicationDataTask implements Task<Map<String, Object>> {
 
+    private final FeatureToggleService featureToggleService;
+
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         String caseId = getCaseId(context);
@@ -29,17 +33,23 @@ public class ServiceApplicationDataTask implements Task<Map<String, Object>> {
         DivorceServiceApplication serviceApplication = buildServiceApplication(caseData);
 
         persistLastServiceApplication(caseData, serviceApplication);
+
         return addNewServiceApplicationToCaseData(caseData, serviceApplication);
     }
 
-    private void persistLastServiceApplication(Map<String, Object> caseData, DivorceServiceApplication serviceApplication) {
+    private void persistLastServiceApplication(
+        Map<String, Object> caseData, DivorceServiceApplication serviceApplication) {
         caseData.put(CcdFields.LAST_SERVICE_APPLICATION, serviceApplication);
+        if (featureToggleService.isFeatureEnabled(Features.BAILIFF_JOURNEY)) {
+            caseData.put(CcdFields.LAST_SERVICE_APPLICATION_TYPE, serviceApplication.getType());
+        }
     }
 
     private Map<String, Object> addNewServiceApplicationToCaseData(
         Map<String, Object> caseData, DivorceServiceApplication serviceApplication) {
 
-        List<CollectionMember<DivorceServiceApplication>> collection = ServiceApplicationDataExtractor.getListOfServiceApplications(caseData);
+        List<CollectionMember<DivorceServiceApplication>> collection = ServiceApplicationDataExtractor
+            .getListOfServiceApplications(caseData);
         CollectionMember<DivorceServiceApplication> collectionMember = new CollectionMember<>();
         collectionMember.setValue(serviceApplication);
 
@@ -50,7 +60,7 @@ public class ServiceApplicationDataTask implements Task<Map<String, Object>> {
         return caseData;
     }
 
-    private DivorceServiceApplication buildServiceApplication(Map<String, Object> caseData) {
+    protected DivorceServiceApplication buildServiceApplication(Map<String, Object> caseData) {
         return DivorceServiceApplication.builder()
             .addedDate(DatesDataExtractor.getReceivedServiceAddedDateUnformatted(caseData))
             .receivedDate(DatesDataExtractor.getReceivedServiceApplicationDateUnformatted(caseData))

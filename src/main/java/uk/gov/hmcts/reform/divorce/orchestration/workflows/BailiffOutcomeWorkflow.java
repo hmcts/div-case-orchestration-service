@@ -8,6 +8,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.BailiffServiceApplicationDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.BailiffServiceApplicationRemovalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.BailiffSuccessServiceDueDateSetterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.BailiffUnsuccessServiceDueDateSetterTask;
 
@@ -26,6 +28,8 @@ public class BailiffOutcomeWorkflow extends DefaultWorkflow<Map<String, Object>>
 
     private final BailiffSuccessServiceDueDateSetterTask bailiffSuccessServiceDueDateSetterTask;
     private final BailiffUnsuccessServiceDueDateSetterTask bailiffUnsuccessServiceDueDateSetterTask;
+    private final BailiffServiceApplicationDataTask bailiffServiceApplicationDataTask;
+    private final BailiffServiceApplicationRemovalTask bailiffServiceApplicationRemovalTask;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authorisation) throws WorkflowException {
         String caseId = caseDetails.getCaseId();
@@ -53,6 +57,11 @@ public class BailiffOutcomeWorkflow extends DefaultWorkflow<Map<String, Object>>
             log.info("CaseID: {}. Setting Certificate of service due date after Bailiff Service unsuccessful", caseId);
             tasks.add(bailiffUnsuccessServiceDueDateSetterTask);
         }
+
+        log.info("CaseID: {}. Adding bailiff service application data task", caseId);
+        tasks.add(bailiffServiceApplicationDataTask);
+        log.info("CaseID: {}. Adding bailiff service application removal task", caseId);
+        tasks.add(bailiffServiceApplicationRemovalTask);
 
         return tasks.toArray(new Task[] {});
     }
