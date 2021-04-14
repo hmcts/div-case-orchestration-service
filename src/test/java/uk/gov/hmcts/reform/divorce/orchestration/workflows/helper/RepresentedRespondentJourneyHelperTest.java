@@ -14,6 +14,7 @@ import java.util.Map;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_DIGITAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
@@ -72,6 +73,7 @@ public class RepresentedRespondentJourneyHelperTest {
     public void shouldGenerateRespondentAosInvitation_WhenRespondentIsRepresentedByDigitalSolicitor() {
         Map<String, Object> caseData = Map.of(
             RESP_SOL_REPRESENTED, YES_VALUE,
+            RESPONDENT_SOLICITOR_DIGITAL, YES_VALUE,
             RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy()
         );
 
@@ -83,6 +85,7 @@ public class RepresentedRespondentJourneyHelperTest {
     @Test
     public void shouldUpdateNoticeOfProceedingsDetails_WhenRespondentSolicitorIsDigital_AndToggleIsOn() {
         Map<String, Object> caseData = Map.of(
+            RESPONDENT_SOLICITOR_DIGITAL, YES_VALUE,
             RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy()
         );
 
@@ -95,6 +98,7 @@ public class RepresentedRespondentJourneyHelperTest {
     public void shouldNotUpdateNoticeOfProceedingsDetails_WhenRespondentSolicitorIsDigital_AndToggleIsOff() {
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(false);
         Map<String, Object> caseData = Map.of(
+            RESPONDENT_SOLICITOR_DIGITAL, YES_VALUE,
             RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy()
         );
 

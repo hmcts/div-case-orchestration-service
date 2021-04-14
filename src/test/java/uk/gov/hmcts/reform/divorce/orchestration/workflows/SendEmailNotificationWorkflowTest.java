@@ -28,7 +28,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS_FROM_REISSUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_DIGITAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.buildOrganisationPolicy;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
@@ -122,6 +124,7 @@ public class SendEmailNotificationWorkflowTest {
 
     private Map<String, Object> buildCaseData() {
         Map<String, Object> caseData = new HashMap<>();
+        caseData.put(RESPONDENT_SOLICITOR_DIGITAL, YES_VALUE);
         caseData.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
 
         return caseData;

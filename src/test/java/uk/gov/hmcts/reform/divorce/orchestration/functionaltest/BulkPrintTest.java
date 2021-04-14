@@ -35,6 +35,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ORGANISATION_POLICY_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_DIGITAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
@@ -105,6 +106,7 @@ public class BulkPrintTest extends IdamTestSupport {
         stubSendLetterService(HttpStatus.OK);
 
         Map<String, Object> expectedCaseData = caseDataWithDocuments();
+
         expectedCaseData.put(CcdFields.NOTICE_OF_PROCEEDINGS_DIGITAL, YES_VALUE);
         expectedCaseData.put(CcdFields.NOTICE_OF_PROCEEDINGS_EMAIL, TEST_EMAIL);
         expectedCaseData.put(CcdFields.NOTICE_OF_PROCEEDINGS_FIRM, TEST_ORGANISATION_POLICY_NAME);
@@ -155,6 +157,7 @@ public class BulkPrintTest extends IdamTestSupport {
 
     private CcdCallbackRequest callbackWithDigitalRespSol() {
         final Map<String, Object> caseData = caseDataWithDocuments();
+        caseData.put(RESPONDENT_SOLICITOR_DIGITAL, YES_VALUE);
         caseData.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
         caseData.put(RESPONDENT_SOLICITOR_EMAIL, TEST_EMAIL);
 
