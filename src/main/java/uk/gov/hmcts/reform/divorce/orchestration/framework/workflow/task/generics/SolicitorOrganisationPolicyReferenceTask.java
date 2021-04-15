@@ -46,10 +46,18 @@ public abstract class SolicitorOrganisationPolicyReferenceTask implements Task<M
             String organisationPolicyCaseField = getOrganisationPolicyCaseField();
             log.info("CaseID: {} Adding Solicitor Reference to Organisation Policy detail for {}", caseId, organisationPolicyCaseField);
             caseData.put(organisationPolicyCaseField, updatedOrganisationPolicy);
+            populateLegacyFieldsWithValuesFromOrganisationPolicy(caseId, caseData,updatedOrganisationPolicy);
         }
 
         log.info("CaseID: {} Updated solicitor organisation policy reference for {}", caseId, solicitorReferenceCaseField);
         return caseData;
+    }
+
+    protected void populateLegacyFieldsWithValuesFromOrganisationPolicy(
+        String caseId,
+        Map<String, Object> caseData,
+        OrganisationPolicy organisationPolicy) {
+        log.info("CaseId: {}, by default there is nothing to populate", caseId);
     }
 
     private OrganisationPolicy getUpdatedOrganisationPolicy(Map<String, Object> caseData, String solicitorReference) {
