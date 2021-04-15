@@ -16,7 +16,6 @@ public class DivorceServiceApplication {
         String addedDate,
         String receivedDate,
         String type,
-        String bailiffApplicationGranted,
         String applicationGranted,
         String decisionDate,
         String payment,
@@ -25,7 +24,6 @@ public class DivorceServiceApplication {
         this.addedDate = addedDate;
         this.receivedDate = receivedDate;
         this.type = type;
-        this.bailiffApplicationGranted = bailiffApplicationGranted;
         this.applicationGranted = applicationGranted;
         this.decisionDate = decisionDate;
         this.payment = payment;
@@ -46,9 +44,6 @@ public class DivorceServiceApplication {
 
     @JsonProperty("ApplicationGranted")
     private String applicationGranted;
-
-    @JsonProperty("BailiffApplicationGranted")
-    private String bailiffApplicationGranted;
 
     @JsonProperty("DecisionDate")
     private String decisionDate;
