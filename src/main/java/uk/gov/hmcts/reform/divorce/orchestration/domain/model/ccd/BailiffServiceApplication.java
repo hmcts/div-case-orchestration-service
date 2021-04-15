@@ -26,14 +26,18 @@ public class BailiffServiceApplication extends DivorceServiceApplication {
         String certificateOfServiceDate,
         String successfulServedByBailiff,
         String reasonFailureToServe) {
-        super(addedDate, receivedDate, type, bailiffApplicationGranted, applicationGranted, decisionDate, payment, refusalReason);
+        super(addedDate, receivedDate, type, applicationGranted, decisionDate, payment, refusalReason);
 
+        this.bailiffApplicationGranted = bailiffApplicationGranted;
         this.localCourtAddress = localCourtAddress;
         this.localCourtEmail = localCourtEmail;
         this.certificateOfServiceDate = certificateOfServiceDate;
         this.successfulServedByBailiff = successfulServedByBailiff;
         this.reasonFailureToServe = reasonFailureToServe;
     }
+
+    @JsonProperty("BailiffApplicationGranted")
+    private String bailiffApplicationGranted;
 
     @JsonProperty("LocalCourtAddress")
     private String localCourtAddress;
