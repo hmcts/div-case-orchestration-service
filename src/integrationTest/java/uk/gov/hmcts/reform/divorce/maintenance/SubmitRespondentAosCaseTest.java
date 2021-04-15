@@ -187,7 +187,7 @@ public class SubmitRespondentAosCaseTest extends CcdSubmissionSupport {
     }
 
     private void assertAosSubmittedData(UserDetails userDetails, String caseId) {
-        CaseDetails caseDetails = this.retrieveCase(userDetails, caseId);
+        CaseDetails caseDetails = this.retrieveCaseForCitizen(userDetails, caseId);
         assertThat(caseDetails.getData().get(RECEIVED_AOS_FROM_RESP), is(YES_VALUE));
         assertThat(caseDetails.getData().get(RECEIVED_AOS_FROM_RESP_DATE), is(LocalDate.now().format(DateTimeFormatter.ofPattern(CCD_DATE_FORMAT))));
     }

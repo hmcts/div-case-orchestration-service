@@ -68,7 +68,7 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
                 ImmutablePair.of(AOS_LETTER_HOLDER_ID, pinResponse.getUserId())
         );
 
-        UserDetails solicitorUser = createSolicitorUser();
+        UserDetails solicitorUser = retrieveSolicitorUserDetails();
 
         Response linkResponse = linkSolicitor(
                         solicitorUser.getAuthToken(),
@@ -83,7 +83,7 @@ public class SolicitorLinkCaseCallbackTest extends RetrieveAosCaseSupport {
         assertThat(caseDetails.getData(), is(notNullValue()));
 
         //linking with a different user should fail
-        solicitorUser = createSolicitorUser();
+        solicitorUser = retrieveSolicitorUserDetails();
 
         linkResponse = linkSolicitor(
                 solicitorUser.getAuthToken(),

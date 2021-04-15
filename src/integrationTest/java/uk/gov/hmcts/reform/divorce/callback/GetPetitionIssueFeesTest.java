@@ -99,7 +99,7 @@ public class GetPetitionIssueFeesTest extends IntegrationTest {
     }
 
     private uk.gov.hmcts.reform.ccd.client.model.CaseDetails createCaseWithSolicitor() throws IOException {
-        solicitorUser = createSolicitorUser();
+        solicitorUser = retrieveSolicitorUserDetails();
 
         Map<String, Object> baseCaseData = getJsonFromResourceFile(BASE_CASE_RESPONSE, new TypeReference<HashMap<String, Object>>() {
         });
