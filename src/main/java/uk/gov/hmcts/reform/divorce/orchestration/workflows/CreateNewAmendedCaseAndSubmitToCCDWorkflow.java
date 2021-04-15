@@ -36,8 +36,10 @@ public class CreateNewAmendedCaseAndSubmitToCCDWorkflow extends DefaultWorkflow<
     @Autowired
     public CreateNewAmendedCaseAndSubmitToCCDWorkflow(
         CreateAmendPetitionDraftForRefusalFromCaseIdTask amendPetitionDraftForRefusalFromCaseId,
-        FormatDivorceSessionToCaseDataTask formatDivorceSessionToCaseDataTask, CopyPetitionerSolicitorDetailsTask copyPetitionerSolicitorDetailsTask,
-        ValidateCaseDataTask validateCaseDataTask, SolicitorSubmitCaseToCCDTask solicitorSubmitCaseToCCD,
+        FormatDivorceSessionToCaseDataTask formatDivorceSessionToCaseDataTask,
+        CopyPetitionerSolicitorDetailsTask copyPetitionerSolicitorDetailsTask,
+        ValidateCaseDataTask validateCaseDataTask,
+        SolicitorSubmitCaseToCCDTask solicitorSubmitCaseToCCD,
         SetAmendedCaseIdTask setAmendedCaseIdTask) {
         this.createAmendPetitionDraftForRefusalFromCaseId = amendPetitionDraftForRefusalFromCaseId;
         this.formatDivorceSessionToCaseDataTask = formatDivorceSessionToCaseDataTask;
