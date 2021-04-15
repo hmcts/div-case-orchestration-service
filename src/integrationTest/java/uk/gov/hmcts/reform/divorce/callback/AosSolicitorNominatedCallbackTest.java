@@ -26,7 +26,7 @@ public class AosSolicitorNominatedCallbackTest extends IntegrationTest {
     @Test
     public void whenSubmitAOSSubmittedIsCalledBack_thenReturnAOSData() {
         //given
-        UserDetails solicitorUser = createSolicitorUser();
+        UserDetails solicitorUser = retrieveSolicitorUserDetails();
         Map<String, Object> aosCase = ResourceLoader.loadJsonToObject(BASE_CASE_RESPONSE, Map.class);
 
         //when
