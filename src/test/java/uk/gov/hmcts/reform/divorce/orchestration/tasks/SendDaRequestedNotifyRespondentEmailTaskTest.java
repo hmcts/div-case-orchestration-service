@@ -63,6 +63,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_RESP_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_WELSH_HUSBAND_OR_WIFE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_SOLICITOR_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
@@ -86,7 +87,6 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
     private TaskContext context;
     private Map<String, Object> testData;
     private Map<String, String> expectedTemplateVars;
-//    private static final String CCD_CASE_ID = "123123123";
 
     @Before
     public void setup() {
@@ -180,7 +180,7 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
     }
 
     @Test
-    public void shouldSendEmailToRespondentSolicitor() throws TaskException {
+    public void shouldSendEmailToRespondentSolicitor() throws Exception {
         testData.put(CASE_ID_JSON_KEY, TEST_CASE_ID);
         testData.put(RESPONDENT_EMAIL_ADDRESS, "");
         testData.put(RESPONDENT_SOLICITOR_DIGITAL, YES_VALUE);
@@ -197,17 +197,32 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
 
         assertEquals(testData, returnPayload);
 
-        try {
-            verify(emailService)
-                .sendEmailAndReturnExceptionIfFails(
-                    eq(TEST_RESPONDENT_SOLICITOR_EMAIL),
-                    eq(EmailTemplateNames.DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_SOLICITOR.name()),
-                    eq(expectedTempVars),
-                    eq(REQUESTED_BY_SOLICITOR),
-                    eq(LanguagePreference.ENGLISH));
-        } catch (NotificationClientException e) {
-            fail("exception occurred in test");
-        }
+        verify(emailService)
+            .sendEmailAndReturnExceptionIfFails(
+                eq(TEST_RESPONDENT_SOLICITOR_EMAIL),
+                eq(EmailTemplateNames.DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_SOLICITOR.name()),
+                eq(expectedTempVars),
+                eq(REQUESTED_BY_SOLICITOR),
+                eq(LanguagePreference.ENGLISH)
+            );
+    }
+
+    @Test
+    public void shouldNotSendEmailToRespondentSolicitorWhenRespondentSolicitorIsNotDigital() throws Exception {
+        testData.put(CASE_ID_JSON_KEY, TEST_CASE_ID);
+        testData.put(RESPONDENT_EMAIL_ADDRESS, "");
+        testData.put(RESPONDENT_SOLICITOR_DIGITAL, NO_VALUE);
+        testData.put(RESPONDENT_SOLICITOR_EMAIL_ADDRESS, TEST_RESPONDENT_SOLICITOR_EMAIL);
+        testData.put(RESP_FIRST_NAME_CCD_FIELD, TEST_RESPONDENT_FIRST_NAME);
+        testData.put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME);
+        testData.put(D_8_PETITIONER_FIRST_NAME, TEST_RESPONDENT_LAST_NAME);
+        testData.put(D_8_PETITIONER_LAST_NAME, TEST_RELATIONSHIP);
+        testData.put(D8_RESPONDENT_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
+        testData.put(LANGUAGE_PREFERENCE_WELSH, NO_VALUE);
+
+        sendDaRequestedNotifyRespondentEmailTask.execute(context, testData);
+
+        verifyNoInteractions(emailService);
     }
 
     @Test
