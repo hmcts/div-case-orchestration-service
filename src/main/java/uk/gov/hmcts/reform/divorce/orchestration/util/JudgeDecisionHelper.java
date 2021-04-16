@@ -19,7 +19,7 @@ public class JudgeDecisionHelper {
     }
 
     public static class JudgeDecisions {
-        public static final String YES_VALUE = "Y";
+        public static final String YES_VALUE = "Yes";
         public static final String NO_VALUE = "No";
         public static final String ADJOURN_VALUE = "Adjourn";
     }
