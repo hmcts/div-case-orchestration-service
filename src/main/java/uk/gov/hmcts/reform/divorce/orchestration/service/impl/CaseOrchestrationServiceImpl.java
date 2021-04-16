@@ -785,16 +785,12 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     private boolean isCostClaimValid(Map<String, Object> caseData) {
         if (isJudgeCostClaimEmpty(caseData) && !isCostClaimGrantedPopulated(caseData)) {
-            // TODO: AC2
             return false;
-        }
-
-        if (isJudgeCostClaimAdjourned(caseData)) {
-            // TODO: AC1
+        } else if (isJudgeCostClaimAdjourned(caseData)) {
             return false;
+        } else {
+            return isPetitionerClaimingCosts(caseData);
         }
-
-        return isPetitionerClaimingCosts(caseData);
     }
 
     @Override
