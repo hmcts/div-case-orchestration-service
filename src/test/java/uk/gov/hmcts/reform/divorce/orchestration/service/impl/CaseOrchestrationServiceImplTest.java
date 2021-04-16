@@ -1144,7 +1144,6 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void shouldGenerateBothDocuments_WhenCostsClaimGrantedIsNo() throws WorkflowException {
-        // TODO: Find out if this was expected. It sounds like it shouldnt be the case.
         Map<String, Object> caseData = new HashMap<String, Object>();
         caseData.put(BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build());
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);

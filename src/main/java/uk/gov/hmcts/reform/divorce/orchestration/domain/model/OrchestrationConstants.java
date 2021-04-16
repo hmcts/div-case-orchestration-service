@@ -293,7 +293,6 @@ public class OrchestrationConstants {
     public static final String ADDITIONAL_INFRORMATION = "additionalInformation";
     public static final String SOLICITOR_HOW_TO_PAY_JSON_KEY = "SolPaymentHowToPay";
     public static final String SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY = "SolicitorFeeAccountNumber";
-    public static final String SOLICITOR_FIRM_JSON_KEY = "PetitionerSolicitorFirm";
     public static final String SOLICITOR_REFERENCE_JSON_KEY = "D8SolicitorReference";
     public static final String SOLICITOR_STATEMENT_OF_TRUTH = "solSignStatementofTruth";
     public static final String RESP_SOL_REPRESENTED = "respondentSolicitorRepresented";
