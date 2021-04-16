@@ -30,7 +30,7 @@ public class SolicitorPersonalServiceCallbackTest extends CcdSubmissionSupport {
     @Test
     public void testSolicitorPersonalServiceCallbackGeneratesPersonalServiceResponse() {
         //given
-        final UserDetails solicitorUser = createSolicitorUser();
+        final UserDetails solicitorUser = retrieveSolicitorUserDetails();
         CaseDetails caseDetails = submitSolicitorCase(ISSUED_SOLICITOR_PETITION_JSON, solicitorUser);
         String caseId = caseDetails.getId().toString();
         log.info("Created case [id: {}]", caseId);
@@ -46,7 +46,7 @@ public class SolicitorPersonalServiceCallbackTest extends CcdSubmissionSupport {
             .build();
 
         CcdCallbackResponse callbackResponse = cosApiClient.processPersonalServicePack(
-            createSolicitorUser().getAuthToken(),
+            retrieveSolicitorUserDetails().getAuthToken(),
             callbackRequest
         );
 

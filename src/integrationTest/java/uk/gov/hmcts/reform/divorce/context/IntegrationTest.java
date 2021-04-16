@@ -146,8 +146,7 @@ public abstract class IntegrationTest {
         });
     }
 
-    protected UserDetails createSolicitorUser() {
-
+    protected UserDetails retrieveSolicitorUserDetails() {
         final String username = SOLICITOR_USER_NAME + EMAIL_DOMAIN;
         return getCreatedUserDetails(username, SOLICITOR_PASSWORD);
     }

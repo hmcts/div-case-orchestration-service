@@ -22,10 +22,9 @@ public class CreateAmendPetitionDraftForRefusalFromCaseIdTask implements Task<Ma
         this.caseMaintenanceClient = caseMaintenanceClient;
     }
 
-
     @Override
     public Map<String, Object> execute(TaskContext context,
-                                       Map<String, Object> draft) {
+                                       Map<String, Object> caseData) {
         final Map<String, Object> amendDraft = caseMaintenanceClient
             .amendPetitionForRefusalFromCaseId(
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString(),
