@@ -57,9 +57,13 @@ public class PartyRepresentationChecker {
     }
 
     public static boolean isRespondentSolicitorDigital(Map<String, Object> caseData) {
-        return getOptionalPropertyValueAsString(caseData, CcdFields.RESPONDENT_SOLICITOR_DIGITAL, "")
-                .equalsIgnoreCase(YES_VALUE)
+        return isRespondentSolicitorDigitalSelectedYes(caseData)
                 && isPopulatedOrganisation(caseData, RESPONDENT_SOLICITOR_ORGANISATION_POLICY);
+    }
+
+    public static boolean isRespondentSolicitorDigitalSelectedYes(Map<String, Object> caseData) {
+        return getOptionalPropertyValueAsString(caseData, CcdFields.RESPONDENT_SOLICITOR_DIGITAL, "")
+                .equalsIgnoreCase(YES_VALUE);
     }
 
     public static boolean isCoRespondentDigital(Map<String, Object> caseData) {
