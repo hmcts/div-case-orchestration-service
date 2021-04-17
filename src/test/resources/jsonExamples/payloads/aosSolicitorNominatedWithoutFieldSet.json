@@ -7,7 +7,10 @@
       "D8RespondentSolicitorCompany": "Awesome Solicitors LLP",
       "D8RespondentSolicitorEmail": "solicitor@localhost.local",
       "D8RespondentSolicitorPhone": "2222222222",
-      "respondentSolicitorReference": "1234"
+      "respondentSolicitorReference": "1234",
+      "RespWillDefendDivorce": "No",
+      "D8InferredPetitionerGender": "female",
+      "D8InferredRespondentGender": "male"
     }
   }
 }

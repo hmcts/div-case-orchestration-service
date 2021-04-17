@@ -82,10 +82,10 @@ public class SendRespondentSubmissionNotificationEmailTest {
     private ArgumentCaptor<Map<String, String>> templateParametersCaptor;
 
     @InjectMocks
-    private SendRespondentSubmissionNotificationForDefendedDivorceEmail defendedDivorceNotificationEmailTask;
+    private SendRespondentSubmissionNotificationForDefendedDivorceEmailTask defendedDivorceNotificationEmailTask;
 
     @InjectMocks
-    private SendRespondentSubmissionNotificationForUndefendedDivorceEmail undefendedDivorceNotificationEmailTask;
+    private SendRespondentSubmissionNotificationForUndefendedDivorceEmailTask undefendedDivorceNotificationEmailTask;
 
     private Court testCourt;
 
