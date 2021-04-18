@@ -16,6 +16,8 @@ import static org.junit.Assert.assertThrows;
  * This test can be run to test (locally) that our e-mail is sent according to our expectations.
  * This assertion has to be done manually for now, using MailHog.
  * All we have to do is run MailHog in Docker and run this test (which will be ignored by default).
+ *
+ * Note: See description of this class to find out how to run this test
  */
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -33,15 +35,6 @@ public class DataExtractionEmailClientTest {
         String content = "line1" + System.lineSeparator() + "line2" + System.lineSeparator() + "line3";
         Files.write(file.toPath(), content.getBytes());
     }
-
-    /*
-     * @Test
-     * @Ignore("See description of this class to find out how to run this test")
-     * public void sendEmailWithAttachment() throws MessagingException {
-     *  dataExtractionEmailClient.sendEmailWithAttachment("test@divorce.gov.uk", "myFileName.csv", file);
-     *  //Now go to MailHog and check that your e-mail has been sent as expected
-     * }
-     */
 
     @Test
     public void shouldThrowExceptionWhenEmailIsEmpty() {
