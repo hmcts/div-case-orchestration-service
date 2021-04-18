@@ -1,7 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.dataextraction;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +9,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.File;
 import java.nio.file.Files;
-import javax.mail.MessagingException;
 
 import static org.junit.Assert.assertThrows;
 
@@ -40,8 +38,8 @@ public class DataExtractionEmailClientTest {
      * @Test
      * @Ignore("See description of this class to find out how to run this test")
      * public void sendEmailWithAttachment() throws MessagingException {
-     *    dataExtractionEmailClient.sendEmailWithAttachment("test@divorce.gov.uk", "myFileName.csv", file);
-     *    //Now go to MailHog and check that your e-mail has been sent as expected
+     * dataExtractionEmailClient.sendEmailWithAttachment("test@divorce.gov.uk", "myFileName.csv", file);
+     * //Now go to MailHog and check that your e-mail has been sent as expected
      * }
      */
 
