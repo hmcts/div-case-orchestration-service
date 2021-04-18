@@ -677,6 +677,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         builder.data(caseDetails.getCaseData());
 
         if (isAOSDraftedCandidate(caseDetails)) {
+            log.info("CaseId: {}, case state update to AOS_DRAFTED", caseDetails.getCaseId());
             builder.state(AOS_DRAFTED);
         } else {
             builder.state(caseDetails.getState());
