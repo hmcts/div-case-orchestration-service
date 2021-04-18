@@ -16,7 +16,6 @@ import static org.junit.Assert.assertThrows;
  * This test can be run to test (locally) that our e-mail is sent according to our expectations.
  * This assertion has to be done manually for now, using MailHog.
  * All we have to do is run MailHog in Docker and run this test (which will be ignored by default).
- *
  * Note: See description of this class to find out how to run this test
  */
 @RunWith(SpringRunner.class)
