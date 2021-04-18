@@ -140,6 +140,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.P
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_DRAFTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_OVERDUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_REFERRAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_SERVICE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PAYMENT;
@@ -1817,6 +1818,17 @@ public class CaseOrchestrationServiceImplTest {
             .eventId(TEST_EVENT_ID)
             .token(TEST_TOKEN)
             .build();
+    }
+
+    @Test
+    public void givenDraftAOSEvent_shouldChangeToAosDraftedState_whenAOSOverdue() {
+        CaseDetails caseDetails = CaseDetails.builder()
+            .state(AOS_OVERDUE)
+            .build();
+
+        CcdCallbackResponse response = classUnderTest.confirmSolDnReviewPetition(caseDetails);
+
+        assertThat(response.getState(), is(AOS_DRAFTED));
     }
 
     @Test
