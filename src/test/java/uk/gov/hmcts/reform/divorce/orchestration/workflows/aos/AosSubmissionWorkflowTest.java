@@ -688,7 +688,6 @@ public class AosSubmissionWorkflowTest {
         CcdCallbackRequest ccdCallbackRequest = setUpCommonRespondentRepresentedCallbackRequest(Collections.emptyMap());
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
         caseData.remove(RESP_SOL_REPRESENTED);
-        caseData.remove(D8_RESPONDENT_SOLICITOR_NAME);
         caseData.remove(D8_RESPONDENT_SOLICITOR_COMPANY);
 
         aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
