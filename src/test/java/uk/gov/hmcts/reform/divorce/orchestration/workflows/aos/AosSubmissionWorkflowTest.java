@@ -667,6 +667,22 @@ public class AosSubmissionWorkflowTest {
     }
 
     @Test
+    public void givenCaseNotDefended_whenRespondentRepresentedAndPetitionerEmailNotExist_thenShouldNotSendEmailNotification() throws
+        IOException, WorkflowException {
+        CcdCallbackRequest ccdCallbackRequest = setUpCommonRespondentRepresentedCallbackRequest(
+            of(
+                PETITIONER_SOLICITOR_EMAIL, EMPTY_STRING,
+                D_8_PETITIONER_EMAIL, EMPTY_STRING
+            )
+        );
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+
+        aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
+
+        verifyNoInteractions(emailNotificationTask);
+    }
+
+    @Test
     public void givenCaseNotDefended_whenOnlyRespondentSolicitorDetailExists_thenSendEmailNotification() throws
         IOException, WorkflowException {
         CcdCallbackRequest ccdCallbackRequest = setUpCommonRespondentRepresentedCallbackRequest(

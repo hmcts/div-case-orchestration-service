@@ -80,8 +80,7 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         final Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
         final String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         final String caseState = ccdCallbackRequest.getCaseDetails().getState();
-
-        GenericEmailContext notificationContext = getGenericEmailContext(ccdCallbackRequest.getCaseDetails());
+        GenericEmailContext notificationContext = null;
 
         if (isPetitionerRepresented(caseData)) {
             tasks.add(aosReceivedPetitionerSolicitorEmailTask);
@@ -94,6 +93,7 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
             log.info("CaseId: {} Queueing solicitor AoS submission, case state: {}", caseId, caseState);
             tasks.add(queueAosSolicitorSubmitTask);
 
+            notificationContext = getGenericEmailContext(ccdCallbackRequest.getCaseDetails());
             return execute(
                 tasks.toArray(new Task[0]),
                 caseData,
@@ -109,6 +109,7 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         log.info("CaseId: {} Attempting to process AoS submission tasks, case state: {}", caseId, caseState);
         processAosSubmissionTasks(ccdCallbackRequest, tasks);
 
+        notificationContext = getGenericEmailContext(ccdCallbackRequest.getCaseDetails());
         return execute(
             tasks.toArray(new Task[0]),
             caseData,
