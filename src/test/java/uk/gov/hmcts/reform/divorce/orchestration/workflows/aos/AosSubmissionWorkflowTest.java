@@ -590,7 +590,6 @@ public class AosSubmissionWorkflowTest {
         CcdCallbackRequest ccdCallbackRequest = setUpCommonRespondentRepresentedCallbackRequest(
             of(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS.getValue(),
                 RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE,
-                D_8_CO_RESPONDENT_NAMED, YES_VALUE,
                 RECEIVED_AOS_FROM_CO_RESP, NO_VALUE)
         );
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
@@ -598,6 +597,22 @@ public class AosSubmissionWorkflowTest {
         aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
 
         runCommonRespondentRepresentedEmailTemplateAssertion(caseData, AOS_RECEIVED_UNDEFENDED_NO_CONSENT_2_YEARS);
+        runCommonRespondentRepresentedVerification(caseData);
+    }
+
+    @Test
+    public void givenCaseNotDefended_Sep2YrAndConsent_whenRespondentRepresentedPetitionerNotRepresented_thenSendEmailNotification() throws
+        IOException, WorkflowException {
+        CcdCallbackRequest ccdCallbackRequest = setUpCommonRespondentRepresentedCallbackRequest(
+            of(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS.getValue(),
+                RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE,
+                RECEIVED_AOS_FROM_CO_RESP, NO_VALUE)
+        );
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+
+        aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
+
+        runCommonRespondentRepresentedEmailTemplateAssertion(caseData, RESPONDENT_SUBMISSION_CONSENT);
         runCommonRespondentRepresentedVerification(caseData);
     }
 

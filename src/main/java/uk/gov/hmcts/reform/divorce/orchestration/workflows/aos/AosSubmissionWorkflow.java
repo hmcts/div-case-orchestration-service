@@ -60,8 +60,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerRepresented;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
 
-;
-
 @Component
 @AllArgsConstructor
 @Slf4j
@@ -181,11 +179,12 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
 
     private boolean usingRespondentSolicitor(Map<String, Object> caseData) {
         // temporary fix until we implement setting respondentSolicitorRepresented from CCD for RespSols
-        final String respondentSolicitorName = (String) caseData.get(D8_RESPONDENT_SOLICITOR_NAME);
-        final String respondentSolicitorCompany = (String) caseData.get(D8_RESPONDENT_SOLICITOR_COMPANY);
+        return isRespondentRepresented(caseData) || hasRespondentSolicitorDetail(caseData);
+    }
 
-        return isRespondentRepresented(caseData)
-            || respondentSolicitorName != null && respondentSolicitorCompany != null;
+    private boolean hasRespondentSolicitorDetail(Map<String, Object> caseData) {
+        return isNotEmpty(getOptionalPropertyValueAsString(caseData, D8_RESPONDENT_SOLICITOR_NAME, EMPTY_STRING))
+            && isNotEmpty(getOptionalPropertyValueAsString(caseData, D8_RESPONDENT_SOLICITOR_COMPANY, EMPTY_STRING));
     }
 
     private boolean respondentIsDefending(CaseDetails caseDetails) {
