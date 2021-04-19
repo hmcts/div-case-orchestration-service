@@ -63,7 +63,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
@@ -622,7 +621,7 @@ public class AosSubmissionWorkflowTest {
     }
 
     @Test
-    public void givenCaseNotDefended_whenRespondentRepresentedPetitionerEmailNotExist_thenShouldNotSendEmailNotification()  throws
+    public void givenCaseNotDefended_whenRespondentRepresentedPetitionerEmailNotExist_thenShouldNotSendEmailNotification() throws
         IOException, WorkflowException {
         CcdCallbackRequest ccdCallbackRequest = setUpCommonRespondentRepresentedCallbackRequest(
             of(PETITIONER_SOLICITOR_EMAIL, TEST_PETITIONER_EMAIL)
