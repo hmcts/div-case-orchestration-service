@@ -36,7 +36,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ANSWERS_LINK;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.BAILIFF;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DEEMED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DISPENSED;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SolicitorDnFetchDocWorkflowTest {
@@ -188,6 +190,40 @@ public class SolicitorDnFetchDocWorkflowTest {
 
         verify(populateDocLinkTask).execute(taskContext, caseData);
     }
+
+    @Test
+    public void shouldNotAddPopulateDocLinkTask_WhenDeemed() throws WorkflowException {
+        Map<String, Object> caseData = buildServiceApplicationCaseData(DEEMED, YES_VALUE);
+
+        taskContext.setTransientObject(DOCUMENT_DRAFT_LINK_FIELD, RESP_ANSWERS_LINK);
+
+        executeWorkflow(caseData, RESP_ANSWERS_LINK);
+
+        verify(populateDocLinkTask, never()).execute(taskContext, caseData);
+    }
+
+    @Test
+    public void shouldNotAddPopulateDocLinkTask_WhenDispensed() throws WorkflowException {
+        Map<String, Object> caseData = buildServiceApplicationCaseData(DISPENSED, YES_VALUE);
+
+        taskContext.setTransientObject(DOCUMENT_DRAFT_LINK_FIELD, RESP_ANSWERS_LINK);
+
+        executeWorkflow(caseData, RESP_ANSWERS_LINK);
+
+        verify(populateDocLinkTask, never()).execute(taskContext, caseData);
+    }
+
+    @Test
+    public void shouldNotAddPopulateDocLinkTask_WhenBailiff() throws WorkflowException {
+        Map<String, Object> caseData = buildServiceApplicationCaseData(BAILIFF, YES_VALUE);
+
+        taskContext.setTransientObject(DOCUMENT_DRAFT_LINK_FIELD, RESP_ANSWERS_LINK);
+
+        executeWorkflow(caseData, RESP_ANSWERS_LINK);
+
+        verify(populateDocLinkTask, never()).execute(taskContext, caseData);
+    }
+
 
     public static Map<String, Object> buildServiceApplicationCaseData(String type, String granted) {
 
