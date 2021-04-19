@@ -84,6 +84,7 @@ public class CcdFields {
     public static final String RESPONDENT_SOLICITOR_REFERENCE = "respondentSolicitorReference";
     public static final String RESPONDENT_SOLICITOR_PHONE = "D8RespondentSolicitorPhone";
     public static final String RESPONDENT_SOLICITOR_EMAIL = "D8RespondentSolicitorEmail";
+    public static final String RESPONDENT_SOLICITOR_ADDRESS = "D8DerivedRespondentSolicitorAddr";
     public static final String PETITIONER_SOLICITOR_FIRM = "PetitionerSolicitorFirm";
 
     public static final String BAILIFF_APPLICATION_GRANTED = "BailiffApplicationGranted";

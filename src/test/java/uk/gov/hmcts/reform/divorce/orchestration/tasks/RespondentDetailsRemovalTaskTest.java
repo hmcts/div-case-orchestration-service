@@ -30,6 +30,7 @@ public class RespondentDetailsRemovalTaskTest {
         caseData.put(CcdFields.RESPONDENT_SOLICITOR_REFERENCE, "1");
         caseData.put(CcdFields.RESPONDENT_SOLICITOR_PHONE, "1");
         caseData.put(CcdFields.RESPONDENT_SOLICITOR_EMAIL, "1");
+        caseData.put(CcdFields.RESPONDENT_SOLICITOR_ADDRESS, "1");
         caseData.put(CcdFields.RESPONDENT_SOLICITOR_DIGITAL, "1");
 
         Map<String, Object> returnedPayload = classUnderTest.execute(contextWithToken(), caseData);
@@ -40,7 +41,7 @@ public class RespondentDetailsRemovalTaskTest {
 
     @Test
     public void getFieldToRemoveIsValid() {
-        assertThat(classUnderTest.getFieldsToRemove().size(), is(6));
+        assertThat(classUnderTest.getFieldsToRemove().size(), is(7));
         assertThat(
             classUnderTest.getFieldsToRemove().get(0),
             is(CcdFields.RESPONDENT_SOLICITOR_NAME)
@@ -59,10 +60,14 @@ public class RespondentDetailsRemovalTaskTest {
         );
         assertThat(
             classUnderTest.getFieldsToRemove().get(4),
-            is(CcdFields.RESPONDENT_SOLICITOR_DIGITAL)
+            is(CcdFields.RESPONDENT_SOLICITOR_ADDRESS)
         );
         assertThat(
             classUnderTest.getFieldsToRemove().get(5),
+            is(CcdFields.RESPONDENT_SOLICITOR_DIGITAL)
+        );
+        assertThat(
+            classUnderTest.getFieldsToRemove().get(6),
             is(CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY)
         );
     }

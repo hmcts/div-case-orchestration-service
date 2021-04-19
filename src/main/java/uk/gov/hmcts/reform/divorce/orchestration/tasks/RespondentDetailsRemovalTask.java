@@ -20,6 +20,7 @@ public class RespondentDetailsRemovalTask extends FieldsRemovalTask {
             CcdFields.RESPONDENT_SOLICITOR_REFERENCE,
             CcdFields.RESPONDENT_SOLICITOR_PHONE,
             CcdFields.RESPONDENT_SOLICITOR_EMAIL,
+            CcdFields.RESPONDENT_SOLICITOR_ADDRESS,
             CcdFields.RESPONDENT_SOLICITOR_DIGITAL,
             CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY
         );

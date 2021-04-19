@@ -33,6 +33,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CO_RESPONDENT_SOLICITOR_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
@@ -47,6 +48,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLIC
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CREATE_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_DIGITAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_NAME;
@@ -188,6 +190,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
         caseData.put(RESPONDENT_SOLICITOR_REFERENCE, TEST_RESPONDENT_SOLICITOR_REFERENCE);
         caseData.put(RESPONDENT_SOLICITOR_PHONE, TEST_SOLICITOR_PHONE);
         caseData.put(RESPONDENT_SOLICITOR_EMAIL, TEST_RESPONDENT_SOLICITOR_EMAIL);
+        caseData.put(RESPONDENT_SOLICITOR_ADDRESS, TEST_CO_RESPONDENT_SOLICITOR_ADDRESS);
         caseData.put(RESPONDENT_SOLICITOR_DIGITAL, YES_VALUE);
         caseData.put(RESP_SOL_REPRESENTED, NO_VALUE);
 
@@ -206,6 +209,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
                 hasNoJsonPath("$.data.respondentSolicitorReference"),
                 hasNoJsonPath("$.data.D8RespondentSolicitorPhone"),
                 hasNoJsonPath("$.data.D8RespondentSolicitorEmail"),
+                hasNoJsonPath("$.data.D8DerivedRespondentSolicitorAddr"),
                 hasNoJsonPath("$.data.RespSolDigital"),
                 hasNoJsonPath("$.data.RespondentOrganisationPolicy")
             )
