@@ -14,6 +14,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.R
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_SESSION_RESPONDENT_SOLICITOR_REFERENCE_DATA_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
@@ -59,7 +60,7 @@ public class PartyRepresentationChecker {
     /**
      * This is meant to be used after case is submitted.
      *
-     * <p>For cases that are not submitted yet we should use isRespondentSolicitorDigitalSelectedYes
+     * <p>For cases that are not submitted yet we should use isRespondentSolicitorDigitalSelectedYes</p>
      * */
     public static boolean isRespondentSolicitorDigital(Map<String, Object> caseData) {
         return isPopulatedOrganisation(caseData, RESPONDENT_SOLICITOR_ORGANISATION_POLICY);
@@ -68,11 +69,11 @@ public class PartyRepresentationChecker {
     /**
      * This is meant to be used before case is submitted to cover edge case DIV-6869.
      *
-     * <p>For cases already submitted (in exui / PFE) we should use isRespondentSolicitorDigital
+     * <p>For cases already submitted (in exui / PFE) we should use isRespondentSolicitorDigital</p>
      * */
     public static boolean isRespondentSolicitorDigitalSelectedYes(Map<String, Object> caseData) {
-        return getOptionalPropertyValueAsString(caseData, CcdFields.RESPONDENT_SOLICITOR_DIGITAL, "")
-                .equalsIgnoreCase(YES_VALUE);
+        return getOptionalPropertyValueAsString(caseData, CcdFields.RESPONDENT_SOLICITOR_DIGITAL, EMPTY_STRING)
+            .equalsIgnoreCase(YES_VALUE);
     }
 
     public static boolean isCoRespondentDigital(Map<String, Object> caseData) {

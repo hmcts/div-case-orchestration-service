@@ -73,7 +73,6 @@ public class RepresentedRespondentJourneyHelperTest {
     public void shouldGenerateRespondentAosInvitation_WhenRespondentIsRepresentedByDigitalSolicitor() {
         Map<String, Object> caseData = Map.of(
             RESP_SOL_REPRESENTED, YES_VALUE,
-            RESPONDENT_SOLICITOR_DIGITAL, YES_VALUE,
             RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy()
         );
 
