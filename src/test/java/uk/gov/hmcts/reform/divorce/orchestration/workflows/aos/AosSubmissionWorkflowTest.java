@@ -56,6 +56,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH_MALE_GENDER_IN_RELATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_COMPANY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_RESPONDENT_GENDER;
@@ -678,6 +680,20 @@ public class AosSubmissionWorkflowTest {
 
         runCommonRespondentRepresentedEmailTemplateAssertion(caseData, RESPONDENT_SUBMISSION_CONSENT);
         runCommonRespondentRepresentedVerification(caseData);
+    }
+
+    @Test
+    public void givenCaseNotDefended_whenRespondentNotRepresented_thenNotQueueAosSolicitorSubmitTask() throws
+        IOException, WorkflowException {
+        CcdCallbackRequest ccdCallbackRequest = setUpCommonRespondentRepresentedCallbackRequest(Collections.emptyMap());
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+        caseData.remove(RESP_SOL_REPRESENTED);
+        caseData.remove(D8_RESPONDENT_SOLICITOR_NAME);
+        caseData.remove(D8_RESPONDENT_SOLICITOR_COMPANY);
+
+        aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
+
+        verifyNoInteractions(queueAosSolicitorSubmitTask);
     }
 
     private CcdCallbackRequest setUpCommonRespondentRepresentedCallbackRequest(Map<String, Object> additionalData) throws IOException {
