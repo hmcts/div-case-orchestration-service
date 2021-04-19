@@ -77,12 +77,11 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest, final String authToken) throws WorkflowException {
         final List<Task<Map<String, Object>>> tasks = new ArrayList<>();
-        final CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
-        final Map<String, Object> caseData = caseDetails.getCaseData();
-        final String caseId = caseDetails.getCaseId();
-        final String caseState = caseDetails.getState();
+        final Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+        final String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        final String caseState = ccdCallbackRequest.getCaseDetails().getState();
 
-        final GenericEmailContext notificationContext = getGenericEmailContext(caseDetails);
+        final GenericEmailContext notificationContext = getGenericEmailContext(ccdCallbackRequest.getCaseDetails());
 
         if (isPetitionerRepresented(caseData)) {
             tasks.add(aosReceivedPetitionerSolicitorEmailTask);
@@ -146,8 +145,7 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
     }
 
     private void addNotificationEmailTaskForNonRepresentedPetitioner(List<Task<Map<String, Object>>> tasks, Map<String, Object> caseData) {
-        String petitionerEmail = getOptionalPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL, EMPTY_STRING);
-        if (!isPetitionerRepresented(caseData) && isNotEmpty(petitionerEmail)) {
+        if (isPetitionerNotRepresented(caseData)) {
             tasks.add(emailNotificationTask);
         }
     }
@@ -185,14 +183,12 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
     }
 
     private boolean hasRespondentSolicitorDetail(Map<String, Object> caseData) {
-        String respondentSolicitorName = getOptionalPropertyValueAsString(caseData, D8_RESPONDENT_SOLICITOR_NAME, EMPTY_STRING);
-        String respondentSolicitorCompany = getOptionalPropertyValueAsString(caseData, D8_RESPONDENT_SOLICITOR_COMPANY, EMPTY_STRING);
-        return isNotEmpty(respondentSolicitorName) && isNotEmpty(respondentSolicitorCompany);
+        return isNotEmpty(getOptionalPropertyValueAsString(caseData, D8_RESPONDENT_SOLICITOR_NAME, EMPTY_STRING))
+            && isNotEmpty(getOptionalPropertyValueAsString(caseData, D8_RESPONDENT_SOLICITOR_COMPANY, EMPTY_STRING));
     }
 
     private boolean respondentIsDefending(CaseDetails caseDetails) {
-        String respWillDefendDivorce = getOptionalPropertyValueAsString(caseDetails.getCaseData(), RESP_WILL_DEFEND_DIVORCE, EMPTY_STRING);
-        return YES_VALUE.equalsIgnoreCase(respWillDefendDivorce);
+        return YES_VALUE.equalsIgnoreCase(getOptionalPropertyValueAsString(caseDetails.getCaseData(), RESP_WILL_DEFEND_DIVORCE, EMPTY_STRING));
     }
 
     private boolean respondentIsNotDefending(CaseDetails caseDetails) {
@@ -251,5 +247,10 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         String isCoRespNamed = getFieldAsStringOrNull(caseDetails, D_8_CO_RESPONDENT_NAMED);
         String receivedAosFromCoResp = getFieldAsStringOrNull(caseDetails, RECEIVED_AOS_FROM_CO_RESP);
         return equalsIgnoreCase(isCoRespNamed, YES_VALUE) && !equalsIgnoreCase(receivedAosFromCoResp, YES_VALUE);
+    }
+
+    private boolean isPetitionerNotRepresented(Map<String, Object> caseData) {
+        return !isPetitionerRepresented(caseData)
+            && isNotEmpty(getOptionalPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL, EMPTY_STRING));
     }
 }
