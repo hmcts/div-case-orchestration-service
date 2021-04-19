@@ -49,6 +49,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_FAMILY_MAN_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INFERRED_MALE_GENDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RELATIONSHIP_HUSBAND;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_FIRST_NAME;
@@ -62,6 +63,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
@@ -74,6 +76,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY;
@@ -615,6 +618,33 @@ public class AosSubmissionWorkflowTest {
         aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
 
         runCommonRespondentRepresentedEmailTemplateAssertion(caseData, RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED);
+        runCommonRespondentRepresentedVerification(caseData);
+    }
+
+    @Test
+    public void givenCaseNotDefended_whenRespondentRepresentedPetitionerEmailNotExist_thenShouldNotSendEmailNotification()  throws
+        IOException, WorkflowException {
+        CcdCallbackRequest ccdCallbackRequest = setUpCommonRespondentRepresentedCallbackRequest(
+            of(PETITIONER_SOLICITOR_EMAIL, TEST_PETITIONER_EMAIL)
+        );
+
+        aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
+
+        verifyNoInteractions(emailNotificationTask);
+    }
+
+    @Test
+    public void givenCaseNotDefended_whenOnlyRespondentSolicitorDetailExists_thenSendEmailNotification() throws
+        IOException, WorkflowException {
+        CcdCallbackRequest ccdCallbackRequest = setUpCommonRespondentRepresentedCallbackRequest(
+            Collections.EMPTY_MAP
+        );
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+        caseData.remove(RESP_SOL_REPRESENTED);
+
+        aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
+
+        runCommonRespondentRepresentedEmailTemplateAssertion(caseData, RESPONDENT_SUBMISSION_CONSENT);
         runCommonRespondentRepresentedVerification(caseData);
     }
 
