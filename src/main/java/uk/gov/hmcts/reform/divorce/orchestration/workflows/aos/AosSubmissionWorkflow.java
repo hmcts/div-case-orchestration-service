@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.StringUtils.isNotEmpty;
 import static com.microsoft.applicationinsights.web.dependencies.apachecommons.lang3.StringUtils.equalsIgnoreCase;
-import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_COMPANY;
@@ -60,6 +60,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerRepresented;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
 
+;
+
 @Component
 @AllArgsConstructor
 @Slf4j
@@ -81,7 +83,7 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         final String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         final String caseState = ccdCallbackRequest.getCaseDetails().getState();
 
-        final GenericEmailContext notificationContext = getGenericEmailContext(ccdCallbackRequest.getCaseDetails());
+        GenericEmailContext notificationContext = getGenericEmailContext(ccdCallbackRequest.getCaseDetails());
 
         if (isPetitionerRepresented(caseData)) {
             tasks.add(aosReceivedPetitionerSolicitorEmailTask);
@@ -122,8 +124,8 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
 
     private void processAosSubmissionTasks(
         CcdCallbackRequest ccdCallbackRequest, List<Task<Map<String, Object>>> tasks) throws WorkflowException {
-        final CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
-        final Map<String, Object> caseData = caseDetails.getCaseData();
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        Map<String, Object> caseData = caseDetails.getCaseData();
         final String caseId = caseDetails.getCaseId();
         final String state = caseDetails.getState();
 
@@ -179,21 +181,22 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
 
     private boolean usingRespondentSolicitor(Map<String, Object> caseData) {
         // temporary fix until we implement setting respondentSolicitorRepresented from CCD for RespSols
-        return isRespondentRepresented(caseData) || hasRespondentSolicitorDetail(caseData);
-    }
+        final String respondentSolicitorName = (String) caseData.get(D8_RESPONDENT_SOLICITOR_NAME);
+        final String respondentSolicitorCompany = (String) caseData.get(D8_RESPONDENT_SOLICITOR_COMPANY);
 
-    private boolean hasRespondentSolicitorDetail(Map<String, Object> caseData) {
-        return isNotEmpty(getOptionalPropertyValueAsString(caseData, D8_RESPONDENT_SOLICITOR_NAME, EMPTY_STRING))
-            && isNotEmpty(getOptionalPropertyValueAsString(caseData, D8_RESPONDENT_SOLICITOR_COMPANY, EMPTY_STRING));
+        return isRespondentRepresented(caseData)
+            || respondentSolicitorName != null && respondentSolicitorCompany != null;
     }
 
     private boolean respondentIsDefending(CaseDetails caseDetails) {
-        return YES_VALUE.equalsIgnoreCase(getOptionalPropertyValueAsString(caseDetails.getCaseData(), RESP_WILL_DEFEND_DIVORCE, EMPTY_STRING));
+        final String respWillDefendDivorce = (String) caseDetails.getCaseData().get(RESP_WILL_DEFEND_DIVORCE);
+        return YES_VALUE.equalsIgnoreCase(respWillDefendDivorce);
     }
 
     private boolean respondentIsNotDefending(CaseDetails caseDetails) {
-        String respWillDefendDivorce = getOptionalPropertyValueAsString(caseDetails.getCaseData(), RESP_WILL_DEFEND_DIVORCE, EMPTY_STRING);
-        return NO_VALUE.equalsIgnoreCase(respWillDefendDivorce) || NOT_DEFENDING_NOT_ADMITTING.equalsIgnoreCase(respWillDefendDivorce);
+        final String respWillDefendDivorce = (String) caseDetails.getCaseData().get(RESP_WILL_DEFEND_DIVORCE);
+        return NO_VALUE.equalsIgnoreCase(respWillDefendDivorce)
+            || NOT_DEFENDING_NOT_ADMITTING.equalsIgnoreCase(respWillDefendDivorce);
     }
 
     private String getRespondentRelationship(CaseDetails caseDetails) {
@@ -234,13 +237,15 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
     private boolean isAdulteryAndNoConsent(CaseDetails caseDetails) {
         String reasonForDivorce = getFieldAsStringOrNull(caseDetails, D_8_REASON_FOR_DIVORCE);
         String respAdmitOrConsentToFact = getFieldAsStringOrNull(caseDetails, RESP_ADMIT_OR_CONSENT_TO_FACT);
-        return equalsIgnoreCase(ADULTERY.getValue(), reasonForDivorce) && equalsIgnoreCase(NO_VALUE, respAdmitOrConsentToFact);
+        return equalsIgnoreCase(ADULTERY.getValue(), reasonForDivorce) && equalsIgnoreCase(NO_VALUE,
+            respAdmitOrConsentToFact);
     }
 
     private boolean isSep2YrAndNoConsent(CaseDetails caseDetails) {
         String reasonForDivorce = getFieldAsStringOrNull(caseDetails, D_8_REASON_FOR_DIVORCE);
         String respAdmitOrConsentToFact = getFieldAsStringOrNull(caseDetails, RESP_ADMIT_OR_CONSENT_TO_FACT);
-        return equalsIgnoreCase(SEPARATION_TWO_YEARS.getValue(), reasonForDivorce) && equalsIgnoreCase(NO_VALUE, respAdmitOrConsentToFact);
+        return equalsIgnoreCase(SEPARATION_TWO_YEARS.getValue(), reasonForDivorce)
+            && equalsIgnoreCase(NO_VALUE, respAdmitOrConsentToFact);
     }
 
     private boolean isCoRespNamedAndNotReplied(CaseDetails caseDetails) {
