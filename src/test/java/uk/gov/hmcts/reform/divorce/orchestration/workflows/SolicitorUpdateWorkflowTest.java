@@ -14,6 +14,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CopyD8JurisdictionConnectionPolicyTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentDetailsRemovalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentOrganisationPolicyRemovalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetNewLegalConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
@@ -29,6 +30,7 @@ import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.buildOrganisationPolicy;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
@@ -52,6 +54,9 @@ public class SolicitorUpdateWorkflowTest {
 
     @Mock
     private RespondentOrganisationPolicyRemovalTask respondentOrganisationPolicyRemovalTask;
+
+    @Mock
+    private RespondentDetailsRemovalTask respondentDetailsRemovalTask;
 
     @Mock
     private ValidateSelectedOrganisationTask validateSelectedOrganisationTask;
@@ -105,13 +110,15 @@ public class SolicitorUpdateWorkflowTest {
         verifyTasksWereNeverCalled(
             validateSelectedOrganisationTask,
             setPetitionerSolicitorOrganisationPolicyReferenceTask,
-            setRespondentSolicitorOrganisationPolicyReferenceTask
+            setRespondentSolicitorOrganisationPolicyReferenceTask,
+            respondentOrganisationPolicyRemovalTask
         );
     }
 
     @Test
     public void runShouldRunSetSolicitorOrganisationPolicyReferenceTaskWhenFeatureIsOnAndIsRespSolDigital() throws Exception {
         Map<String, Object> payload = new HashMap<>();
+        payload.put(RESP_SOL_REPRESENTED, YES_VALUE);
         payload.put(CcdFields.RESPONDENT_SOLICITOR_DIGITAL, YES_VALUE);
         payload.put(CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
 
@@ -144,12 +151,56 @@ public class SolicitorUpdateWorkflowTest {
             setRespondentSolicitorOrganisationPolicyReferenceTask
         );
 
-        verifyTasksWereNeverCalled(respondentOrganisationPolicyRemovalTask);
+        verifyTasksWereNeverCalled(
+            respondentOrganisationPolicyRemovalTask,
+            respondentOrganisationPolicyRemovalTask
+        );
+    }
+
+    @Test
+    public void runShouldRunRespondentDetailsRemovalTaskWhenFeatureIsOnAndRespNotRep() throws Exception {
+        Map<String, Object> payload = new HashMap<>();
+        payload.put(RESP_SOL_REPRESENTED, NO_VALUE);
+
+        CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
+
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
+        when(featureToggleService.isFeatureEnabled(Features.SHARE_A_CASE)).thenReturn(true);
+
+        mockTasksExecution(
+            caseDetails.getCaseData(),
+            setNewLegalConnectionPolicyTask,
+            copyD8JurisdictionConnectionPolicyTask,
+            addMiniPetitionDraftTask,
+            addNewDocumentsToCaseDataTask,
+            validateSelectedOrganisationTask,
+            setPetitionerSolicitorOrganisationPolicyReferenceTask,
+            respondentDetailsRemovalTask
+        );
+
+        assertThat(solicitorUpdateWorkflow.run(caseDetails, AUTH_TOKEN), is(caseDetails.getCaseData()));
+
+        verifyTasksCalledInOrder(
+            caseDetails.getCaseData(),
+            setNewLegalConnectionPolicyTask,
+            copyD8JurisdictionConnectionPolicyTask,
+            addMiniPetitionDraftTask,
+            addNewDocumentsToCaseDataTask,
+            validateSelectedOrganisationTask,
+            setPetitionerSolicitorOrganisationPolicyReferenceTask,
+            respondentDetailsRemovalTask
+        );
+
+        verifyTasksWereNeverCalled(
+            setRespondentSolicitorOrganisationPolicyReferenceTask,
+            respondentOrganisationPolicyRemovalTask
+        );
     }
 
     @Test
     public void runShouldRunSetSolicitorOrganisationPolicyReferenceTaskWhenFeatureIsOnAndNotRespSolDigital() throws Exception {
         Map<String, Object> payload = new HashMap<>();
+        payload.put(RESP_SOL_REPRESENTED, YES_VALUE);
         payload.put(CcdFields.RESPONDENT_SOLICITOR_DIGITAL, NO_VALUE);
 
         CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
@@ -181,7 +232,9 @@ public class SolicitorUpdateWorkflowTest {
                 respondentOrganisationPolicyRemovalTask
         );
 
-        verifyTasksWereNeverCalled(setRespondentSolicitorOrganisationPolicyReferenceTask);
+        verifyTasksWereNeverCalled(
+            setRespondentSolicitorOrganisationPolicyReferenceTask
+        );
     }
 
     @Test
@@ -205,8 +258,11 @@ public class SolicitorUpdateWorkflowTest {
             addNewDocumentsToCaseDataTask
         );
 
-        verifyTasksWereNeverCalled(setPetitionerSolicitorOrganisationPolicyReferenceTask);
-        verifyTasksWereNeverCalled(setRespondentSolicitorOrganisationPolicyReferenceTask);
+        verifyTasksWereNeverCalled(
+            setPetitionerSolicitorOrganisationPolicyReferenceTask,
+            setRespondentSolicitorOrganisationPolicyReferenceTask,
+            respondentOrganisationPolicyRemovalTask
+        );
     }
 
     private void executeWorkflow() throws WorkflowException {
