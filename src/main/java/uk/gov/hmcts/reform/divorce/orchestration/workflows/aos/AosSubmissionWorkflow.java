@@ -77,12 +77,12 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest, final String authToken) throws WorkflowException {
         final List<Task<Map<String, Object>>> tasks = new ArrayList<>();
-        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
-        Map<String, Object> caseData = caseDetails.getCaseData();
-        String caseId = caseDetails.getCaseId();
-        String caseState = caseDetails.getState();
+        final CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        final Map<String, Object> caseData = caseDetails.getCaseData();
+        final String caseId = caseDetails.getCaseId();
+        final String caseState = caseDetails.getState();
 
-        GenericEmailContext notificationContext = getGenericEmailContext(caseDetails);
+        final GenericEmailContext notificationContext = getGenericEmailContext(caseDetails);
 
         if (isPetitionerRepresented(caseData)) {
             tasks.add(aosReceivedPetitionerSolicitorEmailTask);
@@ -123,8 +123,7 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
 
     private void processAosSubmissionTasks(
         CcdCallbackRequest ccdCallbackRequest, List<Task<Map<String, Object>>> tasks) throws WorkflowException {
-        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
-
+        final CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
         final Map<String, Object> caseData = caseDetails.getCaseData();
         final String caseId = caseDetails.getCaseId();
         final String state = caseDetails.getState();
@@ -158,24 +157,21 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
         String emailToSendTo = null;
         ImmutableMap.Builder<String, String> notificationTemplateVars = ImmutableMap.builder();
         try {
-            final String relationship = getRespondentRelationship(caseDetails);
-            final String welshRelationship = getWelshRespondentRelationship(caseDetails);
-
             final Map<String, Object> caseData = caseDetails.getCaseData();
-            final String ref = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
-            final String petitionerFirstName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME);
-            final String petitionerLastName = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME);
-            final String petitionerEmail = getOptionalPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL, EMPTY_STRING);
+            emailToSendTo = getOptionalPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL, EMPTY_STRING);
 
-            notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, petitionerFirstName);
-            notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, petitionerLastName);
-            notificationTemplateVars.put(NOTIFICATION_RELATIONSHIP_KEY, relationship);
-            notificationTemplateVars.put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, welshRelationship);
-            notificationTemplateVars.put(NOTIFICATION_REFERENCE_KEY, ref);
+            notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY,
+                getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_FIRST_NAME));
+            notificationTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY,
+                getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_LAST_NAME));
+            notificationTemplateVars.put(NOTIFICATION_RELATIONSHIP_KEY,
+                getRespondentRelationship(caseDetails));
+            notificationTemplateVars.put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE,
+                getWelshRespondentRelationship(caseDetails));
+            notificationTemplateVars.put(NOTIFICATION_REFERENCE_KEY,
+                getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE));
 
             template = findTemplateNameToBeSent(caseDetails);
-            emailToSendTo = petitionerEmail;
-
         } catch (Exception exception) {
             throw new WorkflowException(exception.getMessage());
         }
@@ -201,8 +197,7 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
 
     private boolean respondentIsNotDefending(CaseDetails caseDetails) {
         String respWillDefendDivorce = getOptionalPropertyValueAsString(caseDetails.getCaseData(), RESP_WILL_DEFEND_DIVORCE, EMPTY_STRING);
-        return NO_VALUE.equalsIgnoreCase(respWillDefendDivorce)
-            || NOT_DEFENDING_NOT_ADMITTING.equalsIgnoreCase(respWillDefendDivorce);
+        return NO_VALUE.equalsIgnoreCase(respWillDefendDivorce) || NOT_DEFENDING_NOT_ADMITTING.equalsIgnoreCase(respWillDefendDivorce);
     }
 
     private String getRespondentRelationship(CaseDetails caseDetails) {
@@ -243,15 +238,13 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
     private boolean isAdulteryAndNoConsent(CaseDetails caseDetails) {
         String reasonForDivorce = getFieldAsStringOrNull(caseDetails, D_8_REASON_FOR_DIVORCE);
         String respAdmitOrConsentToFact = getFieldAsStringOrNull(caseDetails, RESP_ADMIT_OR_CONSENT_TO_FACT);
-        return equalsIgnoreCase(ADULTERY.getValue(), reasonForDivorce) && equalsIgnoreCase(NO_VALUE,
-            respAdmitOrConsentToFact);
+        return equalsIgnoreCase(ADULTERY.getValue(), reasonForDivorce) && equalsIgnoreCase(NO_VALUE, respAdmitOrConsentToFact);
     }
 
     private boolean isSep2YrAndNoConsent(CaseDetails caseDetails) {
         String reasonForDivorce = getFieldAsStringOrNull(caseDetails, D_8_REASON_FOR_DIVORCE);
         String respAdmitOrConsentToFact = getFieldAsStringOrNull(caseDetails, RESP_ADMIT_OR_CONSENT_TO_FACT);
-        return equalsIgnoreCase(SEPARATION_TWO_YEARS.getValue(), reasonForDivorce)
-            && equalsIgnoreCase(NO_VALUE, respAdmitOrConsentToFact);
+        return equalsIgnoreCase(SEPARATION_TWO_YEARS.getValue(), reasonForDivorce) && equalsIgnoreCase(NO_VALUE, respAdmitOrConsentToFact);
     }
 
     private boolean isCoRespNamedAndNotReplied(CaseDetails caseDetails) {
