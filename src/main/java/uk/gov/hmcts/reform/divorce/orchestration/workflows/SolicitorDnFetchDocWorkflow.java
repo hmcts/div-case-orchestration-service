@@ -18,6 +18,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ANSWERS_LINK;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getLastServiceApplication;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationBailiff;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDeemedDispensedOrBailiff;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationDeemedOrDispensed;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationGranted;
 import static uk.gov.hmcts.reform.divorce.orchestration.workflows.alternativeservice.AlternativeServiceHelper.isServedByAlternativeMethod;
@@ -69,7 +71,7 @@ public class SolicitorDnFetchDocWorkflow extends DefaultWorkflow<Map<String, Obj
         DivorceServiceApplication serviceApplication = getLastServiceApplication(caseData);
 
         return isServiceApplicationGranted(serviceApplication)
-            && isServiceApplicationDeemedOrDispensed(serviceApplication);
+            && isServiceApplicationDeemedDispensedOrBailiff(serviceApplication);
     }
 
     private boolean isAlternativeService(Map<String, Object> caseData) {
