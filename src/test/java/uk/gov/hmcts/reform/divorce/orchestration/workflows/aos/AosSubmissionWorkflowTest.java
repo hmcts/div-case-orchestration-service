@@ -63,6 +63,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
@@ -87,6 +88,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.Divor
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.SEPARATION_TWO_YEARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTaskWasCalled;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksWereNeverCalled;
 
@@ -645,6 +647,22 @@ public class AosSubmissionWorkflowTest {
         aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
 
         verifyNoInteractions(emailNotificationTask);
+    }
+
+    @Test
+    public void givenCaseNotDefended_whenRespondentRepresentedAndPetitionerEmailExist_thenShouldSendEmailNotification() throws
+        IOException, WorkflowException {
+        CcdCallbackRequest ccdCallbackRequest = setUpCommonRespondentRepresentedCallbackRequest(
+            of(
+                PETITIONER_SOLICITOR_EMAIL, EMPTY_STRING,
+                D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL
+            )
+        );
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+
+        aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
+
+        verifyTaskWasCalled(caseData, emailNotificationTask);
     }
 
     @Test
