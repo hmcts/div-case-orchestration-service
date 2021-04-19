@@ -675,7 +675,6 @@ public class AosSubmissionWorkflowTest {
                 D_8_PETITIONER_EMAIL, EMPTY_STRING
             )
         );
-        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
 
         aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
 
@@ -685,9 +684,7 @@ public class AosSubmissionWorkflowTest {
     @Test
     public void givenCaseNotDefended_whenOnlyRespondentSolicitorDetailExists_thenSendEmailNotification() throws
         IOException, WorkflowException {
-        CcdCallbackRequest ccdCallbackRequest = setUpCommonRespondentRepresentedCallbackRequest(
-            Collections.EMPTY_MAP
-        );
+        CcdCallbackRequest ccdCallbackRequest = setUpCommonRespondentRepresentedCallbackRequest(Collections.EMPTY_MAP);
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
         caseData.remove(RESP_SOL_REPRESENTED);
 
@@ -700,7 +697,7 @@ public class AosSubmissionWorkflowTest {
     @Test
     public void givenCaseNotDefended_whenRespondentNotRepresented_thenNotQueueAosSolicitorSubmitTask() throws
         IOException, WorkflowException {
-        CcdCallbackRequest ccdCallbackRequest = setUpCommonRespondentRepresentedCallbackRequest(Collections.emptyMap());
+        CcdCallbackRequest ccdCallbackRequest = setUpCommonRespondentRepresentedCallbackRequest(Collections.EMPTY_MAP);
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
         caseData.remove(RESP_SOL_REPRESENTED);
         caseData.remove(D8_RESPONDENT_SOLICITOR_COMPANY);
