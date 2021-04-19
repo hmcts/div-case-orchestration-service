@@ -95,6 +95,7 @@ public class CcdFields {
     public static final String NOTICE_OF_PROCEEDINGS_FIRM = "NoticeOfProceedingsSolicitorFirm";
 
     public static final String JUDGE_COSTS_DECISION = "JudgeCostsDecision";
+    public static final String JUDGE_COSTS_CLAIM_GRANTED = "JudgeCostsClaimGranted";
 
     public static final String RESPONDENT_SOLICITOR_DIGITAL = "RespSolDigital";
 }

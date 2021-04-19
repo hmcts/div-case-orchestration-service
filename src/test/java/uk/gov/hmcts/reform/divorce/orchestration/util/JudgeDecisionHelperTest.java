@@ -7,7 +7,9 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.JudgeDecisionHelper.JudgeFields.JUDGE_COSTS_CLAIM_GRANTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.JUDGE_COSTS_CLAIM_GRANTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.JudgeDecisionHelper.isJudgeCostClaimAdjourned;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.JudgeDecisionHelper.isJudgeCostClaimEmpty;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.JudgeDecisionHelper.isJudgeCostClaimGranted;
@@ -17,12 +19,12 @@ public class JudgeDecisionHelperTest {
 
     @Test
     public void isJudgeCostClaimGrantedReturnsTrue() {
-        assertThat(isJudgeCostClaimGranted(createCaseData(JUDGE_COSTS_CLAIM_GRANTED, JudgeDecisionHelper.JudgeDecisions.YES_VALUE)), is(true));
+        assertThat(isJudgeCostClaimGranted(createCaseData(JUDGE_COSTS_CLAIM_GRANTED, YES_VALUE)), is(true));
     }
 
     @Test
     public void isJudgeCostClaimRejectedReturnsTrue() {
-        assertThat(isJudgeCostClaimRejected(createCaseData(JUDGE_COSTS_CLAIM_GRANTED, JudgeDecisionHelper.JudgeDecisions.NO_VALUE)), is(true));
+        assertThat(isJudgeCostClaimRejected(createCaseData(JUDGE_COSTS_CLAIM_GRANTED, NO_VALUE)), is(true));
     }
 
     @Test
