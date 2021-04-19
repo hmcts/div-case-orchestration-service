@@ -131,6 +131,9 @@ public class SolicitorCreateTest extends IdamTestSupport {
         caseData.put(RESPONDENT_SOLICITOR_DIGITAL, NO_VALUE);
         caseData.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
 
+        stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
+        stubGetMyOrganisationServerEndpoint(AUTH_TOKEN, TEST_SERVICE_AUTH_TOKEN);
+
         stubDraftDocumentGeneratorService(
             DRAFT_MINI_PETITION_TEMPLATE_NAME,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequest.getCaseDetails()),
