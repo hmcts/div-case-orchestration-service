@@ -26,7 +26,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigitalSelectedYes;
 
 @Component
 @Slf4j
@@ -77,7 +77,7 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
         if (isRepresentedRespondentJourneyEnabled()) {
             log.info("CaseId: {}, Adding task to set petSol Organisation Policy Reference details", caseId);
             tasks.add(setPetitionerSolicitorOrganisationPolicyReferenceTask);
-            if (isRespondentSolicitorDigital(caseDetails.getCaseData())) {
+            if (isRespondentSolicitorDigitalSelectedYes(caseDetails.getCaseData())) {
                 log.info("CaseId: {}, Adding task to set respSol Organisation Policy Reference details", caseId);
                 tasks.add(setRespondentSolicitorOrganisationPolicyReferenceTask);
             } else {
