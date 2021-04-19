@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CopyD8JurisdictionConnectionPolicyTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentDetailsRemovalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentOrganisationPolicyRemovalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetNewLegalConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
@@ -26,6 +27,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigitalSelectedYes;
 
 @Component
@@ -38,6 +40,7 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
     private final SetPetitionerSolicitorOrganisationPolicyReferenceTask setPetitionerSolicitorOrganisationPolicyReferenceTask;
     private final SetRespondentSolicitorOrganisationPolicyReferenceTask setRespondentSolicitorOrganisationPolicyReferenceTask;
     private final RespondentOrganisationPolicyRemovalTask respondentOrganisationPolicyRemovalTask;
+    private final RespondentDetailsRemovalTask respondentDetailsRemovalTask;
     private final SetNewLegalConnectionPolicyTask setNewLegalConnectionPolicyTask;
     private final CopyD8JurisdictionConnectionPolicyTask copyD8JurisdictionConnectionPolicyTask;
     private final ValidateSelectedOrganisationTask validateSelectedOrganisationTask;
@@ -77,14 +80,19 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
         if (isRepresentedRespondentJourneyEnabled()) {
             log.info("CaseId: {}, Adding task to set petSol Organisation Policy Reference details", caseId);
             tasks.add(setPetitionerSolicitorOrganisationPolicyReferenceTask);
-            if (isRespondentSolicitorDigitalSelectedYes(caseDetails.getCaseData())) {
-                log.info("CaseId: {}, Adding task to set respSol Organisation Policy Reference details", caseId);
-                tasks.add(setRespondentSolicitorOrganisationPolicyReferenceTask);
-            } else {
-                log.info("CaseId: {}, adding task to remove Organisation Policy details when respSol NOT digital", caseId);
-                tasks.add(respondentOrganisationPolicyRemovalTask);
-            }
 
+            if (isRespondentRepresented(caseDetails.getCaseData())) {
+                if (isRespondentSolicitorDigitalSelectedYes(caseDetails.getCaseData())) {
+                    log.info("CaseId: {}, Adding task to set respSol Organisation Policy Reference details", caseId);
+                    tasks.add(setRespondentSolicitorOrganisationPolicyReferenceTask);
+                } else {
+                    log.info("CaseId: {}, adding task to remove Organisation Policy details when respSol NOT digital", caseId);
+                    tasks.add(respondentOrganisationPolicyRemovalTask);
+                }
+            } else {
+                log.info("CaseId: {}, Respondent not represented, adding task to remove respSol details", caseId);
+                tasks.add(respondentDetailsRemovalTask);
+            }
         }
 
         return tasks.toArray(new Task[] {});
