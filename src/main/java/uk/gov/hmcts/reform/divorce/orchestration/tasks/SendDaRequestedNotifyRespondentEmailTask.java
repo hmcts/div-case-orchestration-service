@@ -42,7 +42,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.DECREE_ABSOLUTE_REQUESTED_NOTIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.DECREE_ABSOLUTE_REQUESTED_NOTIFICATION_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigitalSelectedYes;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
 
 @Component
 @AllArgsConstructor
@@ -88,7 +88,7 @@ public class SendDaRequestedNotifyRespondentEmailTask implements Task<Map<String
 
     private boolean shouldEmailBeSentToRespondentSolicitor(Map<String, Object> caseData) {
         return isEmailFieldPopulated(RESPONDENT_SOLICITOR_EMAIL_ADDRESS, caseData)
-            && isRespondentSolicitorDigitalSelectedYes(caseData);
+            && isRespondentSolicitorDigital(caseData);
     }
 
     private boolean isEmailFieldPopulated(String emailField, Map<String, Object> caseData) {

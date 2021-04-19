@@ -76,7 +76,6 @@ public class PartyRepresentationChecker {
             .equalsIgnoreCase(YES_VALUE);
     }
 
-
     public static boolean isCoRespondentDigital(Map<String, Object> caseData) {
         return isYesOrEmpty(caseData, CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL);
     }
