@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.microsoft.applicationinsights.web.dependencies.apachecommons.lang3.StringUtils.equalsIgnoreCase;
 import static org.apache.commons.lang3.StringUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
@@ -243,20 +244,20 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
     private boolean isAdulteryAndNoConsent(CaseDetails caseDetails) {
         String reasonForDivorce = getFieldAsStringOrNull(caseDetails, D_8_REASON_FOR_DIVORCE);
         String respAdmitOrConsentToFact = getFieldAsStringOrNull(caseDetails, RESP_ADMIT_OR_CONSENT_TO_FACT);
-        return StringUtils.equalsIgnoreCase(ADULTERY.getValue(), reasonForDivorce) && StringUtils.equalsIgnoreCase(NO_VALUE,
+        return equalsIgnoreCase(ADULTERY.getValue(), reasonForDivorce) && equalsIgnoreCase(NO_VALUE,
             respAdmitOrConsentToFact);
     }
 
     private boolean isSep2YrAndNoConsent(CaseDetails caseDetails) {
         String reasonForDivorce = getFieldAsStringOrNull(caseDetails, D_8_REASON_FOR_DIVORCE);
         String respAdmitOrConsentToFact = getFieldAsStringOrNull(caseDetails, RESP_ADMIT_OR_CONSENT_TO_FACT);
-        return StringUtils.equalsIgnoreCase(SEPARATION_TWO_YEARS.getValue(), reasonForDivorce)
-            && StringUtils.equalsIgnoreCase(NO_VALUE, respAdmitOrConsentToFact);
+        return equalsIgnoreCase(SEPARATION_TWO_YEARS.getValue(), reasonForDivorce)
+            && equalsIgnoreCase(NO_VALUE, respAdmitOrConsentToFact);
     }
 
     private boolean isCoRespNamedAndNotReplied(CaseDetails caseDetails) {
         String isCoRespNamed = getFieldAsStringOrNull(caseDetails, D_8_CO_RESPONDENT_NAMED);
         String receivedAosFromCoResp = getFieldAsStringOrNull(caseDetails, RECEIVED_AOS_FROM_CO_RESP);
-        return StringUtils.equalsIgnoreCase(isCoRespNamed, YES_VALUE) && !StringUtils.equalsIgnoreCase(receivedAosFromCoResp, YES_VALUE);
+        return equalsIgnoreCase(isCoRespNamed, YES_VALUE) && !equalsIgnoreCase(receivedAosFromCoResp, YES_VALUE);
     }
 }
