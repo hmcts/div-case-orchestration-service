@@ -23,8 +23,18 @@ public class JudgeDecisionHelperTest {
     }
 
     @Test
+    public void isJudgeCostClaimGrantedReturnsFalse() {
+        assertThat(isJudgeCostClaimGranted(createCaseData(JUDGE_COSTS_CLAIM_GRANTED, NO_VALUE)), is(false));
+    }
+
+    @Test
     public void isJudgeCostClaimRejectedReturnsTrue() {
         assertThat(isJudgeCostClaimRejected(createCaseData(JUDGE_COSTS_CLAIM_GRANTED, NO_VALUE)), is(true));
+    }
+
+    @Test
+    public void isJudgeCostClaimRejectedReturnsFalse() {
+        assertThat(isJudgeCostClaimRejected(createCaseData(JUDGE_COSTS_CLAIM_GRANTED, YES_VALUE)), is(false));
     }
 
     @Test
@@ -35,6 +45,11 @@ public class JudgeDecisionHelperTest {
     @Test
     public void isJudgeCostClaimEmptyReturnsTrue() {
         assertThat(isJudgeCostClaimEmpty(createCaseData(JUDGE_COSTS_CLAIM_GRANTED, null)), is(true));
+    }
+
+    @Test
+    public void isJudgeCostClaimEmptyReturnsFalse() {
+        assertThat(isJudgeCostClaimEmpty(createCaseData(JUDGE_COSTS_CLAIM_GRANTED, "SomeValueThatIsNotNull")), is(false));
     }
 
     private static Map<String, Object> createCaseData(String field, Object value) {
