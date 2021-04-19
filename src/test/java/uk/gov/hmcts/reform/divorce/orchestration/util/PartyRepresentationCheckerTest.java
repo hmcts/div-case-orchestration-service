@@ -162,7 +162,7 @@ public class PartyRepresentationCheckerTest {
     }
 
     @Test
-    public void isRespondentSolicitorDigitalSelectedYesReturnsFalse_WhenRespSolDigitalIsYesAndOrgDetailsNotPopulated() {
+    public void isRespondentSolicitorDigitalSelectedYesReturnsTrue_WhenRespSolDigitalIsYesAndOrgDetailsNotPopulated() {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(RESPONDENT_SOLICITOR_DIGITAL, YES_VALUE);
 
