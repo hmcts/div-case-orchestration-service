@@ -133,7 +133,7 @@ public class AosSubmissionWorkflow extends DefaultWorkflow<Map<String, Object>> 
             log.info("CaseId: {} Respondent is defending, case state: {}", caseId, state);
             tasks.add(sendRespondentSubmissionNotificationForDefendedDivorceEmailTask);
         } else if (respondentIsNotDefending(caseDetails)) {
-            log.info("CaseId: {} Adding generic notification email task for petitioner on solicitor AoS submission", caseId);
+            log.info("CaseId: {} Adding generic notification email task for petitioner on AoS submission", caseId);
             addNotificationEmailTaskForNonRepresentedPetitioner(tasks, caseData);
 
             log.info("CaseId: {} Respondent is not defending, case state: {}", caseId, state);
