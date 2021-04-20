@@ -53,7 +53,7 @@ public class CoERespondentCoverLetterGenerationTask extends BasePayloadSpecificD
             .letterDate(DatesDataExtractor.getLetterDate())
             .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
             .hearingDate(DatesDataExtractor.getHearingDate(caseData))
-            .costClaimGranted(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData))
+            .costClaimGranted(CoECoverLetterDataExtractor.isLegalAdvisorCostsClaimGranted(caseData))
             .deadlineToContactCourtBy(DatesDataExtractor.getDeadlineToContactCourtBy(caseData))
             .addressee(AddresseeDataExtractor.getRespondent(caseData))
             .husbandOrWife(CoECoverLetterDataExtractor.getHusbandOrWife(caseData))
