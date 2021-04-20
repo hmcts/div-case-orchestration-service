@@ -263,8 +263,6 @@ public class OrchestrationConstants {
     public static final String DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_DOCUMENT_TYPE = "daGrantedLetter";
     public static final String DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER_DOCUMENT_TYPE = "daGrantedLetterSol";
     public static final String DECREE_ABSOLUTE_FILENAME = "decreeAbsolute";
-    public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_FILENAME = "solicitor-personal-service-";
-    public static final String SOLICITOR_PERSONAL_SERVICE_LETTER_DOCUMENT_TYPE = "personalService";
     public static final String FEE_TO_PAY_JSON_KEY = "FeeToPay";
     public static final String AOS_OVERDUE_COVER_LETTER_DOCUMENT_TYPE = "aosOverdueCoverLetter";
     public static final String CERTIFICATE_OF_ENTITLEMENT_FILENAME_PREFIX = "certificateOfEntitlement";
@@ -295,7 +293,6 @@ public class OrchestrationConstants {
     public static final String ADDITIONAL_INFRORMATION = "additionalInformation";
     public static final String SOLICITOR_HOW_TO_PAY_JSON_KEY = "SolPaymentHowToPay";
     public static final String SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY = "SolicitorFeeAccountNumber";
-    public static final String SOLICITOR_FIRM_JSON_KEY = "PetitionerSolicitorFirm";
     public static final String SOLICITOR_REFERENCE_JSON_KEY = "D8SolicitorReference";
     public static final String SOLICITOR_STATEMENT_OF_TRUTH = "solSignStatementofTruth";
     public static final String RESP_SOL_REPRESENTED = "respondentSolicitorRepresented";

@@ -29,6 +29,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.buildOrganisationPolicy;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksWereNeverCalled;
@@ -116,11 +117,12 @@ public class SolicitorCreateWorkflowTest {
         Map<String, Object> payload = new HashMap<>();
         payload.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
         payload.put(CcdFields.RESPONDENT_SOLICITOR_DIGITAL, YES_VALUE);
+        payload.put(CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
+
+        CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
 
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
         when(featureToggleService.isFeatureEnabled(Features.SHARE_A_CASE)).thenReturn(true);
-
-        CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
 
         mockTasksExecution(
             caseDetails.getCaseData(),

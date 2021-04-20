@@ -9,7 +9,7 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath("net.serenity-bdd:serenity-gradle-plugin:2.2.13")
+        classpath("net.serenity-bdd:serenity-gradle-plugin:2.4.4")
     }
 }
 
@@ -34,7 +34,7 @@ def versions = [
         bspCommonLib                 : '0.0.47',
         ccdStoreClient               : '4.7.3',
         commonsBeanUtils             : '1.9.4',
-        commonsIo                    : '2.6',
+        commonsIo                    : '2.7',
         commonsLang3                 : '3.9',
         commonsMath3                 : '3.6.1',
         divCommonLib                 : '1.2.16',

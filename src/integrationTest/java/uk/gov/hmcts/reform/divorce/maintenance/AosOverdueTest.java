@@ -116,7 +116,7 @@ public class AosOverdueTest extends RetrieveCaseSupport {
     }
 
     private void assertCaseIsInExpectedState(String caseId, String expectedState) {
-        CaseDetails caseDetails = retrieveCase(citizenUser, caseId);
+        CaseDetails caseDetails = retrieveCaseForCitizen(citizenUser, caseId);
         String state = caseDetails.getState();
         assertThat(format("Case %s should be in \"%s\" state", caseId, expectedState), state, is(expectedState));
     }

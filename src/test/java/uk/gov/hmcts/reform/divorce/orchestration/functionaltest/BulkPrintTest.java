@@ -23,12 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
-import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static java.util.Collections.emptyMap;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.hasItem;
-import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -36,12 +31,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.PERSONAL_SERVICE_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.SOL_SERVICE_METHOD_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ORGANISATION_POLICY_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_DIGITAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_CO_RESPONDENT_INVITATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
@@ -112,6 +106,7 @@ public class BulkPrintTest extends IdamTestSupport {
         stubSendLetterService(HttpStatus.OK);
 
         Map<String, Object> expectedCaseData = caseDataWithDocuments();
+
         expectedCaseData.put(CcdFields.NOTICE_OF_PROCEEDINGS_DIGITAL, YES_VALUE);
         expectedCaseData.put(CcdFields.NOTICE_OF_PROCEEDINGS_EMAIL, TEST_EMAIL);
         expectedCaseData.put(CcdFields.NOTICE_OF_PROCEEDINGS_FIRM, TEST_ORGANISATION_POLICY_NAME);
@@ -162,6 +157,7 @@ public class BulkPrintTest extends IdamTestSupport {
 
     private CcdCallbackRequest callbackWithDigitalRespSol() {
         final Map<String, Object> caseData = caseDataWithDocuments();
+        caseData.put(RESPONDENT_SOLICITOR_DIGITAL, YES_VALUE);
         caseData.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
         caseData.put(RESPONDENT_SOLICITOR_EMAIL, TEST_EMAIL);
 
@@ -180,37 +176,6 @@ public class BulkPrintTest extends IdamTestSupport {
             createCollectionMemberDocument("http://localhost:4020/documents/" + testDocumentId, DOCUMENT_TYPE_CO_RESPONDENT_INVITATION, "coRespondentletter")
         ));
         return caseData;
-    }
-
-    @Test
-    public void givenServiceMethodIsPersonalServiceAndStateIsNotAwaitingService_thenResponseContainsErrors() throws Exception {
-        final Map<String, Object> caseData = Collections.singletonMap(
-            SOL_SERVICE_METHOD_CCD_FIELD, PERSONAL_SERVICE_VALUE
-        );
-
-        final CaseDetails caseDetails = CaseDetails.builder()
-            .state("Issued")
-            .caseData(caseData)
-            .build();
-
-        CcdCallbackRequest request = CcdCallbackRequest.builder()
-            .caseDetails(caseDetails)
-            .build();
-
-        webClient.perform(post(API_URL)
-            .content(convertObjectToJsonString(request))
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON)
-            .header(AUTHORIZATION, AUTH_TOKEN))
-            .andExpect(status().isOk())
-            .andExpect(content().string(allOf(
-                isJson(),
-                hasJsonPath("$.data", is(Collections.emptyMap())),
-                hasJsonPath("$.errors",
-                    hasItem("Failed to bulk print documents - This event cannot be used when "
-                        + "service method is Personal Service and the case is not in Awaiting Service.")
-                )
-            )));
     }
 
     private void setRespondentJourneyFeatureToggleOn() {

@@ -190,9 +190,10 @@
       "RespSolDigital": "Yes",
       "RespondentOrganisationPolicy": {
         "Organisation": {
-          "OrganisationID": null,
-          "OrganisationName": null
+          "OrganisationID": "M6ZT7Q7",
+          "OrganisationName": "MoLalaSolicitors"
         },
+        "OrgPolicyReference": "MoLalaSolicitors",
         "OrgPolicyCaseAssignedRole": "[RESPSOLICITOR]"
       },
       "D8SelectedDivorceCentreSiteId" : "AA01",

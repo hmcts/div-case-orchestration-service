@@ -170,8 +170,8 @@ public abstract class CcdSubmissionSupport extends IntegrationTest {
         );
     }
 
-    public CaseDetails retrieveCase(final UserDetails user, String caseId) {
-        return ccdClientSupport.retrieveCase(user, caseId);
+    public CaseDetails retrieveCaseForCitizen(final UserDetails user, String caseId) {
+        return ccdClientSupport.retrieveCaseForCitizen(user, caseId);
     }
 
     public CaseDetails retrieveCaseForCaseworker(final UserDetails user, String caseId) {

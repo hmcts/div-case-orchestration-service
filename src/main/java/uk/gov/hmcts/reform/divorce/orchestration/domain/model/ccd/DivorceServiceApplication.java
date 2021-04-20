@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
@@ -9,6 +10,7 @@ import lombok.ToString;
 @Data
 @NoArgsConstructor
 @ToString
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DivorceServiceApplication {
 
     @Builder
@@ -16,7 +18,6 @@ public class DivorceServiceApplication {
         String addedDate,
         String receivedDate,
         String type,
-        String bailiffApplicationGranted,
         String applicationGranted,
         String decisionDate,
         String payment,
@@ -25,7 +26,6 @@ public class DivorceServiceApplication {
         this.addedDate = addedDate;
         this.receivedDate = receivedDate;
         this.type = type;
-        this.bailiffApplicationGranted = bailiffApplicationGranted;
         this.applicationGranted = applicationGranted;
         this.decisionDate = decisionDate;
         this.payment = payment;
@@ -46,9 +46,6 @@ public class DivorceServiceApplication {
 
     @JsonProperty("ApplicationGranted")
     private String applicationGranted;
-
-    @JsonProperty("BailiffApplicationGranted")
-    private String bailiffApplicationGranted;
 
     @JsonProperty("DecisionDate")
     private String decisionDate;

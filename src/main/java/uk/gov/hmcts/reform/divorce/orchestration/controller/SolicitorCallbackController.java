@@ -40,9 +40,9 @@ public class SolicitorCallbackController {
 
     @PostMapping(path = "/personal-service-pack",
         consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Generates the petitioner's solicitor personal service pack to be served to the respondent")
+    @ApiOperation(value = "Validates case to be issued with personal service")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Document generated and emailed to the petitioner's solicitor",
+        @ApiResponse(code = 200, message = "Case validation successful",
             response = CaseResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> issuePersonalServicePack(
@@ -52,7 +52,7 @@ public class SolicitorCallbackController {
         Map<String, Object> response;
 
         try {
-            response = solicitorService.issuePersonalServicePack(ccdCallbackRequest, authorizationToken);
+            response = solicitorService.validateForPersonalServicePack(ccdCallbackRequest, authorizationToken);
         } catch (Exception e) {
             return ResponseEntity.ok(
                 CcdCallbackResponse.builder()
@@ -66,6 +66,34 @@ public class SolicitorCallbackController {
                 .data(response)
                 .build());
     }
+
+    @PostMapping(path = "/solicitor-confirm-service",
+        consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    @ApiOperation(value = "Validates the case for solicitor confirm service")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Case successfully validated",
+            response = CaseResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> solicitorConfirmPersonalService(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+
+        Map<String, Object> response;
+        try {
+            response = solicitorService.solicitorConfirmPersonalService(ccdCallbackRequest);
+        } catch (Exception e) {
+            return ResponseEntity.ok(
+                CcdCallbackResponse.builder()
+                    .data(ImmutableMap.of())
+                    .warnings(ImmutableList.of())
+                    .errors(singletonList("Failed to validate for solicitor confirm personal service - " + e.getMessage()))
+                    .build());
+        }
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(response)
+                .build());
+    }
+
 
     @PostMapping(path = "/handle-post-personal-service-pack")
     @ApiOperation(value = "Callback to notify solicitor that personal service pack has been issued")
