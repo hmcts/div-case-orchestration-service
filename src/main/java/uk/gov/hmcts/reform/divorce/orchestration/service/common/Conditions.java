@@ -43,8 +43,16 @@ public class Conditions {
         return ApplicationServiceTypes.DEEMED.equalsIgnoreCase(serviceApplication.getType());
     }
 
+    public static boolean isServiceApplicationDeemedDispensedOrBailiff(DivorceServiceApplication serviceApplication) {
+        return isServiceApplicationDeemedOrDispensed(serviceApplication) || isServiceApplicationBailiff(serviceApplication);
+    }
+
     public static boolean isServiceApplicationDeemedOrDispensed(DivorceServiceApplication serviceApplication) {
         return isServiceApplicationDeemed(serviceApplication) || isServiceApplicationDispensed(serviceApplication);
+    }
+
+    public static boolean isServiceApplicationBailiff(DivorceServiceApplication serviceApplication) {
+        return ApplicationServiceTypes.BAILIFF.equalsIgnoreCase(serviceApplication.getType());
     }
 
     public static boolean isServiceApplicationBailiff(Map<String, Object> caseData) {

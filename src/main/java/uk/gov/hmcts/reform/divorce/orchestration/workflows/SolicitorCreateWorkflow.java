@@ -32,7 +32,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_FROM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigitalSelectedYes;
 
 @Component
 @Slf4j
@@ -96,7 +96,7 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
             log.info("CaseId: {}, Adding OrganisationPolicyReferenceTasks", caseId);
             tasks.add(setPetitionerSolicitorOrganisationPolicyReferenceTask);
 
-            if (isRespondentSolicitorDigital(caseDetails.getCaseData())) {
+            if (isRespondentSolicitorDigitalSelectedYes(caseDetails.getCaseData())) {
                 log.info("CaseId: {}, respondent solicitor is digital", caseId);
                 tasks.add(setRespondentSolicitorOrganisationPolicyReferenceTask);
             } else {

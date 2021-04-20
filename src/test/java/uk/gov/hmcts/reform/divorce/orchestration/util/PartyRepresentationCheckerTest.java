@@ -38,6 +38,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentation
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigitalDivorceSession;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigitalSelectedYes;
 
 public class PartyRepresentationCheckerTest {
 
@@ -139,35 +140,33 @@ public class PartyRepresentationCheckerTest {
     }
 
     @Test
-    public void isRespondentSolicitorDigitalReturnsFalse_WhenRespSolDigitalIsEmptyAndOrgDetailsPopulated() {
+    public void isRespondentSolicitorDigitalReturnsTrue_WhenOrgPolicyDetailsPopulated() {
         Map<String, Object> caseData = createCaseData(RESPONDENT_SOLICITOR_ORGANISATION_POLICY,
                                                         buildOrganisationPolicyWithId(TEST_ORGANISATION_POLICY_ID));
-        assertThat(isRespondentSolicitorDigital(caseData), is(false));
+        assertThat(isRespondentSolicitorDigital(caseData), is(true));
     }
 
     @Test
-    public void isRespondentSolicitorDigitalReturnsFalse_WhenRespSolDigitalIsYesAndOrgDetailsEmpty() {
+    public void isRespondentSolicitorDigitalReturnsFalse_WhenOrgPolicyDetailsIsNotPopulated() {
         Map<String, Object> caseData = createCaseData(RESPONDENT_SOLICITOR_DIGITAL, YES_VALUE);
 
         assertThat(isRespondentSolicitorDigital(caseData), is(false));
     }
 
     @Test
-    public void isRespondentSolicitorDigitalReturnsFalse_WhenRespSolDigitalIsNoAndOrgDetailsPopulated() {
+    public void isRespondentSolicitorDigitalSelectedYesReturnsFalse_WhenRespSolDigitalNo() {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(RESPONDENT_SOLICITOR_DIGITAL, NO_VALUE);
-        caseData.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicyWithId(TEST_ORGANISATION_POLICY_ID));
 
         assertThat(isRespondentSolicitorDigital(caseData), is(false));
     }
 
     @Test
-    public void isRespondentSolicitorDigitalReturnsFalse_WhenRespSolDigitalIsYesAndOrgDetailsNotPopulated() {
+    public void isRespondentSolicitorDigitalSelectedYesReturnsTrue_WhenRespSolDigitalIsYesAndOrgDetailsNotPopulated() {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(RESPONDENT_SOLICITOR_DIGITAL, YES_VALUE);
-        caseData.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicyWithId(""));
 
-        assertThat(isRespondentSolicitorDigital(caseData), is(false));
+        assertThat(isRespondentSolicitorDigitalSelectedYes(caseData), is(true));
     }
 
     @Test
@@ -176,7 +175,7 @@ public class PartyRepresentationCheckerTest {
         caseData.put(RESPONDENT_SOLICITOR_DIGITAL, YES_VALUE);
         caseData.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicyWithId(TEST_ORGANISATION_POLICY_ID));
 
-        assertThat(isRespondentSolicitorDigital(caseData), is(true));
+        assertThat(isRespondentSolicitorDigitalSelectedYes(caseData), is(true));
     }
 
     @Test
