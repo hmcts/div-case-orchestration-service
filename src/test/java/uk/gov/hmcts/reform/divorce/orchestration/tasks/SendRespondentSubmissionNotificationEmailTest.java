@@ -23,8 +23,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.is;
@@ -48,6 +50,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH_MALE_GENDER_IN_RELATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
@@ -82,10 +85,10 @@ public class SendRespondentSubmissionNotificationEmailTest {
     private ArgumentCaptor<Map<String, String>> templateParametersCaptor;
 
     @InjectMocks
-    private SendRespondentSubmissionNotificationForDefendedDivorceEmail defendedDivorceNotificationEmailTask;
+    private SendRespondentSubmissionNotificationForDefendedDivorceEmailTask defendedDivorceNotificationEmailTask;
 
     @InjectMocks
-    private SendRespondentSubmissionNotificationForUndefendedDivorceEmail undefendedDivorceNotificationEmailTask;
+    private SendRespondentSubmissionNotificationForUndefendedDivorceEmailTask undefendedDivorceNotificationEmailTask;
 
     private Court testCourt;
 
@@ -159,7 +162,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
 
         assertThat(
             exception.getMessage(),
-            is("Could not evaluate value of mandatory property \"D8caseReference\"")
+            containsString(format("Could not evaluate value of mandatory property \"%s\"", D_8_CASE_REFERENCE))
         );
     }
 
@@ -179,7 +182,7 @@ public class SendRespondentSubmissionNotificationEmailTest {
         );
         assertThat(
             exception.getMessage(),
-            is("Could not evaluate value of mandatory property \"D8InferredPetitionerGender\"")
+            containsString(format("Could not evaluate value of mandatory property \"%s\"", D_8_INFERRED_PETITIONER_GENDER))
         );
     }
 
