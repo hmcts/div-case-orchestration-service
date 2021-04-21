@@ -20,6 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.JUDGE_COSTS_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
@@ -38,6 +39,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
     private static final String API_URL = "/generate-dn-pronouncement-documents";
     private static final String COSTS_ORDER_TEMPLATE_ID = "FL-DIV-DEC-ENG-00060.docx";
+    private static final String COSTS_ORDER_JUDGE_TEMPLATE_ID = "FL-DIV-DEC-ENG-00711.docx";
     private static final String DECREE_NISI_TEMPLATE_ID = "FL-DIV-GNO-ENG-00021.docx";
 
     private static final Map<String, Object> CASE_DATA = ImmutableMap.of(
@@ -128,6 +130,53 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .content(convertObjectToJsonString(CCD_CALLBACK_REQUEST))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
+    }
+
+    @Test
+    public void happyPathWithCostsOrderJudge() throws Exception {
+        Map<String, Object> caseData = ImmutableMap.of(
+            JUDGE_COSTS_DECISION, YES_VALUE,
+            DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE,
+            DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE,
+            BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build()
+        );
+
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseData(caseData)
+            .caseId(TEST_CASE_ID)
+            .build();
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(caseDetails)
+            .build();
+
+        String firstDocumentId = stubDocumentGeneratorService(DECREE_NISI_TEMPLATE_ID,
+            singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS),
+            DECREE_NISI_DOCUMENT_TYPE);
+
+        Map<String, Object> caseDataWithFirstDocumentAdded = ImmutableMap.<String, Object>builder()
+            .putAll(CASE_DATA)
+            .put(D8DOCUMENTS_GENERATED, singletonList(
+                createCollectionMemberDocumentAsMap(getDocumentStoreTestUrl(firstDocumentId),
+                    DECREE_NISI_DOCUMENT_TYPE,
+                    DECREE_NISI_FILENAME + TEST_CASE_ID)
+            )).build();
+        stubDocumentGeneratorService(COSTS_ORDER_JUDGE_TEMPLATE_ID, singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY,
+            CaseDetails.builder()
+                .caseData(caseDataWithFirstDocumentAdded)
+                .caseId(TEST_CASE_ID)
+                .build()),
+            COSTS_ORDER_DOCUMENT_TYPE);
+
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(CASE_DATA).build();
+
+        webClient.perform(post(API_URL)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(ccdCallbackRequest))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
