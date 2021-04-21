@@ -142,13 +142,12 @@ public class DnDecisionMadeCallbackITest extends MockedFunctionalTest {
         waitAsyncCompleted();
 
         Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put(CASE_STATE_JSON_KEY,null);
+        requestBody.put(CASE_STATE_JSON_KEY, null);
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, caseId), RequestMethod.POST,
             convertObjectToJsonString(requestBody));
     }
 
     private void stubCmsServerEndpoint(String path, HttpStatus status, String body, HttpMethod method) {
-
         maintenanceServiceServer.stubFor(WireMock.request(method.name(),urlEqualTo(path))
             .willReturn(aResponse()
                 .withStatus(status.value())
