@@ -55,11 +55,6 @@ public class GeneralOrderDraftTest extends GeneralOrderTest {
         Map<String, Object> caseData = buildInputCaseData();
         caseData.remove(JUDGE_NAME);
 
-        String documentType = GeneralOrderGenerationTask.FileMetadata.DOCUMENT_TYPE;
-//        String fileName = formatDocumentFileName(documentType);
-
-//        stubDocumentGeneratorServiceRequest(caseData, GeneralOrderGenerationTask.FileMetadata.TEMPLATE_ID, documentType);
-
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .content(convertObjectToJsonString(buildRequest(caseData)))
