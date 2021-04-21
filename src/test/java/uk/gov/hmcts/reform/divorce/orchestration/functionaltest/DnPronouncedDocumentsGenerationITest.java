@@ -155,11 +155,11 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
             .build();
 
         String firstDocumentId = stubDocumentGeneratorService(DECREE_NISI_TEMPLATE_ID,
-            singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS),
+            singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails),
             DECREE_NISI_DOCUMENT_TYPE);
 
         Map<String, Object> caseDataWithFirstDocumentAdded = ImmutableMap.<String, Object>builder()
-            .putAll(CASE_DATA)
+            .putAll(caseData)
             .put(D8DOCUMENTS_GENERATED, singletonList(
                 createCollectionMemberDocumentAsMap(getDocumentStoreTestUrl(firstDocumentId),
                     DECREE_NISI_DOCUMENT_TYPE,
@@ -172,7 +172,7 @@ public class DnPronouncedDocumentsGenerationITest extends MockedFunctionalTest {
                 .build()),
             COSTS_ORDER_DOCUMENT_TYPE);
 
-        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(CASE_DATA).build();
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseData).build();
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
