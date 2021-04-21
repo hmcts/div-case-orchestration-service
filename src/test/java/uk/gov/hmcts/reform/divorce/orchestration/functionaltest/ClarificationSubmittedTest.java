@@ -24,7 +24,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_DIVOR
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COURT_NAME_TEMPLATE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
@@ -41,7 +40,7 @@ public class ClarificationSubmittedTest extends MockedFunctionalTest {
 
     private static final String API_URL = "/clarification-submitted";
 
-    private static final String DECREE_NISI_CLARIFICATION_SUBMISSION_TEMPLATE_ID ="1b59454a-af9a-4444-87a3-67f3f238db35";
+    private static final String DECREE_NISI_CLARIFICATION_SUBMISSION_TEMPLATE_ID = "1b59454a-af9a-4444-87a3-67f3f238db35";
 
     @MockBean
     private EmailClient emailClient;
