@@ -21,14 +21,16 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskExc
 import uk.gov.hmcts.reform.divorce.orchestration.service.TemplateConfigService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.GenericEmailNotificationTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.QueueAosSolicitorSubmitTask;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForDefendedDivorceEmail;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForUndefendedDivorceEmail;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForDefendedDivorceEmailTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SendRespondentSubmissionNotificationForUndefendedDivorceEmailTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.aos.AosReceivedPetitionerSolicitorEmailTask;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.microsoft.applicationinsights.core.dependencies.google.common.collect.ImmutableMap.of;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -39,16 +41,22 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_FAMILY_MAN_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INFERRED_MALE_GENDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RELATIONSHIP_HUSBAND;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_FIRST_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH_MALE_GENDER_IN_RELATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_COMPANY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CO_RESPONDENT_NAMED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_INFERRED_RESPONDENT_GENDER;
@@ -56,6 +64,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_ADDRESSEE_LAST_NAME_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_EMAIL;
@@ -68,12 +77,19 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_CONSENT_2_YEARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.email.EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.SEPARATION_TWO_YEARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTaskWasCalled;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksWereNeverCalled;
 
@@ -97,10 +113,10 @@ public class AosSubmissionWorkflowTest {
     private Map<String, Object> returnedPayloadFromTask;
 
     @Mock
-    private SendRespondentSubmissionNotificationForDefendedDivorceEmail defendedDivorceNotificationEmailTask;
+    private SendRespondentSubmissionNotificationForDefendedDivorceEmailTask defendedDivorceNotificationEmailTask;
 
     @Mock
-    private SendRespondentSubmissionNotificationForUndefendedDivorceEmail undefendedDivorceNotificationEmailTask;
+    private SendRespondentSubmissionNotificationForUndefendedDivorceEmailTask undefendedDivorceNotificationEmailTask;
 
     @Mock
     private AosReceivedPetitionerSolicitorEmailTask aosReceivedPetitionerSolicitorEmailTask;
@@ -135,10 +151,13 @@ public class AosSubmissionWorkflowTest {
             RESP_ACKNOWLEDGES_SERVICE_DEFENDING_DIVORCE_JSON, CcdCallbackRequest.class);
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
 
+        setupTemplateConfigServiceExpectations();
+
         Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
 
         verify(defendedDivorceNotificationEmailTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
         verifyNoInteractions(undefendedDivorceNotificationEmailTask);
+
         assertThat(returnedPayloadFromWorkflow, is(sameInstance(returnedPayloadFromTask)));
         TaskContext taskContextPassedToTask = taskContextArgumentCaptor.getValue();
         String caseIdPassedToTask = taskContextPassedToTask.getTransientObject(CASE_ID_JSON_KEY);
@@ -148,14 +167,19 @@ public class AosSubmissionWorkflowTest {
     @Test
     public void testUndefendedTaskIsCalled_WhenRespondentChoosesToNotDefendDivorce() throws IOException,
         WorkflowException, TaskException {
+
         CcdCallbackRequest callbackRequest = getJsonFromResourceFile(
             RESP_ACKNOWLEDGES_SERVICE_NOT_DEFENDING_DIVORCE_JSON, CcdCallbackRequest.class);
         Map<String, Object> caseData = callbackRequest.getCaseDetails().getCaseData();
+
+        setupTemplateConfigServiceExpectations();
+        when(emailNotificationTask.execute(any(), any())).thenReturn(caseData);
 
         Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(callbackRequest, AUTH_TOKEN);
 
         verify(undefendedDivorceNotificationEmailTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
         verifyNoInteractions(defendedDivorceNotificationEmailTask);
+
         assertThat(returnedPayloadFromWorkflow, is(sameInstance(returnedPayloadFromTask)));
         TaskContext taskContextPassedToTask = taskContextArgumentCaptor.getValue();
         String caseIdPassedToTask = taskContextPassedToTask.getTransientObject(CASE_ID_JSON_KEY);
@@ -165,14 +189,19 @@ public class AosSubmissionWorkflowTest {
     @Test
     public void testUndefendedTaskIsCalled_WhenRespondentChoosesToNotDefendDivorceButNotAdmitWhatIsSaid()
         throws IOException, WorkflowException, TaskException {
+
         CcdCallbackRequest callbackRequest = getJsonFromResourceFile(
             RESP_ACKNOWLEDGES_SERVICE_NOT_DEFENDING_NOT_ADMITTING_DIVORCE_JSON, CcdCallbackRequest.class);
         Map<String, Object> caseData = callbackRequest.getCaseDetails().getCaseData();
+
+        setupTemplateConfigServiceExpectations();
+        when(emailNotificationTask.execute(any(), any())).thenReturn(caseData);
 
         Map<String, Object> returnedPayloadFromWorkflow = aosSubmissionWorkflow.run(callbackRequest, AUTH_TOKEN);
 
         verify(undefendedDivorceNotificationEmailTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
         verifyNoInteractions(defendedDivorceNotificationEmailTask);
+
         assertThat(returnedPayloadFromWorkflow, is(sameInstance(returnedPayloadFromTask)));
         TaskContext taskContextPassedToTask = taskContextArgumentCaptor.getValue();
         String caseIdPassedToTask = taskContextPassedToTask.getTransientObject(CASE_ID_JSON_KEY);
@@ -181,6 +210,8 @@ public class AosSubmissionWorkflowTest {
 
     @Test
     public void testExceptionIsThrown_IfNotPossibleToAssert_WhetherDivorceWillBeDefended() throws IOException {
+        setupTemplateConfigServiceExpectations();
+
         CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
             UNCLEAR_ACKNOWLEDGEMENT_OF_SERVICE_JSON, CcdCallbackRequest.class);
 
@@ -202,15 +233,20 @@ public class AosSubmissionWorkflowTest {
         CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
             AOS_SOLICITOR_NOMINATED_JSON, CcdCallbackRequest.class);
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+        caseData.putAll(buildPetitionerDetail());
+
+        setupTemplateConfigServiceExpectations();
+        when(emailNotificationTask.execute(any(), any())).thenReturn(caseData);
 
         aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
 
-        verify(queueAosSolicitorSubmitTask).execute(taskContextArgumentCaptor.capture(), same(caseData));
+        runCommonRespondentRepresentedVerification(caseData);
     }
 
     @Test
     public void testSolicitorTaskIsNotCalledWhenSolicitorIsNotRepresenting() throws IOException,
         WorkflowException {
+        setupTemplateConfigServiceExpectations();
         CcdCallbackRequest callbackRequest = getJsonFromResourceFile(
             RESP_ACKNOWLEDGES_SERVICE_NOT_DEFENDING_DIVORCE_JSON, CcdCallbackRequest.class);
 
@@ -222,9 +258,14 @@ public class AosSubmissionWorkflowTest {
     @Test
     public void testSolicitorTaskIsCalled_whenSolicitorIsRepresentingIsEmpty_andRespSolValuesExist()
         throws WorkflowException, IOException, TaskException {
+
         CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
             AOS_SOLICITOR_NOMINATED_WITHOUT_FIELDS_SET_JSON, CcdCallbackRequest.class);
         Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+        caseData.putAll(buildPetitionerDetail());
+
+        setupTemplateConfigServiceExpectations();
+        when(emailNotificationTask.execute(any(), any())).thenReturn(caseData);
 
         aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
 
@@ -233,20 +274,15 @@ public class AosSubmissionWorkflowTest {
 
     @Test
     public void givenCaseNotDefended_whenRunWorkflow_thenEmailNotificationTaskCalled() throws WorkflowException {
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.ENGLISH)))
-            .thenReturn(TEST_RELATIONSHIP_HUSBAND);
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.WELSH)))
-            .thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
+        setupTemplateConfigServiceExpectations();
+
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(D_8_PETITIONER_FIRST_NAME, TestConstants.TEST_USER_FIRST_NAME);
-        caseData.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME);
-        caseData.put(D_8_PETITIONER_EMAIL, TestConstants.TEST_USER_EMAIL);
-        caseData.put(D_8_CASE_REFERENCE, TestConstants.TEST_CASE_FAMILY_MAN_ID);
+        caseData.putAll(buildPetitionerDetail());
         caseData.put(D_8_INFERRED_RESPONDENT_GENDER, "male");
         caseData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .caseId(TestConstants.TEST_CASE_ID)
+            .caseId(TEST_CASE_ID)
             .caseData(caseData)
             .build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
@@ -254,88 +290,87 @@ public class AosSubmissionWorkflowTest {
         when(emailNotificationTask.execute(any(), any())).thenReturn(caseDetails.getCaseData());
 
         Map<String, String> vars = ImmutableMap.of(
-            NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TestConstants.TEST_USER_FIRST_NAME,
-            NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TestConstants.TEST_USER_LAST_NAME,
+            NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_USER_FIRST_NAME,
+            NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_USER_LAST_NAME,
             NOTIFICATION_RELATIONSHIP_KEY, TEST_RELATIONSHIP_HUSBAND,
-            NOTIFICATION_REFERENCE_KEY, TestConstants.TEST_CASE_FAMILY_MAN_ID,
+            NOTIFICATION_REFERENCE_KEY, TEST_CASE_FAMILY_MAN_ID,
             NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TestConstants.TEST_WELSH_MALE_GENDER_IN_RELATION
         );
+
         aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
-        verify(emailNotificationTask, times(1))
+
+        verify(emailNotificationTask)
             .execute(argThat(argument ->
-                argument.getTransientObject(CASE_ID_JSON_KEY).equals(TestConstants.TEST_CASE_ID)
+                argument.getTransientObject(CASE_ID_JSON_KEY).equals(TEST_CASE_ID)
                     && argument.getTransientObject(NOTIFICATION_TEMPLATE_VARS).equals(vars)), any());
     }
 
     @Test
     public void givenCaseDefended_whenRunWorkflow_thenEmailNotificationTaskNotCalled() throws WorkflowException {
         Map<String, Object> caseData = new HashMap<>();
+        caseData.putAll(buildPetitionerDetail());
         caseData.put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
+        caseData.put(D_8_INFERRED_RESPONDENT_GENDER, "male");
+
         CaseDetails caseDetails = CaseDetails.builder()
-            .caseId(TestConstants.TEST_CASE_ID)
+            .caseId(TEST_CASE_ID)
             .caseData(caseData)
             .build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
+        setupTemplateConfigServiceExpectations();
+
         aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
+
         verifyNoMoreInteractions(emailNotificationTask);
     }
 
     @Test
-    public void givenCaseNoPetEmail_whenRunWorkflow_thenEmailNotificationTaskNotCalled() throws WorkflowException {
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.ENGLISH)))
-            .thenReturn(TEST_RELATIONSHIP_HUSBAND);
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.WELSH)))
-            .thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
+    public void givenCaseNoPetEmail_whenRunWorkflow_thenEmailNotificationTaskNotCalled() {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(D_8_PETITIONER_FIRST_NAME, TestConstants.TEST_USER_FIRST_NAME);
-        caseData.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME);
-        caseData.put(D_8_CASE_REFERENCE, TestConstants.TEST_CASE_FAMILY_MAN_ID);
+        caseData.putAll(buildPetitionerDetail());
         caseData.put(D_8_INFERRED_RESPONDENT_GENDER, "male");
         caseData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
+        caseData.remove(D_8_PETITIONER_EMAIL);
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .caseId(TestConstants.TEST_CASE_ID)
+            .caseId(TEST_CASE_ID)
             .caseData(caseData)
             .build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
-        aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
+        setupTemplateConfigServiceExpectations();
+
         verifyNoMoreInteractions(emailNotificationTask);
     }
 
     @Test
     public void givenAdulteryCoRespNotRepliedRespUndefended_whenSendEmail_thenSendRespUndefendedCoRespNoReplyTemplate() throws Exception {
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.ENGLISH)))
-            .thenReturn(TEST_RELATIONSHIP_HUSBAND);
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.WELSH)))
-            .thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(D_8_PETITIONER_FIRST_NAME, TestConstants.TEST_USER_FIRST_NAME);
-        caseData.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME);
-        caseData.put(D_8_PETITIONER_EMAIL, TestConstants.TEST_USER_EMAIL);
-        caseData.put(D_8_CASE_REFERENCE, TestConstants.TEST_CASE_FAMILY_MAN_ID);
+        caseData.putAll(buildPetitionerDetail());
         caseData.put(D_8_INFERRED_RESPONDENT_GENDER, "male");
         caseData.put(D_8_CO_RESPONDENT_NAMED, YES_VALUE);
         caseData.put(RECEIVED_AOS_FROM_CO_RESP, NO_VALUE);
         caseData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .caseId(TestConstants.TEST_CASE_ID)
+            .caseId(TEST_CASE_ID)
             .caseData(caseData)
             .build();
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
+        setupTemplateConfigServiceExpectations();
+
         aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
 
-        ArgumentCaptor<TaskContext> argument = ArgumentCaptor.forClass(TaskContext.class);
-        verify(emailNotificationTask).execute(argument.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
+        verify(emailNotificationTask).execute(taskContextArgumentCaptor.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
 
-        TaskContext capturedTask = argument.getValue();
+        TaskContext capturedTask = taskContextArgumentCaptor.getValue();
 
         DefaultTaskContext expectedContext = createdExpectedContext(
-            EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED
+            RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED,
+            caseData
         );
 
         assertThat(expectedContext, equalTo(capturedTask));
@@ -343,15 +378,8 @@ public class AosSubmissionWorkflowTest {
 
     @Test
     public void givenAdulteryCoRespNotRepliedRespNoAdmitUndefended_whenSendEmail_thenSendRespNoAdmitUndefendedCoRespNoReplyTemplate() throws Exception {
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.ENGLISH)))
-            .thenReturn(TEST_RELATIONSHIP_HUSBAND);
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.WELSH)))
-            .thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(D_8_PETITIONER_FIRST_NAME, TestConstants.TEST_USER_FIRST_NAME);
-        caseData.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME);
-        caseData.put(D_8_PETITIONER_EMAIL, TestConstants.TEST_USER_EMAIL);
-        caseData.put(D_8_CASE_REFERENCE, TestConstants.TEST_CASE_FAMILY_MAN_ID);
+        caseData.putAll(buildPetitionerDetail());
         caseData.put(D_8_INFERRED_RESPONDENT_GENDER, "male");
         caseData.put(D_8_CO_RESPONDENT_NAMED, YES_VALUE);
         caseData.put(RECEIVED_AOS_FROM_CO_RESP, NO_VALUE);
@@ -360,21 +388,23 @@ public class AosSubmissionWorkflowTest {
         caseData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .caseId(TestConstants.TEST_CASE_ID)
+            .caseId(TEST_CASE_ID)
             .caseData(caseData)
             .build();
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
+        setupTemplateConfigServiceExpectations();
+
         aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
 
-        ArgumentCaptor<TaskContext> argument = ArgumentCaptor.forClass(TaskContext.class);
-        verify(emailNotificationTask).execute(argument.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
+        verify(emailNotificationTask).execute(taskContextArgumentCaptor.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
 
-        TaskContext capturedTask = argument.getValue();
+        TaskContext capturedTask = taskContextArgumentCaptor.getValue();
 
         DefaultTaskContext expectedContext = createdExpectedContext(
-            EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED
+            AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED,
+            caseData
         );
 
         assertThat(expectedContext, equalTo(capturedTask));
@@ -382,36 +412,29 @@ public class AosSubmissionWorkflowTest {
 
     @Test
     public void givenAdulteryRespNoAdmitUndefendedCoRespReplied_whenSendEmail_thenSendRespNoAdmitUndefendedTemplate() throws Exception {
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.ENGLISH)))
-            .thenReturn(TEST_RELATIONSHIP_HUSBAND);
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.WELSH)))
-            .thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(D_8_PETITIONER_FIRST_NAME, TestConstants.TEST_USER_FIRST_NAME);
-        caseData.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME);
-        caseData.put(D_8_PETITIONER_EMAIL, TestConstants.TEST_USER_EMAIL);
-        caseData.put(D_8_CASE_REFERENCE, TestConstants.TEST_CASE_FAMILY_MAN_ID);
+        caseData.putAll(buildPetitionerDetail());
         caseData.put(D_8_INFERRED_RESPONDENT_GENDER, "male");
         caseData.put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue());
         caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
         caseData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .caseId(TestConstants.TEST_CASE_ID)
+            .caseId(TEST_CASE_ID)
             .caseData(caseData)
             .build();
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
+        setupTemplateConfigServiceExpectations();
+
         aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
 
-        ArgumentCaptor<TaskContext> argument = ArgumentCaptor.forClass(TaskContext.class);
-        verify(emailNotificationTask).execute(argument.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
-
-        TaskContext capturedTask = argument.getValue();
-
+        verify(emailNotificationTask).execute(taskContextArgumentCaptor.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
+        TaskContext capturedTask = taskContextArgumentCaptor.getValue();
         DefaultTaskContext expectedContext = createdExpectedContext(
-            EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY
+            AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY,
+            caseData
         );
 
         assertThat(expectedContext, equalTo(capturedTask));
@@ -419,36 +442,29 @@ public class AosSubmissionWorkflowTest {
 
     @Test
     public void givenSep2YrRespNoConsentUndefended_whenSendEmail_thenSendRespNoConsentUndefendedTemplate() throws Exception {
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.ENGLISH)))
-            .thenReturn(TEST_RELATIONSHIP_HUSBAND);
-        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.WELSH)))
-            .thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(D_8_PETITIONER_FIRST_NAME, TestConstants.TEST_USER_FIRST_NAME);
-        caseData.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME);
-        caseData.put(D_8_PETITIONER_EMAIL, TestConstants.TEST_USER_EMAIL);
-        caseData.put(D_8_CASE_REFERENCE, TestConstants.TEST_CASE_FAMILY_MAN_ID);
+        caseData.putAll(buildPetitionerDetail());
         caseData.put(D_8_INFERRED_RESPONDENT_GENDER, "male");
         caseData.put(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS.getValue());
         caseData.put(RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE);
         caseData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .caseId(TestConstants.TEST_CASE_ID)
+            .caseId(TEST_CASE_ID)
             .caseData(caseData)
             .build();
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
+        setupTemplateConfigServiceExpectations();
+
         aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
 
-        ArgumentCaptor<TaskContext> argument = ArgumentCaptor.forClass(TaskContext.class);
-        verify(emailNotificationTask).execute(argument.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
-
-        TaskContext capturedTask = argument.getValue();
-
+        verify(emailNotificationTask).execute(taskContextArgumentCaptor.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
+        TaskContext capturedTask = taskContextArgumentCaptor.getValue();
         DefaultTaskContext expectedContext = createdExpectedContext(
-            EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_CONSENT_2_YEARS
+            AOS_RECEIVED_UNDEFENDED_NO_CONSENT_2_YEARS,
+            caseData
         );
 
         assertThat(expectedContext, equalTo(capturedTask));
@@ -461,17 +477,14 @@ public class AosSubmissionWorkflowTest {
         when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.WELSH)))
             .thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(D_8_PETITIONER_FIRST_NAME, TestConstants.TEST_USER_FIRST_NAME);
-        caseData.put(D_8_PETITIONER_LAST_NAME, TestConstants.TEST_USER_LAST_NAME);
-        caseData.put(D_8_PETITIONER_EMAIL, TestConstants.TEST_USER_EMAIL);
-        caseData.put(D_8_CASE_REFERENCE, TestConstants.TEST_CASE_FAMILY_MAN_ID);
+        caseData.putAll(buildPetitionerDetail());
         caseData.put(D_8_INFERRED_RESPONDENT_GENDER, "male");
         caseData.put(D_8_CO_RESPONDENT_NAMED, YES_VALUE);
         caseData.put(RECEIVED_AOS_FROM_CO_RESP, YES_VALUE);
         caseData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .caseId(TestConstants.TEST_CASE_ID)
+            .caseId(TEST_CASE_ID)
             .caseData(caseData)
             .build();
 
@@ -479,12 +492,13 @@ public class AosSubmissionWorkflowTest {
 
         aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
 
-        ArgumentCaptor<TaskContext> argument = ArgumentCaptor.forClass(TaskContext.class);
-        verify(emailNotificationTask).execute(argument.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
+        verify(emailNotificationTask).execute(taskContextArgumentCaptor.capture(), eq(ccdCallbackRequest.getCaseDetails().getCaseData()));
 
-        TaskContext capturedTask = argument.getValue();
+        TaskContext capturedTask = taskContextArgumentCaptor.getValue();
 
-        DefaultTaskContext expectedContext = createdExpectedContext(EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT);
+        DefaultTaskContext expectedContext = createdExpectedContext(
+            RESPONDENT_SUBMISSION_CONSENT,
+            caseData);
 
         assertThat(expectedContext, equalTo(capturedTask));
     }
@@ -492,13 +506,17 @@ public class AosSubmissionWorkflowTest {
     @Test
     public void givenCaseSolicitor_whenRunWorkflow_thenSolEmailNotificationTaskCalled() throws WorkflowException {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(PETITIONER_SOLICITOR_EMAIL, TestConstants.TEST_USER_EMAIL);
+        caseData.putAll(buildPetitionerDetail());
+        caseData.put(PETITIONER_SOLICITOR_EMAIL, TEST_USER_EMAIL);
         caseData.put(RESP_WILL_DEFEND_DIVORCE, NO_VALUE);
+        caseData.put(D_8_INFERRED_RESPONDENT_GENDER, "male");
 
         CaseDetails caseDetails = CaseDetails.builder()
-            .caseId(TestConstants.TEST_CASE_ID)
+            .caseId(TEST_CASE_ID)
             .caseData(caseData)
             .build();
+
+        setupTemplateConfigServiceExpectations();
 
         mockTasksExecution(
             caseData,
@@ -523,15 +541,216 @@ public class AosSubmissionWorkflowTest {
         );
     }
 
-    private DefaultTaskContext createdExpectedContext(EmailTemplateNames template) {
+    @Test
+    public void givenCaseNotDefended_whenRespondentRepresentedPetitionerNotRepresented_thenSendEmailNotification() throws IOException,
+        WorkflowException {
+        CcdCallbackRequest ccdCallbackRequest = setUpCommonRespondentRepresentedCallbackRequest(Collections.EMPTY_MAP);
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+
+        aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
+
+        runCommonRespondentRepresentedEmailTemplateAssertion(caseData, RESPONDENT_SUBMISSION_CONSENT);
+        runCommonRespondentRepresentedVerification(caseData);
+    }
+
+    @Test
+    public void givenCaseNotDefended_AdulteryAndNoConsent_whenRespondentRepresentedPetitionerNotRepresented_thenSendEmailNotification()
+        throws IOException, WorkflowException {
+        CcdCallbackRequest ccdCallbackRequest = setUpCommonRespondentRepresentedCallbackRequest(
+            of(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue(),
+                RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE,
+                RECEIVED_AOS_FROM_CO_RESP, YES_VALUE)
+        );
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+
+        aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
+
+        runCommonRespondentRepresentedEmailTemplateAssertion(caseData, AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY);
+        runCommonRespondentRepresentedVerification(caseData);
+    }
+
+    @Test
+    public void givenCaseNotDefended_NoConsentCoRespNamedAndNotReplied_whenRespondentRepresentedPetitionerNotRepresented_thenSendEmailNotification()
+        throws IOException, WorkflowException {
+        CcdCallbackRequest ccdCallbackRequest = setUpCommonRespondentRepresentedCallbackRequest(
+            of(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue(),
+                RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE,
+                D_8_CO_RESPONDENT_NAMED, YES_VALUE,
+                RECEIVED_AOS_FROM_CO_RESP, NO_VALUE)
+        );
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+
+        aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
+
+        runCommonRespondentRepresentedEmailTemplateAssertion(caseData,
+            AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED);
+        runCommonRespondentRepresentedVerification(caseData);
+    }
+
+    @Test
+    public void givenCaseNotDefended_Sep2YrAndNoConsent_whenRespondentRepresentedPetitionerNotRepresented_thenSendEmailNotification() throws
+        IOException, WorkflowException {
+        CcdCallbackRequest ccdCallbackRequest = setUpCommonRespondentRepresentedCallbackRequest(
+            of(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS.getValue(),
+                RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE,
+                RECEIVED_AOS_FROM_CO_RESP, NO_VALUE)
+        );
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+
+        aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
+
+        runCommonRespondentRepresentedEmailTemplateAssertion(caseData, AOS_RECEIVED_UNDEFENDED_NO_CONSENT_2_YEARS);
+        runCommonRespondentRepresentedVerification(caseData);
+    }
+
+    @Test
+    public void givenCaseNotDefended_Sep2YrAndConsent_whenRespondentRepresentedPetitionerNotRepresented_thenSendEmailNotification() throws
+        IOException, WorkflowException {
+        CcdCallbackRequest ccdCallbackRequest = setUpCommonRespondentRepresentedCallbackRequest(
+            of(D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS.getValue(),
+                RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE,
+                RECEIVED_AOS_FROM_CO_RESP, NO_VALUE)
+        );
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+
+        aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
+
+        runCommonRespondentRepresentedEmailTemplateAssertion(caseData, RESPONDENT_SUBMISSION_CONSENT);
+        runCommonRespondentRepresentedVerification(caseData);
+    }
+
+    @Test
+    public void givenCaseNotDefended_CoRespNamedAndNotReplied_whenRespondentRepresentedPetitionerNotRepresented_thenSendEmailNotification() throws
+        IOException, WorkflowException {
+        CcdCallbackRequest ccdCallbackRequest = setUpCommonRespondentRepresentedCallbackRequest(
+            of(
+                D_8_REASON_FOR_DIVORCE, ADULTERY.getValue(),
+                RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE,
+                D_8_CO_RESPONDENT_NAMED, YES_VALUE,
+                RECEIVED_AOS_FROM_CO_RESP, NO_VALUE
+            )
+        );
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+
+        aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
+
+        runCommonRespondentRepresentedEmailTemplateAssertion(caseData, RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED);
+        runCommonRespondentRepresentedVerification(caseData);
+    }
+
+    @Test
+    public void givenCaseNotDefended_whenRespondentRepresentedPetitionerEmailNotExist_thenShouldNotSendEmailNotification() throws
+        IOException, WorkflowException {
+        CcdCallbackRequest ccdCallbackRequest = setUpCommonRespondentRepresentedCallbackRequest(
+            of(PETITIONER_SOLICITOR_EMAIL, TEST_PETITIONER_EMAIL)
+        );
+
+        aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
+
+        verifyNoInteractions(emailNotificationTask);
+    }
+
+    @Test
+    public void givenCaseNotDefended_whenRespondentRepresentedAndPetitionerEmailExist_thenShouldSendEmailNotification() throws
+        IOException, WorkflowException {
+        CcdCallbackRequest ccdCallbackRequest = setUpCommonRespondentRepresentedCallbackRequest(
+            of(
+                PETITIONER_SOLICITOR_EMAIL, EMPTY_STRING,
+                D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL
+            )
+        );
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+
+        aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
+
+        verifyTaskWasCalled(caseData, emailNotificationTask);
+    }
+
+    @Test
+    public void givenCaseNotDefended_whenRespondentRepresentedAndPetitionerEmailNotExist_thenShouldNotSendEmailNotification() throws
+        IOException, WorkflowException {
+        CcdCallbackRequest ccdCallbackRequest = setUpCommonRespondentRepresentedCallbackRequest(
+            of(
+                PETITIONER_SOLICITOR_EMAIL, EMPTY_STRING,
+                D_8_PETITIONER_EMAIL, EMPTY_STRING
+            )
+        );
+
+        aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
+
+        verifyNoInteractions(emailNotificationTask);
+    }
+
+    @Test
+    public void givenCaseNotDefended_whenOnlyRespondentSolicitorDetailExists_thenSendEmailNotification() throws
+        IOException, WorkflowException {
+        CcdCallbackRequest ccdCallbackRequest = setUpCommonRespondentRepresentedCallbackRequest(Collections.EMPTY_MAP);
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+        caseData.remove(RESP_SOL_REPRESENTED);
+
+        aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
+
+        runCommonRespondentRepresentedEmailTemplateAssertion(caseData, RESPONDENT_SUBMISSION_CONSENT);
+        runCommonRespondentRepresentedVerification(caseData);
+    }
+
+    @Test
+    public void givenCaseNotDefended_whenRespondentNotRepresented_thenNotQueueAosSolicitorSubmitTask() throws
+        IOException, WorkflowException {
+        CcdCallbackRequest ccdCallbackRequest = setUpCommonRespondentRepresentedCallbackRequest(Collections.EMPTY_MAP);
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+        caseData.remove(RESP_SOL_REPRESENTED);
+        caseData.remove(D8_RESPONDENT_SOLICITOR_COMPANY);
+
+        aosSubmissionWorkflow.run(ccdCallbackRequest, AUTH_TOKEN);
+
+        verifyNoInteractions(queueAosSolicitorSubmitTask);
+    }
+
+    private CcdCallbackRequest setUpCommonRespondentRepresentedCallbackRequest(Map<String, Object> additionalData) throws IOException {
+        CcdCallbackRequest ccdCallbackRequest = getJsonFromResourceFile(
+            AOS_SOLICITOR_NOMINATED_JSON, CcdCallbackRequest.class);
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+        caseData.putAll(buildPetitionerDetail());
+        caseData.putAll(additionalData);
+
+        setupTemplateConfigServiceExpectations();
+        when(emailNotificationTask.execute(any(), any())).thenReturn(caseData);
+
+        return ccdCallbackRequest;
+    }
+
+    private void runCommonRespondentRepresentedEmailTemplateAssertion(Map<String, Object> caseData, EmailTemplateNames expectedEmailTemplateName) {
+        verify(emailNotificationTask).execute(taskContextArgumentCaptor.capture(), eq(caseData));
+        TaskContext capturedTask = taskContextArgumentCaptor.getValue();
+
+        EmailTemplateNames actualEmailTemplateNameUsed = capturedTask.getTransientObject(NOTIFICATION_TEMPLATE);
+        assertThat(expectedEmailTemplateName, is(actualEmailTemplateNameUsed));
+    }
+
+    private void runCommonRespondentRepresentedVerification(Map<String, Object> caseData) {
+        verifyTasksCalledInOrder(
+            caseData,
+            emailNotificationTask,
+            queueAosSolicitorSubmitTask
+        );
+
+        verifyTasksWereNeverCalled(
+            aosReceivedPetitionerSolicitorEmailTask,
+            undefendedDivorceNotificationEmailTask,
+            defendedDivorceNotificationEmailTask
+        );
+    }
+
+    private DefaultTaskContext createdExpectedContext(EmailTemplateNames template, Map<String, Object> caseData) {
         final Map<String, Object> expectedTemplateVars = new HashMap<>();
         final DefaultTaskContext expectedContext = new DefaultTaskContext();
 
-        expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TestConstants.TEST_USER_FIRST_NAME);
-        expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TestConstants.TEST_USER_LAST_NAME);
-        expectedTemplateVars.put(NOTIFICATION_RELATIONSHIP_KEY, TestConstants.TEST_RELATIONSHIP_HUSBAND);
-        expectedTemplateVars.put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TestConstants.TEST_WELSH_MALE_GENDER_IN_RELATION);
-        expectedTemplateVars.put(NOTIFICATION_REFERENCE_KEY, TestConstants.TEST_CASE_FAMILY_MAN_ID);
+        expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, TEST_USER_FIRST_NAME);
+        expectedTemplateVars.put(NOTIFICATION_ADDRESSEE_LAST_NAME_KEY, TEST_USER_LAST_NAME);
+        expectedTemplateVars.put(NOTIFICATION_RELATIONSHIP_KEY, TEST_RELATIONSHIP_HUSBAND);
+        expectedTemplateVars.put(NOTIFICATION_WELSH_HUSBAND_OR_WIFE, TEST_WELSH_MALE_GENDER_IN_RELATION);
+        expectedTemplateVars.put(NOTIFICATION_REFERENCE_KEY, TEST_CASE_FAMILY_MAN_ID);
 
         expectedContext.setTransientObjects(ImmutableMap
             .of(CASE_ID_JSON_KEY, TestConstants.TEST_CASE_ID,
@@ -541,5 +760,21 @@ public class AosSubmissionWorkflowTest {
             ));
 
         return expectedContext;
+    }
+
+    private Map<String, Object> buildPetitionerDetail() {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(D_8_PETITIONER_FIRST_NAME, TEST_USER_FIRST_NAME);
+        caseData.put(D_8_PETITIONER_LAST_NAME, TEST_USER_LAST_NAME);
+        caseData.put(D_8_PETITIONER_EMAIL, TEST_USER_EMAIL);
+        caseData.put(D_8_CASE_REFERENCE, TEST_CASE_FAMILY_MAN_ID);
+        return caseData;
+    }
+
+    private void setupTemplateConfigServiceExpectations() {
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.ENGLISH)))
+            .thenReturn(TEST_RELATIONSHIP_HUSBAND);
+        when(templateConfigService.getRelationshipTermByGender(eq(TEST_INFERRED_MALE_GENDER), eq(LanguagePreference.WELSH)))
+            .thenReturn(TEST_WELSH_MALE_GENDER_IN_RELATION);
     }
 }
