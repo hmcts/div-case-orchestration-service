@@ -11,12 +11,15 @@ import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.JUDGE_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class GeneralOrderDraftTest extends GeneralOrderTest {
@@ -44,6 +47,32 @@ public class GeneralOrderDraftTest extends GeneralOrderTest {
                 hasJsonPath("$.data.GeneralOrderDraft.document_filename", is(fileName)),
                 hasNoJsonPath("$.errors"),
                 hasNoJsonPath("$.warnings")
+            )));
+    }
+
+    @Test
+    public void shouldThrowErrorWhenNoJudgeName() throws Exception {
+        Map<String, Object> caseData = buildInputCaseData();
+        caseData.remove(JUDGE_NAME);
+
+        String documentType = GeneralOrderGenerationTask.FileMetadata.DOCUMENT_TYPE;
+//        String fileName = formatDocumentFileName(documentType);
+
+//        stubDocumentGeneratorServiceRequest(caseData, GeneralOrderGenerationTask.FileMetadata.TEMPLATE_ID, documentType);
+
+        webClient.perform(post(API_URL)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(buildRequest(caseData)))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(
+                isJson(),
+                hasJsonPath("$.errors", hasSize(1)),
+                hasJsonPath(
+                    "$.errors[0]",
+                    containsString("Could not evaluate value of mandatory property \"JudgeName\"")
+                )
             )));
     }
 }
