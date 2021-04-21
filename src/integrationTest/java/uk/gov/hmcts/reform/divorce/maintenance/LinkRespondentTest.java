@@ -31,7 +31,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_RESP_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.events.CcdTestEvents.TEST_AOS_AWAITING_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.events.CcdTestEvents.TEST_AOS_AWAITING_EVENT;
 import static uk.gov.hmcts.reform.divorce.util.DateConstants.CCD_DATE_FORMAT;
 
 public class LinkRespondentTest extends RetrieveAosCaseSupport {
@@ -84,7 +84,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
             null,
-            TEST_AOS_AWAITING_EVENT_ID,
+                TEST_AOS_AWAITING_EVENT,
             petitionerUserDetails);
 
         final UserDetails respondentUserDetails = createCitizenUser();
@@ -122,7 +122,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
             null,
-            TEST_AOS_AWAITING_EVENT_ID,
+                TEST_AOS_AWAITING_EVENT,
             petitionerUserDetails);
 
         updateCase(String.valueOf(caseDetails.getId()), null, "aosNotReceived");
@@ -161,7 +161,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
             null,
-            TEST_AOS_AWAITING_EVENT_ID,
+                TEST_AOS_AWAITING_EVENT,
             petitionerUserDetails);
 
         final UserDetails coRespondentUserDetails = createCitizenUser();
@@ -199,7 +199,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
 
         updateCaseForCitizen(String.valueOf(caseDetails.getId()),
             null,
-            TEST_AOS_AWAITING_EVENT_ID,
+                TEST_AOS_AWAITING_EVENT,
             petitionerUserDetails);
 
         final UserDetails coRespondentUserDetails = createCitizenUser();
@@ -227,7 +227,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
     }
 
     private void assertCaseDetailsRespondent(UserDetails userDetails, String caseId) {
-        CaseDetails caseDetails = ccdClientSupport.retrieveCase(userDetails, caseId);
+        CaseDetails caseDetails = ccdClientSupport.retrieveCaseForCitizen(userDetails, caseId);
 
         assertEquals(userDetails.getEmailAddress(), caseDetails.getData().get(RESPONDENT_EMAIL_ADDRESS));
         assertNull(caseDetails.getData().get(RECEIVED_AOS_FROM_RESP));
@@ -235,7 +235,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
     }
 
     private void assertCaseDetailsCoRespondent(UserDetails userDetails, String caseId) {
-        CaseDetails caseDetails = ccdClientSupport.retrieveCase(userDetails, caseId);
+        CaseDetails caseDetails = ccdClientSupport.retrieveCaseForCitizen(userDetails, caseId);
 
         assertEquals(userDetails.getEmailAddress(), caseDetails.getData().get(CO_RESP_EMAIL_ADDRESS));
         assertNull(caseDetails.getData().get(RECEIVED_AOS_FROM_RESP));

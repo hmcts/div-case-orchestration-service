@@ -12,6 +12,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING_SOLICITOR;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_OVERDUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_CCD_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
@@ -42,8 +43,16 @@ public class Conditions {
         return ApplicationServiceTypes.DEEMED.equalsIgnoreCase(serviceApplication.getType());
     }
 
+    public static boolean isServiceApplicationDeemedDispensedOrBailiff(DivorceServiceApplication serviceApplication) {
+        return isServiceApplicationDeemedOrDispensed(serviceApplication) || isServiceApplicationBailiff(serviceApplication);
+    }
+
     public static boolean isServiceApplicationDeemedOrDispensed(DivorceServiceApplication serviceApplication) {
         return isServiceApplicationDeemed(serviceApplication) || isServiceApplicationDispensed(serviceApplication);
+    }
+
+    public static boolean isServiceApplicationBailiff(DivorceServiceApplication serviceApplication) {
+        return ApplicationServiceTypes.BAILIFF.equalsIgnoreCase(serviceApplication.getType());
     }
 
     public static boolean isServiceApplicationBailiff(Map<String, Object> caseData) {
@@ -60,7 +69,8 @@ public class Conditions {
 
     public static boolean isAOSDraftedCandidate(CaseDetails caseDetails) {
         return caseDetails.getState().equals(AOS_AWAITING_SOLICITOR)
-                || caseDetails.getState().equals(AOS_AWAITING);
+            || caseDetails.getState().equals(AOS_AWAITING)
+            || caseDetails.getState().equals(AOS_OVERDUE);
     }
 
     public static boolean isPetitionAmended(Map<String, Object> caseData) {

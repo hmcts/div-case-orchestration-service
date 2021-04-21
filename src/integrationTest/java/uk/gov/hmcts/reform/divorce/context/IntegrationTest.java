@@ -1,8 +1,10 @@
 package uk.gov.hmcts.reform.divorce.context;
 
+import io.restassured.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.junit.runners.SerenityRunner;
 import net.serenitybdd.junit.spring.integration.SpringIntegrationMethodRule;
+import net.serenitybdd.rest.SerenityRest;
 import org.assertj.core.util.Strings;
 import org.junit.After;
 import org.junit.Before;
@@ -10,6 +12,7 @@ import org.junit.Rule;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import uk.gov.hmcts.reform.divorce.RetryRule;
 import uk.gov.hmcts.reform.divorce.model.idam.UserDetails;
@@ -49,6 +52,9 @@ public abstract class IntegrationTest {
 
     @Value("${case.orchestration.service.base.uri}")
     protected String serverUrl;
+
+    @Value("${idam.s2s-auth.url}")
+    private String idamS2sAuthUrl;
 
     @Value("${http.proxy:#{null}}")
     protected String httpProxy;
@@ -140,8 +146,7 @@ public abstract class IntegrationTest {
         });
     }
 
-    protected UserDetails createSolicitorUser() {
-
+    protected UserDetails retrieveSolicitorUserDetails() {
         final String username = SOLICITOR_USER_NAME + EMAIL_DOMAIN;
         return getCreatedUserDetails(username, SOLICITOR_PASSWORD);
     }
@@ -215,4 +220,17 @@ public abstract class IntegrationTest {
             }
         }
     }
+
+    protected String getS2sAuth() {
+        Response response = SerenityRest.given()
+            .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+            .relaxedHTTPSValidation()
+            .body(String.format("{\"microservice\": \"divorce_frontend\"}"))
+            .post(idamS2sAuthUrl + "/testing-support/lease");
+
+        String token = response.getBody().asString();
+
+        return "Bearer " + token;
+    }
+
 }

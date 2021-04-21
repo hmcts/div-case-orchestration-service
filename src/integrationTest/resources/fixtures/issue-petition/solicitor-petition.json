@@ -1,9 +1,10 @@
 {
   "PetitionerOrganisationPolicy": {
     "Organisation": {
-      "OrganisationID": null,
-      "OrganisationName": null
+      "OrganisationID": "M2ZT9Q2",
+      "OrganisationName": "DivPetitionerSolicitorFirm"
     },
+    "OrgPolicyReference": "DivPetitionerSolicitorFirm",
     "OrgPolicyCaseAssignedRole": "[PETSOLICITOR]"
   },
   "D8DerivedPetitionerHomeAddress": "123 some road\nSW2 2SW",
@@ -12,9 +13,6 @@
   "D8DivorceCostsClaim": "No",
   "D8DivorceUnit": "eastMidlands",
   "D8DivorceWho": "wife",
-  "D8DocumentsGenerated": [
-  ],
-  "D8DocumentsUploaded": [],
   "D8FinancialOrder": "No",
   "D8InferredPetitionerGender": "male",
   "D8InferredRespondentGender": "female",

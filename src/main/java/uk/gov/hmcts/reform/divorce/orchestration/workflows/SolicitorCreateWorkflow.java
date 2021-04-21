@@ -14,11 +14,13 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CopyD8JurisdictionConnectionPolicyTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentOrganisationPolicyRemovalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetClaimCostsFromTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetNewLegalConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSelectedOrganisationTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +32,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_FROM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigitalSelectedYes;
 
 @Component
 @Slf4j
@@ -42,9 +45,12 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
     private final SetClaimCostsFromTask setClaimCostsFromTask;
     private final SetPetitionerSolicitorOrganisationPolicyReferenceTask setPetitionerSolicitorOrganisationPolicyReferenceTask;
     private final SetRespondentSolicitorOrganisationPolicyReferenceTask setRespondentSolicitorOrganisationPolicyReferenceTask;
-    private final FeatureToggleService featureToggleService;
+    private final RespondentOrganisationPolicyRemovalTask respondentOrganisationPolicyRemovalTask;
     private final SetNewLegalConnectionPolicyTask setNewLegalConnectionPolicyTask;
     private final CopyD8JurisdictionConnectionPolicyTask copyD8JurisdictionConnectionPolicyTask;
+    private final ValidateSelectedOrganisationTask validateSelectedOrganisationTask;
+
+    private final FeatureToggleService featureToggleService;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
         return this.execute(
@@ -65,9 +71,11 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
     }
 
     private Task<Map<String, Object>>[] getTasks(CaseDetails caseDetails) {
+        final String caseId = caseDetails.getCaseId();
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
         if (isPetitionerClaimingCostsAndClaimCostsFromIsEmptyIn(caseDetails)) {
+            log.info("CaseId: {}, petitioner claiming costs", caseId);
             tasks.add(setClaimCostsFromTask);
         }
 
@@ -77,12 +85,29 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
         tasks.add(addMiniPetitionDraftTask);
         tasks.add(addNewDocumentsToCaseDataTask);
 
+        if (featureToggleService.isFeatureEnabled(Features.SHARE_A_CASE)) {
+            log.info("CaseId: {}, validate selected organisation", caseId);
+            tasks.add(validateSelectedOrganisationTask);
+        } else {
+            log.info("CaseId: {}, share a case switched OFF", caseId);
+        }
+
         if (featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)) {
-            log.info("Adding OrganisationPolicyReferenceTasks, REPRESENTED_RESPONDENT_JOURNEY feature toggle is set to true.");
+            log.info("CaseId: {}, Adding OrganisationPolicyReferenceTasks", caseId);
             tasks.add(setPetitionerSolicitorOrganisationPolicyReferenceTask);
-            tasks.add(setRespondentSolicitorOrganisationPolicyReferenceTask);
+
+            if (isRespondentSolicitorDigitalSelectedYes(caseDetails.getCaseData())) {
+                log.info("CaseId: {}, respondent solicitor is digital", caseId);
+                tasks.add(setRespondentSolicitorOrganisationPolicyReferenceTask);
+            } else {
+                log.info("CaseId: {}, respondent solicitor is NOT digital", caseId);
+                tasks.add(respondentOrganisationPolicyRemovalTask);
+            }
+        } else {
+            log.info("CaseId: {}, RRJ is OFF", caseId);
         }
 
         return tasks.toArray(new Task[] {});
     }
+
 }

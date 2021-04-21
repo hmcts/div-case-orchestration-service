@@ -9,7 +9,7 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath("net.serenity-bdd:serenity-gradle-plugin:2.2.13")
+        classpath("net.serenity-bdd:serenity-gradle-plugin:2.4.4")
     }
 }
 
@@ -34,10 +34,10 @@ def versions = [
         bspCommonLib                 : '0.0.47',
         ccdStoreClient               : '4.7.3',
         commonsBeanUtils             : '1.9.4',
-        commonsIo                    : '2.6',
+        commonsIo                    : '2.7',
         commonsLang3                 : '3.9',
         commonsMath3                 : '3.6.1',
-        divCommonLib                 : '1.2.13',
+        divCommonLib                 : '1.2.16',
         dumbster                     : '1.7.1',
         elasticsearch                : '7.10.2',
         feignHttpClient              : '10.3.0',
@@ -71,7 +71,6 @@ def versions = [
         springBoot                   : '2.3.4.RELEASE',//Upgrading to 2.3.9 makes build break because of embeddedPG and Flyway
         tomcat                       : '9.0.43',
         unirest                      : '1.4.9',
-        embeddedPostgres             : '1.5.5',
         pact_version                 : '4.1.11',
         httpComponents               : '4.5.13',
 ]
@@ -140,8 +139,8 @@ allprojects {
                 entry 'jackson-module-parameter-names'
             }
 
-            // solves CVE-2014-3488, CVE-2015-2156, CVE-2019-16869
-            dependencySet(group: 'io.netty', version: '4.1.60.Final') {
+            // solves CVE-2014-3488, CVE-2015-2156, CVE-2019-16869, CVE-2021-21409
+            dependencySet(group: 'io.netty', version: '4.1.61.Final') {
                 entry 'netty-buffer'
                 entry 'netty-codec'
                 entry 'netty-codec-http'
@@ -325,7 +324,6 @@ dependencies {
         exclude(module: 'commons-logging')
         exclude(module: 'android-json')
     }
-    testImplementation group: 'io.zonky.test', name: 'embedded-database-spring-test', version: versions.embeddedPostgres
 
     //integration test
     integrationTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok

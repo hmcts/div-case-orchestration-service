@@ -32,6 +32,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_AUTHORIZATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getJsonFromResourceFile;
@@ -102,21 +103,6 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
         assertThat(getResponseBody(response), hasUpdatedOrganisationPolicyReferences());
     }
 
-    @Test
-    public void givenCallbackRequestWhenSolicitorUpdateWithNoSolicitorReferencesThenReturnWithOrgPolicyReferenceUnchanged() throws Exception {
-        Response response = postWithPetitionerOrganisationPolicyDataAndNoSolicitorReferenceAndValidateResponse();
-
-        assertEverythingIsFine(response);
-        assertThat(getResponseBody(response),
-            isJson(
-                allOf(
-                    withJsonPath("$.data.PetitionerOrganisationPolicy.OrgPolicyReference", is(EXISTING_POLICY_REFERENCE_VALUE)),
-                    withJsonPath("$.data.RespondentOrganisationPolicy.OrgPolicyReference", is(EXISTING_POLICY_REFERENCE_VALUE))
-                )
-            )
-        );
-    }
-
     private void assertEverythingIsFine(Response response) {
         Map<String, Object> responseData = response.getBody().path(DATA);
 
@@ -146,7 +132,9 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
     private Map<String, Object> getRequestHeaders() {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
-        headers.put(HttpHeaders.AUTHORIZATION, createSolicitorUser().getAuthToken());
+        headers.put(HttpHeaders.AUTHORIZATION, retrieveSolicitorUserDetails().getAuthToken());
+        headers.put(SERVICE_AUTHORIZATION_HEADER, getS2sAuth());
+
         return headers;
     }
 
@@ -207,28 +195,14 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
         return response;
     }
 
-    private Response postWithPetitionerOrganisationPolicyDataAndNoSolicitorReferenceAndValidateResponse() throws Exception {
-        CcdCallbackRequest ccdCallbackRequest = buildCcdCallbackRequest();
-
-        removeItemFromCaseData(ccdCallbackRequest, SOLICITOR_REFERENCE_JSON_KEY);
-        removeItemFromCaseData(ccdCallbackRequest, D8_RESPONDENT_SOLICITOR_REFERENCE);
-
-        addItemToCaseData(ccdCallbackRequest, PETITIONER_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicyData());
-        addItemToCaseData(ccdCallbackRequest, RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicyData());
-
-        String requestPayload = convertObjectToJsonString(ccdCallbackRequest);
-
-        Response response = RestUtil.postToRestService(getSolicitorUpdateUrl(), getRequestHeaders(), requestPayload);
-
-        assertThat(HttpStatus.OK.value(), is(response.getStatusCode()));
-
-        return response;
-    }
-
     private OrganisationPolicy buildOrganisationPolicyData() {
         return OrganisationPolicy.builder()
             .orgPolicyReference(EXISTING_POLICY_REFERENCE_VALUE)
-            .organisation(Organisation.builder().build())
+            .organisation(
+                Organisation.builder()
+                    .organisationID("M2ZT9Q2")
+                    .organisationName("DivPetitionerSolicitorFirm")
+                    .build())
             .build();
     }
 

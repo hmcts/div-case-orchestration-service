@@ -39,24 +39,11 @@ spring:
   main:
     allow-bean-definition-overriding: true
   quartz:
-    job-store-type: jdbc
-    properties:
-      org:
-        quartz:
-          scheduler:
-            instanceId: AUTO
-          jobStore:
-            isClustered: true
-            class: org.quartz.impl.jdbcjobstore.JobStoreTX
-            driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
-            dataSource: 'scheduler'
-          threadPool:
-            class: org.quartz.simpl.SimpleThreadPool
-            threadCount: 8
+    job-store-type: memory
     scheduler-name: 'Divorce Job Scheduler'
     auto-startup: ${scheduler.enabled}
   flyway:
-    enabled: ${scheduler.enabled}
+    enabled: false
     schemas: 'public'
 
 feign:
@@ -149,10 +136,15 @@ feature-toggle:
     paper_update: ${FEATURE_PAPER_UPDATE:false}
     share_a_case: ${FEATURE_SHARE_A_CASE:true}
     represented_respondent_journey: ${FEATURE_REPRESENTED_RESPONDENT_JOURNEY:true}
+    bailiff_journey: ${FEATURE_BAILIFF_JOURNEY:true}
     feature_fee_pay_s2s_token: ${FEATURE_FEE_PAY_S2S_TOKEN:true}
 
 send-letter:
   url: ${SEND_LETTER_SERIVCE_BASEURL:http://localhost:4021}
+
+prd:
+  api:
+    url: ${PRD_SERVICE_API_BASEURL:http://localhost:4451}
 
 aca:
   api:

@@ -29,7 +29,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.A
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_STARTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.events.CcdTestEvents.TEST_AOS_AWAITING_EVENT_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.events.CcdTestEvents.TEST_AOS_AWAITING_EVENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.events.CcdTestEvents.TEST_AOS_DRAFTED_EVENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.events.CcdTestEvents.TEST_AOS_STARTED_EVENT;
 
 @Slf4j
 public class AosOverdueTest extends RetrieveCaseSupport {
@@ -38,8 +40,6 @@ public class AosOverdueTest extends RetrieveCaseSupport {
     private String jobSchedulerContextPath;
 
     private static final String SUBMIT_COMPLETE_CASE_JSON_FILE_PATH = "submit-complete-case.json";
-    private static final String TEST_AOS_STARTED_EVENT = "testAosStarted";
-    private static final String TEST_AOS_DRAFTED_EVENT = "testAosDrafted";
 
     private String aosAwaitingCaseId;
     private String aosStartedCaseId;
@@ -61,11 +61,11 @@ public class AosOverdueTest extends RetrieveCaseSupport {
         citizenUser = createCitizenUser();
         caseworkerUser = createCaseWorkerUser();
 
-        aosAwaitingCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_AWAITING_EVENT_ID);
+        aosAwaitingCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_AWAITING_EVENT);
         aosStartedCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_STARTED_EVENT);
         servedByProcessServerCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_STARTED_EVENT, Pair.of(SERVED_BY_PROCESS_SERVER, YES_VALUE));
         servedByAlternativeMethodCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_STARTED_EVENT, Pair.of(SERVED_BY_ALTERNATIVE_METHOD, YES_VALUE));
-        servedByBailiffCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_AWAITING_EVENT_ID, Pair.of(BAILIFF_SERVICE_SUCCESSFUL, YES_VALUE));
+        servedByBailiffCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_AWAITING_EVENT, Pair.of(BAILIFF_SERVICE_SUCCESSFUL, YES_VALUE));
 
         aosDraftedCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_DRAFTED_EVENT);
         aosDraftedServedByProcessServerCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_DRAFTED_EVENT,
@@ -116,7 +116,7 @@ public class AosOverdueTest extends RetrieveCaseSupport {
     }
 
     private void assertCaseIsInExpectedState(String caseId, String expectedState) {
-        CaseDetails caseDetails = retrieveCase(citizenUser, caseId);
+        CaseDetails caseDetails = retrieveCaseForCitizen(citizenUser, caseId);
         String state = caseDetails.getState();
         assertThat(format("Case %s should be in \"%s\" state", caseId, expectedState), state, is(expectedState));
     }
