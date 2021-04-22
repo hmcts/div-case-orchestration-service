@@ -798,7 +798,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     }
 
     private boolean shouldCostOrderBeSent(Map<String, Object> caseData) {
-        if ((isJudgeCostClaimEmpty(caseData) && !isCostClaimGrantedPopulated(caseData)) || isJudgeCostClaimAdjourned(caseData)) {
+        if (featureToggleService.isFeatureEnabled(Features.OBJECT_TO_COSTS)
+            && (isJudgeCostClaimEmpty(caseData) && !isCostClaimGrantedPopulated(caseData)) || isJudgeCostClaimAdjourned(caseData)) {
             return false;
         }
         return isPetitionerClaimingCosts(caseData);
