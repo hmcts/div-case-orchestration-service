@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.JUDGE_COSTS_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.JudgeHelper.isJudgeGrantCostOrderYes;
@@ -41,6 +42,7 @@ public class JudgeCostsDecisionWorkflow extends DefaultWorkflow<Map<String, Obje
 
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
+        log.info("CaseID: {} Adding field {} to payload with `Yes` value.", caseId, JUDGE_COSTS_DECISION);
         tasks.add(addJudgeCostsDecisionToPayloadTask);
 
         if (!isJudgeGrantCostOrderYes(caseDetails.getCaseData())) {

@@ -21,7 +21,7 @@ public class AddJudgeCostsDecisionToPayloadTaskTest {
     private AddJudgeCostsDecisionToPayloadTask classUnderTest;
 
     @Test
-    public void shouldReturnCourtsInPayload() throws TaskException {
+    public void shouldReturnYesInPayload() throws TaskException {
         Map<String, Object> returnedPayload = classUnderTest.execute(null, singletonMap("incomingKey", "incomingValue"));
 
         assertThat(returnedPayload, hasEntry("incomingKey", "incomingValue"));
