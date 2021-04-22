@@ -11,6 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.model.payment.Payment;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -21,6 +22,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.Fee;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpdate;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionForRefusalWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
@@ -168,6 +170,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtConstants.ALLOCATED_COURT_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.CASE_LIST_FOR_PRONOUNCEMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COSTS_ORDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COSTS_ORDER_JUDGE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DECREE_NISI;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -358,6 +361,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private JudgeCostsDecisionWorkflow judgeCostsDecisionWorkflow;
+
+    @Mock
+    private FeatureToggleService featureToggleService;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -1416,6 +1422,112 @@ public class CaseOrchestrationServiceImplTest {
         expectedResult.putAll(requestPayload);
 
         assertThat(result, is(expectedResult));
+
+        verify(documentGenerationWorkflow, times(1)).run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE);
+    }
+
+    @Test
+    public void shouldGeneratePdfFile_ForDecreeNisiAndCostOrder_WhenCostsClaimGranted_andJudgeHasMadeCostsDecision()
+        throws WorkflowException {
+
+        Map<String, Object> caseData = new HashMap<String, Object>();
+        caseData.put(BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build());
+        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
+        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
+        caseData.put(LANGUAGE_PREFERENCE_WELSH, NO_VALUE);
+        caseData.put(JUDGE_COSTS_DECISION, YES_VALUE);
+
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        when(documentGenerationWorkflow.run(caseDetails, AUTH_TOKEN, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME))
+            .thenReturn(caseData);
+        when(documentGenerationWorkflow.run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_JUDGE, COSTS_ORDER_DOCUMENT_TYPE))
+            .thenReturn(requestPayload);
+        when(featureToggleService.isFeatureEnabled(Features.OBJECT_TO_COSTS)).thenReturn(true);
+
+        final Map<String, Object> result = classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
+
+        Map<String, Object> expectedResult = new HashMap<>();
+        expectedResult.put(BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build());
+        expectedResult.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
+        expectedResult.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
+        expectedResult.put(LANGUAGE_PREFERENCE_WELSH, NO_VALUE);
+        expectedResult.put(JUDGE_COSTS_DECISION, YES_VALUE);
+        expectedResult.putAll(requestPayload);
+
+        assertThat(result, is(expectedResult));
+
+        verify(documentGenerationWorkflow, times(1))
+            .run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_JUDGE, COSTS_ORDER_DOCUMENT_TYPE);
+    }
+
+    @Test
+    public void shouldGeneratePdfFile_ForDecreeNisiAndCostOrder_WhenCostsClaimGranted_andJudgeHasMadeCostsDecision_otcToggledOff()
+        throws WorkflowException {
+
+        Map<String, Object> caseData = new HashMap<String, Object>();
+        caseData.put(BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build());
+        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
+        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
+        caseData.put(LANGUAGE_PREFERENCE_WELSH, NO_VALUE);
+        caseData.put(JUDGE_COSTS_DECISION, YES_VALUE);
+
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        when(documentGenerationWorkflow.run(caseDetails, AUTH_TOKEN, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME))
+            .thenReturn(caseData);
+        when(documentGenerationWorkflow.run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE))
+            .thenReturn(requestPayload);
+        when(featureToggleService.isFeatureEnabled(Features.OBJECT_TO_COSTS)).thenReturn(false);
+
+        final Map<String, Object> result = classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
+
+        Map<String, Object> expectedResult = new HashMap<>();
+        expectedResult.put(BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build());
+        expectedResult.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
+        expectedResult.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
+        expectedResult.put(LANGUAGE_PREFERENCE_WELSH, NO_VALUE);
+        expectedResult.put(JUDGE_COSTS_DECISION, YES_VALUE);
+        expectedResult.putAll(requestPayload);
+
+        assertThat(result, is(expectedResult));
+
+        verify(documentGenerationWorkflow, times(1)).run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE);
+    }
+
+    @Test
+    public void shouldGeneratePdfFile_ForDecreeNisiAndCostOrder_WhenCostsClaimGranted_andJudgeHasNotMadeCostsDecision()
+        throws WorkflowException {
+
+        Map<String, Object> caseData = new HashMap<String, Object>();
+        caseData.put(BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build());
+        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
+        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
+        caseData.put(LANGUAGE_PREFERENCE_WELSH, NO_VALUE);
+
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        when(documentGenerationWorkflow.run(caseDetails, AUTH_TOKEN, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME))
+            .thenReturn(caseData);
+        when(documentGenerationWorkflow.run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE))
+            .thenReturn(requestPayload);
+        when(featureToggleService.isFeatureEnabled(Features.OBJECT_TO_COSTS)).thenReturn(true);
+
+        final Map<String, Object> result = classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
+
+        Map<String, Object> expectedResult = new HashMap<>();
+        expectedResult.put(BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build());
+        expectedResult.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
+        expectedResult.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
+        expectedResult.put(LANGUAGE_PREFERENCE_WELSH, NO_VALUE);
+        expectedResult.putAll(requestPayload);
+
+        assertThat(result, is(expectedResult));
+
+        verify(documentGenerationWorkflow, times(1)).run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE);
     }
 
     @Test
