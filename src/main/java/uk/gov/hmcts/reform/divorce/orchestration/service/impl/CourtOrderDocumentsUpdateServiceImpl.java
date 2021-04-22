@@ -30,8 +30,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.te
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COSTS_ORDER_JUDGE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DECREE_ABSOLUTE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DECREE_NISI;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.hasJudgeMadeCostsDecision;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil.getCollectionMembersOrEmptyList;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.JudgeDecisionHelper.hasJudgeGrantedCostsDecision;
 
 @RequiredArgsConstructor
 @Service
@@ -52,7 +52,7 @@ public class CourtOrderDocumentsUpdateServiceImpl implements CourtOrderDocuments
 
         if (isDocumentPresent(generatedDocuments, COSTS_ORDER_DOCUMENT_TYPE)) {
             if (featureToggleService.isFeatureEnabled(Features.OBJECT_TO_COSTS)
-                && hasJudgeMadeCostsDecision(caseDetails.getCaseData())) {
+                && hasJudgeGrantedCostsDecision(caseDetails.getCaseData())) {
                 updateCostsOrderJudge(authToken, caseDetails);
             } else {
                 updateCostsOrder(authToken, caseDetails);

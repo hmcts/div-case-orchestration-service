@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.JUDGE_COSTS_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
@@ -39,6 +40,10 @@ public class JudgeDecisionHelper {
         String judgeDecision = (String) caseData.get(CcdFields.JUDGE_COSTS_CLAIM_GRANTED);
 
         return Strings.isNullOrEmpty(judgeDecision);
+    }
+
+    public static boolean hasJudgeGrantedCostsDecision(Map<String, Object> caseData) {
+        return YES_VALUE.equalsIgnoreCase(String.valueOf(caseData.get(JUDGE_COSTS_DECISION)));
     }
 
     private static boolean isGranted(Map<String, Object> caseData, String field) {

@@ -27,7 +27,6 @@ import static org.hamcrest.core.IsNull.nullValue;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.DUMMY_CASE_DATA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_REFERENCE_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.VALUE_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.JUDGE_COSTS_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.DN_REFUSED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.WELSH_LA_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADDITIONAL_INFRORMATION;
@@ -125,26 +124,6 @@ public class CaseDataUtilsTest {
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, "No");
         caseData.put(DN_COSTS_OPTIONS_CCD_FIELD, "No");
         assertThat(CaseDataUtils.isPetitionerClaimingCosts(caseData), is(false));
-    }
-
-    @Test
-    public void givenJudgeCostDecisionNo_whenHasJudgeMadeCostsDecision_thenReturnFalse() {
-        Map<String, Object> caseData = new HashMap<>();
-        caseData.put(JUDGE_COSTS_DECISION, "No");
-        assertThat(CaseDataUtils.hasJudgeMadeCostsDecision(caseData), is(false));
-    }
-
-    @Test
-    public void givenJudgeCostDecisionEmpty_whenHasJudgeMadeCostsDecision_thenReturnFalse() {
-        Map<String, Object> caseData = new HashMap<>();
-        assertThat(CaseDataUtils.hasJudgeMadeCostsDecision(caseData), is(false));
-    }
-
-    @Test
-    public void givenJudgeCostDecisionYes_whenHasJudgeMadeCostsDecision_thenReturnTrue() {
-        Map<String, Object> caseData = new HashMap<>();
-        caseData.put(JUDGE_COSTS_DECISION, "Yes");
-        assertThat(CaseDataUtils.hasJudgeMadeCostsDecision(caseData), is(true));
     }
 
     @Test

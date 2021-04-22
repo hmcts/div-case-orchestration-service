@@ -114,8 +114,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.te
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.EventHelper.isIssueAosEvent;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isAOSDraftedCandidate;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isCostClaimGrantedPopulated;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.hasJudgeMadeCostsDecision;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isPetitionerClaimingCosts;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.JudgeDecisionHelper.hasJudgeGrantedCostsDecision;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.JudgeDecisionHelper.isJudgeCostClaimAdjourned;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.JudgeDecisionHelper.isJudgeCostClaimEmpty;
 
@@ -776,25 +776,28 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         Map<String, Object> caseData = caseDetails.getCaseData();
 
         if (Objects.nonNull(caseData.get(BULK_LISTING_CASE_ID_FIELD))) {
-            caseData.putAll(
-                documentGenerationWorkflow.run(caseDetails, authToken, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME));
+            caseData.putAll(documentGenerationWorkflow.run(caseDetails, authToken, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME));
 
-            if (shouldCostClaimBeSent(caseData)) {
-                if (featureToggleService.isFeatureEnabled(Features.OBJECT_TO_COSTS)
-                    && hasJudgeMadeCostsDecision(caseDetails.getCaseData())) {
-                    caseData.putAll(documentGenerationWorkflow.run(
-                        caseDetails, authToken, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_JUDGE, COSTS_ORDER_DOCUMENT_TYPE));
-                } else {
-                    caseData.putAll(documentGenerationWorkflow.run(
-                        caseDetails, authToken, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE));
-                }
+            if (shouldCostOrderBeSent(caseData)) {
+                sendCostOrderDocument(authToken, caseDetails, caseData);
             }
         }
 
         return caseData;
     }
 
-    private boolean shouldCostClaimBeSent(Map<String, Object> caseData) {
+    private void sendCostOrderDocument(String authToken, CaseDetails caseDetails, Map<String, Object> caseData) throws WorkflowException {
+        if (featureToggleService.isFeatureEnabled(Features.OBJECT_TO_COSTS)
+            && hasJudgeGrantedCostsDecision(caseDetails.getCaseData())) {
+            caseData.putAll(documentGenerationWorkflow.run(
+                caseDetails, authToken, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_JUDGE, COSTS_ORDER_DOCUMENT_TYPE));
+        } else {
+            caseData.putAll(documentGenerationWorkflow.run(
+                caseDetails, authToken, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE));
+        }
+    }
+
+    private boolean shouldCostOrderBeSent(Map<String, Object> caseData) {
         if ((isJudgeCostClaimEmpty(caseData) && !isCostClaimGrantedPopulated(caseData)) || isJudgeCostClaimAdjourned(caseData)) {
             return false;
         }
