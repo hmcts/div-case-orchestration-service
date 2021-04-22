@@ -154,6 +154,7 @@ feature-toggle:
     pay_by_account: true
     share_a_case: true
     represented_respondent_journey: true
+    object_to_costs: true
     bailiff_journey: true
 
 send-letter:
