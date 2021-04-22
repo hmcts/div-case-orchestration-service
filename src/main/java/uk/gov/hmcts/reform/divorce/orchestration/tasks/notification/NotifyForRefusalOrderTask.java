@@ -55,8 +55,8 @@ public class NotifyForRefusalOrderTask implements Task<Map<String, Object>> {
     private static final String EMAIL_DESCRIPTION = "Decree Nisi Refusal Order - ";
     private static final String SOL_PERSONAL_SERVICE_EMAIL = "DN decision made email";
 
-    private EmailService emailService;
-    private TemplateConfigService templateConfigService;
+    private final EmailService emailService;
+    private final TemplateConfigService templateConfigService;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) throws TaskException {
