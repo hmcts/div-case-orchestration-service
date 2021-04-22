@@ -58,4 +58,5 @@ public class CcdEvents {
     public static final String SOLICITOR_SUBMIT = "solicitorStatementOfTruthPaySubmit";
     public static final String ISSUE_AOS_OFFLINE_RESPONDENT_FROM_AOS_AWAITING = "IssueAOSOffline_Respondent_fromAosAwaiting";
 
+    public static final String CANCEL_BULK_PRONOUNCED_EVENT = "cancelPronouncement";
 }

@@ -11,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.IdamTestSupport;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper;
+import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +22,7 @@ import static org.hamcrest.Matchers.allOf;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -198,6 +200,19 @@ public class GeneralEmailTest extends IdamTestSupport {
             eq(getExpectedNotificationTemplateVars(OTHER, context(), caseData)),
             any()
         );
+    }
+
+    @Test
+    public void shouldFailWhenNetworkIssue() throws Exception {
+        when(emailClient.sendEmail(any(), any(), any(), any()))
+            .thenThrow(new NotificationClientException("network error"));
+
+        Map<String, Object> caseData = getPetitionerData(false);
+
+        webClient.perform(post(API_URL)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(convertObjectToJsonString(buildRequest(caseData))))
+            .andExpect(status().isOk());
     }
 
     private void setupWebClient(CcdCallbackRequest ccdCallbackRequest) throws Exception {
