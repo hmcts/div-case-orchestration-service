@@ -15,10 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.JUDGE_COSTS_CLAIM_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.JudgeHelper.isJudgeGrantCostOrderYes;
 
 @Component
 @Slf4j
@@ -37,10 +36,6 @@ public class JudgeCostsDecisionWorkflow extends DefaultWorkflow<Map<String, Obje
         );
     }
 
-    private boolean isJudgeGrantCostOrderYes(CaseDetails caseDetails) {
-        return YES_VALUE.equalsIgnoreCase(String.valueOf(caseDetails.getCaseData().get(JUDGE_COSTS_CLAIM_GRANTED)));
-    }
-
     private Task<Map<String, Object>>[] getTasks(CaseDetails caseDetails) {
         final String caseId = caseDetails.getCaseId();
 
@@ -48,7 +43,7 @@ public class JudgeCostsDecisionWorkflow extends DefaultWorkflow<Map<String, Obje
 
         tasks.add(addJudgeCostsDecisionToPayloadTask);
 
-        if (!isJudgeGrantCostOrderYes(caseDetails)) {
+        if (!isJudgeGrantCostOrderYes(caseDetails.getCaseData())) {
             log.info("CaseId: {}, cleaning Judge Costs Claim fields", caseId);
             tasks.add(judgeCostsClaimFieldsRemovalTask);
         }
