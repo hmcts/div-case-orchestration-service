@@ -29,7 +29,6 @@ public class JudgeCostsClaimFieldsRemovalTaskTest {
         caseData.put(classUnderTest.getFieldsToRemove().get(0), "a");
         caseData.put(classUnderTest.getFieldsToRemove().get(1), "b");
         caseData.put(classUnderTest.getFieldsToRemove().get(2), "c");
-        caseData.put(classUnderTest.getFieldsToRemove().get(3), "d");
 
         Map<String, Object> returnedPayload = classUnderTest.execute(contextWithToken(), caseData);
 
@@ -41,10 +40,9 @@ public class JudgeCostsClaimFieldsRemovalTaskTest {
     @Test
     public void getFieldToRemoveIsValid() {
         assertThat(classUnderTest.getFieldsToRemove(), is(not(empty())));
-        assertThat(classUnderTest.getFieldsToRemove().get(0), is(CcdFields.JUDGE_COSTS_CLAIM_GRANTED));
-        assertThat(classUnderTest.getFieldsToRemove().get(1), is(CcdFields.JUDGE_WHO_PAYS_COSTS));
-        assertThat(classUnderTest.getFieldsToRemove().get(2), is(CcdFields.JUDGE_TYPE_COSTS_DECISION));
-        assertThat(classUnderTest.getFieldsToRemove().get(3), is(CcdFields.JUDGE_COSTS_ADDITIONAL_INFO));
+        assertThat(classUnderTest.getFieldsToRemove().get(0), is(CcdFields.JUDGE_WHO_PAYS_COSTS));
+        assertThat(classUnderTest.getFieldsToRemove().get(1), is(CcdFields.JUDGE_TYPE_COSTS_DECISION));
+        assertThat(classUnderTest.getFieldsToRemove().get(2), is(CcdFields.JUDGE_COSTS_ADDITIONAL_INFO));
     }
 
 }

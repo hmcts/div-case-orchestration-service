@@ -16,7 +16,6 @@ public class JudgeCostsClaimFieldsRemovalTask extends FieldsRemovalTask {
     @Override
     protected List<String> getFieldsToRemove() {
         return asList(
-            CcdFields.JUDGE_COSTS_CLAIM_GRANTED,
             CcdFields.JUDGE_WHO_PAYS_COSTS,
             CcdFields.JUDGE_TYPE_COSTS_DECISION,
             CcdFields.JUDGE_COSTS_ADDITIONAL_INFO
