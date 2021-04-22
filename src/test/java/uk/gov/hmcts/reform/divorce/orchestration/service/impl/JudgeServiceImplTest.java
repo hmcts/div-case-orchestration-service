@@ -11,7 +11,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.JudgeServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.JudgeCostsDecisionWorkflow;
 
 import java.util.Map;
@@ -22,10 +21,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
@@ -69,8 +66,8 @@ public class JudgeServiceImplTest {
         when(judgeCostsDecisionWorkflow.run(any())).thenThrow(WorkflowException.class);
 
         JudgeServiceException exception = assertThrows(
-                JudgeServiceException.class,
-                () -> classUnderTest.judgeCostsDecision(ccdCallbackRequest)
+            JudgeServiceException.class,
+            () -> classUnderTest.judgeCostsDecision(ccdCallbackRequest)
         );
 
         assertThat(exception.getCause(), is(instanceOf(WorkflowException.class)));
