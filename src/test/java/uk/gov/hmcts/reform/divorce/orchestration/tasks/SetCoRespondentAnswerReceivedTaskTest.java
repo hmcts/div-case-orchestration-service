@@ -21,7 +21,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 @RunWith(MockitoJUnitRunner.class)
-public class SetCoRespondentAnswerReceivedTest {
+public class SetCoRespondentAnswerReceivedTaskTest {
 
     private static final String CURRENT_DATE = "2018-01-01";
 
@@ -29,7 +29,7 @@ public class SetCoRespondentAnswerReceivedTest {
     private CcdUtil ccdUtil;
 
     @InjectMocks
-    private SetCoRespondentAnswerReceived classToTest;
+    private SetCoRespondentAnswerReceivedTask classToTest;
 
     @Before
     public void before() {
@@ -40,8 +40,11 @@ public class SetCoRespondentAnswerReceivedTest {
     public void execute() {
         Map<String, Object> caseDataResponse = classToTest.execute(null, new HashMap<>());
 
-        Map<String, Object> expectedCaseData = ImmutableMap.of(CO_RESPONDENT_ANSWER_RECEIVED, YES_VALUE,
-            CO_RESPONDENT_ANSWER_RECEIVED_DATE, CURRENT_DATE);
+        Map<String, Object> expectedCaseData = ImmutableMap.of(
+            CO_RESPONDENT_ANSWER_RECEIVED, YES_VALUE,
+            CO_RESPONDENT_ANSWER_RECEIVED_DATE, CURRENT_DATE
+        );
+
         assertEquals(expectedCaseData, caseDataResponse);
     }
 }

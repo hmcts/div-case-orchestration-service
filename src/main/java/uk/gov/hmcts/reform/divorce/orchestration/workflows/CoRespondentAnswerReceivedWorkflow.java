@@ -7,7 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCoRespondentAnswerReceived;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCoRespondentAnswerReceivedTask;
 
 import java.util.Map;
 
@@ -16,12 +16,16 @@ import java.util.Map;
 public class CoRespondentAnswerReceivedWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     @Autowired
-    private final  SetCoRespondentAnswerReceived setCoRespondentAnswerReceived;
+    private final SetCoRespondentAnswerReceivedTask setCoRespondentAnswerReceivedTask;
 
     public Map<String, Object> run(CaseDetails caseDetails) throws WorkflowException {
 
-        return this.execute(new Task[]{setCoRespondentAnswerReceived},
-            caseDetails.getCaseData());
+        return this.execute(
+            new Task[] {
+                setCoRespondentAnswerReceivedTask
+            },
+            caseDetails.getCaseData()
+        );
     }
 
 }
