@@ -45,7 +45,11 @@ public class CoECoverLetterDataExtractor {
         return YES_VALUE.equalsIgnoreCase((String) caseData.get(CaseDataKeys.COSTS_CLAIM_GRANTED));
     }
 
-    public static boolean isCostsClaimGranted(Map<String, Object> caseData) {
+    public static boolean isCostsClaimGranted(Map<String, Object> caseData, boolean isToggleOn) {
+        if (!isToggleOn) {
+            return isLegalAdvisorCostsClaimGranted(caseData);
+        }
+
         String judgeDecision = getOptionalPropertyValueAsString(caseData, CaseDataKeys.JUDGE_COSTS_CLAIM_GRANTED, EMPTY_STRING);
         if (isNullOrEmpty(judgeDecision)) {
             return isLegalAdvisorCostsClaimGranted(caseData);

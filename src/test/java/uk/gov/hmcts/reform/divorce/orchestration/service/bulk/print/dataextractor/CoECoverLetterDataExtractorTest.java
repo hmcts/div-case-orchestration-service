@@ -59,14 +59,14 @@ public class CoECoverLetterDataExtractorTest {
     @Test
     public void isCostsClaimGrantedReturnsTrueWhenJudgeCostsClaimGrantedIsYes() {
         Map<String, Object> caseData = buildCaseDataWithIsCostsClaimGranted(YES_VALUE, null);
-        assertThat(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData), is(true));
+        assertThat(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData, true), is(true));
     }
 
     @Test
     public void isCostsClaimGrantedReturnsTrueWhenJudgeCostsClaimGrantedIsEmptyAndLegalAdvisorCostsClaimGrantedIsYes() {
         asList(EMPTY_STRING, null).forEach(isJudgeCostsClaimGrantedValue -> {
             Map<String, Object> caseData = buildCaseDataWithIsCostsClaimGranted(isJudgeCostsClaimGrantedValue, YES_VALUE);
-            assertThat(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData), is(true));
+            assertThat(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData, true), is(true));
         });
     }
 
@@ -74,7 +74,7 @@ public class CoECoverLetterDataExtractorTest {
     public void isCostsClaimGrantedReturnsFalseWhenJudgeCostsClaimGrantedIsNotYes() {
         asList(NO_VALUE, "adjourn").forEach(isJudgeCostsClaimGrantedValue -> {
             Map<String, Object> caseData = buildCaseDataWithIsCostsClaimGranted(isJudgeCostsClaimGrantedValue, YES_VALUE);
-            assertThat(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData), is(false));
+            assertThat(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData, true), is(false));
         });
     }
 
@@ -82,8 +82,14 @@ public class CoECoverLetterDataExtractorTest {
     public void isCostsClaimGrantedReturnsFalseWhenJudgeCostsClaimGrantedIsEmptyAndLegalAdvisorCostsClaimGrantedIsEmptyOrNo() {
         asList(EMPTY_STRING, null, NO_VALUE).forEach(isLegalAdvisorCostsClaimGrantedValue -> {
             Map<String, Object> caseData = buildCaseDataWithIsCostsClaimGranted(EMPTY_STRING, isLegalAdvisorCostsClaimGrantedValue);
-            assertThat(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData), is(false));
+            assertThat(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData, true), is(false));
         });
+    }
+
+    @Test
+    public void isCostsClaimGrantedReturnsIsLegalAdvisorCostsClaimGrantedWhenObjectToCostsToggleIsOff() {
+        Map<String, Object> caseData = buildCaseDataWithIsCostsClaimGranted(YES_VALUE, NO_VALUE);
+        assertThat(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData, false), is(false));
     }
 
     @Test
