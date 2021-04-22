@@ -67,7 +67,6 @@ public class JudgeCostsDecisionTest extends IdamTestSupport {
             ));
     }
 
-
     @Test
     public void givenJudgeGrantsCostsClaim_whenCalledEndpoint_thenJudgeCostsClaimGrantedIsPopulated() throws Exception {
         Map<String, Object> caseData = new HashMap<>();

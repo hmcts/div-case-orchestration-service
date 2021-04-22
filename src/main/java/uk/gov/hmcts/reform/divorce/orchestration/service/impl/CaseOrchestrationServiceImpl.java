@@ -40,7 +40,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.GenerateCoRespondentA
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWithIdWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.JudgeCostsDecisionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDecreeAbsoluteWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.PetitionerSolicitorRoleWorkflow;
@@ -192,7 +191,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final RemoveDNDocumentsWorkflow removeDNDocumentsWorkflow;
     private final SendClarificationSubmittedNotificationWorkflow sendClarificationSubmittedNotificationWorkflow;
     private final CreateNewAmendedCaseAndSubmitToCCDWorkflow createNewAmendedCaseAndSubmitToCCDWorkflow;
-    private final JudgeCostsDecisionWorkflow judgeCostsDecisionWorkflow;
     private final FeatureToggleService featureToggleService;
 
     @Override
@@ -1015,13 +1013,4 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         }
     }
 
-    @Override
-    public Map<String, Object> judgeCostsDecision(CcdCallbackRequest ccdCallbackRequest)
-            throws CaseOrchestrationServiceException {
-        try {
-            return judgeCostsDecisionWorkflow.run(ccdCallbackRequest.getCaseDetails());
-        } catch (WorkflowException e) {
-            throw new CaseOrchestrationServiceException(e);
-        }
-    }
 }

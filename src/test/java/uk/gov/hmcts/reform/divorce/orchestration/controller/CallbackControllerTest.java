@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentStatus;
+import uk.gov.hmcts.reform.divorce.orchestration.exception.JudgeServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AlternativeServiceService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
@@ -32,6 +33,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CourtOrderDocumentsUpda
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralEmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralOrderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralReferralService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.JudgeService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPaymentTask;
@@ -95,6 +97,9 @@ public class CallbackControllerTest {
 
     @Mock
     private CaseOrchestrationService caseOrchestrationService;
+
+    @Mock
+    private JudgeService judgeService;
 
     @Mock
     private AosService aosService;
@@ -1885,17 +1890,17 @@ public class CallbackControllerTest {
     }
 
     @Test
-    public void shouldCallAdequateServiceForJudgeCostsDecision() throws CaseOrchestrationServiceException {
+    public void shouldCallAdequateServiceForJudgeCostsDecision() throws JudgeServiceException {
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(TEST_INCOMING_CASE_DETAILS).build();
 
-        when(caseOrchestrationService.judgeCostsDecision(ccdCallbackRequest)).thenReturn(TEST_PAYLOAD_TO_RETURN);
+        when(judgeService.judgeCostsDecision(ccdCallbackRequest)).thenReturn(TEST_PAYLOAD_TO_RETURN);
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.judgeCostsDecision(AUTH_TOKEN, ccdCallbackRequest);
 
         assertThat(response.getStatusCode(), is(OK));
         assertThat(response.getBody().getErrors(), is(nullValue()));
         assertThat(response.getBody().getData(), is(TEST_PAYLOAD_TO_RETURN));
-        verify(caseOrchestrationService).judgeCostsDecision(eq(ccdCallbackRequest));
+        verify(judgeService).judgeCostsDecision(eq(ccdCallbackRequest));
     }
 
     @Test

@@ -1916,16 +1916,6 @@ public class CaseOrchestrationServiceImplTest {
         assertThat(ccdCallbackResponse.getErrors(), is(errors));
     }
 
-    @Test
-    public void shouldCallRightWorkflow_WhenJudgeCostsDecision()
-        throws CaseOrchestrationServiceException, WorkflowException {
-        when(judgeCostsDecisionWorkflow.run(any())).thenReturn(expectedPayload);
-
-        Map<String, Object> returnedPayload = classUnderTest.judgeCostsDecision(ccdCallbackRequest);
-
-        assertThat(returnedPayload, equalTo(expectedPayload));
-    }
-
     private CcdCallbackRequest buildCcdCallbackRequest(Map<String, Object> requestPayload) {
         return CcdCallbackRequest.builder()
             .caseDetails(
