@@ -1194,12 +1194,61 @@ public class CaseOrchestrationServiceImplTest {
         verifyNoMoreInteractions(documentGenerationWorkflow);
     }
 
+
     @Test
-    public void shouldNotGenerateCostOrder_WhenJudgeCostClaim_IsAdjourn() throws WorkflowException {
-        Map<String, Object> caseData = new HashMap<String, Object>();
-        caseData.put(BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build());
+    public void shouldGenerateCostOrderWhen_JudgeCostClaimIsEmptyAndCostClaimGrantedPopulated() throws WorkflowException {
+        Map<String, Object> caseData = buildCaseDataWithPetitionerClaimingCosts();
+
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
+
+        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME);
+        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE);
+
+        verifyNoMoreInteractions(documentGenerationWorkflow);
+    }
+
+    @Test
+    public void shouldGenerateCostOrderWhen_CostClaimGrantedAndPetitionerClaimingCosts() throws WorkflowException {
+        Map<String, Object> caseData = buildCaseDataWithPetitionerClaimingCosts();
+
+        caseData.put(JUDGE_COSTS_CLAIM_GRANTED, YES_VALUE);
+
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
+
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
+
+        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME);
+        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE);
+
+        verifyNoMoreInteractions(documentGenerationWorkflow);
+    }
+
+    @Test
+    public void shouldGenerateCostOrder_WhenJudgeCostClaim_IsYes() throws WorkflowException {
+        Map<String, Object> caseData = buildCaseDataWithPetitionerClaimingCosts();
+
+        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
+
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
+
+        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME);
+        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE);
+        verifyNoMoreInteractions(documentGenerationWorkflow);
+    }
+
+    @Test
+    public void shouldNotGenerateCostOrderWhen_JudgeDecisionIsAdjourn() throws WorkflowException {
+        Map<String, Object> caseData = buildCaseDataWithPetitionerClaimingCosts();
 
         caseData.put(JUDGE_COSTS_CLAIM_GRANTED, JudgeDecisionHelper.JudgeDecisions.ADJOURN_VALUE);
 
@@ -1213,13 +1262,11 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void shouldNotGenerateCostOrder_WhenJudgeCostClaim_IsYes() throws WorkflowException {
-        Map<String, Object> caseData = new HashMap<String, Object>();
-        caseData.put(BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build());
-        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
-        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
+    public void shouldNotGenerateCostOrderWhen_JudgeCostClaimNotPopulated_CostClaimGrantedNotPopulated() throws WorkflowException {
+        Map<String, Object> caseData = buildCaseDataWithPetitionerClaimingCosts();
 
-        caseData.put(JUDGE_COSTS_CLAIM_GRANTED, YES_VALUE);
+        caseData.put(JUDGE_COSTS_CLAIM_GRANTED, null);
+        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, null);
 
         CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
@@ -1227,20 +1274,15 @@ public class CaseOrchestrationServiceImplTest {
         classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
         verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME);
-        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE);
         verifyNoMoreInteractions(documentGenerationWorkflow);
     }
 
-
-
     @Test
-    public void shouldGenerateCostOrder_WhenJudgeCostClaim_IsYes() throws WorkflowException {
-        Map<String, Object> caseData = new HashMap<String, Object>();
-        caseData.put(BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build());
-        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
-        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
+    public void shouldNotGenerateCostOrderWhen_CostClaimGrantedNotPopulated_JudgeDecisionIsAdjourn() throws WorkflowException {
+        Map<String, Object> caseData = buildCaseDataWithPetitionerClaimingCosts();
 
-        caseData.put(JUDGE_COSTS_CLAIM_GRANTED, YES_VALUE);
+        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, null);
+        caseData.put(JUDGE_COSTS_CLAIM_GRANTED, JudgeDecisionHelper.JudgeDecisions.ADJOURN_VALUE);
 
         CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
@@ -1248,7 +1290,21 @@ public class CaseOrchestrationServiceImplTest {
         classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
 
         verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME);
-        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE);
+        verifyNoMoreInteractions(documentGenerationWorkflow);
+    }
+
+    @Test
+    public void shouldNotGenerateCostOrderWhen_CostClaimGrantedNotPopulated() throws WorkflowException {
+        Map<String, Object> caseData = buildCaseDataWithPetitionerClaimingCosts();
+
+        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, null);
+
+        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
+
+        classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
+
+        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME);
         verifyNoMoreInteractions(documentGenerationWorkflow);
     }
 
@@ -1977,6 +2033,17 @@ public class CaseOrchestrationServiceImplTest {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(SOLICITOR_REFERENCE_JSON_KEY, TEST_SOLICITOR_REFERENCE);
         caseData.put(PETITIONER_SOLICITOR_ORGANISATION_POLICY, organisationPolicy);
+        return caseData;
+    }
+
+    private Map<String, Object> buildCaseDataWithPetitionerClaimingCosts() {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build());
+
+        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
+        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
+
+        caseData.put(JUDGE_COSTS_DECISION, null);
         return caseData;
     }
 

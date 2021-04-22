@@ -787,7 +787,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         if ((isJudgeCostClaimEmpty(caseData) && !isCostClaimGrantedPopulated(caseData)) || isJudgeCostClaimAdjourned(caseData)) {
             return false;
         }
-
         return isPetitionerClaimingCosts(caseData);
     }
 
