@@ -24,9 +24,11 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CANCEL_BULK_PRONOUNCED_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.loadResourceAsString;
 
 public class CancelPronouncementBulkCaseITest extends IdamTestSupport {
+
     private static final String API_URL = "/bulk/pronouncement/cancel";
 
     private static final String CMS_UPDATE_CASE_PATH = "/casemaintenance/version/1/updateCase/%s/%s";
@@ -39,24 +41,23 @@ public class CancelPronouncementBulkCaseITest extends IdamTestSupport {
 
     private static final String TEST_AUTH_TOKEN = "testAuthToken";
 
-    private static final String CANCEL_PRONOUNCMENT_EVENT_ID = "cancelPronouncement";
     @Autowired
     private ThreadPoolTaskExecutor asyncTaskExecutor;
+
+    @Autowired
+    private MockMvc webClient;
 
     @Before
     public void setup() {
         maintenanceServiceServer.resetAll();
     }
 
-    @Autowired
-    private MockMvc webClient;
-
     @Test
     public void givenCallbackRequestWithTwoCaseLinks_thenTriggerBulkCaseUpdateEvent() throws Exception {
         stubSignInForCaseworker();
-        String updateCaseOnePath = String.format(CMS_UPDATE_CASE_PATH, CASE_ID_FIRST, CANCEL_PRONOUNCMENT_EVENT_ID);
-        String updateCaseTwoPath = String.format(CMS_UPDATE_CASE_PATH, CASE_ID_SECOND, CANCEL_PRONOUNCMENT_EVENT_ID);
-        String updateBulkCasePath = String.format(CMS_UPDATE_BULK_CASE_PATH, BULK_CASE_ID, CANCEL_PRONOUNCMENT_EVENT_ID);
+        String updateCaseOnePath = String.format(CMS_UPDATE_CASE_PATH, CASE_ID_FIRST, CANCEL_BULK_PRONOUNCED_EVENT);
+        String updateCaseTwoPath = String.format(CMS_UPDATE_CASE_PATH, CASE_ID_SECOND, CANCEL_BULK_PRONOUNCED_EVENT);
+        String updateBulkCasePath = String.format(CMS_UPDATE_BULK_CASE_PATH, BULK_CASE_ID, CANCEL_BULK_PRONOUNCED_EVENT);
 
         stubCmsServerEndpoint(updateCaseOnePath, HttpStatus.OK, "{}", POST);
         stubCmsServerEndpoint(updateCaseTwoPath, HttpStatus.OK, "{}", POST);
