@@ -15,6 +15,7 @@ public enum Features {
     PAY_BY_ACCOUNT("pay_by_account"),
     SHARE_A_CASE("share_a_case"),
     REPRESENTED_RESPONDENT_JOURNEY("represented_respondent_journey"),
+    OBJECT_TO_COSTS("object_to_costs"),
     BAILIFF_JOURNEY("bailiff_journey");
 
     private final String name;

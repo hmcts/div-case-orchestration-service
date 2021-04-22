@@ -26,13 +26,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.JUDGE_COSTS_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference.ENGLISH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_COE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COSTS_ORDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COSTS_ORDER_JUDGE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DECREE_ABSOLUTE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
@@ -56,6 +59,49 @@ public class CourtOrderDocumentsUpdateCallbackTest extends MockedFunctionalTest 
         stubDocumentGeneratorService(DECREE_ABSOLUTE.getTemplateByLanguage(ENGLISH), DECREE_ABSOLUTE_DOCUMENT_TYPE);
 
         Map<String, Object> caseData = loadAndValidateTestCaseData();
+
+        String response = webClient.perform(post("/update-court-order-documents")
+            .contentType(APPLICATION_JSON)
+            .accept(APPLICATION_JSON)
+            .header(AUTHORIZATION, AUTH_TOKEN)
+            .content(convertObjectToJsonString(
+                CcdCallbackRequest.builder()
+                    .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build())
+                    .build()
+            )))
+            .andExpect(status().isOk())
+            .andReturn().getResponse().getContentAsString();
+
+        //Make sure document ids were replaced
+        assertThat(response, hasJsonPath("$.data.D8DocumentsGenerated", hasItems(
+            allOf(
+                hasJsonPath("$.value.DocumentType", is(DOCUMENT_TYPE_COE)),
+                hasJsonPath("$.value.DocumentLink.document_url", not(endsWith(TEST_COE_INCOMING_DOCUMENT)))
+            ),
+            allOf(
+                hasJsonPath("$.value.DocumentType", is(COSTS_ORDER_DOCUMENT_TYPE)),
+                hasJsonPath("$.value.DocumentLink.document_url", not(endsWith(TEST_COSTS_ORDER_INCOMING_DOCUMENT)))
+            ),
+            allOf(
+                hasJsonPath("$.value.DocumentType", is(DECREE_NISI_DOCUMENT_TYPE)),
+                hasJsonPath("$.value.DocumentLink.document_url", not(endsWith(TEST_DECREE_NISI_INCOMING_DOCUMENT)))
+            ),
+            allOf(
+                hasJsonPath("$.value.DocumentType", is(DECREE_ABSOLUTE_DOCUMENT_TYPE)),
+                hasJsonPath("$.value.DocumentLink.document_url", not(endsWith(TEST_DECREE_ABSOLUTE_INCOMING_DOCUMENT)))
+            )
+        )));
+    }
+
+    @Test
+    public void shouldUpdateExistingCourtOrderJudgeDocuments() throws Exception {
+        stubDocumentGeneratorService(COE.getTemplateByLanguage(ENGLISH), DOCUMENT_TYPE_COE);
+        stubDocumentGeneratorService(COSTS_ORDER_JUDGE.getTemplateByLanguage(ENGLISH), COSTS_ORDER_DOCUMENT_TYPE);
+        stubDocumentGeneratorService(DECREE_NISI.getTemplateByLanguage(ENGLISH), DECREE_NISI_DOCUMENT_TYPE);
+        stubDocumentGeneratorService(DECREE_ABSOLUTE.getTemplateByLanguage(ENGLISH), DECREE_ABSOLUTE_DOCUMENT_TYPE);
+
+        Map<String, Object> caseData = loadAndValidateTestCaseData();
+        caseData.put(JUDGE_COSTS_DECISION, YES_VALUE);
 
         String response = webClient.perform(post("/update-court-order-documents")
             .contentType(APPLICATION_JSON)
