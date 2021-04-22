@@ -774,7 +774,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
             caseData.putAll(
                 documentGenerationWorkflow.run(caseDetails, authToken, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME));
 
-            if (isCostClaimValid(caseData)) {
+            if (shouldCostClaimBeSent(caseData)) {
                 caseData.putAll(
                     documentGenerationWorkflow.run(caseDetails, authToken, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE));
             }
@@ -783,7 +783,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         return caseData;
     }
 
-    private boolean isCostClaimValid(Map<String, Object> caseData) {
+    private boolean shouldCostClaimBeSent(Map<String, Object> caseData) {
         if ((isJudgeCostClaimEmpty(caseData) && !isCostClaimGrantedPopulated(caseData)) || isJudgeCostClaimAdjourned(caseData)) {
             return false;
         }
