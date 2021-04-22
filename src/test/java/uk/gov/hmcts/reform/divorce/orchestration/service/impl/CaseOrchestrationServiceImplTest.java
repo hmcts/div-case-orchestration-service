@@ -41,6 +41,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.GenerateCoRespondentA
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWithIdWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.GetCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.IssueEventWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.JudgeCostsDecisionWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.LinkRespondentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.MakeCaseEligibleForDecreeAbsoluteWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.PetitionerSolicitorRoleWorkflow;
@@ -135,7 +136,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.controller.util.CallbackControllerTestUtils.assertCaseOrchestrationServiceExceptionIsSetProperly;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.JUDGE_COSTS_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING_SOLICITOR;
@@ -355,6 +355,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private WelshSetPreviousStateWorkflow welshSetPreviousStateWorkflow;
+
+    @Mock
+    private JudgeCostsDecisionWorkflow judgeCostsDecisionWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -1801,10 +1804,13 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void shouldSetExpectedField_WhenJudgeCostsDecision() {
-        Map<String, Object> result = classUnderTest.judgeCostsDecision(buildCcdCallbackRequest(new HashMap<>()));
+    public void shouldCallRightWorkflow_WhenJudgeCostsDecision()
+        throws CaseOrchestrationServiceException, WorkflowException {
+        when(judgeCostsDecisionWorkflow.run(any())).thenReturn(expectedPayload);
 
-        assertThat(result.get(JUDGE_COSTS_DECISION), is(YES_VALUE));
+        Map<String, Object> returnedPayload = classUnderTest.judgeCostsDecision(ccdCallbackRequest);
+
+        assertThat(returnedPayload, equalTo(expectedPayload));
     }
 
     private CcdCallbackRequest buildCcdCallbackRequest(Map<String, Object> requestPayload) {
