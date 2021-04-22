@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.model.payment.Payment;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpd
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionForRefusalWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
@@ -107,9 +109,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COSTS_ORDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COSTS_ORDER_JUDGE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.EventHelper.isIssueAosEvent;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isAOSDraftedCandidate;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.hasJudgeMadeCostsDecision;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isPetitionerClaimingCosts;
 
 @Slf4j
@@ -189,6 +193,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final RemoveDNDocumentsWorkflow removeDNDocumentsWorkflow;
     private final SendClarificationSubmittedNotificationWorkflow sendClarificationSubmittedNotificationWorkflow;
     private final CreateNewAmendedCaseAndSubmitToCCDWorkflow createNewAmendedCaseAndSubmitToCCDWorkflow;
+    private final FeatureToggleService featureToggleService;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -772,9 +777,14 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                 documentGenerationWorkflow.run(caseDetails, authToken, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME));
 
             if (isPetitionerClaimingCosts(caseData)) {
-                // DocumentType is clear enough to use as the file name
-                caseData.putAll(
-                    documentGenerationWorkflow.run(caseDetails, authToken, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE));
+                if (featureToggleService.isFeatureEnabled(Features.OBJECT_TO_COSTS)
+                    && hasJudgeMadeCostsDecision(caseDetails.getCaseData())) {
+                    caseData.putAll(documentGenerationWorkflow.run(
+                        caseDetails, authToken, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_JUDGE, COSTS_ORDER_DOCUMENT_TYPE));
+                } else {
+                    caseData.putAll(documentGenerationWorkflow.run(
+                        caseDetails, authToken, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE));
+                }
             }
         }
 
