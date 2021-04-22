@@ -1184,25 +1184,8 @@ public class CaseOrchestrationServiceImplTest {
     }
 
     @Test
-    public void shouldNotGenerateCostOrder_WhenJudgeCostClaimEmptyAndCostsClaimGrantedFieldIsEmpty() throws WorkflowException {
-        Map<String, Object> caseData = new HashMap<String, Object>();
-        caseData.put(BULK_LISTING_CASE_ID_FIELD, CaseLink.builder().caseReference(TEST_CASE_ID).build());
-        caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
-        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, null);
-        caseData.put(JUDGE_COSTS_CLAIM_GRANTED, null);
-
-        CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
-
-        classUnderTest.handleDnPronouncementDocumentGeneration(ccdCallbackRequest, AUTH_TOKEN);
-
-        verify(documentGenerationWorkflow).run(caseDetails, AUTH_TOKEN, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME);
-        verifyNoMoreInteractions(documentGenerationWorkflow);
-    }
-
-
-    @Test
     public void shouldGenerateCostOrderWhen_JudgeCostClaimIsEmptyAndCostClaimGrantedPopulated() throws WorkflowException {
+        when(featureToggleService.isFeatureEnabled(Features.OBJECT_TO_COSTS)).thenReturn(true);
         Map<String, Object> caseData = buildCaseDataWithPetitionerClaimingCosts();
 
         CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
@@ -1218,6 +1201,7 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void shouldGenerateCostOrderWhen_CostClaimGrantedAndPetitionerClaimingCosts() throws WorkflowException {
+        when(featureToggleService.isFeatureEnabled(Features.OBJECT_TO_COSTS)).thenReturn(true);
         Map<String, Object> caseData = buildCaseDataWithPetitionerClaimingCosts();
 
         caseData.put(JUDGE_COSTS_CLAIM_GRANTED, YES_VALUE);
@@ -1238,6 +1222,7 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void shouldGenerateCostOrder_WhenJudgeCostClaim_IsYes() throws WorkflowException {
+        when(featureToggleService.isFeatureEnabled(Features.OBJECT_TO_COSTS)).thenReturn(true);
         Map<String, Object> caseData = buildCaseDataWithPetitionerClaimingCosts();
 
         caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE);
@@ -1254,6 +1239,7 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void shouldNotGenerateCostOrderWhen_JudgeDecisionIsAdjourn() throws WorkflowException {
+        when(featureToggleService.isFeatureEnabled(Features.OBJECT_TO_COSTS)).thenReturn(true);
         Map<String, Object> caseData = buildCaseDataWithPetitionerClaimingCosts();
 
         caseData.put(JUDGE_COSTS_CLAIM_GRANTED, JudgeDecisionHelper.JudgeDecisions.ADJOURN_VALUE);
