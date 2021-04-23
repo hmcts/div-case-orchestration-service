@@ -47,7 +47,7 @@ public class CoERespondentSolicitorLetterGenerationTask extends BasePayloadSpeci
             .letterDate(DatesDataExtractor.getLetterDate())
             .ctscContactDetails(ctscContactDetailsDataProviderService.getCtscContactDetails())
             .hearingDate(DatesDataExtractor.getHearingDate(caseData))
-            .costClaimGranted(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData))
+            .costClaimGranted(CoECoverLetterDataExtractor.isLegalAdvisorCostsClaimGranted(caseData))
             .deadlineToContactCourtBy(DatesDataExtractor.getDeadlineToContactCourtBy(caseData))
             .addressee(AddresseeDataExtractor.getRespondentSolicitor(caseData))
             .solicitorReference(SolicitorDataExtractor.getSolicitorReference(caseData))
