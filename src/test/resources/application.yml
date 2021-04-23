@@ -177,7 +177,7 @@ uk:
   gov:
     notify:
       api:
-        key: ***REMOVED***
+        key: 2409ba37-b5e6-4f03-b052-7d0f0986888d
         baseUrl: dummy
       email:
         templateVars:
