@@ -128,7 +128,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
 
         log.info("CaseID: {} named co-respondent", caseId);
 
-        if (isCostsClaimGranted(caseData)) {
+        if (isCostsClaimGranted(caseData, isObjectToCostsEnabled())) {
             log.info("CaseID: {} adding cost order cover letter doc for co-respondent (solicitor)", caseId);
             coRespondentDocTypes.add(coRespondentOrSolicitor(caseData).getDocumentType());
 
@@ -155,7 +155,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         log.info("CaseID: {} adding dn granted certificate for respondent (solicitor)", caseId);
         respondentDocTypes.add(DECREE_NISI_DOCUMENT_TYPE);
 
-        if (isCostsClaimGranted(caseData)) {
+        if (isCostsClaimGranted(caseData, isObjectToCostsEnabled())) {
             log.info("CaseID: {} adding costOrder doc for respondent (solicitor)", caseId);
             respondentDocTypes.add(COSTS_ORDER_DOCUMENT_TYPE);
         } else {
@@ -242,7 +242,7 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
             log.info("Features.PAPER_UPDATE = off. Nothing will be sent to bulk print");
         }
 
-        if (isCostsClaimGranted(caseDetails.getCaseData())) {
+        if (isCostsClaimGranted(caseDetails.getCaseData(), isObjectToCostsEnabled())) {
             log.info("CaseID: {} - Cost claim granted", caseDetails.getCaseId());
 
             if (isCoRespondentRepresented(caseDetails.getCaseData())) {
@@ -268,6 +268,10 @@ public class SendDnPronouncedNotificationWorkflow extends DefaultWorkflow<Map<St
         } else {
             log.info("CaseID: {} - corespondent is not liable for costs. Email will not be sent", caseId);
         }
+    }
+
+    private boolean isObjectToCostsEnabled() {
+        return featureToggleService.isFeatureEnabled(Features.OBJECT_TO_COSTS);
     }
 
     private boolean isPaperUpdateEnabled() {
