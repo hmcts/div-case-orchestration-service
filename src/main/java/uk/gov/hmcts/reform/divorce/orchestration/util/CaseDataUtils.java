@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_REFERENCE_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.VALUE_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.JUDGE_COSTS_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.WELSH_LA_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ADDITIONAL_INFRORMATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_ADDITIONAL_INFO;
@@ -134,8 +133,12 @@ public class CaseDataUtils {
             && Objects.nonNull(caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD));
     }
 
-    public static boolean hasJudgeMadeCostsDecision(Map<String, Object> caseData) {
-        return YES_VALUE.equalsIgnoreCase(String.valueOf(caseData.get(JUDGE_COSTS_DECISION)));
+    public static boolean isCostClaimGrantedYes(Map<String, Object> caseData) {
+        return YES_VALUE.equalsIgnoreCase(String.valueOf(caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD)));
+    }
+
+    public static boolean isCostClaimGrantedPopulated(Map<String, Object> caseData) {
+        return Objects.nonNull(caseData.get(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD));
     }
 
     public boolean isAdulteryCaseWithNamedCoRespondent(Map<String, Object> caseData) {
