@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
@@ -13,6 +14,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @Component
+@Slf4j
 public class UpdateCaseInCCD implements Task<Map<String, Object>> {
 
     @Autowired
@@ -20,10 +22,16 @@ public class UpdateCaseInCCD implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
+
+        String caseID = context.getTransientObject(CASE_ID_JSON_KEY);
+        String eventID = context.getTransientObject(CASE_EVENT_ID_JSON_KEY);
+
+        log.info("{}: Updating case {} in CCD", eventID, caseID);
+
         return caseMaintenanceClient.updateCase(
             context.getTransientObject(AUTH_TOKEN_JSON_KEY),
-            context.getTransientObject(CASE_ID_JSON_KEY),
-            context.getTransientObject(CASE_EVENT_ID_JSON_KEY),
+            caseID,
+            eventID,
             caseData
         );
     }

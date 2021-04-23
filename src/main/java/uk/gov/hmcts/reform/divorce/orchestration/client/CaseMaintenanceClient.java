@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.client;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
 
@@ -39,6 +41,7 @@ public interface CaseMaintenanceClient {
     @ApiOperation("Amend Petition For Refusal using case ID")
     @PutMapping(value = "/casemaintenance/version/1/amended-petition-draft-refusal/{caseId}",
         headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.OK)
     Map<String, Object> amendPetitionForRefusalFromCaseId(
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationToken,
         @PathVariable("caseId") String caseId
