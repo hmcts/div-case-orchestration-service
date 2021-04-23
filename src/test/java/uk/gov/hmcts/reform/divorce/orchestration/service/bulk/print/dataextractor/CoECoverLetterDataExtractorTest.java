@@ -12,10 +12,12 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.fail;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.COSTS_CLAIM_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.COURT_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.JUDGE_COSTS_CLAIM_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor.CaseDataKeys.PETITIONER_GENDER;
 
 public class CoECoverLetterDataExtractorTest {
@@ -41,22 +43,58 @@ public class CoECoverLetterDataExtractorTest {
     }
 
     @Test
-    public void isCostsClaimGrantedReturnsTrueWhenValueIsYes() {
-        Map<String, Object> caseData = buildCaseDataWithIsCostsClaimGranted(YES_VALUE);
-        assertThat(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData), is(true));
+    public void isLegalAdvisorCostsClaimGrantedReturnsTrueWhenValueIsYes() {
+        Map<String, Object> caseData = buildCaseDataWithIsLegalAdvisorCostsClaimGranted(YES_VALUE);
+        assertThat(CoECoverLetterDataExtractor.isLegalAdvisorCostsClaimGranted(caseData), is(true));
     }
 
     @Test
-    public void isCostsClaimGrantedReturnsFalseWhenItValueIsNoOrItDoesNotExist() {
-        asList("", null, NO_VALUE).forEach(isCostsClaimGrantedValue -> {
-            Map<String, Object> caseData = buildCaseDataWithIsCostsClaimGranted(isCostsClaimGrantedValue);
-            assertThat(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData), is(false));
+    public void isLegalAdvisorCostsClaimGrantedReturnsFalseWhenItValueIsNoOrItDoesNotExist() {
+        asList(EMPTY_STRING, null, NO_VALUE).forEach(isLegalAdvisorCostsClaimGrantedValue -> {
+            Map<String, Object> caseData = buildCaseDataWithIsLegalAdvisorCostsClaimGranted(isLegalAdvisorCostsClaimGrantedValue);
+            assertThat(CoECoverLetterDataExtractor.isLegalAdvisorCostsClaimGranted(caseData), is(false));
         });
     }
 
     @Test
+    public void isCostsClaimGrantedReturnsTrueWhenJudgeCostsClaimGrantedIsYes() {
+        Map<String, Object> caseData = buildCaseDataWithIsCostsClaimGranted(YES_VALUE, null);
+        assertThat(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData, true), is(true));
+    }
+
+    @Test
+    public void isCostsClaimGrantedReturnsTrueWhenJudgeCostsClaimGrantedIsEmptyAndLegalAdvisorCostsClaimGrantedIsYes() {
+        asList(EMPTY_STRING, null).forEach(isJudgeCostsClaimGrantedValue -> {
+            Map<String, Object> caseData = buildCaseDataWithIsCostsClaimGranted(isJudgeCostsClaimGrantedValue, YES_VALUE);
+            assertThat(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData, true), is(true));
+        });
+    }
+
+    @Test
+    public void isCostsClaimGrantedReturnsFalseWhenJudgeCostsClaimGrantedIsNotYes() {
+        asList(NO_VALUE, "adjourn").forEach(isJudgeCostsClaimGrantedValue -> {
+            Map<String, Object> caseData = buildCaseDataWithIsCostsClaimGranted(isJudgeCostsClaimGrantedValue, YES_VALUE);
+            assertThat(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData, true), is(false));
+        });
+    }
+
+    @Test
+    public void isCostsClaimGrantedReturnsFalseWhenJudgeCostsClaimGrantedIsEmptyAndLegalAdvisorCostsClaimGrantedIsEmptyOrNo() {
+        asList(EMPTY_STRING, null, NO_VALUE).forEach(isLegalAdvisorCostsClaimGrantedValue -> {
+            Map<String, Object> caseData = buildCaseDataWithIsCostsClaimGranted(EMPTY_STRING, isLegalAdvisorCostsClaimGrantedValue);
+            assertThat(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData, true), is(false));
+        });
+    }
+
+    @Test
+    public void isCostsClaimGrantedReturnsIsLegalAdvisorCostsClaimGrantedWhenObjectToCostsToggleIsOff() {
+        Map<String, Object> caseData = buildCaseDataWithIsCostsClaimGranted(YES_VALUE, NO_VALUE);
+        assertThat(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData, false), is(false));
+    }
+
+    @Test
     public void getHusbandOrWifeThrowsExceptionsPetitionerGenderDoesNotExist() {
-        asList("", null).forEach(petitionerGenderValue -> {
+        asList(EMPTY_STRING, null).forEach(petitionerGenderValue -> {
             try {
                 CoECoverLetterDataExtractor.getHusbandOrWife(buildCaseDataWithPetitionerGender(petitionerGenderValue));
                 fail("Should have thrown exception");
@@ -68,7 +106,7 @@ public class CoECoverLetterDataExtractorTest {
 
     @Test
     public void getCourtIdThrowsExceptionsWhenItDoesNotExist() {
-        asList("", null).forEach(courtIdValue -> {
+        asList(EMPTY_STRING, null).forEach(courtIdValue -> {
             try {
                 CoECoverLetterDataExtractor.getCourtId(buildCaseDataWithCourt(courtIdValue));
                 fail("Should have thrown exception");
@@ -92,9 +130,17 @@ public class CoECoverLetterDataExtractorTest {
         return caseData;
     }
 
-    private static Map<String, Object> buildCaseDataWithIsCostsClaimGranted(String isCostsClaimGranted) {
+    private static Map<String, Object> buildCaseDataWithIsCostsClaimGranted(String isJudgeCostsClaimGranted, String isLegalAdvisorCostsClaimGranted) {
         Map<String, Object> caseData = new HashMap<>();
-        caseData.put(COSTS_CLAIM_GRANTED, isCostsClaimGranted);
+        caseData.put(JUDGE_COSTS_CLAIM_GRANTED, isJudgeCostsClaimGranted);
+        caseData.put(COSTS_CLAIM_GRANTED, isLegalAdvisorCostsClaimGranted);
+
+        return caseData;
+    }
+
+    private static Map<String, Object> buildCaseDataWithIsLegalAdvisorCostsClaimGranted(String isLegalAdvisorCostsClaimGranted) {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(COSTS_CLAIM_GRANTED, isLegalAdvisorCostsClaimGranted);
 
         return caseData;
     }

@@ -9,7 +9,13 @@
       "D8InferredPetitionerGender": "female",
       "D8DivorceUnit": "westMidlands",
       "dueDate": "2018-09-20",
-      "D8caseReference": "LV17D80101"
+      "D8caseReference": "LV17D80101",
+      "D8PetitionerEmail": "petitioner@divorce.co.uk",
+      "D8PetitionerFirstName": "Ted",
+      "D8PetitionerLastName": "Jones",
+      "D8DerivedPetitionerCorrespondenceAddr": "10 Jones's Close\nLondon",
+      "D8InferredPetitionerGender": "female",
+      "D8InferredRespondentGender": "male"
     }
   }
 }

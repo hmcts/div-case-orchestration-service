@@ -5,11 +5,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.model.ccd.Document;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CourtOrderDocumentsUpdateService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.DocumentGenerationWorkflow;
 
 import java.util.List;
@@ -25,9 +27,11 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_COE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COSTS_ORDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COSTS_ORDER_JUDGE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DECREE_ABSOLUTE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil.getCollectionMembersOrEmptyList;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.JudgeDecisionHelper.hasJudgeGrantedCostsDecision;
 
 @RequiredArgsConstructor
 @Service
@@ -35,6 +39,7 @@ public class CourtOrderDocumentsUpdateServiceImpl implements CourtOrderDocuments
 
     private final ObjectMapper objectMapper;
     private final DocumentGenerationWorkflow documentGenerationWorkflow;
+    private final FeatureToggleService featureToggleService;
 
     @Override
     public Map<String, Object> updateExistingCourtOrderDocuments(String authToken, CaseDetails caseDetails) throws CaseOrchestrationServiceException {
@@ -46,7 +51,12 @@ public class CourtOrderDocumentsUpdateServiceImpl implements CourtOrderDocuments
         }
 
         if (isDocumentPresent(generatedDocuments, COSTS_ORDER_DOCUMENT_TYPE)) {
-            updateCostsOrder(authToken, caseDetails);
+            if (featureToggleService.isFeatureEnabled(Features.OBJECT_TO_COSTS)
+                && hasJudgeGrantedCostsDecision(caseDetails.getCaseData())) {
+                updateCostsOrderJudge(authToken, caseDetails);
+            } else {
+                updateCostsOrder(authToken, caseDetails);
+            }
         }
 
         if (isDocumentPresent(generatedDocuments, DECREE_NISI_DOCUMENT_TYPE)) {
@@ -73,6 +83,10 @@ public class CourtOrderDocumentsUpdateServiceImpl implements CourtOrderDocuments
 
     private void updateCostsOrder(String authToken, CaseDetails caseDetails) throws CaseOrchestrationServiceException {
         generateDocument(authToken, caseDetails, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE);
+    }
+
+    private void updateCostsOrderJudge(String authToken, CaseDetails caseDetails) throws CaseOrchestrationServiceException {
+        generateDocument(authToken, caseDetails, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_JUDGE, COSTS_ORDER_DOCUMENT_TYPE);
     }
 
     private void updateDecreeNisi(String authToken, CaseDetails caseDetails) throws CaseOrchestrationServiceException {

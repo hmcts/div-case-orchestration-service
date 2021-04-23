@@ -21,6 +21,7 @@ public enum DocumentType {
     CO_RESPONDENT_ANSWERS("coRespondentAnswers", "co-respondent-answers", "FL-DIV-LET-WEL-00258.docx"),
     CO_RESPONDENT_INVITATION("coRespondentInvitation", "co-respondentinvitation", "FL-DIV-LET-WEL-00259.docx"),
     COSTS_ORDER("costsOrderTemplateId", "FL-DIV-DEC-ENG-00060.docx", "FL-DIV-DEC-WEL-00240.docx"),
+    COSTS_ORDER_JUDGE("costsOrderJudgeTemplateId", "FL-DIV-DEC-ENG-00711.docx", "FL-DIV-DEC-WEL-00712.docx"),
     DECREE_NISI("decreeNisiTemplateId", "FL-DIV-GNO-ENG-00021.docx", "FL-DIV-GNO-WEL-00239.docx"),
     DECREE_NISI_ANSWER("decreeNisiAnswerTemplateId", "FL-DIV-GNO-ENG-00022.docx", "FL-DIV-APP-WEL-00253.docx"),
     DECREE_NISI_REFUSAL_ORDER_CLARIFICATION(

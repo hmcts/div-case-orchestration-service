@@ -38,7 +38,6 @@ import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyMap;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.BULK_CASE_ACCEPTED_LIST_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CANCEL_BULK_PRONOUNCED_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_LIST_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_REFERENCE_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CREATE_EVENT;
@@ -46,6 +45,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseCon
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.PRONOUNCED_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.REMOVED_CASE_LIST;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.VALUE_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CANCEL_BULK_PRONOUNCED_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REMOVE_FROM_BULK_CASE_LISTED_EVENT;
@@ -227,7 +227,12 @@ public class BulkCaseServiceImpl implements BulkCaseService {
             throw new BulkUpdateException(String.format("Failed to cancel pronouncement for some cases on bulk case id %s", bulkCaseId));
         }
 
-        updateBulkCaseWorkflow.run(emptyMap(), context.getTransientObject(AUTH_TOKEN_JSON_KEY), bulkCaseId, CANCEL_BULK_PRONOUNCED_EVENT);
+        updateBulkCaseWorkflow.run(
+            emptyMap(),
+            context.getTransientObject(AUTH_TOKEN_JSON_KEY),
+            bulkCaseId,
+            CANCEL_BULK_PRONOUNCED_EVENT
+        );
         final long endTime = Instant.now().toEpochMilli();
         log.info("Completed bulk case cancel pronouncement with bulk cased Id:{} in:{} millis", bulkCaseId, endTime - startTime);
     }

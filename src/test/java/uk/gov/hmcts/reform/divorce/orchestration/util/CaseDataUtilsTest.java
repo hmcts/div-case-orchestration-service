@@ -127,6 +127,34 @@ public class CaseDataUtilsTest {
     }
 
     @Test
+    public void givenClaimCostGranted_isYes_thenReturnTrue() {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes");
+        assertThat(CaseDataUtils.isCostClaimGrantedYes(caseData), is(true));
+    }
+
+    @Test
+    public void givenClaimCostGranted_isNo_thenReturnFalse() {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "No");
+        assertThat(CaseDataUtils.isCostClaimGrantedYes(caseData), is(false));
+    }
+
+    @Test
+    public void givenClaimCostGranted_isNotNull_thenReturnTrue() {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Something");
+        assertThat(CaseDataUtils.isCostClaimGrantedPopulated(caseData), is(true));
+    }
+
+    @Test
+    public void givenClaimCostGranted_isNull_thenReturnFalse() {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, null);
+        assertThat(CaseDataUtils.isCostClaimGrantedPopulated(caseData), is(false));
+    }
+
+    @Test
     public void getTestLanguagePreferenceWithValue_Yes() {
         HashMap<String, Object> caseData = new HashMap<>();
         caseData.put(LANGUAGE_PREFERENCE_WELSH, YES_VALUE);
