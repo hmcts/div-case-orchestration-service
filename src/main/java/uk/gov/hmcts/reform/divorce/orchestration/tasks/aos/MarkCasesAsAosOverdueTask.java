@@ -9,6 +9,7 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes;
 import uk.gov.hmcts.reform.divorce.orchestration.event.domain.AosOverdueEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.domain.AosOverdueForAlternativeMethodCaseEvent;
 import uk.gov.hmcts.reform.divorce.orchestration.event.domain.AosOverdueForBailiffApplicationCaseEvent;
@@ -20,6 +21,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.util.CaseOrchestrationValues;
 import uk.gov.hmcts.reform.divorce.orchestration.util.elasticsearch.CMSElasticSearchIterator;
 import uk.gov.hmcts.reform.divorce.orchestration.util.elasticsearch.CMSElasticSearchSupport;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
@@ -29,6 +31,8 @@ import javax.annotation.PostConstruct;
 import static org.apache.commons.lang3.StringUtils.SPACE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.BAILIFF_SERVICE_SUCCESSFUL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.DUE_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.LAST_SERVICE_APPLICATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.LAST_SERVICE_APPLICATION_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVED_BY_ALTERNATIVE_METHOD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVED_BY_PROCESS_SERVER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
@@ -84,7 +88,7 @@ public class MarkCasesAsAosOverdueTask extends SelfPublishingAsyncTask<Void> {
     private final Function<CaseDetails, Optional<ApplicationEvent>> caseDetailsTransformationFunction = caseDetails -> {
         ApplicationEvent eventToRaise;
 
-        boolean caseServedByBailiff = isSuccessfulBailiffApplication(caseDetails, BAILIFF_SERVICE_SUCCESSFUL);
+        boolean caseServedByBailiff = isSuccessfulBailiffApplication(caseDetails);
         boolean caseServedByAlternativeMethod = isAlternativeService(caseDetails, SERVED_BY_ALTERNATIVE_METHOD);
         boolean caseServedByProcessServer = isAlternativeService(caseDetails, SERVED_BY_PROCESS_SERVER);
 
@@ -125,7 +129,7 @@ public class MarkCasesAsAosOverdueTask extends SelfPublishingAsyncTask<Void> {
         return searchCriteria.toString();
     }
 
-    private Boolean isAlternativeService(CaseDetails caseDetails, String serviceType) {
+    private boolean isAlternativeService(CaseDetails caseDetails, String serviceType) {
         return Optional.ofNullable(caseDetails.getCaseData())
             .map(caseData -> caseData.get(serviceType))
             .map(String.class::cast)
@@ -133,12 +137,16 @@ public class MarkCasesAsAosOverdueTask extends SelfPublishingAsyncTask<Void> {
             .orElse(false);
     }
 
-    private Boolean isSuccessfulBailiffApplication(CaseDetails caseDetails, String isBailiffSuccessful) {
-        return Optional.ofNullable(caseDetails.getCaseData())
-            .map(caseData -> caseData.get(isBailiffSuccessful))
-            .map(String.class::cast)
-            .map(YES_VALUE::equalsIgnoreCase)
-            .orElse(false);
+    private boolean isSuccessfulBailiffApplication(CaseDetails caseDetails) {
+        Map<String, Object> caseData = caseDetails.getCaseData();
+
+        if (ApplicationServiceTypes.BAILIFF.equalsIgnoreCase((String)caseData.get(LAST_SERVICE_APPLICATION_TYPE))) {
+            Map<String, Object> bailiffApplication = (Map) caseData.get(LAST_SERVICE_APPLICATION);
+
+            return YES_VALUE.equalsIgnoreCase((String) bailiffApplication.get(BAILIFF_SERVICE_SUCCESSFUL));
+        }
+
+        return false;
     }
 
     private boolean isRespondentRepresentedJourneyEnabled() {
