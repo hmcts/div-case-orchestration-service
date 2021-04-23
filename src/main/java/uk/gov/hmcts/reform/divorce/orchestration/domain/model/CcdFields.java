@@ -101,6 +101,10 @@ public class CcdFields {
 
     public static final String JUDGE_COSTS_DECISION = "JudgeCostsDecision";
     public static final String JUDGE_COSTS_CLAIM_GRANTED = "JudgeCostsClaimGranted";
+    public static final String JUDGE_WHO_PAYS_COSTS = "JudgeWhoPaysCosts";
+    public static final String JUDGE_TYPE_COSTS_DECISION = "JudgeTypeCostsDecision";
+    public static final String JUDGE_COSTS_ADDITIONAL_INFO = "JudgeCostsOrderAdditionalInfo";
+
 
     public static final String RESPONDENT_SOLICITOR_DIGITAL = "RespSolDigital";
 }
