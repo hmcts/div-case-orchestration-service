@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyMap;
 import static org.apache.commons.lang3.StringUtils.SPACE;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -94,8 +95,8 @@ public class MarkCasesAsAosOverdueTaskTest {
     public void shouldPublishMessagesForEligibleCases() throws TaskException {
         CMSElasticSearchUtils.mockCMSElasticSearchSupportToProduceIteratorWithCaseDetailsBatches(mockCmsElasticSearchSupport, AUTH_TOKEN, query,
             asList(
-                CaseDetails.builder().state(AOS_STARTED).caseId("1").build(),
-                CaseDetails.builder().state(AOS_AWAITING).caseId("2").build()
+                CaseDetails.builder().state(AOS_STARTED).caseId("1").caseData(emptyMap()).build(),
+                CaseDetails.builder().state(AOS_AWAITING).caseId("2").caseData(emptyMap()).build()
             ),
             asList(
                 CaseDetails.builder().state(AOS_AWAITING).caseId("3").caseData(Map.of(SERVED_BY_PROCESS_SERVER, YES_VALUE)).build(),
@@ -126,9 +127,9 @@ public class MarkCasesAsAosOverdueTaskTest {
     public void shouldPublishMessagesForEligibleAosDraftedCases() throws TaskException {
         CMSElasticSearchUtils.mockCMSElasticSearchSupportToProduceIteratorWithCaseDetailsBatches(mockCmsElasticSearchSupport, AUTH_TOKEN, query,
             asList(
-                CaseDetails.builder().state(AOS_STARTED).caseId("1").build(),
-                CaseDetails.builder().state(AOS_DRAFTED).caseId("2").build(),
-                CaseDetails.builder().state(AOS_AWAITING).caseId("3").build()
+                CaseDetails.builder().state(AOS_STARTED).caseId("1").caseData(emptyMap()).build(),
+                CaseDetails.builder().state(AOS_DRAFTED).caseId("2").caseData(emptyMap()).build(),
+                CaseDetails.builder().state(AOS_AWAITING).caseId("3").caseData(emptyMap()).build()
             ),
             asList(
                 CaseDetails.builder().state(AOS_DRAFTED).caseId("4").caseData(Map.of(SERVED_BY_PROCESS_SERVER, YES_VALUE)).build(),
