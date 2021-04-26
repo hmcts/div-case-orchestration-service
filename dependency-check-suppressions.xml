@@ -21,5 +21,4 @@
         <packageUrl regex="true">^.*$</packageUrl>
         <cve>CVE-2021-22134</cve>
     </suppress>
-
 </suppressions>
