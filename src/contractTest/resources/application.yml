@@ -188,7 +188,7 @@ uk:
   gov:
     notify:
       api:
-        key: 2409ba37-b5e6-4f03-b052-7d0f0986888d
+        key: ${UK_GOV_NOTIFY_API_KEY:dummy}
         baseUrl: dummy
       email:
         templateVars:
