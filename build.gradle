@@ -39,7 +39,7 @@ def versions = [
         commonsMath3                 : '3.6.1',
         divCommonLib                 : '1.2.16',
         dumbster                     : '1.7.1',
-        elasticsearch                : '7.10.2',
+        elasticsearch                : '7.11.0',
         feignHttpClient              : '10.3.0',
         flyway                        : '6.5.5',
         googleAuth                   : '1.5.0',
@@ -540,7 +540,6 @@ task contract(type: Test) {
     classpath = sourceSets.contractTest.runtimeClasspath
     include "uk/gov/hmcts/reform/divorce/orchestration/client/**"
     systemProperty 'pact.rootDir', "pacts"
-    environment("APPINSIGHTS_INSTRUMENTATIONKEY", "test-key")
 }
 
 task runAndPublishConsumerPactTests(type: Test){
