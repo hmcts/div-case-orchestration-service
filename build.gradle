@@ -39,7 +39,7 @@ def versions = [
         commonsMath3                 : '3.6.1',
         divCommonLib                 : '1.2.16',
         dumbster                     : '1.7.1',
-        elasticsearch                : '7.11.0',
+        elasticsearch                : '7.12.0',
         feignHttpClient              : '10.3.0',
         flyway                        : '6.5.5',
         googleAuth                   : '1.5.0',
@@ -158,6 +158,9 @@ allprojects {
                 entry 'tomcat-embed-el'
             }
             //CVE-2017-18640
+            dependency group: 'org.yaml',name: 'snakeyaml', version: '1.26'
+
+            //CVE-2021-22134
             dependency group: 'org.yaml',name: 'snakeyaml', version: '1.26'
         }
     }
