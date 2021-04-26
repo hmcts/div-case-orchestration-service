@@ -7,20 +7,19 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCoRespondentAnswerReceived;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetCoRespondentAnswerReceivedTask;
 
 import java.util.HashMap;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CoRespondentAnswerReceivedWorkflowTest {
 
     @Mock
-    private SetCoRespondentAnswerReceived setCoRespondentAnswerReceived;
+    private SetCoRespondentAnswerReceivedTask setCoRespondentAnswerReceivedTask;
 
     @InjectMocks
     private CoRespondentAnswerReceivedWorkflow classToTest;
@@ -34,7 +33,7 @@ public class CoRespondentAnswerReceivedWorkflowTest {
 
         classToTest.run(caseDetails);
 
-        verify(setCoRespondentAnswerReceived, times(1))
+        verify(setCoRespondentAnswerReceivedTask)
             .execute(any(), eq(caseDetails.getCaseData()));
     }
 }

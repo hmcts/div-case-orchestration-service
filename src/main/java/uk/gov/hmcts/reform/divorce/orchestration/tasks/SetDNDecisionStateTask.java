@@ -59,8 +59,13 @@ public class SetDNDecisionStateTask implements Task<Map<String, Object>> {
                 }
             }
         }
-        log.info("Set case state on DN decision for case Id : {} , state {}", context.getTransientObject(CASE_ID_JSON_KEY), newCaseEndState);
+        log.info(
+            "Set case state on DN decision for case Id : {} , state {}",
+            context.getTransientObject(CASE_ID_JSON_KEY),
+            newCaseEndState
+        );
         payload.put(STATE_CCD_FIELD, newCaseEndState);
+
         return payload;
     }
 
@@ -69,6 +74,7 @@ public class SetDNDecisionStateTask implements Task<Map<String, Object>> {
             endState = WELSH_LA_DECISION;
             payload.put(WELSH_NEXT_EVENT, BO_WELSH_GRANT_DN_MAKE_DECISION);
         }
+
         return endState;
     }
 
