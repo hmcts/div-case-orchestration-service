@@ -13,7 +13,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 @Component
-public class SetCoRespondentAnswerReceived implements Task<Map<String, Object>> {
+public class SetCoRespondentAnswerReceivedTask implements Task<Map<String, Object>> {
 
     @Autowired
     private CcdUtil ccdUtil;
@@ -22,6 +22,7 @@ public class SetCoRespondentAnswerReceived implements Task<Map<String, Object>> 
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) {
         payload.put(CO_RESPONDENT_ANSWER_RECEIVED, YES_VALUE);
         payload.put(CO_RESPONDENT_ANSWER_RECEIVED_DATE, ccdUtil.getCurrentDateCcdFormat());
+
         return payload;
     }
 }
