@@ -637,13 +637,15 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     @Override
     public Map<String, Object> amendPetition(String caseId, String authorisation) throws WorkflowException {
-        Map<String, Object> response = amendPetitionWorkflow.run(caseId, authorisation);
-        if (response != null) {
+        try {
+            Map<String, Object> response = amendPetitionWorkflow.run(caseId, authorisation);
             log.info("Successfully created a new draft to amend, and updated old case {}", caseId);
-        } else {
+            return response;
+        } catch (WorkflowException e) {
             log.error("Unable to create new amendment petition for case {}", caseId);
+            throw new WorkflowException(e.getMessage());
         }
-        return response;
+
     }
 
     @Override
