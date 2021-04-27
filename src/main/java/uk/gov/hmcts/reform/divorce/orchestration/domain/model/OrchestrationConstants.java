@@ -31,7 +31,6 @@ public class OrchestrationConstants {
      * This solution will be removed from CCD, see https://tools.hmcts.net/jira/browse/RDM-6970 for more details
      */
     public static final String STATE_CCD_FIELD = "state";
-
     public static final String CASE_DETAILS_JSON_KEY = "case_details";
     public static final String CASE_EVENT_DATA_JSON_KEY = "eventData";
     public static final String CASE_EVENT_ID_JSON_KEY = "eventId";

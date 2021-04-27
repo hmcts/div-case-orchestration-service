@@ -6,11 +6,12 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentRequest;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_ACCOUNT_NUMBER;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PBA_NUMBERS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_TYPE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DynamicList.asDynamicList;
 
-
-@SpringBootTest(properties = {"feature-toggle.toggle.pay_by_account=false", "feature-toggle.toggle.pba_case_type=false"})
-public class ProcessPbaPaymentFeatureSwitchedOffIAbstractITest extends ProcessPbaPaymentAbstractITest {
+@SpringBootTest(properties = {"feature-toggle.toggle.pay_by_account=true", "feature-toggle.toggle.pba_case_type=true"})
+public class ProcessPbaUsingCaseTypeFeatureSwitchedOnIAbstractITest extends ProcessPbaPaymentAbstractITest {
 
     @Before
     public void setup() {
@@ -19,11 +20,11 @@ public class ProcessPbaPaymentFeatureSwitchedOffIAbstractITest extends ProcessPb
 
     @Override
     protected void setPbaNumber() {
-        caseData.put(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY, TEST_SOLICITOR_ACCOUNT_NUMBER);
+        caseData.put(PBA_NUMBERS, asDynamicList(TEST_SOLICITOR_ACCOUNT_NUMBER));
     }
 
     @Override
     protected void setSiteIdOrCaseType(CreditAccountPaymentRequest request) {
-        request.setSiteId(CourtEnum.EASTMIDLANDS.getSiteId());
+        request.setCaseType(CASE_TYPE_ID);
     }
 }

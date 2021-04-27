@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
@@ -23,6 +24,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountP
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentItem;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentStatus;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPaymentTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.payment.PbaErrorMessage;
 import uk.gov.service.notify.NotificationClientException;
@@ -72,6 +74,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLIC
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_FIRM;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_TYPE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CURRENCY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_CENTRE_SITEID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_UNIT_JSON_KEY;
@@ -131,6 +134,7 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
     private CreditAccountPaymentResponse basicFailedResponse;
 
     protected abstract void setPbaNumber();
+    protected abstract void setSiteIdOrCaseType(CreditAccountPaymentRequest request);
 
     @Before
     public void setUp() {
@@ -171,7 +175,7 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
         request.setCurrency(CURRENCY);
         request.setAmount(orderSummary.getPaymentTotal());
         request.setCcdCaseNumber(TEST_CASE_ID);
-        request.setSiteId(CourtEnum.EASTMIDLANDS.getSiteId());
+        setSiteIdOrCaseType(request);
         request.setAccountNumber(TEST_SOLICITOR_ACCOUNT_NUMBER);
         request.setOrganisationName(TEST_SOLICITOR_FIRM_NAME);
         request.setCustomerReference(TEST_SOLICITOR_REFERENCE);

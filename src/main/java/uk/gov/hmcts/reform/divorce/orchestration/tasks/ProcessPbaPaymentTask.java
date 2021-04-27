@@ -32,6 +32,7 @@ import static java.util.Collections.singletonList;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_FIRM;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_TYPE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CURRENCY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_CENTRE_SITEID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY;
@@ -167,7 +168,12 @@ public class ProcessPbaPaymentTask implements Task<Map<String, Object>> {
                                         OrderSummary orderSummary, FeeValue value) {
         addToRequest(request::setAmount, orderSummary::getPaymentTotal);
         addToRequest(request::setCcdCaseNumber, context.getTransientObject(CASE_ID_JSON_KEY)::toString);
-        addToRequest(request::setSiteId, caseData.get(DIVORCE_CENTRE_SITEID_JSON_KEY)::toString);
+
+        if (featureToggleService.isFeatureEnabled(Features.PBA_USING_CASE_TYPE)) {
+            addToRequest(request::setCaseType, caseData.get(CASE_TYPE_ID)::toString);
+        } else {
+            addToRequest(request::setSiteId, caseData.get(DIVORCE_CENTRE_SITEID_JSON_KEY)::toString);
+        }
         addToRequest(request::setAccountNumber, getPbaNumber(caseData, isPbaToggleOn())::toString);
         addToRequest(request::setOrganisationName, caseData.get(PETITIONER_SOLICITOR_FIRM)::toString);
         addToRequest(request::setCustomerReference, caseData.get(SOLICITOR_REFERENCE_JSON_KEY)::toString);
