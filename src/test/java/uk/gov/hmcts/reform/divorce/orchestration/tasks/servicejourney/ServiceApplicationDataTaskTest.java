@@ -3,11 +3,14 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceServiceApplication;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +20,7 @@ import java.util.Map;
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ADDED_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_FAMILY_MAN_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_DECISION_DATE;
@@ -28,6 +32,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_APPLICATION_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.LAST_SERVICE_APPLICATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.LAST_SERVICE_APPLICATION_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATIONS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.CASE_REFERENCE;
@@ -40,11 +45,15 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelp
 @RunWith(MockitoJUnitRunner.class)
 public class ServiceApplicationDataTaskTest {
 
+    @Mock
+    private FeatureToggleService featureToggleService;
+
     @InjectMocks
     private ServiceApplicationDataTask serviceApplicationDataTask;
 
     @Test
-    public void shouldExecuteAndAddElementToNewCollection() {
+    public void shouldExecuteAndAddElementToNewCollectionAndPopulateLastServiceApplicationTypeWhenBailiffOff() {
+        when(featureToggleService.isFeatureEnabled(Features.BAILIFF_JOURNEY)).thenReturn(false);
         Map<String, Object> input = buildCaseData();
         int originalSize = input.size();
 
@@ -59,7 +68,24 @@ public class ServiceApplicationDataTaskTest {
     }
 
     @Test
+    public void shouldExecuteAndAddElementToNewCollectionAndPopulateLastServiceApplicationTypeWhenBailiffOn() {
+        when(featureToggleService.isFeatureEnabled(Features.BAILIFF_JOURNEY)).thenReturn(true);
+        Map<String, Object> input = buildCaseData();
+        int originalSize = input.size();
+
+        Map<String, Object> output = serviceApplicationDataTask.execute(context(), input);
+
+        List<CollectionMember<DivorceServiceApplication>> collectionMembers = (List) output
+            .get(SERVICE_APPLICATIONS);
+        DivorceServiceApplication serviceApplication = collectionMembers.get(0).getValue();
+
+        assertThat(output.size(), is(originalSize + 3));
+        assertThat(serviceApplication.getType(), is(ApplicationServiceTypes.DEEMED));
+    }
+
+    @Test
     public void shouldExecuteAndAddAnotherElementToExistingCollection() {
+        when(featureToggleService.isFeatureEnabled(Features.BAILIFF_JOURNEY)).thenReturn(true);
         Map<String, Object> input = buildCaseData();
         List<CollectionMember<DivorceServiceApplication>> memberList = new ArrayList<>(asList(buildCollectionMember()));
         input.put(SERVICE_APPLICATIONS, memberList);
@@ -79,6 +105,7 @@ public class ServiceApplicationDataTaskTest {
     private void assertLastServiceApplicationIsPersisted(Map<String, Object> caseData) {
         DivorceServiceApplication serviceApplication = (DivorceServiceApplication) caseData.get(LAST_SERVICE_APPLICATION);
         assertServiceApplicationIsCorrect(serviceApplication);
+        String type = (String) caseData.get(LAST_SERVICE_APPLICATION_TYPE);
     }
 
     private void assertServiceApplicationIsCorrect(DivorceServiceApplication serviceApplication) {

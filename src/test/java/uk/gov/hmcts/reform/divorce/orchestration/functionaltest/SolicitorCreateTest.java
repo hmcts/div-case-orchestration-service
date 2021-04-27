@@ -27,6 +27,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ORGANISATION_POLICY_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_REFERENCE;
@@ -113,6 +114,7 @@ public class SolicitorCreateTest extends IdamTestSupport {
             allOf(
                 hasJsonPath("$.data.D8SolicitorReference"),
                 hasJsonPath("$.data.respondentSolicitorReference"),
+                hasJsonPath("$.data.PetitionerSolicitorFirm", is(TEST_ORGANISATION_POLICY_NAME)),
                 hasJsonPath("$.data.PetitionerOrganisationPolicy.OrgPolicyReference", is(TEST_SOLICITOR_REFERENCE)),
                 hasJsonPath("$.data.RespondentOrganisationPolicy.OrgPolicyReference", is(TEST_RESPONDENT_SOLICITOR_REFERENCE)))
         );
@@ -128,6 +130,9 @@ public class SolicitorCreateTest extends IdamTestSupport {
         caseData.put(RESP_SOL_REPRESENTED, YES_VALUE);
         caseData.put(RESPONDENT_SOLICITOR_DIGITAL, NO_VALUE);
         caseData.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy());
+
+        stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
+        stubGetMyOrganisationServerEndpoint(AUTH_TOKEN, TEST_SERVICE_AUTH_TOKEN);
 
         stubDraftDocumentGeneratorService(
             DRAFT_MINI_PETITION_TEMPLATE_NAME,
@@ -147,6 +152,7 @@ public class SolicitorCreateTest extends IdamTestSupport {
             allOf(
                 hasJsonPath("$.data.D8SolicitorReference"),
                 hasJsonPath("$.data.respondentSolicitorReference"),
+                hasJsonPath("$.data.PetitionerSolicitorFirm", is(TEST_ORGANISATION_POLICY_NAME)),
                 hasJsonPath("$.data.PetitionerOrganisationPolicy.OrgPolicyReference", is(TEST_SOLICITOR_REFERENCE)),
                 hasNoJsonPath("$.data.RespondentOrganisationPolicy"))
         );
@@ -182,6 +188,7 @@ public class SolicitorCreateTest extends IdamTestSupport {
             allOf(
                 hasJsonPath("$.data.D8SolicitorReference"),
                 hasJsonPath("$.data.respondentSolicitorReference"),
+                hasJsonPath("$.data.PetitionerSolicitorFirm", is(TEST_ORGANISATION_POLICY_NAME)),
                 hasJsonPath("$.data.PetitionerOrganisationPolicy.OrgPolicyReference", is(TEST_SOLICITOR_REFERENCE)),
                 hasNoJsonPath("$.data.RespondentOrganisationPolicy"))
         );
@@ -208,6 +215,7 @@ public class SolicitorCreateTest extends IdamTestSupport {
         assertThat(mvcResult.getResponse().getContentAsString(),
             allOf(
                 hasNoJsonPath("$.data.D8SolicitorReference"),
+                hasNoJsonPath("$.data.PetitionerSolicitorFirm"),
                 hasNoJsonPath("$.data.PetitionerOrganisationPolicy"),
                 hasNoJsonPath("$.data.respondentSolicitorReference"),
                 hasNoJsonPath("$.data.RespondentOrganisationPolicy")
@@ -236,5 +244,4 @@ public class SolicitorCreateTest extends IdamTestSupport {
             .caseDetails(fullCase)
             .build();
     }
-
 }

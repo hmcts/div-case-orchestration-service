@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType;
+import uk.gov.hmcts.reform.divorce.orchestration.exception.JudgeServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AlternativeServiceService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.AosService;
@@ -32,6 +33,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CourtOrderDocumentsUpda
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralEmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralOrderService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralReferralService;
+import uk.gov.hmcts.reform.divorce.orchestration.service.JudgeService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ProcessPbaPaymentTask;
@@ -78,6 +80,7 @@ public class CallbackController {
     private static final String FAILED_TO_EXECUTE_SERVICE_ERROR = "Failed to execute service for case ID:  %s";
 
     private final CaseOrchestrationService caseOrchestrationService;
+    private final JudgeService judgeService;
     private final ServiceJourneyService serviceJourneyService;
     private final GeneralOrderService generalOrderService;
     private final AosService aosService;
@@ -1324,8 +1327,8 @@ public class CallbackController {
             @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
         return ResponseEntity.ok(
-                serviceJourneyService
-                        .setupAddBailiffReturnEvent(ccdCallbackRequest.getCaseDetails(), authorizationToken)
+            serviceJourneyService
+                .setupAddBailiffReturnEvent(ccdCallbackRequest.getCaseDetails(), authorizationToken)
         );
     }
 
@@ -1542,10 +1545,10 @@ public class CallbackController {
     public ResponseEntity<CcdCallbackResponse> judgeCostsDecision(
         @RequestHeader(value = AUTHORIZATION_HEADER)
         @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
-        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws JudgeServiceException {
 
         return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .data(caseOrchestrationService.judgeCostsDecision(ccdCallbackRequest))
+            .data(judgeService.judgeCostsDecision(ccdCallbackRequest))
             .build());
     }
 

@@ -7,6 +7,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.BailiffServiceApplicationDataTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.BailiffServiceApplicationRemovalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.BailiffSuccessServiceDueDateSetterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.BailiffUnsuccessServiceDueDateSetterTask;
 
@@ -37,6 +39,12 @@ public class BailiffOutcomeWorkflowTest {
     @Mock
     private BailiffUnsuccessServiceDueDateSetterTask bailiffUnsuccessServiceDueDateSetterTask;
 
+    @Mock
+    private BailiffServiceApplicationDataTask bailiffServiceApplicationDataTask;
+
+    @Mock
+    private BailiffServiceApplicationRemovalTask bailiffServiceApplicationRemovalTask;
+
     @Test
     public void shouldRunCorrectTask_whenBailiffServiceSuccessful() throws WorkflowException {
         Map<String, Object> caseData = new HashMap<>();
@@ -44,15 +52,19 @@ public class BailiffOutcomeWorkflowTest {
         CaseDetails caseDetails = buildCaseDetails(caseData, ISSUED_TO_BAILIFF);
 
         mockTasksExecution(
-                caseData,
-                bailiffSuccessServiceDueDateSetterTask
+            caseData,
+            bailiffSuccessServiceDueDateSetterTask,
+            bailiffServiceApplicationDataTask,
+            bailiffServiceApplicationRemovalTask
         );
 
         Map<String, Object> returnedData = executeWorkflow(caseDetails);
 
         verifyTasksCalledInOrder(
-                returnedData,
-                bailiffSuccessServiceDueDateSetterTask
+            returnedData,
+            bailiffSuccessServiceDueDateSetterTask,
+            bailiffServiceApplicationDataTask,
+            bailiffServiceApplicationRemovalTask
         );
 
         verifyTasksWereNeverCalled(bailiffUnsuccessServiceDueDateSetterTask);
@@ -65,27 +77,30 @@ public class BailiffOutcomeWorkflowTest {
         CaseDetails caseDetails = buildCaseDetails(caseData, ISSUED_TO_BAILIFF);
 
         mockTasksExecution(
-                caseData,
-                bailiffUnsuccessServiceDueDateSetterTask
+            caseData,
+            bailiffUnsuccessServiceDueDateSetterTask,
+            bailiffServiceApplicationDataTask,
+            bailiffServiceApplicationRemovalTask
         );
 
         Map<String, Object> returnedData = executeWorkflow(caseDetails);
 
         verifyTasksCalledInOrder(
-                returnedData,
-                bailiffUnsuccessServiceDueDateSetterTask
+            returnedData,
+            bailiffUnsuccessServiceDueDateSetterTask,
+            bailiffServiceApplicationDataTask,
+            bailiffServiceApplicationRemovalTask
         );
 
         verifyTasksWereNeverCalled(bailiffSuccessServiceDueDateSetterTask);
     }
 
-
     private CaseDetails buildCaseDetails(Map<String, Object> caseData, String caseState) {
         return CaseDetails.builder()
-                .caseData(caseData)
-                .caseId(TEST_CASE_ID)
-                .state(caseState)
-                .build();
+            .caseData(caseData)
+            .caseId(TEST_CASE_ID)
+            .state(caseState)
+            .build();
     }
 
     private Map<String, Object> executeWorkflow(CaseDetails caseDetails)

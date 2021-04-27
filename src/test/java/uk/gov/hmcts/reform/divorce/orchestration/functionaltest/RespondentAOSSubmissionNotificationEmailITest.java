@@ -27,7 +27,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -317,7 +316,7 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
                 ))
             );
 
-        verify(mockClient, never()).sendEmail(any(), any(), any(), any());
+        verify(mockClient).sendEmail(any(), any(), any(), any());
     }
 
     @Test
@@ -537,6 +536,7 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
         caseData.put(RESPONDENT_EMAIL_ADDRESS, TEST_RESPONDENT_EMAIL);
         caseData.put(PETITIONER_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
         caseData.put(D_8_DIVORCE_UNIT, "westMidlands");
+        caseData.put(D_8_INFERRED_RESPONDENT_GENDER, "male");
 
         caseData.put(D_8_INFERRED_PETITIONER_GENDER, TEST_INFERRED_MALE_GENDER);
 

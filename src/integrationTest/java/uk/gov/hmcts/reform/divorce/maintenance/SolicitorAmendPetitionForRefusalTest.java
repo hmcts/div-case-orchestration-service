@@ -27,7 +27,7 @@ public class SolicitorAmendPetitionForRefusalTest extends CcdSubmissionSupport {
     @Test
     @Ignore
     public void givenValidCase_whenSolicitorAmendPetitionForRefusalRejection_newDraftPetitionIsReturned() throws Exception {
-        final UserDetails solicitorUser = createSolicitorUser();
+        final UserDetails solicitorUser = retrieveSolicitorUserDetails();
 
         Response cosResponse = postWithData("solicitor-request-data-dn-rejection.json", solicitorUser.getAuthToken());
         assertThat(cosResponse.getStatusCode(), is(HttpStatus.OK.value()));

@@ -23,6 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.te
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COE_RESPONDENT_LETTER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COE_RESPONDENT_SOLICITOR_LETTER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COSTS_ORDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COSTS_ORDER_JUDGE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COST_ORDER_CO_RESPONDENT_LETTER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COST_ORDER_CO_RESPONDENT_SOLICITOR_LETTER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.CO_RESPONDENT_ANSWERS;
@@ -59,6 +60,7 @@ public class DocumentTypeTest {
         assertDocumentTypeTemplates(CO_RESPONDENT_ANSWERS, "co-respondent-answers", "FL-DIV-LET-WEL-00258.docx");
         assertDocumentTypeTemplates(CO_RESPONDENT_INVITATION, "co-respondentinvitation", "FL-DIV-LET-WEL-00259.docx");
         assertDocumentTypeTemplates(COSTS_ORDER, "FL-DIV-DEC-ENG-00060.docx", "FL-DIV-DEC-WEL-00240.docx");
+        assertDocumentTypeTemplates(COSTS_ORDER_JUDGE, "FL-DIV-DEC-ENG-00711.docx", "FL-DIV-DEC-WEL-00712.docx");
         assertDocumentTypeTemplates(DECREE_NISI, "FL-DIV-GNO-ENG-00021.docx", "FL-DIV-GNO-WEL-00239.docx");
         assertDocumentTypeTemplates(DECREE_NISI_ANSWER, "FL-DIV-GNO-ENG-00022.docx", "FL-DIV-APP-WEL-00253.docx");
         assertDocumentTypeTemplates(DECREE_NISI_REFUSAL_ORDER_CLARIFICATION, "FL-DIV-DEC-ENG-00088.docx", "FL-DIV-DEC-WEL-00251.docx");

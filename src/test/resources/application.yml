@@ -136,6 +136,8 @@ feature-toggle:
     paper_update: ${FEATURE_PAPER_UPDATE:false}
     share_a_case: ${FEATURE_SHARE_A_CASE:true}
     represented_respondent_journey: ${FEATURE_REPRESENTED_RESPONDENT_JOURNEY:true}
+    object_to_costs: ${FEATURE_OBJECT_TO_COSTS:true}
+    bailiff_journey: ${FEATURE_BAILIFF_JOURNEY:true}
     feature_fee_pay_s2s_token: ${FEATURE_FEE_PAY_S2S_TOKEN:true}
 
 send-letter:
@@ -175,7 +177,7 @@ uk:
   gov:
     notify:
       api:
-        key: 2409ba37-b5e6-4f03-b052-7d0f0986888d
+        key: ***REMOVED***
         baseUrl: dummy
       email:
         templateVars:

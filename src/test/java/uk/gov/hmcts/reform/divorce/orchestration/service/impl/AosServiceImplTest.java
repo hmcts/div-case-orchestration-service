@@ -47,6 +47,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_EVENT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_INCOMING_PAYLOAD;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PAYLOAD_TO_RETURN;
 import static uk.gov.hmcts.reform.divorce.orchestration.controller.util.CallbackControllerTestUtils.assertCaseOrchestrationServiceExceptionIsSetProperly;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_DIGITAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
@@ -316,6 +317,7 @@ public class AosServiceImplTest {
             .caseId(TEST_CASE_ID)
             .caseData(Map.of(
                 RESP_SOL_REPRESENTED, YES_VALUE,
+                RESPONDENT_SOLICITOR_DIGITAL, YES_VALUE,
                 RESPONDENT_SOLICITOR_ORGANISATION_POLICY, Map.of("Organisation", Map.of("OrganisationID", "testRegisteredSolicitorOrganisationId"))
             ))
             .build();

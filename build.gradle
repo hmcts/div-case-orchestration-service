@@ -9,7 +9,7 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-        classpath("net.serenity-bdd:serenity-gradle-plugin:2.2.13")
+        classpath("net.serenity-bdd:serenity-gradle-plugin:2.3.13")
     }
 }
 
@@ -25,7 +25,7 @@ plugins {
     id 'org.owasp.dependencycheck' version '6.1.5'
     id 'org.sonarqube' version '3.0'
     id 'org.springframework.boot' version '2.3.5.RELEASE'
-    id 'au.com.dius.pact' version '4.2.3'
+    id 'au.com.dius.pact' version '4.1.8'
 }
 
 def versions = [
@@ -34,7 +34,7 @@ def versions = [
         bspCommonLib                 : '0.0.47',
         ccdStoreClient               : '4.7.3',
         commonsBeanUtils             : '1.9.4',
-        commonsIo                    : '2.6',
+        commonsIo                    : '2.7',
         commonsLang3                 : '3.9',
         commonsMath3                 : '3.6.1',
         divCommonLib                 : '1.2.16',
