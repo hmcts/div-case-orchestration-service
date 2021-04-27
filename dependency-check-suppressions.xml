@@ -10,4 +10,16 @@
         <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring\-security\-crypto@.*$</packageUrl>
         <cve>CVE-2018-1258</cve>
     </suppress>
+
+    <suppress>
+        <notes>
+            <![CDATA[
+                elasticsearch-7.10.2.jar (pkg:maven/org.elasticsearch/elasticsearch@7.10.2,
+                cpe:2.3:a:elasticsearch:elasticsearch:7.10.2:*:*:*:*:*:*:*)
+            ]]>
+        </notes>
+        <packageUrl regex="true">^.*$</packageUrl>
+        <cve>CVE-2021-22134</cve>
+    </suppress>
+
 </suppressions>

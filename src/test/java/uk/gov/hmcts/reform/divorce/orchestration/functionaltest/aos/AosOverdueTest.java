@@ -15,6 +15,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 
@@ -29,6 +30,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static com.github.tomakehurst.wiremock.matching.RequestPatternBuilder.newRequestPattern;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyMap;
 import static org.apache.commons.lang3.StringUtils.SPACE;
 import static org.awaitility.Awaitility.await;
 import static org.mockito.Mockito.when;
@@ -42,6 +44,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.A
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.NOT_RECEIVED_AOS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.BAILIFF_SERVICE_SUCCESSFUL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.DUE_DATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.LAST_SERVICE_APPLICATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.LAST_SERVICE_APPLICATION_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVED_BY_ALTERNATIVE_METHOD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVED_BY_PROCESS_SERVER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_AWAITING;
@@ -83,14 +87,14 @@ public class AosOverdueTest extends MockedFunctionalTest {
     public void shouldMoveEligibleCasesToAosOverdue() throws Exception {
         QueryBuilder expectedQuery = buildCaseMaintenanceQuery();
         stubCaseMaintenanceSearchEndpoint(asList(
-            CaseDetails.builder().state(AOS_STARTED).caseId("1").build(),
-            CaseDetails.builder().state(AOS_AWAITING).caseId("2").build(),
-            CaseDetails.builder().state(AOS_AWAITING).caseId("3").build(),
+            CaseDetails.builder().state(AOS_STARTED).caseId("1").caseData(emptyMap()).build(),
+            CaseDetails.builder().state(AOS_AWAITING).caseId("2").caseData(emptyMap()).build(),
+            CaseDetails.builder().state(AOS_AWAITING).caseId("3").caseData(emptyMap()).build(),
             CaseDetails.builder().state(AOS_STARTED).caseId("4").caseData(Map.of(SERVED_BY_PROCESS_SERVER, YES_VALUE)).build(),
             CaseDetails.builder().state(AOS_AWAITING).caseId("5").caseData(Map.of(SERVED_BY_PROCESS_SERVER, YES_VALUE)).build(),
             CaseDetails.builder().state(AOS_STARTED).caseId("6").caseData(Map.of(SERVED_BY_ALTERNATIVE_METHOD, YES_VALUE)).build(),
             CaseDetails.builder().state(AOS_AWAITING).caseId("7").caseData(Map.of(SERVED_BY_ALTERNATIVE_METHOD, YES_VALUE)).build(),
-            CaseDetails.builder().state(AOS_AWAITING).caseId("8").caseData(Map.of(BAILIFF_SERVICE_SUCCESSFUL, YES_VALUE)).build()
+            CaseDetails.builder().state(AOS_AWAITING).caseId("8").caseData(getBailiffServiceSuccessful()).build()
         ), expectedQuery);
 
         mockMvc.perform(post("/cases/aos/make-overdue").header(AUTHORIZATION, AUTH_TOKEN))
@@ -106,6 +110,14 @@ public class AosOverdueTest extends MockedFunctionalTest {
             verifyCaseWasUpdated("8", AOS_NOT_RECEIVED_FOR_BAILIFF_APPLICATION);
         });
         verifyCaseWasNotUpdated("1", NOT_RECEIVED_AOS);
+    }
+
+    private Map<String, Object> getBailiffServiceSuccessful() {
+        return Map.of(
+            LAST_SERVICE_APPLICATION_TYPE, ApplicationServiceTypes.BAILIFF,
+            LAST_SERVICE_APPLICATION,Map.of(BAILIFF_SERVICE_SUCCESSFUL, YES_VALUE)
+        );
+
     }
 
     @Test
@@ -128,10 +140,10 @@ public class AosOverdueTest extends MockedFunctionalTest {
 
     private List<CaseDetails> buildCaseMaintenanceResponseWithAosDraftedCases() {
         return asList(
-            CaseDetails.builder().state(AOS_STARTED).caseId("1").build(),
-            CaseDetails.builder().state(AOS_DRAFTED).caseId("2").build(),
+            CaseDetails.builder().state(AOS_STARTED).caseId("1").caseData(emptyMap()).build(),
+            CaseDetails.builder().state(AOS_DRAFTED).caseId("2").caseData(emptyMap()).build(),
             CaseDetails.builder().state(AOS_DRAFTED).caseId("3").caseData(Map.of(SERVED_BY_PROCESS_SERVER, YES_VALUE)).build(),
-            CaseDetails.builder().state(AOS_AWAITING).caseId("4").build(),
+            CaseDetails.builder().state(AOS_AWAITING).caseId("4").caseData(emptyMap()).build(),
             CaseDetails.builder().state(AOS_DRAFTED).caseId("5").caseData(Map.of(SERVED_BY_ALTERNATIVE_METHOD, YES_VALUE)).build()
         );
     }
