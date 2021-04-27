@@ -6,6 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.divorce.model.payment.Payment;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CaseDataResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -15,6 +16,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.payment.PaymentUpd
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.util.AuthUtil;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionForRefusalWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.AmendPetitionWorkflow;
@@ -94,7 +96,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.JUDGE_COSTS_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_DRAFTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
@@ -105,12 +106,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_FILENAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COSTS_ORDER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.COSTS_ORDER_JUDGE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.EventHelper.isIssueAosEvent;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isAOSDraftedCandidate;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isCostClaimGrantedPopulated;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.isPetitionerClaimingCosts;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.JudgeDecisionHelper.hasJudgeGrantedCostsDecision;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.JudgeDecisionHelper.isJudgeCostClaimAdjourned;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.JudgeDecisionHelper.isJudgeCostClaimEmpty;
 
 @Slf4j
 @Service
@@ -189,6 +194,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final RemoveDNDocumentsWorkflow removeDNDocumentsWorkflow;
     private final SendClarificationSubmittedNotificationWorkflow sendClarificationSubmittedNotificationWorkflow;
     private final CreateNewAmendedCaseAndSubmitToCCDWorkflow createNewAmendedCaseAndSubmitToCCDWorkflow;
+    private final FeatureToggleService featureToggleService;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -677,6 +683,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         builder.data(caseDetails.getCaseData());
 
         if (isAOSDraftedCandidate(caseDetails)) {
+            log.info("CaseId: {}, case state update to AOS_DRAFTED", caseDetails.getCaseId());
             builder.state(AOS_DRAFTED);
         } else {
             builder.state(caseDetails.getState());
@@ -767,17 +774,33 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         Map<String, Object> caseData = caseDetails.getCaseData();
 
         if (Objects.nonNull(caseData.get(BULK_LISTING_CASE_ID_FIELD))) {
-            caseData.putAll(
-                documentGenerationWorkflow.run(caseDetails, authToken, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME));
+            caseData.putAll(documentGenerationWorkflow.run(caseDetails, authToken, DECREE_NISI_DOCUMENT_TYPE, DECREE_NISI, DECREE_NISI_FILENAME));
 
-            if (isPetitionerClaimingCosts(caseData)) {
-                // DocumentType is clear enough to use as the file name
-                caseData.putAll(
-                    documentGenerationWorkflow.run(caseDetails, authToken, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE));
+            if (shouldCostOrderBeSent(caseData)) {
+                sendCostOrderDocument(authToken, caseDetails, caseData);
             }
         }
 
         return caseData;
+    }
+
+    private void sendCostOrderDocument(String authToken, CaseDetails caseDetails, Map<String, Object> caseData) throws WorkflowException {
+        if (featureToggleService.isFeatureEnabled(Features.OBJECT_TO_COSTS)
+            && hasJudgeGrantedCostsDecision(caseDetails.getCaseData())) {
+            caseData.putAll(documentGenerationWorkflow.run(
+                caseDetails, authToken, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_JUDGE, COSTS_ORDER_DOCUMENT_TYPE));
+        } else {
+            caseData.putAll(documentGenerationWorkflow.run(
+                caseDetails, authToken, COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER, COSTS_ORDER_DOCUMENT_TYPE));
+        }
+    }
+
+    private boolean shouldCostOrderBeSent(Map<String, Object> caseData) {
+        if (featureToggleService.isFeatureEnabled(Features.OBJECT_TO_COSTS)
+            && (isJudgeCostClaimEmpty(caseData) && !isCostClaimGrantedPopulated(caseData)) || isJudgeCostClaimAdjourned(caseData)) {
+            return false;
+        }
+        return isPetitionerClaimingCosts(caseData);
     }
 
     @Override
@@ -1004,12 +1027,4 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         }
     }
 
-    @Override
-    public Map<String, Object> judgeCostsDecision(CcdCallbackRequest ccdCallbackRequest) {
-        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
-
-        caseData.put(JUDGE_COSTS_DECISION, YES_VALUE);
-
-        return caseData;
-    }
 }

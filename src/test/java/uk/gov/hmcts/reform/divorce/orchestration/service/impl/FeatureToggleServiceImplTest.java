@@ -16,8 +16,9 @@ import static org.hamcrest.core.Is.is;
 @TestPropertySource(properties = {
     "FEATURE_SHARE_A_CASE=true",
     "FEATURE_PAPER_UPDATE=true",
-    "FEATURE_REPRESENTED_RESPONDENT_JOURNEY=true"
-})
+    "FEATURE_REPRESENTED_RESPONDENT_JOURNEY=true",
+    "FEATURE_OBJECT_TO_COSTS: true"
+    })
 public class FeatureToggleServiceImplTest {
 
     @Autowired
@@ -37,6 +38,7 @@ public class FeatureToggleServiceImplTest {
         assertThat(classUnderTest.isFeatureEnabled(Features.PAPER_UPDATE), is(true));
         assertThat(classUnderTest.isFeatureEnabled(Features.SHARE_A_CASE), is(true));
         assertThat(classUnderTest.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY), is(true));
+        assertThat(classUnderTest.isFeatureEnabled(Features.OBJECT_TO_COSTS), is(true));
     }
 
 }

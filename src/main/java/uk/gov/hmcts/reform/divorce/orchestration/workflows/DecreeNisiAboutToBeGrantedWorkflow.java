@@ -51,9 +51,9 @@ public class DecreeNisiAboutToBeGrantedWorkflow extends DefaultWorkflow<Map<Stri
 
     private final GetAmendPetitionFeeTask getAmendPetitionFeeTask;
 
-    private final FeatureToggleService featureToggleService;
-
     private final PopulateDocLinkTask populateDocLinkTask;
+
+    private final FeatureToggleService featureToggleService;
 
     public Map<String, Object> run(CaseDetails caseDetails, String authToken) throws WorkflowException {
         List<Task<Map<String, Object>>> tasksToRun = new ArrayList<>();

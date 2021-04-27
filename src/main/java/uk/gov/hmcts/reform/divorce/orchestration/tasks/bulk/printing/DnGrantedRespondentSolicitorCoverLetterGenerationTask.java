@@ -3,9 +3,11 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CoERespondentSolicitorCoverLetter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.docmosis.DocmosisTemplateVars;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.PdfDocumentGenerationService;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor;
 import uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CoECoverLetterDataExtractor;
@@ -24,6 +26,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.get
 @Component
 public class DnGrantedRespondentSolicitorCoverLetterGenerationTask extends BasePayloadSpecificDocumentGenerationTask {
 
+    private final FeatureToggleService featureToggleService;
+
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class FileMetadata {
         public static final String TEMPLATE_ID = DN_GRANTED_COVER_LETTER_RESPONDENT_SOLICITOR.getTemplateByLanguage(ENGLISH);
@@ -33,8 +37,11 @@ public class DnGrantedRespondentSolicitorCoverLetterGenerationTask extends BaseP
     public DnGrantedRespondentSolicitorCoverLetterGenerationTask(
         CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
         PdfDocumentGenerationService pdfDocumentGenerationService,
-        CcdUtil ccdUtil) {
+        CcdUtil ccdUtil,
+        FeatureToggleService featureToggleService) {
         super(ctscContactDetailsDataProviderService, pdfDocumentGenerationService, ccdUtil);
+
+        this.featureToggleService = featureToggleService;
     }
 
     @Override
@@ -47,7 +54,7 @@ public class DnGrantedRespondentSolicitorCoverLetterGenerationTask extends BaseP
             .hearingDate(DatesDataExtractor.getHearingDate(caseData))
             .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
             .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
-            .costClaimGranted(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData))
+            .costClaimGranted(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData, isObjectToCostsEnabled()))
             .solicitorReference(SolicitorDataExtractor.getSolicitorReference(caseData))
             .build();
     }
@@ -60,5 +67,9 @@ public class DnGrantedRespondentSolicitorCoverLetterGenerationTask extends BaseP
     @Override
     public String getTemplateId() {
         return FileMetadata.TEMPLATE_ID;
+    }
+
+    private boolean isObjectToCostsEnabled() {
+        return featureToggleService.isFeatureEnabled(Features.OBJECT_TO_COSTS);
     }
 }

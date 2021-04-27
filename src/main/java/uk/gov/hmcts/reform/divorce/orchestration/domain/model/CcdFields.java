@@ -80,6 +80,12 @@ public class CcdFields {
 
     public static final String PETITIONER_SOLICITOR_ORGANISATION_POLICY = "PetitionerOrganisationPolicy";
     public static final String RESPONDENT_SOLICITOR_ORGANISATION_POLICY = "RespondentOrganisationPolicy";
+    public static final String RESPONDENT_SOLICITOR_NAME = "D8RespondentSolicitorName";
+    public static final String RESPONDENT_SOLICITOR_REFERENCE = "respondentSolicitorReference";
+    public static final String RESPONDENT_SOLICITOR_PHONE = "D8RespondentSolicitorPhone";
+    public static final String RESPONDENT_SOLICITOR_EMAIL = "D8RespondentSolicitorEmail";
+    public static final String RESPONDENT_SOLICITOR_ADDRESS = "D8DerivedRespondentSolicitorAddr";
+    public static final String PETITIONER_SOLICITOR_FIRM = "PetitionerSolicitorFirm";
 
     public static final String BAILIFF_APPLICATION_GRANTED = "BailiffApplicationGranted";
     public static final String CERTIFICATE_OF_SERVICE_DOCUMENT = "CertificateOfServiceDocument";
@@ -94,6 +100,10 @@ public class CcdFields {
     public static final String NOTICE_OF_PROCEEDINGS_FIRM = "NoticeOfProceedingsSolicitorFirm";
 
     public static final String JUDGE_COSTS_DECISION = "JudgeCostsDecision";
+    public static final String JUDGE_COSTS_CLAIM_GRANTED = "JudgeCostsClaimGranted";
+    public static final String JUDGE_WHO_PAYS_COSTS = "JudgeWhoPaysCosts";
+    public static final String JUDGE_TYPE_COSTS_DECISION = "JudgeTypeCostsDecision";
+    public static final String JUDGE_COSTS_ADDITIONAL_INFO = "JudgeCostsOrderAdditionalInfo";
 
     public static final String RESPONDENT_SOLICITOR_DIGITAL = "RespSolDigital";
 }

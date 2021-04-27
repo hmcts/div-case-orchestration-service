@@ -56,7 +56,7 @@ public class CoECoRespondentCoverLetterGenerationTask extends BasePayloadSpecifi
             .letterDate(DateUtils.formatDateWithCustomerFacingFormat(LocalDate.now()))
             .petitionerFullName(FullNamesDataExtractor.getPetitionerFullName(caseData))
             .respondentFullName(FullNamesDataExtractor.getRespondentFullName(caseData))
-            .costClaimGranted(CoECoverLetterDataExtractor.isCostsClaimGranted(caseData))
+            .costClaimGranted(CoECoverLetterDataExtractor.isLegalAdvisorCostsClaimGranted(caseData))
             .courtName(getCourtName(caseData))
             .deadlineToContactCourtBy(DatesDataExtractor.getDeadlineToContactCourtBy(caseData))
             .hearingDate(DatesDataExtractor.getHearingDate(caseData))
