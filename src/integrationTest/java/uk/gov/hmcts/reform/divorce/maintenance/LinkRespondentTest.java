@@ -227,7 +227,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
     }
 
     private void assertCaseDetailsRespondent(UserDetails userDetails, String caseId) {
-        CaseDetails caseDetails = ccdClientSupport.retrieveCase(userDetails, caseId);
+        CaseDetails caseDetails = ccdClientSupport.retrieveCaseForCitizen(userDetails, caseId);
 
         assertEquals(userDetails.getEmailAddress(), caseDetails.getData().get(RESPONDENT_EMAIL_ADDRESS));
         assertNull(caseDetails.getData().get(RECEIVED_AOS_FROM_RESP));
@@ -235,7 +235,7 @@ public class LinkRespondentTest extends RetrieveAosCaseSupport {
     }
 
     private void assertCaseDetailsCoRespondent(UserDetails userDetails, String caseId) {
-        CaseDetails caseDetails = ccdClientSupport.retrieveCase(userDetails, caseId);
+        CaseDetails caseDetails = ccdClientSupport.retrieveCaseForCitizen(userDetails, caseId);
 
         assertEquals(userDetails.getEmailAddress(), caseDetails.getData().get(CO_RESP_EMAIL_ADDRESS));
         assertNull(caseDetails.getData().get(RECEIVED_AOS_FROM_RESP));

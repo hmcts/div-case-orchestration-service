@@ -15,6 +15,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ORGANISATION_POLICY_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_DIGITAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
@@ -113,13 +114,13 @@ public class PartyRepresentationCheckerTest {
     }
 
     @Test
-    public void isPetitionerSolicitorDigitalReturnsFalseWhenRespOrgPolicyDoesNotExist() {
+    public void isPetitionerSolicitorDigitalReturnsFalse_WhenRespOrgPolicyDoesNotExist() {
         Map<String, Object> caseData = emptyMap();
         assertThat(isPetitionerSolicitorDigital(caseData), is(false));
     }
 
     @Test
-    public void isPetitionerSolicitorDigitalReturnsFalseWhenRespOrgPolicyIdIsEmptyOrNull() {
+    public void isPetitionerSolicitorDigitalReturnsFalse_WhenRespOrgPolicyIdIsEmptyOrNull() {
         Map<String, Object> caseData = createCaseData(PETITIONER_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicyWithId(""));
         assertThat(isPetitionerSolicitorDigital(caseData), is(false));
     }
@@ -132,21 +133,49 @@ public class PartyRepresentationCheckerTest {
     }
 
     @Test
-    public void isRespondentSolicitorDigitalReturnsFalseWhenRespOrgPolicyDoesNotExist() {
+    public void isRespondentSolicitorDigitalReturnsFalse_WhenRespOrgPolicyDoesNotExist() {
         Map<String, Object> caseData = emptyMap();
         assertThat(isRespondentSolicitorDigital(caseData), is(false));
     }
 
     @Test
-    public void isRespondentSolicitorDigitalReturnsFalseWhenRespOrgPolicyIdIsEmptyOrNull() {
-        Map<String, Object> caseData = createCaseData(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicyWithId(""));
+    public void isRespondentSolicitorDigitalReturnsFalse_WhenRespSolDigitalIsEmptyAndOrgDetailsPopulated() {
+        Map<String, Object> caseData = createCaseData(RESPONDENT_SOLICITOR_ORGANISATION_POLICY,
+                                                        buildOrganisationPolicyWithId(TEST_ORGANISATION_POLICY_ID));
         assertThat(isRespondentSolicitorDigital(caseData), is(false));
     }
 
     @Test
-    public void isRespondentSolicitorDigitalReturnsTrue() {
-        Map<String, Object> caseData = createCaseData(RESPONDENT_SOLICITOR_ORGANISATION_POLICY,
-            buildOrganisationPolicyWithId(TEST_ORGANISATION_POLICY_ID));
+    public void isRespondentSolicitorDigitalReturnsFalse_WhenRespSolDigitalIsYesAndOrgDetailsEmpty() {
+        Map<String, Object> caseData = createCaseData(RESPONDENT_SOLICITOR_DIGITAL, YES_VALUE);
+
+        assertThat(isRespondentSolicitorDigital(caseData), is(false));
+    }
+
+    @Test
+    public void isRespondentSolicitorDigitalReturnsFalse_WhenRespSolDigitalIsNoAndOrgDetailsPopulated() {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(RESPONDENT_SOLICITOR_DIGITAL, NO_VALUE);
+        caseData.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicyWithId(TEST_ORGANISATION_POLICY_ID));
+
+        assertThat(isRespondentSolicitorDigital(caseData), is(false));
+    }
+
+    @Test
+    public void isRespondentSolicitorDigitalReturnsFalse_WhenRespSolDigitalIsYesAndOrgDetailsNotPopulated() {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(RESPONDENT_SOLICITOR_DIGITAL, YES_VALUE);
+        caseData.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicyWithId(""));
+
+        assertThat(isRespondentSolicitorDigital(caseData), is(false));
+    }
+
+    @Test
+    public void isRespondentSolicitorDigitalReturnsTrue_WhenRespSolDigitalIsYesAndOrgDetailsFilled() {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(RESPONDENT_SOLICITOR_DIGITAL, YES_VALUE);
+        caseData.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicyWithId(TEST_ORGANISATION_POLICY_ID));
+
         assertThat(isRespondentSolicitorDigital(caseData), is(true));
     }
 

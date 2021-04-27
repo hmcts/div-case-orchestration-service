@@ -132,7 +132,7 @@ public class SolicitorCreateAndUpdateTest extends IntegrationTest {
     private Map<String, Object> getRequestHeaders() {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
-        headers.put(HttpHeaders.AUTHORIZATION, createSolicitorUser().getAuthToken());
+        headers.put(HttpHeaders.AUTHORIZATION, retrieveSolicitorUserDetails().getAuthToken());
         headers.put(SERVICE_AUTHORIZATION_HEADER, getS2sAuth());
 
         return headers;

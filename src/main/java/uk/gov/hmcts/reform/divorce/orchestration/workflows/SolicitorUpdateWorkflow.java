@@ -13,6 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddMiniPetitionDraftTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.AddNewDocumentsToCaseDataTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.CopyD8JurisdictionConnectionPolicyTask;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.RespondentOrganisationPolicyRemovalTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetNewLegalConnectionPolicyTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetPetitionerSolicitorOrganisationPolicyReferenceTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrganisationPolicyReferenceTask;
@@ -25,6 +26,7 @@ import java.util.Map;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
 
 @Component
 @Slf4j
@@ -35,6 +37,7 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
     private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
     private final SetPetitionerSolicitorOrganisationPolicyReferenceTask setPetitionerSolicitorOrganisationPolicyReferenceTask;
     private final SetRespondentSolicitorOrganisationPolicyReferenceTask setRespondentSolicitorOrganisationPolicyReferenceTask;
+    private final RespondentOrganisationPolicyRemovalTask respondentOrganisationPolicyRemovalTask;
     private final SetNewLegalConnectionPolicyTask setNewLegalConnectionPolicyTask;
     private final CopyD8JurisdictionConnectionPolicyTask copyD8JurisdictionConnectionPolicyTask;
     private final ValidateSelectedOrganisationTask validateSelectedOrganisationTask;
@@ -47,7 +50,7 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
         log.info("CaseID: {} SolicitorUpdateWorkflow workflow is going to be executed.", caseId);
 
         return this.execute(
-            getTasks(caseId),
+            getTasks(caseDetails),
             caseDetails.getCaseData(),
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
             ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
@@ -55,7 +58,8 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
         );
     }
 
-    private Task<Map<String, Object>>[] getTasks(String caseId) {
+    private Task<Map<String, Object>>[] getTasks(CaseDetails caseDetails) {
+        final String caseId = caseDetails.getCaseId();
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
         tasks.add(getNewLegalConnectionPolicyTask(caseId));
@@ -71,9 +75,16 @@ public class SolicitorUpdateWorkflow extends DefaultWorkflow<Map<String, Object>
         }
 
         if (isRepresentedRespondentJourneyEnabled()) {
-            log.info("CaseId: {}, Adding OrganisationPolicyReference tasks", caseId);
+            log.info("CaseId: {}, Adding task to set petSol Organisation Policy Reference details", caseId);
             tasks.add(setPetitionerSolicitorOrganisationPolicyReferenceTask);
-            tasks.add(setRespondentSolicitorOrganisationPolicyReferenceTask);
+            if (isRespondentSolicitorDigital(caseDetails.getCaseData())) {
+                log.info("CaseId: {}, Adding task to set respSol Organisation Policy Reference details", caseId);
+                tasks.add(setRespondentSolicitorOrganisationPolicyReferenceTask);
+            } else {
+                log.info("CaseId: {}, adding task to remove Organisation Policy details when respSol NOT digital", caseId);
+                tasks.add(respondentOrganisationPolicyRemovalTask);
+            }
+
         }
 
         return tasks.toArray(new Task[] {});
