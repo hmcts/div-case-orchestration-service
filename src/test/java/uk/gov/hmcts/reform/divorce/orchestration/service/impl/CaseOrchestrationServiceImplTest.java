@@ -363,9 +363,6 @@ public class CaseOrchestrationServiceImplTest {
     private WelshSetPreviousStateWorkflow welshSetPreviousStateWorkflow;
 
     @Mock
-    private MigrateChequePaymentWorkflow migrateChequePaymentWorkflow;
-
-    @Mock
     private JudgeCostsDecisionWorkflow judgeCostsDecisionWorkflow;
 
     @Mock
@@ -2036,13 +2033,6 @@ public class CaseOrchestrationServiceImplTest {
 
         List<String> errors = workflowErrors.values().stream().map(String.class::cast).collect(Collectors.toList());
         assertThat(ccdCallbackResponse.getErrors(), is(errors));
-    }
-
-    @Test
-    public void shouldSetExpectedField_WhenJudgeCostsDecision() {
-        Map<String, Object> result = classUnderTest.judgeCostsDecision(buildCcdCallbackRequest(new HashMap<>()));
-
-        assertThat(result.get(JUDGE_COSTS_DECISION), is(YES_VALUE));
     }
 
     private CcdCallbackRequest buildCcdCallbackRequest(Map<String, Object> requestPayload) {
