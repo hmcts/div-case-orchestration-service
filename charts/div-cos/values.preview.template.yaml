@@ -21,7 +21,6 @@ java:
     SCHEDULER_ENABLED: false
     SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_ENABLED: false
     SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_CRON: "0 0/10 * ? * * *"#Runs every 10 minutes (if enabled)
-    CASE_MAINTENANCE_SERVICE_API_BASEURL: "http://div-cms-pr-456.service.core-compute-preview.internal"
 
   keyVaults:
     "div":
