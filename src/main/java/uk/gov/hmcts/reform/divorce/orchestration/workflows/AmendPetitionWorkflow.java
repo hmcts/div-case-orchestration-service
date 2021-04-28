@@ -48,7 +48,7 @@ public class AmendPetitionWorkflow extends DefaultWorkflow<Map<String, Object>> 
 
             return execute(new Task[] {addCourtsToPayloadTask}, newDraft);
         } catch (TaskException exception) {
-            log.error(format("amendPetition failed for case id {}", caseId), exception);
+            log.error(format("amendPetition failed for case id %s", caseId), exception);
             throw new WorkflowException(exception.getMessage(), exception);
         }
     }

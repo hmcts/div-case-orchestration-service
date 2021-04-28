@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.CourtsMatcher;
 
 import java.util.HashMap;
@@ -49,18 +50,18 @@ public class AmendPetitionITest extends MockedFunctionalTest {
     }
 
     @Test
-    public void givenAmendPetitionDraftFails_thenReturnBadGateway()
+    public void givenAmendPetitionDraftFails_thenReturnAmendPetitionErrorMessage()
         throws Exception {
-        final String errorMessage = "{\"error\":\"error message\"}";
+        final String errorMessage = "amendPetition: An error occurred";
 
         stubCmsAmendPetitionDraftEndpoint(HttpStatus.BAD_GATEWAY, errorMessage);
         stubCmsUpdateCaseEndpoint(HttpStatus.OK, "{}");
 
-        webClient.perform(put(API_URL + "/" + CASE_ID)
+        ResultActions response = webClient.perform(put(API_URL + "/" + CASE_ID)
             .header(AUTHORIZATION, USER_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadGateway())
-            .andExpect(content().string(containsString(errorMessage)));
+            .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(content().string(containsString(errorMessage)));
     }
 
     @Test
@@ -76,26 +77,56 @@ public class AmendPetitionITest extends MockedFunctionalTest {
         stubCmsAmendPetitionDraftEndpoint(HttpStatus.OK, content);
         stubCmsUpdateCaseEndpoint(HttpStatus.BAD_GATEWAY, errorMessage);
 
-        webClient.perform(put(API_URL + "/" + CASE_ID)
+        ResultActions response = webClient.perform(put(API_URL + "/" + CASE_ID)
             .header(AUTHORIZATION, USER_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadGateway())
-            .andExpect(content().string(containsString(errorMessage)));
+            .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(status().isBadGateway()).andExpect(content().string(containsString(errorMessage)));
     }
 
     @Test
-    public void givenNoCaseExists_thenReturnNotFound()
+    public void givenNoCaseExists_thenReturnCaseNotFound()
         throws Exception {
-        final String errorMessage = "error message";
+        final String errorMessage = "amendPetition: Case not found - please check the case ID: " + CASE_ID;
 
         stubCmsAmendPetitionDraftEndpoint(HttpStatus.NOT_FOUND, errorMessage);
         stubCmsUpdateCaseEndpoint(HttpStatus.NOT_FOUND, errorMessage);
 
-        webClient.perform(put(API_URL + "/" + CASE_ID)
+        ResultActions response = webClient.perform(put(API_URL + "/" + CASE_ID)
             .header(AUTHORIZATION, USER_TOKEN)
-            .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isNotFound())
-            .andExpect(content().string(containsString(errorMessage)));
+            .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(content().string(containsString(errorMessage)));
+    }
+
+    @Test
+    public void givenNoCaseExists_thenReturnMultipleCasesFoundMessage()
+        throws Exception {
+        final String errorMessage = "amendPetition: Multiple cases found";
+
+        stubCmsAmendPetitionDraftEndpoint(HttpStatus.MULTIPLE_CHOICES, errorMessage);
+        stubCmsUpdateCaseEndpoint(HttpStatus.OK, "{}");
+
+        ResultActions response = webClient.perform(put(API_URL + "/" + CASE_ID)
+            .header(AUTHORIZATION, USER_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(content().string(containsString(errorMessage)));
+    }
+
+    @Test
+    public void givenNoCaseExists_thenReturnUnauthorisedMessage()
+        throws Exception {
+        final String errorMessage = "amendPetition: Unauthorized (invalid user or case) - caseID: " + CASE_ID;
+
+        stubCmsAmendPetitionDraftEndpoint(HttpStatus.UNAUTHORIZED, errorMessage);
+        stubCmsUpdateCaseEndpoint(HttpStatus.OK, "{}");
+
+        ResultActions response = webClient.perform(put(API_URL + "/" + CASE_ID)
+            .header(AUTHORIZATION, USER_TOKEN)
+            .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(content().string(containsString(errorMessage)));
     }
 
     @Test
