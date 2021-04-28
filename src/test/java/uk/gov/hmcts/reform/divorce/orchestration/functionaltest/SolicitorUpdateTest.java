@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultMatcher;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -23,9 +22,12 @@ import java.util.Map;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.when;
@@ -96,7 +98,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
         stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
         stubGetMyOrganisationServerEndpoint(AUTH_TOKEN, TEST_SERVICE_AUTH_TOKEN);
 
-        callCallbackEndpoint(ccdCallbackRequest, status().isOk());
+        callCallbackEndpoint(ccdCallbackRequest);
     }
 
     @Test
@@ -113,7 +115,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
 
         stubDgsCall(ccdCallbackRequest);
 
-        MvcResult mvcResult = callCallbackEndpoint(ccdCallbackRequest, status().isOk());
+        MvcResult mvcResult = callCallbackEndpoint(ccdCallbackRequest);
 
         assertThat(
             getResponseContent(mvcResult),
@@ -141,7 +143,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
 
         stubDgsCall(ccdCallbackRequest);
 
-        MvcResult mvcResult = callCallbackEndpoint(ccdCallbackRequest, status().isOk());
+        MvcResult mvcResult = callCallbackEndpoint(ccdCallbackRequest);
 
         assertThat(
             getResponseContent(mvcResult),
@@ -167,7 +169,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
 
         stubDgsCall(ccdCallbackRequest);
 
-        MvcResult mvcResult = callCallbackEndpoint(ccdCallbackRequest, status().isOk());
+        MvcResult mvcResult = callCallbackEndpoint(ccdCallbackRequest);
 
         assertThat(getResponseContent(mvcResult),
             allOf(
@@ -200,7 +202,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
 
         stubDgsCall(ccdCallbackRequest);
 
-        MvcResult mvcResult = callCallbackEndpoint(ccdCallbackRequest, status().isOk());
+        MvcResult mvcResult = callCallbackEndpoint(ccdCallbackRequest);
 
         assertThat(getResponseContent(mvcResult),
             allOf(
@@ -234,7 +236,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
 
         stubDgsCall(ccdCallbackRequest);
 
-        MvcResult mvcResult = callCallbackEndpoint(ccdCallbackRequest, status().isOk());
+        MvcResult mvcResult = callCallbackEndpoint(ccdCallbackRequest);
 
         assertThat(getResponseContent(mvcResult),
             allOf(
@@ -254,7 +256,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
 
         stubDgsCall(ccdCallbackRequest);
 
-        MvcResult mvcResult = callCallbackEndpoint(ccdCallbackRequest, status().isOk());
+        MvcResult mvcResult = callCallbackEndpoint(ccdCallbackRequest);
 
         assertThat(getResponseContent(mvcResult),
             allOf(
@@ -274,7 +276,15 @@ public class SolicitorUpdateTest extends IdamTestSupport {
 
         stubDgsCall(ccdCallbackRequest);
 
-        callCallbackEndpoint(ccdCallbackRequest, status().isInternalServerError());
+        MvcResult mvcResult = callCallbackEndpoint(ccdCallbackRequest);
+
+        assertThat(mvcResult.getResponse().getContentAsString(),
+            allOf(
+                isJson(),
+                hasJsonPath("$.errors", hasSize(1)),
+                hasJsonPath("$.errors[0]", containsString("Please select an organisation"))
+            )
+        );
     }
 
     @Test
@@ -289,7 +299,15 @@ public class SolicitorUpdateTest extends IdamTestSupport {
         stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
         stubGetMyOrganisationServerEndpoint(AUTH_TOKEN, TEST_SERVICE_AUTH_TOKEN);
 
-        callCallbackEndpoint(ccdCallbackRequest, status().isInternalServerError());
+        MvcResult mvcResult = callCallbackEndpoint(ccdCallbackRequest);
+
+        assertThat(mvcResult.getResponse().getContentAsString(),
+            allOf(
+                isJson(),
+                hasJsonPath("$.errors", hasSize(1)),
+                hasJsonPath("$.errors[0]", containsString("Please select an organisation you belong to"))
+            )
+        );
     }
 
     private void switchFeatureTogglesOn() {
@@ -314,13 +332,13 @@ public class SolicitorUpdateTest extends IdamTestSupport {
         );
     }
 
-    private MvcResult callCallbackEndpoint(CcdCallbackRequest ccdCallbackRequest, ResultMatcher expectedStatus) throws Exception {
+    private MvcResult callCallbackEndpoint(CcdCallbackRequest ccdCallbackRequest) throws Exception {
         return webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .content(getBody(ccdCallbackRequest))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
-            .andExpect(expectedStatus)
+            .andExpect(status().isOk())
             .andReturn();
     }
 
