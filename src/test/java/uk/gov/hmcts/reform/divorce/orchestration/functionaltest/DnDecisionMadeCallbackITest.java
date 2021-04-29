@@ -282,8 +282,7 @@ public class DnDecisionMadeCallbackITest extends MockedFunctionalTest {
                 eq(emailVars),
                 anyString()
             );
-
-        verifyCmsCalls(caseId);
+        waitAsyncCompleted();
     }
 
     @Test

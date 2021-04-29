@@ -314,8 +314,7 @@ public class OrchestrationController {
     public ResponseEntity<Map<String, Object>> amendPetition(
             @RequestHeader(AUTHORIZATION_HEADER)
             @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
-            @PathVariable String caseId)
-            throws WorkflowException {
+            @PathVariable String caseId) throws WorkflowException {
 
         return ResponseEntity.ok(orchestrationService.amendPetition(caseId, authorizationToken));
     }
