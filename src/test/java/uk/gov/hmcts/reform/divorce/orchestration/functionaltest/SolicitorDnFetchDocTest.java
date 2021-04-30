@@ -192,6 +192,27 @@ public class SolicitorDnFetchDocTest extends MockedFunctionalTest {
             );
     }
 
+    @Test
+    public void givenNoRespAnswersDocument_andNoServiceApplicationGranted_whenRequestingRespondentAnswers_thenReturnError() throws Exception {
+
+        final Map<String, Object> caseData = Collections.emptyMap();
+
+        CcdCallbackRequest request = buildRequest(caseData);
+
+        webClient.perform(post(API_URL_RESP_ANSWERS)
+            .content(convertObjectToJsonString(request))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(allOf(
+                isJson(),
+                hasJsonPath("$.data", is(nullValue())),
+                hasJsonPath("$.errors",
+                    hasItem("respondentAnswers document not found")
+                )
+            )));
+    }
+
     private Map<String, Object> buildExpectedDataMap() {
         HashMap<String, Object> expectedMiniPetitionLink = new HashMap<>();
         expectedMiniPetitionLink.put("document_url", "https://localhost:8080/documents/1234");

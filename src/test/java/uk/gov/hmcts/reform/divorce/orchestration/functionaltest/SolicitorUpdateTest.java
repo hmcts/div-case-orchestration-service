@@ -22,9 +22,12 @@ import java.util.Map;
 
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasNoJsonPath;
+import static com.jayway.jsonpath.matchers.JsonPathMatchers.isJson;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.when;
@@ -95,7 +98,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
         stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
         stubGetMyOrganisationServerEndpoint(AUTH_TOKEN, TEST_SERVICE_AUTH_TOKEN);
 
-        callCallbackEndpointSuccessfully(ccdCallbackRequest);
+        callCallbackEndpoint(ccdCallbackRequest);
     }
 
     @Test
@@ -112,7 +115,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
 
         stubDgsCall(ccdCallbackRequest);
 
-        MvcResult mvcResult = callCallbackEndpointSuccessfully(ccdCallbackRequest);
+        MvcResult mvcResult = callCallbackEndpoint(ccdCallbackRequest);
 
         assertThat(
             getResponseContent(mvcResult),
@@ -140,7 +143,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
 
         stubDgsCall(ccdCallbackRequest);
 
-        MvcResult mvcResult = callCallbackEndpointSuccessfully(ccdCallbackRequest);
+        MvcResult mvcResult = callCallbackEndpoint(ccdCallbackRequest);
 
         assertThat(
             getResponseContent(mvcResult),
@@ -166,7 +169,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
 
         stubDgsCall(ccdCallbackRequest);
 
-        MvcResult mvcResult = callCallbackEndpointSuccessfully(ccdCallbackRequest);
+        MvcResult mvcResult = callCallbackEndpoint(ccdCallbackRequest);
 
         assertThat(getResponseContent(mvcResult),
             allOf(
@@ -199,7 +202,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
 
         stubDgsCall(ccdCallbackRequest);
 
-        MvcResult mvcResult = callCallbackEndpointSuccessfully(ccdCallbackRequest);
+        MvcResult mvcResult = callCallbackEndpoint(ccdCallbackRequest);
 
         assertThat(getResponseContent(mvcResult),
             allOf(
@@ -233,7 +236,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
 
         stubDgsCall(ccdCallbackRequest);
 
-        MvcResult mvcResult = callCallbackEndpointSuccessfully(ccdCallbackRequest);
+        MvcResult mvcResult = callCallbackEndpoint(ccdCallbackRequest);
 
         assertThat(getResponseContent(mvcResult),
             allOf(
@@ -253,7 +256,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
 
         stubDgsCall(ccdCallbackRequest);
 
-        MvcResult mvcResult = callCallbackEndpointSuccessfully(ccdCallbackRequest);
+        MvcResult mvcResult = callCallbackEndpoint(ccdCallbackRequest);
 
         assertThat(getResponseContent(mvcResult),
             allOf(
@@ -261,6 +264,48 @@ public class SolicitorUpdateTest extends IdamTestSupport {
                 hasNoJsonPath("$.data.PetitionerOrganisationPolicy"),
                 hasNoJsonPath("$.data.respondentSolicitorReference"),
                 hasNoJsonPath("$.data.RespondentOrganisationPolicy")
+            )
+        );
+    }
+
+    @Test
+    public void givenCaseData_whenSolicitorUpdate_andShareACaseJourneyIsOn_andNoPetSolicitorOrg_thenReturnError() throws Exception {
+        switchFeatureTogglesOn();
+
+        CcdCallbackRequest ccdCallbackRequest = buildRequest();
+
+        stubDgsCall(ccdCallbackRequest);
+
+        MvcResult mvcResult = callCallbackEndpoint(ccdCallbackRequest);
+
+        assertThat(mvcResult.getResponse().getContentAsString(),
+            allOf(
+                isJson(),
+                hasJsonPath("$.errors", hasSize(1)),
+                hasJsonPath("$.errors[0]", containsString("Please select an organisation"))
+            )
+        );
+    }
+
+    @Test
+    public void givenCaseData_whenSolicitorUpdate_andShareACaseJourneyIsOn_andPetNotBelongsToPetSolicitorOrg_thenReturnError() throws Exception {
+        switchFeatureTogglesOn();
+
+        CcdCallbackRequest ccdCallbackRequest = buildRequest();
+        Map<String, Object> caseData = ccdCallbackRequest.getCaseDetails().getCaseData();
+        caseData.put(PETITIONER_SOLICITOR_ORGANISATION_POLICY, buildOrganisationPolicy("notPetSolOrgId"));
+
+        stubDgsCall(ccdCallbackRequest);
+        stubServiceAuthProvider(HttpStatus.OK, TEST_SERVICE_AUTH_TOKEN);
+        stubGetMyOrganisationServerEndpoint(AUTH_TOKEN, TEST_SERVICE_AUTH_TOKEN);
+
+        MvcResult mvcResult = callCallbackEndpoint(ccdCallbackRequest);
+
+        assertThat(mvcResult.getResponse().getContentAsString(),
+            allOf(
+                isJson(),
+                hasJsonPath("$.errors", hasSize(1)),
+                hasJsonPath("$.errors[0]", containsString("Please select an organisation you belong to"))
             )
         );
     }
@@ -287,7 +332,7 @@ public class SolicitorUpdateTest extends IdamTestSupport {
         );
     }
 
-    private MvcResult callCallbackEndpointSuccessfully(CcdCallbackRequest ccdCallbackRequest) throws Exception {
+    private MvcResult callCallbackEndpoint(CcdCallbackRequest ccdCallbackRequest) throws Exception {
         return webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .content(getBody(ccdCallbackRequest))
