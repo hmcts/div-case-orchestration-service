@@ -39,7 +39,7 @@ public class CreateAmendPetitionDraftTask implements Task<Map<String, Object>> {
             } else if (exception.status() == HttpStatus.MULTIPLE_CHOICES.value()) {
                 throw new TaskException("amendPetition: Multiple cases found", exception);
             } else if (exception.status() == HttpStatus.UNAUTHORIZED.value()) {
-                throw new TaskException("amendPetition: Unauthorized (invalid user or case) - caseID:" + caseId, exception);
+                throw new TaskException("amendPetition: Unauthorized (invalid user or case) - caseID: " + caseId, exception);
             } else {
                 throw new TaskException("amendPetition: An error occurred", exception);
             }
