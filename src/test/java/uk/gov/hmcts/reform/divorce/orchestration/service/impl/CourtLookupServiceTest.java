@@ -104,6 +104,6 @@ public class CourtLookupServiceTest {
     @Test
     public void shouldReturnAllCourts() {
         Map<String, Court> allCourts = courtLookupService.getAllCourts();
-        assertThat(allCourts.size(), is(5));
+        assertThat(allCourts.size(), is(6));
     }
 }
