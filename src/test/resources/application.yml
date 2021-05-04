@@ -398,6 +398,16 @@ court:
       phoneNumber: '0300 303 0642'
       siteId: 'AA04'
       courtId: 'northWest'
+    buryStEdmunds:
+      divorceCentreName: 'Bury St. Edmunds Regional Divorce Centre'
+      courtCity: 'Bury St. Edmunds'
+      street: '2nd Floor\nTriton House\nSt. Andrews Street North'
+      postCode: 'IP33 1TR'
+      openingHours: 'Telephone Enquiries from: Monday - Friday 8am to 8pm, Saturday 8am to 2pm'
+      email: 'divorcecase@justice.gov.uk'
+      phoneNumber: '0300 303 0642'
+      siteId: 'AA05'
+      courtId: 'buryStEdmunds'
     serviceCentre:
       serviceCentreName: 'Courts and Tribunals Service Centre'
       divorceCentreName: 'HMCTS Digital Divorce'
