@@ -67,7 +67,7 @@ public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
         moveCaseToDnPronounced(citizenUser, caseId);
 
         final UserDetails caseWorkerUser = createCaseWorkerUser();
-        makeCasesEligibleForDa(caseWorkerUser.getAuthToken(), HttpStatus.OK.value());
+        makeCasesEligibleForDa(caseWorkerUser.getAuthToken());
 
         assertCaseStateIsAsExpected(AWAITING_DA, citizenUser.getAuthToken());
     }
@@ -84,7 +84,7 @@ public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
         moveCaseToDnPronounced(citizenUser, caseId);
 
         final UserDetails caseWorkerUser = createCaseWorkerUser();
-        makeCasesEligibleForDa(caseWorkerUser.getAuthToken(), HttpStatus.INTERNAL_SERVER_ERROR.value());
+        makeCasesEligibleForDa(caseWorkerUser.getAuthToken());
 
         assertCaseStateIsAsExpected(DN_PRONOUNCED, citizenUser.getAuthToken());
     }
@@ -109,7 +109,7 @@ public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
         });
     }
 
-    private void makeCasesEligibleForDa(final String userToken, int expectedStatus) {
+    private void makeCasesEligibleForDa(final String userToken) {
         final Map<String, Object> headers = new HashMap<>();
         headers.put(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.toString());
 
@@ -124,7 +124,7 @@ public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
             emptyMap()
         );
 
-        assertThat(response.getStatusCode(), is(expectedStatus));
+        assertThat(response.getStatusCode(), is(HttpStatus.OK.value()));
     }
 
 }
