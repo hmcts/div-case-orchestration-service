@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest;
 
 import org.junit.Before;
 import org.springframework.boot.test.context.SpringBootTest;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentRequest;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_ACCOUNT_NUMBER;
