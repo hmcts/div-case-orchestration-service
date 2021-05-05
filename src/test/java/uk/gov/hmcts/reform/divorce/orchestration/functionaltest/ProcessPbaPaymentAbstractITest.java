@@ -10,6 +10,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import uk.gov.hmcts.reform.divorce.model.ccd.CaseLink;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
@@ -44,6 +45,8 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.anyMap;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -200,6 +203,29 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
         makePaymentAndReturn();
 
         verifyApplicationSubmittedEmailWasSent();
+    }
+
+    @Test
+    public void givenCaseData_andNoPetEmail_whenProcessPbaPayment_thenNotSendSubmissionEmailToPetitioner() throws Exception {
+        caseData.put(STATEMENT_OF_TRUTH, YES_VALUE);
+        caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, YES_VALUE);
+
+        caseData.remove(D_8_PETITIONER_EMAIL);
+
+        makePaymentAndReturn();
+
+        verifyApplicationSubmittedEmailWasNotSent();
+    }
+
+    @Test
+    public void givenAmendedCase_andPetSolEmail_whenProcessPbaPayment_thenNotSendSubmissionEmailToPetitionerSolicitor() throws Exception {
+        caseData.put(STATEMENT_OF_TRUTH, YES_VALUE);
+        caseData.put(SOLICITOR_STATEMENT_OF_TRUTH, YES_VALUE);
+        caseData.put(PREVIOUS_CASE_ID_CCD_KEY, CaseLink.builder().caseReference(TEST_CASE_ID).build());
+
+        makePaymentAndReturn();
+
+        verifySolicitorApplicationSubmittedEmailWasNotSent();
     }
 
     @Test
@@ -596,6 +622,14 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
         );
     }
 
+    private void verifySolicitorApplicationSubmittedEmailWasNotSent() throws NotificationClientException {
+        verify(mockEmailClient, never()).sendEmail(
+            eq(SOL_APPLICANT_APPLICATION_SUBMITTED_TEMPLATE_ID),
+            eq(TEST_SOLICITOR_EMAIL),
+            anyMap(),
+            anyString());
+    }
+
     private void verifyApplicationSubmittedEmailWasSent() throws NotificationClientException {
         verify(mockEmailClient).sendEmail(
             eq(APPLIC_SUBMISSION_TEMPLATE_ID),
@@ -610,6 +644,14 @@ public abstract class ProcessPbaPaymentAbstractITest extends MockedFunctionalTes
             ),
             anyString()
         );
+    }
+
+    private void verifyApplicationSubmittedEmailWasNotSent() throws NotificationClientException {
+        verify(mockEmailClient, never()).sendEmail(
+            eq(APPLIC_SUBMISSION_TEMPLATE_ID),
+            eq(TEST_PETITIONER_EMAIL),
+            anyMap(),
+            anyString());
     }
 
     private void verifyAmendedApplicationSubmittedEmailWasSent() throws NotificationClientException {

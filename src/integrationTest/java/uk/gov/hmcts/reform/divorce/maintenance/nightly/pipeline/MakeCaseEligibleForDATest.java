@@ -64,17 +64,38 @@ public class MakeCaseEligibleForDATest extends RetrieveCaseSupport {
             ImmutablePair.of(DECREE_NISI_GRANTED_DATE_KEY, DECREE_NISI_GRANTED_DATE));
         log.debug("{}={} updated in the case {}", DECREE_NISI_GRANTED_DATE_KEY, DECREE_NISI_GRANTED_DATE, caseId);
 
+        moveCaseToDnPronounced(citizenUser, caseId);
+
+        final UserDetails caseWorkerUser = createCaseWorkerUser();
+        makeCasesEligibleForDa(caseWorkerUser.getAuthToken());
+
+        assertCaseStateIsAsExpected(AWAITING_DA, citizenUser.getAuthToken());
+    }
+
+    @Test
+    public void givenCaseIsInDNPronounced_andMissingDnGranted_WhenMakeCaseEligibleForDAIsCalled_EventFails() {
+        final UserDetails citizenUser = createCitizenUser();
+        final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, citizenUser,
+            Pair.of(D_8_PETITIONER_EMAIL, citizenUser.getEmailAddress()));
+
+        final String caseId = String.valueOf(caseDetails.getId());
+        log.debug("Case " + caseId + " created.");
+
+        moveCaseToDnPronounced(citizenUser, caseId);
+
+        final UserDetails caseWorkerUser = createCaseWorkerUser();
+        makeCasesEligibleForDa(caseWorkerUser.getAuthToken());
+
+        assertCaseStateIsAsExpected(DN_PRONOUNCED, citizenUser.getAuthToken());
+    }
+
+    private void moveCaseToDnPronounced(UserDetails citizenUser, String caseId) {
         updateCaseForCitizen(caseId, null, TEST_DN_PRONOUNCED, citizenUser);
         log.debug("Case {} moved to DNPronounced.", caseId);
 
         elasticSearchTestHelper.ensureCaseIsSearchable(caseId, citizenUser.getAuthToken(), DN_PRONOUNCED);
 
         assertCaseStateIsAsExpected(DN_PRONOUNCED, citizenUser.getAuthToken());
-
-        final UserDetails caseWorkerUser = createCaseWorkerUser();
-        makeCasesEligibleForDa(caseWorkerUser.getAuthToken());
-
-        assertCaseStateIsAsExpected(AWAITING_DA, citizenUser.getAuthToken());
     }
 
     private void assertCaseStateIsAsExpected(final String expectedState, final String authToken) {
