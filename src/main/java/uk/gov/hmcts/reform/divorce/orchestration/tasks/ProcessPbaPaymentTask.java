@@ -169,9 +169,12 @@ public class ProcessPbaPaymentTask implements Task<Map<String, Object>> {
         addToRequest(request::setAmount, orderSummary::getPaymentTotal);
         addToRequest(request::setCcdCaseNumber, context.getTransientObject(CASE_ID_JSON_KEY)::toString);
 
+        //this will only be sent when Features.pba_case_type is enabled, Site ID is being depreciated
         if (featureToggleService.isFeatureEnabled(Features.PBA_USING_CASE_TYPE)) {
-            addToRequest(request::setCaseType, caseData.get(CASE_TYPE_ID)::toString);
+            log.info("CaseId: {} setting case type in request for PBA Payment", getCaseId(context));
+            addToRequest(request::setCaseType, CASE_TYPE_ID::toString);
         } else {
+            log.info("CaseId: {} setting site ID in request for PBA Payment", getCaseId(context));
             addToRequest(request::setSiteId, caseData.get(DIVORCE_CENTRE_SITEID_JSON_KEY)::toString);
         }
         addToRequest(request::setAccountNumber, getPbaNumber(caseData, isPbaToggleOn())::toString);

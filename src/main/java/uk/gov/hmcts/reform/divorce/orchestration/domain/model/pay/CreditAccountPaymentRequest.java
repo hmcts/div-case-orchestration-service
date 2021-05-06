@@ -37,6 +37,7 @@ public class CreditAccountPaymentRequest {
     @JsonProperty("site_id")
     private String siteId;
 
+    //this will only be sent when Features.pba_case_type is enabled, Site ID (above) is being depreciated
     @JsonProperty("case_type")
     private String caseType;
 
@@ -54,5 +55,4 @@ public class CreditAccountPaymentRequest {
                 .map(Double::parseDouble).map(i -> i / 100)
                 .map(String::valueOf).orElse(amount);
     }
-
 }

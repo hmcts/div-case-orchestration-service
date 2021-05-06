@@ -21,7 +21,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountP
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentItem;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentStatus;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
@@ -58,7 +57,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLIC
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_FIRM_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_FIRM;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CURRENCY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_CENTRE_SITEID_JSON_KEY;
@@ -71,6 +69,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.buildPaymentClientResponse;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.formatMessage;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.getBasicFailedResponse;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithToken;
 
 @RunWith(MockitoJUnitRunner.class)
 public abstract class ProcessPbaPaymentTaskAbstractTest {
@@ -102,9 +101,7 @@ public abstract class ProcessPbaPaymentTaskAbstractTest {
 
     @Before()
     public void setUp() {
-        context = new DefaultTaskContext();
-        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-        context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
+        context = contextWithToken();
 
         basicFailedResponse = getBasicFailedResponse();
 
