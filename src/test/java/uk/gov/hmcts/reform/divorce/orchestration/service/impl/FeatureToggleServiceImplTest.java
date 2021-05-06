@@ -29,7 +29,6 @@ public class FeatureToggleServiceImplTest {
         //Not registered in application.yml (default value will be false)
         assertThat(classUnderTest.isFeatureEnabled(Features.SOLICITOR_DN_REJECT_AND_AMEND), is(false));
         assertThat(classUnderTest.isFeatureEnabled(Features.PAY_BY_ACCOUNT), is(false));
-        assertThat(classUnderTest.isFeatureEnabled(Features.PBA_USING_CASE_TYPE), is(false));
 
         //Default values
         assertThat(classUnderTest.isFeatureEnabled(Features.RESPONDENT_SOLICITOR_DETAILS), is(true));
@@ -40,6 +39,7 @@ public class FeatureToggleServiceImplTest {
         assertThat(classUnderTest.isFeatureEnabled(Features.SHARE_A_CASE), is(true));
         assertThat(classUnderTest.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY), is(true));
         assertThat(classUnderTest.isFeatureEnabled(Features.OBJECT_TO_COSTS), is(true));
+        assertThat(classUnderTest.isFeatureEnabled(Features.PBA_USING_CASE_TYPE), is(true));
     }
 
 }

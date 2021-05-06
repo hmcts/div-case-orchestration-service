@@ -5,7 +5,6 @@ import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -82,8 +81,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHel
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.PbaClientErrorTestUtil.getBasicFailedResponse;
 
-@SpringBootTest(properties = {"feature-toggle.toggle.represented_respondent_journey=true"})
-public class ProcessPbaPaymentRepRespJourneyTest extends MockedFunctionalTest {
+public abstract class ProcessPbaPaymentRepRespJourneyTest extends MockedFunctionalTest {
 
     private static final String API_URL = "/process-pba-payment";
     private static final String PAYMENTS_CREDIT_ACCOUNT_CONTEXT_PATH = "/credit-account-payments";
@@ -97,6 +95,8 @@ public class ProcessPbaPaymentRepRespJourneyTest extends MockedFunctionalTest {
     private CcdCallbackRequest ccdCallbackRequest;
     private CreditAccountPaymentRequest request;
     private CreditAccountPaymentResponse basicFailedResponse;
+
+    protected abstract void setSiteIdOrCaseType(CreditAccountPaymentRequest request);
 
     @Before
     public void setUp() {
@@ -140,7 +140,7 @@ public class ProcessPbaPaymentRepRespJourneyTest extends MockedFunctionalTest {
         request.setCurrency(CURRENCY);
         request.setAmount(orderSummary.getPaymentTotal());
         request.setCcdCaseNumber(TEST_CASE_ID);
-        request.setSiteId(CourtEnum.EASTMIDLANDS.getSiteId());
+        setSiteIdOrCaseType(request);
         request.setAccountNumber(TEST_SOLICITOR_ACCOUNT_NUMBER);
         request.setOrganisationName(TEST_SOLICITOR_FIRM_NAME);
         request.setCustomerReference(TEST_SOLICITOR_REFERENCE);
