@@ -74,13 +74,16 @@ public class EmailService {
     }
 
     private void sendEmailUsingClient(EmailToSend emailToSend, String emailDescription) throws NotificationClientException {
-        log.debug("Attempting to send {} email. Reference ID: {}", emailDescription, emailToSend.getReferenceId());
+        log.debug("Attempting to send {} email, template {}. Reference ID: {}", emailDescription, emailToSend.getTemplateId(),
+            emailToSend.getReferenceId());
+
         emailClient.sendEmail(
             emailToSend.getTemplateId(),
             emailToSend.getDestinationEmailAddress(),
             emailToSend.getTemplateFields(),
             emailToSend.getReferenceId()
         );
+
         log.info("Sending email success. Reference ID: {}", emailToSend.getReferenceId());
     }
 }
