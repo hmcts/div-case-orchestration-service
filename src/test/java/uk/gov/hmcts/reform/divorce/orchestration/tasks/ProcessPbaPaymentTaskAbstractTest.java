@@ -58,6 +58,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLIC
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_FIRM;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_TYPE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CURRENCY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_CENTRE_SITEID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_PAY_BY_ACCOUNT;
@@ -75,27 +76,27 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelp
 public abstract class ProcessPbaPaymentTaskAbstractTest {
 
     @Mock
-    private PaymentClient paymentClient;
+    protected PaymentClient paymentClient;
 
     @Mock
-    private AuthTokenGenerator serviceAuthGenerator;
+    protected AuthTokenGenerator serviceAuthGenerator;
 
     @Mock
-    private ResponseEntity<CreditAccountPaymentResponse> responseEntity;
+    protected ResponseEntity<CreditAccountPaymentResponse> responseEntity;
 
     @Mock
-    private ObjectMapper objectMapper;
+    protected ObjectMapper objectMapper;
 
     @Mock
     protected FeatureToggleService featureToggleService;
 
     @InjectMocks
-    private ProcessPbaPaymentTask processPbaPaymentTask;
+    protected ProcessPbaPaymentTask processPbaPaymentTask;
 
-    private TaskContext context;
+    protected TaskContext context;
     protected Map<String, Object> caseData;
-    private CreditAccountPaymentRequest expectedRequest;
-    private OrderSummary orderSummary;
+    protected CreditAccountPaymentRequest expectedRequest;
+    protected OrderSummary orderSummary;
     private CreditAccountPaymentResponse basicFailedResponse;
     private final String errorMessage = "Payment request failed";
 
@@ -121,6 +122,7 @@ public abstract class ProcessPbaPaymentTaskAbstractTest {
         caseData.put(DIVORCE_CENTRE_SITEID_JSON_KEY, CourtEnum.EASTMIDLANDS.getSiteId());
         caseData.put(PETITIONER_SOLICITOR_FIRM, TEST_SOLICITOR_FIRM_NAME);
         caseData.put(SOLICITOR_REFERENCE_JSON_KEY, TEST_SOLICITOR_REFERENCE);
+        caseData.put(CASE_TYPE_ID, "DIVORCE");
 
         expectedRequest = new CreditAccountPaymentRequest();
         expectedRequest.setService(SERVICE);
@@ -302,7 +304,7 @@ public abstract class ProcessPbaPaymentTaskAbstractTest {
         assertThat(errorMessages.get(0), is(errorMessage));
     }
 
-    private void runCommonVerifications() {
+    protected void runCommonVerifications() {
         verify(objectMapper).convertValue(caseData.get(PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY), OrderSummary.class);
         verify(serviceAuthGenerator).generate();
         verify(paymentClient).creditAccountPayment(
