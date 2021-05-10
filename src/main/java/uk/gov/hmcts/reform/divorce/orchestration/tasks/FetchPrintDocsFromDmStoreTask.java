@@ -27,10 +27,10 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Optional.ofNullable;
+import static uk.gov.hmcts.reform.divorce.orchestration.config.SpecificHttpHeaders.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENTS_GENERATED;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_AUTHORIZATION_HEADER;
 
 @Component
 @Slf4j
@@ -83,7 +83,7 @@ public class FetchPrintDocsFromDmStoreTask implements Task<Map<String, Object>> 
         CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
         for (GeneratedDocumentInfo generatedDocumentInfo : generatedDocumentsInfo.values()) {
             HttpHeaders headers = new HttpHeaders();
-            headers.set(SERVICE_AUTHORIZATION_HEADER, authTokenGenerator.generate());
+            headers.set(SERVICE_AUTHORIZATION, authTokenGenerator.generate());
             headers.set(USER_ROLES, CASEWORKER_DIVORCE);
             HttpEntity<RestRequest> httpEntity = new HttpEntity<>(headers);
 

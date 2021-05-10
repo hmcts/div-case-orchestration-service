@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.DecreeAbsoluteService;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_HEADER;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @RestController
 @Slf4j
@@ -27,7 +27,7 @@ public class DecreeAbsoluteCaseInternalController {
         @ApiResponse(code = 200, message = "Cases are made eligible for Decree Absolute"),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<String> makeCasesEligibleForDA(
-        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken) throws WorkflowException {
+        @RequestHeader(value = AUTHORIZATION) String authorizationToken) throws WorkflowException {
         int casesProcessed = decreeAbsoluteService.enableCaseEligibleForDecreeAbsolute(authorizationToken);
         return ResponseEntity.ok("Cases made eligible for DA: " + casesProcessed);
     }

@@ -17,8 +17,6 @@ public class OrchestrationConstants {
     public static final String GRANT_TYPE = "authorization_code";
     public static final String BASIC = "Basic ";
     public static final String LOCATION_HEADER = "Location";
-    public static final String SERVICE_AUTHORIZATION_HEADER = "ServiceAuthorization";
-    public static final String AUTHORIZATION_HEADER = "Authorization";
 
     //Issue Petition
     public static final String GENERATE_AOS_INVITATION = "generateAosInvitation";
