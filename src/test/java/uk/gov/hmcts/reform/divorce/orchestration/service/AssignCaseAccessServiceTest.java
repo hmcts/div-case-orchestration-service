@@ -45,7 +45,6 @@ public class AssignCaseAccessServiceTest {
         verify(assignCaseAccessClient).assignCaseAccess(
             AUTH_TOKEN,
             TEST_SERVICE_TOKEN,
-            true,
             AssignCaseAccessRequest
                 .builder()
                 .caseId(TEST_CASE_ID)

@@ -20,7 +20,6 @@ public interface AssignCaseAccessClient {
     void assignCaseAccess(
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
-        @RequestHeader("use_user_token") boolean useUserToken,
         @RequestBody final AssignCaseAccessRequest assignCaseAccessRequest
     );
 }
