@@ -29,6 +29,7 @@ public class AssignCaseAccessService {
         assignCaseAccessClient.assignCaseAccess(
             authorisationToken,
             serviceToken,
+            true,
             buildAssignCaseAccessRequest(caseDetails, userId)
         );
 

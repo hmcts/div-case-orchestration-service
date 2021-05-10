@@ -13,7 +13,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountP
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_AUTHORIZATION_HEADER;
+import static uk.gov.hmcts.reform.divorce.orchestration.config.SpecificHttpHeaders.SERVICE_AUTHORIZATION;
 
 @FeignClient(name = "payment-client", url = "${payment.service.api.baseurl}")
 public interface PaymentClient {
@@ -22,13 +22,13 @@ public interface PaymentClient {
     @PostMapping(value = "/credit-account-payments")
     ResponseEntity<CreditAccountPaymentResponse> creditAccountPayment(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
-            @RequestHeader(SERVICE_AUTHORIZATION_HEADER) String serviceAuthorisation,
+            @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
             CreditAccountPaymentRequest creditAccountPaymentRequest);
 
     @ApiOperation("Returns payment information for given payment reference")
     @GetMapping(value = "/card-payments/{paymentRef}")
     Map<String, Object> checkPayment(
             @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
-            @RequestHeader(SERVICE_AUTHORIZATION_HEADER) String serviceAuthorisation,
+            @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
             @PathVariable("paymentRef") String paymentRef);
 }

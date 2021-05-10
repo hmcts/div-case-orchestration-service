@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.prd.OrganisationsResponse;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_AUTHORIZATION_HEADER;
+import static uk.gov.hmcts.reform.divorce.orchestration.config.SpecificHttpHeaders.SERVICE_AUTHORIZATION;
 
 @FeignClient(name = "organisation-client", url = "${prd.api.url}")
 public interface OrganisationClient {
@@ -19,6 +19,6 @@ public interface OrganisationClient {
     )
     OrganisationsResponse getMyOrganisation(
         @RequestHeader(AUTHORIZATION) String authorisation,
-        @RequestHeader(SERVICE_AUTHORIZATION_HEADER) String s2sToken
+        @RequestHeader(SERVICE_AUTHORIZATION) String s2sToken
     );
 }
