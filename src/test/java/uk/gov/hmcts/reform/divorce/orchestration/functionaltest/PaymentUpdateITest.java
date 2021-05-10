@@ -29,8 +29,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.BEARER_AUTH_TOKEN_1;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.config.SpecificHttpHeaders.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_AUTHORIZATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class PaymentUpdateITest extends IdamTestSupport {
@@ -100,7 +100,7 @@ public class PaymentUpdateITest extends IdamTestSupport {
     @Test
     public void givenEventDataAndAuth_whenEventDataIsSubmitted_thenReturnSuccess() throws Exception {
         webClient.perform(put(API_URL)
-                    .header(SERVICE_AUTHORIZATION_HEADER, BEARER_AUTH_TOKEN_1)
+                    .header(SERVICE_AUTHORIZATION, BEARER_AUTH_TOKEN_1)
                     .content(convertObjectToJsonString(paymentUpdate))
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -111,7 +111,7 @@ public class PaymentUpdateITest extends IdamTestSupport {
     @Test
     public void givenEventDataAndForbiddenAuth_whenEventDataIsSubmitted_thenReturnError() throws Exception {
         webClient.perform(put(API_URL)
-            .header(SERVICE_AUTHORIZATION_HEADER, BEARER_AUTH_TOKEN)
+            .header(SERVICE_AUTHORIZATION, BEARER_AUTH_TOKEN)
             .content(convertObjectToJsonString(paymentUpdate))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
@@ -122,7 +122,7 @@ public class PaymentUpdateITest extends IdamTestSupport {
     @Test
     public void givenEventDataAndNoAuth_whenEventDataIsSubmitted_thenReturnError() throws Exception {
         webClient.perform(put(API_URL)
-            .header(SERVICE_AUTHORIZATION_HEADER, "")
+            .header(SERVICE_AUTHORIZATION, "")
             .content(convertObjectToJsonString(paymentUpdate))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
