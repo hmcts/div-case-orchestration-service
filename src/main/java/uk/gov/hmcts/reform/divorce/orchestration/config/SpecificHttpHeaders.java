@@ -7,4 +7,5 @@ import lombok.NoArgsConstructor;
 public class SpecificHttpHeaders {
 
     public static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
+    public static final String USE_USER_TOKEN = "use_user_token";
 }
