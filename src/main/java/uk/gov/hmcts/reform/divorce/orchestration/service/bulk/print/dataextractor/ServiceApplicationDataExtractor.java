@@ -25,6 +25,7 @@ public class ServiceApplicationDataExtractor {
         public static final String REFUSAL_REASON = CcdFields.SERVICE_APPLICATION_REFUSAL_REASON;
         public static final String SERVICE_APPLICATION_GRANTED = CcdFields.SERVICE_APPLICATION_GRANTED;
         public static final String SERVICE_APPLICATION_TYPE = CcdFields.SERVICE_APPLICATION_TYPE;
+        public static final String SERVICE_APPLICATION_PAYMENT_REQUIRED = CcdFields.RECEIVED_SERVICE_PAYMENT_REQUIRED;
         public static final String SERVICE_APPLICATION_PAYMENT = CcdFields.SERVICE_APPLICATION_PAYMENT;
     }
 
@@ -58,6 +59,10 @@ public class ServiceApplicationDataExtractor {
 
     public static String getServiceApplicationType(Map<String, Object> caseData) {
         return getMandatoryStringValue(caseData, CaseDataKeys.SERVICE_APPLICATION_TYPE);
+    }
+
+    public static String getServiceApplicationPaymentRequired(Map<String, Object> caseData) {
+        return getOptionalPropertyValueAsString(caseData, CaseDataKeys.SERVICE_APPLICATION_PAYMENT_REQUIRED, "");
     }
 
     public static String getServiceApplicationPayment(Map<String, Object> caseData) {

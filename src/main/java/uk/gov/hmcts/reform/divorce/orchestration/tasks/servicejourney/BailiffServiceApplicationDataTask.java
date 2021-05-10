@@ -25,6 +25,7 @@ public class BailiffServiceApplicationDataTask extends ServiceApplicationDataTas
             .applicationGranted(ServiceApplicationDataExtractor.getServiceApplicationGranted(caseData))
             .bailiffApplicationGranted(BailiffServiceApplicationDataExtractor.getBailiffApplicationGranted(caseData))
             .decisionDate(DatesDataExtractor.getServiceApplicationDecisionDateUnformatted(caseData))
+            .paymentRequired(ServiceApplicationDataExtractor.getServiceApplicationPaymentRequired(caseData))
             .payment(ServiceApplicationDataExtractor.getServiceApplicationPayment(caseData))
             .refusalReason(ServiceApplicationDataExtractor.getServiceApplicationRefusalReasonOrEmpty(caseData))
             .localCourtAddress(BailiffServiceApplicationDataExtractor.getLocalCourtAddress(caseData))

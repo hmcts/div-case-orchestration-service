@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
@@ -24,6 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.A
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_SERVICE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationBailiff;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.common.Conditions.isServiceApplicationGranted;
@@ -66,10 +66,23 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
     }
 
     @Override
-    public Map<String, Object> receivedServiceAddedDate(CcdCallbackRequest ccdCallbackRequest)
-        throws ServiceJourneyServiceException {
+    public CcdCallbackResponse serviceApplicationReceivedEvent(CaseDetails caseDetails) throws ServiceJourneyServiceException {
+        CcdCallbackResponse.CcdCallbackResponseBuilder builder = CcdCallbackResponse.builder();
+
+        if (Conditions.isPaymentRequired(caseDetails.getCaseData())) {
+            builder.state(AWAITING_SERVICE_PAYMENT);
+        } else {
+            if (Conditions.isServiceApplicationDeemedOrDispensed(caseDetails.getCaseData())) {
+                builder.state(AWAITING_SERVICE_CONSIDERATION);
+            }
+
+            if (Conditions.isServiceApplicationBailiff(caseDetails.getCaseData())) {
+                builder.state(AWAITING_BAILIFF_REFERRAL);
+            }
+        }
+
         try {
-            return receivedServiceAddedDateWorkflow.run(ccdCallbackRequest.getCaseDetails());
+            return builder.data(receivedServiceAddedDateWorkflow.run(caseDetails)).build();
         } catch (WorkflowException workflowException) {
             throw new ServiceJourneyServiceException(workflowException);
         }

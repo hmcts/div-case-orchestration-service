@@ -67,6 +67,7 @@ public class ServiceApplicationDataTask implements Task<Map<String, Object>> {
             .type(ServiceApplicationDataExtractor.getServiceApplicationType(caseData))
             .applicationGranted(ServiceApplicationDataExtractor.getServiceApplicationGranted(caseData))
             .decisionDate(DatesDataExtractor.getServiceApplicationDecisionDateUnformatted(caseData))
+            .paymentRequired(ServiceApplicationDataExtractor.getServiceApplicationPaymentRequired(caseData))
             .payment(ServiceApplicationDataExtractor.getServiceApplicationPayment(caseData))
             .refusalReason(ServiceApplicationDataExtractor.getServiceApplicationRefusalReasonOrEmpty(caseData))
             .build();

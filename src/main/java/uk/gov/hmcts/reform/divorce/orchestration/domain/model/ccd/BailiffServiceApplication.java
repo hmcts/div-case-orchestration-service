@@ -19,6 +19,7 @@ public class BailiffServiceApplication extends DivorceServiceApplication {
         String bailiffApplicationGranted,
         String applicationGranted,
         String decisionDate,
+        String paymentRequired,
         String payment,
         String refusalReason,
         String localCourtAddress,
@@ -26,7 +27,7 @@ public class BailiffServiceApplication extends DivorceServiceApplication {
         String certificateOfServiceDate,
         String successfulServedByBailiff,
         String reasonFailureToServe) {
-        super(addedDate, receivedDate, type, applicationGranted, decisionDate, payment, refusalReason);
+        super(addedDate, receivedDate, type, applicationGranted, decisionDate, paymentRequired, payment, refusalReason);
 
         this.bailiffApplicationGranted = bailiffApplicationGranted;
         this.localCourtAddress = localCourtAddress;

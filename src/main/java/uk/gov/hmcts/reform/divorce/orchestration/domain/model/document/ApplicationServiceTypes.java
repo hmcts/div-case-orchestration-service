@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ApplicationServiceTypes {
-    public static final String DISPENSED = "dispensed";
-    public static final String DEEMED = "deemed";
     public static final String BAILIFF = "bailiff";
+    public static final String DEEMED = "deemed";
+    public static final String DISPENSED = "dispensed";
 }

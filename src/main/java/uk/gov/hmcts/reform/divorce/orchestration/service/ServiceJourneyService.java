@@ -7,9 +7,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRes
 import java.util.Map;
 
 public interface ServiceJourneyService {
-    CcdCallbackResponse makeServiceDecision(CaseDetails caseDetails, String authorisation) throws ServiceJourneyServiceException;
+    CcdCallbackResponse makeServiceDecision(CaseDetails caseDetails, String authorisation)
+        throws ServiceJourneyServiceException;
 
-    Map<String, Object> receivedServiceAddedDate(CcdCallbackRequest ccdCallbackRequest) throws ServiceJourneyServiceException;
+    CcdCallbackResponse serviceApplicationReceivedEvent(CaseDetails caseDetails)
+        throws ServiceJourneyServiceException;
 
     CcdCallbackResponse serviceDecisionMade(CaseDetails caseDetails, String authorisation)
         throws ServiceJourneyServiceException;

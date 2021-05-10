@@ -43,12 +43,16 @@ public class Conditions {
         return ApplicationServiceTypes.DEEMED.equalsIgnoreCase(serviceApplication.getType());
     }
 
-    public static boolean isServiceApplicationDeemedDispensedOrBailiff(DivorceServiceApplication serviceApplication) {
-        return isServiceApplicationDeemedOrDispensed(serviceApplication) || isServiceApplicationBailiff(serviceApplication);
+    public static boolean isServiceApplicationDeemedOrDispensed(Map<String, Object> caseData) {
+        return isServiceApplicationDeemed(caseData) || isServiceApplicationDispensed(caseData);
     }
 
     public static boolean isServiceApplicationDeemedOrDispensed(DivorceServiceApplication serviceApplication) {
         return isServiceApplicationDeemed(serviceApplication) || isServiceApplicationDispensed(serviceApplication);
+    }
+
+    public static boolean isServiceApplicationDeemedDispensedOrBailiff(DivorceServiceApplication serviceApplication) {
+        return isServiceApplicationDeemedOrDispensed(serviceApplication) || isServiceApplicationBailiff(serviceApplication);
     }
 
     public static boolean isServiceApplicationBailiff(DivorceServiceApplication serviceApplication) {
@@ -77,5 +81,9 @@ public class Conditions {
         Map<String, Object> previousCaseId = (Map<String, Object>) caseData.get(PREVIOUS_CASE_ID_CCD_KEY);
 
         return previousCaseId != null;
+    }
+
+    public static boolean isPaymentRequired(Map<String, Object> caseData) {
+        return YES_VALUE.equalsIgnoreCase((String) caseData.get(CcdFields.RECEIVED_SERVICE_PAYMENT_REQUIRED));
     }
 }

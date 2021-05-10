@@ -20,6 +20,7 @@ public class DivorceServiceApplication {
         String type,
         String applicationGranted,
         String decisionDate,
+        String paymentRequired,
         String payment,
         String refusalReason) {
 
@@ -28,6 +29,7 @@ public class DivorceServiceApplication {
         this.type = type;
         this.applicationGranted = applicationGranted;
         this.decisionDate = decisionDate;
+        this.paymentRequired = paymentRequired;
         this.payment = payment;
         this.refusalReason = refusalReason;
     }
@@ -40,6 +42,9 @@ public class DivorceServiceApplication {
 
     @JsonProperty("Type")
     private String type;
+
+    @JsonProperty("PaymentRequired")
+    private String paymentRequired;
 
     @JsonProperty("Payment")
     private String payment;
