@@ -42,7 +42,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETIT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RELATIONSHIP;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WELSH_FEMALE_GENDER_IN_RELATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.ISSUE_AOS_OFFLINE_RESPONDENT_FROM_AOS_AWAITING;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_HEADER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_DIVORCED_WHO;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
@@ -103,7 +102,7 @@ public class AosPackIssuedCallbackTest extends MockedFunctionalTest {
 
         webClient.perform(post("/aos-pack-issued")
             .contentType(APPLICATION_JSON)
-            .header(AUTHORIZATION_HEADER, AUTH_TOKEN)
+            .header(AUTHORIZATION, AUTH_TOKEN)
             .content(ObjectMapperTestUtil.convertObjectToJsonString(payload))
         ).andExpect(status().isOk());
 

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
+import uk.gov.hmcts.reform.divorce.orchestration.config.SpecificHttpHeaders;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.FetchingDocumentFromDmStoreException;
 
 @Slf4j
@@ -25,7 +25,7 @@ public class DocumentContentFetcherService {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Headers {
-        public static final String SERVICE_AUTHORIZATION = OrchestrationConstants.SERVICE_AUTHORIZATION_HEADER;
+        public static final String SERVICE_AUTHORIZATION = SpecificHttpHeaders.SERVICE_AUTHORIZATION;
         public static final String USER_ROLES = "user-roles";
     }
 
