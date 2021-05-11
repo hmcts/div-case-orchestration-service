@@ -1188,6 +1188,24 @@ public class CallbackController {
         return ResponseEntity.ok(caseOrchestrationService.welshContinueIntercept(ccdCallbackRequest, authorizationToken));
     }
 
+    @PostMapping(path = "/received-service-added-date", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Callback to set ReceivedServiceAddedDate field to 'now'")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.",
+            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    /**
+     * TODO: Remove once ccd changes been deployed and tested
+     */
+    public ResponseEntity<CcdCallbackResponse> receivedServiceAddedDate(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws ServiceJourneyServiceException {
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(serviceJourneyService.receivedServiceAddedDate(ccdCallbackRequest))
+                .build()
+        );
+    }
+
     @PostMapping(path = "/service-application-received", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Callback to set ReceivedServiceAddedDate field to 'now'")
     @ApiResponses(value = {
