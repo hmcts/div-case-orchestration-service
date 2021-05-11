@@ -32,7 +32,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_APPLICATION_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.LAST_SERVICE_APPLICATION;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.LAST_SERVICE_APPLICATION_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATIONS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.CASE_REFERENCE;
@@ -105,7 +104,6 @@ public class ServiceApplicationDataTaskTest {
     private void assertLastServiceApplicationIsPersisted(Map<String, Object> caseData) {
         DivorceServiceApplication serviceApplication = (DivorceServiceApplication) caseData.get(LAST_SERVICE_APPLICATION);
         assertServiceApplicationIsCorrect(serviceApplication);
-        String type = (String) caseData.get(LAST_SERVICE_APPLICATION_TYPE);
     }
 
     private void assertServiceApplicationIsCorrect(DivorceServiceApplication serviceApplication) {
@@ -114,6 +112,7 @@ public class ServiceApplicationDataTaskTest {
         assertThat(serviceApplication.getDecisionDate(), is(TEST_DECISION_DATE));
         assertThat(serviceApplication.getApplicationGranted(), is(YES_VALUE));
         assertThat(serviceApplication.getRefusalReason(), is(TEST_MY_REASON));
+        assertThat(serviceApplication.getPaymentRequired(), is(YES_VALUE));
         assertThat(serviceApplication.getPayment(), is(TEST_SERVICE_APPLICATION_PAYMENT));
         assertThat(serviceApplication.getType(), is(ApplicationServiceTypes.DEEMED));
     }
@@ -129,6 +128,7 @@ public class ServiceApplicationDataTaskTest {
         caseData.put(RESPONDENT_LAST_NAME, TEST_RESPONDENT_LAST_NAME);
 
         caseData.put(CcdFields.RECEIVED_SERVICE_APPLICATION_DATE, TEST_RECEIVED_DATE);
+        caseData.put(CcdFields.RECEIVED_SERVICE_PAYMENT_REQUIRED, YES_VALUE);
         caseData.put(CcdFields.SERVICE_APPLICATION_DECISION_DATE, TEST_DECISION_DATE);
         caseData.put(CcdFields.RECEIVED_SERVICE_ADDED_DATE, TEST_ADDED_DATE);
         caseData.put(CcdFields.SERVICE_APPLICATION_TYPE, ApplicationServiceTypes.DEEMED);

@@ -131,6 +131,7 @@ public class BailiffServiceApplicationDataTaskTest {
         assertThat(bailiffServiceApplication.getApplicationGranted(), is(YES_VALUE));
         assertThat(bailiffServiceApplication.getBailiffApplicationGranted(), is(YES_VALUE));
         assertThat(bailiffServiceApplication.getRefusalReason(), is(TEST_MY_REASON));
+        assertThat(bailiffServiceApplication.getPaymentRequired(), is(YES_VALUE));
         assertThat(bailiffServiceApplication.getPayment(), is(TEST_SERVICE_APPLICATION_PAYMENT));
         assertThat(bailiffServiceApplication.getType(), is(ApplicationServiceTypes.BAILIFF));
 
@@ -152,6 +153,7 @@ public class BailiffServiceApplicationDataTaskTest {
         caseData.put(RESPONDENT_LAST_NAME, TEST_RESPONDENT_LAST_NAME);
 
         caseData.put(CcdFields.RECEIVED_SERVICE_APPLICATION_DATE, TEST_RECEIVED_DATE);
+        caseData.put(CcdFields.RECEIVED_SERVICE_PAYMENT_REQUIRED, YES_VALUE);
         caseData.put(CcdFields.SERVICE_APPLICATION_DECISION_DATE, TEST_DECISION_DATE);
         caseData.put(CcdFields.RECEIVED_SERVICE_ADDED_DATE, TEST_ADDED_DATE);
         caseData.put(CcdFields.SERVICE_APPLICATION_TYPE, ApplicationServiceTypes.BAILIFF);

@@ -25,7 +25,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 
 public class ReceivedServiceAddedDateTest extends IdamTestSupport {
 
-    private static final String API_URL = "/received-service-added-date";
+    private static final String API_URL = "/service-application-received";
 
     @Autowired
     private MockMvc webClient;

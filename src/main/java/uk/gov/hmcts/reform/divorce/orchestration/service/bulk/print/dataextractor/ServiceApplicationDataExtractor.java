@@ -61,7 +61,7 @@ public class ServiceApplicationDataExtractor {
         return getMandatoryStringValue(caseData, CaseDataKeys.SERVICE_APPLICATION_TYPE);
     }
 
-    public static String getServiceApplicationPaymentRequired(Map<String, Object> caseData) {
+    public static String getServiceApplicationPaymentRequiredOrEmpty(Map<String, Object> caseData) {
         return getOptionalPropertyValueAsString(caseData, CaseDataKeys.SERVICE_APPLICATION_PAYMENT_REQUIRED, "");
     }
 

@@ -30,10 +30,12 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.Ap
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.ApplicationServiceTypes.DISPENSED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.CaseDataKeys.REFUSAL_REASON;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.CaseDataKeys.SERVICE_APPLICATION_PAYMENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.CaseDataKeys.SERVICE_APPLICATION_PAYMENT_REQUIRED;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getLastServiceApplication;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getListOfServiceApplications;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationGranted;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationPayment;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationPaymentRequiredOrEmpty;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationRefusalReason;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationRefusalReasonOrEmpty;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.ServiceApplicationDataExtractor.getServiceApplicationType;
@@ -75,6 +77,17 @@ public class ServiceApplicationDataExtractorTest {
         Map<String, Object> caseData = buildCaseDataWithField(SERVICE_APPLICATION_PAYMENT, paymentType);
 
         assertThat(getServiceApplicationPayment(caseData), is(paymentType));
+    }
+
+    @Test
+    public void getServiceApplicationPaymentRequiredOrEmptyShouldReturnValueIfSet() {
+        Map<String, Object> caseData = buildCaseDataWithField(SERVICE_APPLICATION_PAYMENT_REQUIRED, YES_VALUE);
+        assertThat(getServiceApplicationPaymentRequiredOrEmpty(caseData), is(YES_VALUE));
+    }
+
+    @Test
+    public void getServiceApplicationPaymentRequiredOrEmptyShouldReturnEmptyStringIfNotSet() {
+        assertThat(getServiceApplicationPaymentRequiredOrEmpty(new HashMap<>()), is(Strings.EMPTY));
     }
 
     @Test(expected = InvalidDataForTaskException.class)

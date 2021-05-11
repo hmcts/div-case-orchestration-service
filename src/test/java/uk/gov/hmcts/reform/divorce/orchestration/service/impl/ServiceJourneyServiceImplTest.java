@@ -35,11 +35,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_APPLICATION_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RECEIVED_SERVICE_PAYMENT_REQUIRED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATION_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_REFERRAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_BAILIFF_SERVICE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.SERVICE_APPLICATION_NOT_APPROVED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -133,23 +135,96 @@ public class ServiceJourneyServiceImplTest {
     }
 
     @Test
-    public void receivedServiceAddedDateShouldCallWorkflow()
+    public void serviceAppReceivedShouldHaveStateAwaitingServicePaymentWhenPaymentRequired()
+        throws ServiceJourneyServiceException {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(RECEIVED_SERVICE_PAYMENT_REQUIRED, YES_VALUE);
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .caseData(caseData)
+            .build();
+
+        CcdCallbackResponse res = classUnderTest.serviceApplicationReceivedEvent(caseDetails);
+
+        assertThat(res.getState(), is(AWAITING_SERVICE_PAYMENT));
+    }
+
+    @Test
+    public void serviceAppReceivedShouldHaveStateAwaitingServiceConsiderationWhenPaymentNotRequiredAndDeemed()
+        throws ServiceJourneyServiceException {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(RECEIVED_SERVICE_PAYMENT_REQUIRED, NO_VALUE);
+        caseData.put(SERVICE_APPLICATION_TYPE, DEEMED);
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .caseData(caseData)
+            .build();
+
+        CcdCallbackResponse res = classUnderTest.serviceApplicationReceivedEvent(caseDetails);
+
+        assertThat(res.getState(), is(AWAITING_SERVICE_CONSIDERATION));
+    }
+
+    @Test
+    public void serviceAppReceivedShouldHaveStateAwaitingServiceConsiderationWhenPaymentNotRequiredAndDispensed()
+        throws ServiceJourneyServiceException {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(RECEIVED_SERVICE_PAYMENT_REQUIRED, NO_VALUE);
+        caseData.put(SERVICE_APPLICATION_TYPE, DISPENSED);
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .caseData(caseData)
+            .build();
+
+        CcdCallbackResponse res = classUnderTest.serviceApplicationReceivedEvent(caseDetails);
+
+        assertThat(res.getState(), is(AWAITING_SERVICE_CONSIDERATION));
+    }
+
+    @Test
+    public void serviceAppReceivedShouldHaveStateAwaitingBailiffReferralWhenPaymentNotRequiredAndBailiff()
+        throws ServiceJourneyServiceException {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(RECEIVED_SERVICE_PAYMENT_REQUIRED, NO_VALUE);
+        caseData.put(SERVICE_APPLICATION_TYPE, BAILIFF);
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .caseData(caseData)
+            .build();
+
+        CcdCallbackResponse res = classUnderTest.serviceApplicationReceivedEvent(caseDetails);
+
+        assertThat(res.getState(), is(AWAITING_BAILIFF_REFERRAL));
+    }
+
+    @Test
+    public void serviceApplicationReceivedShouldRunWorkflow()
         throws ServiceJourneyServiceException, WorkflowException {
-        CcdCallbackRequest input = buildCcdCallbackRequest();
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(RECEIVED_SERVICE_PAYMENT_REQUIRED, YES_VALUE);
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .caseData(caseData)
+            .build();
 
-        classUnderTest.receivedServiceAddedDate(input);
+        classUnderTest.serviceApplicationReceivedEvent(caseDetails);
 
-        verify(receivedServiceAddedDateWorkflow).run(input.getCaseDetails());
+        verify(receivedServiceAddedDateWorkflow).run(caseDetails);
     }
 
     @Test(expected = ServiceJourneyServiceException.class)
-    public void receivedServiceAddedDateShouldThrowServiceJourneyServiceException()
+    public void serviceApplicationReceivedWorkflowShouldThrowServiceJourneyServiceException()
         throws ServiceJourneyServiceException, WorkflowException {
-        CcdCallbackRequest input = buildCcdCallbackRequest();
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(RECEIVED_SERVICE_PAYMENT_REQUIRED, YES_VALUE);
+        CaseDetails caseDetails = CaseDetails.builder()
+            .caseId(TEST_CASE_ID)
+            .caseData(caseData)
+            .build();
 
         when(receivedServiceAddedDateWorkflow.run(any(CaseDetails.class))).thenThrow(WorkflowException.class);
 
-        classUnderTest.receivedServiceAddedDate(input);
+        classUnderTest.serviceApplicationReceivedEvent(caseDetails);
     }
 
     @Test
