@@ -1207,7 +1207,7 @@ public class CallbackController {
     }
 
     @PostMapping(path = "/service-application-received", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
-    @ApiOperation(value = "Callback to set ReceivedServiceAddedDate field to 'now'")
+    @ApiOperation(value = "Callback to set state and perform workflow for Service application received event")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback processed.",
             response = CcdCallbackResponse.class),
