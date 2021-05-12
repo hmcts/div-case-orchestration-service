@@ -34,6 +34,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_APPLICATION_PAYMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.LAST_SERVICE_APPLICATION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.LAST_SERVICE_APPLICATION_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.SERVICE_APPLICATIONS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.CaseDataExtractor.CaseDataKeys.CASE_REFERENCE;
@@ -108,6 +109,7 @@ public class BailiffServiceApplicationDataTaskTest {
     private void assertLastServiceApplicationIsPersisted(Map<String, Object> caseData) {
         BailiffServiceApplication serviceApplication = (BailiffServiceApplication) caseData.get(LAST_SERVICE_APPLICATION);
         assertServiceApplicationIsCorrect(serviceApplication);
+        assertThat(serviceApplication.getType(), is((String) caseData.get(LAST_SERVICE_APPLICATION_TYPE)));
     }
 
     private void assertExecutedCorrectlyAndAnotherElementAddedToExistingCollection(Map<String, Object> input) {
