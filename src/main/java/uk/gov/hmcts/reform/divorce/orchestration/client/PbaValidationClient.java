@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.validation.PBAOrganisationResponse;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_AUTHORIZATION_HEADER;
+import static uk.gov.hmcts.reform.divorce.orchestration.config.SpecificHttpHeaders.SERVICE_AUTHORIZATION;
 
 @FeignClient(name = "pba-validation-client", url = "${pba.validation.service.api.baseurl}")
 public interface PbaValidationClient {
@@ -18,6 +18,6 @@ public interface PbaValidationClient {
     @GetMapping(value = "/refdata/external/v1/organisations/pbas")
     ResponseEntity<PBAOrganisationResponse> retrievePbaNumbers(
         @RequestHeader(HttpHeaders.AUTHORIZATION) String authorisation,
-        @RequestHeader(SERVICE_AUTHORIZATION_HEADER) String serviceAuthorisation,
+        @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorisation,
         @RequestParam(name = "email") String email);
 }

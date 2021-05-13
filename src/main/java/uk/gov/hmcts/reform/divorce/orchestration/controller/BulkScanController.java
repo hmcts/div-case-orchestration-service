@@ -34,8 +34,8 @@ import static java.lang.String.format;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.http.ResponseEntity.ok;
+import static uk.gov.hmcts.reform.divorce.orchestration.config.SpecificHttpHeaders.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_TYPE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_AUTHORIZATION_HEADER;
 
 @Slf4j
 @Controller
@@ -56,7 +56,7 @@ public class BulkScanController {
         @ApiResponse(code = 404, message = "Form type not found")
     })
     public ResponseEntity<OcrValidationResponse> validateOcrData(
-        @RequestHeader(name = SERVICE_AUTHORIZATION_HEADER) String s2sAuthToken,
+        @RequestHeader(name = SERVICE_AUTHORIZATION) String s2sAuthToken,
         @PathVariable(name = "form-type") String formType,
         @Valid @RequestBody OcrDataValidationRequest request
     ) {
@@ -86,7 +86,7 @@ public class BulkScanController {
         @ApiResponse(code = 422, message = "Exception Record is well-formed, but contains invalid data.")
     })
     public ResponseEntity<SuccessfulTransformationResponse> transformExceptionRecordIntoCase(
-        @RequestHeader(name = SERVICE_AUTHORIZATION_HEADER) String s2sAuthToken,
+        @RequestHeader(name = SERVICE_AUTHORIZATION) String s2sAuthToken,
         @Valid @RequestBody ExceptionRecord exceptionRecord) {
         String exceptionRecordId = exceptionRecord.getId();
         log.info("Transforming Exception Record to case with Case ID: {}", exceptionRecordId);
@@ -126,7 +126,7 @@ public class BulkScanController {
         @ApiResponse(code = 422, message = "Exception record is well-formed, but contains invalid data")
     })
     public ResponseEntity<SuccessfulUpdateResponse> updateCase(
-        @RequestHeader(name = SERVICE_AUTHORIZATION_HEADER) String s2sAuthToken,
+        @RequestHeader(name = SERVICE_AUTHORIZATION) String s2sAuthToken,
         @Valid @RequestBody BulkScanCaseUpdateRequest request) {
         authService.assertIsServiceAllowedToUpdate(s2sAuthToken);
         ResponseEntity<SuccessfulUpdateResponse> updateControllerResponse;
