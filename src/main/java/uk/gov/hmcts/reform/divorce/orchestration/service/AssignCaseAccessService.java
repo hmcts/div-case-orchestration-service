@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.client.AssignCaseAccessClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.AssignCaseAccessRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 
@@ -20,6 +21,8 @@ public class AssignCaseAccessService {
     private final AssignCaseAccessClient assignCaseAccessClient;
     private final IdamClient idamClient;
 
+    private final FeatureToggleService featureToggleService;
+
     public void assignCaseAccess(CaseDetails caseDetails, String authorisationToken) {
         String userId = idamClient.getUserDetails(authorisationToken).getId();
 
@@ -29,7 +32,6 @@ public class AssignCaseAccessService {
         assignCaseAccessClient.assignCaseAccess(
             authorisationToken,
             serviceToken,
-            true,
             buildAssignCaseAccessRequest(caseDetails, userId)
         );
 
@@ -42,6 +44,7 @@ public class AssignCaseAccessService {
             .caseId(caseDetails.getCaseId())
             .assigneeId(userId)
             .caseTypeId(CASE_TYPE_ID)
+            .userUserToken(featureToggleService.isFeatureEnabled(Features.USE_USER_TOKEN))
             .build();
     }
 }

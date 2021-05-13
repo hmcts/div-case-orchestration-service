@@ -17,4 +17,7 @@ public class AssignCaseAccessRequest {
 
     @JsonProperty("case_type_id")
     private String caseTypeId;
+
+    @JsonProperty("use_user_token")
+    private boolean userUserToken;
 }

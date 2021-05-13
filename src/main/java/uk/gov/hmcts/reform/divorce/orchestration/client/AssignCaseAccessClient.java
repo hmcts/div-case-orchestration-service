@@ -9,7 +9,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.AssignCaseAccessRe
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.config.SpecificHttpHeaders.SERVICE_AUTHORIZATION;
-import static uk.gov.hmcts.reform.divorce.orchestration.config.SpecificHttpHeaders.USE_USER_TOKEN;
 
 @FeignClient(name = "aca-api-client", url = "${aca.api.url}")
 public interface AssignCaseAccessClient {
@@ -21,7 +20,6 @@ public interface AssignCaseAccessClient {
     void assignCaseAccess(
         @RequestHeader(AUTHORIZATION) String authorisation,
         @RequestHeader(SERVICE_AUTHORIZATION) String serviceAuthorization,
-        @RequestHeader(USE_USER_TOKEN) boolean useUserToken,
         @RequestBody final AssignCaseAccessRequest assignCaseAccessRequest
     );
 }

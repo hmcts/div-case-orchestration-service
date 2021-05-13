@@ -156,6 +156,7 @@ feature-toggle:
     represented_respondent_journey: true
     object_to_costs: true
     bailiff_journey: true
+    use_user_token: true
 
 send-letter:
   url: ${SEND_LETTER_SERIVCE_BASEURL:http://rpe-send-letter-service-aat.service.core-compute-aat.internal}

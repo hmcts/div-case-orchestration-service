@@ -39,7 +39,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ORGANISATION_POLICY_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.config.SpecificHttpHeaders.SERVICE_AUTHORIZATION;
-import static uk.gov.hmcts.reform.divorce.orchestration.config.SpecificHttpHeaders.USE_USER_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.elasticsearch.CMSElasticSearchSupport.buildCMSBooleanSearchSource;
 
@@ -169,7 +168,6 @@ public abstract class MockedFunctionalTest {
         assignCaseAccessServer.stubFor(WireMock.post("/case-assignments")
             .withHeader(SERVICE_AUTHORIZATION, new EqualToPattern("Bearer " + s2sAuthToken))
             .withHeader(AUTHORIZATION, new EqualToPattern(authToken))
-            .withHeader(USE_USER_TOKEN, new EqualToPattern("true"))
             .willReturn(aResponse()
                 .withStatus(status.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)));
