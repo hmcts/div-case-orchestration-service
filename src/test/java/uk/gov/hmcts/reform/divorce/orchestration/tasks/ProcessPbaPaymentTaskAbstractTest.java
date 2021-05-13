@@ -5,7 +5,6 @@ import feign.FeignException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
@@ -90,7 +89,6 @@ public abstract class ProcessPbaPaymentTaskAbstractTest {
     @Mock
     protected FeatureToggleService featureToggleService;
 
-    @InjectMocks
     protected ProcessPbaPaymentTask processPbaPaymentTask;
 
     protected TaskContext context;
@@ -103,6 +101,9 @@ public abstract class ProcessPbaPaymentTaskAbstractTest {
     @Before()
     public void setUp() {
         context = contextWithToken();
+        processPbaPaymentTask = new ProcessPbaPaymentTask(
+            paymentClient, serviceAuthGenerator, featureToggleService, new CreditAccountPaymentRequestBuilder(objectMapper, featureToggleService)
+        );
 
         basicFailedResponse = getBasicFailedResponse();
 

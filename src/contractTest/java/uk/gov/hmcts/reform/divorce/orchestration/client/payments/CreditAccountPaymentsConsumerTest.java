@@ -25,12 +25,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.hmcts.reform.divorce.orchestration.client.PaymentClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.CourtEnum;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeResponse;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentResponse;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentItem;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.CreditAccountPaymentRequestBuilder;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import javax.validation.constraints.NotNull;
@@ -40,14 +42,23 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_AMOUNT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_DESCRIPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_VERSION;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_ACCOUNT_NUMBER;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_FIRM_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_REFERENCE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CURRENCY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_FIRM;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_TYPE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_CENTRE_SITEID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_PAY_BY_ACCOUNT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithToken;
 
 @ExtendWith(PactConsumerTestExt.class)
 @ExtendWith(SpringExtension.class)
@@ -66,13 +77,41 @@ public class CreditAccountPaymentsConsumerTest {
     private PaymentClient paymentClient;
 
     @Autowired
+    private CreditAccountPaymentRequestBuilder creditAccountPaymentRequestBuilder;
+
+    @Autowired
     ObjectMapper objectMapper;
 
     public static final String SERVICE_AUTHORIZATION = "ServiceAuthorization";
 
+    protected TaskContext context;
+    protected Map<String, Object> caseData;
+    protected CreditAccountPaymentRequest expectedRequest;
+    protected OrderSummary orderSummary;
+
     @BeforeEach
     public void setUpEachTest() throws InterruptedException {
         Thread.sleep(2000);
+        context = contextWithToken();
+
+        FeeResponse feeResponse = FeeResponse.builder()
+            .amount(TEST_FEE_AMOUNT)
+            .feeCode(TEST_FEE_CODE)
+            .version(TEST_FEE_VERSION)
+            .description(TEST_FEE_DESCRIPTION)
+            .build();
+        orderSummary = new OrderSummary();
+        orderSummary.add(feeResponse);
+
+        caseData = new HashMap<>();
+        caseData.put(SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY, TEST_SOLICITOR_ACCOUNT_NUMBER);
+        caseData.put(SOLICITOR_HOW_TO_PAY_JSON_KEY, FEE_PAY_BY_ACCOUNT);
+        caseData.put(PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY, orderSummary);
+        caseData.put(CASE_ID_JSON_KEY, TEST_CASE_ID);
+        caseData.put(DIVORCE_CENTRE_SITEID_JSON_KEY, CourtEnum.EASTMIDLANDS.getSiteId());
+        caseData.put(PETITIONER_SOLICITOR_FIRM, TEST_SOLICITOR_FIRM_NAME);
+        caseData.put(SOLICITOR_REFERENCE_JSON_KEY, TEST_SOLICITOR_REFERENCE);
+        caseData.put(CASE_TYPE_ID, "DIVORCE");
     }
 
     @After
@@ -194,25 +233,8 @@ public class CreditAccountPaymentsConsumerTest {
 
     @NotNull
     private CreditAccountPaymentRequest getCreditAccountPaymentRequest(String amount) {
-        CreditAccountPaymentRequest expectedRequest = new CreditAccountPaymentRequest();
-        expectedRequest.setService(SERVICE);
-        expectedRequest.setCurrency(CURRENCY);
+        CreditAccountPaymentRequest expectedRequest = creditAccountPaymentRequestBuilder.buildCreditAccountPaymentRequest(context, caseData);
         expectedRequest.setAmount(amount);
-        expectedRequest.setCcdCaseNumber(TEST_CASE_ID);
-        expectedRequest.setSiteId(CourtEnum.EASTMIDLANDS.getSiteId());
-        expectedRequest.setAccountNumber(TEST_SOLICITOR_ACCOUNT_NUMBER);
-        expectedRequest.setOrganisationName(TEST_SOLICITOR_FIRM_NAME);
-        expectedRequest.setCustomerReference(TEST_SOLICITOR_REFERENCE);
-        expectedRequest.setDescription(TEST_FEE_DESCRIPTION);
-
-        PaymentItem paymentItem = new PaymentItem();
-        paymentItem.setCcdCaseNumber(TEST_CASE_ID);
-        paymentItem.setCalculatedAmount("550.00");
-        paymentItem.setCode(TEST_FEE_CODE);
-        paymentItem.setReference(TEST_SOLICITOR_REFERENCE);
-
-        paymentItem.setVersion(TEST_FEE_VERSION.toString());
-        expectedRequest.setFees(Collections.singletonList(paymentItem));
         return expectedRequest;
     }
 }

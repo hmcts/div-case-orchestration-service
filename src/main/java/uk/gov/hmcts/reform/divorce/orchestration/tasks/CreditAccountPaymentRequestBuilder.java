@@ -1,0 +1,111 @@
+package uk.gov.hmcts.reform.divorce.orchestration.tasks;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeItem;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.FeeValue;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.fees.OrderSummary;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.PaymentItem;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
+import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import static java.util.Collections.singletonList;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_FIRM;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_TYPE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CURRENCY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_CENTRE_SITEID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.SolicitorDataExtractor.getPbaNumber;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getCaseId;
+
+@Component
+@Slf4j
+@RequiredArgsConstructor
+public class CreditAccountPaymentRequestBuilder {
+
+    private final ObjectMapper objectMapper;
+    private final FeatureToggleService featureToggleService;
+
+    public CreditAccountPaymentRequest buildCreditAccountPaymentRequest(TaskContext context, Map<String, Object> caseData) {
+        CreditAccountPaymentRequest creditAccountPaymentRequest;
+        creditAccountPaymentRequest = new CreditAccountPaymentRequest();
+        OrderSummary orderSummary = getOrderSummary(caseData);
+
+        creditAccountPaymentRequest.setService(SERVICE);
+        creditAccountPaymentRequest.setCurrency(CURRENCY);
+
+        final FeeValue feeValue = getFeeValue(orderSummary);
+        populatePaymentRequest(
+            context,
+            caseData,
+            creditAccountPaymentRequest,
+            orderSummary,
+            feeValue);
+
+        List<PaymentItem> paymentItemList = populateFeesPaymentItems(context, caseData, orderSummary, feeValue);
+        creditAccountPaymentRequest.setFees(paymentItemList);
+        return creditAccountPaymentRequest;
+    }
+
+    private OrderSummary getOrderSummary(Map<String, Object> caseData) {
+        return objectMapper.convertValue(
+            caseData.get(PETITION_ISSUE_ORDER_SUMMARY_JSON_KEY),
+            OrderSummary.class);
+    }
+
+    private List<PaymentItem> populateFeesPaymentItems(TaskContext context, Map<String, Object> caseData, OrderSummary orderSummary, FeeValue value) {
+        PaymentItem paymentItem = new PaymentItem();
+        addToRequest(paymentItem::setCcdCaseNumber, context.getTransientObject(CASE_ID_JSON_KEY)::toString);
+        addToRequest(paymentItem::setCalculatedAmount, orderSummary::getPaymentTotal);
+        addToRequest(paymentItem::setCode, value::getFeeCode);
+        addToRequest(paymentItem::setReference, caseData.get(SOLICITOR_REFERENCE_JSON_KEY)::toString);
+        addToRequest(paymentItem::setVersion, value::getFeeVersion);
+        return singletonList(paymentItem);
+    }
+
+    private FeeValue getFeeValue(OrderSummary orderSummary) {
+        // We are always interested in the first fee. There may be a change in the future
+        FeeItem feeItem = orderSummary.getFees().get(0);
+        return feeItem.getValue();
+    }
+
+    private void populatePaymentRequest(TaskContext context, Map<String, Object> caseData, CreditAccountPaymentRequest request,
+                                        OrderSummary orderSummary, FeeValue value) {
+        addToRequest(request::setAmount, orderSummary::getPaymentTotal);
+        addToRequest(request::setCcdCaseNumber, context.getTransientObject(CASE_ID_JSON_KEY)::toString);
+
+        //this will only be sent when Features.pba_case_type is enabled, Site ID is being depreciated
+        if (featureToggleService.isFeatureEnabled(Features.PBA_USING_CASE_TYPE)) {
+            log.info("CaseId: {} setting case type in request for PBA Payment", getCaseId(context));
+            addToRequest(request::setCaseType, CASE_TYPE_ID::toString);
+        } else {
+            log.info("CaseId: {} setting site ID in request for PBA Payment", getCaseId(context));
+            addToRequest(request::setSiteId, caseData.get(DIVORCE_CENTRE_SITEID_JSON_KEY)::toString);
+        }
+        addToRequest(request::setAccountNumber, getPbaNumber(caseData, isPbaToggleOn())::toString);
+        addToRequest(request::setOrganisationName, caseData.get(PETITIONER_SOLICITOR_FIRM)::toString);
+        addToRequest(request::setCustomerReference, caseData.get(SOLICITOR_REFERENCE_JSON_KEY)::toString);
+        addToRequest(request::setDescription, value::getFeeDescription);
+    }
+
+    private void addToRequest(Consumer<String> setter, Supplier<String> value) {
+        Optional.ofNullable(value.get()).ifPresent(setter);
+    }
+
+    private boolean isPbaToggleOn() {
+        return featureToggleService.isFeatureEnabled(Features.PAY_BY_ACCOUNT);
+    }
+}
