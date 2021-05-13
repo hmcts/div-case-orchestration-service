@@ -31,7 +31,7 @@ public class CreateAmendPetitionDraftForRefusalTask implements Task<Map<String, 
     public Map<String, Object> execute(TaskContext context,
                                        Map<String, Object> draft) {
         String caseId = context.getTransientObject(CASE_ID_JSON_KEY);
-        try{
+        try {
             final Map<String, Object> amendDraft = caseMaintenanceClient
                 .amendPetitionForRefusal(context.getTransientObject(AUTH_TOKEN_JSON_KEY).toString());
 
