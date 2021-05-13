@@ -32,6 +32,7 @@ public class AssignCaseAccessService {
         assignCaseAccessClient.assignCaseAccess(
             authorisationToken,
             serviceToken,
+            featureToggleService.isFeatureEnabled(Features.USE_USER_TOKEN),
             buildAssignCaseAccessRequest(caseDetails, userId)
         );
 
@@ -44,7 +45,6 @@ public class AssignCaseAccessService {
             .caseId(caseDetails.getCaseId())
             .assigneeId(userId)
             .caseTypeId(CASE_TYPE_ID)
-            .userUserToken(featureToggleService.isFeatureEnabled(Features.USE_USER_TOKEN))
             .build();
     }
 }

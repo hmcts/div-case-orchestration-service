@@ -62,12 +62,12 @@ public class AssignCaseAccessServiceTest {
         verify(assignCaseAccessClient).assignCaseAccess(
             AUTH_TOKEN,
             TEST_SERVICE_TOKEN,
+            useUserTokenFlag,
             AssignCaseAccessRequest
                 .builder()
                 .caseId(TEST_CASE_ID)
                 .assigneeId(TEST_USER_ID)
                 .caseTypeId(CASE_TYPE_ID)
-                .userUserToken(useUserTokenFlag)
                 .build()
         );
     }
