@@ -16,7 +16,8 @@ public enum Features {
     SHARE_A_CASE("share_a_case"),
     REPRESENTED_RESPONDENT_JOURNEY("represented_respondent_journey"),
     OBJECT_TO_COSTS("object_to_costs"),
-    BAILIFF_JOURNEY("bailiff_journey");
+    BAILIFF_JOURNEY("bailiff_journey"),
+    USE_USER_TOKEN("use_user_token");
 
     private final String name;
 

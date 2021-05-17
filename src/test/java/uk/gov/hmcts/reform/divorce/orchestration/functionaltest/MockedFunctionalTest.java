@@ -165,7 +165,7 @@ public abstract class MockedFunctionalTest {
     }
 
     public void stubAssignCaseAccessServerEndpoint(String authToken, String s2sAuthToken, HttpStatus status) {
-        assignCaseAccessServer.stubFor(WireMock.post("/case-assignments")
+        assignCaseAccessServer.stubFor(WireMock.post("/case-assignments?use_user_token=true")
             .withHeader(SERVICE_AUTHORIZATION, new EqualToPattern("Bearer " + s2sAuthToken))
             .withHeader(AUTHORIZATION, new EqualToPattern(authToken))
             .willReturn(aResponse()
