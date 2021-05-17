@@ -28,7 +28,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.buildOrganisationPolicy;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
-@SpringBootTest(properties = {"feature-toggle.toggle.share_a_case=true"})
+@SpringBootTest(properties = {"feature-toggle.toggle.share_a_case=true", "feature-toggle.toggle.use_user_token=true"})
 public class GetPetitionIssueFeesTestShareCaseFeatureSwitchedOnTest extends GetPetitionIssueFeesAbstractTest {
 
     @Before
