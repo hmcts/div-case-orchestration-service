@@ -1750,6 +1750,17 @@ public class CallbackControllerTest {
     }
 
     @Test
+    public void whenClearGeneralEmailFields_thenGeneralEmailServiceInvoked() throws CaseOrchestrationServiceException {
+        when(generalEmailService.clearGeneralEmailFields(any())).thenReturn(TEST_PAYLOAD_TO_RETURN);
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(TEST_INCOMING_CASE_DETAILS).build();
+        ResponseEntity<CcdCallbackResponse> ccdCallbackResponse = classUnderTest.clearFieldsForCreateGeneralEmailEvent(ccdCallbackRequest);
+
+        assertThat(ccdCallbackResponse.getBody().getData(), equalTo(TEST_PAYLOAD_TO_RETURN));
+        verify(generalEmailService).clearGeneralEmailFields(TEST_INCOMING_CASE_DETAILS);
+    }
+
+    @Test
     public void shouldReturnOk_whenGeneralReferralServiceIsCalled() throws CaseOrchestrationServiceException {
         when(generalReferralService.receiveReferral(any())).thenReturn(CcdCallbackResponse.builder().build());
 

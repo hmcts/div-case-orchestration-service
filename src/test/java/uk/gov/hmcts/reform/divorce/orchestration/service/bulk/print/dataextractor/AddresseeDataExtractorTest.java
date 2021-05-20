@@ -48,7 +48,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.datae
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.buildCaseDataWithCoRespondentSolicitorNames;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.buildCaseDataWithPetitionerNames;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractorTest.buildCaseDataWithRespondentNames;
-import static uk.gov.hmcts.reform.divorce.orchestration.workflows.GeneralEmailWorkflow.OTHER_GENERAL_EMAIL_SELECTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.generalemail.GeneralEmailWorkflow.OTHER_GENERAL_EMAIL_SELECTION;
 
 public class AddresseeDataExtractorTest {
 

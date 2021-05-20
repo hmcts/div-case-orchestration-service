@@ -6,7 +6,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServiceException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralEmailService;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.GeneralEmailWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalemail.ClearGeneralEmailFieldsWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalemail.GeneralEmailWorkflow;
 
 import java.util.Map;
 
@@ -15,6 +16,16 @@ import java.util.Map;
 public class GeneralEmailServiceImpl implements GeneralEmailService {
 
     private final GeneralEmailWorkflow generalEmailWorkflow;
+    private final ClearGeneralEmailFieldsWorkflow clearGeneralEmailFieldsWorkflow;
+
+    @Override
+    public Map<String, Object> clearGeneralEmailFields(CaseDetails caseDetails) throws CaseOrchestrationServiceException {
+        try {
+            return clearGeneralEmailFieldsWorkflow.run(caseDetails);
+        } catch (WorkflowException exception) {
+            throw new CaseOrchestrationServiceException(exception, caseDetails.getCaseId());
+        }
+    }
 
     @Override
     public Map<String, Object> createGeneralEmail(CaseDetails caseDetails) throws CaseOrchestrationServiceException {

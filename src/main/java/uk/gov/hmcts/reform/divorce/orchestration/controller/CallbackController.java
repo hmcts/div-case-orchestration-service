@@ -1375,8 +1375,21 @@ public class CallbackController {
                 .build());
     }
 
+    @PostMapping(path = "/create-general-email/clear-fields")
+    @ApiOperation(value = "Prepare the event sending general email by clearing fields it's using")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.")})
+    public ResponseEntity<CcdCallbackResponse> clearFieldsForCreateGeneralEmailEvent(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(generalEmailService.clearGeneralEmailFields(ccdCallbackRequest.getCaseDetails()))
+                .build());
+    }
+
     @PostMapping(path = "/create-general-email")
-    @ApiOperation(value = "Prepare event to send general email")
+    @ApiOperation(value = "Sends the general email to recipient")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Create general email notification callback processed.")})
     public ResponseEntity<CcdCallbackResponse> createGeneralEmail(
