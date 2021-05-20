@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.workflows.generalemail;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
@@ -10,6 +11,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalemail.ClearGeneral
 
 import java.util.Map;
 
+@Component
 @RequiredArgsConstructor
 @Slf4j
 public class ClearGeneralEmailFieldsWorkflow extends DefaultWorkflow<Map<String, Object>> {
