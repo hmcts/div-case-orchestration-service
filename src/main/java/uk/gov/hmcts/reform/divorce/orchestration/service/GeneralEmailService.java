@@ -8,5 +8,8 @@ public interface GeneralEmailService {
 
     Map<String, Object> clearGeneralEmailFields(CaseDetails caseDetails) throws CaseOrchestrationServiceException;
 
+    Map<String, Object> storeGeneralEmailFields(CaseDetails caseDetails, String authorizationToken) throws CaseOrchestrationServiceException;
+
     Map<String, Object> createGeneralEmail(CaseDetails caseDetails) throws CaseOrchestrationServiceException;
+
 }

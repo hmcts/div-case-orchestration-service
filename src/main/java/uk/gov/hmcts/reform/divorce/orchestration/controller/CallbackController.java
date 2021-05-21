@@ -1388,6 +1388,21 @@ public class CallbackController {
                 .build());
     }
 
+    @PostMapping(path = "/create-general-email/store-fields")
+    @ApiOperation(value = "Store general email fields in general email details collection")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.")})
+    public ResponseEntity<CcdCallbackResponse> storeGeneralEmailEventFieldsInCollection(
+        @RequestHeader(value = AUTHORIZATION)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(generalEmailService.storeGeneralEmailFields(ccdCallbackRequest.getCaseDetails(), authorizationToken))
+                .build());
+    }
+
     @PostMapping(path = "/create-general-email")
     @ApiOperation(value = "Sends the general email to recipient")
     @ApiResponses(value = {

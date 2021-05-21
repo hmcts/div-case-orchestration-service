@@ -8,6 +8,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.CaseOrchestrationServic
 import uk.gov.hmcts.reform.divorce.orchestration.service.GeneralEmailService;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalemail.ClearGeneralEmailFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalemail.GeneralEmailWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.generalemail.StoreGeneralEmailFieldsWorkflow;
 
 import java.util.Map;
 
@@ -17,11 +18,21 @@ public class GeneralEmailServiceImpl implements GeneralEmailService {
 
     private final GeneralEmailWorkflow generalEmailWorkflow;
     private final ClearGeneralEmailFieldsWorkflow clearGeneralEmailFieldsWorkflow;
+    private final StoreGeneralEmailFieldsWorkflow storeGeneralEmailFieldsWorkflow;
 
     @Override
     public Map<String, Object> clearGeneralEmailFields(CaseDetails caseDetails) throws CaseOrchestrationServiceException {
         try {
             return clearGeneralEmailFieldsWorkflow.run(caseDetails);
+        } catch (WorkflowException exception) {
+            throw new CaseOrchestrationServiceException(exception, caseDetails.getCaseId());
+        }
+    }
+
+    @Override
+    public Map<String, Object> storeGeneralEmailFields(CaseDetails caseDetails, String authorizationToken) throws CaseOrchestrationServiceException {
+        try {
+            return storeGeneralEmailFieldsWorkflow.run(caseDetails, authorizationToken);
         } catch (WorkflowException exception) {
             throw new CaseOrchestrationServiceException(exception, caseDetails.getCaseId());
         }
