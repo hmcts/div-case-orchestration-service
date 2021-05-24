@@ -1761,6 +1761,17 @@ public class CallbackControllerTest {
     }
 
     @Test
+    public void whenStoreGeneralEmailFields_thenGeneralEmailServiceInvoked() throws CaseOrchestrationServiceException {
+        when(generalEmailService.storeGeneralEmailFields(any(), eq(AUTH_TOKEN))).thenReturn(TEST_PAYLOAD_TO_RETURN);
+
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(TEST_INCOMING_CASE_DETAILS).build();
+        ResponseEntity<CcdCallbackResponse> ccdCallbackResponse = classUnderTest.storeGeneralEmailEventFieldsInCollection(AUTH_TOKEN, ccdCallbackRequest);
+
+        assertThat(ccdCallbackResponse.getBody().getData(), equalTo(TEST_PAYLOAD_TO_RETURN));
+        verify(generalEmailService).storeGeneralEmailFields(TEST_INCOMING_CASE_DETAILS, AUTH_TOKEN);
+    }
+
+    @Test
     public void shouldReturnOk_whenGeneralReferralServiceIsCalled() throws CaseOrchestrationServiceException {
         when(generalReferralService.receiveReferral(any())).thenReturn(CcdCallbackResponse.builder().build());
 
