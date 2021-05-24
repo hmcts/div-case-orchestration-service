@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import static java.lang.String.format;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.COURT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.DN_PRONOUNCED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.DN_REFUSED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_CLAIM_GRANTED;
@@ -97,7 +97,7 @@ public class DecreeNisiDataExtractor implements CSVExtractor {
             csvLine.append(hearingTime);
             csvLine.append(COMMA);
 
-            String ccdCourtName = getMandatoryPropertyValueAsString(caseData, COURT_NAME_CCD_FIELD);
+            String ccdCourtName = getMandatoryPropertyValueAsString(caseData, COURT_NAME);
             String dnCourtName = getDnCourtName(ccdCourtName);
             csvLine.append(dnCourtName);
             csvLine.append(COMMA);

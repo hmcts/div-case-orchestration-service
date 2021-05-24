@@ -106,4 +106,7 @@ public class CcdFields {
     public static final String JUDGE_COSTS_ADDITIONAL_INFO = "JudgeCostsOrderAdditionalInfo";
 
     public static final String RESPONDENT_SOLICITOR_DIGITAL = "RespSolDigital";
+
+    public static final String COURT_NAME = "CourtName";
+    public static final String COURT_HEARING_DATE = "hearingDate";
 }

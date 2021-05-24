@@ -17,7 +17,7 @@ import static org.apache.commons.lang3.StringUtils.SPACE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.COURT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CARE_OF_PREFIX;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COURT_CONTACT_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMAIL_LABEL;
@@ -43,7 +43,7 @@ public class SetFormattedDnCourtDetailsTest {
     @Test
     public void testDnCourtDetailsAreSetOnContext() throws CourtDetailsNotFound {
         Map<String, Object> payload = new HashMap<>();
-        payload.put(COURT_NAME_CCD_FIELD, TEST_COURT_ID);
+        payload.put(COURT_NAME, TEST_COURT_ID);
 
         DnCourt dnCourt = new DnCourt();
         dnCourt.setName(TEST_COURT_NAME);
@@ -59,7 +59,7 @@ public class SetFormattedDnCourtDetailsTest {
 
         Map<String, Object> contextDnCourtDetails = context.getTransientObject(DN_COURT_DETAILS);
 
-        assertEquals(TEST_COURT_NAME, contextDnCourtDetails.get(COURT_NAME_CCD_FIELD));
+        assertEquals(TEST_COURT_NAME, contextDnCourtDetails.get(COURT_NAME));
         assertEquals(contextDnCourtDetails.get(COURT_CONTACT_JSON_KEY),
                 CARE_OF_PREFIX + SPACE + TEST_COURT_NAME + LINE_SEPARATOR
                 + TEST_COURT_ADDRESS + LINE_SEPARATOR + LINE_SEPARATOR
@@ -71,7 +71,7 @@ public class SetFormattedDnCourtDetailsTest {
     @Test
     public void testDnCourtDetailsAreNotSetOnContextWhenCourtNotFound() throws CourtDetailsNotFound {
         Map<String, Object> payload = new HashMap<>();
-        payload.put(COURT_NAME_CCD_FIELD, TEST_COURT_ID);
+        payload.put(COURT_NAME, TEST_COURT_ID);
 
         when(taskCommons.getDnCourt(TEST_COURT_ID)).thenThrow(CourtDetailsNotFound.class);
 

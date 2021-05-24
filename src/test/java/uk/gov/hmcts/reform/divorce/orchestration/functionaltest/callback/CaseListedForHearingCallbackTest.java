@@ -60,7 +60,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.COURT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
@@ -104,7 +104,7 @@ public class CaseListedForHearingCallbackTest extends MockedFunctionalTest {
         .put(RESPONDENT_DERIVED_CORRESPONDENCE_ADDRESS, "221B Baker Street")
         .put(D_8_CASE_REFERENCE, TEST_CASE_ID)
         .put(DATETIME_OF_HEARING_CCD_FIELD, DATE_TIME_OF_HEARINGS)
-        .put(COURT_NAME_CCD_FIELD, TEST_COURT_ID)
+        .put(COURT_NAME, TEST_COURT_ID)
         .put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE)
         .build();
 

@@ -22,13 +22,11 @@ public class BulkCaseConstants {
     public static final String SEARCH_RESULT_KEY = "SearchResult";
     public static final String REMOVED_CASE_LIST = "RemovedCaseList";
 
-    public static final String COURT_NAME_CCD_FIELD = "CourtName";
-    public static final String COURT_HEARING_DATE_CCD_FIELD = "hearingDate";
-
     //Bulk case events
     public static final String LISTED_EVENT = "listed";
     public static final String CREATE_EVENT = "create";
     public static final String PRONOUNCED_EVENT = "pronounced";
+
     //Errors
     public static final String BULKCASE_CREATION_ERROR = "BulKCaseCreation_Error";
 }

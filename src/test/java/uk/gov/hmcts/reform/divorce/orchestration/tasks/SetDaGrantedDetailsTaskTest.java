@@ -18,7 +18,7 @@ import static java.time.ZoneOffset.UTC;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PRONOUNCEMENT_JUDGE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_HEARING_DATE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.COURT_HEARING_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
 
@@ -43,7 +43,7 @@ public class SetDaGrantedDetailsTaskTest {
     @Test(expected = TaskException.class)
     public void shouldThrowExceptionForSetDaGrantedDetailsTaskIfPronouncementJudgeIsEmpty() throws TaskException {
         HashMap<String, Object> payload = new HashMap<>();
-        payload.put(COURT_HEARING_DATE_CCD_FIELD, EXPECTED_DATE_TIME);
+        payload.put(COURT_HEARING_DATE, EXPECTED_DATE_TIME);
 
         setDaGrantedDetailsTask.execute(null, payload);
     }

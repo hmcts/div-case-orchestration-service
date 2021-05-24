@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 import static java.util.Objects.nonNull;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_HEARING_DATE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.COURT_HEARING_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_ELIGIBLE_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_DATE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
@@ -30,7 +30,7 @@ public class SetDnPronouncementDetailsTask implements Task<Map<String,Object>> {
             throw new TaskException("Judge who pronounced field must be set.");
         }
 
-        LocalDateTime hearingDateTime = LocalDateTime.parse((String) caseData.get(COURT_HEARING_DATE_CCD_FIELD));
+        LocalDateTime hearingDateTime = LocalDateTime.parse((String) caseData.get(COURT_HEARING_DATE));
 
         if (hearingDateTime.isAfter(ccdUtil.getCurrentLocalDateTime())) {
             throw new TaskException("You cannot pronounce a bulk case that has a scheduled pronouncement date that is in the future.");

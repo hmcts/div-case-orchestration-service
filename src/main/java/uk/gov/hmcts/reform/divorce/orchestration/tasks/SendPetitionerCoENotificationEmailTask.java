@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.COURT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_CLAIM_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_CLAIM_NOT_GRANTED;
@@ -67,7 +67,7 @@ public class SendPetitionerCoENotificationEmailTask implements Task<Map<String, 
         String familyManCaseId = getMandatoryPropertyValueAsString(payload, D_8_CASE_REFERENCE);
         String petitionerFirstName = getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_FIRST_NAME);
         String petitionerLastName = getMandatoryPropertyValueAsString(payload, D_8_PETITIONER_LAST_NAME);
-        String courtName = getMandatoryPropertyValueAsString(payload, COURT_NAME_CCD_FIELD);
+        String courtName = getMandatoryPropertyValueAsString(payload, COURT_NAME);
         EmailTemplateNames template;
         String emailToBeSentTo;
 
