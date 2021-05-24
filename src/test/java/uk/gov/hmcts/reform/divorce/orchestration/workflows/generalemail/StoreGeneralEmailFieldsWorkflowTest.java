@@ -39,7 +39,8 @@ public class StoreGeneralEmailFieldsWorkflowTest {
     public void whenTheWorkflowRuns_thenExpectedTaskIsExecuted() throws WorkflowException {
         when(storeGeneralEmailFieldsTask.execute(any(), any())).thenReturn(expectedOutput);
 
-        Map<String, Object> result = storeGeneralEmailFieldsWorkflow.run(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(emptyMap()).build(), AUTH_TOKEN);
+        Map<String, Object> result = storeGeneralEmailFieldsWorkflow.run(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(emptyMap()).build(),
+            AUTH_TOKEN);
 
         assertThat(result, is(expectedOutput));
 
