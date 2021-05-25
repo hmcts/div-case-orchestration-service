@@ -27,6 +27,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.G
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getAuthToken;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
+import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateTimeForCcd;
 
 @Component
 @RequiredArgsConstructor
@@ -41,7 +42,7 @@ public class StoreGeneralEmailFieldsTask implements Task<Map<String, Object>> {
         Map<String, Object> payloadToReturn = new HashMap<>(payload);
 
         GeneralEmailDetails generalEmailDetails = GeneralEmailDetails.builder()
-            .generalEmailDateTime(LocalDateTime.now())
+            .generalEmailDateTime(formatDateTimeForCcd(LocalDateTime.now()))
             .generalEmailParties(getMandatoryPropertyValueAsString(payload, GENERAL_EMAIL_PARTIES))
             .generalEmailOtherRecipientEmail(getOptionalPropertyValueAsString(payload, GENERAL_EMAIL_OTHER_RECIPIENT_EMAIL, null))
             .generalEmailOtherRecipientName(getOptionalPropertyValueAsString(payload, GENERAL_EMAIL_OTHER_RECIPIENT_NAME, null))

@@ -29,6 +29,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.G
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_EMAIL_PARTIES;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.getObjectMapperInstance;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.contextWithToken;
+import static uk.gov.hmcts.reform.divorce.utils.DateUtils.Formats.CCD_DATE;
+import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateFromLocalDate;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StoreGeneralEmailFieldsTaskTest {
@@ -60,7 +62,7 @@ public class StoreGeneralEmailFieldsTaskTest {
         assertThat((Collection<CollectionMember<GeneralEmailDetails>>)result.get(GENERAL_EMAIL_DETAILS_COLLECTION), hasSize(1));
         GeneralEmailDetails generalEmailDetails = ((List<CollectionMember<GeneralEmailDetails>>)result.get(GENERAL_EMAIL_DETAILS_COLLECTION))
             .get(0).getValue();
-        assertThat(generalEmailDetails.getGeneralEmailDateTime().toLocalDate(), is(LocalDate.now()));
+        assertThat(generalEmailDetails.getGeneralEmailDateTime().substring(0, CCD_DATE.length()), is(formatDateFromLocalDate(LocalDate.now())));
         assertThat(generalEmailDetails.getGeneralEmailParties(), is(GENERAL_EMAIL_PARTIES_VALUE));
         assertThat(generalEmailDetails.getGeneralEmailOtherRecipientEmail(), is(GENERAL_EMAIL_OTHER_RECIPIENT_EMAIL_VALUE));
         assertThat(generalEmailDetails.getGeneralEmailOtherRecipientName(), is(GENERAL_EMAIL_OTHER_RECIPIENT_NAME_VALUE));
