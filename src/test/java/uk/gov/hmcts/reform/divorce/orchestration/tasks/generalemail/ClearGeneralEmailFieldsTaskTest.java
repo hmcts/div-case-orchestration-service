@@ -13,6 +13,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.G
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_EMAIL_OTHER_RECIPIENT_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_EMAIL_OTHER_RECIPIENT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_EMAIL_PARTIES;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.context;
 
 public class ClearGeneralEmailFieldsTaskTest {
 
@@ -30,7 +31,7 @@ public class ClearGeneralEmailFieldsTaskTest {
         Map<String, Object> payload = new HashMap<>();
         generalEmailFields.forEach(fieldName -> payload.put(fieldName, TEST_VALUE));
 
-        Map<String, Object> result = clearGeneralEmailFieldsTask.execute(null, payload);
+        Map<String, Object> result = clearGeneralEmailFieldsTask.execute(context(), payload);
         generalEmailFields.forEach(fieldName -> assertThat(result.containsKey(fieldName), is(false)));
     }
 }

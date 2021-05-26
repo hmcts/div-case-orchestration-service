@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.workflows.generalemail;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
@@ -10,6 +11,8 @@ import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalemail.ClearGeneralEmailFieldsTask;
 
 import java.util.Map;
+
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @Component
 @RequiredArgsConstructor
@@ -26,7 +29,8 @@ public class ClearGeneralEmailFieldsWorkflow extends DefaultWorkflow<Map<String,
 
         return this.execute(
             new Task[] { clearGeneralEmailFieldsTask },
-            caseData
+            caseData,
+            ImmutablePair.of(CASE_ID_JSON_KEY, caseId)
         );
     }
 }

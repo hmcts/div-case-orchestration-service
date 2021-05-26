@@ -8,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
-import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.generalemail.ClearGeneralEmailFieldsTask;
 
 import java.util.Map;
@@ -20,6 +19,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.context;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ClearGeneralEmailFieldsWorkflowTest {
@@ -39,6 +39,6 @@ public class ClearGeneralEmailFieldsWorkflowTest {
         Map<String, Object> result = clearGeneralEmailFieldsWorkflow.run(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(emptyMap()).build());
 
         assertThat(result, is(expectedOutput));
-        verify(clearGeneralEmailFieldsTask).execute(new DefaultTaskContext(), emptyMap());
+        verify(clearGeneralEmailFieldsTask).execute(context(), emptyMap());
     }
 }
