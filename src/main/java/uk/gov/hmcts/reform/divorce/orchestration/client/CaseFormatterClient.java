@@ -27,7 +27,7 @@ public interface CaseFormatterClient {
     @PostMapping(value = "/caseformatter/version/1/remove/documents/{documentType}",
         headers = CONTENT_TYPE + "=" + APPLICATION_JSON_VALUE)
     Map<String, Object> removeAllDocumentsByType(
-        @PathVariable("documentType") String eventId,
+        @PathVariable("documentType") String documentType,
         @RequestBody Map<String, Object> caseData
     );
 
