@@ -81,7 +81,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_TOKEN
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_SERVICE_CONSIDERATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_OUTCOME_FLAG_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_PAY_BY_ACCOUNT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
@@ -1370,7 +1369,7 @@ public class CallbackControllerTest {
 
     @Test
     public void testRemoveCaseOnDigitalDecreeNisi_returnsPayload_whenExecuted() throws WorkflowException {
-        Map<String, Object> caseData = Collections.singletonMap(DN_OUTCOME_FLAG_CCD_FIELD, YES_VALUE);
+        Map<String, Object> caseData = Collections.singletonMap(CcdFields.DN_OUTCOME_FLAG, YES_VALUE);
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build();
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
 
@@ -1912,4 +1911,16 @@ public class CallbackControllerTest {
         assertThat(response.getStatusCode(), equalTo(OK));
     }
 
+    @Test
+    public void shouldCallRemoveLegalAdvisorMakeDecisionFields() throws Exception {
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder().build())
+            .build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest
+            .removeLegalAdvisorMakeDecisionFields(ccdCallbackRequest);
+
+        verify(caseOrchestrationService).removeLegalAdvisorMakeDecisionFields(ccdCallbackRequest);
+        assertThat(response.getStatusCode(), equalTo(OK));
+    }
 }

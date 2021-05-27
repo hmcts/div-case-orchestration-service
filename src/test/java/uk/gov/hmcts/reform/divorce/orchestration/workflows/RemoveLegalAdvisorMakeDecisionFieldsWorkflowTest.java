@@ -19,6 +19,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.DUMMY_CASE_DATA;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RemoveLegalAdvisorMakeDecisionFieldsWorkflowTest {
@@ -31,16 +32,15 @@ public class RemoveLegalAdvisorMakeDecisionFieldsWorkflowTest {
 
     @Test
     public void givenWorkflow_thenExecuteTask() throws WorkflowException, TaskException {
-        when(removeLegalAdvisorMakeDecisionFieldsTask.execute(any(TaskContext.class), eq(DUMMY_CASE_DATA))).thenReturn(DUMMY_CASE_DATA);
+        when(removeLegalAdvisorMakeDecisionFieldsTask.execute(any(TaskContext.class), eq(DUMMY_CASE_DATA)))
+            .thenReturn(DUMMY_CASE_DATA);
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
-                .caseDetails(CaseDetails.builder().caseData(DUMMY_CASE_DATA).build())
-                .build();
+            .caseDetails(CaseDetails.builder().caseData(DUMMY_CASE_DATA).caseId(TEST_CASE_ID).build())
+            .build();
 
         assertThat(classToTest.run(ccdCallbackRequest), is(DUMMY_CASE_DATA));
 
         verify(removeLegalAdvisorMakeDecisionFieldsTask).execute(any(TaskContext.class), eq(DUMMY_CASE_DATA));
     }
-
-
 }
