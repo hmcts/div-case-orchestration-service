@@ -17,7 +17,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_HEARING_DATE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.COURT_HEARING_DATE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ValidateBulkCourtHearingDateTest {
@@ -37,7 +37,7 @@ public class ValidateBulkCourtHearingDateTest {
     @Test
     public void givenFutureCourtHearingDate_whenValidateCourtHearingDate_thenReturnCaseDetails() throws TaskException {
         String futureDate = LocalDateTime.now().plusMonths(3).toString();
-        Map<String, Object> bulkCaseData = Collections.singletonMap(COURT_HEARING_DATE_CCD_FIELD, futureDate);
+        Map<String, Object> bulkCaseData = Collections.singletonMap(COURT_HEARING_DATE, futureDate);
 
         when(ccdUtil.isCcdDateTimeInThePast(futureDate)).thenReturn(false);
 
@@ -47,7 +47,7 @@ public class ValidateBulkCourtHearingDateTest {
     @Test(expected = TaskException.class)
     public void givenPastCourtHearingDate_whenValidateCourtHearingDate_thenThrowTaskException() throws TaskException {
         String pastDate = LocalDateTime.now().minusMonths(3).toString();
-        Map<String, Object> bulkCaseData = Collections.singletonMap(COURT_HEARING_DATE_CCD_FIELD, pastDate);
+        Map<String, Object> bulkCaseData = Collections.singletonMap(COURT_HEARING_DATE, pastDate);
 
         when(ccdUtil.isCcdDateTimeInThePast(pastDate)).thenReturn(true);
 
@@ -57,7 +57,7 @@ public class ValidateBulkCourtHearingDateTest {
     @Test(expected = TaskException.class)
     public void givenSameDayCourtHearingDate_whenValidateCourtHearingDate_thenThrowTaskException() throws TaskException {
         String todaysDate = LocalDateTime.now().toString();
-        Map<String, Object> bulkCaseData = Collections.singletonMap(COURT_HEARING_DATE_CCD_FIELD, todaysDate);
+        Map<String, Object> bulkCaseData = Collections.singletonMap(COURT_HEARING_DATE, todaysDate);
 
         when(ccdUtil.isCcdDateTimeInThePast(todaysDate)).thenReturn(true);
 

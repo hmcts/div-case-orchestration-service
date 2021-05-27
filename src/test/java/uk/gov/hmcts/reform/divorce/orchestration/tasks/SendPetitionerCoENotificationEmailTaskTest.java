@@ -43,7 +43,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETIT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FULL_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.COURT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_CLAIM_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_CLAIM_NOT_GRANTED;
@@ -93,7 +93,7 @@ public class SendPetitionerCoENotificationEmailTaskTest {
         D_8_PETITIONER_FIRST_NAME,
         D_8_PETITIONER_LAST_NAME,
         DATETIME_OF_HEARING_CCD_FIELD,
-        COURT_NAME_CCD_FIELD);
+        COURT_NAME);
 
     private final List<String> solMandatoryFields = asList(
         D_8_PETITIONER_FIRST_NAME,
@@ -102,7 +102,7 @@ public class SendPetitionerCoENotificationEmailTaskTest {
         RESP_LAST_NAME_CCD_FIELD,
         PETITIONER_SOLICITOR_NAME,
         DATETIME_OF_HEARING_CCD_FIELD,
-        COURT_NAME_CCD_FIELD);
+        COURT_NAME);
 
     @Before
     public void setUp() throws CourtDetailsNotFound {
