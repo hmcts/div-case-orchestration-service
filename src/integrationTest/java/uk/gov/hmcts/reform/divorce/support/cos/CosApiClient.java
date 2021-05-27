@@ -221,12 +221,6 @@ public interface CosApiClient {
     Map<String, Object> removeDnOutcomeCaseFlag(@RequestBody CcdCallbackRequest ccdCallbackRequest
     );
 
-    @ApiOperation("Handle callback to remove LA 'Make Decision' fields")
-    @PostMapping(value = "/remove-la-make-decision-fields")
-    Map<String, Object> removeLegalAdvisorMakeDecisionFields(
-        @RequestBody CcdCallbackRequest ccdCallbackRequest
-    );
-
     @ApiOperation("Handle callback for DA about to be granted")
     @PostMapping(value = "/dn-about-to-be-granted")
     CcdCallbackResponse processDnAboutToBeGranted(

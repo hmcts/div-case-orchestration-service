@@ -14,6 +14,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.TYPE_COSTS_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_COSTS_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.context;
 
 public class RemoveLegalAdvisorMakeDecisionFieldsTaskTest {
 
@@ -32,7 +33,7 @@ public class RemoveLegalAdvisorMakeDecisionFieldsTaskTest {
             COSTS_ORDER_ADDITIONAL_INFO_CCD_FIELD, "some text"
         ));
 
-        Map<String, Object> response = classToTest.execute(null, caseData);
+        Map<String, Object> response = classToTest.execute(context(), caseData);
 
         Map<String, Object> expectedMap = new HashMap<>();
         expectedMap.put("anyKey", "anyData");
