@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -21,8 +22,6 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.BULK_CASE_DETAILS_CONTEXT_KEY;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_HEARING_DATE_CCD_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CCD_CASE_DATA_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
@@ -53,8 +52,8 @@ public class SetCourtHearingDetailsFromBulkCaseTaskTest {
         Map<String, Object> bulkCaseDetails = ImmutableMap.of(
                 ID, TEST_CASE_ID,
                 CCD_CASE_DATA_FIELD, ImmutableMap.of(
-                        COURT_NAME_CCD_FIELD, COURT_NAME,
-                        COURT_HEARING_DATE_CCD_FIELD, COURT_HEARING_DATE_TIME
+                CcdFields.COURT_NAME, COURT_NAME,
+                CcdFields.COURT_HEARING_DATE, COURT_HEARING_DATE_TIME
                 ));
 
         context.setTransientObject(BULK_CASE_DETAILS_CONTEXT_KEY, bulkCaseDetails);
@@ -70,7 +69,7 @@ public class SetCourtHearingDetailsFromBulkCaseTaskTest {
         ));
 
         Map<String, Object> expectedResult = ImmutableMap.of(
-            COURT_NAME_CCD_FIELD, COURT_NAME,
+            CcdFields.COURT_NAME, COURT_NAME,
             DATETIME_OF_HEARING_CCD_FIELD, Collections.singletonList(expectedDateTimeCollection)
         );
 
@@ -84,8 +83,8 @@ public class SetCourtHearingDetailsFromBulkCaseTaskTest {
         Map<String, Object> bulkCaseDetails = ImmutableMap.of(
                 ID, TEST_CASE_ID,
                 CCD_CASE_DATA_FIELD, ImmutableMap.of(
-                        COURT_NAME_CCD_FIELD, COURT_NAME,
-                        COURT_HEARING_DATE_CCD_FIELD, COURT_HEARING_DATE_TIME
+                CcdFields.COURT_NAME, COURT_NAME,
+                CcdFields.COURT_HEARING_DATE, COURT_HEARING_DATE_TIME
                 ));
 
         context.setTransientObject(BULK_CASE_DETAILS_CONTEXT_KEY, bulkCaseDetails);
@@ -112,7 +111,7 @@ public class SetCourtHearingDetailsFromBulkCaseTaskTest {
         courtHearings.add(newDateTimeCollection);
 
         Map<String, Object> expectedResult = ImmutableMap.of(
-            COURT_NAME_CCD_FIELD, COURT_NAME,
+            CcdFields.COURT_NAME, COURT_NAME,
             DATETIME_OF_HEARING_CCD_FIELD, courtHearings
         );
 

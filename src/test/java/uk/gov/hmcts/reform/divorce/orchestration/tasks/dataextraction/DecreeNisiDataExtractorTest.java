@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.D8_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_COURT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_JUDGE_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.COURT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_CLAIM_GRANTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATE_OF_HEARING_CCD_FIELD;
@@ -146,7 +146,7 @@ public class DecreeNisiDataExtractorTest {
     @Test
     public void shouldReturnCourtId_ifFullCourtNameIsNotFound() throws TaskException {
         Map<String, Object> caseData = getTestCaseData();
-        caseData.put(COURT_NAME_CCD_FIELD, "invalid-court-name");
+        caseData.put(COURT_NAME, "invalid-court-name");
 
         CaseDetails caseDetails = CaseDetails.builder().caseData(caseData).build();
         Optional<String> transformedCaseData = classUnderTest.mapCaseData(caseDetails);
@@ -161,7 +161,7 @@ public class DecreeNisiDataExtractorTest {
         caseData.put(DN_DECISION_DATE_FIELD, TEST_DN_DECISION_DATE);
 
         caseData.put(DATETIME_OF_HEARING_CCD_FIELD, DATE_TIME_OF_HEARINGS);
-        caseData.put(COURT_NAME_CCD_FIELD, TEST_COURT);
+        caseData.put(COURT_NAME, TEST_COURT);
         caseData.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, TEST_DIVORCE_COSTS_CLAIM_CCD_FIELD);
         caseData.put(WHO_PAYS_COSTS_CCD_FIELD, TEST_WHO_PAYS_COSTS_CCD_FIELD);
         caseData.put(COSTS_CLAIM_GRANTED, TEST_COSTS_CLAIM_GRANTED);

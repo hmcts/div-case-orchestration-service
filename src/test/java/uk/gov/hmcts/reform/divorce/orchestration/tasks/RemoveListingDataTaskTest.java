@@ -18,7 +18,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.COURT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATE_OF_HEARING_CCD_FIELD;
@@ -45,7 +45,7 @@ public class RemoveListingDataTaskTest {
         expectedMap.put("anyKey", "anyData");
 
         Map<String, Object> caseData = ImmutableMap.of("anyKey", "anyData",
-                COURT_NAME_CCD_FIELD, "Court",
+            COURT_NAME, "Court",
                 BULK_LISTING_CASE_ID_FIELD,"caseLink",
                 PRONOUNCEMENT_JUDGE_CCD_FIELD, "Judge Name",
                 DATETIME_OF_HEARING_CCD_FIELD, courtHearingDates);

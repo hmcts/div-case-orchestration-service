@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import uk.gov.hmcts.reform.bsp.common.model.document.Addressee;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.bulk.print.CoECoverLetter;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.courts.DnCourt;
 import uk.gov.hmcts.reform.divorce.orchestration.exception.CourtDetailsNotFound;
@@ -25,7 +26,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETIT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.CO_RESPONDENT_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.CO_RESPONDENT_SOLICITORS_EXPECTED_NAME;
@@ -128,7 +128,7 @@ public class CoECoRespondentCoverLetterGenerationTaskTest extends BasePayloadSpe
         when(courtLookupService.getDnCourtByKey(invalidCourtLocation)).thenThrow(CourtDetailsNotFound.class);
 
         Map<String, Object> caseData = buildCaseDataCoRespondentNotRepresented();
-        caseData.put(COURT_NAME_CCD_FIELD, invalidCourtLocation);
+        caseData.put(CcdFields.COURT_NAME, invalidCourtLocation);
 
         coECoRespondentCoverLetterGenerationTask.execute(context, caseData);
     }
@@ -151,7 +151,7 @@ public class CoECoRespondentCoverLetterGenerationTaskTest extends BasePayloadSpe
         caseData.put(RESPONDENT_FIRST_NAME, TEST_RESPONDENT_FIRST_NAME);
         caseData.put(RESPONDENT_LAST_NAME, TEST_RESPONDENT_LAST_NAME);
 
-        caseData.put(COURT_NAME_CCD_FIELD, COURT_LOCATION);
+        caseData.put(CcdFields.COURT_NAME, COURT_LOCATION);
         caseData.put(DATETIME_OF_HEARING_CCD_FIELD, createHearingDatesList());
 
         return caseData;
