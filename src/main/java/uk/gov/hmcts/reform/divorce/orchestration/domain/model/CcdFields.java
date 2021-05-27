@@ -109,9 +109,6 @@ public class CcdFields {
 
     public static final String COURT_NAME = "CourtName";
     public static final String COURT_HEARING_DATE = "hearingDate";
-  
-    public static final String DN_OUTCOME_FLAG = "DnOutcomeCase";
 
-    public static final String COURT_NAME = "CourtName";
-    public static final String COURT_HEARING_DATE = "hearingDate";
+    public static final String DN_OUTCOME_FLAG = "DnOutcomeCase";
 }
