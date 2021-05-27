@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.SearchResult;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -27,7 +28,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_DECISION_DATE_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_OUTCOME_FLAG_CCD_FIELD;
 
 @Component
 public class SearchAwaitingPronouncementCases implements Task<Map<String, Object>> {
@@ -35,7 +35,7 @@ public class SearchAwaitingPronouncementCases implements Task<Map<String, Object
     private static final String DATA = "data.%s";
     private static final String HEARING_DATE = String.format(DATA, DATETIME_OF_HEARING_CCD_FIELD);
     private static final String BULK_LISTING_CASE_ID = String.format(DATA, BULK_LISTING_CASE_ID_FIELD);
-    private static final String IS_DN_OUTCOME_CASE = String.format(DATA, DN_OUTCOME_FLAG_CCD_FIELD);
+    private static final String IS_DN_OUTCOME_CASE = String.format(DATA, CcdFields.DN_OUTCOME_FLAG);
     private static final String DN_DECISION_DATE_DATA_FIELD = String.format(DATA, DN_DECISION_DATE_FIELD);
 
     @Value("${bulk-action.page-size:50}")
