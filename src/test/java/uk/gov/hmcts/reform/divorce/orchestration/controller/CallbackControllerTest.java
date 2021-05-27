@@ -1911,4 +1911,16 @@ public class CallbackControllerTest {
         assertThat(response.getStatusCode(), equalTo(OK));
     }
 
+    @Test
+    public void shouldCallRemoveLegalAdvisorMakeDecisionFields() throws Exception {
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder().build())
+            .build();
+
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest
+            .removeLegalAdvisorMakeDecisionFields(ccdCallbackRequest);
+
+        verify(caseOrchestrationService).removeLegalAdvisorMakeDecisionFields(ccdCallbackRequest);
+        assertThat(response.getStatusCode(), equalTo(OK));
+    }
 }
