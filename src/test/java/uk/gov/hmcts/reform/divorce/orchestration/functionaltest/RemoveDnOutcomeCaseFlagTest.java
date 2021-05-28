@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 
 import java.util.Map;
@@ -18,7 +17,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
@@ -32,7 +30,7 @@ public class RemoveDnOutcomeCaseFlagTest extends MockedFunctionalTest {
     @Test
     public void givenCase_whenRemoveDnOutcomeCaseFlag_thenFlagIsRemovedFromCase() throws Exception {
         Map<String, Object> caseData = ImmutableMap.of("DnOutcomeCase", TEST_CODE);
-        CcdCallbackRequest ccdCallbackRequest = buildRequest(caseData);
+        CcdCallbackRequest ccdCallbackRequest = getCcdCallbackRequest(caseData);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -43,14 +41,5 @@ public class RemoveDnOutcomeCaseFlagTest extends MockedFunctionalTest {
                 isJson(),
                 hasNoJsonPath("$.data.DnOutcomeCase")
             )));
-    }
-
-    private CcdCallbackRequest buildRequest(Map<String, Object> caseData) {
-        return CcdCallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .caseId(TEST_CASE_ID)
-                .caseData(caseData)
-                .build())
-            .build();
     }
 }

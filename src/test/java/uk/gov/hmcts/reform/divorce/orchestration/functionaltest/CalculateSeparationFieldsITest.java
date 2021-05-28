@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.utils.DateUtils;
@@ -34,6 +33,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.Divor
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class CalculateSeparationFieldsITest extends MockedFunctionalTest {
+
     private static final String API_URL = "/calculate-separation-fields";
 
     @Autowired
@@ -56,11 +56,7 @@ public class CalculateSeparationFieldsITest extends MockedFunctionalTest {
         expectedData.put(D_8_SEP_REF_DATE, pastDate5Yrs6Mnths);
         expectedData.put(SEP_YEARS, "5");
 
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .caseData(testCaseData)
-                .build())
-            .build();
+        CcdCallbackRequest ccdCallbackRequest = getCcdCallbackRequest(testCaseData);
 
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
             .data(expectedData)
@@ -78,11 +74,7 @@ public class CalculateSeparationFieldsITest extends MockedFunctionalTest {
     public void shouldReturnErrorWhenNoReasonForDivorce() throws Exception {
         webClient.perform(post(API_URL)
             .content(
-                convertObjectToJsonString(
-                    CcdCallbackRequest.builder()
-                        .caseDetails(CaseDetails.builder().caseData(Collections.emptyMap()).build())
-                        .build()
-                )
+                convertObjectToJsonString(getCcdCallbackRequest(Collections.emptyMap()))
             )
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))

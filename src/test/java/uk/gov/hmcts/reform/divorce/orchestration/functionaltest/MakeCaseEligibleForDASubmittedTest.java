@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 
@@ -79,12 +78,7 @@ public class MakeCaseEligibleForDASubmittedTest extends MockedFunctionalTest {
         caseData.put(PETITIONER_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
         caseData.put(PETITIONER_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL);
 
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .caseId(TEST_CASE_ID)
-                .caseData(caseData)
-                .build())
-            .build();
+        CcdCallbackRequest ccdCallbackRequest = getCcdCallbackRequest(caseData);
 
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
             .data(caseData)
@@ -128,12 +122,7 @@ public class MakeCaseEligibleForDASubmittedTest extends MockedFunctionalTest {
         caseData.put(D_8_PETITIONER_EMAIL, TEST_PETITIONER_EMAIL);
         caseData.put(D_8_CASE_REFERENCE, TEST_CASE_FAMILY_MAN_ID);
 
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .caseId(TEST_CASE_ID)
-                .caseData(caseData)
-                .build())
-            .build();
+        CcdCallbackRequest ccdCallbackRequest = getCcdCallbackRequest(caseData);
 
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
             .data(caseData)
@@ -174,12 +163,7 @@ public class MakeCaseEligibleForDASubmittedTest extends MockedFunctionalTest {
         caseData.put(RESP_LAST_NAME_CCD_FIELD, TEST_RESPONDENT_LAST_NAME);
         caseData.put(PETITIONER_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
 
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .caseId(TEST_CASE_ID)
-                .caseData(caseData)
-                .build())
-            .build();
+        CcdCallbackRequest ccdCallbackRequest = getCcdCallbackRequest(caseData);
 
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
             .data(caseData)

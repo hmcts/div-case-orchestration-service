@@ -8,7 +8,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.service.TemplateConfigService;
@@ -99,6 +98,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctionalTest {
 
     private static final String API_URL = "/aos-submitted";
+
     private static final String SOL_APPLICANT_AOS_RECEIVED_TEMPLATE_ID = "162ffa54-b008-470e-92b2-a3f2ecb6d30c";
     private static final String DEFENDED_DIVORCE_EMAIL_TEMPLATE_ID = "eac41143-b296-4879-ba60-a0ea6f97c757";
     private static final String UNDEFENDED_DIVORCE_EMAIL_TEMPLATE_ID = "277fd3f3-2fdb-4c79-9354-1b3db8d44cca";
@@ -321,13 +321,7 @@ public class RespondentAOSSubmissionNotificationEmailITest extends MockedFunctio
 
     @Test
     public void testEmailCanBeSentToPetitionerSolicitor_ForUndefendedDivorce() throws Exception {
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
-            .caseDetails(
-                CaseDetails.builder()
-                    .caseId(TEST_CASE_ID)
-                    .caseData(buildCaseDataForPetSolicitor())
-                    .build()
-            ).build();
+        CcdCallbackRequest ccdCallbackRequest = getCcdCallbackRequest(buildCaseDataForPetSolicitor());
 
         CcdCallbackResponse expected = CcdCallbackResponse.builder()
             .data(ccdCallbackRequest.getCaseDetails().getCaseData())

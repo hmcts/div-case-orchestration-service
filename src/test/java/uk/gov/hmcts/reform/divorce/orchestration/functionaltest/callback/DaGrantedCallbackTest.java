@@ -14,8 +14,6 @@ import uk.gov.hmcts.reform.divorce.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
 import uk.gov.hmcts.reform.divorce.orchestration.service.BulkPrintService;
@@ -151,11 +149,7 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(convertObjectToJsonString(
-                CcdCallbackRequest.builder()
-                    .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build())
-                    .build()
-            ))
+            .content(convertObjectToJsonString(getCcdCallbackRequest(caseData)))
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
@@ -194,11 +188,7 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(convertObjectToJsonString(
-                CcdCallbackRequest.builder()
-                    .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build())
-                    .build()
-            ))
+            .content(convertObjectToJsonString(getCcdCallbackRequest(caseData)))
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
@@ -243,11 +233,7 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(convertObjectToJsonString(
-                CcdCallbackRequest.builder()
-                    .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build())
-                    .build()
-            ))
+            .content(convertObjectToJsonString(getCcdCallbackRequest(caseData)))
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
@@ -276,11 +262,7 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(convertObjectToJsonString(
-                CcdCallbackRequest.builder()
-                    .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build())
-                    .build()
-            ))
+            .content(convertObjectToJsonString(getCcdCallbackRequest(caseData)))
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
@@ -304,11 +286,7 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(convertObjectToJsonString(
-                CcdCallbackRequest.builder()
-                    .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build())
-                    .build()
-            ))
+            .content(convertObjectToJsonString(getCcdCallbackRequest(caseData)))
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
@@ -335,11 +313,7 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(convertObjectToJsonString(
-                CcdCallbackRequest.builder()
-                    .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build())
-                    .build()
-            ))
+            .content(convertObjectToJsonString(getCcdCallbackRequest(caseData)))
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
@@ -361,11 +335,7 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(convertObjectToJsonString(
-                CcdCallbackRequest.builder()
-                    .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build())
-                    .build()
-            ))
+            .content(convertObjectToJsonString(getCcdCallbackRequest(caseData)))
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().string(hasJsonPath("$.errors", hasItem("This has failed."))));
@@ -383,11 +353,7 @@ public class DaGrantedCallbackTest extends MockedFunctionalTest {
     @Test
     public void givenAuthHeaderIsNull_whenEndpointInvoked_thenReturnBadRequest() throws Exception {
         webClient.perform(post(API_URL)
-            .content(convertObjectToJsonString(
-                CcdCallbackRequest.builder()
-                    .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(BASE_CASE_DATA).build())
-                    .build()
-            ))
+            .content(convertObjectToJsonString(getCcdCallbackRequest(BASE_CASE_DATA)))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());

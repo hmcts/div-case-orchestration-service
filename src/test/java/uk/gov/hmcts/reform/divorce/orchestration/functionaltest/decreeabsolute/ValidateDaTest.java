@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
 
@@ -21,7 +20,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.APPLY_FOR_DA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -33,9 +31,7 @@ public class ValidateDaTest extends MockedFunctionalTest {
 
     private static final Map<String, Object> caseData = new HashMap<>(ImmutableMap.of(APPLY_FOR_DA, YES_VALUE));
 
-    private static final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
-        .caseDetails(CaseDetails.builder().caseData(caseData).caseId(TEST_CASE_ID).build())
-        .build();
+    private static final CcdCallbackRequest ccdCallbackRequest = getCcdCallbackRequest(caseData);
 
     @Autowired
     private MockMvc webClient;
