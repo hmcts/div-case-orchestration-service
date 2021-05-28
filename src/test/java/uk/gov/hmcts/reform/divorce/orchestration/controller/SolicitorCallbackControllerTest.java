@@ -19,9 +19,11 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.SolicitorService;
 import java.util.Collections;
 import java.util.Map;
 
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
@@ -38,6 +40,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DynamicList.asDynamicList;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.ccdRequestWithData;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.ccdResponseWithData;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.responseWithData;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SolicitorCallbackControllerTest {
@@ -51,9 +54,7 @@ public class SolicitorCallbackControllerTest {
     @Test
     public void whenIssuePersonalServicePack_thenProceedAsExpected() throws WorkflowException {
         final Map<String, Object> divorceSession = Collections.singletonMap("key", "value");
-        CcdCallbackRequest request = CcdCallbackRequest.builder()
-                .caseDetails(CaseDetails.builder().caseData(divorceSession).build())
-                .build();
+        CcdCallbackRequest request = ccdRequestWithData(divorceSession);
 
         when(solicitorService.validateForPersonalServicePack(request, AUTH_TOKEN))
                 .thenReturn(divorceSession);
@@ -70,9 +71,7 @@ public class SolicitorCallbackControllerTest {
     @Test
     public void whenExceptionIsThrown_thenCatchAndProceedAsExpected() throws WorkflowException {
         final Map<String, Object> divorceSession = Collections.singletonMap("key", "value");
-        CcdCallbackRequest request = CcdCallbackRequest.builder()
-                .caseDetails(CaseDetails.builder().caseData(divorceSession).build())
-                .build();
+        CcdCallbackRequest request = ccdRequestWithData(divorceSession);
 
         when(solicitorService.validateForPersonalServicePack(request, AUTH_TOKEN))
                 .thenThrow(new RuntimeException("test"));
@@ -88,11 +87,11 @@ public class SolicitorCallbackControllerTest {
 
     @Test
     public void testServiceMethodIsCalled_WhenSendSolicitorPersonalServiceEmail() throws WorkflowException {
-        when(solicitorService.sendSolicitorPersonalServiceEmail(any())).thenReturn(singletonMap("returnedKey", "returnedValue"));
+        when(solicitorService.sendSolicitorPersonalServiceEmail(any()))
+            .thenReturn(singletonMap("returnedKey", "returnedValue"));
 
-        CcdCallbackRequest callbackRequest = CcdCallbackRequest.builder()
-            .caseDetails(CaseDetails.builder().caseData(singletonMap("incomingKey", "incomingValue")).build())
-            .build();
+        CcdCallbackRequest callbackRequest = ccdRequestWithData(singletonMap("incomingKey", "incomingValue"));
+
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.sendSolicitorPersonalServiceEmail(callbackRequest);
 
         assertThat(response.getStatusCode(), CoreMatchers.is(OK));
@@ -107,7 +106,7 @@ public class SolicitorCallbackControllerTest {
             PBA_NUMBERS, asDynamicList(ImmutableList.of("pbaNumber1", "pbaNumber2"))
         );
 
-        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseDataReturnedFromService).build();
+        CcdCallbackResponse expectedResponse = responseWithData(caseDataReturnedFromService);
 
         whenRetrievePbaNumbersExpect(expectedResponse, caseDataReturnedFromService);
     }
@@ -118,8 +117,7 @@ public class SolicitorCallbackControllerTest {
             SOLICITOR_HOW_TO_PAY_JSON_KEY, "NotByAccount"
         );
 
-        CcdCallbackResponse expectedResponse = ccdResponseWithData(caseDataReturnedFromService);
-
+        final CcdCallbackResponse expectedResponse = ccdResponseWithData(caseDataReturnedFromService);
         final CcdCallbackRequest ccdCallbackRequest = ccdRequestWithData(caseDataReturnedFromService);
 
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.retrievePbaNumbers(AUTH_TOKEN, ccdCallbackRequest);
@@ -143,17 +141,31 @@ public class SolicitorCallbackControllerTest {
     }
 
     @Test
-    public void testServiceMethodIsCalled_WhenSolicitorConfirmPersonalService() throws WorkflowException {
+    public void serviceMethodIsCalled_whenSolicitorConfirmPersonalService() throws WorkflowException {
         when(solicitorService.solicitorConfirmPersonalService(any())).thenReturn(singletonMap("testKey", "testValue"));
 
-        CcdCallbackRequest callbackRequest = CcdCallbackRequest.builder()
-            .caseDetails(CaseDetails.builder().caseData(singletonMap("testKey", "testValue")).build())
-            .build();
+        CcdCallbackRequest callbackRequest = ccdRequestWithData(singletonMap("testKey", "testValue"));
         ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorConfirmPersonalService(callbackRequest);
 
         assertThat(response.getStatusCode(), CoreMatchers.is(OK));
         assertThat(response.getBody().getData(), hasEntry("testKey", "testValue"));
         verify(solicitorService).solicitorConfirmPersonalService(callbackRequest);
+    }
+
+    @Test
+    public void errorIsReturned_whenSolicitorConfirmPersonalService() throws WorkflowException {
+        String errorMsg = "error";
+        when(solicitorService.solicitorConfirmPersonalService(any())).thenThrow(new WorkflowException(errorMsg));
+
+        CcdCallbackRequest callbackRequest = ccdRequestWithData(emptyMap());
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.solicitorConfirmPersonalService(callbackRequest);
+
+        assertThat(response.getStatusCode(), CoreMatchers.is(OK));
+        assertThat(response.getBody().getErrors(), hasSize(1));
+        assertThat(
+            response.getBody().getErrors().get(0),
+            is("Failed to validate for solicitor confirm personal service - " + errorMsg)
+        );
     }
 
     private void whenRetrievePbaNumbersExpect(CcdCallbackResponse expectedResponse, Map<String, Object> caseData) throws WorkflowException {
