@@ -50,6 +50,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class RetrievePbaNumbersITest extends IdamTestSupport {
 
     private static final String API_URL = "/retrieve-pba-numbers";
+
     private static final String RETRIEVE_PBA_NUMBERS_URL = "/refdata/external/v1/organisations/pbas?email=testRespondentSolicitor%40email.com";
 
     @Autowired
@@ -128,7 +129,6 @@ public class RetrievePbaNumbersITest extends IdamTestSupport {
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
     }
-
 
     private void stubRetrievePbaNumbersEndpoint(HttpStatus status, PBAOrganisationResponse response) {
         pbaValidationServer.stubFor(WireMock.get(urlEqualTo(RETRIEVE_PBA_NUMBERS_URL))

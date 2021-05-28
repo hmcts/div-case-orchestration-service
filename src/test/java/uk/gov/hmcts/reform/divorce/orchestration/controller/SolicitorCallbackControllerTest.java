@@ -106,7 +106,7 @@ public class SolicitorCallbackControllerTest {
             PBA_NUMBERS, asDynamicList(ImmutableList.of("pbaNumber1", "pbaNumber2"))
         );
 
-        CcdCallbackResponse expectedResponse = responseWithData(caseDataReturnedFromService);
+        CcdCallbackResponse expectedResponse = CcdCallbackResponse.builder().data(caseDataReturnedFromService).build();
 
         whenRetrievePbaNumbersExpect(expectedResponse, caseDataReturnedFromService);
     }
