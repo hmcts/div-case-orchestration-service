@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
@@ -18,6 +17,7 @@ import java.util.Collections;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalToJson;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
+import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.hasItem;
@@ -46,11 +46,7 @@ public class GenerateCoRespondentAnswersITest extends MockedFunctionalTest {
 
     @Test
     public void givenValidRequest_whenGenerateCoRespondentAnswers_thenReturnDocumentData() throws Exception {
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .caseData(Collections.emptyMap())
-                .build())
-            .build();
+        CcdCallbackRequest ccdCallbackRequest = getCcdCallbackRequest(emptyMap());
 
         stubDocumentGeneratorService(CO_RESPONDENT_ANSWERS_TEMPLATE_NAME,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequest.getCaseDetails()),
@@ -71,11 +67,7 @@ public class GenerateCoRespondentAnswersITest extends MockedFunctionalTest {
 
     @Test
     public void givenInvalidRequest_whenGenerateCoRespondentAnswers_thenReturnErrors() throws Exception {
-        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .caseData(Collections.emptyMap())
-                .build())
-            .build();
+        CcdCallbackRequest ccdCallbackRequest = getCcdCallbackRequest(Collections.emptyMap());
 
         final GenerateDocumentRequest generateCoRespondentAnswersRequest =
             GenerateDocumentRequest.builder()

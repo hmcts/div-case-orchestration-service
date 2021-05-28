@@ -7,7 +7,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
@@ -147,6 +146,7 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
         caseDataWithRespSolEmail.put(D8_RESPONDENT_SOLICITOR_NAME, TEST_RESP_SOLICITOR_NAME);
         caseDataWithRespSolEmail.put(RESPONDENT_SOLICITOR_EMAIL_ADDRESS, TEST_RESP_SOLICITOR_EMAIL);
         caseDataWithRespSolEmail.remove(RESPONDENT_EMAIL_ADDRESS);
+
         return caseDataWithRespSolEmail;
     }
 
@@ -227,17 +227,6 @@ public class DecreeAbsoluteRequestedRespondentNotificationTest extends MockedFun
 
     private void setRespondentJourneyFeatureToggleOff() {
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(false);
-    }
-
-    private CcdCallbackRequest getCcdCallbackRequest(Map<String, Object> caseData) {
-        return CcdCallbackRequest.builder()
-            .caseDetails(
-                CaseDetails.builder()
-                    .caseId(TEST_CASE_ID)
-                    .caseData(caseData)
-                    .build()
-            )
-            .build();
     }
 
     private void verifyEmailWasSentToPetSol() throws Exception {

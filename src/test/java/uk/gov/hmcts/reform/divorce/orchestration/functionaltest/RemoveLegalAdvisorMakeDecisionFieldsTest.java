@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 
 import java.util.HashMap;
@@ -21,7 +20,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_ADDITIONAL_INFO_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
@@ -32,6 +30,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 public class RemoveLegalAdvisorMakeDecisionFieldsTest extends MockedFunctionalTest {
 
     private static final String API_URL = "/remove-la-make-decision-fields";
+
     public static final String THIS_FIELD_WILL_BE_RETURNED = "this-field-will-be-returned";
 
     @Autowired
@@ -47,7 +46,7 @@ public class RemoveLegalAdvisorMakeDecisionFieldsTest extends MockedFunctionalTe
             COSTS_ORDER_ADDITIONAL_INFO_CCD_FIELD, "some text"
         ));
         caseData.put(THIS_FIELD_WILL_BE_RETURNED, "some text");
-        CcdCallbackRequest ccdCallbackRequest = buildRequest(caseData);
+        CcdCallbackRequest ccdCallbackRequest = getCcdCallbackRequest(caseData);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -69,14 +68,5 @@ public class RemoveLegalAdvisorMakeDecisionFieldsTest extends MockedFunctionalTe
 
     private Matcher<? super Object> assertThereIsNoFieldReturned(String field) {
         return hasNoJsonPath("$.data." + field);
-    }
-
-    private CcdCallbackRequest buildRequest(Map<String, Object> caseData) {
-        return CcdCallbackRequest.builder()
-            .caseDetails(CaseDetails.builder()
-                .caseId(TEST_CASE_ID)
-                .caseData(caseData)
-                .build())
-            .build();
     }
 }

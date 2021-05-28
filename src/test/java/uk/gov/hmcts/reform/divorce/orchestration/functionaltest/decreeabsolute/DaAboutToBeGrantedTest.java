@@ -8,7 +8,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
@@ -70,9 +69,7 @@ public class DaAboutToBeGrantedTest extends MockedFunctionalTest {
         .put(DECREE_ABSOLUTE_GRANTED_DATE_CCD_FIELD, TEST_DECREE_ABSOLUTE_GRANTED_DATE)
         .build();
 
-    private static final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
-        .caseDetails(CaseDetails.builder().caseData(CASE_DATA).caseId(TEST_CASE_ID).build())
-        .build();
+    private static final CcdCallbackRequest ccdCallbackRequest = getCcdCallbackRequest(CASE_DATA);
 
     @Autowired
     private MockMvc webClient;

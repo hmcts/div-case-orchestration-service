@@ -314,11 +314,7 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(convertObjectToJsonString(
-                CcdCallbackRequest.builder()
-                    .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build())
-                    .build()
-            ))
+            .content(convertObjectToJsonString(getCcdCallbackRequest(caseData)))
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
@@ -382,11 +378,7 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(convertObjectToJsonString(
-                CcdCallbackRequest.builder()
-                    .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build())
-                    .build()
-            ))
+            .content(convertObjectToJsonString(getCcdCallbackRequest(caseData)))
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
@@ -423,11 +415,7 @@ public class DnPronouncedNotificationTest extends MockedFunctionalTest {
         Map<String, Object> baseCaseData = buildCaseDataForEmailNotifications(ImmutableMap.<String, Object>builder().build());
 
         webClient.perform(post(API_URL)
-            .content(convertObjectToJsonString(
-                CcdCallbackRequest.builder()
-                    .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(baseCaseData).build())
-                    .build()
-            ))
+            .content(convertObjectToJsonString(getCcdCallbackRequest(baseCaseData)))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
