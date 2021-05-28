@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.documentgeneration.GenerateDocumentRequest;
@@ -34,6 +35,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
 public class GenerateCoRespondentAnswersITest extends MockedFunctionalTest {
+
     private static final String API_URL = "/co-respondent-generate-answers";
 
     private static final String GENERATE_DOCUMENT_CONTEXT_PATH = "/version/1/generatePDF";
@@ -46,11 +48,15 @@ public class GenerateCoRespondentAnswersITest extends MockedFunctionalTest {
 
     @Test
     public void givenValidRequest_whenGenerateCoRespondentAnswers_thenReturnDocumentData() throws Exception {
-        CcdCallbackRequest ccdCallbackRequest = getCcdCallbackRequest(emptyMap());
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder().caseData(Collections.emptyMap()).build())
+            .build();
 
-        stubDocumentGeneratorService(CO_RESPONDENT_ANSWERS_TEMPLATE_NAME,
+        stubDocumentGeneratorService(
+            CO_RESPONDENT_ANSWERS_TEMPLATE_NAME,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, ccdCallbackRequest.getCaseDetails()),
-            DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS);
+            DOCUMENT_TYPE_CO_RESPONDENT_ANSWERS
+        );
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -67,7 +73,9 @@ public class GenerateCoRespondentAnswersITest extends MockedFunctionalTest {
 
     @Test
     public void givenInvalidRequest_whenGenerateCoRespondentAnswers_thenReturnErrors() throws Exception {
-        CcdCallbackRequest ccdCallbackRequest = getCcdCallbackRequest(Collections.emptyMap());
+        CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
+            .caseDetails(CaseDetails.builder().caseData(Collections.emptyMap()).build())
+            .build();
 
         final GenerateDocumentRequest generateCoRespondentAnswersRequest =
             GenerateDocumentRequest.builder()
