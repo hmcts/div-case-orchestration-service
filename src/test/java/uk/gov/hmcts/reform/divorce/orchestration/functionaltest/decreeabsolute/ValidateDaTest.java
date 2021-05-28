@@ -3,12 +3,10 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.decreeabsolute;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
-import uk.gov.hmcts.reform.divorce.orchestration.service.EmailService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,9 +35,6 @@ public class ValidateDaTest extends MockedFunctionalTest {
 
     @Autowired
     private MockMvc webClient;
-
-    @MockBean
-    private EmailService mockEmailService;
 
     @Test
     public void shouldReturnSuccessWhenApplyForDaIsYes() throws Exception {

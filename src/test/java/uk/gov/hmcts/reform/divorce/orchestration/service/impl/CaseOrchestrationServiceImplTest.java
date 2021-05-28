@@ -1803,9 +1803,8 @@ public class CaseOrchestrationServiceImplTest {
                 .caseId(TEST_CASE_ID)
                 .build()).build();
 
-        when(removeLinkFromListedWorkflow.run(request.getCaseDetails().getCaseData())).thenReturn(caseData);
+        when(removeLinkFromListedWorkflow.run(request.getCaseDetails())).thenReturn(caseData);
         classUnderTest.removeBulkLink(request);
-
 
         Map<String, Object> response = classUnderTest.removeBulkListed(request);
         assertThat(response, is(caseData));
