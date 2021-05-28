@@ -40,7 +40,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DynamicList.asDynamicList;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.ccdRequestWithData;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.ccdResponseWithData;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.responseWithData;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SolicitorCallbackControllerTest {
