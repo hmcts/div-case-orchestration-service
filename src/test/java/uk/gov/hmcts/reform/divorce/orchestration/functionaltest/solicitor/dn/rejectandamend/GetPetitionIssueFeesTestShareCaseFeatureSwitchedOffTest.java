@@ -23,7 +23,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOL_APPLICATION_FEE_IN_POUNDS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
-@SpringBootTest(properties = {"feature-toggle.toggle.share_a_case=false"})
+@SpringBootTest(properties = {"feature-toggle.toggle.share_a_case=false", "feature-toggle.toggle.use_user_token=true"})
 public class GetPetitionIssueFeesTestShareCaseFeatureSwitchedOffTest extends GetPetitionIssueFeesAbstractTest {
 
     @Test

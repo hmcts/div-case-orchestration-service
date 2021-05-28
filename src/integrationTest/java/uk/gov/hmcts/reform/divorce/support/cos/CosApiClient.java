@@ -25,7 +25,7 @@ import java.util.Map;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_AUTHORIZATION_HEADER;
+import static uk.gov.hmcts.reform.divorce.orchestration.config.SpecificHttpHeaders.SERVICE_AUTHORIZATION;
 
 @FeignClient(name = "case-orchestration-api", url = "${case.orchestration.service.base.uri}",
     configuration = ServiceContextConfiguration.class)
@@ -221,12 +221,6 @@ public interface CosApiClient {
     Map<String, Object> removeDnOutcomeCaseFlag(@RequestBody CcdCallbackRequest ccdCallbackRequest
     );
 
-    @ApiOperation("Handle callback to remove LA 'Make Decision' fields")
-    @PostMapping(value = "/remove-la-make-decision-fields")
-    Map<String, Object> removeLegalAdvisorMakeDecisionFields(
-        @RequestBody CcdCallbackRequest ccdCallbackRequest
-    );
-
     @ApiOperation("Handle callback for DA about to be granted")
     @PostMapping(value = "/dn-about-to-be-granted")
     CcdCallbackResponse processDnAboutToBeGranted(
@@ -255,7 +249,7 @@ public interface CosApiClient {
     @ApiOperation("Validate bulk scanned fields")
     @PostMapping(value = "/forms/{form-type}/validate-ocr")
     SuccessfulUpdateResponse validateBulkScannedFields(
-        @RequestHeader(SERVICE_AUTHORIZATION_HEADER) String s2sAuthToken,
+        @RequestHeader(SERVICE_AUTHORIZATION) String s2sAuthToken,
         @PathVariable("form-type") String formType,
         @RequestBody OcrDataValidationRequest request
     );
@@ -263,14 +257,14 @@ public interface CosApiClient {
     @ApiOperation("Transform bulk scanned fields to CCD format")
     @PostMapping(value = "/transform-exception-record")
     SuccessfulTransformationResponse transformBulkScannedFields(
-        @RequestHeader(SERVICE_AUTHORIZATION_HEADER) String s2sAuthToken,
+        @RequestHeader(SERVICE_AUTHORIZATION) String s2sAuthToken,
         @RequestBody ExceptionRecord exceptionRecord
     );
 
     @ApiOperation("Transform bulk scanned fields to CCD format for updating case")
     @PostMapping(value = "/update-case")
     SuccessfulUpdateResponse transformBulkScannedFieldsForUpdatingCase(
-        @RequestHeader(SERVICE_AUTHORIZATION_HEADER) String s2sAuthToken,
+        @RequestHeader(SERVICE_AUTHORIZATION) String s2sAuthToken,
         @RequestBody BulkScanCaseUpdateRequest request
     );
 

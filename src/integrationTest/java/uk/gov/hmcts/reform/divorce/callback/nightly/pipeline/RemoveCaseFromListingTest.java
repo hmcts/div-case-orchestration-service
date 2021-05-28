@@ -26,9 +26,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_JUDGE
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.BULK_CASE_ACCEPTED_LIST_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_LIST_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_REFERENCE_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CREATE_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.LISTED_EVENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.COURT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_LIST_FOR_PRONOUNCEMENT_FILE_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.util.ResourceLoader.objectToJson;
@@ -105,13 +105,13 @@ public class RemoveCaseFromListingTest extends CcdSubmissionSupport {
         await().pollInterval(POOL_INTERVAL_IN_MILLIS, MILLISECONDS)
             .atMost(MAX_WAITING_TIME_IN_SECONDS, SECONDS)
             .untilAsserted(() -> Assertions.assertThat(
-                    retrieveCaseForCaseworker(user, caseId).getData().get(COURT_NAME_CCD_FIELD)).isNotNull());
+                    retrieveCaseForCaseworker(user, caseId).getData().get(COURT_NAME)).isNotNull());
     }
 
     private void validateCaseWithAwaitingTime(UserDetails user, String caseId) {
         await().pollInterval(POOL_INTERVAL_IN_MILLIS, MILLISECONDS)
             .atMost(MAX_WAITING_TIME_IN_SECONDS, SECONDS)
             .untilAsserted(() -> Assertions.assertThat(
-                retrieveCaseForCaseworker(user, caseId).getData().get(COURT_NAME_CCD_FIELD)).isNull());
+                retrieveCaseForCaseworker(user, caseId).getData().get(COURT_NAME)).isNull());
     }
 }

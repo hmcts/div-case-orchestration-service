@@ -39,7 +39,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.COURT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
@@ -140,7 +140,7 @@ public class MultipleDocumentGenerationTaskTest {
     @Test
     public void callsDocumentGeneratorAndStoresGeneratedDocumentWithDnCourtDetails() throws TaskException {
         Map<String, Object> dnCourtDetails = ImmutableMap.of(
-            COURT_NAME_CCD_FIELD, "TestCourt",
+            COURT_NAME, "TestCourt",
             COURT_CONTACT_JSON_KEY, "TestContact"
         );
         taskContext.setTransientObject(DN_COURT_DETAILS, dnCourtDetails);

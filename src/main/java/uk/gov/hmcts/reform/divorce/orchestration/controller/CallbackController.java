@@ -48,7 +48,7 @@ import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTHORIZATION_HEADER;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_PRINT_ERROR_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_LIST_FOR_PRONOUNCEMENT_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_LIST_FOR_PRONOUNCEMENT_FILE_NAME;
@@ -111,7 +111,7 @@ public class CallbackController {
         @ApiResponse(code = 401, message = "User Not Authenticated"),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> dnSubmitted(
-        @RequestHeader(AUTHORIZATION_HEADER)
+        @RequestHeader(AUTHORIZATION)
         @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return ResponseEntity.ok(caseOrchestrationService.dnSubmitted(ccdCallbackRequest, authorizationToken));
@@ -136,7 +136,7 @@ public class CallbackController {
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> dnPronounced(
-        @RequestHeader(value = AUTHORIZATION_HEADER)
+        @RequestHeader(value = AUTHORIZATION)
         @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
@@ -175,7 +175,7 @@ public class CallbackController {
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> getPetitionIssueFees(
-        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return ResponseEntity.ok(caseOrchestrationService.setOrderSummaryAssignRole(ccdCallbackRequest, authorizationToken));
     }
@@ -188,7 +188,7 @@ public class CallbackController {
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> processPbaPayment(
-        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
         log.info("About to process PBA payment for case id {}", ccdCallbackRequest.getCaseDetails().getCaseId());
@@ -218,7 +218,7 @@ public class CallbackController {
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> solicitorCreate(
-        @RequestHeader(value = AUTHORIZATION_HEADER, required = false) String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION, required = false) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
         return ResponseEntity.ok(CcdCallbackResponse.builder()
             .data(caseOrchestrationService.solicitorCreate(ccdCallbackRequest, authorizationToken))
@@ -232,7 +232,7 @@ public class CallbackController {
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> solicitorUpdate(
-        @RequestHeader(value = AUTHORIZATION_HEADER, required = false) String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION, required = false) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
         return ResponseEntity.ok(CcdCallbackResponse.builder()
             .data(caseOrchestrationService.solicitorUpdate(ccdCallbackRequest, authorizationToken))
@@ -246,7 +246,7 @@ public class CallbackController {
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> solicitorAmendPetitionForRefusal(
-        @RequestHeader(value = AUTHORIZATION_HEADER, required = false) String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION, required = false) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return ResponseEntity.ok(CcdCallbackResponse.builder()
             .data(caseOrchestrationService.solicitorAmendPetitionForRefusal(ccdCallbackRequest, authorizationToken))
@@ -260,7 +260,7 @@ public class CallbackController {
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> respondentAOSSubmitted(
-        @RequestHeader(value = AUTHORIZATION_HEADER, required = false) String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION, required = false) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         log.info("/aos-submitted endpoint called for caseId {}", caseId);
@@ -340,7 +340,7 @@ public class CallbackController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> confirmPersonalService(
-        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
         String eventId = ccdCallbackRequest.getEventId();
@@ -372,7 +372,7 @@ public class CallbackController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> bulkPrint(
-        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
         try {
@@ -412,7 +412,7 @@ public class CallbackController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> petitionIssuedCallback(
-        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION) String authorizationToken,
         @RequestParam(value = GENERATE_AOS_INVITATION, required = false)
         @ApiParam(GENERATE_AOS_INVITATION) boolean generateAosInvitation,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
@@ -443,7 +443,7 @@ public class CallbackController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> caseLinkedForHearing(
-        @RequestHeader(value = AUTHORIZATION_HEADER)
+        @RequestHeader(value = AUTHORIZATION)
         @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
@@ -604,7 +604,7 @@ public class CallbackController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> generateCoRespondentAnswers(
-        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
@@ -639,7 +639,7 @@ public class CallbackController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> generateDocument(
-        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION) String authorizationToken,
         @RequestParam(value = "templateId") @ApiParam("templateId") String templateId,
         @RequestParam(value = "documentType") @ApiParam("documentType") String documentType,
         @RequestParam(value = "filename") @ApiParam("filename") String filename,
@@ -660,7 +660,7 @@ public class CallbackController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> prepareToPrintForPronouncement(
-        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
         return generateNewDocumentAndAddToCaseData(authorizationToken,
@@ -677,7 +677,7 @@ public class CallbackController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> updateBulkCaseHearingDetails(
-        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
         String ccdDocumentType = "coe";
@@ -693,7 +693,7 @@ public class CallbackController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> generateDnDocuments(
-        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
@@ -719,7 +719,7 @@ public class CallbackController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> daAboutToBeGranted(
-        @RequestHeader(value = AUTHORIZATION_HEADER) String authorizationToken,
+        @RequestHeader(value = AUTHORIZATION) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
@@ -741,7 +741,7 @@ public class CallbackController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "DA Granted callback processed")})
     public ResponseEntity<CcdCallbackResponse> handleDaGranted(
-        @RequestHeader(value = AUTHORIZATION_HEADER)
+        @RequestHeader(value = AUTHORIZATION)
         @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
@@ -766,7 +766,7 @@ public class CallbackController {
         @ApiResponse(code = 401, message = "User Not Authenticated"),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> aosReceived(
-        @RequestHeader(AUTHORIZATION_HEADER)
+        @RequestHeader(AUTHORIZATION)
         @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return ResponseEntity.ok(caseOrchestrationService.aosReceived(ccdCallbackRequest, authorizationToken));
@@ -790,7 +790,7 @@ public class CallbackController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> aosSolicitorNominated(
-        @RequestHeader(value = AUTHORIZATION_HEADER) String authToken,
+        @RequestHeader(value = AUTHORIZATION) String authToken,
         @RequestBody @ApiParam("CaseData")
             CcdCallbackRequest ccdCallbackRequest) {
 
@@ -846,7 +846,7 @@ public class CallbackController {
         @ApiResponse(code = 400, message = "Bad Request"),
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> dnAboutToBeGranted(
-        @RequestHeader(value = AUTHORIZATION_HEADER) String authToken,
+        @RequestHeader(value = AUTHORIZATION) String authToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
@@ -901,7 +901,7 @@ public class CallbackController {
         @ApiResponse(code = 401, message = "Not authorised"),
         @ApiResponse(code = 404, message = "Case not found")})
     public ResponseEntity<CcdCallbackResponse> solicitorLinkCase(
-        @RequestHeader(AUTHORIZATION_HEADER)
+        @RequestHeader(AUTHORIZATION)
         @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
@@ -932,7 +932,7 @@ public class CallbackController {
         @ApiResponse(code = 401, message = "Not authorised"),
         @ApiResponse(code = 404, message = "Case not found")})
     public ResponseEntity<CcdCallbackResponse> clearStateCallback(
-        @RequestHeader(AUTHORIZATION_HEADER)
+        @RequestHeader(AUTHORIZATION)
         @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
@@ -952,7 +952,7 @@ public class CallbackController {
         @ApiResponse(code = 401, message = "Not authorised"),
         @ApiResponse(code = 404, message = "Case not found")})
     public ResponseEntity<CcdCallbackResponse> dnDecisionMadeCallback(
-        @RequestHeader(AUTHORIZATION_HEADER)
+        @RequestHeader(AUTHORIZATION)
         @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
@@ -1027,7 +1027,7 @@ public class CallbackController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Callback processed")})
     public ResponseEntity<CcdCallbackResponse> issueAosPackOffline(
-        @RequestHeader(name = AUTHORIZATION_HEADER)
+        @RequestHeader(name = AUTHORIZATION)
         @ApiParam(value = "Authorisation token issued by IDAM", required = true) String authToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest,
         @PathVariable("party")
@@ -1056,7 +1056,7 @@ public class CallbackController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Successfully processed offline AOS Answers")})
     public ResponseEntity<CcdCallbackResponse> processAosPackOfflineAnswers(
-        @RequestHeader(AUTHORIZATION_HEADER)
+        @RequestHeader(AUTHORIZATION)
         @ApiParam(value = "Authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest,
         @PathVariable("party")
@@ -1182,7 +1182,7 @@ public class CallbackController {
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> welshContinueIntercept(
-        @RequestHeader(AUTHORIZATION_HEADER)
+        @RequestHeader(AUTHORIZATION)
         @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
         return ResponseEntity.ok(caseOrchestrationService.welshContinueIntercept(ccdCallbackRequest, authorizationToken));
@@ -1210,7 +1210,7 @@ public class CallbackController {
             response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> makeServiceDecision(
-        @RequestHeader(AUTHORIZATION_HEADER)
+        @RequestHeader(AUTHORIZATION)
         @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws ServiceJourneyServiceException {
 
@@ -1226,7 +1226,7 @@ public class CallbackController {
         @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> draftDocumentsForServiceDecision(
-        @RequestHeader(AUTHORIZATION_HEADER)
+        @RequestHeader(AUTHORIZATION)
         @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
@@ -1242,7 +1242,7 @@ public class CallbackController {
         @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> serviceDecisionMade(
-        @RequestHeader(AUTHORIZATION_HEADER)
+        @RequestHeader(AUTHORIZATION)
         @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
@@ -1257,7 +1257,7 @@ public class CallbackController {
         @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> generateDraftOfGeneralOrder(
-        @RequestHeader(AUTHORIZATION_HEADER)
+        @RequestHeader(AUTHORIZATION)
         @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
@@ -1276,7 +1276,7 @@ public class CallbackController {
         @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> generateGeneralOrder(
-        @RequestHeader(AUTHORIZATION_HEADER)
+        @RequestHeader(AUTHORIZATION)
         @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
@@ -1307,7 +1307,7 @@ public class CallbackController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Service payment confirmation callback")})
     public ResponseEntity<CcdCallbackResponse> confirmServicePaymentEvent(
-            @RequestHeader(AUTHORIZATION_HEADER)
+            @RequestHeader(AUTHORIZATION)
             @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
@@ -1322,7 +1322,7 @@ public class CallbackController {
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Setup Add Bailiff Return event")})
     public ResponseEntity<CcdCallbackResponse> setupAddBailiffReturnEvent(
-            @RequestHeader(AUTHORIZATION_HEADER)
+            @RequestHeader(AUTHORIZATION)
             @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
             @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
@@ -1365,7 +1365,7 @@ public class CallbackController {
         @ApiResponse(code = 400, message = "Bad Request")
     })
     public ResponseEntity<CcdCallbackResponse> prepareAosNotReceivedForSubmission(
-        @RequestHeader(AUTHORIZATION_HEADER)
+        @RequestHeader(AUTHORIZATION)
         @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
@@ -1499,7 +1499,7 @@ public class CallbackController {
         @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> updateCourtOrderDocuments(
-        @RequestHeader(value = AUTHORIZATION_HEADER)
+        @RequestHeader(value = AUTHORIZATION)
         @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
@@ -1521,7 +1521,7 @@ public class CallbackController {
         @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> issueBailiffPack(
-        @RequestHeader(value = AUTHORIZATION_HEADER)
+        @RequestHeader(value = AUTHORIZATION)
         @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
@@ -1543,7 +1543,7 @@ public class CallbackController {
         @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> judgeCostsDecision(
-        @RequestHeader(value = AUTHORIZATION_HEADER)
+        @RequestHeader(value = AUTHORIZATION)
         @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws JudgeServiceException {
 
@@ -1558,7 +1558,7 @@ public class CallbackController {
         @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> aosPackIssued(
-        @RequestHeader(value = AUTHORIZATION_HEADER)
+        @RequestHeader(value = AUTHORIZATION)
         @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();

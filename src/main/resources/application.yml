@@ -154,6 +154,7 @@ feature-toggle:
     object_to_costs: ${FEATURE_OBJECT_TO_COSTS:true}
     bailiff_journey: ${FEATURE_BAILIFF_JOURNEY:false}
     feature_fee_pay_s2s_token: ${FEATURE_FEE_PAY_S2S_TOKEN:false}
+    use_user_token: ${FEATURE_USE_USER_TOKEN:false}
 
 send-letter:
   url: ${SEND_LETTER_SERIVCE_BASEURL:http://localhost:4021}
@@ -405,6 +406,16 @@ court:
       phoneNumber: '0300 303 0642'
       siteId: 'AA04'
       courtId: 'northWest'
+    buryStEdmunds:
+      divorceCentreName: 'Bury St. Edmunds Regional Divorce Centre'
+      courtCity: 'Bury St. Edmunds'
+      street: '2nd Floor\nTriton House\nSt. Andrews Street North'
+      postCode: 'IP33 1TR'
+      openingHours: 'Telephone Enquiries from: Monday - Friday 8am to 8pm, Saturday 8am to 2pm'
+      email: 'divorcecase@justice.gov.uk'
+      phoneNumber: '0300 303 0642'
+      siteId: 'AA05'
+      courtId: 'buryStEdmunds'
     serviceCentre:
       serviceCentreName: 'Courts and Tribunals Service Centre'
       divorceCentreName: 'HMCTS Digital Divorce'
@@ -462,6 +473,11 @@ dncourt:
     birmingham:
       name: "Birmingham Civil and Family Justice Centre"
       address: "Priory Courts\n33 Bull Street\nBirmingham\nB4 6DS"
+      email: "divorcecase@justice.gov.uk"
+      phone: "0300 303 0642"
+    buryStEdmunds:
+      name: "Bury St. Edmunds Regional Divorce Centre"
+      address: "2nd Floor\nTriton House\nSt. Andrews Street North\nBury St. Edmunds\nIP33 1TR"
       email: "divorcecase@justice.gov.uk"
       phone: "0300 303 0642"
 

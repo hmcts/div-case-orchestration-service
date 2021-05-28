@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextract
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Gender;
@@ -21,13 +20,13 @@ public class CoECoverLetterDataExtractor {
 
     @NoArgsConstructor(access = AccessLevel.PRIVATE)
     public static class CaseDataKeys {
-        public static final String COURT_NAME = BulkCaseConstants.COURT_NAME_CCD_FIELD;
+        public static final String COURT_NAME = CcdFields.COURT_NAME;
         public static final String HEARING_DATE = OrchestrationConstants.DATE_OF_HEARING_CCD_FIELD;
         public static final String HEARING_DATE_TIME = OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
         public static final String PETITIONER_GENDER = OrchestrationConstants.D_8_INFERRED_PETITIONER_GENDER;
         public static final String COSTS_CLAIM_GRANTED = OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
         public static final String JUDGE_COSTS_CLAIM_GRANTED = CcdFields.JUDGE_COSTS_CLAIM_GRANTED;
-        public static final String COURT_ID = BulkCaseConstants.COURT_NAME_CCD_FIELD;
+        public static final String COURT_ID = CcdFields.COURT_NAME;
     }
 
     public static String getCourtId(Map<String, Object> caseData) {

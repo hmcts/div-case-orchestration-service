@@ -38,7 +38,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ORGANISATION_POLICY_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SERVICE_AUTHORIZATION_HEADER;
+import static uk.gov.hmcts.reform.divorce.orchestration.config.SpecificHttpHeaders.SERVICE_AUTHORIZATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.elasticsearch.CMSElasticSearchSupport.buildCMSBooleanSearchSource;
 
@@ -147,7 +147,7 @@ public abstract class MockedFunctionalTest {
 
     public void stubDMStore(String documentId, byte[] fileBytes) {
         documentStore.stubFor(WireMock.get("/documents/" + documentId + "/binary")
-            .withHeader(SERVICE_AUTHORIZATION_HEADER, new EqualToPattern("Bearer " + TEST_SERVICE_AUTH_TOKEN))
+            .withHeader(SERVICE_AUTHORIZATION, new EqualToPattern("Bearer " + TEST_SERVICE_AUTH_TOKEN))
             .withHeader("user-roles", new EqualToPattern("caseworker-divorce"))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
@@ -157,7 +157,7 @@ public abstract class MockedFunctionalTest {
 
     public void stubRemoveCaseRoleServerEndpoint(String authToken, String s2sAuthToken, HttpStatus status) {
         caseRoleServer.stubFor(WireMock.delete("/case-users")
-            .withHeader(SERVICE_AUTHORIZATION_HEADER, new EqualToPattern("Bearer " + s2sAuthToken))
+            .withHeader(SERVICE_AUTHORIZATION, new EqualToPattern("Bearer " + s2sAuthToken))
             .withHeader(AUTHORIZATION, new EqualToPattern(authToken))
             .willReturn(aResponse()
                 .withStatus(status.value())
@@ -165,8 +165,8 @@ public abstract class MockedFunctionalTest {
     }
 
     public void stubAssignCaseAccessServerEndpoint(String authToken, String s2sAuthToken, HttpStatus status) {
-        assignCaseAccessServer.stubFor(WireMock.post("/case-assignments")
-            .withHeader(SERVICE_AUTHORIZATION_HEADER, new EqualToPattern("Bearer " + s2sAuthToken))
+        assignCaseAccessServer.stubFor(WireMock.post("/case-assignments?use_user_token=true")
+            .withHeader(SERVICE_AUTHORIZATION, new EqualToPattern("Bearer " + s2sAuthToken))
             .withHeader(AUTHORIZATION, new EqualToPattern(authToken))
             .willReturn(aResponse()
                 .withStatus(status.value())
@@ -176,7 +176,7 @@ public abstract class MockedFunctionalTest {
     public void stubGetMyOrganisationServerEndpoint(String authToken, String s2sToken) {
         prdServer.stubFor(WireMock.get("/refdata/external/v1/organisations")
             .withHeader(AUTHORIZATION, new EqualToPattern(authToken))
-            .withHeader(SERVICE_AUTHORIZATION_HEADER, new EqualToPattern("Bearer " + s2sToken))
+            .withHeader(SERVICE_AUTHORIZATION, new EqualToPattern("Bearer " + s2sToken))
             .willReturn(aResponse()
                 .withStatus(HttpStatus.OK.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)

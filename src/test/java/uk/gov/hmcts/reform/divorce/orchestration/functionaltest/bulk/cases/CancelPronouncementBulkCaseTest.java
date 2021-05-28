@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.bulk;
+package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.bulk.cases;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
@@ -24,10 +24,11 @@ import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpMethod.POST;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.CANCEL_BULK_PRONOUNCED_EVENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ResourceLoader.loadResourceAsString;
 
-public class CancelPronouncementBulkCaseITest extends IdamTestSupport {
+public class CancelPronouncementBulkCaseTest extends IdamTestSupport {
 
     private static final String API_URL = "/bulk/pronouncement/cancel";
 
@@ -38,8 +39,6 @@ public class CancelPronouncementBulkCaseITest extends IdamTestSupport {
     private static final String BULK_CASE_ID = "1505150515051550";
     private static final String CASE_ID_FIRST = "1558711395612316";
     private static final String CASE_ID_SECOND = "1558711407435839";
-
-    private static final String TEST_AUTH_TOKEN = "testAuthToken";
 
     @Autowired
     private ThreadPoolTaskExecutor asyncTaskExecutor;
@@ -64,7 +63,7 @@ public class CancelPronouncementBulkCaseITest extends IdamTestSupport {
         stubCmsServerEndpoint(updateBulkCasePath, HttpStatus.OK, "{}", POST);
 
         webClient.perform(MockMvcRequestBuilders.post(API_URL)
-            .header(AUTHORIZATION, TEST_AUTH_TOKEN)
+            .header(AUTHORIZATION, AUTH_TOKEN)
             .content(loadResourceAsString(REQUEST_JSON_PATH))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))

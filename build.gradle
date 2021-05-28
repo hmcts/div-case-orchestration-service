@@ -140,7 +140,7 @@ allprojects {
             }
 
             // solves CVE-2014-3488, CVE-2015-2156, CVE-2019-16869, CVE-2021-21409
-            dependencySet(group: 'io.netty', version: '4.1.61.Final') {
+            dependencySet(group: 'io.netty', version: '4.1.65.Final') {
                 entry 'netty-buffer'
                 entry 'netty-codec'
                 entry 'netty-codec-http'
@@ -372,10 +372,9 @@ dependencies {
 
     contractTestCompile group: 'org.apache.httpcomponents', name: 'httpclient', version: versions.httpComponents
     contractTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-    contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.7.0")
-    contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.7.0")
-    contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.7.0')
-
+    contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.7.2")
+    contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.7.2")
+    contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.7.2')
     contractTestCompile sourceSets.main.runtimeClasspath
     contractTestCompile sourceSets.test.runtimeClasspath
 }

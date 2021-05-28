@@ -17,8 +17,6 @@ public class OrchestrationConstants {
     public static final String GRANT_TYPE = "authorization_code";
     public static final String BASIC = "Basic ";
     public static final String LOCATION_HEADER = "Location";
-    public static final String SERVICE_AUTHORIZATION_HEADER = "ServiceAuthorization";
-    public static final String AUTHORIZATION_HEADER = "Authorization";
 
     //Issue Petition
     public static final String GENERATE_AOS_INVITATION = "generateAosInvitation";
@@ -114,7 +112,6 @@ public class OrchestrationConstants {
     public static final String D_8_REASON_FOR_DIVORCE_SEPARATION_YEAR = "D8ReasonForDivorceSeperationYear";
 
     //CCD DN fields
-    public static final String DN_OUTCOME_FLAG_CCD_FIELD = "DnOutcomeCase";
     public static final String REFUSAL_DECISION_CCD_FIELD = "RefusalDecision";
     public static final String REFUSAL_REJECTION_ADDITIONAL_INFO = "RefusalRejectionAdditionalInfo";
     public static final String REFUSAL_REJECTION_ADDITIONAL_INFO_WELSH = "RefusalRejectionAdditionalInfoWelsh";
