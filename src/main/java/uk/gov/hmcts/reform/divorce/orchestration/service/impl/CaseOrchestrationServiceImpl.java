@@ -960,8 +960,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     @Override
     public Map<String, Object> removeBulkListed(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
-        return removeLinkFromListedWorkflow.run(caseDetails.getCaseData());
+        return removeLinkFromListedWorkflow.run(ccdCallbackRequest.getCaseDetails());
     }
 
     @Override
