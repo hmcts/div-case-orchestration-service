@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import uk.gov.hmcts.reform.authorisation.ServiceAuthAutoConfiguration;
@@ -20,7 +21,7 @@ import uk.gov.hmcts.reform.sendletter.SendLetterAutoConfiguration;
         "uk.gov.hmcts.reform.bsp.common"
     },
     exclude = {
-        ServiceAuthAutoConfiguration.class, SendLetterAutoConfiguration.class,DataSourceAutoConfiguration.class
+        ServiceAuthAutoConfiguration.class, HibernateJpaAutoConfiguration.class, SendLetterAutoConfiguration.class, DataSourceAutoConfiguration.class
     })
 @EnableConfigurationProperties({
     CourtDistributionConfig.class, EmailTemplatesConfig.class, CourtDetailsConfig.class
