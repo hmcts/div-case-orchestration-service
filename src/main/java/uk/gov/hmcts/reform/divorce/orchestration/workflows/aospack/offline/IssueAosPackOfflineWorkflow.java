@@ -89,6 +89,7 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
         tasks.add(bulkPrinterTask);
         tasks.add(markJourneyAsOfflineTask);
 
+        // context transient objects needed for other tasks - offline respond/co-respondent aos emails
         Map<String, Object> contextTransientObjects = new HashMap<>();
 
         if (divorceParty.equals(RESPONDENT)) {
@@ -106,7 +107,7 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
 
         log.warn("CaseId {}, number of tasks to be executed {}", caseId, tasks.size());
 
-        // add the fixed values last
+        // add the previous values for tasks last so they are preserved
         contextTransientObjects.put(AUTH_TOKEN_JSON_KEY, authToken);
         contextTransientObjects.put(CASE_DETAILS_JSON_KEY, caseDetails);
         contextTransientObjects.put(CASE_ID_JSON_KEY, caseDetails.getCaseId());
@@ -115,12 +116,11 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
         contextTransientObjects.put(DOCUMENT_TYPES_TO_PRINT, documentTypesToPrint);
         contextTransientObjects.put(DIVORCE_PARTY, divorceParty);
 
-        ImmutablePair<String, Object>[] pairs = contextTransientObjects.entrySet().stream().map(entry -> new ImmutablePair<String, Object>(entry.getKey(), entry.getValue())).toArray(ImmutablePair[]::new);
-
+        // convert the map of context transient objects into an ImmutablePair array
         return execute(tasks.toArray(new Task[0]),
             caseData,
-            pairs
-        );
+            contextTransientObjects.entrySet().stream()
+                .map(entry -> new ImmutablePair<>(entry.getKey(), entry.getValue())).toArray(ImmutablePair[]::new)        );
     }
 
     private String getLetterType(DivorceParty divorceParty) throws WorkflowException {
