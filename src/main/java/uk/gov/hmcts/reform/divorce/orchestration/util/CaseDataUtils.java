@@ -24,6 +24,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.microsoft.applicationinsights.web.dependencies.apachecommons.lang3.StringUtils.equalsIgnoreCase;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.CASE_REFERENCE_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.VALUE_KEY;
@@ -44,15 +45,21 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_PAY_BY_ACCOUNT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOT_DEFENDING_NOT_ADMITTING;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_CLARIFICATION_ADDITIONAL_INFO;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_CLARIFICATION_ADDITIONAL_INFO_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_MORE_INFO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_REJECTION_ADDITIONAL_INFO_WELSH;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.TYPE_COSTS_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.SEPARATION_TWO_YEARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.SolicitorDataExtractor.getPaymentMethod;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsObject;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
@@ -260,6 +267,35 @@ public class CaseDataUtils {
         }
 
         return listOfCollectionMembers;
+    }
+
+    public boolean isAdulteryAndNoConsent(Map<String, Object> caseData) {
+        String reasonForDivorce = getOptionalPropertyValueAsString(caseData, D_8_REASON_FOR_DIVORCE, EMPTY);
+        String respAdmitOrConsentToFact = getOptionalPropertyValueAsString(caseData, RESP_ADMIT_OR_CONSENT_TO_FACT, EMPTY);
+
+        return equalsIgnoreCase(ADULTERY.getValue(), reasonForDivorce) && equalsIgnoreCase(NO_VALUE,
+            respAdmitOrConsentToFact);
+    }
+
+    public boolean isSep2YrAndNoConsent(Map<String, Object> caseData) {
+        String reasonForDivorce = getOptionalPropertyValueAsString(caseData, D_8_REASON_FOR_DIVORCE, EMPTY);
+        String respAdmitOrConsentToFact = getOptionalPropertyValueAsString(caseData, RESP_ADMIT_OR_CONSENT_TO_FACT, EMPTY);
+
+        return equalsIgnoreCase(SEPARATION_TWO_YEARS.getValue(), reasonForDivorce)
+            && equalsIgnoreCase(NO_VALUE, respAdmitOrConsentToFact);
+    }
+
+    public boolean isCoRespNamedAndNotReplied(Map<String, Object> caseData) {
+        String isCoRespNamed = getOptionalPropertyValueAsString(caseData, D_8_CO_RESPONDENT_NAMED, EMPTY);
+        String receivedAosFromCoResp = getOptionalPropertyValueAsString(caseData, RECEIVED_AOS_FROM_CO_RESP, EMPTY);
+
+        return equalsIgnoreCase(isCoRespNamed, YES_VALUE) && !equalsIgnoreCase(receivedAosFromCoResp, YES_VALUE);
+    }
+
+    public boolean isRespondentNotDefending(Map<String, Object> caseData) {
+        final String respWillDefendDivorce = (String) caseData.get(RESP_WILL_DEFEND_DIVORCE);
+        return NO_VALUE.equalsIgnoreCase(respWillDefendDivorce)
+            || NOT_DEFENDING_NOT_ADMITTING.equalsIgnoreCase(respWillDefendDivorce);
     }
 
 }

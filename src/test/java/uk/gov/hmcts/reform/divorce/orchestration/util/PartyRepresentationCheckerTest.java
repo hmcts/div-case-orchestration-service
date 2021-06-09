@@ -1,10 +1,12 @@
 package uk.gov.hmcts.reform.divorce.orchestration.util;
 
+import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.Organisation;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.OrganisationPolicy;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,6 +21,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.R
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_COMPANY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_SESSION_RESPONDENT_SOLICITOR_REFERENCE_DATA_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
@@ -36,6 +40,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentation
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerSolicitorDigital;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentDigital;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.usingRespondentSolicitor;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigitalDivorceSession;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigitalSelectedYes;
@@ -67,6 +72,24 @@ public class PartyRepresentationCheckerTest {
         assertThat(isRespondentRepresented(createCaseData("another-field-1", YES_VALUE)), is(false));
         assertThat(isRespondentRepresented(createCaseData("another-field-2", NO_VALUE)), is(false));
         assertThat(isRespondentRepresented(EMPTY_MAP), is(false));
+    }
+
+    @Test
+    public void usingRespondentRepresentedReturnsTrue() {
+        assertThat(usingRespondentSolicitor(createCaseData(RESP_SOL_REPRESENTED, YES_VALUE)), is(true));
+        Map<String, Object> caseData = ImmutableMap.of(D8_RESPONDENT_SOLICITOR_NAME, "myname", D8_RESPONDENT_SOLICITOR_COMPANY, "myfirmname");
+        assertThat(usingRespondentSolicitor(caseData), is(true));
+    }
+
+    @Test
+    public void usingRespondentRepresentedReturnsFalse() {
+        assertThat(usingRespondentSolicitor(createCaseData(RESP_SOL_REPRESENTED, NO_VALUE)), is(false));
+        assertThat(usingRespondentSolicitor(createCaseData(RESP_SOL_REPRESENTED, null)), is(false));
+        assertThat(usingRespondentSolicitor(createCaseData(D8_RESPONDENT_SOLICITOR_NAME, "myname")), is(false));
+        assertThat(usingRespondentSolicitor(createCaseData(D8_RESPONDENT_SOLICITOR_COMPANY, "myfirmname")), is(false));
+        assertThat(usingRespondentSolicitor(createCaseData("another-field-1", YES_VALUE)), is(false));
+        assertThat(usingRespondentSolicitor(createCaseData("another-field-2", NO_VALUE)), is(false));
+        assertThat(usingRespondentSolicitor(Collections.emptyMap()), is(false));
     }
 
     @Test

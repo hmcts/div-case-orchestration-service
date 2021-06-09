@@ -7,12 +7,15 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
 
 import java.util.Map;
 
+import static com.microsoft.applicationinsights.boot.dependencies.apachecommons.lang3.StringUtils.isNotEmpty;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.CO_RESPONDENT_LINKED_TO_CASE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_EMAIL_PARTIES;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_COMPANY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_SESSION_RESPONDENT_SOLICITOR_REFERENCE_DATA_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
@@ -39,6 +42,12 @@ public class PartyRepresentationChecker {
 
     public static boolean isRespondentRepresented(Map<String, Object> caseData) {
         return isRepresented(caseData, RESP_SOL_REPRESENTED);
+    }
+
+    // all methods in this class must be static - yuch
+    public static boolean usingRespondentSolicitor(Map<String, Object> caseData) {
+        // temporary fix until we implement setting respondentSolicitorRepresented from CCD for RespSols
+        return isRespondentRepresented(caseData) || hasRespondentSolicitorDetail(caseData);
     }
 
     public static boolean isCoRespondentLinkedToCase(Map<String, Object> caseData) {
@@ -126,4 +135,10 @@ public class PartyRepresentationChecker {
     private static boolean isPopulatedOrganisation(Map<String, Object> caseData, String field) {
         return isOrganisationPolicyPopulated(getSolicitorOrganisationPolicy(caseData, field));
     }
+
+    private static boolean hasRespondentSolicitorDetail(Map<String, Object> caseData) {
+        return isNotEmpty(getOptionalPropertyValueAsString(caseData, D8_RESPONDENT_SOLICITOR_NAME, EMPTY_STRING))
+            && isNotEmpty(getOptionalPropertyValueAsString(caseData, D8_RESPONDENT_SOLICITOR_COMPANY, EMPTY_STRING));
+    }
+
 }

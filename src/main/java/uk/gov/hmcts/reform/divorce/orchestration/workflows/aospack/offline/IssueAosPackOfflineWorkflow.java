@@ -22,6 +22,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.MultipleDocumentGeneratio
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.BulkPrinterTask;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -61,6 +62,8 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
     private final BulkPrinterTask bulkPrinterTask;
     private final MarkJourneyAsOfflineTask markJourneyAsOfflineTask;
     private final AosPackDueDateSetterTask aosPackDueDateSetterTask;
+    private final RespondentAosOfflineNotification respondentAosOfflineNotification;
+    private final CoRespondentAosOfflineNotification coRespondentAosOfflineNotification;
 
     public Map<String, Object> run(String authToken, CaseDetails caseDetails, DivorceParty divorceParty)
         throws WorkflowException {
@@ -86,22 +89,37 @@ public class IssueAosPackOfflineWorkflow extends DefaultWorkflow<Map<String, Obj
         tasks.add(bulkPrinterTask);
         tasks.add(markJourneyAsOfflineTask);
 
+        Map<String, Object> contextTransientObjects = new HashMap<>();
+
         if (divorceParty.equals(RESPONDENT)) {
             log.warn("CaseId {}, modify modifyDueDate", caseId);
             tasks.add(aosPackDueDateSetterTask);
+
+            // add notification tasks about offline respondent aos
+            respondentAosOfflineNotification.addAOSEmailTasks(contextTransientObjects, tasks, caseDetails, authToken);
+        }
+
+        if (divorceParty.equals(CO_RESPONDENT)) {
+            // add notification tasks about offline co-respondent aos
+            coRespondentAosOfflineNotification.addAOSEmailTasks(tasks, caseDetails);
         }
 
         log.warn("CaseId {}, number of tasks to be executed {}", caseId, tasks.size());
 
+        // add the fixed values last
+        contextTransientObjects.put(AUTH_TOKEN_JSON_KEY, authToken);
+        contextTransientObjects.put(CASE_DETAILS_JSON_KEY, caseDetails);
+        contextTransientObjects.put(CASE_ID_JSON_KEY, caseDetails.getCaseId());
+        contextTransientObjects.put(DOCUMENT_GENERATION_REQUESTS_KEY, documentGenerationRequestsList);
+        contextTransientObjects.put(BULK_PRINT_LETTER_TYPE, letterType);
+        contextTransientObjects.put(DOCUMENT_TYPES_TO_PRINT, documentTypesToPrint);
+        contextTransientObjects.put(DIVORCE_PARTY, divorceParty);
+
+        ImmutablePair<String, Object>[] pairs = contextTransientObjects.entrySet().stream().map(entry -> new ImmutablePair<String, Object>(entry.getKey(), entry.getValue())).toArray(ImmutablePair[]::new);
+
         return execute(tasks.toArray(new Task[0]),
             caseData,
-            ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken),
-            ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
-            ImmutablePair.of(CASE_ID_JSON_KEY, caseDetails.getCaseId()),
-            ImmutablePair.of(DOCUMENT_GENERATION_REQUESTS_KEY, documentGenerationRequestsList),
-            ImmutablePair.of(BULK_PRINT_LETTER_TYPE, letterType),
-            ImmutablePair.of(DOCUMENT_TYPES_TO_PRINT, documentTypesToPrint),
-            ImmutablePair.of(DIVORCE_PARTY, divorceParty)
+            pairs
         );
     }
 

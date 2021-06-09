@@ -9,6 +9,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConst
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.DivorceGeneralReferral;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,11 +41,16 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_REASON_FOR_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_PAY_BY_ACCOUNT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOT_DEFENDING_NOT_ADMITTING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RECEIVED_AOS_FROM_CO_RESP;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.DESERTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.SEPARATION_TWO_YEARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocumentAsMap;
 
 public class CaseDataUtilsTest {
@@ -432,6 +438,129 @@ public class CaseDataUtilsTest {
 
         assertThat(result.size(), is(1));
         assertThat(result, is(myList));
+    }
+
+    @Test
+    public void test_isAdulteryAndNoConsent() {
+        assertThat(caseDataUtils.isAdulteryAndNoConsent(ImmutableMap.of(
+            D_8_REASON_FOR_DIVORCE, DESERTION.getValue()
+        )), is(false));
+
+        assertThat(caseDataUtils.isAdulteryAndNoConsent(ImmutableMap.of(
+            D_8_REASON_FOR_DIVORCE, ADULTERY.getValue()
+        )), is(false));
+
+        assertThat(caseDataUtils.isAdulteryAndNoConsent(ImmutableMap.of(
+            RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE
+        )), is(false));
+
+        assertThat(caseDataUtils.isAdulteryAndNoConsent(ImmutableMap.of(
+            D_8_REASON_FOR_DIVORCE, ADULTERY.getValue(),
+            RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE
+        )), is(true));
+
+        assertThat(caseDataUtils.isAdulteryAndNoConsent(ImmutableMap.of(
+            D_8_REASON_FOR_DIVORCE, ADULTERY.getValue(),
+            RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE
+        )), is(false));
+
+        assertThat(caseDataUtils.isAdulteryAndNoConsent(ImmutableMap.of(
+            D_8_REASON_FOR_DIVORCE, DESERTION.getValue(),
+            RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE
+        )), is(false));
+
+        assertThat(caseDataUtils.isAdulteryAndNoConsent(Collections.emptyMap()), is(false));
+    }
+
+    @Test
+    public void test_isSep2YrAndNoConsent() {
+        assertThat(caseDataUtils.isSep2YrAndNoConsent(ImmutableMap.of(
+            D_8_REASON_FOR_DIVORCE, DESERTION.getValue()
+        )), is(false));
+
+        assertThat(caseDataUtils.isSep2YrAndNoConsent(ImmutableMap.of(
+            D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS.getValue()
+        )), is(false));
+
+        assertThat(caseDataUtils.isSep2YrAndNoConsent(ImmutableMap.of(
+            RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE
+        )), is(false));
+
+        assertThat(caseDataUtils.isSep2YrAndNoConsent(ImmutableMap.of(
+            D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS.getValue(),
+            RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE
+        )), is(true));
+
+        assertThat(caseDataUtils.isSep2YrAndNoConsent(ImmutableMap.of(
+            D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS.getValue(),
+            RESP_ADMIT_OR_CONSENT_TO_FACT, YES_VALUE
+        )), is(false));
+
+        assertThat(caseDataUtils.isSep2YrAndNoConsent(ImmutableMap.of(
+            D_8_REASON_FOR_DIVORCE, ADULTERY.getValue(),
+            RESP_ADMIT_OR_CONSENT_TO_FACT, NO_VALUE
+        )), is(false));
+
+        assertThat(caseDataUtils.isSep2YrAndNoConsent(Collections.emptyMap()), is(false));
+    }
+
+    @Test
+    public void test_isCoRespNamedAndNotReplied() {
+        // RECEIVED_AOS_FROM_CO_RESP missing counts as not replied
+        assertThat(caseDataUtils.isCoRespNamedAndNotReplied(ImmutableMap.of(
+            D_8_CO_RESPONDENT_NAMED, YES_VALUE
+        )), is(true));
+
+        assertThat(caseDataUtils.isCoRespNamedAndNotReplied(ImmutableMap.of(
+            D_8_CO_RESPONDENT_NAMED, NO_VALUE
+        )), is(false));
+
+        assertThat(caseDataUtils.isCoRespNamedAndNotReplied(ImmutableMap.of(
+            RECEIVED_AOS_FROM_CO_RESP, YES_VALUE
+        )), is(false));
+
+        assertThat(caseDataUtils.isCoRespNamedAndNotReplied(ImmutableMap.of(
+            RECEIVED_AOS_FROM_CO_RESP, NO_VALUE
+        )), is(false));
+
+        assertThat(caseDataUtils.isCoRespNamedAndNotReplied(ImmutableMap.of(
+            D_8_CO_RESPONDENT_NAMED, YES_VALUE,
+            RECEIVED_AOS_FROM_CO_RESP, YES_VALUE
+        )), is(false));
+
+        assertThat(caseDataUtils.isCoRespNamedAndNotReplied(ImmutableMap.of(
+            D_8_CO_RESPONDENT_NAMED, YES_VALUE,
+            RECEIVED_AOS_FROM_CO_RESP, NO_VALUE
+        )), is(true));
+
+        assertThat(caseDataUtils.isCoRespNamedAndNotReplied(ImmutableMap.of(
+            D_8_CO_RESPONDENT_NAMED, NO_VALUE,
+            RECEIVED_AOS_FROM_CO_RESP, YES_VALUE
+        )), is(false));
+
+        assertThat(caseDataUtils.isCoRespNamedAndNotReplied(ImmutableMap.of(
+            D_8_CO_RESPONDENT_NAMED, NO_VALUE,
+            RECEIVED_AOS_FROM_CO_RESP, NO_VALUE
+        )), is(false));
+
+        assertThat(caseDataUtils.isCoRespNamedAndNotReplied(Collections.emptyMap()), is(false));
+    }
+
+    @Test
+    public void test_isRespondentNotDefending() {
+        assertThat(caseDataUtils.isRespondentNotDefending(ImmutableMap.of(
+            RESP_WILL_DEFEND_DIVORCE, YES_VALUE
+        )), is(false));
+
+        assertThat(caseDataUtils.isRespondentNotDefending(ImmutableMap.of(
+            RESP_WILL_DEFEND_DIVORCE, NO_VALUE
+        )), is(true));
+
+        assertThat(caseDataUtils.isRespondentNotDefending(ImmutableMap.of(
+            RESP_WILL_DEFEND_DIVORCE, NOT_DEFENDING_NOT_ADMITTING
+        )), is(true));
+
+        assertThat(caseDataUtils.isRespondentNotDefending(Collections.emptyMap()), is(false));
     }
 
 }

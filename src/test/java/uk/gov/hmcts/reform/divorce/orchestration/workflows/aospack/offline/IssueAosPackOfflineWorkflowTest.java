@@ -118,6 +118,12 @@ public class IssueAosPackOfflineWorkflowTest {
     @Mock
     private MarkJourneyAsOfflineTask markJourneyAsOfflineTask;
 
+    @Mock
+    private RespondentAosOfflineNotification respondentAosOfflineNotification;
+
+    @Mock
+    private CoRespondentAosOfflineNotification corespondentAosOfflineNotification;
+
     @InjectMocks
     private IssueAosPackOfflineWorkflow classUnderTest;
 
