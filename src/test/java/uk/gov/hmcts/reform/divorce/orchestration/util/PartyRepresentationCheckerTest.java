@@ -40,10 +40,10 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentation
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isPetitionerSolicitorDigital;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentDigital;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentRepresented;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.usingRespondentSolicitor;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigitalDivorceSession;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigitalSelectedYes;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.usingRespondentSolicitor;
 
 public class PartyRepresentationCheckerTest {
 
@@ -57,7 +57,7 @@ public class PartyRepresentationCheckerTest {
         assertThat(isPetitionerRepresented(createCaseData(PETITIONER_SOLICITOR_EMAIL, "")), is(false));
         assertThat(isPetitionerRepresented(createCaseData(PETITIONER_SOLICITOR_EMAIL, null)), is(false));
         assertThat(isPetitionerRepresented(createCaseData("another-field", "value")), is(false));
-        assertThat(isPetitionerRepresented(EMPTY_MAP), is(false));
+        assertThat(isPetitionerRepresented(Collections.emptyMap()), is(false));
     }
 
     @Test
@@ -71,13 +71,13 @@ public class PartyRepresentationCheckerTest {
         assertThat(isRespondentRepresented(createCaseData(RESP_SOL_REPRESENTED, null)), is(false));
         assertThat(isRespondentRepresented(createCaseData("another-field-1", YES_VALUE)), is(false));
         assertThat(isRespondentRepresented(createCaseData("another-field-2", NO_VALUE)), is(false));
-        assertThat(isRespondentRepresented(EMPTY_MAP), is(false));
+        assertThat(isRespondentRepresented(Collections.emptyMap()), is(false));
     }
 
     @Test
     public void usingRespondentRepresentedReturnsTrue() {
         assertThat(usingRespondentSolicitor(createCaseData(RESP_SOL_REPRESENTED, YES_VALUE)), is(true));
-        Map<String, Object> caseData = ImmutableMap.of(D8_RESPONDENT_SOLICITOR_NAME, "myname", D8_RESPONDENT_SOLICITOR_COMPANY, "myfirmname");
+        Map<String, Object> caseData = ImmutableMap.of(D8_RESPONDENT_SOLICITOR_NAME, "my_name", D8_RESPONDENT_SOLICITOR_COMPANY, "my_firm_name");
         assertThat(usingRespondentSolicitor(caseData), is(true));
     }
 
@@ -85,8 +85,8 @@ public class PartyRepresentationCheckerTest {
     public void usingRespondentRepresentedReturnsFalse() {
         assertThat(usingRespondentSolicitor(createCaseData(RESP_SOL_REPRESENTED, NO_VALUE)), is(false));
         assertThat(usingRespondentSolicitor(createCaseData(RESP_SOL_REPRESENTED, null)), is(false));
-        assertThat(usingRespondentSolicitor(createCaseData(D8_RESPONDENT_SOLICITOR_NAME, "myname")), is(false));
-        assertThat(usingRespondentSolicitor(createCaseData(D8_RESPONDENT_SOLICITOR_COMPANY, "myfirmname")), is(false));
+        assertThat(usingRespondentSolicitor(createCaseData(D8_RESPONDENT_SOLICITOR_NAME, "my_name")), is(false));
+        assertThat(usingRespondentSolicitor(createCaseData(D8_RESPONDENT_SOLICITOR_COMPANY, "my_firm_name")), is(false));
         assertThat(usingRespondentSolicitor(createCaseData("another-field-1", YES_VALUE)), is(false));
         assertThat(usingRespondentSolicitor(createCaseData("another-field-2", NO_VALUE)), is(false));
         assertThat(usingRespondentSolicitor(Collections.emptyMap()), is(false));
@@ -122,7 +122,7 @@ public class PartyRepresentationCheckerTest {
         assertThat(isCoRespondentRepresented(createCaseData(CO_RESPONDENT_REPRESENTED, null)), is(false));
         assertThat(isCoRespondentRepresented(createCaseData("another-field-1", YES_VALUE)), is(false));
         assertThat(isCoRespondentRepresented(createCaseData("another-field-2", NO_VALUE)), is(false));
-        assertThat(isCoRespondentRepresented(EMPTY_MAP), is(false));
+        assertThat(isCoRespondentRepresented(Collections.emptyMap()), is(false));
     }
 
     @Test

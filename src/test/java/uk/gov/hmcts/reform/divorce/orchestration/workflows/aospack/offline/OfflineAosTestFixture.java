@@ -43,8 +43,10 @@ public class OfflineAosTestFixture {
             .build();
     }
 
-    public Map<String, Object> getCaseDataForPetitionerEmail(boolean respondentRepresented, boolean defended, DivorceFact reasonForDivorce, String respAdmit
-        , String coRespNamed, String receivedAosFromCoResp) {
+    public Map<String, Object> getCaseDataForPetitionerEmail(boolean respondentRepresented, boolean defended,
+                                                             DivorceFact reasonForDivorce, String respAdmit,
+         String coRespNamed, String receivedAosFromCoResp) {
+
         return ImmutableMap.<String, Object>builder()
             .put(D_8_PETITIONER_EMAIL, PET_EMAIL)
             .put(D_8_PETITIONER_FIRST_NAME, PET_FIRST_NAME)

@@ -82,7 +82,8 @@ public class RespondentAosOfflineNotificationTest {
         tasks = new LinkedList<>();
 
         // don't boot spring for a unit test
-        respondentAosOfflineNotification = new RespondentAosOfflineNotification(templateConfigService, caseDataUtils, emailNotificationTask, aosReceivedPetitionerSolicitorEmailTask);
+        respondentAosOfflineNotification = new RespondentAosOfflineNotification(templateConfigService, caseDataUtils,
+            emailNotificationTask, aosReceivedPetitionerSolicitorEmailTask);
 
         when(templateConfigService.getRelationshipTermByGender(anyString(), any())).then(AdditionalAnswers.returnsFirstArg());
     }
@@ -119,8 +120,8 @@ public class RespondentAosOfflineNotificationTest {
     public void test_PetitionerEmail_RespondentSolicitor_Defending() {
         Map<String, Object> caseData = testFixture.getCaseDataForPetitionerEmail(true, true, null, EMPTY, EMPTY, EMPTY);
 
-        String caseId = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
-        String petitionerEmail = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL);
+        final String caseId = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
+        final String petitionerEmail = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL);
 
         CaseDetails caseDetails = mock(CaseDetails.class);
         when(caseDetails.getCaseId()).thenReturn(caseId);
@@ -152,8 +153,8 @@ public class RespondentAosOfflineNotificationTest {
     public void test_PetitionerEmail_RespondentSolicitor_NotDefending_AdulteryNotAdmitted_CoRespNotReplied() {
         Map<String, Object> caseData = testFixture.getCaseDataForPetitionerEmail(true, false, ADULTERY, NO_VALUE, YES_VALUE, NO_VALUE);
 
-        String caseId = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
-        String petitionerEmail = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL);
+        final String caseId = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
+        final String petitionerEmail = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL);
 
         CaseDetails caseDetails = mock(CaseDetails.class);
         when(caseDetails.getCaseId()).thenReturn(caseId);
@@ -176,7 +177,8 @@ public class RespondentAosOfflineNotificationTest {
         assertThat(contextTransientObjects.get(CASE_ID_JSON_KEY), is(caseId));
         assertThat(contextTransientObjects.get(CCD_CASE_DATA), is(caseData));
         assertThat(contextTransientObjects.get(NOTIFICATION_EMAIL), is(petitionerEmail));
-        assertThat(contextTransientObjects.get(NOTIFICATION_TEMPLATE), is(EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED));
+        assertThat(contextTransientObjects.get(NOTIFICATION_TEMPLATE),
+            is(EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED));
 
         checkTemplateVariables(contextTransientObjects);
     }
@@ -185,8 +187,8 @@ public class RespondentAosOfflineNotificationTest {
     public void test_PetitionerEmail_RespondentSolicitor_NotDefending_AdulteryNotAdmitted_CoRespReplied() {
         Map<String, Object> caseData = testFixture.getCaseDataForPetitionerEmail(true, false, ADULTERY, NO_VALUE, YES_VALUE, YES_VALUE);
 
-        String caseId = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
-        String petitionerEmail = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL);
+        final String caseId = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
+        final String petitionerEmail = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL);
 
         CaseDetails caseDetails = mock(CaseDetails.class);
         when(caseDetails.getCaseId()).thenReturn(caseId);
@@ -218,8 +220,8 @@ public class RespondentAosOfflineNotificationTest {
     public void test_PetitionerEmail_RespondentSolicitor_2YearSeparation() {
         Map<String, Object> caseData = testFixture.getCaseDataForPetitionerEmail(true, true, SEPARATION_TWO_YEARS, NO_VALUE, EMPTY, EMPTY);
 
-        String caseId = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
-        String petitionerEmail = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL);
+        final String caseId = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
+        final String petitionerEmail = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL);
 
         CaseDetails caseDetails = mock(CaseDetails.class);
         when(caseDetails.getCaseId()).thenReturn(caseId);
@@ -251,8 +253,8 @@ public class RespondentAosOfflineNotificationTest {
     public void test_PetitionerEmail_RespondentSolicitor_CoRespNamedNotReplied() {
         Map<String, Object> caseData = testFixture.getCaseDataForPetitionerEmail(true, true, null, EMPTY, YES_VALUE, NO_VALUE);
 
-        String caseId = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
-        String petitionerEmail = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL);
+        final String caseId = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
+        final String petitionerEmail = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL);
 
         CaseDetails caseDetails = mock(CaseDetails.class);
         when(caseDetails.getCaseId()).thenReturn(caseId);
@@ -284,8 +286,8 @@ public class RespondentAosOfflineNotificationTest {
     public void test_PetitionerEmail_Respondent_NotDefending() {
         Map<String, Object> caseData = testFixture.getCaseDataForPetitionerEmail(false, false, null, EMPTY, EMPTY, EMPTY);
 
-        String caseId = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
-        String petitionerEmail = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL);
+        final String caseId = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
+        final String petitionerEmail = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL);
 
         CaseDetails caseDetails = mock(CaseDetails.class);
         when(caseDetails.getCaseId()).thenReturn(caseId);
@@ -317,8 +319,8 @@ public class RespondentAosOfflineNotificationTest {
     public void test_PetitionerEmail_Respondent_NotDefending_AdulteryNotAdmitted_CoRespNotReplied() {
         Map<String, Object> caseData = testFixture.getCaseDataForPetitionerEmail(false, false, ADULTERY, NO_VALUE, YES_VALUE, NO_VALUE);
 
-        String caseId = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
-        String petitionerEmail = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL);
+        final String caseId = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
+        final String petitionerEmail = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL);
 
         CaseDetails caseDetails = mock(CaseDetails.class);
         when(caseDetails.getCaseId()).thenReturn(caseId);
@@ -341,7 +343,8 @@ public class RespondentAosOfflineNotificationTest {
         assertThat(contextTransientObjects.get(CASE_ID_JSON_KEY), is(caseId));
         assertThat(contextTransientObjects.get(CCD_CASE_DATA), is(caseData));
         assertThat(contextTransientObjects.get(NOTIFICATION_EMAIL), is(petitionerEmail));
-        assertThat(contextTransientObjects.get(NOTIFICATION_TEMPLATE), is(EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED));
+        assertThat(contextTransientObjects.get(NOTIFICATION_TEMPLATE),
+            is(EmailTemplateNames.AOS_RECEIVED_UNDEFENDED_NO_ADMIT_ADULTERY_CORESP_NOT_REPLIED));
 
         checkTemplateVariables(contextTransientObjects);
     }
@@ -350,8 +353,8 @@ public class RespondentAosOfflineNotificationTest {
     public void test_PetitionerEmail_Respondent_NotDefending_AdulteryNotAdmitted_CoRespReplied() {
         Map<String, Object> caseData = testFixture.getCaseDataForPetitionerEmail(false, false, ADULTERY, NO_VALUE, YES_VALUE, YES_VALUE);
 
-        String caseId = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
-        String petitionerEmail = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL);
+        final String caseId = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
+        final String petitionerEmail = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL);
 
         CaseDetails caseDetails = mock(CaseDetails.class);
         when(caseDetails.getCaseId()).thenReturn(caseId);
@@ -383,8 +386,8 @@ public class RespondentAosOfflineNotificationTest {
     public void test_PetitionerEmail_Respondent_NotDefending_2YearSeparation() {
         Map<String, Object> caseData = testFixture.getCaseDataForPetitionerEmail(false, false, SEPARATION_TWO_YEARS, NO_VALUE, EMPTY, EMPTY);
 
-        String caseId = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
-        String petitionerEmail = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL);
+        final String caseId = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
+        final String petitionerEmail = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL);
 
         CaseDetails caseDetails = mock(CaseDetails.class);
         when(caseDetails.getCaseId()).thenReturn(caseId);
@@ -416,8 +419,8 @@ public class RespondentAosOfflineNotificationTest {
     public void test_PetitionerEmail_Respondent_NotDefending_CoRespNamedNotReplied() {
         Map<String, Object> caseData = testFixture.getCaseDataForPetitionerEmail(false, false, null, EMPTY, YES_VALUE, NO_VALUE);
 
-        String caseId = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
-        String petitionerEmail = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL);
+        final String caseId = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
+        final String petitionerEmail = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL);
 
         CaseDetails caseDetails = mock(CaseDetails.class);
         when(caseDetails.getCaseId()).thenReturn(caseId);
@@ -469,6 +472,7 @@ public class RespondentAosOfflineNotificationTest {
         assertThat(tasks, hasSize(0));
     }
 
+    @SuppressWarnings("unchecked")
     private void checkTemplateVariables(final Map<String, Object> contextTransientObjects) {
         assertThat(contextTransientObjects.get(NOTIFICATION_TEMPLATE_VARS), is(not(nullValue())));
 
