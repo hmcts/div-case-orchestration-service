@@ -124,7 +124,7 @@ public class RespondentAosOfflineNotification {
 
             return new GenericEmailContext(emailToSendTo, template, notificationTemplateVars.build());
         } catch (Exception exception) {
-            exception.printStackTrace();
+            log.error(exception.getMessage(), exception);
             throw new WorkflowException(exception.getMessage());
         }
     }
