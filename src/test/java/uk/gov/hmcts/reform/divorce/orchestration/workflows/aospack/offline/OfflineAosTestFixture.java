@@ -26,9 +26,9 @@ public class OfflineAosTestFixture {
 
     public static final String CASE_ID = "1234-5678-9012-3456";
 
-    public static final String PET_SOL_EMAIL = "pet.sol@email.com";
+    public static final String PET_SOL_EMAIL = "divorce.petsol@mailinator.com";
 
-    public static final String PET_EMAIL = "pet.citizen@email.com";
+    public static final String PET_EMAIL = "divorce.petcitizen@mailinator.com";
 
     public static final String PET_FIRST_NAME = "Fred";
 
