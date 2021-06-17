@@ -1,3 +1,4 @@
+sourceCompatibility = 11
 
 repositories {
     mavenLocal()
