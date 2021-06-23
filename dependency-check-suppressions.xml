@@ -22,4 +22,14 @@
         <cve>CVE-2021-22134</cve>
     </suppress>
 
+    <suppress>
+        <notes>
+            <![CDATA[
+                spring-core-5.3.6.jar (pkg:maven/org.springframework/spring-core@5.3.6, cpe:2.3:a:pivotal_software:spring_framework:5.3.6:*:*:*:*:*:*:*, cpe:2.3:a:springsource:spring_framework:5.3.6:*:*:*:*:*:*:*, cpe:2.3:a:vmware:spring_framework:5.3.6:*:*:*:*:*:*:*, cpe:2.3:a:vmware:springsource_spring_framework:5.3.6:*:*:*:*:*:*:*)
+            ]]>
+        </notes>
+        <packageUrl regex="true">^.*$</packageUrl>
+        <cve>CVE-2021-22118</cve>
+    </suppress>
+
 </suppressions>
