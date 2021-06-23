@@ -18,6 +18,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.Responden
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.aospack.offline.RespondentAosDerivedAddressFormatterTask;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,18 +39,30 @@ public class AosPackOfflineAnswersWorkflow extends DefaultWorkflow<Map<String, O
     private final RespondentAosDerivedAddressFormatterTask respondentAosDerivedAddressFormatter;
     private final RespondentAnswersGenerator respondentAnswersGenerator;
     private final AddNewDocumentsToCaseDataTask addNewDocumentsToCaseDataTask;
+    private final RespondentAosOfflineNotification respondentAosOfflineNotification;
+    private final CoRespondentAosOfflineNotification coRespondentAosOfflineNotification;
 
     public Map<String, Object> run(String authToken, CaseDetails caseDetails, DivorceParty divorceParty) throws WorkflowException {
-        Map<String, Object> caseData = caseDetails.getCaseData();
-        String caseId = caseDetails.getCaseId();
+        final Map<String, Object> caseData = caseDetails.getCaseData();
+        final String caseId = caseDetails.getCaseId();
 
-        Task[] tasks = getTasks(divorceParty);
         log.info("Processing AosPackOfflineAnswersWorkflow for Case ID: {}", caseId);
-        return execute(tasks, caseData, ImmutablePair.of(CASE_ID_JSON_KEY, caseId), ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken));
+
+        List<Task<Map<String, Object>>> tasks = new ArrayList<>();
+        Map<String, Object> contextTransientObjects = new HashMap<>();
+
+        addTasks(divorceParty, tasks, contextTransientObjects, caseDetails, authToken);
+        contextTransientObjects.put(CASE_ID_JSON_KEY, caseDetails.getCaseId());
+        contextTransientObjects.put(AUTH_TOKEN_JSON_KEY, authToken);
+
+        // add the previous values for tasks last so they are preserved
+        return execute(tasks.toArray(new Task[] {}), caseData,
+            contextTransientObjects.entrySet().stream()
+                .map(entry -> new ImmutablePair<>(entry.getKey(), entry.getValue())).toArray(ImmutablePair[]::new));
     }
 
-    private Task[] getTasks(DivorceParty divorceParty) {
-        List<Task<Map<String, Object>>> tasks = new ArrayList<>();
+    private void addTasks(DivorceParty divorceParty, List<Task<Map<String, Object>>> tasks, Map<String, Object> contextTransientObjects,
+                          CaseDetails caseDetails, String authToken) throws WorkflowException {
 
         tasks.add(formFieldValuesToCoreFieldsRelay);
 
@@ -58,14 +71,17 @@ public class AosPackOfflineAnswersWorkflow extends DefaultWorkflow<Map<String, O
             tasks.add(respondentAosDerivedAddressFormatter);
             tasks.add(respondentAnswersGenerator);
             tasks.add(addNewDocumentsToCaseDataTask);
+            // add notification tasks about offline respondent aos
+            respondentAosOfflineNotification.addAOSEmailTasks(contextTransientObjects, tasks, caseDetails, authToken);
         }
 
         if (isCoRespondent(divorceParty)) {
             tasks.add(coRespondentAosAnswersProcessor);
             tasks.add(coRespondentAosDerivedAddressFormatter);
+            // add notification tasks about offline co-respondent aos
+            coRespondentAosOfflineNotification.addAOSEmailTasks(tasks, caseDetails);
         }
 
-        return tasks.toArray(new Task[] {});
     }
 
     private boolean isRespondent(DivorceParty divorceParty) {

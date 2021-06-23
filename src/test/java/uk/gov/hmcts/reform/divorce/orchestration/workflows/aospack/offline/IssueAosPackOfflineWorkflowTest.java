@@ -36,7 +36,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -119,12 +118,6 @@ public class IssueAosPackOfflineWorkflowTest {
     @Mock
     private MarkJourneyAsOfflineTask markJourneyAsOfflineTask;
 
-    @Mock
-    private RespondentAosOfflineNotification respondentAosOfflineNotification;
-
-    @Mock
-    private CoRespondentAosOfflineNotification corespondentAosOfflineNotification;
-
     @InjectMocks
     private IssueAosPackOfflineWorkflow classUnderTest;
 
@@ -169,7 +162,6 @@ public class IssueAosPackOfflineWorkflowTest {
         verifyModifyDueDateIsCalled();
         verifyBulkPrintIsCalledAsExpected(AOS_PACK_OFFLINE_RESPONDENT_LETTER_TYPE,
             asList(RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE, RESPONDENT_TWO_YEAR_SEPARATION_AOS_OFFLINE_FORM_DOCUMENT_TYPE));
-        verifyRespondentEmailCalled();
     }
 
     @Test
@@ -193,7 +185,6 @@ public class IssueAosPackOfflineWorkflowTest {
         verifyModifyDueDateIsCalled();
         verifyBulkPrintIsCalledAsExpected(AOS_PACK_OFFLINE_RESPONDENT_LETTER_TYPE,
             asList(RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE, RESPONDENT_FIVE_YEAR_SEPARATION_FORM_DOCUMENT_TYPE));
-        verifyRespondentEmailCalled();
     }
 
     @Test
@@ -217,7 +208,6 @@ public class IssueAosPackOfflineWorkflowTest {
         verifyModifyDueDateIsCalled();
         verifyBulkPrintIsCalledAsExpected(AOS_PACK_OFFLINE_RESPONDENT_LETTER_TYPE,
             asList(RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE, RESPONDENT_BEHAVIOUR_DESERTION_FORM_DOCUMENT_TYPE));
-        verifyRespondentEmailCalled();
     }
 
     @Test
@@ -241,7 +231,6 @@ public class IssueAosPackOfflineWorkflowTest {
         verifyModifyDueDateIsCalled();
         verifyBulkPrintIsCalledAsExpected(AOS_PACK_OFFLINE_RESPONDENT_LETTER_TYPE,
             asList(RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE, RESPONDENT_BEHAVIOUR_DESERTION_FORM_DOCUMENT_TYPE));
-        verifyRespondentEmailCalled();
     }
 
     @Test
@@ -265,7 +254,6 @@ public class IssueAosPackOfflineWorkflowTest {
         verifyModifyDueDateIsCalled();
         verifyBulkPrintIsCalledAsExpected(AOS_PACK_OFFLINE_RESPONDENT_LETTER_TYPE,
             asList(RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE, RESPONDENT_ADULTERY_FORM_DOCUMENT_TYPE));
-        verifyRespondentEmailCalled();
     }
 
     @Test
@@ -277,7 +265,6 @@ public class IssueAosPackOfflineWorkflowTest {
         TaskContext taskContext = taskContextArgumentCaptor.getValue();
         List<DocumentGenerationRequest> documentGenerationRequestList = taskContext.getTransientObject(DOCUMENT_GENERATION_REQUESTS_KEY);
         assertThat("list is empty ", documentGenerationRequestList, empty());
-        verifyCorespondentEmailCalled();
     }
 
     @Test
@@ -306,7 +293,6 @@ public class IssueAosPackOfflineWorkflowTest {
 
         verifyBulkPrintIsCalledAsExpected(AOS_PACK_OFFLINE_CO_RESPONDENT_LETTER_TYPE,
                 asList(CO_RESPONDENT_AOS_INVITATION_LETTER_DOCUMENT_TYPE, CO_RESPONDENT_ADULTERY_FORM_DOCUMENT_TYPE));
-        verifyCorespondentEmailCalled();
     }
 
     private void verifyDocumentGeneratorReceivesExpectedParameters(List<DocumentGenerationRequest> expectedDocumentGenerationRequests)
@@ -361,13 +347,4 @@ public class IssueAosPackOfflineWorkflowTest {
         assertThat(bulkPrintTaskContext.getTransientObject(DOCUMENT_TYPES_TO_PRINT), equalTo(expectedDocumentTypesToPrint));
     }
 
-    private void verifyRespondentEmailCalled() throws WorkflowException {
-        verify(respondentAosOfflineNotification).addAOSEmailTasks(any(), any(), any(), anyString());
-        verifyNoInteractions(corespondentAosOfflineNotification);
-    }
-
-    private void verifyCorespondentEmailCalled() {
-        verifyNoInteractions(respondentAosOfflineNotification);
-        verify(corespondentAosOfflineNotification).addAOSEmailTasks(any(), any());
-    }
 }
