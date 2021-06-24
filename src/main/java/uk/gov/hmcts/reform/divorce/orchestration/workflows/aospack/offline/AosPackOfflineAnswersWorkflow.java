@@ -52,10 +52,11 @@ public class AosPackOfflineAnswersWorkflow extends DefaultWorkflow<Map<String, O
         Map<String, Object> contextTransientObjects = new HashMap<>();
 
         addTasks(divorceParty, tasks, contextTransientObjects, caseDetails, authToken);
+
+        // add the previous values for tasks last so they are preserved
         contextTransientObjects.put(CASE_ID_JSON_KEY, caseDetails.getCaseId());
         contextTransientObjects.put(AUTH_TOKEN_JSON_KEY, authToken);
 
-        // add the previous values for tasks last so they are preserved
         return execute(tasks.toArray(new Task[] {}), caseData,
             contextTransientObjects.entrySet().stream()
                 .map(entry -> new ImmutablePair<>(entry.getKey(), entry.getValue())).toArray(ImmutablePair[]::new));
