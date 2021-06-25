@@ -37,7 +37,6 @@ def versions = [
         commonsIo                    : '2.7',
         commonsLang3                 : '3.9',
         commonsMath3                 : '3.6.1',
-        divCommonLib                 : '1.2.16',
         dumbster                     : '1.7.1',
         elasticsearch                : '7.12.0',
         feignHttpClient              : '10.3.0',
@@ -107,6 +106,7 @@ allprojects {
     }
 
     repositories {
+        maven { url "https://jitpack.io" }
         mavenCentral()
         jcenter()
         maven { url "https://dl.bintray.com/hmcts/hmcts-maven" }
@@ -239,6 +239,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:${versions.lombok}")
     testAnnotationProcessor("org.projectlombok:lombok:${versions.lombok}")
 
+    implementation 'com.github.hmcts:div-common-lib:1.2.17'
     implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
     implementation group: 'com.jayway.jsonpath', name: 'json-path-assert', version: versions.jsonPathAssert
     implementation group: 'com.github.kirviq', name: 'dumbster', version: versions.dumbster
@@ -269,7 +270,6 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
     implementation group: 'org.springframework.retry', name: 'spring-retry'
     implementation group: 'uk.gov.hmcts.reform', name: 'bsp-common-lib', version: versions.bspCommonLib
-    implementation group: 'uk.gov.hmcts.reform', name: 'div-common-lib', version: versions.divCommonLib
     implementation group: 'uk.gov.hmcts.reform', name: 'idam-client', version: versions.idamClient
     implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformsJavaLogging
     implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformsJavaLogging
