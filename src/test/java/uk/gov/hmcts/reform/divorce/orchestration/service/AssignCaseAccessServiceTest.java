@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.authorisation.generators.AuthTokenGenerator;
 import uk.gov.hmcts.reform.divorce.orchestration.client.AssignCaseAccessClient;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.AssignCaseAccessRequest;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.idam.client.IdamClient;
 import uk.gov.hmcts.reform.idam.client.models.UserDetails;
@@ -23,6 +24,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RunWith(MockitoJUnitRunner.class)
 public class AssignCaseAccessServiceTest {
 
+    public static final boolean USE_USER_TOKEN_PARAMETER = true;
+    public static final boolean DONT_USE_USER_TOKEN_PARAMETER = false;
+
     @Mock
     private IdamClient idamClient;
 
@@ -32,11 +36,24 @@ public class AssignCaseAccessServiceTest {
     @Mock
     private AuthTokenGenerator authTokenGenerator;
 
+    @Mock
+    private FeatureToggleService featureToggleService;
+
     @InjectMocks
     private AssignCaseAccessService classUnderTest;
 
     @Test
-    public void assignCaseAccessShouldCallAllServicesWithExpectedValues() {
+    public void assignCaseAccessShouldCallAllServicesWithExpectedValuesAndUseUserTokenParamTrue() {
+        executeAndAssert(USE_USER_TOKEN_PARAMETER);
+    }
+
+    @Test
+    public void assignCaseAccessShouldCallAllServicesWithExpectedValuesAndUseUserTokenParamFalse() {
+        executeAndAssert(DONT_USE_USER_TOKEN_PARAMETER);
+    }
+
+    private void executeAndAssert(boolean useUserTokenFlag) {
+        when(featureToggleService.isFeatureEnabled(Features.USE_USER_TOKEN)).thenReturn(useUserTokenFlag);
         when(idamClient.getUserDetails(AUTH_TOKEN)).thenReturn(UserDetails.builder().id(TEST_USER_ID).build());
         when(authTokenGenerator.generate()).thenReturn(TEST_SERVICE_TOKEN);
 
@@ -45,6 +62,7 @@ public class AssignCaseAccessServiceTest {
         verify(assignCaseAccessClient).assignCaseAccess(
             AUTH_TOKEN,
             TEST_SERVICE_TOKEN,
+            useUserTokenFlag,
             AssignCaseAccessRequest
                 .builder()
                 .caseId(TEST_CASE_ID)

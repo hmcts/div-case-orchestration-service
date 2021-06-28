@@ -44,6 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_FEE_AMOUNT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.DN_OUTCOME_FLAG;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_CLARIFICATION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_PRONOUNCEMENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.DN_REFUSED;
@@ -57,7 +58,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_DECISION_DATE_FIELD;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_OUTCOME_FLAG_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DN_REFUSED_REJECT_OPTION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_OTHER;
@@ -120,7 +120,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
                     hasJsonPath(DECREE_NISI_GRANTED_CCD_FIELD, equalTo(YES_VALUE)),
                     hasJsonPath(STATE_CCD_FIELD, equalTo(AWAITING_PRONOUNCEMENT)),
                     hasJsonPath(WHO_PAYS_COSTS_CCD_FIELD, equalTo(WHO_PAYS_CCD_CODE_FOR_RESPONDENT)),
-                    hasJsonPath(DN_OUTCOME_FLAG_CCD_FIELD, equalTo(YES_VALUE)),
+                    hasJsonPath(DN_OUTCOME_FLAG, equalTo(YES_VALUE)),
                     hasJsonPath(DN_DECISION_DATE_FIELD, equalTo(ccdUtil.getCurrentDateCcdFormat()))
                 ))
             )));
@@ -141,7 +141,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
                 hasJsonPath(CCD_RESPONSE_DATA_FIELD, allOf(
                     hasJsonPath(DECREE_NISI_GRANTED_CCD_FIELD, equalTo(YES_VALUE)),
                     hasJsonPath(STATE_CCD_FIELD, equalTo(AWAITING_PRONOUNCEMENT)),
-                    hasJsonPath(DN_OUTCOME_FLAG_CCD_FIELD, equalTo(YES_VALUE)),
+                    hasJsonPath(DN_OUTCOME_FLAG, equalTo(YES_VALUE)),
                     hasNoJsonPath(WHO_PAYS_COSTS_CCD_FIELD),
                     hasJsonPath(DN_DECISION_DATE_FIELD, equalTo(ccdUtil.getCurrentDateCcdFormat()))
                 ))
@@ -167,7 +167,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
                     hasJsonPath(DECREE_NISI_GRANTED_CCD_FIELD, equalTo(NO_VALUE)),
                     hasJsonPath(STATE_CCD_FIELD, equalTo(AWAITING_CLARIFICATION)),
                     hasJsonPath(DN_DECISION_DATE_FIELD, equalTo(ccdUtil.getCurrentDateCcdFormat())),
-                    hasJsonPath(DN_OUTCOME_FLAG_CCD_FIELD, equalTo(YES_VALUE)),
+                    hasJsonPath(DN_OUTCOME_FLAG, equalTo(YES_VALUE)),
                     hasNoJsonPath(WHO_PAYS_COSTS_CCD_FIELD)
                 ))
             )));
@@ -185,7 +185,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
         expectedRequestData.putAll(ImmutableMap.of(
             STATE_CCD_FIELD, AWAITING_CLARIFICATION,
             DN_DECISION_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat(),
-            DN_OUTCOME_FLAG_CCD_FIELD, YES_VALUE
+            DN_OUTCOME_FLAG, YES_VALUE
         ));
 
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(expectedRequestData).build();
@@ -210,7 +210,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
                     hasJsonPath(DECREE_NISI_GRANTED_CCD_FIELD, equalTo(NO_VALUE)),
                     hasJsonPath(STATE_CCD_FIELD, equalTo(AWAITING_CLARIFICATION)),
                     hasJsonPath(DN_DECISION_DATE_FIELD, equalTo(ccdUtil.getCurrentDateCcdFormat())),
-                    hasJsonPath(DN_OUTCOME_FLAG_CCD_FIELD, equalTo(YES_VALUE)),
+                    hasJsonPath(DN_OUTCOME_FLAG, equalTo(YES_VALUE)),
                     hasNoJsonPath(WHO_PAYS_COSTS_CCD_FIELD)
                 ))
             )));
@@ -233,7 +233,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
             D8DOCUMENTS_GENERATED, buildDocumentCollection(DOCUMENT_TYPE_OTHER, DECREE_NISI_REFUSAL_DOCUMENT_NAME_OLD + FIXED_DATE),
             STATE_CCD_FIELD, AWAITING_CLARIFICATION,
             DN_DECISION_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat(),
-            DN_OUTCOME_FLAG_CCD_FIELD, YES_VALUE
+            DN_OUTCOME_FLAG, YES_VALUE
         ));
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(documentGenerationRequestCaseData).build();
 
@@ -257,7 +257,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
                     hasJsonPath(DECREE_NISI_GRANTED_CCD_FIELD, equalTo(NO_VALUE)),
                     hasJsonPath(STATE_CCD_FIELD, equalTo(AWAITING_CLARIFICATION)),
                     hasJsonPath(DN_DECISION_DATE_FIELD, equalTo(ccdUtil.getCurrentDateCcdFormat())),
-                    hasJsonPath(DN_OUTCOME_FLAG_CCD_FIELD, equalTo(YES_VALUE)),
+                    hasJsonPath(DN_OUTCOME_FLAG, equalTo(YES_VALUE)),
                     hasNoJsonPath(WHO_PAYS_COSTS_CCD_FIELD)
                 ))
             )));
@@ -311,7 +311,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
         expectedRequestData.putAll(ImmutableMap.of(
             STATE_CCD_FIELD, DN_REFUSED,
             DN_DECISION_DATE_FIELD, ccdUtil.getCurrentDateCcdFormat(),
-            DN_OUTCOME_FLAG_CCD_FIELD, YES_VALUE
+            DN_OUTCOME_FLAG, YES_VALUE
         ));
 
         Map<String, Object> expectedDocumentRequestData = new HashMap<>(expectedRequestData);
@@ -342,7 +342,7 @@ public class DecreeNisiAboutToBeGrantedTest extends MockedFunctionalTest {
                     hasJsonPath(DECREE_NISI_GRANTED_CCD_FIELD, equalTo(NO_VALUE)),
                     hasJsonPath(STATE_CCD_FIELD, equalTo(DN_REFUSED)),
                     hasJsonPath(DN_DECISION_DATE_FIELD, equalTo(ccdUtil.getCurrentDateCcdFormat())),
-                    hasJsonPath(DN_OUTCOME_FLAG_CCD_FIELD, equalTo(YES_VALUE)),
+                    hasJsonPath(DN_OUTCOME_FLAG, equalTo(YES_VALUE)),
                     hasNoJsonPath(WHO_PAYS_COSTS_CCD_FIELD)
                 ))
             )));

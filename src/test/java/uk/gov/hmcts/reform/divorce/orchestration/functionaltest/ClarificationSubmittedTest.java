@@ -7,8 +7,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 
 import java.util.Map;
 
@@ -60,11 +58,7 @@ public class ClarificationSubmittedTest extends MockedFunctionalTest {
 
         webClient.perform(post(API_URL)
             .content(
-                convertObjectToJsonString(
-                    CcdCallbackRequest.builder()
-                        .caseDetails(CaseDetails.builder().caseData(caseData).build())
-                        .build()
-                )
+                convertObjectToJsonString(getCcdCallbackRequest(caseData))
             )
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
@@ -92,11 +86,7 @@ public class ClarificationSubmittedTest extends MockedFunctionalTest {
     public void shouldReturnErrorWhenNoMandatoryDataProvided() throws Exception {
         webClient.perform(post(API_URL)
             .content(
-                convertObjectToJsonString(
-                    CcdCallbackRequest.builder()
-                        .caseDetails(CaseDetails.builder().caseData(emptyMap()).build())
-                        .build()
-                )
+                convertObjectToJsonString(getCcdCallbackRequest(emptyMap()))
             )
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))

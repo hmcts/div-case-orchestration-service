@@ -4,8 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
 
@@ -25,7 +23,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.JUDGE_COSTS_DECISION;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference.ENGLISH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_DOCUMENT_TYPE;
@@ -64,11 +61,7 @@ public class CourtOrderDocumentsUpdateCallbackTest extends MockedFunctionalTest 
             .contentType(APPLICATION_JSON)
             .accept(APPLICATION_JSON)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(
-                CcdCallbackRequest.builder()
-                    .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build())
-                    .build()
-            )))
+            .content(convertObjectToJsonString(getCcdCallbackRequest(caseData))))
             .andExpect(status().isOk())
             .andReturn().getResponse().getContentAsString();
 
@@ -107,11 +100,7 @@ public class CourtOrderDocumentsUpdateCallbackTest extends MockedFunctionalTest 
             .contentType(APPLICATION_JSON)
             .accept(APPLICATION_JSON)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(
-                CcdCallbackRequest.builder()
-                    .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build())
-                    .build()
-            )))
+            .content(convertObjectToJsonString(getCcdCallbackRequest(caseData))))
             .andExpect(status().isOk())
             .andReturn().getResponse().getContentAsString();
 
@@ -144,11 +133,7 @@ public class CourtOrderDocumentsUpdateCallbackTest extends MockedFunctionalTest 
             .contentType(APPLICATION_JSON)
             .accept(APPLICATION_JSON)
             .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(
-                CcdCallbackRequest.builder()
-                    .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build())
-                    .build()
-            )))
+            .content(convertObjectToJsonString(getCcdCallbackRequest(caseData))))
             .andExpect(status().isOk())
             .andReturn().getResponse().getContentAsString();
 

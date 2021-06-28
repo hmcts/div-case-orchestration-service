@@ -1,11 +1,9 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskException;
@@ -18,17 +16,15 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.COURT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.BULK_LISTING_CASE_ID_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATE_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PRONOUNCEMENT_JUDGE_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.context;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RemoveListingDataTaskTest {
-
-    @Spy
-    private ObjectMapper mapper;
 
     @InjectMocks
     private RemoveListingDataTask classToTest;
@@ -44,13 +40,14 @@ public class RemoveListingDataTaskTest {
         Map<String, Object> expectedMap = new HashMap<>();
         expectedMap.put("anyKey", "anyData");
 
-        Map<String, Object> caseData = ImmutableMap.of("anyKey", "anyData",
-                COURT_NAME_CCD_FIELD, "Court",
-                BULK_LISTING_CASE_ID_FIELD,"caseLink",
-                PRONOUNCEMENT_JUDGE_CCD_FIELD, "Judge Name",
-                DATETIME_OF_HEARING_CCD_FIELD, courtHearingDates);
+        Map<String, Object> caseData = new HashMap<>(ImmutableMap.of("anyKey", "anyData",
+            COURT_NAME, "Court",
+            BULK_LISTING_CASE_ID_FIELD,"caseLink",
+            PRONOUNCEMENT_JUDGE_CCD_FIELD, "Judge Name",
+            DATETIME_OF_HEARING_CCD_FIELD, courtHearingDates
+        ));
 
-        Map<String, Object> response = classToTest.execute(null, caseData);
+        Map<String, Object> response = classToTest.execute(context(), caseData);
         assertThat(response, is(expectedMap));
     }
 }

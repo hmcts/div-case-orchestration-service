@@ -1,4 +1,3 @@
-
 package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.callback;
 
 import com.google.common.collect.ImmutableMap;
@@ -14,8 +13,6 @@ import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.model.ccd.Document;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
 import uk.gov.hmcts.reform.divorce.orchestration.service.BulkPrintService;
@@ -60,7 +57,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SERVICE_AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.BulkCaseConstants.COURT_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.COURT_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
@@ -104,7 +101,7 @@ public class CaseListedForHearingCallbackTest extends MockedFunctionalTest {
         .put(RESPONDENT_DERIVED_CORRESPONDENCE_ADDRESS, "221B Baker Street")
         .put(D_8_CASE_REFERENCE, TEST_CASE_ID)
         .put(DATETIME_OF_HEARING_CCD_FIELD, DATE_TIME_OF_HEARINGS)
-        .put(COURT_NAME_CCD_FIELD, TEST_COURT_ID)
+        .put(COURT_NAME, TEST_COURT_ID)
         .put(DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, YES_VALUE)
         .build();
 
@@ -134,11 +131,7 @@ public class CaseListedForHearingCallbackTest extends MockedFunctionalTest {
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(convertObjectToJsonString(
-                CcdCallbackRequest.builder()
-                    .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build())
-                    .build()
-            ))
+            .content(convertObjectToJsonString(getCcdCallbackRequest(caseData)))
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
@@ -177,11 +170,7 @@ public class CaseListedForHearingCallbackTest extends MockedFunctionalTest {
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(convertObjectToJsonString(
-                CcdCallbackRequest.builder()
-                    .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build())
-                    .build()
-            ))
+            .content(convertObjectToJsonString(getCcdCallbackRequest(caseData)))
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().json(convertObjectToJsonString(expectedResponse)));
@@ -219,11 +208,7 @@ public class CaseListedForHearingCallbackTest extends MockedFunctionalTest {
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(convertObjectToJsonString(
-                CcdCallbackRequest.builder()
-                    .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(caseData).build())
-                    .build()
-            ))
+            .content(convertObjectToJsonString(getCcdCallbackRequest(caseData)))
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(content().string(hasJsonPath("$.errors", hasItem("Failed to send e-mail"))));
@@ -241,14 +226,9 @@ public class CaseListedForHearingCallbackTest extends MockedFunctionalTest {
     @Test
     public void givenAuthHeaderIsNull_whenEndpointInvoked_thenReturnBadRequest() throws Exception {
         webClient.perform(post(API_URL)
-            .content(convertObjectToJsonString(
-                CcdCallbackRequest.builder()
-                    .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(BASE_CASE_DATA).build())
-                    .build()
-            ))
+            .content(convertObjectToJsonString(getCcdCallbackRequest(BASE_CASE_DATA)))
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isBadRequest());
     }
-
 }

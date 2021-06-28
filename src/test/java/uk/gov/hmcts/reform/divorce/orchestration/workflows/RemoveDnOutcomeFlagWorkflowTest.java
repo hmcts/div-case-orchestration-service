@@ -19,6 +19,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.DUMMY_CASE_DATA;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RemoveDnOutcomeFlagWorkflowTest {
@@ -34,7 +35,7 @@ public class RemoveDnOutcomeFlagWorkflowTest {
         when(removeDnOutcomeCaseFlagTask.execute(any(TaskContext.class), eq(DUMMY_CASE_DATA))).thenReturn(DUMMY_CASE_DATA);
 
         CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
-                .caseDetails(CaseDetails.builder().caseData(DUMMY_CASE_DATA).build())
+                .caseDetails(CaseDetails.builder().caseId(TEST_CASE_ID).caseData(DUMMY_CASE_DATA).build())
                 .build();
 
         assertThat(classToTest.run(ccdCallbackRequest), is(DUMMY_CASE_DATA));

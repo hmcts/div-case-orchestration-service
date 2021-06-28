@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.client.EmailClient;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil;
@@ -23,7 +22,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_FAMILY_MAN_ID;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_USER_EMAIL;
@@ -36,7 +34,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NOTIFICATION_CASE_NUMBER_KEY;
 
 public class PetitionerClarificationNotificationITest extends MockedFunctionalTest {
+
     private static final String API_URL = "/request-clarification-petitioner";
+
     private static final String EMAIL_TEMPLATE_ID = "686ce418-6d76-48ce-b903-a87d2b832125";
 
     @Autowired
@@ -60,11 +60,7 @@ public class PetitionerClarificationNotificationITest extends MockedFunctionalTe
             D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME,
             D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
 
-        final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().eventId(TEST_CASE_ID)
-            .caseDetails(CaseDetails.builder()
-                .caseData(caseDetailMap)
-                .build())
-            .build();
+        final CcdCallbackRequest ccdCallbackRequest = getCcdCallbackRequest(caseDetailMap);
 
         final CcdCallbackResponse ccdCallbackResponse = CcdCallbackResponse
             .builder()
@@ -94,11 +90,7 @@ public class PetitionerClarificationNotificationITest extends MockedFunctionalTe
             D_8_PETITIONER_FIRST_NAME, TEST_PETITIONER_FIRST_NAME,
             D_8_PETITIONER_LAST_NAME, TEST_PETITIONER_LAST_NAME);
 
-        final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder().eventId(TEST_CASE_ID)
-            .caseDetails(CaseDetails.builder()
-                .caseData(caseDetailMap)
-                .build())
-            .build();
+        final CcdCallbackRequest ccdCallbackRequest = getCcdCallbackRequest(caseDetailMap);
 
         final CcdCallbackResponse ccdCallbackResponse = CcdCallbackResponse
             .builder()
@@ -114,6 +106,5 @@ public class PetitionerClarificationNotificationITest extends MockedFunctionalTe
             .andExpect(content().string(expectedResponse));
 
         verifyNoInteractions(mockEmailClient);
-
     }
 }
