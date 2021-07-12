@@ -71,7 +71,6 @@ public class PbaClientConsumerTest {
             .path("/refdata/external/v1/organisations/pbas")
             .method("GET")
             .headers(HttpHeaders.AUTHORIZATION, SOME_AUTHORIZATION_TOKEN, SERVICE_AUTHORIZATION,
-
                 SOME_SERVICE_AUTHORIZATION_TOKEN, USER_EMAIL, ORGANISATION_EMAIL)
             .willRespondWith()
             .status(200)
