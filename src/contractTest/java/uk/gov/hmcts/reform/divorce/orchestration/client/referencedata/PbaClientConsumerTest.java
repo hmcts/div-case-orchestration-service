@@ -39,7 +39,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 })
 public class PbaClientConsumerTest {
 
-
     public static final String SOME_AUTHORIZATION_TOKEN = "Bearer UserAuthToken";
     public static final String SOME_SERVICE_AUTHORIZATION_TOKEN = "ServiceToken";
     protected static final String USER_EMAIL = "UserEmail";
