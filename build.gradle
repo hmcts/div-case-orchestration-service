@@ -218,19 +218,11 @@ sourceSets {
         }
         resources.srcDir file('src/contractTest/resources')
     }
-    fortifyTest {
-        java {
-            compileClasspath += main.output
-            runtimeClasspath += main.output
-        }
-    }
 }
 
 configurations {
     integrationTestImplementation.extendsFrom testImplementation
     integrationTestRuntime.extendsFrom testRuntime
-    fortifyTest.extendsFrom testImplementation
-    fortifyTest.extendsFrom testRuntime
 }
 
 dependencyCheck {
@@ -245,6 +237,18 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok:${versions.lombok}")
     testCompileOnly("org.projectlombok:lombok:${versions.lombok}")
+    testCompile("com.github.hmcts:fortify-client:1.0.1:all"){
+        exclude group: 'org.slf4j'
+    }
+    testRuntime(
+            implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign')
+                    {
+                        exclude group: 'io.reactivex', module: 'io.reactivex'
+                        exclude group: 'io.reactivex', module: 'rxnetty'
+                        exclude group: 'io.reactivex', module: 'rxnetty-contexts'
+                        exclude group: 'io.reactivex', module: 'rxnetty-servo'
+                    }
+    )
     annotationProcessor("org.projectlombok:lombok:${versions.lombok}")
     testAnnotationProcessor("org.projectlombok:lombok:${versions.lombok}")
 
@@ -387,9 +391,6 @@ dependencies {
     contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.7.2')
     contractTestCompile sourceSets.main.runtimeClasspath
     contractTestCompile sourceSets.test.runtimeClasspath
-
-    fortifyTestCompile("com.github.hmcts:fortify-client:1.0.1:all")
-
 }
 
 dependencies {
@@ -585,6 +586,6 @@ pact {
 
 task fortifyScan(type: JavaExec)  {
     main = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
-    classpath += sourceSets.fortifyTest.runtimeClasspath
+    classpath += sourceSets.test.runtimeClasspath
     jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
 }
