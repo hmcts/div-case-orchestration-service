@@ -107,11 +107,16 @@ allprojects {
     }
 
     repositories {
+        mavenLocal()
         mavenCentral()
         jcenter()
+        maven { url "https://repo.maven.apache.org/maven2" }
+        maven { url "https://jitpack.io" }
         maven { url "https://dl.bintray.com/hmcts/hmcts-maven" }
         maven { url 'https://repo.spring.io/libs-milestone' }
     }
+
+
 
     dependencyManagement {
         imports {
@@ -236,8 +241,10 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok:${versions.lombok}")
     testCompileOnly("org.projectlombok:lombok:${versions.lombok}")
+    testCompileOnly("com.github.hmcts:fortify-client:1.0.1:all")
     annotationProcessor("org.projectlombok:lombok:${versions.lombok}")
     testAnnotationProcessor("org.projectlombok:lombok:${versions.lombok}")
+
 
     implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
     implementation group: 'com.jayway.jsonpath', name: 'json-path-assert', version: versions.jsonPathAssert
@@ -324,6 +331,7 @@ dependencies {
         exclude(module: 'commons-logging')
         exclude(module: 'android-json')
     }
+
 
     //integration test
     integrationTestAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
@@ -568,4 +576,10 @@ pact {
         tags = [System.getenv("PACT_BRANCH_NAME") ?:'Dev']
         version = project.pactVersion
     }
+}
+
+task fortifyScan(type: JavaExec)  {
+    main = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
+    classpath += sourceSets.test.runtimeClasspath
+    jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
 }
