@@ -109,8 +109,7 @@ allprojects {
     repositories {
         mavenCentral()
         jcenter()
-        //maven { url "https://repo.maven.apache.org/maven2" }
-        //maven { url "https://jitpack.io" }
+        maven { url "https://jitpack.io" }
         maven { url "https://dl.bintray.com/hmcts/hmcts-maven" }
         maven { url 'https://repo.spring.io/libs-milestone' }
     }
@@ -238,7 +237,7 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok:${versions.lombok}")
     testCompileOnly("org.projectlombok:lombok:${versions.lombok}")
-    //testCompileOnly("com.github.hmcts:fortify-client:1.0.1:all")
+    testCompileOnly("com.github.hmcts:fortify-client:1.0.1:all")
     annotationProcessor("org.projectlombok:lombok:${versions.lombok}")
     testAnnotationProcessor("org.projectlombok:lombok:${versions.lombok}")
 
