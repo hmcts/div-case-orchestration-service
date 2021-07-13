@@ -222,15 +222,15 @@ sourceSets {
         java {
             compileClasspath += main.output
             runtimeClasspath += main.output
-            srcDir file('src/main/java')
         }
-        resources.srcDir file('src/main/resources')
     }
 }
 
 configurations {
     integrationTestImplementation.extendsFrom testImplementation
     integrationTestRuntime.extendsFrom testRuntime
+    fortifyTest.extendsFrom testImplementation
+    fortifyTest.extendsFrom testRuntime
 }
 
 dependencyCheck {
