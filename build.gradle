@@ -218,6 +218,14 @@ sourceSets {
         }
         resources.srcDir file('src/contractTest/resources')
     }
+    fortifyTest {
+        java {
+            compileClasspath += main.output
+            runtimeClasspath += main.output
+            srcDir file('src/main/java')
+        }
+        resources.srcDir file('src/main/resources')
+    }
 }
 
 configurations {
@@ -237,7 +245,6 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok:${versions.lombok}")
     testCompileOnly("org.projectlombok:lombok:${versions.lombok}")
-    testCompile("com.github.hmcts:fortify-client:1.0.1")
     annotationProcessor("org.projectlombok:lombok:${versions.lombok}")
     testAnnotationProcessor("org.projectlombok:lombok:${versions.lombok}")
 
@@ -380,6 +387,11 @@ dependencies {
     contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.7.2')
     contractTestCompile sourceSets.main.runtimeClasspath
     contractTestCompile sourceSets.test.runtimeClasspath
+
+
+    fortifyTestCompile("com.github.hmcts:fortify-client:1.0.1:all")
+    fortifyTestCompile sourceSets.main.runtimeClasspath
+    fortifyTestCompile sourceSets.test.runtimeClasspath
 }
 
 dependencies {
@@ -575,6 +587,6 @@ pact {
 
 task fortifyScan(type: JavaExec)  {
     main = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
-    classpath += sourceSets.test.runtimeClasspath
+    classpath += sourceSets.fortifyTest.runtimeClasspath
     jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
 }
