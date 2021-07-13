@@ -388,10 +388,8 @@ dependencies {
     contractTestCompile sourceSets.main.runtimeClasspath
     contractTestCompile sourceSets.test.runtimeClasspath
 
-
     fortifyTestCompile("com.github.hmcts:fortify-client:1.0.1:all")
-    fortifyTestCompile sourceSets.main.runtimeClasspath
-    fortifyTestCompile sourceSets.test.runtimeClasspath
+
 }
 
 dependencies {
