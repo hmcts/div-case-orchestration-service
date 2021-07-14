@@ -31,13 +31,13 @@ plugins {
 def versions = [
         awaitility                   : '4.0.2',
         bcpkixJdk15on                : '1.64',
-        bspCommonLib                 : '0.0.47',
+        bspCommonLib                 : '0.0.48',
         ccdStoreClient               : '4.7.3',
         commonsBeanUtils             : '1.9.4',
         commonsIo                    : '2.7',
         commonsLang3                 : '3.9',
         commonsMath3                 : '3.6.1',
-        divCommonLib                 : '1.2.16',
+        divCommonLib                 : '1.2.17',
         dumbster                     : '1.7.1',
         elasticsearch                : '7.12.0',
         feignHttpClient              : '10.3.0',
@@ -109,8 +109,8 @@ allprojects {
     repositories {
         mavenCentral()
         jcenter()
-        maven { url "https://dl.bintray.com/hmcts/hmcts-maven" }
         maven { url 'https://repo.spring.io/libs-milestone' }
+        maven { url "https://repo.maven.apache.org/maven2" }
         maven { url "https://jitpack.io" }
     }
 
@@ -269,8 +269,8 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
     implementation group: 'org.springframework.retry', name: 'spring-retry'
-    implementation group: 'uk.gov.hmcts.reform', name: 'bsp-common-lib', version: versions.bspCommonLib
-    implementation group: 'uk.gov.hmcts.reform', name: 'div-common-lib', version: versions.divCommonLib
+    implementation "com.github.hmcts:bsp-common-lib:${versions.bspCommonLib}"
+    implementation "com.github.hmcts:div-common-lib:${versions.divCommonLib}"
     implementation group: 'uk.gov.hmcts.reform', name: 'idam-client', version: versions.idamClient
     implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformsJavaLogging
     implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformsJavaLogging
