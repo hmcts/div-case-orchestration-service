@@ -237,18 +237,7 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok:${versions.lombok}")
     testCompileOnly("org.projectlombok:lombok:${versions.lombok}")
-    testCompile("com.github.hmcts:fortify-client:1.0.1:all"){
-        exclude group: 'org.slf4j'
-    }
-    testRuntime(
-            implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign')
-                    {
-                        exclude group: 'io.reactivex', module: 'io.reactivex'
-                        exclude group: 'io.reactivex', module: 'rxnetty'
-                        exclude group: 'io.reactivex', module: 'rxnetty-contexts'
-                        exclude group: 'io.reactivex', module: 'rxnetty-servo'
-                    }
-    )
+    testCompile("com.github.hmcts:fortify-client:1.0.1:all")
     annotationProcessor("org.projectlombok:lombok:${versions.lombok}")
     testAnnotationProcessor("org.projectlombok:lombok:${versions.lombok}")
 
