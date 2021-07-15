@@ -7,6 +7,7 @@ import com.github.tomakehurst.wiremock.junit.WireMockClassRule;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.junit.ClassRule;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -56,6 +57,12 @@ public abstract class MockedFunctionalTest {
     private static final String SERVICE_AUTH_CONTEXT_PATH = "/lease";
     protected static final String GENERATE_DRAFT_DOCUMENT_CONTEXT_PATH = "/version/1/generateDraftPDF";
     protected static final String CASE_MAINTENANCE_CLIENT_SEARCH_URL = "/casemaintenance/version/1/search";
+
+    @AfterEach
+    public void resetWireMocks(){
+        WireMock.reset();
+    }
+
 
     @ClassRule
     public static WireMockClassRule maintenanceServiceServer = new WireMockClassRule(buildWireMockConfig(4010));
