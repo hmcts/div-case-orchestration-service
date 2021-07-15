@@ -237,7 +237,7 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok:${versions.lombok}")
     testCompileOnly("org.projectlombok:lombok:${versions.lombok}")
-    testCompileOnly('com.github.hmcts:fortify-client:1.2.0:all')
+    testCompile('com.github.hmcts:fortify-client:1.2.0:all')
     annotationProcessor("org.projectlombok:lombok:${versions.lombok}")
     testAnnotationProcessor("org.projectlombok:lombok:${versions.lombok}")
 
