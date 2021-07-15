@@ -59,10 +59,9 @@ public abstract class MockedFunctionalTest {
     protected static final String CASE_MAINTENANCE_CLIENT_SEARCH_URL = "/casemaintenance/version/1/search";
 
     @AfterEach
-    public void resetWireMocks(){
+    public void resetWireMocks() {
         WireMock.reset();
     }
-
 
     @ClassRule
     public static WireMockClassRule maintenanceServiceServer = new WireMockClassRule(buildWireMockConfig(4010));
