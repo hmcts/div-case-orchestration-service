@@ -31,7 +31,7 @@ plugins {
 def versions = [
         awaitility                   : '4.0.2',
         bcpkixJdk15on                : '1.64',
-        bspCommonLib                 : '0.0.47',
+        bspCommonLib                 : '0.0.48',
         ccdStoreClient               : '4.7.3',
         commonsBeanUtils             : '1.9.4',
         commonsIo                    : '2.7',
@@ -109,9 +109,9 @@ allprojects {
     repositories {
         mavenCentral()
         jcenter()
-        maven { url "https://jitpack.io" }
-        maven { url "https://dl.bintray.com/hmcts/hmcts-maven" }
         maven { url 'https://repo.spring.io/libs-milestone' }
+        maven { url "https://repo.maven.apache.org/maven2" }
+        maven { url "https://jitpack.io" }
     }
 
     dependencyManagement {
@@ -241,7 +241,6 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:${versions.lombok}")
     testAnnotationProcessor("org.projectlombok:lombok:${versions.lombok}")
 
-
     implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
     implementation group: 'com.jayway.jsonpath', name: 'json-path-assert', version: versions.jsonPathAssert
     implementation group: 'com.github.kirviq', name: 'dumbster', version: versions.dumbster
@@ -271,8 +270,8 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
     implementation group: 'org.springframework.retry', name: 'spring-retry'
-    implementation group: 'uk.gov.hmcts.reform', name: 'bsp-common-lib', version: versions.bspCommonLib
-    implementation group: 'uk.gov.hmcts.reform', name: 'div-common-lib', version: versions.divCommonLib
+    implementation "com.github.hmcts:bsp-common-lib:${versions.bspCommonLib}"
+    implementation "com.github.hmcts:div-common-lib:${versions.divCommonLib}"
     implementation group: 'uk.gov.hmcts.reform', name: 'idam-client', version: versions.idamClient
     implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformsJavaLogging
     implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformsJavaLogging
