@@ -35,7 +35,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentation
 public class SendDaGrantedNotificationWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final SendDaGrantedNotificationEmailTask sendDaGrantedNotificationEmailTask;
-
     private final DaGrantedCitizenLetterGenerationTask daGrantedCitizenLetterGenerationTask;
     private final DaGrantedSolicitorLetterGenerationTask daGrantedSolicitorLetterGenerationTask;
     private final FetchPrintDocsFromDmStoreTask fetchPrintDocsFromDmStoreTask;

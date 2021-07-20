@@ -50,7 +50,7 @@ public class BulkPrinterTask implements Task<Map<String, Object>> {
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
-        //Make sure every requested document type was found
+        // Make sure every requested document type was found
         if (documentTypesToPrint.size() == documentsToPrint.size()) {
             try {
                 log.info("Sending {} document(s) to bulk print for case ID {}. Documents are {}",

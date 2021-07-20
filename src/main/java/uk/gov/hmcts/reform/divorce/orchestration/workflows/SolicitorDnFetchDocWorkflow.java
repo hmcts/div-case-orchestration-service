@@ -31,14 +31,12 @@ public class SolicitorDnFetchDocWorkflow extends DefaultWorkflow<Map<String, Obj
     private final PopulateDocLinkTask populateDocLinkTask;
 
     public Map<String, Object> run(CaseDetails caseDetails, final String ccdDocumentType, final String docLinkFieldName) throws WorkflowException {
-
         final String caseId = caseDetails.getCaseId();
         Map<String, Object> caseData = caseDetails.getCaseData();
 
         log.info("CaseID: {} Solicitor DN Fetch Document Workflow is going to be executed.", caseId);
 
         if (isRespondentAnswersRequested(docLinkFieldName)) {
-
             if (isRespondentAnswersNotRequired(caseData)) {
                 log.info("CaseID: {} Respondent answers requested, but not required.", caseId);
                 return caseData;

@@ -32,7 +32,6 @@ public class BulkPrintWorkflow extends DefaultWorkflow<Map<String, Object>> {
     private final RespondentAosPackPrinterTask respondentAosPackPrinterTask;
     private final CoRespondentAosPackPrinterTask coRespondentAosPackPrinterTask;
     private final AosPackDueDateSetterTask aosPackDueDateSetterTask;
-
     private final CaseDataUtils caseDataUtils;
 
     public Map<String, Object> run(final String authToken, CaseDetails caseDetails) throws WorkflowException {
@@ -56,5 +55,4 @@ public class BulkPrintWorkflow extends DefaultWorkflow<Map<String, Object>> {
             ImmutablePair.of(CASE_STATE_JSON_KEY, caseDetails.getState())
         );
     }
-
 }

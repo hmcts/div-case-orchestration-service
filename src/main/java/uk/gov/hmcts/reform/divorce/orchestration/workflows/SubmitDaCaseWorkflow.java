@@ -25,9 +25,7 @@ public class SubmitDaCaseWorkflow extends DefaultWorkflow<Map<String, Object>> {
     @Autowired
     private UpdateCaseInCCD updateCaseInCCD;
 
-    public Map<String, Object> run(Map<String, Object> payload,
-                                   String authToken,
-                                   String caseId) throws WorkflowException {
+    public Map<String, Object> run(Map<String, Object> payload, String authToken, String caseId) throws WorkflowException {
         return this.execute(
             new Task[] {
                 formatDivorceSessionToDaCaseDataTask,

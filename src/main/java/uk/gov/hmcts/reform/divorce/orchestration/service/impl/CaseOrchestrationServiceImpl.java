@@ -228,7 +228,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     public Map<String, Object> ccdCallbackBulkPrintHandler(String authToken, CaseDetails caseDetails, String eventId) throws WorkflowException {
         Map<String, Object> payload;
         Map<String, Object> errors;
-        if (isIssueAosEvent(eventId)) { //This should be moved to the controller, or better yet, become an entirely new endpoint
+        if (isIssueAosEvent(eventId)) {
             payload = aosIssueBulkPrintWorkflow.run(authToken, caseDetails);
             errors = aosIssueBulkPrintWorkflow.errors();
         } else {
@@ -273,7 +273,6 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         log.info("Updated case with CASE ID: {}", payload.get(ID));
         return payload;
     }
-
 
     @Override
     public Map<String, Object> update(PaymentUpdate paymentUpdate) throws WorkflowException {
@@ -718,9 +717,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
 
     @Override
     public Map<String, Object> coRespondentAnswerReceived(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-
         return coRespondentAnswerReceivedWorkflow.run(ccdCallbackRequest.getCaseDetails());
-
     }
 
     @Override
@@ -993,8 +990,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public CcdCallbackResponse welshContinueIntercept(CcdCallbackRequest ccdCallbackRequest, String authToken) throws WorkflowException {
         Map<String, Object> response = welshContinueInterceptWorkflow.run(ccdCallbackRequest, authToken);
-        log.info("welshContinueIntercept completed with CASE ID: {}.",
-            ccdCallbackRequest.getCaseDetails().getCaseId());
+        log.info("welshContinueIntercept completed with CASE ID: {}.", ccdCallbackRequest.getCaseDetails().getCaseId());
 
         if (welshContinueInterceptWorkflow.errors().isEmpty()) {
             return CcdCallbackResponse.builder()
@@ -1004,8 +1000,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
             Map<String, Object> workflowErrors = welshContinueInterceptWorkflow.errors();
             log.error("welshContinueInterceptWorkflow with CASE ID: {} failed {}.",
                 ccdCallbackRequest.getCaseDetails().getCaseId(), workflowErrors);
-            return CcdCallbackResponse
-                .builder()
+            return CcdCallbackResponse.builder()
                 .errors(workflowErrors.values().stream().map(String.class::cast).collect(Collectors.toList()))
                 .build();
         }
@@ -1021,13 +1016,10 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
                 .build();
         } else {
             Map<String, Object> workflowErrors = welshSetPreviousStateWorkflow.errors();
-            log.error("CASE ID: {} failed {}. ",
-                ccdCallbackRequest.getCaseDetails().getCaseId(), workflowErrors);
-            return CcdCallbackResponse
-                .builder()
+            log.error("CASE ID: {} failed {}. ", ccdCallbackRequest.getCaseDetails().getCaseId(), workflowErrors);
+            return CcdCallbackResponse.builder()
                 .errors(workflowErrors.values().stream().map(String.class::cast).collect(Collectors.toList()))
                 .build();
         }
     }
-
 }

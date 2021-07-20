@@ -108,8 +108,8 @@ public class AosServiceImpl implements AosService {
     }
 
     @Override
-    public Map<String, Object> prepareAosNotReceivedEventForSubmission(String authToken,
-                                                                       CaseDetails caseDetails) throws CaseOrchestrationServiceException {
+    public Map<String, Object> prepareAosNotReceivedEventForSubmission(String authToken, CaseDetails caseDetails)
+        throws CaseOrchestrationServiceException {
 
         String caseId = caseDetails.getCaseId();
         try {
@@ -117,7 +117,6 @@ public class AosServiceImpl implements AosService {
         } catch (WorkflowException workflowException) {
             throw new CaseOrchestrationServiceException(workflowException, caseId);
         }
-
     }
 
     @Override
@@ -137,7 +136,7 @@ public class AosServiceImpl implements AosService {
 
     @Override
     public void runActionsAfterAosHasBeenIssued(String eventId, CaseDetails caseDetails) throws CaseOrchestrationServiceException {
-        //Notifications
+        // Notifications
         String caseId = caseDetails.getCaseId();
         try {
             sendEmailNotificationWorkflow.run(eventId, caseDetails);
@@ -145,14 +144,14 @@ public class AosServiceImpl implements AosService {
             throw new CaseOrchestrationServiceException(exception, caseId);
         }
 
-        //AOS Offline
+        // AOS Offline
         Map<String, Object> caseData = caseDetails.getCaseData();
         boolean respondentSolicitorRepresented = PartyRepresentationChecker.isRespondentRepresented(caseData);
         if (respondentSolicitorRepresented && !isRespondentSolicitorDigital(caseData)) {
             try {
                 aosOfflineTriggerRequestWorkflow.requestAosOfflineToBeTriggered(caseId);
-            } catch (WorkflowException e) {
-                throw new CaseOrchestrationServiceException(e, caseId);
+            } catch (WorkflowException exception) {
+                throw new CaseOrchestrationServiceException(exception, caseId);
             }
         }
     }
@@ -186,5 +185,4 @@ public class AosServiceImpl implements AosService {
 
         log.info("Case id: {}. Made AOS overdue for case ({}).", caseId, servedByAlternativeMethod);
     }
-
 }

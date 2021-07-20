@@ -49,10 +49,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentation
 @Slf4j
 public class SendDaRequestedNotifyRespondentEmailTask implements Task<Map<String, Object>> {
 
-    static final String REQUESTED_BY_APPLICANT =
-        "Decree Absolute Requested Notification - Applicant Requested Decree Absolute";
-    static final String REQUESTED_BY_SOLICITOR =
-        "Decree Absolute Requested Notification - Solicitor Requested Decree Absolute";
+    static final String REQUESTED_BY_APPLICANT = "Decree Absolute Requested Notification - Applicant Requested Decree Absolute";
+    static final String REQUESTED_BY_SOLICITOR = "Decree Absolute Requested Notification - Solicitor Requested Decree Absolute";
 
     private final EmailService emailService;
     private final TemplateConfigService templateConfigService;
@@ -71,10 +69,8 @@ public class SendDaRequestedNotifyRespondentEmailTask implements Task<Map<String
             CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
             sendEmailToRespondentSolicitor(caseData, caseDetails.getCaseId());
         } else {
-            log.warn(
-                "no respondent email present for case reference, divorce may be using paper journey: {}",
-                caseData.get(D_8_CASE_REFERENCE)
-            );
+            log.warn("no respondent email present for case reference, divorce may be using paper journey: {}",
+                caseData.get(D_8_CASE_REFERENCE));
         }
 
         log.info("CaseId: {} email to respondent/solicitor should be sent", caseId);

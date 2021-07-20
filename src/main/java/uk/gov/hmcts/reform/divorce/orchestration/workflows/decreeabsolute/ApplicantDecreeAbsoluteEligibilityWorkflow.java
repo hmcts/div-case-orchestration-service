@@ -31,5 +31,4 @@ public class ApplicantDecreeAbsoluteEligibilityWorkflow extends DefaultWorkflow<
             payload,
             ImmutablePair.of(CASE_ID_JSON_KEY, caseId));
     }
-
 }

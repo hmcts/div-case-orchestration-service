@@ -104,8 +104,7 @@ public class SendRespondentCoENotificationEmailTask implements Task<Map<String, 
                 template = EmailTemplateNames.SOL_RESP_COE_NOTIFICATION;
                 emailToBeSentTo = respSolEmail;
             } else {
-                String petitionerInferredGender = getMandatoryPropertyValueAsString(caseDataPayload,
-                    D_8_INFERRED_PETITIONER_GENDER);
+                String petitionerInferredGender = getMandatoryPropertyValueAsString(caseDataPayload, D_8_INFERRED_PETITIONER_GENDER);
                 String petitionerRelationshipToRespondent = getRelationshipTermByGender(petitionerInferredGender);
 
                 templateParameters.put(NOTIFICATION_ADDRESSEE_FIRST_NAME_KEY, respondentFirstName);

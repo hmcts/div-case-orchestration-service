@@ -50,7 +50,6 @@ public class DecreeAbsoluteServiceImpl implements DecreeAbsoluteService {
 
     @Override
     public void validateDaRequest(CaseDetails caseDetails) throws WorkflowException {
-
         String applyForDecreeAbsolute = (String) caseDetails.getCaseData().get(APPLY_FOR_DA);
 
         if (!YES_VALUE.equalsIgnoreCase(applyForDecreeAbsolute)) {

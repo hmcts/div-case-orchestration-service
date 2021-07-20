@@ -48,8 +48,7 @@ public class PopulateDocLinkTask implements Task<Map<String, Object>> {
         String ccdDocumentType = context.getTransientObject(DOCUMENT_TYPE);
         String docLinkFieldName = context.getTransientObject(DOCUMENT_DRAFT_LINK_FIELD);
 
-        log.info("CaseID: {} PopulateDocLinkTask type = {}, field name = {}",
-            caseId, ccdDocumentType, docLinkFieldName);
+        log.info("CaseID: {} PopulateDocLinkTask type = {}, field name = {}", caseId, ccdDocumentType, docLinkFieldName);
 
         if (StringUtils.isNotBlank(ccdDocumentType)) {
             CollectionMember<Document> petitionDocument = documentList

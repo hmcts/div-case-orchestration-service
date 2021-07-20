@@ -23,7 +23,6 @@ public class ProcessAwaitingPronouncementCasesWorkflow extends DefaultWorkflow<M
     private final UpdateDivorceCaseWithinBulk updateDivorceCaseWithinBulk;
 
     public Map<String, Object> run(String authToken) throws WorkflowException {
-
         return this.execute(
             new Task[] {
                 searchAwaitingPronouncementCases,
@@ -33,7 +32,5 @@ public class ProcessAwaitingPronouncementCasesWorkflow extends DefaultWorkflow<M
             null,
             ImmutablePair.of(AUTH_TOKEN_JSON_KEY, authToken)
         );
-
     }
-
 }

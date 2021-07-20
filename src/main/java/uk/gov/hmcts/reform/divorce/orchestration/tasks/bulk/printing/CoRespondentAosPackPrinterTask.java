@@ -31,5 +31,4 @@ public class CoRespondentAosPackPrinterTask implements Task<Map<String, Object>>
     public Map<String, Object> execute(final TaskContext context, final Map<String, Object> payload) {
         return bulkPrinter.printSpecifiedDocument(context, payload, LETTER_TYPE_CO_RESPONDENT_PACK, DOCUMENT_TYPES_TO_PRINT);
     }
-
 }

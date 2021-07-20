@@ -36,8 +36,8 @@ public class DecreeAbsoluteController {
     public ResponseEntity<CcdCallbackResponse> notifyRespondentOfDARequested(
         @RequestHeader(value = AUTHORIZATION) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
-        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
 
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
 
         try {
@@ -59,8 +59,8 @@ public class DecreeAbsoluteController {
         @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> validateDaRequest(
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
-        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
 
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
 
         try {

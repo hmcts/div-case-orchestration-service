@@ -20,7 +20,6 @@ public class SetDaRequestedDetailsTask implements Task<Map<String,Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
-
         LocalDateTime daRequestedDateTime = LocalDateTime.now(clock);
         String formattedRequestedDateTime = mapDivorceDateTimeToCCDDateTime(daRequestedDateTime);
 
@@ -28,5 +27,4 @@ public class SetDaRequestedDetailsTask implements Task<Map<String,Object>> {
 
         return caseData;
     }
-
 }

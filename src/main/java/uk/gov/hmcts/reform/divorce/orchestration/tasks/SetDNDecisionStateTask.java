@@ -38,12 +38,10 @@ public class SetDNDecisionStateTask implements Task<Map<String, Object>> {
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         Map<String, Object> payload = new HashMap<>(caseData);
-
         String newCaseEndState = AWAITING_CLARIFICATION;
 
         if (isDnGranted(caseData)) {
             newCaseEndState = evaluateStop(caseData, payload, AWAITING_PRONOUNCEMENT);
-
         } else {
             if (featureToggleService.isFeatureEnabled(DN_REFUSAL)) {
                 String refusalDecision = (String) caseData.getOrDefault(REFUSAL_DECISION_CCD_FIELD, EMPTY_STRING);

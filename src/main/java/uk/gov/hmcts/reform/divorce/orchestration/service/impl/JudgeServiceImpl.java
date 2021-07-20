@@ -17,14 +17,12 @@ public class JudgeServiceImpl implements JudgeService {
     private final JudgeCostsDecisionWorkflow judgeCostsDecisionWorkflow;
 
     @Override
-    public Map<String, Object> judgeCostsDecision(CcdCallbackRequest ccdCallbackRequest)
-            throws JudgeServiceException {
+    public Map<String, Object> judgeCostsDecision(CcdCallbackRequest ccdCallbackRequest) throws JudgeServiceException {
         try {
             return judgeCostsDecisionWorkflow.run(ccdCallbackRequest.getCaseDetails());
         } catch (WorkflowException e) {
             throw new JudgeServiceException(e);
         }
     }
-
 }
 

@@ -96,5 +96,4 @@ public class FetchPrintDocsFromDmStoreTask implements Task<Map<String, Object>> 
             generatedDocumentInfo.setBytes(response.getBody());
         }
     }
-
 }

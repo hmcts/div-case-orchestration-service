@@ -37,7 +37,6 @@ public class AosIssueBulkPrintWorkflow extends DefaultWorkflow<Map<String, Objec
     private final CoRespondentAosPackPrinterTask coRespondentAosPackPrinterTask;
     private final AosPackDueDateSetterTask aosPackDueDateSetterTask;
     private final UpdateNoticeOfProceedingsDetailsTask updateNoticeOfProceedingsDetailsTask;
-
     private final CaseDataUtils caseDataUtils;
     private final RepresentedRespondentJourneyHelper representedRespondentJourneyHelper;
 
@@ -75,5 +74,4 @@ public class AosIssueBulkPrintWorkflow extends DefaultWorkflow<Map<String, Objec
             ImmutablePair.of(CASE_STATE_JSON_KEY, caseDetails.getState())
         );
     }
-
 }

@@ -18,5 +18,4 @@ public class AosOfflineTriggerRequestWorkflow extends DefaultWorkflow<String> {
     public void requestAosOfflineToBeTriggered(String caseId) throws WorkflowException {
         execute(tasks, caseId);
     }
-
 }
