@@ -19,9 +19,9 @@ plugins {
     id 'com.github.ben-manes.versions' version '0.39.0'
     id 'com.jfrog.bintray' version '1.8.4'
     id 'info.solidsoft.pitest' version '1.5.1'
-    id 'io.spring.dependency-management' version '1.0.8.RELEASE'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'jacoco'
-    id 'org.flywaydb.flyway' version '7.1.1'
+    id 'org.flywaydb.flyway' version '7.11.3'
     id 'org.owasp.dependencycheck' version '6.1.6'
     id 'org.sonarqube' version '3.2.0'
     id 'org.springframework.boot' version '2.3.5.RELEASE'
@@ -138,8 +138,6 @@ allprojects {
             ) {
                 entry 'jackson-module-parameter-names'
             }
-
-            // solves CVE-2014-3488, CVE-2015-2156, CVE-2019-16869, CVE-2021-21409
             dependencySet(group: 'io.netty', version: '4.1.65.Final') {
                 entry 'netty-buffer'
                 entry 'netty-codec'
@@ -149,16 +147,13 @@ allprojects {
                 entry 'netty-resolver'
                 entry 'netty-transport'
             }
-            // CVE-2019-10086
             dependency group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
-            // CVE-2020-9484
             dependencySet(group: 'org.apache.tomcat.embed', version: versions.tomcat) {
                 entry 'tomcat-embed-core'
                 entry 'tomcat-embed-websocket'
                 entry 'tomcat-embed-el'
             }
-            //CVE-2017-18640
-            dependency group: 'org.yaml',name: 'snakeyaml', version: '1.26'
+            dependency group: 'org.yaml',name: 'snakeyaml', version: '1.29'
         }
     }
 }
@@ -280,7 +275,7 @@ dependencies {
     implementation group: 'uk.gov.hmcts.reform', name: 'send-letter-client', version: versions.sendLetterClient
     implementation group: 'uk.gov.service.notify', name: 'notifications-java-client', version: versions.hmctsNotify
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: versions.httpComponents
-    implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.4.25.Final'
+    implementation group: 'org.hibernate', name: 'hibernate-core', version: '5.5.4.Final'
 
     implementation(group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign')
             {
@@ -319,7 +314,7 @@ dependencies {
     runtimeOnly('org.springframework.boot:spring-boot-devtools')
 
     testImplementation group: 'org.awaitility', name: 'awaitility', version: versions.awaitility
-    testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '3.0.0'
+    testImplementation group: 'org.springframework.cloud', name: 'spring-cloud-contract-wiremock', version: '3.0.3'
     testImplementation(group: 'org.springframework.boot', name: 'spring-boot-starter-test') {
         exclude(module: 'commons-logging')
         exclude(module: 'android-json')
