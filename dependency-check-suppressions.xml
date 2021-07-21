@@ -22,4 +22,14 @@
         <cve>CVE-2021-22134</cve>
     </suppress>
 
+    <suppress>
+        <notes>
+            <![CDATA[
+                    file name: tomcat-embed-websocket-9.0.43.jar
+            ]]>
+        </notes>
+        <packageUrl regex="true">^pkg:maven/org\.apache\.tomcat\.embed/tomcat\-embed\-websocket@.*$</packageUrl>
+        <cve>CVE-2021-33037</cve>
+    </suppress>
+
 </suppressions>
