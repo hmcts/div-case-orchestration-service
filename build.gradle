@@ -17,7 +17,6 @@ plugins {
     id 'application'
     id 'checkstyle'
     id 'com.github.ben-manes.versions' version '0.39.0'
-    id 'com.jfrog.bintray' version '1.8.4'
     id 'info.solidsoft.pitest' version '1.5.1'
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id 'jacoco'
@@ -31,7 +30,7 @@ plugins {
 def versions = [
         awaitility                   : '4.0.2',
         bcpkixJdk15on                : '1.64',
-        bspCommonLib                 : '0.0.47',
+        bspCommonLib                 : '0.0.48',
         ccdStoreClient               : '4.7.3',
         commonsBeanUtils             : '1.9.4',
         commonsIo                    : '2.7',
@@ -69,7 +68,7 @@ def versions = [
         springSecurityCrypto         : '5.4.5',
         springSecurityRsa            : '1.0.8.RELEASE',
         springBoot                   : '2.3.11.RELEASE',
-        tomcat                       : '9.0.43',
+        tomcat                       : '9.0.48',
         unirest                      : '1.4.9',
         pact_version                 : '4.1.11',
         httpComponents               : '4.5.13',
@@ -109,8 +108,9 @@ allprojects {
     repositories {
         mavenCentral()
         jcenter()
-        maven { url "https://dl.bintray.com/hmcts/hmcts-maven" }
         maven { url 'https://repo.spring.io/libs-milestone' }
+        maven { url "https://repo.maven.apache.org/maven2" }
+        maven { url "https://jitpack.io" }
     }
 
     dependencyManagement {
@@ -268,8 +268,8 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
     implementation group: 'org.springframework.retry', name: 'spring-retry'
-    implementation group: 'uk.gov.hmcts.reform', name: 'bsp-common-lib', version: versions.bspCommonLib
-    implementation group: 'uk.gov.hmcts.reform', name: 'div-common-lib', version: versions.divCommonLib
+    implementation "com.github.hmcts:bsp-common-lib:${versions.bspCommonLib}"
+    implementation "com.github.hmcts:div-common-lib:${versions.divCommonLib}"
     implementation group: 'uk.gov.hmcts.reform', name: 'idam-client', version: versions.idamClient
     implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformsJavaLogging
     implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformsJavaLogging
