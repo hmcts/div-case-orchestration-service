@@ -5,6 +5,7 @@ import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
@@ -76,6 +77,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.Abst
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.generalorders.AbstractGeneralOrderGenerationTaskTest.TEST_JUDGE_TYPE_CODE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
+@WebMvcTest
 public class GeneralOrderTest extends IdamTestSupport {
 
     private static final String API_URL = "/create-general-order/final";

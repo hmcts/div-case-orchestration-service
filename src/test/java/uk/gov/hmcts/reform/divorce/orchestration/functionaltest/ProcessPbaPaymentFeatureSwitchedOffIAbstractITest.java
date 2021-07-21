@@ -6,7 +6,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_ACCOUNT_NUMBER;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_FEE_ACCOUNT_NUMBER_JSON_KEY;
 
-
 @SpringBootTest(properties = {"feature-toggle.toggle.pay_by_account=false"})
 public class ProcessPbaPaymentFeatureSwitchedOffIAbstractITest extends ProcessPbaPaymentAbstractITest {
 

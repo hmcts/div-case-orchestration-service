@@ -4,6 +4,7 @@ import org.hamcrest.Matcher;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields;
@@ -41,6 +42,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.Bai
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney.BailiffServiceApplicationDataTaskTest.TEST_REASON_FAILURE_TO_SERVE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
+@WebMvcTest
 public class BailiffOutcomeTest extends IdamTestSupport {
 
     private static final String API_URL = "/add-bailiff-return";

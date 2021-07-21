@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.alternativeserv
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -34,6 +35,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.alternati
 import static uk.gov.hmcts.reform.divorce.orchestration.functionaltest.alternativeservice.AosNotReceivedForProcessServerTest.getExpectedSolicitorTemplateVars;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
+@WebMvcTest
 public class AlternativeServiceConfirmedTest extends IdamTestSupport {
 
     private static final String API_URL = "/alternative-service-confirmed";

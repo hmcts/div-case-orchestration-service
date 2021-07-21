@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.generalreferral
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
@@ -36,6 +37,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.F
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.FeesAndPaymentHelper.buildFurtherPaymentData;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 
+@WebMvcTest
 public class GeneralReferralPaymentTest extends MockedFunctionalTest {
 
     private static final String API_URL = "/general-referral-payment";

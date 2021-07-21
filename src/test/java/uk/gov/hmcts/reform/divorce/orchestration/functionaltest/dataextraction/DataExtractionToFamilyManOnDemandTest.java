@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.functionaltest.dataextraction;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.eq;
@@ -13,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * This test is very similar to its parent class, but it uses the REST endpoint (like we'd use if we wanted to run the data extraction on demand).
  */
+@WebMvcTest
 public class DataExtractionToFamilyManOnDemandTest extends DataExtractionToFamilyManTest {
 
     @Autowired

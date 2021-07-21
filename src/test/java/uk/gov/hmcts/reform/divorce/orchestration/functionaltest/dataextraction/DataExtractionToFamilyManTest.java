@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import uk.gov.hmcts.reform.divorce.orchestration.functionaltest.MockedFunctionalTest;
 import uk.gov.hmcts.reform.divorce.orchestration.service.DataExtractionService;
@@ -45,6 +46,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN
 /**
  * This test uses the service (just like the scheduled job will).
  */
+@WebMvcTest
 public class DataExtractionToFamilyManTest extends MockedFunctionalTest {
 
     private static final String DA_DESIRED_STATES = "[\"divorcegranted\"]";

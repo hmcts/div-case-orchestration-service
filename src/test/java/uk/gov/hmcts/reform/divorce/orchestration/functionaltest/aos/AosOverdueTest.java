@@ -11,6 +11,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -58,6 +59,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.elasticsearch.CMSEl
 @TestPropertySource(properties = {
     "AOS_OVERDUE_GRACE_PERIOD=0"
 })
+@WebMvcTest
 public class AosOverdueTest extends MockedFunctionalTest {
 
     private static final String TEST_CONFIGURED_AOS_OVERDUE_GRACE_PERIOD = "0d";

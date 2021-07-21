@@ -5,6 +5,7 @@ import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
@@ -88,6 +89,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskTestHelper.
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateFromLocalDate;
 import static uk.gov.hmcts.reform.divorce.utils.DateUtils.formatDateWithCustomerFacingFormat;
 
+@WebMvcTest
 public class MakeServiceDecisionTest extends IdamTestSupport {
 
     private static final String API_URL = "/make-service-decision";
