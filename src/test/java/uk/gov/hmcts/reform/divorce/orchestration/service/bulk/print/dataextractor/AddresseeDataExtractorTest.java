@@ -34,7 +34,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_SOLICITOR_EMAIL_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_REFERENCE_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -64,6 +66,7 @@ public class AddresseeDataExtractorTest {
     public static final String D8_CASE_REFERENCE = "LV17D80102";
     public static final String CO_RESPONDENT_SOLICITOR_REF = "SolRef1234";
     public static final String VALID_HEARING_DATE = "2020-10-20";
+    protected static final String RESPONDENT_EMAIL = "respondentEmailAddress@mail.com";
 
     @Test
     public void getRespondentShouldReturnValidValues() {
@@ -189,6 +192,8 @@ public class AddresseeDataExtractorTest {
         caseData.put(PETITIONER_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
         caseData.put(PETITIONER_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL);
         caseData.put(LANGUAGE_PREFERENCE_WELSH, NO_VALUE);
+        caseData.put(RESPONDENT_EMAIL_ADDRESS, RESPONDENT_EMAIL);
+        caseData.put(RESPONDENT_ADDRESS, RESPONDENTS_ADDRESS);
         return caseData;
     }
 
@@ -209,6 +214,9 @@ public class AddresseeDataExtractorTest {
         caseData.put(RESPONDENT_SOLICITOR_EMAIL_ADDRESS, TEST_RESPONDENT_SOLICITOR_EMAIL);
         caseData.put(D8_RESPONDENT_SOLICITOR_REFERENCE, RESPONDENT_SOLICITOR_REF);
         caseData.put(RESP_SOL_REPRESENTED, YES_VALUE);
+        caseData.put(RESP_IS_USING_DIGITAL_CHANNEL, YES_VALUE);
+        caseData.put(RESPONDENT_EMAIL_ADDRESS, RESPONDENT_EMAIL);
+
 
         return caseData;
     }

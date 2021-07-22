@@ -54,6 +54,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8DOCUMENTS_GENERATED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_COE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -576,6 +577,7 @@ public class CaseLinkedForHearingWorkflowTest {
     private CaseDetails createCaseDetails(Map<String, Object> testPayload, boolean respContactMethodIsDigital,
                                           boolean respIsRepresented, boolean isCoRespondentNamed, boolean coRespContactMethodIsDigital) {
         testPayload.put(RESP_IS_USING_DIGITAL_CHANNEL, respContactMethodIsDigital ? YES_VALUE : NO_VALUE);
+        testPayload.put(RESPONDENT_EMAIL_ADDRESS, "respondent@email.com");
         if (respIsRepresented) {
             testPayload.put(RESP_SOL_REPRESENTED, YES_VALUE);
         }

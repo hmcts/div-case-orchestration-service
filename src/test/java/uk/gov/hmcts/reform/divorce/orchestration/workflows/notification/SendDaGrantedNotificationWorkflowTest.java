@@ -8,7 +8,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
+import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
+import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.service.FeatureToggleService;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.FetchPrintDocsFromDmStoreTask;
@@ -40,6 +42,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
@@ -48,6 +51,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHel
 @RunWith(MockitoJUnitRunner.class)
 public class SendDaGrantedNotificationWorkflowTest {
 
+    protected static final String RESPONDENT_EMAIL_ADDRESS = "respondent@email.com";
     @Mock
     private SendDaGrantedNotificationEmailTask sendDaGrantedNotificationEmailTask;
 
@@ -71,8 +75,7 @@ public class SendDaGrantedNotificationWorkflowTest {
 
     @Test
     public void runShouldCallSendDaGrantedNotificationEmailTaskWhenDigitalCommunication() throws Exception {
-        Map<String, Object> casePayload = buildCaseData(YES_VALUE);
-
+        Map<String, Object> casePayload = buildCaseData(YES_VALUE, "respondent@email.com");
         when(sendDaGrantedNotificationEmailTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
 
         Map<String, Object> result = sendDaGrantedNotificationWorkflow.run(buildCaseDetails(casePayload), AUTH_TOKEN);
@@ -88,31 +91,22 @@ public class SendDaGrantedNotificationWorkflowTest {
 
     @Test
     public void runShouldCallBulkPrintingForOfflineRespondent() throws Exception {
-        Map<String, Object> incomingCaseData = buildCaseData(NO_VALUE);
+        Map<String, Object> incomingCaseData = buildCaseData(NO_VALUE, "respondent@email.com");
 
-        when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
-        when(daGrantedCitizenLetterGenerationTask.execute(isNotNull(), eq(incomingCaseData))).thenReturn(incomingCaseData);
-        when(fetchPrintDocsFromDmStoreTask.execute(isNotNull(), eq(incomingCaseData))).thenReturn(incomingCaseData);
-        when(bulkPrinterTask.execute(isNotNull(), eq(incomingCaseData))).thenReturn(incomingCaseData);
+        verifyBulkPrintingCalls(incomingCaseData);
+    }
 
-        Map<String, Object> returnedCaseData = sendDaGrantedNotificationWorkflow.run(buildCaseDetails(incomingCaseData), AUTH_TOKEN);
+    @Test
+    public void runShouldCallBulkPrintingForDigitalRespondentWithEmptyRespondentEmail() throws Exception {
+        Map<String, Object> incomingCaseData = buildCaseData(NO_VALUE, "");
 
-        assertEquals(incomingCaseData, returnedCaseData);
-        InOrder inOrder = inOrder(
-            daGrantedCitizenLetterGenerationTask,
-            fetchPrintDocsFromDmStoreTask,
-            bulkPrinterTask
-        );
-        inOrder.verify(daGrantedCitizenLetterGenerationTask).execute(any(TaskContext.class), eq(incomingCaseData));
-        inOrder.verify(fetchPrintDocsFromDmStoreTask).execute(any(TaskContext.class), eq(incomingCaseData));
-        inOrder.verify(bulkPrinterTask).execute(any(TaskContext.class), eq(incomingCaseData));
-        verify(sendDaGrantedNotificationEmailTask, never()).execute(any(TaskContext.class), eq(incomingCaseData));
+        verifyBulkPrintingCalls(incomingCaseData);
     }
 
     @Test
     public void runShouldCallBulkPrintingForOfflineRepresentedRespondent() throws Exception {
         Map<String, Object> incomingCaseData = ImmutableMap.<String, Object>builder()
-            .putAll(buildCaseData(NO_VALUE))
+            .putAll(buildCaseData(NO_VALUE, "respondent@email.com"))
             .put(RESP_SOL_REPRESENTED, YES_VALUE)
             .build();
 
@@ -140,8 +134,10 @@ public class SendDaGrantedNotificationWorkflowTest {
         Map<String, Object> incomingCaseData = ImmutableMap.of(
             RESP_IS_USING_DIGITAL_CHANNEL, NO_VALUE,
             D8DOCUMENTS_GENERATED, asList(
-                createCollectionMemberDocument("http://daGrantedLetter.com", DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_DOCUMENT_TYPE, "daGrantedLetter.pdf"),
-                createCollectionMemberDocument("http://daGrantedSolicitorLetter.com", DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER_DOCUMENT_TYPE, "daGrantedSolicitorLetter.pdf")
+                createCollectionMemberDocument("http://daGrantedLetter.com", DECREE_ABSOLUTE_GRANTED_CITIZEN_LETTER_DOCUMENT_TYPE,
+                    "daGrantedLetter.pdf"),
+                createCollectionMemberDocument("http://daGrantedSolicitorLetter.com", DECREE_ABSOLUTE_GRANTED_SOLICITOR_LETTER_DOCUMENT_TYPE,
+                    "daGrantedSolicitorLetter.pdf")
             )
         );
 
@@ -169,7 +165,7 @@ public class SendDaGrantedNotificationWorkflowTest {
 
     @Test
     public void runShouldSkipBulkPrintingTasksWhenFeatureToggleOff() throws Exception {
-        Map<String, Object> casePayload = buildCaseData(NO_VALUE);
+        Map<String, Object> casePayload = buildCaseData(NO_VALUE, RESPONDENT_EMAIL_ADDRESS);
 
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(false);
 
@@ -184,10 +180,33 @@ public class SendDaGrantedNotificationWorkflowTest {
         verify(sendDaGrantedNotificationEmailTask, never()).execute(any(TaskContext.class), eq(casePayload));
     }
 
-    private Map<String, Object> buildCaseData(String value) {
+    private void verifyBulkPrintingCalls(Map<String, Object> incomingCaseData) throws WorkflowException {
+        when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(true);
+        when(daGrantedCitizenLetterGenerationTask.execute(isNotNull(), eq(incomingCaseData))).thenReturn(incomingCaseData);
+        when(fetchPrintDocsFromDmStoreTask.execute(isNotNull(), eq(incomingCaseData))).thenReturn(incomingCaseData);
+        when(bulkPrinterTask.execute(isNotNull(), eq(incomingCaseData))).thenReturn(incomingCaseData);
+
+        Map<String, Object> returnedCaseData = sendDaGrantedNotificationWorkflow.run(buildCaseDetails(incomingCaseData), AUTH_TOKEN);
+
+        assertEquals(incomingCaseData, returnedCaseData);
+        InOrder inOrder = inOrder(
+            daGrantedCitizenLetterGenerationTask,
+            fetchPrintDocsFromDmStoreTask,
+            bulkPrinterTask
+        );
+        inOrder.verify(daGrantedCitizenLetterGenerationTask).execute(any(TaskContext.class), eq(incomingCaseData));
+        inOrder.verify(fetchPrintDocsFromDmStoreTask).execute(any(TaskContext.class), eq(incomingCaseData));
+        inOrder.verify(bulkPrinterTask).execute(any(TaskContext.class), eq(incomingCaseData));
+        verify(sendDaGrantedNotificationEmailTask, never()).execute(any(TaskContext.class), eq(incomingCaseData));
+    }
+
+
+    private Map<String, Object> buildCaseData(String value, String respondentEmailAddress) {
         return ImmutableMap.of(
             RESP_IS_USING_DIGITAL_CHANNEL, value,
-            D8DOCUMENTS_GENERATED, asList(createCollectionMemberDocument("http://daGranted.com", DECREE_ABSOLUTE_DOCUMENT_TYPE, DECREE_ABSOLUTE_FILENAME))
+            D8DOCUMENTS_GENERATED,
+            asList(createCollectionMemberDocument("http://daGranted.com", DECREE_ABSOLUTE_DOCUMENT_TYPE, DECREE_ABSOLUTE_FILENAME)),
+            OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS, respondentEmailAddress
         );
     }
 
