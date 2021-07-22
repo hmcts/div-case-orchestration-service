@@ -75,7 +75,7 @@ public class SendDaGrantedNotificationWorkflowTest {
 
     @Test
     public void runShouldCallSendDaGrantedNotificationEmailTaskWhenDigitalCommunication() throws Exception {
-        Map<String, Object> casePayload = buildCaseData(YES_VALUE, "respondent@email.com");
+        Map<String, Object> casePayload = buildCaseData(YES_VALUE, RESPONDENT_EMAIL_ADDRESS);
         when(sendDaGrantedNotificationEmailTask.execute(isNotNull(), eq(casePayload))).thenReturn(casePayload);
 
         Map<String, Object> result = sendDaGrantedNotificationWorkflow.run(buildCaseDetails(casePayload), AUTH_TOKEN);
@@ -91,7 +91,7 @@ public class SendDaGrantedNotificationWorkflowTest {
 
     @Test
     public void runShouldCallBulkPrintingForOfflineRespondent() throws Exception {
-        Map<String, Object> incomingCaseData = buildCaseData(NO_VALUE, "respondent@email.com");
+        Map<String, Object> incomingCaseData = buildCaseData(NO_VALUE, RESPONDENT_EMAIL_ADDRESS);
 
         verifyBulkPrintingCalls(incomingCaseData);
     }
@@ -106,7 +106,7 @@ public class SendDaGrantedNotificationWorkflowTest {
     @Test
     public void runShouldCallBulkPrintingForOfflineRepresentedRespondent() throws Exception {
         Map<String, Object> incomingCaseData = ImmutableMap.<String, Object>builder()
-            .putAll(buildCaseData(NO_VALUE, "respondent@email.com"))
+            .putAll(buildCaseData(NO_VALUE, RESPONDENT_EMAIL_ADDRESS))
             .put(RESP_SOL_REPRESENTED, YES_VALUE)
             .build();
 

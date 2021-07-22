@@ -65,7 +65,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.ve
 @RunWith(MockitoJUnitRunner.class)
 public class SendDnPronouncedNotificationWorkflowTest {
 
-    protected static final String RESPONDENT_EMAIL_ADDRESS = "respondent@mail.com";
     protected static final String RESPONDENT_MAIL_COM = "respondent@mail.com";
     @InjectMocks
     private SendDnPronouncedNotificationWorkflow sendDnPronouncedNotificationWorkflow;
@@ -127,7 +126,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
     public void genericEmailTaskShouldExecuteAndReturnPayload() throws Exception {
         Map<String, Object> caseData = ImmutableMap.of("testKey", "testValue",
             RESP_IS_USING_DIGITAL_CHANNEL, YES_VALUE,
-            OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS, RESPONDENT_EMAIL_ADDRESS);
+            OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS, RESPONDENT_MAIL_COM);
 
         mockTasksExecution(
             caseData,
@@ -152,7 +151,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
             WHO_PAYS_COSTS_CCD_FIELD,
             WHO_PAYS_CCD_CODE_FOR_RESPONDENT,
             RESP_IS_USING_DIGITAL_CHANNEL, YES_VALUE,
-            OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS, RESPONDENT_EMAIL_ADDRESS);
+            OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS, RESPONDENT_MAIL_COM);
 
 
         mockTasksExecution(
@@ -485,7 +484,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
             COSTS_CLAIM_GRANTED, YES_VALUE,
             CO_RESPONDENT_REPRESENTED, YES_VALUE,
             RESP_IS_USING_DIGITAL_CHANNEL, YES_VALUE,
-            OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS, RESPONDENT_EMAIL_ADDRESS
+            OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS, RESPONDENT_MAIL_COM
         );
 
 
@@ -520,7 +519,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
         Map<String, Object> caseData = ImmutableMap.of(
             COSTS_CLAIM_GRANTED, NO_VALUE,
             RESP_IS_USING_DIGITAL_CHANNEL, YES_VALUE,
-            OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS, RESPONDENT_EMAIL_ADDRESS
+            OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS, RESPONDENT_MAIL_COM
         );
 
         mockTasksExecution(
@@ -544,7 +543,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
     @Test
     public void givenPaperBasedAndPaperUpdateToggledOff_thenNoBulkPrintTasksAreCalled() throws Exception {
         Map<String, Object> caseData = ImmutableMap.of(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE, RESP_IS_USING_DIGITAL_CHANNEL, YES_VALUE,
-            OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS, RESPONDENT_EMAIL_ADDRESS);
+            OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS, RESPONDENT_MAIL_COM);
 
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(false);
 
