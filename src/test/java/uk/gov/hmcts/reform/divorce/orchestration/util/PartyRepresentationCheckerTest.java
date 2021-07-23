@@ -193,17 +193,15 @@ public class PartyRepresentationCheckerTest {
     }
 
     @Test
-    public void isRespondentWhenRespondentEmailIsPopulatedAndCoRespondentDigitalReturnsTrue() {
+    public void isRespondentDigitalWhenRespondentEmailIsPopulatedReturnsTrue() {
         Map<String, Object> caseData = createCaseData(RESPONDENT_EMAIL_ADDRESS, "respondent@email.com");
         assertThat(isRespondentDigital(caseData), is(true));
-        assertThat(isCoRespondentDigital(caseData), is(true));
     }
 
     @Test
     public void isRespondentDigitalReturnsFalseWhenRespondentEmailIsNotPopulated() {
         Map<String, Object> caseData = emptyMap();
         assertThat(isRespondentDigital(caseData), is(false));
-        assertThat(isCoRespondentDigital(caseData), is(true));
     }
 
     @Test
