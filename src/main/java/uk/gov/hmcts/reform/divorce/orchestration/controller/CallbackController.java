@@ -180,7 +180,6 @@ public class CallbackController {
         return ResponseEntity.ok(caseOrchestrationService.setOrderSummaryAssignRole(ccdCallbackRequest, authorizationToken));
     }
 
-    @SuppressWarnings("unchecked")
     @PostMapping(path = "/process-pba-payment", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Callback to receive payment from the Solicitor")
     @ApiResponses(value = {
@@ -524,10 +523,10 @@ public class CallbackController {
     @PostMapping(path = "/confirm-sol-dn-review", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Callback to set state after Solicitor reviews DN petition")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Callback processed",
+        @ApiResponse(code = 200, message = "Callback processed",
                     response = CcdCallbackResponse.class),
-            @ApiResponse(code = 400, message = "Bad Request"),
-            @ApiResponse(code = 500, message = "Internal Server Error")})
+        @ApiResponse(code = 400, message = "Bad Request"),
+        @ApiResponse(code = 500, message = "Internal Server Error")})
     public ResponseEntity<CcdCallbackResponse> confirmSolDnReviewPetition(
             @RequestBody CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
 
@@ -679,6 +678,10 @@ public class CallbackController {
     public ResponseEntity<CcdCallbackResponse> updateBulkCaseHearingDetails(
         @RequestHeader(value = AUTHORIZATION) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+
+        log.info("Starting to update Court Hearing Details for Case ID: {}.", caseId);
 
         String ccdDocumentType = "coe";
         String filename = CERTIFICATE_OF_ENTITLEMENT_FILENAME_PREFIX;
@@ -1610,13 +1613,15 @@ public class CallbackController {
                                                                                     String filename) throws CaseOrchestrationServiceException {
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
 
+        log.info("About to generate document {} for case {}.", ccdDocumentType, caseId);
+
         CcdCallbackResponse.CcdCallbackResponseBuilder callbackResponseBuilder = CcdCallbackResponse.builder();
 
         Map<String, Object> payloadToReturn = caseOrchestrationService.handleDocumentGenerationCallback(
             ccdCallbackRequest, authorizationToken, documentType, ccdDocumentType, filename
         );
         callbackResponseBuilder.data(payloadToReturn);
-        log.info("Generating document {} for case {}.", ccdDocumentType, caseId);
+        log.info("Generated document {} for case {}.", ccdDocumentType, caseId);
 
         return ResponseEntity.ok(callbackResponseBuilder.build());
     }
