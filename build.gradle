@@ -68,7 +68,7 @@ def versions = [
         springSecurityCrypto         : '5.4.5',
         springSecurityRsa            : '1.0.8.RELEASE',
         springBoot                   : '2.3.11.RELEASE',
-        tomcat                       : '9.0.50',
+        tomcat                       : '9.0.48',
         unirest                      : '1.4.9',
         pact_version                 : '4.1.11',
         httpComponents               : '4.5.13',
@@ -110,6 +110,8 @@ allprojects {
         mavenCentral()
         jcenter()
         maven { url 'https://repo.spring.io/libs-milestone' }
+        maven { url "https://repo.maven.apache.org/maven2" }
+        maven { url "https://jitpack.io" }
     }
 
     dependencyManagement {
