@@ -97,7 +97,7 @@ public class SendDaGrantedNotificationWorkflowTest {
     }
 
     @Test
-    public void runShouldCallBulkPrintingForDigitalRespondentWithEmptyRespondentEmail() throws Exception {
+    public void runShouldCallBulkPrintingForRespondentWithEmptyRespondentEmail() throws Exception {
         Map<String, Object> incomingCaseData = buildCaseData(NO_VALUE, "");
 
         verifyBulkPrintingCalls(incomingCaseData);
