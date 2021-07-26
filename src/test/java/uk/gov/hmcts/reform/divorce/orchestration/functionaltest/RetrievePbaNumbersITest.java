@@ -51,7 +51,9 @@ public class RetrievePbaNumbersITest extends IdamTestSupport {
 
     private static final String API_URL = "/retrieve-pba-numbers";
 
-    private static final String RETRIEVE_PBA_NUMBERS_URL = "/refdata/external/v1/organisations/pbas?email=testRespondentSolicitor%40email.com";
+    private static final String RETRIEVE_PBA_NUMBERS_URL = "/refdata/external/v1/organisations/pbas";
+
+    private static final String USER_EMAIL = "UserEmail";
 
     @Autowired
     private MockMvc webClient;
@@ -134,6 +136,7 @@ public class RetrievePbaNumbersITest extends IdamTestSupport {
         pbaValidationServer.stubFor(WireMock.get(urlEqualTo(RETRIEVE_PBA_NUMBERS_URL))
             .withHeader(AUTHORIZATION, new EqualToPattern(BEARER_AUTH_TOKEN))
             .withHeader(SERVICE_AUTHORIZATION, new EqualToPattern("Bearer " + TEST_SERVICE_AUTH_TOKEN))
+            .withHeader(USER_EMAIL, new EqualToPattern("testRespondentSolicitor@email.com"))
             .willReturn(aResponse()
                 .withStatus(status.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
