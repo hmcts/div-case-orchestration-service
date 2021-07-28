@@ -2,6 +2,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import com.google.common.collect.ImmutableMap;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.client.DocumentGeneratorClient;
@@ -26,21 +27,25 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @RequiredArgsConstructor
 @Component
+@Slf4j
 public class RespondentAosLetterGeneratorTask implements Task<Map<String, Object>> {
     private final DocumentGeneratorClient documentGeneratorClient;
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         CaseDetails caseDetails = context.getTransientObject(CASE_DETAILS_JSON_KEY);
+        log.info("In Aos Letter Generator task for Case ID: {}", caseDetails.getCaseId());
         String templateId = DocumentTypeHelper.getLanguageAppropriateTemplate(caseData, DocumentType.AOS_INVITATION_REP_RESP);
-
+        String pinNumber = context.getTransientObject(RESPONDENT_PIN);
+        log.info("Template to call: {}", templateId);
+        log.info("With Respondent PIN: {}", pinNumber);
         GeneratedDocumentInfo aosInvitation =
             documentGeneratorClient.generatePDF(
                 GenerateDocumentRequest.builder()
                     .template(templateId)
                     .values(ImmutableMap.of(
                         DOCUMENT_CASE_DETAILS_JSON_KEY, caseDetails,
-                        ACCESS_CODE, context.getTransientObject(RESPONDENT_PIN))
+                        ACCESS_CODE, pinNumber)
                     )
                     .build(),
                 context.getTransientObject(AUTH_TOKEN_JSON_KEY)
