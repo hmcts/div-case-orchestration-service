@@ -17,7 +17,6 @@ plugins {
     id 'application'
     id 'checkstyle'
     id 'com.github.ben-manes.versions' version '0.39.0'
-    id 'com.jfrog.bintray' version '1.8.4'
     id 'info.solidsoft.pitest' version '1.5.1'
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id 'jacoco'
@@ -39,7 +38,7 @@ def versions = [
         commonsMath3                 : '3.6.1',
         divCommonLib                 : '1.2.16',
         dumbster                     : '1.7.1',
-        elasticsearch                : '7.12.0',
+        elasticsearch                : '7.14.0',
         feignHttpClient              : '10.3.0',
         flyway                        : '6.5.5',
         googleAuth                   : '1.5.0',
@@ -69,7 +68,7 @@ def versions = [
         springSecurityCrypto         : '5.4.5',
         springSecurityRsa            : '1.0.8.RELEASE',
         springBoot                   : '2.3.11.RELEASE',
-        tomcat                       : '9.0.43',
+        tomcat                       : '9.0.48',
         unirest                      : '1.4.9',
         pact_version                 : '4.1.11',
         httpComponents               : '4.5.13',

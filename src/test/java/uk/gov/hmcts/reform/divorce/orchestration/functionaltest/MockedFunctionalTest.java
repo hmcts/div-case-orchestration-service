@@ -58,11 +58,6 @@ public abstract class MockedFunctionalTest {
     protected static final String GENERATE_DRAFT_DOCUMENT_CONTEXT_PATH = "/version/1/generateDraftPDF";
     protected static final String CASE_MAINTENANCE_CLIENT_SEARCH_URL = "/casemaintenance/version/1/search";
 
-    @AfterEach
-    public void resetWireMocks() {
-        WireMock.reset();
-    }
-
     @ClassRule
     public static WireMockClassRule maintenanceServiceServer = new WireMockClassRule(buildWireMockConfig(4010));
 
@@ -104,6 +99,11 @@ public abstract class MockedFunctionalTest {
 
     @ClassRule
     public static WireMockClassRule prdServer = new WireMockClassRule(buildWireMockConfig(4451));
+
+    @AfterEach
+    public void resetWireMocks() {
+        WireMock.reset();
+    }
 
     private static WireMockConfiguration buildWireMockConfig(int port) {
         return WireMockSpring
