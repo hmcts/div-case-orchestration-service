@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks.servicejourney;
 
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
@@ -16,7 +17,7 @@ public class MarkRespondentAsNonDigitalTask implements Task<Map<String, Object>>
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) throws TaskException {
         String digitalChannel = (String) caseData.get(OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL);
-        if (digitalChannel == null) {
+        if (Strings.isNullOrEmpty(digitalChannel)) {
             caseData.put(OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL, OrchestrationConstants.NO_VALUE);
         }
         return caseData;
