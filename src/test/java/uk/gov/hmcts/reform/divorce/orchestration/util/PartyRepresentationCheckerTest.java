@@ -22,7 +22,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_SESSION_RESPONDENT_SOLICITOR_REFERENCE_DATA_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_CO_RESPONDENT;
@@ -112,7 +111,6 @@ public class PartyRepresentationCheckerTest {
     @Test
     public void isRespondentDigitalReturnsTrue() {
         Map<String, Object> caseData = createCaseData(RESP_IS_USING_DIGITAL_CHANNEL, YES_VALUE);
-        caseData.put(RESPONDENT_EMAIL_ADDRESS, "respondent@email.com");
         assertThat(isRespondentDigital(caseData), is(true));
     }
 
@@ -144,7 +142,7 @@ public class PartyRepresentationCheckerTest {
     @Test
     public void isRespondentSolicitorDigitalReturnsTrue_WhenOrgPolicyDetailsPopulated() {
         Map<String, Object> caseData = createCaseData(RESPONDENT_SOLICITOR_ORGANISATION_POLICY,
-            buildOrganisationPolicyWithId(TEST_ORGANISATION_POLICY_ID));
+                                                        buildOrganisationPolicyWithId(TEST_ORGANISATION_POLICY_ID));
         assertThat(isRespondentSolicitorDigital(caseData), is(true));
     }
 
@@ -193,16 +191,9 @@ public class PartyRepresentationCheckerTest {
     }
 
     @Test
-    public void isRespondentWhenRespondentEmailIsPopulatedAndCoRespondentDigitalReturnsTrue() {
-        Map<String, Object> caseData = createCaseData(RESPONDENT_EMAIL_ADDRESS, "respondent@email.com");
-        assertThat(isRespondentDigital(caseData), is(true));
-        assertThat(isCoRespondentDigital(caseData), is(true));
-    }
-
-    @Test
-    public void isRespondentDigitalReturnsFalseWhenRespondentEmailIsNotPopulated() {
+    public void isRespondentAndCoRespondentDigitalReturnsTrueWhenNone() {
         Map<String, Object> caseData = emptyMap();
-        assertThat(isRespondentDigital(caseData), is(false));
+        assertThat(isRespondentDigital(caseData), is(true));
         assertThat(isCoRespondentDigital(caseData), is(true));
     }
 
@@ -247,8 +238,8 @@ public class PartyRepresentationCheckerTest {
         return OrganisationPolicy.builder()
             .organisation(
                 Organisation.builder()
-                    .organisationID(id)
-                    .build())
+                .organisationID(id)
+                .build())
             .build();
     }
 

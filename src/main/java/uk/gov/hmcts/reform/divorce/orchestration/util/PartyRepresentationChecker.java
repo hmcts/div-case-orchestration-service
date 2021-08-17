@@ -16,7 +16,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_SESSION_RESPONDENT_SOLICITOR_REFERENCE_DATA_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.EMPTY_STRING;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_CCD_CODE_FOR_BOTH;
@@ -51,8 +50,7 @@ public class PartyRepresentationChecker {
     }
 
     public static boolean isRespondentDigital(Map<String, Object> caseData) {
-        return isYesOrEmpty(caseData, RESP_IS_USING_DIGITAL_CHANNEL)
-            && !Strings.isNullOrEmpty((String)caseData.get(RESPONDENT_EMAIL_ADDRESS));
+        return isYesOrEmpty(caseData, RESP_IS_USING_DIGITAL_CHANNEL);
     }
 
     public static boolean isPetitionerSolicitorDigital(Map<String, Object> caseData) {

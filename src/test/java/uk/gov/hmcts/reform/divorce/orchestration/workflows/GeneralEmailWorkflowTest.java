@@ -34,7 +34,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPO
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.FullNamesDataExtractor.CaseDataKeys.PETITIONER_FIRST_NAME;
@@ -115,7 +114,6 @@ public class GeneralEmailWorkflowTest {
         caseData = buildCaseData(RESPONDENT);
 
         caseData.put(RESP_IS_USING_DIGITAL_CHANNEL, YES_VALUE);
-        caseData.put(RESPONDENT_EMAIL_ADDRESS, "respondent@email.com");
 
         CaseDetails caseDetails = setupCaseDetails(caseData);
         CcdCallbackRequest ccdCallbackRequest = setupCallbackRequest(caseDetails);

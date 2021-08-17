@@ -8,7 +8,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
@@ -65,7 +64,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.ve
 @RunWith(MockitoJUnitRunner.class)
 public class SendDnPronouncedNotificationWorkflowTest {
 
-    protected static final String RESPONDENT_MAIL_COM = "respondent@mail.com";
     @InjectMocks
     private SendDnPronouncedNotificationWorkflow sendDnPronouncedNotificationWorkflow;
 
@@ -124,9 +122,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
 
     @Test
     public void genericEmailTaskShouldExecuteAndReturnPayload() throws Exception {
-        Map<String, Object> caseData = ImmutableMap.of("testKey", "testValue",
-            RESP_IS_USING_DIGITAL_CHANNEL, YES_VALUE,
-            OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS, RESPONDENT_MAIL_COM);
+        Map<String, Object> caseData = ImmutableMap.of("testKey", "testValue");
 
         mockTasksExecution(
             caseData,
@@ -149,10 +145,8 @@ public class SendDnPronouncedNotificationWorkflowTest {
     public void givenDigitalCaseAndCoRespondentNotLiableForCosts_thenEmailsAreSent() throws Exception {
         Map<String, Object> caseData = ImmutableMap.of(
             WHO_PAYS_COSTS_CCD_FIELD,
-            WHO_PAYS_CCD_CODE_FOR_RESPONDENT,
-            RESP_IS_USING_DIGITAL_CHANNEL, YES_VALUE,
-            OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS, RESPONDENT_MAIL_COM);
-
+            WHO_PAYS_CCD_CODE_FOR_RESPONDENT
+        );
 
         mockTasksExecution(
             caseData,
@@ -482,11 +476,8 @@ public class SendDnPronouncedNotificationWorkflowTest {
         Map<String, Object> caseData = ImmutableMap.of(
             CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE,
             COSTS_CLAIM_GRANTED, YES_VALUE,
-            CO_RESPONDENT_REPRESENTED, YES_VALUE,
-            RESP_IS_USING_DIGITAL_CHANNEL, YES_VALUE,
-            OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS, RESPONDENT_MAIL_COM
+            CO_RESPONDENT_REPRESENTED, YES_VALUE
         );
-
 
         mockTasksExecution(
             caseData,
@@ -517,9 +508,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
     @Test
     public void givenPaperBasedAndPaperUpdateToggledOnAndCostClaimNotGranted_thenNoBulkPrintTasksAreCalled() throws Exception {
         Map<String, Object> caseData = ImmutableMap.of(
-            COSTS_CLAIM_GRANTED, NO_VALUE,
-            RESP_IS_USING_DIGITAL_CHANNEL, YES_VALUE,
-            OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS, RESPONDENT_MAIL_COM
+            COSTS_CLAIM_GRANTED, NO_VALUE
         );
 
         mockTasksExecution(
@@ -542,8 +531,7 @@ public class SendDnPronouncedNotificationWorkflowTest {
 
     @Test
     public void givenPaperBasedAndPaperUpdateToggledOff_thenNoBulkPrintTasksAreCalled() throws Exception {
-        Map<String, Object> caseData = ImmutableMap.of(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE, RESP_IS_USING_DIGITAL_CHANNEL, YES_VALUE,
-            OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS, RESPONDENT_MAIL_COM);
+        Map<String, Object> caseData = ImmutableMap.of(CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL, NO_VALUE);
 
         when(featureToggleService.isFeatureEnabled(Features.PAPER_UPDATE)).thenReturn(false);
 
@@ -643,8 +631,6 @@ public class SendDnPronouncedNotificationWorkflowTest {
         caseData.put(D8DOCUMENTS_GENERATED, asList(
             createCollectionMemberDocumentAsMap("http://dn-pronounced.com", COSTS_ORDER_DOCUMENT_TYPE, COSTS_ORDER_TEMPLATE_ID)
         ));
-        caseData.put(RESP_IS_USING_DIGITAL_CHANNEL, YES_VALUE);
-        caseData.put(OrchestrationConstants.RESPONDENT_EMAIL_ADDRESS, RESPONDENT_MAIL_COM);
         return caseData;
     }
 
