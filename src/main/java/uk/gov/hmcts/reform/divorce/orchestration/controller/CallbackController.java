@@ -1375,8 +1375,36 @@ public class CallbackController {
                 .build());
     }
 
+    @PostMapping(path = "/create-general-email/clear-fields")
+    @ApiOperation(value = "Prepare the event sending general email by clearing fields it's using")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.")})
+    public ResponseEntity<CcdCallbackResponse> clearFieldsForCreateGeneralEmailEvent(
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(generalEmailService.clearGeneralEmailFields(ccdCallbackRequest.getCaseDetails()))
+                .build());
+    }
+
+    @PostMapping(path = "/create-general-email/store-fields")
+    @ApiOperation(value = "Store general email fields in general email details collection")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.")})
+    public ResponseEntity<CcdCallbackResponse> storeGeneralEmailEventFieldsInCollection(
+        @RequestHeader(value = AUTHORIZATION)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws CaseOrchestrationServiceException {
+
+        return ResponseEntity.ok(
+            CcdCallbackResponse.builder()
+                .data(generalEmailService.storeGeneralEmailFields(ccdCallbackRequest.getCaseDetails(), authorizationToken))
+                .build());
+    }
+
     @PostMapping(path = "/create-general-email")
-    @ApiOperation(value = "Prepare event to send general email")
+    @ApiOperation(value = "Sends the general email to recipient")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Create general email notification callback processed.")})
     public ResponseEntity<CcdCallbackResponse> createGeneralEmail(
