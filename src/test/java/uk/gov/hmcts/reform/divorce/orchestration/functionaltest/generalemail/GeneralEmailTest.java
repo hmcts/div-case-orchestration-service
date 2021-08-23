@@ -77,7 +77,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helpe
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.helper.GeneralEmailTaskHelper.getExpectedNotificationTemplateVars;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.context;
-import static uk.gov.hmcts.reform.divorce.orchestration.workflows.GeneralEmailWorkflow.OTHER_GENERAL_EMAIL_SELECTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.workflows.generalemail.GeneralEmailWorkflow.OTHER_GENERAL_EMAIL_SELECTION;
 
 public class GeneralEmailTest extends IdamTestSupport {
 
