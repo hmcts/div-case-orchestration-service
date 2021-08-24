@@ -236,6 +236,7 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok:${versions.lombok}")
     testCompileOnly("org.projectlombok:lombok:${versions.lombok}")
+    testCompile('com.github.hmcts:fortify-client:1.2.0:all')
     annotationProcessor("org.projectlombok:lombok:${versions.lombok}")
     testAnnotationProcessor("org.projectlombok:lombok:${versions.lombok}")
 
@@ -568,4 +569,10 @@ pact {
         tags = [System.getenv("PACT_BRANCH_NAME") ?:'Dev']
         version = project.pactVersion
     }
+}
+
+task fortifyScan(type: JavaExec)  {
+    main = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
+    classpath += sourceSets.test.runtimeClasspath
+    jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
 }
