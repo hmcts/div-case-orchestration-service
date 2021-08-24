@@ -30,13 +30,13 @@ plugins {
 def versions = [
         awaitility                   : '4.0.2',
         bcpkixJdk15on                : '1.64',
-        bspCommonLib                 : '0.0.48',
+        bspCommonLib                 : '0.0.49',
         ccdStoreClient               : '4.7.3',
         commonsBeanUtils             : '1.9.4',
         commonsIo                    : '2.7',
         commonsLang3                 : '3.9',
         commonsMath3                 : '3.6.1',
-        divCommonLib                 : '1.2.16',
+        divCommonLib                 : '1.2.17',
         dumbster                     : '1.7.1',
         elasticsearch                : '7.14.0',
         feignHttpClient              : '10.3.0',
@@ -240,6 +240,8 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:${versions.lombok}")
     testAnnotationProcessor("org.projectlombok:lombok:${versions.lombok}")
 
+    implementation "com.github.hmcts:div-common-lib:${versions.divCommonLib}"
+    implementation "com.github.hmcts:bsp-common-lib:${versions.bspCommonLib}"
     implementation group: 'com.sun.xml.bind', name: 'jaxb-osgi', version: '2.3.3'
     implementation group: 'com.jayway.jsonpath', name: 'json-path-assert', version: versions.jsonPathAssert
     implementation group: 'com.github.kirviq', name: 'dumbster', version: versions.dumbster
@@ -269,8 +271,6 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
     implementation group: 'org.springframework.retry', name: 'spring-retry'
-    implementation "com.github.hmcts:bsp-common-lib:${versions.bspCommonLib}"
-    implementation "com.github.hmcts:div-common-lib:${versions.divCommonLib}"
     implementation group: 'uk.gov.hmcts.reform', name: 'idam-client', version: versions.idamClient
     implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformsJavaLogging
     implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformsJavaLogging
