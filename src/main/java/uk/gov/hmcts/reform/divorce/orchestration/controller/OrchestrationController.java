@@ -317,7 +317,6 @@ public class OrchestrationController {
             @PathVariable String caseId)
             throws WorkflowException {
 
-        log.info("Amend Petition callback for case with CASE ID: {} starting", caseId);
         return ResponseEntity.ok(orchestrationService.amendPetition(caseId, authorizationToken));
     }
 
@@ -335,7 +334,6 @@ public class OrchestrationController {
             @PathVariable String caseId)
             throws WorkflowException {
 
-        log.info("Amend Petition For Refusal callback for case with CASE ID: {} starting", caseId);
         return ResponseEntity.ok(orchestrationService.amendPetitionForRefusal(caseId, authorizationToken));
     }
 }
