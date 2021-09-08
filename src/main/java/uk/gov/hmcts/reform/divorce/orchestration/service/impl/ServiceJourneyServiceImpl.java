@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
-import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyService;
@@ -63,16 +62,6 @@ public class ServiceJourneyServiceImpl implements ServiceJourneyService {
         }
 
         return builder.build();
-    }
-
-    @Override
-    public Map<String, Object> receivedServiceAddedDate(CcdCallbackRequest ccdCallbackRequest)
-        throws ServiceJourneyServiceException {
-        try {
-            return receivedServiceAddedDateWorkflow.run(ccdCallbackRequest.getCaseDetails());
-        } catch (WorkflowException workflowException) {
-            throw new ServiceJourneyServiceException(workflowException);
-        }
     }
 
     @Override

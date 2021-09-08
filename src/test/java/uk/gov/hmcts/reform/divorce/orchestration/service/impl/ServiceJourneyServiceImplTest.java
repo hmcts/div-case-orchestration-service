@@ -16,7 +16,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.service.ServiceJourneyServiceEx
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.BailiffOutcomeWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.FurtherPaymentWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.MakeServiceDecisionWorkflow;
-import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ReceivedServiceAddedDateWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceDecisionMadeWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.ServiceDecisionMakingWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.servicejourney.SetupConfirmServicePaymentWorkflow;
@@ -52,9 +51,6 @@ public class ServiceJourneyServiceImplTest {
 
     @Mock
     private MakeServiceDecisionWorkflow makeServiceDecisionWorkflow;
-
-    @Mock
-    private ReceivedServiceAddedDateWorkflow receivedServiceAddedDateWorkflow;
 
     @Mock
     private ServiceDecisionMadeWorkflow serviceDecisionMadeWorkflow;
@@ -130,26 +126,6 @@ public class ServiceJourneyServiceImplTest {
             .thenThrow(WorkflowException.class);
 
         classUnderTest.makeServiceDecision(caseDetails, AUTH_TOKEN);
-    }
-
-    @Test
-    public void receivedServiceAddedDateShouldCallWorkflow()
-        throws ServiceJourneyServiceException, WorkflowException {
-        CcdCallbackRequest input = buildCcdCallbackRequest();
-
-        classUnderTest.receivedServiceAddedDate(input);
-
-        verify(receivedServiceAddedDateWorkflow).run(input.getCaseDetails());
-    }
-
-    @Test(expected = ServiceJourneyServiceException.class)
-    public void receivedServiceAddedDateShouldThrowServiceJourneyServiceException()
-        throws ServiceJourneyServiceException, WorkflowException {
-        CcdCallbackRequest input = buildCcdCallbackRequest();
-
-        when(receivedServiceAddedDateWorkflow.run(any(CaseDetails.class))).thenThrow(WorkflowException.class);
-
-        classUnderTest.receivedServiceAddedDate(input);
     }
 
     @Test
