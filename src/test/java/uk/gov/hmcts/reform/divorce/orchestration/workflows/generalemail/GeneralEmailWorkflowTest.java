@@ -1,4 +1,4 @@
-package uk.gov.hmcts.reform.divorce.orchestration.workflows;
+package uk.gov.hmcts.reform.divorce.orchestration.workflows.generalemail;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -86,7 +86,7 @@ public class GeneralEmailWorkflowTest {
         CaseDetails caseDetails = setupCaseDetails(caseData);
         CcdCallbackRequest ccdCallbackRequest = setupCallbackRequest(caseDetails);
 
-        executeAndVerityTask(caseData, ccdCallbackRequest, generalEmailPetitionerSolicitorTask);
+        executeAndVerifyTask(caseData, ccdCallbackRequest, generalEmailPetitionerSolicitorTask);
     }
 
     @Test
@@ -96,7 +96,7 @@ public class GeneralEmailWorkflowTest {
         CaseDetails caseDetails = setupCaseDetails(caseData);
         CcdCallbackRequest ccdCallbackRequest = setupCallbackRequest(caseDetails);
 
-        executeAndVerityTask(caseData, ccdCallbackRequest, generalEmailRespondentSolicitorTask);
+        executeAndVerifyTask(caseData, ccdCallbackRequest, generalEmailRespondentSolicitorTask);
     }
 
     @Test
@@ -106,7 +106,7 @@ public class GeneralEmailWorkflowTest {
         CaseDetails caseDetails = setupCaseDetails(caseData);
         CcdCallbackRequest ccdCallbackRequest = setupCallbackRequest(caseDetails);
 
-        executeAndVerityTask(caseData, ccdCallbackRequest, generalEmailCoRespondentSolicitorTask);
+        executeAndVerifyTask(caseData, ccdCallbackRequest, generalEmailCoRespondentSolicitorTask);
     }
 
     @Test
@@ -118,7 +118,7 @@ public class GeneralEmailWorkflowTest {
         CaseDetails caseDetails = setupCaseDetails(caseData);
         CcdCallbackRequest ccdCallbackRequest = setupCallbackRequest(caseDetails);
 
-        executeAndVerityTask(caseData, ccdCallbackRequest, generalEmailRespondentTask);
+        executeAndVerifyTask(caseData, ccdCallbackRequest, generalEmailRespondentTask);
     }
 
     @Test
@@ -130,7 +130,7 @@ public class GeneralEmailWorkflowTest {
         CaseDetails caseDetails = setupCaseDetails(caseData);
         CcdCallbackRequest ccdCallbackRequest = setupCallbackRequest(caseDetails);
 
-        executeAndVerityTask(caseData, ccdCallbackRequest, generalEmailCoRespondentTask);
+        executeAndVerifyTask(caseData, ccdCallbackRequest, generalEmailCoRespondentTask);
     }
 
     @Test
@@ -142,7 +142,7 @@ public class GeneralEmailWorkflowTest {
         CaseDetails caseDetails = setupCaseDetails(caseData);
         CcdCallbackRequest ccdCallbackRequest = setupCallbackRequest(caseDetails);
 
-        executeAndVerityTask(caseData, ccdCallbackRequest, generalEmailPetitionerTask);
+        executeAndVerifyTask(caseData, ccdCallbackRequest, generalEmailPetitionerTask);
     }
 
     @Test
@@ -152,10 +152,10 @@ public class GeneralEmailWorkflowTest {
         CaseDetails caseDetails = setupCaseDetails(caseData);
         CcdCallbackRequest ccdCallbackRequest = setupCallbackRequest(caseDetails);
 
-        executeAndVerityTask(caseData, ccdCallbackRequest, generalEmailOtherPartyTask);
+        executeAndVerifyTask(caseData, ccdCallbackRequest, generalEmailOtherPartyTask);
     }
 
-    private void executeAndVerityTask(Map<String, Object> caseData, CcdCallbackRequest ccdCallbackRequest, Task task) throws WorkflowException {
+    private void executeAndVerifyTask(Map<String, Object> caseData, CcdCallbackRequest ccdCallbackRequest, Task task) throws WorkflowException {
         mockTasksExecution(caseData, task);
 
         Map<String, Object> returnedCaseData = executeWorkflow(ccdCallbackRequest);
