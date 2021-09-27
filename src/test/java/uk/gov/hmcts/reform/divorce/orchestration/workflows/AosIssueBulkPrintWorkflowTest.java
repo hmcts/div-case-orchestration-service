@@ -23,11 +23,15 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.RESPONDENT_SOLICITOR_ORGANISATION_POLICY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
@@ -85,7 +89,6 @@ public class AosIssueBulkPrintWorkflowTest {
     public void shouldCallAllTasksWhenAppropriate() throws WorkflowException, TaskException {
         when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(true);
         when(representedRespondentJourneyHelper.shouldUpdateNoticeOfProceedingsDetails(payload)).thenReturn(true);
-        when(representedRespondentJourneyHelper.shouldGenerateRespondentAosInvitation(payload)).thenReturn(true);
 
         Map<String, Object> response = classUnderTest.run(AUTH_TOKEN, caseDetails);
         assertThat(response, is(payload));
@@ -105,19 +108,21 @@ public class AosIssueBulkPrintWorkflowTest {
     public void shouldCallMinimumTasksWhenAppropriate() throws WorkflowException, TaskException {
         when(caseDataUtils.isAdulteryCaseWithNamedCoRespondent(payload)).thenReturn(false);
         when(representedRespondentJourneyHelper.shouldUpdateNoticeOfProceedingsDetails(payload)).thenReturn(false);
-        when(representedRespondentJourneyHelper.shouldGenerateRespondentAosInvitation(payload)).thenReturn(false);
 
         Map<String, Object> response = classUnderTest.run(AUTH_TOKEN, caseDetails);
         assertThat(response, is(payload));
+
+        payload.put(RESPONDENT_SOLICITOR_ORGANISATION_POLICY, "Awesome organisation");
+        verify(respondentAosPackPrinterTask, times(1)).setDocumentTypesToPrint(any());
 
         verifyTasksCalledInOrder(
             payload,
             serviceMethodValidationTask,
             fetchPrintDocsFromDmStoreTask,
+            respondentAosPackPrinterTask,
             aosPackDueDateSetterTask
         );
 
-        verifyNoInteractions(respondentAosPackPrinterTask);
         verifyNoInteractions(coRespondentAosPackPrinterTask);
         verifyNoInteractions(updateRespondentDigitalDetailsTask);
     }
