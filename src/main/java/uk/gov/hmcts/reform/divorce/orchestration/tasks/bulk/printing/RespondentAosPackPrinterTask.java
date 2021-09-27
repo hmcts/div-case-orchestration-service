@@ -18,18 +18,22 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 public class RespondentAosPackPrinterTask implements Task<Map<String, Object>> {
 
     private static final String LETTER_TYPE_RESPONDENT_PACK = "respondent-aos-pack";
-    private static final List<String> DOCUMENT_TYPES_IN_ORDER = asList(DOCUMENT_TYPE_RESPONDENT_INVITATION, DOCUMENT_TYPE_PETITION);
 
     private final BulkPrinterTask bulkPrinter;
+    private List<String> documentTypesInOrder;
 
     @Autowired
     public RespondentAosPackPrinterTask(final BulkPrinterTask bulkPrinter) {
         this.bulkPrinter = bulkPrinter;
+        this.documentTypesInOrder = asList(DOCUMENT_TYPE_RESPONDENT_INVITATION, DOCUMENT_TYPE_PETITION);
     }
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) {
-        return bulkPrinter.printSpecifiedDocument(context, payload, LETTER_TYPE_RESPONDENT_PACK, DOCUMENT_TYPES_IN_ORDER);
+        return bulkPrinter.printSpecifiedDocument(context, payload, LETTER_TYPE_RESPONDENT_PACK, documentTypesInOrder);
     }
 
+    public void setDocumentTypesToPrint(List<String> documentTypes) {
+        this.documentTypesInOrder = documentTypes;
+    }
 }

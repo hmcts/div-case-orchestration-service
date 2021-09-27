@@ -21,10 +21,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Arrays.asList;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AUTH_TOKEN_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_STATE_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_PETITION;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.PartyRepresentationChecker.isRespondentSolicitorDigital;
 
 @Component
 @RequiredArgsConstructor
@@ -49,12 +52,15 @@ public class AosIssueBulkPrintWorkflow extends DefaultWorkflow<Map<String, Objec
 
         Map<String, Object> caseData = caseDetails.getCaseData();
         String caseId = caseDetails.getCaseId();
-        if (representedRespondentJourneyHelper.shouldGenerateRespondentAosInvitation(caseData)) {
-            log.info("Case id {}: Sending respondent AOS pack to bulk print", caseId);
-            tasks.add(respondentAosPackPrinterTask);
+
+        if (!isRespondentSolicitorDigital(caseData)) {
+            log.info("Case id {}: Sending AOS pack to bulk print, for non digital respondent solicitor", caseId);
+            respondentAosPackPrinterTask.setDocumentTypesToPrint(asList(DOCUMENT_TYPE_PETITION));
         } else {
-            log.info("Case id {}: Not sending respondent AOS pack to bulk print", caseId);
+            log.info("Case id {}: Sending AOS pack to bulk print, for respondent", caseId);
         }
+
+        tasks.add(respondentAosPackPrinterTask);
 
         if (caseDataUtils.isAdulteryCaseWithNamedCoRespondent(caseData)) {
             tasks.add(coRespondentAosPackPrinterTask);
