@@ -37,6 +37,7 @@ public class CcdFields {
     public static final String CO_RESPONDENT_SOLICITOR_EMAIL_ADDRESS = "CoRespondentSolicitorEmail";
     public static final String CO_RESPONDENT_EMAIL_ADDRESS = OrchestrationConstants.CO_RESP_EMAIL_ADDRESS;
 
+    public static final String GENERAL_EMAIL_DETAILS_COLLECTION = "GeneralEmailDetailsCollection";
     public static final String GENERAL_EMAIL_DETAILS = "GeneralEmailDetails";
     public static final String GENERAL_EMAIL_OTHER_RECIPIENT_NAME = "GeneralEmailOtherRecipientName";
     public static final String GENERAL_EMAIL_OTHER_RECIPIENT_EMAIL = "GeneralEmailOtherRecipientEmail";
