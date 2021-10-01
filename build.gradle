@@ -38,7 +38,7 @@ def versions = [
         commonsMath3                 : '3.6.1',
         divCommonLib                 : '1.2.16',
         dumbster                     : '1.7.1',
-        elasticsearch                : '7.12.0',
+        elasticsearch                : '7.14.0',
         feignHttpClient              : '10.3.0',
         flyway                        : '6.5.5',
         googleAuth                   : '1.5.0',
@@ -159,6 +159,8 @@ allprojects {
             }
             //CVE-2017-18640
             dependency group: 'org.yaml',name: 'snakeyaml', version: '1.26'
+
+            dependency group: 'org.glassfish', name: 'jakarta.el', version: '3.0.4'
         }
     }
 }
@@ -236,6 +238,7 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok:${versions.lombok}")
     testCompileOnly("org.projectlombok:lombok:${versions.lombok}")
+    testCompile('com.github.hmcts:fortify-client:1.2.0:all')
     annotationProcessor("org.projectlombok:lombok:${versions.lombok}")
     testAnnotationProcessor("org.projectlombok:lombok:${versions.lombok}")
 
@@ -568,4 +571,10 @@ pact {
         tags = [System.getenv("PACT_BRANCH_NAME") ?:'Dev']
         version = project.pactVersion
     }
+}
+
+task fortifyScan(type: JavaExec)  {
+    main = "uk.gov.hmcts.fortifyclient.FortifyClientMainApp"
+    classpath += sourceSets.test.runtimeClasspath
+    jvmArgs = ['--add-opens=java.base/java.lang.reflect=ALL-UNNAMED']
 }
