@@ -38,7 +38,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTes
 
 public class GetPetitionIssueFeesTest extends IntegrationTest {
 
-    private static final String NEW_CASE_FEE_IN_POUNDS = "550";
+    private static final String NEW_CASE_FEE_IN_POUNDS = "593";
     private static final String AMEND_CASE_FEE_IN_POUNDS = "95";
 
     @Value("${case.orchestration.solicitor.petition-issue-fees.context-path}")
