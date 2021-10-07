@@ -68,7 +68,9 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.te
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.getPbaUpdatedState;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.getResponseErrors;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.hasErrorKeyInResponse;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.isAosReceivedNoAdCon;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.isPaymentSuccess;
+import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.stateForAosReceivedNoAdCon;
 
 @RestController
 @Slf4j
@@ -256,12 +258,12 @@ public class CallbackController {
     @PostMapping(path = "/aos-submitted", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
     @ApiOperation(value = "Trigger notification email to Respondent that their AOS has been submitted")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Email sent to Respondent for AOS Submitted",
-            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 200, message = "Email sent to Respondent for AOS Submitted", response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> respondentAOSSubmitted(
         @RequestHeader(value = AUTHORIZATION, required = false) String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
         log.info("/aos-submitted endpoint called for caseId {}", caseId);
         Map<String, Object> returnedCaseData;
@@ -274,9 +276,14 @@ public class CallbackController {
                 .build());
         }
 
-        return ResponseEntity.ok(CcdCallbackResponse.builder()
-            .data(returnedCaseData)
-            .build());
+        CcdCallbackResponse.CcdCallbackResponseBuilder responseBuilder = CcdCallbackResponse.builder();
+        responseBuilder.data(returnedCaseData);
+
+        if (isAosReceivedNoAdCon(ccdCallbackRequest.getEventId())) {
+            responseBuilder.state(stateForAosReceivedNoAdCon(returnedCaseData));
+        }
+
+        return ResponseEntity.ok(responseBuilder.build());
     }
 
     @PostMapping(path = "/petition-submitted", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
@@ -317,8 +324,7 @@ public class CallbackController {
         produces = MediaType.APPLICATION_JSON)
     @ApiOperation(value = "Default application state")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Default state set",
-            response = CcdCallbackResponse.class),
+        @ApiResponse(code = 200, message = "Default state set", response = CcdCallbackResponse.class),
         @ApiResponse(code = 400, message = "Bad Request")})
     public ResponseEntity<CcdCallbackResponse> defaultValue(
         @RequestHeader(value = "Authorization", required = false) String authorizationToken,

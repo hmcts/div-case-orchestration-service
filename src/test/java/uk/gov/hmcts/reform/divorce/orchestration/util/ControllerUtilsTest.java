@@ -202,6 +202,22 @@ public class ControllerUtilsTest {
         assertThat(ControllerUtils.getResponseErrors(null, Collections.emptyMap()), nullValue());
     }
 
+    @Test
+    public void givenStuff() {
+        Map<String, Object> nothing = new HashMap<>();
+        assertThat(ControllerUtils.isAosReceivedNoAdCon(TEST_CASE_ID), is(false));
+        assertThat(ControllerUtils.stateForAosReceivedNoAdCon(nothing), is("AwaitingDecreeNisi"));
+
+        assertThat(ControllerUtils.isAosReceivedNoAdCon("aosReceivedNoAdConStarted"), is(true));
+
+        nothing.put("RespAOS2yrConsent", "No");
+        assertThat(ControllerUtils.stateForAosReceivedNoAdCon(nothing), is("AosCompleted"));
+
+        nothing.put("RespAOS2yrConsent", "Yes");
+        nothing.put("RespWillDefendDivorce", "Yes");
+        assertThat(ControllerUtils.stateForAosReceivedNoAdCon(nothing), is("AosSubmittedAwaitingAnswer"));
+    }
+
     private Map<String, Object> buildTestCaseData(String howToPay, String paymentStatus) {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(SOLICITOR_HOW_TO_PAY_JSON_KEY, howToPay);
