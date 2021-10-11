@@ -108,10 +108,11 @@ public class ControllerUtils {
         return AWAITING_DECREE_NISI;
     }
 
-    public static boolean isAosReceivedNoAdCon(String caseId) {
-        if (BO_WELSH_AOS_RECEIVED_NO_AD_CON_STARTED.equals(caseId) || COMPLETED_AOS.equals(caseId)) {
+    public static boolean isAosReceivedNoAdCon(String eventId) {
+        if (BO_WELSH_AOS_RECEIVED_NO_AD_CON_STARTED.equals(eventId) || COMPLETED_AOS.equals(eventId)) {
             return true;
         }
+
         return false;
     }
 }

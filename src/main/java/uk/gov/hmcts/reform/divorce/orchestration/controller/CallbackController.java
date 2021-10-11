@@ -279,6 +279,8 @@ public class CallbackController {
         CcdCallbackResponse.CcdCallbackResponseBuilder responseBuilder = CcdCallbackResponse.builder();
         responseBuilder.data(returnedCaseData);
 
+        log.info("{} DEBUGG: IsNoAdCon: {}. STATE: {}",
+            caseId, isAosReceivedNoAdCon(ccdCallbackRequest.getEventId()), stateForAosReceivedNoAdCon(returnedCaseData));
         if (isAosReceivedNoAdCon(ccdCallbackRequest.getEventId())) {
             responseBuilder.state(stateForAosReceivedNoAdCon(returnedCaseData));
         }
