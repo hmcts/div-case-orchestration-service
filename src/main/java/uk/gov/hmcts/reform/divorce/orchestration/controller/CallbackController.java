@@ -276,16 +276,9 @@ public class CallbackController {
                 .build());
         }
 
-        CcdCallbackResponse.CcdCallbackResponseBuilder responseBuilder = CcdCallbackResponse.builder();
-        responseBuilder.data(returnedCaseData);
-
-        log.info("{} DEBUGG: IsNoAdCon: {}. STATE: {}",
-            caseId, isAosReceivedNoAdCon(ccdCallbackRequest.getEventId()), stateForAosReceivedNoAdCon(returnedCaseData));
-        if (isAosReceivedNoAdCon(ccdCallbackRequest.getEventId())) {
-            responseBuilder.state(stateForAosReceivedNoAdCon(returnedCaseData));
-        }
-
-        return ResponseEntity.ok(responseBuilder.build());
+        return ResponseEntity.ok(CcdCallbackResponse.builder()
+            .data(returnedCaseData)
+            .build());
     }
 
     @PostMapping(path = "/petition-submitted", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
@@ -777,7 +770,14 @@ public class CallbackController {
         @RequestHeader(AUTHORIZATION)
         @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
-        return ResponseEntity.ok(caseOrchestrationService.aosReceived(ccdCallbackRequest, authorizationToken));
+
+        CcdCallbackResponse response = caseOrchestrationService.aosReceived(ccdCallbackRequest, authorizationToken);
+        CcdCallbackResponse.CcdCallbackResponseBuilder responseBuilder = CcdCallbackResponse.builder();
+        if (isAosReceivedNoAdCon(ccdCallbackRequest.getEventId())) {
+            responseBuilder.state(stateForAosReceivedNoAdCon(response.getData()));
+        }
+
+        return ResponseEntity.ok(responseBuilder.data(response.getData()).build());
     }
 
     @PostMapping(path = "/co-respondent-received")

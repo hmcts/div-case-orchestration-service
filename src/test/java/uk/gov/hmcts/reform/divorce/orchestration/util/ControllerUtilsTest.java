@@ -28,9 +28,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_ERROR_CONTENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_STATE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdEvents.AOS_RECEIVED_NO_ADCON_STARTED;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AOS_SUBMITTED_AWAITING_ANSWER;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdStates.AWAITING_DECREE_NISI;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.FEE_PAY_BY_ACCOUNT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 public class ControllerUtilsTest {
 
@@ -203,19 +208,21 @@ public class ControllerUtilsTest {
     }
 
     @Test
-    public void givenStuff() {
-        Map<String, Object> nothing = new HashMap<>();
-        assertThat(ControllerUtils.isAosReceivedNoAdCon(TEST_CASE_ID), is(false));
-        assertThat(ControllerUtils.stateForAosReceivedNoAdCon(nothing), is("AwaitingDecreeNisi"));
+    public void shouldReturnTrueIfEventIsAosReceivedNoAdCon() {
+        assertThat(ControllerUtils.isAosReceivedNoAdCon(AOS_RECEIVED_NO_ADCON_STARTED), is(true));
+    }
 
-        assertThat(ControllerUtils.isAosReceivedNoAdCon("aosReceivedNoAdConStarted"), is(true));
+    @Test
+    public void shouldReturnAosSubmittedAwaitingAnswerIfRespWillDefendDivorce() {
+        Map<String, Object> caseData = new HashMap<>();
+        caseData.put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
 
-        nothing.put("RespAOS2yrConsent", "No");
-        assertThat(ControllerUtils.stateForAosReceivedNoAdCon(nothing), is("AosCompleted"));
+        assertThat(ControllerUtils.stateForAosReceivedNoAdCon(caseData), is(AOS_SUBMITTED_AWAITING_ANSWER));
+    }
 
-        nothing.put("RespAOS2yrConsent", "Yes");
-        nothing.put("RespWillDefendDivorce", "Yes");
-        assertThat(ControllerUtils.stateForAosReceivedNoAdCon(nothing), is("AosSubmittedAwaitingAnswer"));
+    @Test
+    public void shouldReturnAwaitingDecreeNisiByDefault() {
+        assertThat(ControllerUtils.stateForAosReceivedNoAdCon(new HashMap<>()), is(AWAITING_DECREE_NISI));
     }
 
     private Map<String, Object> buildTestCaseData(String howToPay, String paymentStatus) {

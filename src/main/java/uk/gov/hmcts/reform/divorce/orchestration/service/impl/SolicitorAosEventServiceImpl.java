@@ -96,8 +96,6 @@ public class SolicitorAosEventServiceImpl implements SolicitorAosEventService {
     }
 
     private String getEventId(Map<String, Object> caseData) {
-        final String respAos2yrConsent = (String) caseData.get(RESP_AOS_2_YR_CONSENT);
-        final String respAosAdmitAdultery = (String) caseData.get(RESP_AOS_ADMIT_ADULTERY);
         String eventId;
         if (respondentIsDefending(caseData)) {
             eventId = SOL_AOS_SUBMITTED_DEFENDED;
@@ -105,7 +103,7 @@ public class SolicitorAosEventServiceImpl implements SolicitorAosEventService {
             eventId = SOL_AOS_SUBMITTED_UNDEFENDED;
         }
 
-        if (NO_VALUE.equalsIgnoreCase(respAos2yrConsent) || NO_VALUE.equalsIgnoreCase(respAosAdmitAdultery)) {
+        if (NO_VALUE.equalsIgnoreCase((String) caseData.get(RESP_AOS_2_YR_CONSENT))) {
             eventId = SOL_AOS_RECEIVED_NO_ADCON_STARTED;
         }
         return eventId;
