@@ -230,7 +230,7 @@ public class SolicitorAosEventServiceImplTest {
     }
 
     @Test
-    public void givenDoesNotAdmitAdulteryAndDoesDefend_whenEventTriggered_SolAosReceivedNoAdConStartedAndValuesMapped() {
+    public void givenDoesNotAdmitAdulteryAndDoesDefend_whenEventTriggered_solAosSubmittedDefendedEventFired() {
         final Map<String, Object> caseData = buildSolicitorResponse();
         caseData.put(D_8_REASON_FOR_DIVORCE, ADULTERY.getValue());
         caseData.put(RESP_AOS_ADMIT_ADULTERY, NO_VALUE);
@@ -247,8 +247,7 @@ public class SolicitorAosEventServiceImplTest {
         SubmitSolicitorAosEvent event = new SubmitSolicitorAosEvent(TASK_CONTEXT);
         assertEquals(expectedData, classUnderTest.fireSecondaryAosEvent(event));
 
-        verify(caseMaintenanceClient).updateCase(
-            eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_RECEIVED_NO_ADCON_STARTED), eq(expectedData));
+        verify(caseMaintenanceClient).updateCase(eq(AUTH_TOKEN), eq(TEST_CASE_ID), eq(SOL_AOS_SUBMITTED_DEFENDED), eq(expectedData));
     }
 
     @Test
