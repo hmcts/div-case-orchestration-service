@@ -133,7 +133,7 @@ fees-and-payments:
 payment:
   service:
     api:
-      baseurl: ${PAYMENT_API_BASEURL:http://localhost:9190}
+      baseurl: ${PAYMENT_API_BASEURL:http://localhost:8383}
 
 pba:
   validation:
@@ -491,27 +491,27 @@ judge:
 
 idam:
   client:
-    redirect_uri: ${IDAM_API_REDIRECT_URL:http://localhost:8080/authenticated}
-    port: 4503
-    secret: ${IDAM_CLIENT_SECRET:dummysecret}
-    id: divorce
+    redirect_uri: ${IDAM_API_REDIRECT_URL:https://localhost:3000/authenticated}
+    port: 5000
+    secret: ${IDAM_CLIENT_SECRET:ccd_gateway_secret}
+    id: ccd_gateway
     health:
       context-path: /health
   citizen:
-    username: ${IDAM_CITIZEN_USERNAME:dummyuser}
-    password: ${IDAM_CITIZEN_PASSWORD:dummypassword}
+    username: ${IDAM_CITIZEN_USERNAME:divorce_as_caseworker_superuser@mailinator.com}
+    password: ${IDAM_CITIZEN_PASSWORD:Pa55word11}
   caseworker:
-    username: ${IDAM_CASEWORKER_USERNAME:dummyuser}
-    password: ${IDAM_CASEWORKER_PASSWORD:dummypassword}
+    username: ${IDAM_CASEWORKER_USERNAME:divorce_as_caseworker_superuser@mailinator.com}
+    password: ${IDAM_CASEWORKER_PASSWORD:Pa55word11}
   s2s-auth:
-    url: ${SERVICE_AUTH_PROVIDER_URL:http://localhost:4504}
+    url: ${SERVICE_AUTH_PROVIDER_URL:http://localhost:4502}
     microservice: ${SERVICE_AUTH_MICROSERVICE:divorce_frontend}
-    secret: ${SERVICE_AUTH_SECRET:dummysecret}
+    secret: ${SERVICE_AUTH_SECRET:AAAAAAAAAAAAAAAA}
     services-allowed-to-update: ${BSP_SERVICES_ALLOWED_TO_UPDATE:bulk_scan_orchestrator}
     services-allowed-to-validate: ${BSP_SERVICES_ALLOWED_TO_VALIDATE:bulk_scan_processor}
     services-allowed-to-payment-update: ${SERVICES_ALLOWED_TO_PAYMENT_UPDATE:payment_app}
   api:
-    url: ${IDAM_API_URL:http://localhost:4503}
+    url: ${IDAM_API_URL:http://localhost:5000}
 
 document:
   generator:

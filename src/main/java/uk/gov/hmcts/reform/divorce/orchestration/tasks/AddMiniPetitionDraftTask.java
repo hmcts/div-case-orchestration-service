@@ -50,6 +50,7 @@ public class AddMiniPetitionDraftTask implements Task<Map<String, Object>> {
 
         generatedDocumentInfo.setDocumentType(DOCUMENT_TYPE);
         generatedDocumentInfo.setFileName(format(DOCUMENT_FILENAME_FMT, DOCUMENT_NAME, caseDetails.getCaseId()));
+        generatedDocumentInfo.setUrl(generatedDocumentInfo.getUrl().replace("localhost:4506", "dm-store:8080"));
 
         final LinkedHashSet<GeneratedDocumentInfo> documentCollection = context
             .computeTransientObjectIfAbsent(DOCUMENT_COLLECTION, new LinkedHashSet<>());
