@@ -68,9 +68,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.te
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.getPbaUpdatedState;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.getResponseErrors;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.hasErrorKeyInResponse;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.isAosReceivedNoAdCon;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.isPaymentSuccess;
-import static uk.gov.hmcts.reform.divorce.orchestration.util.ControllerUtils.stateForAosReceivedNoAdCon;
 
 @RestController
 @Slf4j
@@ -771,13 +769,7 @@ public class CallbackController {
         @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
-        CcdCallbackResponse response = caseOrchestrationService.aosReceived(ccdCallbackRequest, authorizationToken);
-        CcdCallbackResponse.CcdCallbackResponseBuilder responseBuilder = CcdCallbackResponse.builder();
-        if (isAosReceivedNoAdCon(ccdCallbackRequest.getEventId())) {
-            responseBuilder.state(stateForAosReceivedNoAdCon(response.getData()));
-        }
-
-        return ResponseEntity.ok(responseBuilder.data(response.getData()).build());
+        return ResponseEntity.ok(caseOrchestrationService.aosReceived(ccdCallbackRequest, authorizationToken));
     }
 
     @PostMapping(path = "/co-respondent-received")
