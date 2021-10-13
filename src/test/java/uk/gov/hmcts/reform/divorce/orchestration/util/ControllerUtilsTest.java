@@ -209,7 +209,7 @@ public class ControllerUtilsTest {
 
     @Test
     public void shouldReturnTrueIfEventIsAosReceivedNoAdCon() {
-        assertThat(ControllerUtils.isAosReceivedNoAdCon(AOS_RECEIVED_NO_ADCON_STARTED), is(true));
+        assertThat(ControllerUtils.isAosReceivedNoAdCoEvent(AOS_RECEIVED_NO_ADCON_STARTED), is(true));
     }
 
     @Test
@@ -217,12 +217,12 @@ public class ControllerUtilsTest {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put(RESP_WILL_DEFEND_DIVORCE, YES_VALUE);
 
-        assertThat(ControllerUtils.stateForAosReceivedNoAdCon(caseData), is(AOS_SUBMITTED_AWAITING_ANSWER));
+        assertThat(ControllerUtils.stateForAosReceivedNoAdConEvent(caseData), is(AOS_SUBMITTED_AWAITING_ANSWER));
     }
 
     @Test
     public void shouldReturnAwaitingDecreeNisiByDefault() {
-        assertThat(ControllerUtils.stateForAosReceivedNoAdCon(new HashMap<>()), is(AWAITING_DECREE_NISI));
+        assertThat(ControllerUtils.stateForAosReceivedNoAdConEvent(new HashMap<>()), is(AWAITING_DECREE_NISI));
     }
 
     private Map<String, Object> buildTestCaseData(String howToPay, String paymentStatus) {

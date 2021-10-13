@@ -82,7 +82,7 @@ public class ControllerUtils {
             .orElse(false);
     }
 
-    public static String stateForAosReceivedNoAdCon(Map<String, Object> caseData) {
+    public static String stateForAosReceivedNoAdConEvent(Map<String, Object> caseData) {
         if (YES_VALUE.equalsIgnoreCase((String) caseData.get(RESP_WILL_DEFEND_DIVORCE))) {
             return AOS_SUBMITTED_AWAITING_ANSWER;
         }
@@ -90,7 +90,7 @@ public class ControllerUtils {
         return AWAITING_DECREE_NISI;
     }
 
-    public static boolean isAosReceivedNoAdCon(String eventId) {
+    public static boolean isAosReceivedNoAdCoEvent(String eventId) {
         return AOS_RECEIVED_NO_ADCON_STARTED.equals(eventId);
     }
 }
