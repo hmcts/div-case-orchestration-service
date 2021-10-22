@@ -114,12 +114,29 @@ public class AosOverdueTest extends RetrieveCaseSupport {
 
         await().pollInterval(fibonacci(SECONDS)).atMost(480, SECONDS).untilAsserted(() -> {
             assertCaseIsInExpectedState(aosAwaitingCaseId, AOS_OVERDUE);
+        });
+        await().pollInterval(fibonacci(SECONDS)).atMost(480, SECONDS).untilAsserted(() -> {
             assertCaseIsInExpectedState(aosStartedCaseId, AOS_STARTED);
+        });
+        await().pollInterval(fibonacci(SECONDS)).atMost(480, SECONDS).untilAsserted(() -> {
             assertCaseIsInExpectedState(servedByProcessServerCaseId, AWAITING_DECREE_NISI);
+        });
+        await().pollInterval(fibonacci(SECONDS)).atMost(480, SECONDS).untilAsserted(() -> {
             assertCaseIsInExpectedState(servedByAlternativeMethodCaseId, AWAITING_DECREE_NISI);
+        });
+        await().pollInterval(fibonacci(SECONDS)).atMost(480, SECONDS).untilAsserted(() -> {
             assertCaseIsInExpectedState(servedByBailiffCaseId, AWAITING_DECREE_NISI);
+        });
+        await().pollInterval(fibonacci(SECONDS)).atMost(480, SECONDS).untilAsserted(() -> {
+            assertCaseIsInExpectedState(servedByBailiffCaseId, AWAITING_DECREE_NISI);
+        });
+        await().pollInterval(fibonacci(SECONDS)).atMost(480, SECONDS).untilAsserted(() -> {
             assertCaseIsInExpectedState(aosDraftedCaseId, AOS_OVERDUE);
+        });
+        await().pollInterval(fibonacci(SECONDS)).atMost(480, SECONDS).untilAsserted(() -> {
             assertCaseIsInExpectedState(aosDraftedServedByProcessServerCaseId, AWAITING_DECREE_NISI);
+        });
+        await().pollInterval(fibonacci(SECONDS)).atMost(480, SECONDS).untilAsserted(() -> {
             assertCaseIsInExpectedState(aosDraftedServedByAlternativeMethodCaseId, AWAITING_DECREE_NISI);
         });
     }
