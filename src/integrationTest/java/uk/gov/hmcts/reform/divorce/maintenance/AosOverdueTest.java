@@ -104,39 +104,22 @@ public class AosOverdueTest extends RetrieveCaseSupport {
 
     @Test
     public void shouldMoveEligibleCasesWhenAosIsOverdue() {
-//        RestAssured
-//            .given()
-//            .header(HttpHeaders.AUTHORIZATION, caseworkerUser.getAuthToken())
-//            .when()
-//            .post(serverUrl + jobSchedulerContextPath)
-//            .then()
-//            .statusCode(HttpStatus.SC_OK);
+        RestAssured
+            .given()
+            .header(HttpHeaders.AUTHORIZATION, caseworkerUser.getAuthToken())
+            .when()
+            .post(serverUrl + jobSchedulerContextPath)
+            .then()
+            .statusCode(HttpStatus.SC_OK);
 
         await().pollInterval(fibonacci(SECONDS)).atMost(480, SECONDS).untilAsserted(() -> {
             assertCaseIsInExpectedState(aosAwaitingCaseId, AOS_OVERDUE);
-        });
-        await().pollInterval(fibonacci(SECONDS)).atMost(480, SECONDS).untilAsserted(() -> {
             assertCaseIsInExpectedState(aosStartedCaseId, AOS_STARTED);
-        });
-        await().pollInterval(fibonacci(SECONDS)).atMost(480, SECONDS).untilAsserted(() -> {
             assertCaseIsInExpectedState(servedByProcessServerCaseId, AWAITING_DECREE_NISI);
-        });
-        await().pollInterval(fibonacci(SECONDS)).atMost(480, SECONDS).untilAsserted(() -> {
             assertCaseIsInExpectedState(servedByAlternativeMethodCaseId, AWAITING_DECREE_NISI);
-        });
-        await().pollInterval(fibonacci(SECONDS)).atMost(480, SECONDS).untilAsserted(() -> {
             assertCaseIsInExpectedState(servedByBailiffCaseId, AWAITING_DECREE_NISI);
-        });
-        await().pollInterval(fibonacci(SECONDS)).atMost(480, SECONDS).untilAsserted(() -> {
-            assertCaseIsInExpectedState(servedByBailiffCaseId, AWAITING_DECREE_NISI);
-        });
-        await().pollInterval(fibonacci(SECONDS)).atMost(480, SECONDS).untilAsserted(() -> {
             assertCaseIsInExpectedState(aosDraftedCaseId, AOS_OVERDUE);
-        });
-        await().pollInterval(fibonacci(SECONDS)).atMost(480, SECONDS).untilAsserted(() -> {
             assertCaseIsInExpectedState(aosDraftedServedByProcessServerCaseId, AWAITING_DECREE_NISI);
-        });
-        await().pollInterval(fibonacci(SECONDS)).atMost(480, SECONDS).untilAsserted(() -> {
             assertCaseIsInExpectedState(aosDraftedServedByAlternativeMethodCaseId, AWAITING_DECREE_NISI);
         });
     }
