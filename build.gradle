@@ -409,8 +409,8 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
     maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
     forkEvery = 10
 
-    exclude "uk/gov/hmcts/reform/divorce/callback/nightly/pipeline/**"
-    exclude "uk/gov/hmcts/reform/divorce/maintenance/nightly/pipeline/**"
+//    exclude "uk/gov/hmcts/reform/divorce/callback/nightly/pipeline/**"
+    include "uk/gov/hmcts/reform/divorce/maintenance/AosOverdueTest.java"
 
 
     setTestClassesDirs(sourceSets.integrationTest.output.classesDirs)

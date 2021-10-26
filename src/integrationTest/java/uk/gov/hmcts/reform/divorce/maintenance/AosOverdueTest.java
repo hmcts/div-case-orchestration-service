@@ -67,6 +67,7 @@ public class AosOverdueTest extends RetrieveCaseSupport {
         caseworkerUser = createCaseWorkerUser();
 
         aosAwaitingCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_AWAITING_EVENT);
+        log.info("Created case id aosAwaitingCaseId {}", aosAwaitingCaseId);
         aosStartedCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_STARTED_EVENT);
         servedByProcessServerCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_STARTED_EVENT, Pair.of(SERVED_BY_PROCESS_SERVER, YES_VALUE));
         servedByAlternativeMethodCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_STARTED_EVENT, Pair.of(SERVED_BY_ALTERNATIVE_METHOD, YES_VALUE));
@@ -96,7 +97,6 @@ public class AosOverdueTest extends RetrieveCaseSupport {
     private String createCaseAndTriggerGivenEvent(String eventId, Pair<String, Object>... additionalCaseData) {
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, citizenUser);
         String caseId = String.valueOf(caseDetails.getId());
-        log.debug("Created case id {}", caseId);
         updateCase(caseId, null, eventId, caseworkerUser, additionalCaseData);
 
         return caseId;
@@ -104,13 +104,13 @@ public class AosOverdueTest extends RetrieveCaseSupport {
 
     @Test
     public void shouldMoveEligibleCasesWhenAosIsOverdue() {
-        RestAssured
-            .given()
-            .header(HttpHeaders.AUTHORIZATION, caseworkerUser.getAuthToken())
-            .when()
-            .post(serverUrl + jobSchedulerContextPath)
-            .then()
-            .statusCode(HttpStatus.SC_OK);
+//        RestAssured
+//            .given()
+//            .header(HttpHeaders.AUTHORIZATION, caseworkerUser.getAuthToken())
+//            .when()
+//            .post(serverUrl + jobSchedulerContextPath)
+//            .then()
+//            .statusCode(HttpStatus.SC_OK);
 
         await().pollInterval(fibonacci(SECONDS)).atMost(480, SECONDS).untilAsserted(() -> {
             assertCaseIsInExpectedState(aosAwaitingCaseId, AOS_OVERDUE);
