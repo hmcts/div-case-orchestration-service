@@ -42,7 +42,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.events.CcdT
 @Slf4j
 public class AosOverdueTest extends RetrieveCaseSupport {
 
-    private static final int  MAX_WAITING_TIME_IN_SECONDS = 60;
     private static final int  POOL_INTERVAL_IN_MILLIS = 1000;
 
     @Value("${case.orchestration.jobScheduler.make-case-overdue-for-aos.context-path}")
@@ -71,7 +70,6 @@ public class AosOverdueTest extends RetrieveCaseSupport {
         caseworkerUser = createCaseWorkerUser();
 
         aosAwaitingCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_AWAITING_EVENT);
-        log.info("Created case id aosAwaitingCaseId {}", aosAwaitingCaseId);
         aosStartedCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_STARTED_EVENT);
         servedByProcessServerCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_STARTED_EVENT, Pair.of(SERVED_BY_PROCESS_SERVER, YES_VALUE));
         servedByAlternativeMethodCaseId = createCaseAndTriggerGivenEvent(TEST_AOS_STARTED_EVENT, Pair.of(SERVED_BY_ALTERNATIVE_METHOD, YES_VALUE));
@@ -108,13 +106,15 @@ public class AosOverdueTest extends RetrieveCaseSupport {
 
     @Test
     public void shouldMoveEligibleCasesWhenAosIsOverdue() {
-        RestAssured
-            .given()
-            .header(HttpHeaders.AUTHORIZATION, caseworkerUser.getAuthToken())
-            .when()
-            .post(serverUrl + jobSchedulerContextPath)
-            .then()
-            .statusCode(HttpStatus.SC_OK);
+        await().pollInterval(POOL_INTERVAL_IN_MILLIS, MILLISECONDS).atMost(900, SECONDS).untilAsserted(() -> {
+            RestAssured
+                .given()
+                .header(HttpHeaders.AUTHORIZATION, caseworkerUser.getAuthToken())
+                .when()
+                .post(serverUrl + jobSchedulerContextPath)
+                .then()
+                .statusCode(HttpStatus.SC_OK);
+        });
 
         await().pollInterval(POOL_INTERVAL_IN_MILLIS, MILLISECONDS).atMost(900, SECONDS).untilAsserted(() -> {
             assertCaseIsInExpectedState(aosAwaitingCaseId, AOS_OVERDUE);
