@@ -99,6 +99,7 @@ public class AosOverdueTest extends RetrieveCaseSupport {
     private String createCaseAndTriggerGivenEvent(String eventId, Pair<String, Object>... additionalCaseData) {
         final CaseDetails caseDetails = submitCase(SUBMIT_COMPLETE_CASE_JSON_FILE_PATH, citizenUser);
         String caseId = String.valueOf(caseDetails.getId());
+        log.debug("Created case id {}", caseId);
         updateCase(caseId, null, eventId, caseworkerUser, additionalCaseData);
 
         return caseId;

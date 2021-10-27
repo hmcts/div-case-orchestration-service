@@ -42,10 +42,12 @@ public abstract class IntegrationTest {
     private static final String CASEWORKER_PASSWORD = "Testing1234";
     private static final String PASSWORD = "genericPassword123";
     private static final String CITIZEN_USERGROUP = "citizens";
+
     protected static final String ERRORS = "errors";
     protected static final String DATA = "data";
     protected static final String CASE_DATA = "case_data";
     protected static final String CASE_DETAILS = "case_details";
+
     private UserDetails caseWorkerUser;
     private UserDetails caseWorkerSuperUser;
 
