@@ -55,7 +55,7 @@ withNightlyPipeline(type, product, component) {
     }
 
     enableFullFunctionalTest()
-    enableMutationTest()
+
     enableFortifyScan()
 
     after('fortify-scan') {
