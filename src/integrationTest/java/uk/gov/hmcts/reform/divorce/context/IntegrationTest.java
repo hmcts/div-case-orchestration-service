@@ -33,12 +33,13 @@ import javax.annotation.PostConstruct;
 @ContextConfiguration(classes = {ServiceContextConfiguration.class})
 public abstract class IntegrationTest {
 
-    private static final String CASE_WORKER_USERNAME = "TEST_CASE_WORKER_USER";
+    private static final String CASE_WORKER_USERNAME = "divorce_as_caseworker_beta";
     private static final String CASE_WORKER_SUPERUSER = "TEST_CASE_WORKER_SUPERUSER";
     private static final String SOLICITOR_USER_NAME = "divorce_as_petitioner_solicitor_02";
     private static final String EMAIL_DOMAIN = "@mailinator.com";
     private static final String CITIZEN_ROLE = "citizen";
     private static final String SOLICITOR_PASSWORD = "Testing1234";
+    private static final String CASEWORKER_PASSWORD = "Testing1234";
     private static final String PASSWORD = "genericPassword123";
     private static final String CITIZEN_USERGROUP = "citizens";
 
@@ -118,7 +119,7 @@ public abstract class IntegrationTest {
             if (caseWorkerUser == null) {
                 caseWorkerUser = wrapInRetry(() -> getCreatedUserDetails(
                     CASE_WORKER_USERNAME +  EMAIL_DOMAIN,
-                    PASSWORD));
+                    CASEWORKER_PASSWORD));
             }
             return caseWorkerUser;
         }

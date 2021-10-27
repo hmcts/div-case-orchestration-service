@@ -18,9 +18,9 @@ import uk.gov.hmcts.reform.divorce.util.ElasticSearchTestHelper;
 import java.util.Map;
 
 import static java.lang.String.format;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
-import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.BAILIFF_SERVICE_SUCCESSFUL;
@@ -40,6 +40,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.events.CcdT
 
 @Slf4j
 public class AosOverdueTest extends RetrieveCaseSupport {
+
+    private static final int  POOL_INTERVAL_IN_MILLIS = 1000;
 
     @Value("${case.orchestration.jobScheduler.make-case-overdue-for-aos.context-path}")
     private String jobSchedulerContextPath;
@@ -104,15 +106,17 @@ public class AosOverdueTest extends RetrieveCaseSupport {
 
     @Test
     public void shouldMoveEligibleCasesWhenAosIsOverdue() {
-        RestAssured
-            .given()
-            .header(HttpHeaders.AUTHORIZATION, caseworkerUser.getAuthToken())
-            .when()
-            .post(serverUrl + jobSchedulerContextPath)
-            .then()
-            .statusCode(HttpStatus.SC_OK);
+        await().pollInterval(POOL_INTERVAL_IN_MILLIS, MILLISECONDS).atMost(900, SECONDS).untilAsserted(() -> {
+            RestAssured
+                .given()
+                .header(HttpHeaders.AUTHORIZATION, caseworkerUser.getAuthToken())
+                .when()
+                .post(serverUrl + jobSchedulerContextPath)
+                .then()
+                .statusCode(HttpStatus.SC_OK);
+        });
 
-        await().pollInterval(fibonacci(SECONDS)).atMost(480, SECONDS).untilAsserted(() -> {
+        await().pollInterval(POOL_INTERVAL_IN_MILLIS, MILLISECONDS).atMost(900, SECONDS).untilAsserted(() -> {
             assertCaseIsInExpectedState(aosAwaitingCaseId, AOS_OVERDUE);
             assertCaseIsInExpectedState(aosStartedCaseId, AOS_STARTED);
             assertCaseIsInExpectedState(servedByProcessServerCaseId, AWAITING_DECREE_NISI);
