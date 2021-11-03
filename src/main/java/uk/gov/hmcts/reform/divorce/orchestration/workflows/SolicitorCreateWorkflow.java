@@ -65,7 +65,8 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
     private boolean isPetitionerClaimingCostsAndClaimCostsFromIsEmptyIn(CaseDetails caseDetails) {
         Map<String, Object> caseData = caseDetails.getCaseData();
         boolean isPetitionerClaimingCosts = YES_VALUE.equalsIgnoreCase(String.valueOf(caseData.get(DIVORCE_COSTS_CLAIM_CCD_FIELD)));
-        boolean claimCostsFromIsEmpty = StringUtils.isEmpty(caseData.get(DIVORCE_COSTS_CLAIM_FROM_CCD_FIELD));
+        Object claimFrom = caseData.get(DIVORCE_COSTS_CLAIM_FROM_CCD_FIELD);
+        boolean claimCostsFromIsEmpty = (claimFrom == null || (claimFrom instanceof List && ((List<?>) claimFrom).isEmpty()));
 
         return isPetitionerClaimingCosts && claimCostsFromIsEmpty;
     }
