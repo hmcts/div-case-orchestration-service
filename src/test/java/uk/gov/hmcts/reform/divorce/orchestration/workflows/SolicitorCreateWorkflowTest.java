@@ -28,7 +28,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.*;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_FROM_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_FROM_CCD_CODE_FOR_RESPONDENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_FROM_CCD_CODE_FOR_CORESPONDENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.buildOrganisationPolicy;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.verifyTasksCalledInOrder;
@@ -114,7 +118,7 @@ public class SolicitorCreateWorkflowTest {
     @Test
     public void runShouldSetClaimCostsFromWhenClaimCostsIsYesAndClaimCostsFromIsEmptyArray() throws Exception {
         Map<String, Object> payload = new HashMap<>();
-        ArrayList<String> claimFrom = new ArrayList<String>();
+        ArrayList<String> claimFrom = new ArrayList<>();
 
         payload.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
         payload.put(DIVORCE_COSTS_CLAIM_FROM_CCD_FIELD, claimFrom);
@@ -155,7 +159,7 @@ public class SolicitorCreateWorkflowTest {
     @Test
     public void runShouldSetClaimCostsFromWhenClaimCostsIsYesAndClaimCostsFromIsRespondent() throws Exception {
         Map<String, Object> payload = new HashMap<>();
-        ArrayList<String> claimFrom = new ArrayList<String>();
+        ArrayList<String> claimFrom = new ArrayList<>();
         claimFrom.add(DIVORCE_COSTS_CLAIM_FROM_CCD_CODE_FOR_RESPONDENT);
 
         payload.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
@@ -195,7 +199,7 @@ public class SolicitorCreateWorkflowTest {
     @Test
     public void runShouldSetClaimCostsFromWhenClaimCostsIsYesAndClaimCostsFromIsRespondentAndCorespondent() throws Exception {
         Map<String, Object> payload = new HashMap<>();
-        ArrayList<String> claimFrom = new ArrayList<String>();
+        ArrayList<String> claimFrom = new ArrayList<>();
         claimFrom.add(DIVORCE_COSTS_CLAIM_FROM_CCD_CODE_FOR_RESPONDENT);
         claimFrom.add(DIVORCE_COSTS_CLAIM_FROM_CCD_CODE_FOR_CORESPONDENT);
 
