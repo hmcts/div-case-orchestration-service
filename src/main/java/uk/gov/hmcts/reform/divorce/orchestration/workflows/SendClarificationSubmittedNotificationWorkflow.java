@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
@@ -18,6 +19,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class SendClarificationSubmittedNotificationWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
     private final RemoveLegalAdvisorMakeDecisionFieldsTask removeLegalAdvisorMakeDecisionFieldsTask;
@@ -25,12 +27,12 @@ public class SendClarificationSubmittedNotificationWorkflow extends DefaultWorkf
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
+        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
+        log.info("Clarification submitted notification workflow for CASE ID: {} ", caseId);
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
         tasks.add(removeLegalAdvisorMakeDecisionFieldsTask);
         tasks.add(sendPetitionerNotificationEmail);
-
-        String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();
 
         return this.execute(
             tasks.toArray(new Task[tasks.size()]),
