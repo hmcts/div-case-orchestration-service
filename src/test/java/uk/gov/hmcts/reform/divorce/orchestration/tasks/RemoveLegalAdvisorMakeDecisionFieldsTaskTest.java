@@ -12,6 +12,7 @@ import static org.hamcrest.core.Is.is;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.COSTS_ORDER_ADDITIONAL_INFO_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_GRANTED_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.REFUSAL_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.TYPE_COSTS_DECISION_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.WHO_PAYS_COSTS_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.TaskContextHelper.context;
@@ -25,6 +26,7 @@ public class RemoveLegalAdvisorMakeDecisionFieldsTaskTest {
         Map<String, Object> caseData = new HashMap<>();
 
         caseData.put("anyKey", "anyData");
+        caseData.put( REFUSAL_DECISION_CCD_FIELD, "moreInfo");
         caseData.putAll(ImmutableMap.of(
             DECREE_NISI_GRANTED_CCD_FIELD, "Yes",
             DIVORCE_COSTS_CLAIM_GRANTED_CCD_FIELD, "Yes",
@@ -39,4 +41,5 @@ public class RemoveLegalAdvisorMakeDecisionFieldsTaskTest {
         expectedMap.put("anyKey", "anyData");
         assertThat(response, is(expectedMap));
     }
+
 }

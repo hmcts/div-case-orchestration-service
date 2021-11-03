@@ -7,6 +7,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackReq
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.RemoveLegalAdvisorMakeDecisionFieldsTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.notification.PetitionerClarificationSubmittedNotificationEmailTask;
 
 import java.util.ArrayList;
@@ -19,12 +20,14 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 @RequiredArgsConstructor
 public class SendClarificationSubmittedNotificationWorkflow extends DefaultWorkflow<Map<String, Object>> {
 
+    private final RemoveLegalAdvisorMakeDecisionFieldsTask removeLegalAdvisorMakeDecisionFieldsTask;
     private final PetitionerClarificationSubmittedNotificationEmailTask sendPetitionerNotificationEmail;
 
     public Map<String, Object> run(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException {
 
         List<Task<Map<String, Object>>> tasks = new ArrayList<>();
 
+        tasks.add(removeLegalAdvisorMakeDecisionFieldsTask);
         tasks.add(sendPetitionerNotificationEmail);
 
         String caseId = ccdCallbackRequest.getCaseDetails().getCaseId();

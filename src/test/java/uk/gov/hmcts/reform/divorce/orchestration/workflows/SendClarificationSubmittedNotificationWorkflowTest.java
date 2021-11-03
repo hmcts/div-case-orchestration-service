@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
+import uk.gov.hmcts.reform.divorce.orchestration.tasks.RemoveLegalAdvisorMakeDecisionFieldsTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.notification.PetitionerClarificationSubmittedNotificationEmailTask;
 
 import java.util.HashMap;
@@ -21,9 +22,13 @@ public class SendClarificationSubmittedNotificationWorkflowTest {
 
     @Mock
     private PetitionerClarificationSubmittedNotificationEmailTask petitionerClarificationSubmittedNotificationEmailTask;
+    @Mock
+    private RemoveLegalAdvisorMakeDecisionFieldsTask removeLegalAdvisorMakeDecisionFieldsTask;
 
     @InjectMocks
     private SendClarificationSubmittedNotificationWorkflow sendClarificationSubmittedNotificationWorkflow;
+
+
 
     @Test
     public void shouldCallPetitionerClarificationSubmittedNotificationEmailTask() throws WorkflowException {
@@ -31,6 +36,7 @@ public class SendClarificationSubmittedNotificationWorkflowTest {
 
         mockTasksExecution(
             caseData,
+            removeLegalAdvisorMakeDecisionFieldsTask,
             petitionerClarificationSubmittedNotificationEmailTask
         );
 
@@ -40,6 +46,7 @@ public class SendClarificationSubmittedNotificationWorkflowTest {
                 .build()
         );
 
+        verifyTaskWasCalled(caseData, removeLegalAdvisorMakeDecisionFieldsTask);
         verifyTaskWasCalled(caseData, petitionerClarificationSubmittedNotificationEmailTask);
     }
 }
