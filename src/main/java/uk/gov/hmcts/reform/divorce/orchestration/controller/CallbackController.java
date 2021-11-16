@@ -1597,6 +1597,33 @@ public class CallbackController {
         return ResponseEntity.ok(CcdCallbackResponse.builder().build());
     }
 
+    @PostMapping(path = "/resend-existing-documents", consumes = APPLICATION_JSON, produces = APPLICATION_JSON)
+    @ApiOperation(value = "Re-send existing documents via bulk print")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Callback processed.", response = CcdCallbackResponse.class),
+        @ApiResponse(code = 400, message = "Bad Request")})
+    public ResponseEntity<CcdCallbackResponse> resendExistingDocuments(
+        @RequestHeader(value = AUTHORIZATION)
+        @ApiParam(value = "JWT authorisation token issued by IDAM", required = true) final String authorizationToken,
+        @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
+
+        CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
+        log.info("/resend-existing-documents called for case id [{}]", caseDetails.getCaseId());
+        try {
+            caseOrchestrationService.resendExistingDocuments(caseDetails);
+        } catch (WorkflowException e) {
+            return ResponseEntity.ok(
+                CcdCallbackResponse.builder()
+                    .data(ImmutableMap.of())
+                    .warnings(ImmutableList.of())
+                    .errors(singletonList("Failed to resend generated documents - " + e.getMessage()))
+                    .build()
+            );
+        }
+
+        return ResponseEntity.ok(CcdCallbackResponse.builder().build());
+    }
+
     @ExceptionHandler(CaseOrchestrationServiceException.class)
     ResponseEntity<CcdCallbackResponse> handleCaseOrchestrationServiceExceptionForCcdCallback(CaseOrchestrationServiceException exception) {
         log.error(exception.getIdentifiableMessage(), exception);

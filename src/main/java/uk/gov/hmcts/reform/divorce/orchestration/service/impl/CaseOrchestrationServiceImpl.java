@@ -49,6 +49,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveDnOutcomeCaseFl
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLegalAdvisorMakeDecisionFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLinkFromListedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLinkWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.ResendExistingDocumentsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorLinkCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorNominatedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSubmittedCallbackWorkflow;
@@ -195,6 +196,7 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     private final SendClarificationSubmittedNotificationWorkflow sendClarificationSubmittedNotificationWorkflow;
     private final CreateNewAmendedCaseAndSubmitToCCDWorkflow createNewAmendedCaseAndSubmitToCCDWorkflow;
     private final FeatureToggleService featureToggleService;
+    private final ResendExistingDocumentsWorkflow resendExistingDocumentsWorkflow;
 
     @Override
     public Map<String, Object> handleIssueEventCallback(CcdCallbackRequest ccdCallbackRequest,
@@ -1016,13 +1018,10 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         Map<String, Object> response = welshSetPreviousStateWorkflow.run(ccdCallbackRequest, authUtil.getCaseworkerToken());
 
         if (welshSetPreviousStateWorkflow.errors().isEmpty()) {
-            return CcdCallbackResponse.builder()
-                .data(response)
-                .build();
+            return CcdCallbackResponse.builder().data(response).build();
         } else {
             Map<String, Object> workflowErrors = welshSetPreviousStateWorkflow.errors();
-            log.error("CASE ID: {} failed {}. ",
-                ccdCallbackRequest.getCaseDetails().getCaseId(), workflowErrors);
+            log.error("CASE ID: {} failed {}. ", ccdCallbackRequest.getCaseDetails().getCaseId(), workflowErrors);
             return CcdCallbackResponse
                 .builder()
                 .errors(workflowErrors.values().stream().map(String.class::cast).collect(Collectors.toList()))
@@ -1030,4 +1029,8 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
         }
     }
 
+    @Override
+    public void resendExistingDocuments(CaseDetails caseDetails) throws WorkflowException {
+        resendExistingDocumentsWorkflow.run(caseDetails);
+    }
 }

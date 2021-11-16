@@ -178,4 +178,6 @@ public interface CaseOrchestrationService {
 
     CcdCallbackResponse welshSetPreviousState(CcdCallbackRequest ccdCallbackRequest) throws WorkflowException;
 
+    void resendExistingDocuments(CaseDetails caseDetails) throws WorkflowException;
+
 }
