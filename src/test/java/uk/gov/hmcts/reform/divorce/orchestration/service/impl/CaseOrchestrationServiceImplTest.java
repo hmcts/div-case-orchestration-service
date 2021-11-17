@@ -54,6 +54,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveDnOutcomeCaseFl
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLegalAdvisorMakeDecisionFieldsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLinkFromListedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RemoveLinkWorkflow;
+import uk.gov.hmcts.reform.divorce.orchestration.workflows.ResendExistingDocumentsWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorLinkCaseWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RespondentSolicitorNominatedWorkflow;
 import uk.gov.hmcts.reform.divorce.orchestration.workflows.RetrieveAosCaseWorkflow;
@@ -367,6 +368,9 @@ public class CaseOrchestrationServiceImplTest {
 
     @Mock
     private FeatureToggleService featureToggleService;
+
+    @Mock
+    private ResendExistingDocumentsWorkflow resendExistingDocumentsWorkflow;
 
     @InjectMocks
     private CaseOrchestrationServiceImpl classUnderTest;
@@ -2111,6 +2115,15 @@ public class CaseOrchestrationServiceImplTest {
         CcdCallbackResponse response = classUnderTest.confirmSolDnReviewPetition(caseDetails);
 
         assertThat(response.getState(), is(AWAITING_BAILIFF_REFERRAL));
+    }
+
+    @Test
+    public void resendExistingDocuments() throws WorkflowException {
+        CaseDetails caseDetails = CaseDetails.builder().build();
+
+        classUnderTest.resendExistingDocuments(caseDetails);
+
+        verify(resendExistingDocumentsWorkflow, times(1)).run(caseDetails);
     }
 
     private Map<String, Object> buildCaseDataWithOrganisationPolicy() {
