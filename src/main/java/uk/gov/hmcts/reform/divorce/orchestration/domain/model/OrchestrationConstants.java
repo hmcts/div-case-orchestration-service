@@ -173,7 +173,7 @@ public class OrchestrationConstants {
     public static final String DATE_OF_HEARING = "date of hearing";
     public static final String WELSH_DATE_OF_HEARING = "welsh date of hearing";
     public static final String LIMIT_DATE_TO_CONTACT_COURT = "limit date to contact court";
-    public static final Period PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT = Period.ofWeeks(2);
+    public static final Period PERIOD_BEFORE_HEARING_DATE_TO_CONTACT_COURT = Period.ofDays(15);
 
     // Notification
     public static final String NOTIFICATION_EMAIL = "email address";
