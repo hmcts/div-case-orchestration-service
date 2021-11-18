@@ -25,6 +25,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_ABSOLUTE_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DECREE_NISI_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_COE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DOCUMENT_TYPE_JSON_KEY;
 
 @Slf4j
 @Component
@@ -48,7 +49,7 @@ public class ResendExistingDocumentsPrinterTask implements Task<Map<String, Obje
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) {
         var allGeneratedDocuments = extractDocumentsFromCase(payload);
         if (allGeneratedDocuments.isEmpty()) {
-            String msg = String.format(EXCEPTION_MSG, (String) context.getTransientObject(CASE_ID_JSON_KEY));
+            var msg = String.format(EXCEPTION_MSG, (String) context.getTransientObject(CASE_ID_JSON_KEY));
             log.info(msg);
             throw new TaskException(msg);
         }
@@ -73,12 +74,9 @@ public class ResendExistingDocumentsPrinterTask implements Task<Map<String, Obje
     }
 
     private List<String> filterForDocumentsToSend(List<Map<String, Object>> documents) {
-        return documents.stream().filter(collectionMember -> {
-            Map<String, Object> document = (Map<String, Object>) collectionMember.get(VALUE_KEY);
-            return DOCUMENT_TYPES_TO_SEND.contains(document.get("DocumentType"));
-        }).map(collectionMember -> {
-            Map<String, Object> document = (Map<String, Object>) collectionMember.get(VALUE_KEY);
-            return (String) document.get("DocumentType");
-        }).collect(Collectors.toList());
+        return documents.stream().map(collectionMember -> {
+            var document = (Map<String, Object>) collectionMember.get(VALUE_KEY);
+            return (String) document.get(DOCUMENT_TYPE_JSON_KEY);
+        }).filter(type -> DOCUMENT_TYPES_TO_SEND.contains(type)).collect(Collectors.toList());
     }
 }
