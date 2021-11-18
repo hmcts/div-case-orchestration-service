@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.ResendExist
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_DETAILS_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 
 @Component
@@ -29,6 +30,7 @@ public class ResendExistingDocumentsWorkflow extends DefaultWorkflow<Map<String,
                 resendExistingDocumentsTask
             },
             caseDetails.getCaseData(),
+            ImmutablePair.of(CASE_DETAILS_JSON_KEY, caseDetails),
             ImmutablePair.of(CASE_ID_JSON_KEY, caseDetails.getCaseId())
         );
     }
