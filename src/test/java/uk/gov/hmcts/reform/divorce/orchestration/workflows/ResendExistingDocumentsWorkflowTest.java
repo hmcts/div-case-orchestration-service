@@ -59,7 +59,6 @@ public class ResendExistingDocumentsWorkflowTest {
 
         verifyTasksCalledInOrder(
             payload,
-            fetchPrintDocsFromDmStoreTask,
             resendExistingDocumentsTask
         );
     }
@@ -67,7 +66,6 @@ public class ResendExistingDocumentsWorkflowTest {
     private void mockTaskExecution() {
         mockTasksExecution(
             payload,
-            fetchPrintDocsFromDmStoreTask,
             resendExistingDocumentsTask
         );
     }

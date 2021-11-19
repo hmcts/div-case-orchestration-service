@@ -67,7 +67,6 @@ public class FetchPrintDocsFromDmStoreTask implements Task<Map<String, Object>> 
 
             if (documentLink != null) {
                 GeneratedDocumentInfo gdi = GeneratedDocumentInfo.builder()
-                    .documentType(value.getDocumentType())
                     .url(documentLink.getDocumentBinaryUrl())
                     .documentType(documentType)
                     .fileName(documentLink.getDocumentFilename())
