@@ -1927,7 +1927,7 @@ public class CallbackControllerTest {
 
     @Test
     public void shouldCallAdequateService_ForPostAosIssueEndpoint() throws CaseOrchestrationServiceException {
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.aosPackIssued(AUTH_TOKEN,
+        var response = classUnderTest.aosPackIssued(AUTH_TOKEN,
             CcdCallbackRequest.builder().eventId(TEST_EVENT_ID).caseDetails(TEST_INCOMING_CASE_DETAILS).build());
 
         verify(aosService).runActionsAfterAosHasBeenIssued(TEST_EVENT_ID, TEST_INCOMING_CASE_DETAILS);

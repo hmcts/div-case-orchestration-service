@@ -2119,7 +2119,7 @@ public class CaseOrchestrationServiceImplTest {
 
     @Test
     public void resendExistingDocuments() throws WorkflowException {
-        CaseDetails caseDetails = CaseDetails.builder().build();
+        var caseDetails = CaseDetails.builder().build();
 
         classUnderTest.resendExistingDocuments(caseDetails);
 

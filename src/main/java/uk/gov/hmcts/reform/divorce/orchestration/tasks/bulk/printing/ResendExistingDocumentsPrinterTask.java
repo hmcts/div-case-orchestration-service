@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.model.ccd.CollectionMember;
 import uk.gov.hmcts.reform.divorce.model.ccd.Document;
-import uk.gov.hmcts.reform.divorce.model.ccd.DocumentLink;
 import uk.gov.hmcts.reform.divorce.model.documentupdate.GeneratedDocumentInfo;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -72,19 +71,18 @@ public class ResendExistingDocumentsPrinterTask implements Task<Map<String, Obje
     }
 
     private Map<String, GeneratedDocumentInfo> prepareForPrint(List<CollectionMember<Document>> generatedDocumentList) {
-        Map<String, GeneratedDocumentInfo> generatedDocumentInfoList = new HashMap<>();
-        for (CollectionMember<Document> document : generatedDocumentList) {
-            Document value = document.getValue();
-            String documentType = value.getDocumentType();
-            DocumentLink documentLink = value.getDocumentLink();
+        var generatedDocumentInfoList = new HashMap<String, GeneratedDocumentInfo>();
+        for (var document : generatedDocumentList) {
+            var documentType = document.getValue().getDocumentType();
+            var documentLink = document.getValue().getDocumentLink();
 
             if (documentLink != null) {
-                GeneratedDocumentInfo gdi = documentContentFetcherService.fetchPrintContent(GeneratedDocumentInfo.builder()
+                var documentInfo = documentContentFetcherService.fetchPrintContent(GeneratedDocumentInfo.builder()
                     .url(documentLink.getDocumentBinaryUrl())
                     .documentType(documentType)
                     .fileName(documentLink.getDocumentFilename())
                     .build());
-                generatedDocumentInfoList.put(documentType, gdi);
+                generatedDocumentInfoList.put(documentType, documentInfo);
             }
         }
 

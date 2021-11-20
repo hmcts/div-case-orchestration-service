@@ -1608,7 +1608,7 @@ public class CallbackController {
         @RequestBody @ApiParam("CaseData") CcdCallbackRequest ccdCallbackRequest) {
 
         CaseDetails caseDetails = ccdCallbackRequest.getCaseDetails();
-        log.info("/resend-existing-documents called for case id [{}]", caseDetails.getCaseId());
+        log.info("/resend-existing-documents called for case id: {}", caseDetails.getCaseId());
         try {
             caseOrchestrationService.resendExistingDocuments(caseDetails);
         } catch (WorkflowException e) {
