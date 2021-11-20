@@ -38,8 +38,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.CcdUtil.getCollecti
 @RequiredArgsConstructor
 public class ResendExistingDocumentsPrinterTask implements Task<Map<String, Object>> {
     private static final String LETTER_TYPE_EXISTING_DOCUMENTS_PACK = "existing-documents-pack";
-    private static final String EXCEPTION_MSG = "There are no generated documents to resend for case: %s";
-    private static final List<String> DOCUMENT_TYPES_TO_SEND = asList(
+    private static final String EXCEPTION_MSG = "There are no documents to resend for case: %s";
+    private static final List<String> DOCUMENT_TYPES_TO_RESEND = asList(
         COSTS_ORDER_DOCUMENT_TYPE, DOCUMENT_TYPE_COE, DECREE_NISI_DOCUMENT_TYPE, DECREE_ABSOLUTE_DOCUMENT_TYPE,
         DeemedServiceRefusalOrderTask.FileMetadata.DOCUMENT_TYPE, DispensedServiceRefusalOrderTask.FileMetadata.DOCUMENT_TYPE,
         DeemedServiceOrderGenerationTask.FileMetadata.DOCUMENT_TYPE, OrderToDispenseGenerationTask.FileMetadata.DOCUMENT_TYPE);
@@ -50,48 +50,48 @@ public class ResendExistingDocumentsPrinterTask implements Task<Map<String, Obje
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> payload) {
-        var generatedDocumentList = extractDocumentsFromCase(payload);
-        if (generatedDocumentList.isEmpty()) {
+        var generatedDocuments = extractDocumentsFromCase(payload);
+        var documentsToSend = prepareForPrint(generatedDocuments);
+        if (documentsToSend.isEmpty()) {
             var msg = String.format(EXCEPTION_MSG, (String) context.getTransientObject(CASE_ID_JSON_KEY));
             log.info(msg);
             throw new TaskException(msg);
         }
-        context.setTransientObject(DOCUMENTS_GENERATED, prepareForPrint(generatedDocumentList));
+        context.setTransientObject(DOCUMENTS_GENERATED, documentsToSend);
 
-        return bulkPrinter.printSpecifiedDocument(context, payload, LETTER_TYPE_EXISTING_DOCUMENTS_PACK,
-            filterForDocumentsToSend(generatedDocumentList));
+        return bulkPrinter.printSpecifiedDocument(context, payload, LETTER_TYPE_EXISTING_DOCUMENTS_PACK, documentTypesToPrint(generatedDocuments));
     }
 
     private List<CollectionMember<Document>> extractDocumentsFromCase(Map<String, Object> caseData) {
-        var documentsGenerated = getCollectionMembersOrEmptyList(objectMapper, caseData, D8DOCUMENTS_GENERATED);
-        var serviceApplicationDocuments = getCollectionMembersOrEmptyList(objectMapper, caseData, SERVICE_APPLICATION_DOCUMENTS);
-
-        return Stream.concat(documentsGenerated.stream(), serviceApplicationDocuments.stream())
-            .collect(Collectors.toList());
+        return Stream.concat(
+            getCollectionMembersOrEmptyList(objectMapper, caseData, D8DOCUMENTS_GENERATED).stream(),
+            getCollectionMembersOrEmptyList(objectMapper, caseData, SERVICE_APPLICATION_DOCUMENTS).stream()
+        ).collect(Collectors.toList());
     }
 
-    private Map<String, GeneratedDocumentInfo> prepareForPrint(List<CollectionMember<Document>> generatedDocumentList) {
-        var generatedDocumentInfoList = new HashMap<String, GeneratedDocumentInfo>();
-        for (var document : generatedDocumentList) {
+    private Map<String, GeneratedDocumentInfo> prepareForPrint(List<CollectionMember<Document>> generatedDocuments) {
+        var generatedDocumentsInfo = new HashMap<String, GeneratedDocumentInfo>();
+        for (var document : generatedDocuments) {
             var documentType = document.getValue().getDocumentType();
             var documentLink = document.getValue().getDocumentLink();
 
-            if (documentLink != null) {
+            if (documentLink != null && DOCUMENT_TYPES_TO_RESEND.contains(documentType)) {
                 var documentInfo = documentContentFetcherService.fetchPrintContent(GeneratedDocumentInfo.builder()
                     .url(documentLink.getDocumentBinaryUrl())
                     .documentType(documentType)
                     .fileName(documentLink.getDocumentFilename())
                     .build());
-                generatedDocumentInfoList.put(documentType, documentInfo);
+                generatedDocumentsInfo.put(documentType, documentInfo);
             }
         }
 
-        return generatedDocumentInfoList;
+        return generatedDocumentsInfo;
     }
 
-    private List<String> filterForDocumentsToSend(List<CollectionMember<Document>> documents) {
+    private List<String> documentTypesToPrint(List<CollectionMember<Document>> documents) {
         return documents.stream()
             .map(collectionMember -> collectionMember.getValue().getDocumentType())
-            .filter(type -> DOCUMENT_TYPES_TO_SEND.contains(type)).collect(Collectors.toList());
+            .filter(type -> DOCUMENT_TYPES_TO_RESEND.contains(type))
+            .collect(Collectors.toList());
     }
 }

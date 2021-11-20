@@ -1927,7 +1927,7 @@ public class CallbackControllerTest {
 
     @Test
     public void shouldCallAdequateService_ForPostAosIssueEndpoint() throws CaseOrchestrationServiceException {
-        var response = classUnderTest.aosPackIssued(AUTH_TOKEN,
+        ResponseEntity<CcdCallbackResponse> response = classUnderTest.aosPackIssued(AUTH_TOKEN,
             CcdCallbackRequest.builder().eventId(TEST_EVENT_ID).caseDetails(TEST_INCOMING_CASE_DETAILS).build());
 
         verify(aosService).runActionsAfterAosHasBeenIssued(TEST_EVENT_ID, TEST_INCOMING_CASE_DETAILS);
@@ -1949,7 +1949,7 @@ public class CallbackControllerTest {
 
     @Test
     public void shouldCallResendExistingDocuments() throws WorkflowException {
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.resendExistingDocuments(AUTH_TOKEN,
+        var response = classUnderTest.resendExistingDocuments(AUTH_TOKEN,
             CcdCallbackRequest.builder().eventId(TEST_EVENT_ID).caseDetails(TEST_INCOMING_CASE_DETAILS).build());
 
         verify(caseOrchestrationService).resendExistingDocuments(TEST_INCOMING_CASE_DETAILS);

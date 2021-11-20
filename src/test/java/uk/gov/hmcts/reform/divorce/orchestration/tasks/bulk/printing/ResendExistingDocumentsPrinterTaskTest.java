@@ -35,8 +35,8 @@ import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHel
 @RunWith(MockitoJUnitRunner.class)
 public class ResendExistingDocumentsPrinterTaskTest {
     private static final String LETTER_TYPE_EXISTING_DOCUMENTS_PACK = "existing-documents-pack";
-    private static final String EXCEPTION_MSG = "There are no generated documents to resend for case: %s";
-    private static final List<String> DOCUMENT_TYPES_TO_SEND = asList(COSTS_ORDER_DOCUMENT_TYPE, DOCUMENT_TYPE_COE, DOCUMENT_TYPE);
+    private static final String EXCEPTION_MSG = "There are no documents to resend for case: %s";
+    private static final List<String> DOCUMENT_TYPES_TO_RESEND = asList(COSTS_ORDER_DOCUMENT_TYPE, DOCUMENT_TYPE_COE, DOCUMENT_TYPE);
 
     private ObjectMapper objectMapper;
 
@@ -66,7 +66,7 @@ public class ResendExistingDocumentsPrinterTaskTest {
         var result = classUnderTest.execute(context, caseData);
 
         assertThat(result, is(caseData));
-        verify(bulkPrinterTask).printSpecifiedDocument(context, caseData, LETTER_TYPE_EXISTING_DOCUMENTS_PACK, DOCUMENT_TYPES_TO_SEND);
+        verify(bulkPrinterTask).printSpecifiedDocument(context, caseData, LETTER_TYPE_EXISTING_DOCUMENTS_PACK, DOCUMENT_TYPES_TO_RESEND);
     }
 
     private Map<String, Object> caseData() {
