@@ -106,7 +106,7 @@ public class AosOverdueTest extends RetrieveCaseSupport {
     }
 
     @Test
-    @Ignore
+    @Ignore("Revisit as it is receiving HTTP/1.1 504 Gateway Time-out")
     public void shouldMoveEligibleCasesWhenAosIsOverdue() {
         await().pollInterval(POOL_INTERVAL_IN_MILLIS, MILLISECONDS).atMost(900, SECONDS).untilAsserted(() -> {
             RestAssured
