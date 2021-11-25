@@ -7,7 +7,7 @@ properties([
         ])
 ])
 
-@Library("Infrastructure@enable-logging-on-ft")
+@Library("Infrastructure")
 
 def type = "java"
 def product = "div"
@@ -55,10 +55,10 @@ withNightlyPipeline(type, product, component) {
     }
 
     enableFullFunctionalTest()
-//    enableMutationTest()
-//    enableFortifyScan()
-//
-//    after('fortify-scan') {
-//        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
-//    }
+    enableMutationTest()
+    enableFortifyScan()
+
+    after('fortify-scan') {
+        steps.archiveArtifacts allowEmptyArchive: true, artifacts: '**/Fortify Scan/**/*'
+    }
 }
