@@ -6,7 +6,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -106,7 +105,6 @@ public class AosOverdueTest extends RetrieveCaseSupport {
     }
 
     @Test
-    @Ignore("Revisit as it is receiving HTTP/1.1 504 Gateway Time-out")
     public void shouldMoveEligibleCasesWhenAosIsOverdue() {
         await().pollInterval(POOL_INTERVAL_IN_MILLIS, MILLISECONDS).atMost(900, SECONDS).untilAsserted(() -> {
             RestAssured

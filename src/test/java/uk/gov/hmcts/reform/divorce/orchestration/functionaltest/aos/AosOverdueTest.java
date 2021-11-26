@@ -9,7 +9,6 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -85,7 +84,6 @@ public class AosOverdueTest extends MockedFunctionalTest {
     }
 
     @Test
-    @Ignore("Revisit as it is receiving HTTP/1.1 504 Gateway Time-out")
     public void shouldMoveEligibleCasesToAosOverdue() throws Exception {
         QueryBuilder expectedQuery = buildCaseMaintenanceQuery();
         stubCaseMaintenanceSearchEndpoint(asList(
@@ -123,7 +121,6 @@ public class AosOverdueTest extends MockedFunctionalTest {
     }
 
     @Test
-    @Ignore("Revisit as it is receiving HTTP/1.1 504 Gateway Time-out")
     public void shouldMoveEligibleAosDraftedCasesToAosOverdue() throws Exception {
         QueryBuilder expectedCMSQuery = buildCaseMaintenanceQuery();
         List<CaseDetails> expectedCMSResponse = buildCaseMaintenanceResponseWithAosDraftedCases();
