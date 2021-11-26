@@ -402,13 +402,6 @@ task bootRunAat(type: BootRun, description: 'Runs the app using AAT config', dep
 }
 
 task functional(type: Test, description: 'Runs the functional tests.', group: 'Verification') {
-    doFirst(){
-        printf("Available processors:::::::::: " + Runtime.runtime.availableProcessors().intdiv(2).toString())
-    }
-
-    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
-    forkEvery = 10
-
     exclude "uk/gov/hmcts/reform/divorce/callback/nightly/pipeline/**"
     exclude "uk/gov/hmcts/reform/divorce/maintenance/nightly/pipeline/**"
 
