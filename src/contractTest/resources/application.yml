@@ -183,7 +183,7 @@ bulk-action:
     max: 4
     backoff:
       base-rate: 1
-  min-cases: 2
+  min-cases: 0
 
 uk:
   gov:
