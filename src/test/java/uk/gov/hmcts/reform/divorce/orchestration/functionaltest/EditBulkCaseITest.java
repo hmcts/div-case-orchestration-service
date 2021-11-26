@@ -38,7 +38,7 @@ public class EditBulkCaseITest extends MockedFunctionalTest {
     private static final String API_URL = "/about-to-edit-bulk-case";
     private static final String DEPRECATED_API_URL = "/bulk/edit/listing?templateId=a&documentType=b&filename=c";
 
-    private static final String ERROR_MESSAGE = "Court hearing date is in the past";
+    private static final String ERROR_MESSAGE = "Court hearing date is in the past. Are you sure you want to continue?";
 
     private Map<String, Object> caseData;
 
@@ -122,7 +122,7 @@ public class EditBulkCaseITest extends MockedFunctionalTest {
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.errors", contains(ERROR_MESSAGE)));
+            .andExpect(jsonPath("$.warnings", contains(ERROR_MESSAGE)));
     }
 
     @Test
@@ -139,7 +139,7 @@ public class EditBulkCaseITest extends MockedFunctionalTest {
             .contentType(MediaType.APPLICATION_JSON)
             .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.errors", contains(ERROR_MESSAGE)));
+            .andExpect(jsonPath("$.warnings", contains(ERROR_MESSAGE)));
     }
 
 }
