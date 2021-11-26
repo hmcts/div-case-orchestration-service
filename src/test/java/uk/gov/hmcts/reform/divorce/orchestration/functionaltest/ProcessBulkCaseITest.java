@@ -83,28 +83,6 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
     }
 
     @Test
-    public void givenCaseList_thenCreateBulkCaseAndUpdateAllCases() throws Exception {
-        stubCaseMaintenanceSearchEndpoint(asList(prepareBulkCase(), prepareBulkCase()));
-        stubCmsServerEndpoint(CMS_BULK_CASE_SUBMIT, HttpStatus.OK, getCmsBulkCaseResponse(), POST);
-        stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, CASE_ID1), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
-        stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, CASE_ID2), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
-        stubCmsServerEndpoint(String.format(CMS_UPDATE_CASE, CASE_ID3), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
-        stubCmsServerEndpoint(String.format(CMS_UPDATE_BULK_CASE_PATH, BULK_CASE_ID, CREATE_EVENT), HttpStatus.OK, getCmsBulkCaseResponse(), POST);
-
-        stubSignInForCaseworker();
-        webClient.perform(post(API_URL)
-            .contentType(APPLICATION_JSON)
-            .accept(APPLICATION_JSON))
-            .andExpect(status().isOk());
-
-        waitAsyncCompleted();
-        verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID1), RequestMethod.POST, UPDATE_BODY);
-        verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID2), RequestMethod.POST, UPDATE_BODY);
-        verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID3), RequestMethod.POST, UPDATE_BODY);
-        verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_BULK_CASE_PATH, BULK_CASE_ID, CREATE_EVENT), RequestMethod.POST);
-    }
-
-    @Test
     public void givenError_whenCreateBulkCase_thenCasesAreNotUpdated() throws Exception {
         stubCaseMaintenanceSearchEndpoint(asList(prepareBulkCase(), prepareBulkCase()));
         stubCmsServerEndpoint(CMS_BULK_CASE_SUBMIT, HttpStatus.NOT_FOUND, getCmsBulkCaseResponse(), POST);
@@ -146,23 +124,6 @@ public class ProcessBulkCaseITest extends IdamTestSupport {
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID2), RequestMethod.POST, UPDATE_BODY);
         verifyCmsServerEndpoint(1, String.format(CMS_UPDATE_CASE, CASE_ID3), RequestMethod.POST, UPDATE_BODY);
         verifyCmsServerEndpoint(0, String.format(CMS_UPDATE_BULK_CASE_PATH, BULK_CASE_ID, CREATE_EVENT), RequestMethod.POST);
-    }
-
-    @Test
-    public void givenSearchWithoutMinimumCases_whenCreateBulkCase_thenBulkCasesIsNotCreated() throws Exception {
-        stubCaseMaintenanceSearchEndpoint(singletonList(prepareBulkCase()));
-        stubCmsServerEndpoint(CMS_BULK_CASE_SUBMIT, HttpStatus.OK, getCmsBulkCaseResponse(), POST);
-
-        stubSignInForCaseworker();
-        webClient.perform(post(API_URL)
-            .contentType(APPLICATION_JSON)
-            .accept(APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath(BULK_CASE_LIST_KEY).isEmpty());
-
-        verifyCmsServerEndpoint(0, CMS_BULK_CASE_SUBMIT, RequestMethod.POST);
-
-        verifyCmsServerEndpoint(0, CMS_UPDATE_CASE, RequestMethod.POST, UPDATE_BODY);
     }
 
     @Test(expected = BulkUpdateException.class)

@@ -81,21 +81,6 @@ public class BulkCaseControllerTest {
     }
 
     @Test
-    public void whenValidateBulkCaseListingDataThrowsError_thenReturnExpectedResponse() throws WorkflowException {
-        CaseDetails caseDetails = CaseDetails.builder().caseData(Collections.emptyMap()).build();
-        CcdCallbackRequest request = CcdCallbackRequest.builder().caseDetails(caseDetails).build();
-        String error = "error has occurred";
-
-        when(caseOrchestrationService.validateBulkCaseListingData(Collections.emptyMap()))
-                .thenThrow(new WorkflowException(error));
-
-        ResponseEntity<CcdCallbackResponse> response = classUnderTest.validateBulkCaseListingData(request);
-
-        assertThat(response.getStatusCode(), is(HttpStatus.OK));
-        assertThat(response.getBody(), is(CcdCallbackResponse.builder().errors(Collections.singletonList(error)).build()));
-    }
-
-    @Test
     public void whenUpdateBulkCasePronouncementDate_thenReturnExpectedResponse() throws WorkflowException {
         CaseDetails caseDetails = CaseDetails.builder().caseId(TEST_CASE_ID).caseData(Collections.emptyMap()).build();
         CcdCallbackRequest request = CcdCallbackRequest.builder().caseDetails(caseDetails).build();

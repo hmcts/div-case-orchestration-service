@@ -108,38 +108,5 @@ public class EditBulkCaseITest extends MockedFunctionalTest {
             .andExpect(content().json(convertObjectToJsonString(ImmutableMap.of("data", caseData))));
     }
 
-    @Test
-    public void givenCallbackRequestWithPastDateBulkCaseData_thenReturnCallbackResponseWithErrors() throws Exception {
-        // Mock current date to be in the past compared to the request json
-        LocalDateTime today = LocalDateTime.parse("2001-01-01T10:20:55.000");
-        when(clock.instant()).thenReturn(today.toInstant(ZoneOffset.UTC));
-
-        caseData.put("hearingDate", "2000-01-01T10:20:55.000");
-
-        webClient.perform(post(API_URL)
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(ccdCallbackRequest))
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.warnings", contains(ERROR_MESSAGE)));
-    }
-
-    @Test
-    public void givenCallbackRequestWithPastDateBulkCaseData_thenReturnCallbackResponseWithErrors_ForDeprecatedEndpoint() throws Exception {
-        // Mock current date to be in the past compared to the request json
-        LocalDateTime today = LocalDateTime.parse("2001-01-01T10:20:55.000");
-        when(clock.instant()).thenReturn(today.toInstant(ZoneOffset.UTC));
-
-        caseData.put("hearingDate", "2000-01-01T10:20:55.000");
-
-        webClient.perform(post(DEPRECATED_API_URL)
-            .header(AUTHORIZATION, AUTH_TOKEN)
-            .content(convertObjectToJsonString(ccdCallbackRequest))
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.warnings", contains(ERROR_MESSAGE)));
-    }
 
 }
