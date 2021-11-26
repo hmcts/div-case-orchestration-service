@@ -71,7 +71,7 @@ public class BulkCaseCreateTask implements Task<Map<String, Object>> {
         List<Map<String, Object>> bulkCases = new ArrayList<>();
         searchResultList.forEach(searchResult -> {
             try {
-                if (0 <= searchResult.getCases().size()) {
+                if (minimunCasesToProcess <= searchResult.getCases().size()) {
                     Map<String, Object> bulkCase = createBulkCase(searchResult);
                     Map<String, Object> bulkCaseResult = caseMaintenanceClient.submitBulkCase(bulkCase,
                         context.getTransientObject(AUTH_TOKEN_JSON_KEY));
