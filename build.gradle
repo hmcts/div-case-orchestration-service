@@ -402,6 +402,13 @@ task bootRunAat(type: BootRun, description: 'Runs the app using AAT config', dep
 }
 
 task functional(type: Test, description: 'Runs the functional tests.', group: 'Verification') {
+    doFirst(){
+        printf("Available processors:::::::::: " + Runtime.runtime.availableProcessors())
+    }
+
+    maxParallelForks = Runtime.runtime.availableProcessors()
+    //forkEvery = 10
+
     exclude "uk/gov/hmcts/reform/divorce/callback/nightly/pipeline/**"
     exclude "uk/gov/hmcts/reform/divorce/maintenance/nightly/pipeline/**"
 
@@ -418,6 +425,13 @@ task functional(type: Test, description: 'Runs the functional tests.', group: 'V
 }
 
 task nightlyFunctional(type: Test, description: 'Runs the Nightly Only Functional tests.', group: 'Verification') {
+    doFirst(){
+        printf("::::::::::  Running  nightlyFunctional ::::::::::")
+    }
+
+    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+    forkEvery = 10
+
     include "uk/gov/hmcts/reform/divorce/callback/nightly/pipeline/**"
     include "uk/gov/hmcts/reform/divorce/maintenance/nightly/pipeline/**"
 
