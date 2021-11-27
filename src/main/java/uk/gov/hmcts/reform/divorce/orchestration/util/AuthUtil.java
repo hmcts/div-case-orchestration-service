@@ -66,6 +66,7 @@ public class AuthUtil {
     }
 
     private String getIdamOauth2Token(String username, String password) {
+        log.info("Username: {} and pwd : {}" , username, password);
         return idamClient.authenticateUser(username, password);
     }
 
