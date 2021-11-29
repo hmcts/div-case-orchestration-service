@@ -22,50 +22,21 @@ java:
     SCHEDULER_ENABLED: false
     SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_ENABLED: false
     SCHEDULER_MAKE_ELIGIBLE_CASES_AOS_OVERDUE_CRON: "0 0/10 * ? * * *"#Runs every 10 minutes (if enabled)
-    IDAM_CITIZEN_USERNAME: ${IDAM_CITIZEN_USERNAME}
-    IDAM_CITIZEN_PASSWORD: ${IDAM_CITIZEN_PASSWORD}
-    IDAM_CASEWORKER_USERNAME: ${IDAM_CASEWORKER_USERNAME}
-    IDAM_CASEWORKER_PASSWORD: ${IDAM_CASEWORKER_PASSWORD}
-    AUTH_PROVIDER_CCDSUBMISSION_CLIENT_KEY: ${AUTH_PROVIDER_CCDSUBMISSION_CLIENT_KEY}
-    AUTH_PROVIDER_DOCUMENTGENERATOR_CLIENT_KEY: ${AUTH_PROVIDER_DOCUMENTGENERATOR_CLIENT_KEY}
-    IDAM_CLIENT_SECRET: ${IDAM_CLIENT_SECRET}
-    SERVICE_AUTH_SECRET: ${SERVICE_AUTH_SECRET}
-    UK_GOV_NOTIFY_API_KEY: ${UK_GOV_NOTIFY_API_KEY}
-    USERNAME_SOLICITOR: ${USERNAME_SOLICITOR}
-    PASSWORD_SOLICITOR: ${PASSWORD_SOLICITOR}
 
   keyVaults:
     "div":
       resourceGroup: div
       secrets:
-        - name: idam-citizen-username
-          alias: IDAM_CITIZEN_USERNAME
-        - name: idam-citizen-password
-          alias: IDAM_CITIZEN_PASSWORD
-        - name: ccd-submission-s2s-auth-secret
-          alias: AUTH_PROVIDER_CCDSUBMISSION_CLIENT_KEY
-        - name: div-doc-s2s-auth-secret
-          alias: AUTH_PROVIDER_DOCUMENTGENERATOR_CLIENT_KEY
-        - name: idam-secret
-          alias: IDAM_CLIENT_SECRET
-        - name: frontend-secret
-          alias: SERVICE_AUTH_SECRET
-        - name: idam-caseworker-password
-          alias: IDAM_CASEWORKER_PASSWORD
-        - name: idam-caseworker-username
-          alias: IDAM_CASEWORKER_USERNAME
-        - name: uk-gov-notify-api-key
-          alias: UK_GOV_NOTIFY_API_KEY
-        - name: ccd-e2e-solicitor-email
-          alias: USERNAME_SOLICITOR
-        - name: ccd-e2e-solicitor-password
-          alias: PASSWORD_SOLICITOR
-        - name: cos-postgresql-password
-          alias: DIV_SCHEDULER_DB_PASSWORD
-        - name : AppInsightsInstrumentationKey
-          alias: azure.application-insights.instrumentation-key
-        - name: spring-mail-password
-          alias: spring.mail.password
+        - ccd-submission-s2s-auth-secret
+        - div-doc-s2s-auth-secret
+        - idam-secret
+        - frontend-secret
+        - idam-citizen-username
+        - idam-citizen-password
+        - idam-caseworker-username
+        - idam-caseworker-password
+        - uk-gov-notify-api-key
+        - spring-mail-password
 
   # Don't modify these properties
   image: ${IMAGE_NAME}
