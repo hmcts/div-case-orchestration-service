@@ -95,20 +95,6 @@ public class BulkCaseCreateTaskTest {
         verify(caseMaintenanceClient, never()).submitBulkCase(any(),any());
     }
 
-//    @Test
-//    public void givenSearchListWithLessThanMinimumNumber_thenDoNothing() {
-//        setMinimumNumberOfCases(10);
-//
-//        TaskContext context = new DefaultTaskContext();
-//        SearchResult  searchResult = createSearchResult();
-//        context.setTransientObject(SEARCH_RESULT_KEY, Collections.singletonList(searchResult));
-//        context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
-//
-//        classToTest.execute(context, null);
-//
-//        verify(caseMaintenanceClient, never()).submitBulkCase(any(),any());
-//    }
-
     @Test
     public void givenSearchList_thenProcessAll() {
         TaskContext context = new DefaultTaskContext();
