@@ -140,9 +140,10 @@ public class PartyRepresentationCheckerTest {
     }
 
     @Test
-    public void isRespondentSolicitorDigitalReturnsTrue_WhenOrgPolicyDetailsPopulated() {
+    public void isRespondentSolicitorDigitalReturnsTrue_WhenOrgPolicyDetailsPopulatedAndIsMarkedAsDigital() {
         Map<String, Object> caseData = createCaseData(RESPONDENT_SOLICITOR_ORGANISATION_POLICY,
                                                         buildOrganisationPolicyWithId(TEST_ORGANISATION_POLICY_ID));
+        caseData.put(RESPONDENT_SOLICITOR_DIGITAL, YES_VALUE);
         assertThat(isRespondentSolicitorDigital(caseData), is(true));
     }
 

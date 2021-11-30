@@ -63,7 +63,8 @@ public class PartyRepresentationChecker {
      * <p>For cases that are not submitted yet we should use isRespondentSolicitorDigitalSelectedYes</p>
      * */
     public static boolean isRespondentSolicitorDigital(Map<String, Object> caseData) {
-        return isPopulatedOrganisation(caseData, RESPONDENT_SOLICITOR_ORGANISATION_POLICY);
+        return isRespondentSolicitorDigitalSelectedYes(caseData)
+            && isPopulatedOrganisation(caseData, RESPONDENT_SOLICITOR_ORGANISATION_POLICY);
     }
 
     /**
