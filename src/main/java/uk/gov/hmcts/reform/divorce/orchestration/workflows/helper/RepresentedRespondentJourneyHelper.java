@@ -33,6 +33,7 @@ public class RepresentedRespondentJourneyHelper {
             log.info("REPRESENTED_RESPONDENT_JOURNEY enabled.");
             boolean respondentRepresented = isRespondentRepresented(caseData);
             boolean respondentSolicitorDigital = isRespondentSolicitorDigital(caseData);
+
             if (respondentRepresented && !respondentSolicitorDigital) {
                 shouldGenerateRespondentAosInvitation = false;
             }

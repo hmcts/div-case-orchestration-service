@@ -69,6 +69,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_SOLICITOR_EMAIL_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_FIRST_NAME_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_LAST_NAME_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaRequestedNotifyRespondentEmailTask.REQUESTED_BY_APPLICANT;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.SendDaRequestedNotifyRespondentEmailTask.REQUESTED_BY_SOLICITOR;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.buildOrganisationPolicy;
@@ -191,7 +192,8 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
         testData.put(D_8_PETITIONER_FIRST_NAME, TEST_RESPONDENT_LAST_NAME);
         testData.put(D_8_PETITIONER_LAST_NAME, TEST_RELATIONSHIP);
         testData.put(D8_RESPONDENT_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
-        testData.put(LANGUAGE_PREFERENCE_WELSH, "No");
+        testData.put(LANGUAGE_PREFERENCE_WELSH, NO_VALUE);
+        testData.put(RESPONDENT_SOLICITOR_DIGITAL, YES_VALUE);
         Map<String, String> expectedTempVars = prepareExpectedTemplateVarsForSolicitor(testData);
 
         Map<String, Object> returnPayload = sendDaRequestedNotifyRespondentEmailTask.execute(context, testData);
@@ -220,6 +222,8 @@ public class SendDaRequestedNotifyRespondentEmailTaskTest {
         testData.put(D_8_PETITIONER_LAST_NAME, TEST_RELATIONSHIP);
         testData.put(D8_RESPONDENT_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
         testData.put(LANGUAGE_PREFERENCE_WELSH, NO_VALUE);
+
+
 
         sendDaRequestedNotifyRespondentEmailTask.execute(context, testData);
 
