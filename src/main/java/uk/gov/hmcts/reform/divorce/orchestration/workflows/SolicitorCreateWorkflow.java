@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.Features;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.DefaultWorkflow;
@@ -65,7 +64,8 @@ public class SolicitorCreateWorkflow extends DefaultWorkflow<Map<String, Object>
     private boolean isPetitionerClaimingCostsAndClaimCostsFromIsEmptyIn(CaseDetails caseDetails) {
         Map<String, Object> caseData = caseDetails.getCaseData();
         boolean isPetitionerClaimingCosts = YES_VALUE.equalsIgnoreCase(String.valueOf(caseData.get(DIVORCE_COSTS_CLAIM_CCD_FIELD)));
-        boolean claimCostsFromIsEmpty = StringUtils.isEmpty(caseData.get(DIVORCE_COSTS_CLAIM_FROM_CCD_FIELD));
+        Object claimFrom = caseData.get(DIVORCE_COSTS_CLAIM_FROM_CCD_FIELD);
+        boolean claimCostsFromIsEmpty = (claimFrom == null || (claimFrom instanceof List && ((List<?>) claimFrom).isEmpty()));
 
         return isPetitionerClaimingCosts && claimCostsFromIsEmpty;
     }

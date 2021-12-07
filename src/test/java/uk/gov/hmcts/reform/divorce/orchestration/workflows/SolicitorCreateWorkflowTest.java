@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetRespondentSolicitorOrg
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.SetSolicitorCourtDetailsTask;
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.ValidateSelectedOrganisationTask;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +29,9 @@ import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_CCD_FIELD;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_FROM_CCD_CODE_FOR_CORESPONDENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_FROM_CCD_CODE_FOR_RESPONDENT;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DIVORCE_COSTS_CLAIM_FROM_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.buildOrganisationPolicy;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.Verificators.mockTasksExecution;
@@ -74,7 +78,7 @@ public class SolicitorCreateWorkflowTest {
     SolicitorCreateWorkflow solicitorCreateWorkflow;
 
     @Test
-    public void runShouldSetClaimCostsFromWhenClaimCostsIsYesAndClaimCostsFromIsEmpty() throws Exception {
+    public void runShouldSetClaimCostsFromWhenClaimCostsIsYesAndClaimCostsFromIsNull() throws Exception {
         Map<String, Object> payload = new HashMap<>();
         payload.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
 
@@ -109,6 +113,128 @@ public class SolicitorCreateWorkflowTest {
         );
 
         verifyTasksWereNeverCalled(setRespondentSolicitorOrganisationPolicyReferenceTask);
+    }
+
+    @Test
+    public void runShouldSetClaimCostsFromWhenClaimCostsIsYesAndClaimCostsFromIsEmptyArray() throws Exception {
+        Map<String, Object> payload = new HashMap<>();
+        ArrayList<String> claimFrom = new ArrayList<>();
+
+        payload.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
+        payload.put(DIVORCE_COSTS_CLAIM_FROM_CCD_FIELD, claimFrom);
+
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
+
+        CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
+
+        mockTasksExecution(
+            caseDetails.getCaseData(),
+            setClaimCostsFromTask,
+            setSolicitorCourtDetailsTask,
+            setNewLegalConnectionPolicyTask,
+            copyD8JurisdictionConnectionPolicyTask,
+            addMiniPetitionDraftTask,
+            addNewDocumentsToCaseDataTask,
+            setPetitionerSolicitorOrganisationPolicyReferenceTask,
+            respondentOrganisationPolicyRemovalTask
+        );
+
+        assertThat(solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN), is(caseDetails.getCaseData()));
+
+        verifyTasksCalledInOrder(
+            caseDetails.getCaseData(),
+            setClaimCostsFromTask,
+            setSolicitorCourtDetailsTask,
+            setNewLegalConnectionPolicyTask,
+            copyD8JurisdictionConnectionPolicyTask,
+            addMiniPetitionDraftTask,
+            addNewDocumentsToCaseDataTask,
+            setPetitionerSolicitorOrganisationPolicyReferenceTask,
+            respondentOrganisationPolicyRemovalTask
+        );
+
+        verifyTasksWereNeverCalled(setRespondentSolicitorOrganisationPolicyReferenceTask);
+    }
+
+    @Test
+    public void runShouldSetClaimCostsFromWhenClaimCostsIsYesAndClaimCostsFromIsRespondent() throws Exception {
+        Map<String, Object> payload = new HashMap<>();
+        ArrayList<String> claimFrom = new ArrayList<>();
+        claimFrom.add(DIVORCE_COSTS_CLAIM_FROM_CCD_CODE_FOR_RESPONDENT);
+
+        payload.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
+        payload.put(DIVORCE_COSTS_CLAIM_FROM_CCD_FIELD, claimFrom);
+
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
+
+        CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
+
+        mockTasksExecution(
+            caseDetails.getCaseData(),
+            setSolicitorCourtDetailsTask,
+            setNewLegalConnectionPolicyTask,
+            copyD8JurisdictionConnectionPolicyTask,
+            addMiniPetitionDraftTask,
+            addNewDocumentsToCaseDataTask,
+            setPetitionerSolicitorOrganisationPolicyReferenceTask,
+            respondentOrganisationPolicyRemovalTask
+        );
+
+        assertThat(solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN), is(caseDetails.getCaseData()));
+
+        verifyTasksCalledInOrder(
+            caseDetails.getCaseData(),
+            setSolicitorCourtDetailsTask,
+            setNewLegalConnectionPolicyTask,
+            copyD8JurisdictionConnectionPolicyTask,
+            addMiniPetitionDraftTask,
+            addNewDocumentsToCaseDataTask,
+            setPetitionerSolicitorOrganisationPolicyReferenceTask,
+            respondentOrganisationPolicyRemovalTask
+        );
+
+        verifyTasksWereNeverCalled(setRespondentSolicitorOrganisationPolicyReferenceTask, setClaimCostsFromTask);
+    }
+
+    @Test
+    public void runShouldSetClaimCostsFromWhenClaimCostsIsYesAndClaimCostsFromIsRespondentAndCorespondent() throws Exception {
+        Map<String, Object> payload = new HashMap<>();
+        ArrayList<String> claimFrom = new ArrayList<>();
+        claimFrom.add(DIVORCE_COSTS_CLAIM_FROM_CCD_CODE_FOR_RESPONDENT);
+        claimFrom.add(DIVORCE_COSTS_CLAIM_FROM_CCD_CODE_FOR_CORESPONDENT);
+
+        payload.put(DIVORCE_COSTS_CLAIM_CCD_FIELD, YES_VALUE);
+        payload.put(DIVORCE_COSTS_CLAIM_FROM_CCD_FIELD, claimFrom);
+
+        when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
+
+        CaseDetails caseDetails = CaseDetails.builder().caseData(payload).build();
+
+        mockTasksExecution(
+            caseDetails.getCaseData(),
+            setSolicitorCourtDetailsTask,
+            setNewLegalConnectionPolicyTask,
+            copyD8JurisdictionConnectionPolicyTask,
+            addMiniPetitionDraftTask,
+            addNewDocumentsToCaseDataTask,
+            setPetitionerSolicitorOrganisationPolicyReferenceTask,
+            respondentOrganisationPolicyRemovalTask
+        );
+
+        assertThat(solicitorCreateWorkflow.run(caseDetails, AUTH_TOKEN), is(caseDetails.getCaseData()));
+
+        verifyTasksCalledInOrder(
+            caseDetails.getCaseData(),
+            setSolicitorCourtDetailsTask,
+            setNewLegalConnectionPolicyTask,
+            copyD8JurisdictionConnectionPolicyTask,
+            addMiniPetitionDraftTask,
+            addNewDocumentsToCaseDataTask,
+            setPetitionerSolicitorOrganisationPolicyReferenceTask,
+            respondentOrganisationPolicyRemovalTask
+        );
+
+        verifyTasksWereNeverCalled(setRespondentSolicitorOrganisationPolicyReferenceTask, setClaimCostsFromTask);
     }
 
     @Test
