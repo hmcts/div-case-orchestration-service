@@ -7,7 +7,6 @@ import com.google.common.collect.ImmutableMap;
 import org.apache.logging.log4j.util.Strings;
 import org.junit.Test;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpMethod;
@@ -87,7 +86,7 @@ public class DnDecisionMadeCallbackITest extends MockedFunctionalTest {
     private static final String API_URL = "/dn-decision-made";
 
     private static final String CMS_UPDATE_CASE = "/casemaintenance/version/1/updateCase/%s/cleanCaseState";
-    private static final String AMEND_PETITION_FEE_CONTEXT_PATH =  "/fees-and-payments/version/1/amend-fee";
+    private static final String AMEND_PETITION_FEE_CONTEXT_PATH = "/fees-and-payments/version/1/amend-fee";
 
     private static final String DECREE_NISI_REFUSAL_ORDER_CLARIFICATION_TEMPLATE_ID = "bc4c7ba0-4fc0-4f14-876b-1328eca127b8";
     private static final String SOL_DN_DECISION_MADE_TEMPLATE_ID = "fd6d9667-527f-4c22-b1f1-d095c412ab2c";
@@ -334,7 +333,7 @@ public class DnDecisionMadeCallbackITest extends MockedFunctionalTest {
     }
 
     private void stubCmsServerEndpoint(String path, HttpStatus status, String body, HttpMethod method) {
-        maintenanceServiceServer.stubFor(WireMock.request(method.name(),urlEqualTo(path))
+        maintenanceServiceServer.stubFor(WireMock.request(method.name(), urlEqualTo(path))
             .willReturn(aResponse()
                 .withStatus(status.value())
                 .withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
