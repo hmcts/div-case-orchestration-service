@@ -12,7 +12,7 @@ import uk.gov.hmcts.reform.divorce.validation.service.ValidationService;
 
 import java.util.Map;
 
-import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 
 @Component
 @Slf4j
@@ -24,8 +24,7 @@ public class ValidateCaseDataTask implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
-        String caseId = caseData.getOrDefault(ID, "").toString();
-
+        String caseId = caseData.getOrDefault(D_8_CASE_REFERENCE, "").toString();
         log.info("Mapping: caseData, CoreCaseData.class");
         CoreCaseData coreCaseData = mapper.convertValue(caseData, CoreCaseData.class);
         log.info("Validating case data for case Id {}", caseId);

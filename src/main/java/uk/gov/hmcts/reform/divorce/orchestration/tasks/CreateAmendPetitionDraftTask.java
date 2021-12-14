@@ -22,8 +22,7 @@ public class CreateAmendPetitionDraftTask implements Task<Map<String, Object>> {
     private final CaseMaintenanceClient caseMaintenanceClient;
 
     @Override
-    public Map<String, Object> execute(TaskContext context,
-                                       Map<String, Object> draft) {
+    public Map<String, Object> execute(TaskContext context, Map<String, Object> draft) {
         String oldCaseId = context.getTransientObject(CASE_ID_JSON_KEY);
         log.info("About to request amended draft for Case {}", oldCaseId);
 

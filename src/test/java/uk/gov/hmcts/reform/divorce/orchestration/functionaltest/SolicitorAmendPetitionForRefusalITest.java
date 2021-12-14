@@ -13,7 +13,6 @@ import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CcdCallbackRequest;
 import uk.gov.hmcts.reform.divorce.validation.service.ValidationService;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.AUTH_TOKEN;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AMENDED_CASE_ID_CCD_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_REFERENCE_CCD_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PREVIOUS_CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.ObjectMapperTestUtil.convertObjectToJsonString;
@@ -47,12 +47,9 @@ public class SolicitorAmendPetitionForRefusalITest extends MockedFunctionalTest 
     );
 
     private static final ValidationResponse validationResponseOk = ValidationResponse.builder().build();
-    private static final CaseDetails caseDetails =
-        CaseDetails.builder().caseId(CASE_ID)
-        .caseData(Collections.emptyMap())
-        .build();
-    private static final CcdCallbackRequest ccdCallbackRequest =
-        CcdCallbackRequest.builder()
+    private static final CaseDetails caseDetails = CaseDetails.builder().caseId(CASE_ID)
+        .caseData(Map.of(D_8_CASE_REFERENCE, "AwesomeRef")).build();
+    private static final CcdCallbackRequest ccdCallbackRequest = CcdCallbackRequest.builder()
         .caseDetails(caseDetails).build();
 
     @Autowired

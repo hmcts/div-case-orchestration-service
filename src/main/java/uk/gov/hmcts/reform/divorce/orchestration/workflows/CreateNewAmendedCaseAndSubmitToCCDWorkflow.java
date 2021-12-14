@@ -40,7 +40,8 @@ public class CreateNewAmendedCaseAndSubmitToCCDWorkflow extends DefaultWorkflow<
         CopyPetitionerSolicitorDetailsTask copyPetitionerSolicitorDetailsTask,
         ValidateCaseDataTask validateCaseDataTask,
         SolicitorSubmitCaseToCCDTask solicitorSubmitCaseToCCD,
-        SetAmendedCaseIdTask setAmendedCaseIdTask) {
+        SetAmendedCaseIdTask setAmendedCaseIdTask
+    ) {
         this.createAmendPetitionDraftForRefusalFromCaseId = amendPetitionDraftForRefusalFromCaseId;
         this.formatDivorceSessionToCaseDataTask = formatDivorceSessionToCaseDataTask;
         this.copyPetitionerSolicitorDetailsTask = copyPetitionerSolicitorDetailsTask;
