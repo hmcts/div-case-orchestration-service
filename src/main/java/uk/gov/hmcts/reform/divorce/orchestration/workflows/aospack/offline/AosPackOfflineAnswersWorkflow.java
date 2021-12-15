@@ -66,7 +66,7 @@ public class AosPackOfflineAnswersWorkflow extends DefaultWorkflow<Map<String, O
                           CaseDetails caseDetails, String authToken) throws WorkflowException {
 
         tasks.add(formFieldValuesToCoreFieldsRelay);
-
+        log.info("divorceParty {}", divorceParty.name());
         if (isRespondent(divorceParty)) {
             tasks.add(respondentAosAnswersProcessor);
             tasks.add(respondentAosDerivedAddressFormatter);
