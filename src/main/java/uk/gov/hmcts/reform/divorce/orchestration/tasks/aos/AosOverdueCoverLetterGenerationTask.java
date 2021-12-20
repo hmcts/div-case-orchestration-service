@@ -57,7 +57,10 @@ public class AosOverdueCoverLetterGenerationTask extends BasePayloadSpecificDocu
     }
 
     private Addressee getAddressee(Map<String, Object> caseData) {
-        if (getMandatoryPropertyValueAsString(caseData, D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL).equals(KEEP)
+
+        String confidentialField = getOptionalPropertyValueAsString(caseData, D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL, "empty");
+
+        if (confidentialField.equals(KEEP)
             && !PartyRepresentationChecker.isPetitionerRepresented(caseData)) {
             return Addressee.builder()
                 .name("")

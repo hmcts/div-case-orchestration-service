@@ -117,6 +117,7 @@ public class TestConstants {
     public static final String TEST_CO_RESPONDENT_FIRST_NAME = "Bruce";
     public static final String TEST_CO_RESPONDENT_LAST_NAME = "Wayne";
     public static final String TEST_CO_RESPONDENT_FULL_NAME = TEST_CO_RESPONDENT_FIRST_NAME + " " + TEST_CO_RESPONDENT_LAST_NAME;
+    public static final String TEST_D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL = "keep";
 
     public static final String TEST_RECEIVED_DATE = "2020-05-05";
     public static final String TEST_DECISION_DATE = "2030-10-10";
