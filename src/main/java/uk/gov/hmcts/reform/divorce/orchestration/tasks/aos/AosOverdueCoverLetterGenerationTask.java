@@ -57,7 +57,7 @@ public class AosOverdueCoverLetterGenerationTask extends BasePayloadSpecificDocu
     }
 
     private Addressee getAddressee(Map<String, Object> caseData) {
-        if(getMandatoryPropertyValueAsString(caseData, D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL).equals(KEEP)
+        if (getMandatoryPropertyValueAsString(caseData, D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL).equals(KEEP)
             && !PartyRepresentationChecker.isPetitionerRepresented(caseData)) {
             return Addressee.builder()
                 .name("")
@@ -65,8 +65,8 @@ public class AosOverdueCoverLetterGenerationTask extends BasePayloadSpecificDocu
                 .build();
         }
 
-        return PartyRepresentationChecker.isPetitionerRepresented(caseData) ?
-            getPetitionerSolicitor(caseData) : getPetitioner(caseData);
+        return PartyRepresentationChecker.isPetitionerRepresented(caseData)
+            ? getPetitionerSolicitor(caseData) : getPetitioner(caseData);
     }
 
 }
