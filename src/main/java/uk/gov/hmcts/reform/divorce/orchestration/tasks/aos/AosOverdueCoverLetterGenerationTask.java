@@ -17,6 +17,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.H
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference.ENGLISH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.AOS_OVERDUE_COVER_LETTER_DOCUMENT_TYPE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.AOS_OVERDUE_COVER_LETTER;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.getPetitioner;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.getPetitionerSolicitor;
@@ -27,8 +28,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.forma
 @Component
 public class AosOverdueCoverLetterGenerationTask extends BasePayloadSpecificDocumentGenerationTask {
 
-    private static final String D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL = "D8PetitionerContactDetailsConfidential";
-    private static final String KEEP = "keep";
+    private static final String CONFIDENTIAL_TRUE = "keep";
 
     public AosOverdueCoverLetterGenerationTask(CtscContactDetailsDataProviderService ctscContactDetailsDataProviderService,
                                                PdfDocumentGenerationService pdfDocumentGenerationService,
@@ -60,16 +60,12 @@ public class AosOverdueCoverLetterGenerationTask extends BasePayloadSpecificDocu
 
         String confidentialField = getMandatoryPropertyValueAsString(caseData, D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL);
 
-        if (confidentialField.equals(KEEP)
-            && !PartyRepresentationChecker.isPetitionerRepresented(caseData)) {
-            return Addressee.builder()
-                .name("")
-                .formattedAddress("")
-                .build();
+        if (PartyRepresentationChecker.isPetitionerRepresented(caseData)) {
+            return getPetitionerSolicitor(caseData);
         }
 
-        return PartyRepresentationChecker.isPetitionerRepresented(caseData)
-            ? getPetitionerSolicitor(caseData) : getPetitioner(caseData);
+        Addressee emptyAddressee = Addressee.builder().name("").formattedAddress("").build();
+        return confidentialField.equals(CONFIDENTIAL_TRUE) ? emptyAddressee : getPetitioner(caseData);
     }
 
 }

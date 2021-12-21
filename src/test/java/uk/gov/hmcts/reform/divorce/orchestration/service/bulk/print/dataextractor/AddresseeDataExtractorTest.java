@@ -27,6 +27,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.G
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_IS_USING_DIGITAL_CHANNEL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CO_RESPONDENT_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_DERIVED_REASON_FOR_DIVORCE_ADULTERY_3RD_PARTY_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D8_RESPONDENT_SOLICITOR_REFERENCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.DATETIME_OF_HEARING_CCD_FIELD;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_CASE_REFERENCE;
@@ -66,7 +67,6 @@ public class AddresseeDataExtractorTest {
     public static final String D8_CASE_REFERENCE = "LV17D80102";
     public static final String CO_RESPONDENT_SOLICITOR_REF = "SolRef1234";
     public static final String VALID_HEARING_DATE = "2020-10-20";
-    public static final String D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL = "D8PetitionerContactDetailsConfidential";
     public static final String CONFIDENTIAL_KEEP = "keep";
     public static final String CONFIDENTIAL_SHARE = "share";
 
