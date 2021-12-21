@@ -67,8 +67,9 @@ public class AddresseeDataExtractorTest {
     public static final String D8_CASE_REFERENCE = "LV17D80102";
     public static final String CO_RESPONDENT_SOLICITOR_REF = "SolRef1234";
     public static final String VALID_HEARING_DATE = "2020-10-20";
-    public static final String CONFIDENTIAL_KEEP = "keep";
-    public static final String CONFIDENTIAL_SHARE = "share";
+    public static final String CONFIDENTIAL_TRUE = "keep";
+    public static final String CONFIDENTIAL_FALSE = "share";
+
 
     @Test
     public void getRespondentShouldReturnValidValues() {
@@ -176,7 +177,7 @@ public class AddresseeDataExtractorTest {
         Map<String, Object> caseData = buildCaseDataWithPetitionerNames();
         caseData.put(GENERAL_EMAIL_PARTIES, PETITIONER.getDescription());
         caseData.put(PETITIONER_CORRESPONDENCE_ADDRESS, PETITIONERS_CORRESPONDENCE_ADDRESS);
-        caseData.put(D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL, CONFIDENTIAL_SHARE);
+        caseData.put(D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL, CONFIDENTIAL_FALSE);
 
         return caseData;
     }
@@ -185,7 +186,7 @@ public class AddresseeDataExtractorTest {
         Map<String, Object> caseData = buildCaseDataWithPetitionerNames();
         caseData.put(GENERAL_EMAIL_PARTIES, PETITIONER.getDescription());
         caseData.put(PETITIONER_HOME_ADDRESS, PETITIONERS_HOME_ADDRESS);
-        caseData.put(D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL, CONFIDENTIAL_SHARE);
+        caseData.put(D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL, CONFIDENTIAL_FALSE);
 
         return caseData;
     }
@@ -194,7 +195,7 @@ public class AddresseeDataExtractorTest {
         Map<String, Object> caseData = buildCaseDataWithPetitionerNames();
         caseData.put(GENERAL_EMAIL_PARTIES, PETITIONER.getDescription());
         caseData.put(PETITIONER_HOME_ADDRESS, PETITIONERS_HOME_ADDRESS);
-        caseData.put(D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL, CONFIDENTIAL_KEEP);
+        caseData.put(D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL, CONFIDENTIAL_TRUE);
 
         return caseData;
     }
@@ -203,7 +204,7 @@ public class AddresseeDataExtractorTest {
         Map<String, Object> caseData = buildCaseDataWithPetitionerNames();
         caseData.put(GENERAL_EMAIL_PARTIES, PETITIONER.getDescription());
         caseData.put(PETITIONER_HOME_ADDRESS, PETITIONERS_HOME_ADDRESS);
-        caseData.put(D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL, CONFIDENTIAL_SHARE);
+        caseData.put(D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL, CONFIDENTIAL_FALSE);
         caseData.put(PETITIONER_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
         caseData.put(PETITIONER_SOLICITOR_DERIVED_ADDRESS, TEST_SOLICITOR_ADDRESS);
         caseData.put(PETITIONER_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL);
@@ -215,7 +216,7 @@ public class AddresseeDataExtractorTest {
         Map<String, Object> caseData = buildCaseDataWithPetitionerNames();
         caseData.put(GENERAL_EMAIL_PARTIES, PETITIONER.getDescription());
         caseData.put(PETITIONER_HOME_ADDRESS, PETITIONERS_HOME_ADDRESS);
-        caseData.put(D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL, CONFIDENTIAL_KEEP);
+        caseData.put(D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL, CONFIDENTIAL_TRUE);
         caseData.put(PETITIONER_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
         caseData.put(PETITIONER_SOLICITOR_DERIVED_ADDRESS, TEST_SOLICITOR_ADDRESS);
         caseData.put(PETITIONER_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL);
