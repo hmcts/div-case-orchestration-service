@@ -64,6 +64,9 @@ public class AddresseeDataExtractorTest {
     public static final String D8_CASE_REFERENCE = "LV17D80102";
     public static final String CO_RESPONDENT_SOLICITOR_REF = "SolRef1234";
     public static final String VALID_HEARING_DATE = "2020-10-20";
+    public static final String D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL = "D8PetitionerContactDetailsConfidential";
+    public static final String CONFIDENTIAL_KEEP = "keep";
+    public static final String CONFIDENTIAL_SHARE = "share";
 
     @Test
     public void getRespondentShouldReturnValidValues() {
@@ -171,6 +174,7 @@ public class AddresseeDataExtractorTest {
         Map<String, Object> caseData = buildCaseDataWithPetitionerNames();
         caseData.put(GENERAL_EMAIL_PARTIES, PETITIONER.getDescription());
         caseData.put(PETITIONER_CORRESPONDENCE_ADDRESS, PETITIONERS_CORRESPONDENCE_ADDRESS);
+        caseData.put(D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL, CONFIDENTIAL_SHARE);
 
         return caseData;
     }
@@ -179,6 +183,16 @@ public class AddresseeDataExtractorTest {
         Map<String, Object> caseData = buildCaseDataWithPetitionerNames();
         caseData.put(GENERAL_EMAIL_PARTIES, PETITIONER.getDescription());
         caseData.put(PETITIONER_HOME_ADDRESS, PETITIONERS_HOME_ADDRESS);
+        caseData.put(D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL, CONFIDENTIAL_SHARE);
+
+        return caseData;
+    }
+
+    public static Map<String, Object> buildCaseDataWithConfidentialKeepPetitioner() {
+        Map<String, Object> caseData = buildCaseDataWithPetitionerNames();
+        caseData.put(GENERAL_EMAIL_PARTIES, PETITIONER.getDescription());
+        caseData.put(PETITIONER_HOME_ADDRESS, PETITIONERS_HOME_ADDRESS);
+        caseData.put(D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL, CONFIDENTIAL_KEEP);
 
         return caseData;
     }

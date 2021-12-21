@@ -20,6 +20,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.document.template.DocumentType.AOS_OVERDUE_COVER_LETTER;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.getPetitioner;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractor.getPetitionerSolicitor;
+import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getOptionalPropertyValueAsString;
 import static uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils.formatCaseIdToReferenceNumber;
 
@@ -55,9 +56,9 @@ public class AosOverdueCoverLetterGenerationTask extends BasePayloadSpecificDocu
         return AOS_OVERDUE_COVER_LETTER_DOCUMENT_TYPE;
     }
 
-    private Addressee getAddressee(Map<String, Object> caseData) {
+    public Addressee getAddressee(Map<String, Object> caseData) {
 
-        String confidentialField = getOptionalPropertyValueAsString(caseData, D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL, "empty");
+        String confidentialField = getMandatoryPropertyValueAsString(caseData, D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL);
 
         if (confidentialField.equals(KEEP)
             && !PartyRepresentationChecker.isPetitionerRepresented(caseData)) {
