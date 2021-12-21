@@ -113,7 +113,6 @@ public class AosOverdueCoverLetterGenerationTaskTest extends BasePayloadSpecific
 
     private Map<String, Object> buildCaseDataWithHelpWithFeesWithNoCorrespondenceAddress() {
         Map<String, Object> caseData = buildCaseDataWithPetitionerHomeAddressButNoCorrespondenceAddress();
-
         caseData.put("D8HelpWithFeesReferenceNumber", TEST_HELP_WITH_FEES_NUMBER);
 
         return caseData;
