@@ -18,6 +18,7 @@ import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.PETITIONER;
 import static uk.gov.hmcts.reform.divorce.model.parties.DivorceParty.RESPONDENT;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_OTHER_PARTY_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_SOLICITOR_EMAIL;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.GENERAL_EMAIL_OTHER_RECIPIENT_EMAIL;
@@ -32,6 +33,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.D_8_PETITIONER_FIRST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.LANGUAGE_PREFERENCE_WELSH;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.NO_VALUE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_DERIVED_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESPONDENT_SOLICITOR_EMAIL_ADDRESS;
@@ -193,6 +195,30 @@ public class AddresseeDataExtractorTest {
         caseData.put(GENERAL_EMAIL_PARTIES, PETITIONER.getDescription());
         caseData.put(PETITIONER_HOME_ADDRESS, PETITIONERS_HOME_ADDRESS);
         caseData.put(D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL, CONFIDENTIAL_KEEP);
+
+        return caseData;
+    }
+
+    public static Map<String, Object> buildCaseDataWithPetitionerSolicitorNotConfidential() {
+        Map<String, Object> caseData = buildCaseDataWithPetitionerNames();
+        caseData.put(GENERAL_EMAIL_PARTIES, PETITIONER.getDescription());
+        caseData.put(PETITIONER_HOME_ADDRESS, PETITIONERS_HOME_ADDRESS);
+        caseData.put(D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL, CONFIDENTIAL_SHARE);
+        caseData.put(PETITIONER_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
+        caseData.put(PETITIONER_SOLICITOR_DERIVED_ADDRESS, TEST_SOLICITOR_ADDRESS);
+        caseData.put(PETITIONER_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL);
+
+        return caseData;
+    }
+
+    public static Map<String, Object> buildCaseDataWithPetitionerSolicitorIsConfidential() {
+        Map<String, Object> caseData = buildCaseDataWithPetitionerNames();
+        caseData.put(GENERAL_EMAIL_PARTIES, PETITIONER.getDescription());
+        caseData.put(PETITIONER_HOME_ADDRESS, PETITIONERS_HOME_ADDRESS);
+        caseData.put(D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL, CONFIDENTIAL_KEEP);
+        caseData.put(PETITIONER_SOLICITOR_NAME, TEST_SOLICITOR_NAME);
+        caseData.put(PETITIONER_SOLICITOR_DERIVED_ADDRESS, TEST_SOLICITOR_ADDRESS);
+        caseData.put(PETITIONER_SOLICITOR_EMAIL, TEST_SOLICITOR_EMAIL);
 
         return caseData;
     }

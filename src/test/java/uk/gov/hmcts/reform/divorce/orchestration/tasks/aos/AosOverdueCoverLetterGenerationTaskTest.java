@@ -18,6 +18,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_CASE_ID;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FULL_NAME;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_ADDRESS;
+import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_SOLICITOR_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.PETITIONERS_CORRESPONDENCE_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.PETITIONERS_HOME_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.service.bulk.print.dataextractor.AddresseeDataExtractorTest.buildCaseDataWithPetitionerHomeAddressButNoCorrespondenceAddress;
@@ -108,11 +110,65 @@ public class AosOverdueCoverLetterGenerationTaskTest extends BasePayloadSpecific
         );
     }
 
+    @Test
+    public void shouldGenerateDocumentWithSolicitorAddressNotConfidential() {
+        Map<String, Object> caseData = buildCaseDataWithHWFAndPetSolNotConfidential();
+
+        Map<String, Object> returnedCaseData = classUnderTest.execute(context, caseData);
+
+        verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
+        final AosOverdueCoverLetter expectedDocmosisTemplateVars = AosOverdueCoverLetter.aosOverdueCoverLetterBuilder()
+            .caseReference(formatCaseIdToReferenceNumber(TEST_CASE_ID))
+            .addressee(classUnderTest.getAddressee(caseData))
+            .ctscContactDetails(CTSC_CONTACT)
+            .helpWithFeesNumber(TEST_HELP_WITH_FEES_NUMBER)
+            .build();
+        assertThat(expectedDocmosisTemplateVars.getAddressee(), is(Addressee.builder()
+            .name(TEST_SOLICITOR_NAME)
+            .formattedAddress(TEST_SOLICITOR_ADDRESS)
+            .build()));
+        runCommonVerifications(caseData,
+            returnedCaseData,
+            "aosOverdueCoverLetter",
+            "FL-DIV-LET-ENG-00537.odt",
+            expectedDocmosisTemplateVars
+        );
+    }
+
+    @Test
+    public void shouldGenerateDocumentWithSolicitorAddressIsConfidentialPetitioner() {
+        Map<String, Object> caseData = buildCaseDataWithHWFAndPetSolIsConfidential();
+
+        Map<String, Object> returnedCaseData = classUnderTest.execute(context, caseData);
+
+        verify(ctscContactDetailsDataProviderService).getCtscContactDetails();
+        final AosOverdueCoverLetter expectedDocmosisTemplateVars = AosOverdueCoverLetter.aosOverdueCoverLetterBuilder()
+            .caseReference(formatCaseIdToReferenceNumber(TEST_CASE_ID))
+            .addressee(classUnderTest.getAddressee(caseData))
+            .ctscContactDetails(CTSC_CONTACT)
+            .helpWithFeesNumber(TEST_HELP_WITH_FEES_NUMBER)
+            .build();
+        assertThat(expectedDocmosisTemplateVars.getAddressee(), is(Addressee.builder()
+            .name(TEST_SOLICITOR_NAME)
+            .formattedAddress(TEST_SOLICITOR_ADDRESS)
+            .build()));
+        runCommonVerifications(caseData,
+            returnedCaseData,
+            "aosOverdueCoverLetter",
+            "FL-DIV-LET-ENG-00537.odt",
+            expectedDocmosisTemplateVars
+        );
+    }
+
     private Map<String, Object> buildCaseDataWithHelpWithFeesWithNoCorrespondenceAddress() {
         Map<String, Object> caseData = buildCaseDataWithPetitionerHomeAddressButNoCorrespondenceAddress();
         caseData.put("D8HelpWithFeesReferenceNumber", TEST_HELP_WITH_FEES_NUMBER);
 
         return caseData;
+    }
+
+    private Map<String, Object> buildCaseDataWithNoHelpWithFeesWithCorrespondenceAddress() {
+        return AddresseeDataExtractorTest.buildCaseDataWithPetitionerCorrespondenceAddressButNoHomeAddress();
     }
 
     private Map<String, Object> buildCaseDataWithHWFAndConfidentialPetitioner() {
@@ -122,8 +178,18 @@ public class AosOverdueCoverLetterGenerationTaskTest extends BasePayloadSpecific
         return caseData;
     }
 
-    private Map<String, Object> buildCaseDataWithNoHelpWithFeesWithCorrespondenceAddress() {
-        return AddresseeDataExtractorTest.buildCaseDataWithPetitionerCorrespondenceAddressButNoHomeAddress();
+    private Map<String, Object> buildCaseDataWithHWFAndPetSolNotConfidential() {
+        Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithPetitionerSolicitorNotConfidential();
+        caseData.put("D8HelpWithFeesReferenceNumber", TEST_HELP_WITH_FEES_NUMBER);
+
+        return caseData;
+    }
+
+    private Map<String, Object> buildCaseDataWithHWFAndPetSolIsConfidential() {
+        Map<String, Object> caseData = AddresseeDataExtractorTest.buildCaseDataWithPetitionerSolicitorIsConfidential();
+        caseData.put("D8HelpWithFeesReferenceNumber", TEST_HELP_WITH_FEES_NUMBER);
+
+        return caseData;
     }
 
 }
