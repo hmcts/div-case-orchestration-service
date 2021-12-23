@@ -33,6 +33,9 @@ public class ValidateCaseDataTask implements Task<Map<String, Object>> {
         log.info("Finished Validation case data for case Id {}, valid = {}", caseId, validationResponse.isValid());
 
         if (!validationResponse.isValid()) {
+            for(String s : validationResponse.getErrors()) {
+                log.info("Validation Error: " + s);
+            }
             context.setTaskFailed(true);
             context.setTransientObject(this.getClass().getName() + "_Error", validationResponse);
         }
