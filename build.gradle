@@ -88,12 +88,11 @@ allprojects {
     group = 'uk.gov.hmcts.reform.divorce'
     version = '0.0.1'
 
-    checkstyle {
-        maxWarnings = 0
-        toolVersion = '8.24'
-        // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
-        getConfigDirectory().set(new File(rootDir, 'checkstyle.xml'))
-    }
+    checkstyle.toolVersion = '8.34'
+    checkstyle.getConfigDirectory().set(new File(rootDir, "checkstyle.xml"))
+    checkstyle.maxWarnings(0)
+
+
     // https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration.html
     dependencyCheck {
         // Specifies if the build should be failed if a CVSS score above a specified level is identified.
