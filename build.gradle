@@ -88,11 +88,12 @@ allprojects {
     group = 'uk.gov.hmcts.reform.divorce'
     version = '0.0.1'
 
-    checkstyle.toolVersion = '8.34'
-    checkstyle.configFile = new File(rootDir, "checkstyle.xml")
-    checkstyle.configDir(rootDir)
-    checkstyle.maxWarnings(0)
-
+    checkstyle {
+        maxWarnings = 0
+        toolVersion = '8.24'
+        // need to set configDir to rootDir otherwise submodule will use submodule/config/checkstyle
+        getConfigDirectory().set(new File(rootDir, 'checkstyle.xml'))
+    }
     // https://jeremylong.github.io/DependencyCheck/dependency-check-gradle/configuration.html
     dependencyCheck {
         // Specifies if the build should be failed if a CVSS score above a specified level is identified.
@@ -236,9 +237,9 @@ dependencyCheck {
 dependencies {
     implementation project(':job-scheduler')
 
-    compileOnly("org.projectlombok:lombok:${versions.lombok}")
-    testCompileOnly("org.projectlombok:lombok:${versions.lombok}")
-    testCompile('com.github.hmcts:fortify-client:1.2.0:all')
+    implementation("org.projectlombok:lombok:${versions.lombok}")
+    testImplementation("org.projectlombok:lombok:${versions.lombok}")
+    testImplementation('com.github.hmcts:fortify-client:1.2.0:all')
     annotationProcessor("org.projectlombok:lombok:${versions.lombok}")
     testAnnotationProcessor("org.projectlombok:lombok:${versions.lombok}")
 
@@ -366,20 +367,20 @@ dependencies {
                 exclude group: 'io.reactivex', module: 'rxnetty-servo'
             }
 
-    contractTestCompile group: 'com.google.guava', name: 'guava', version: versions.guava
-    contractTestCompile group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
-    contractTestCompile group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
-    contractTestRuntime group: 'com.google.guava', name: 'guava', version: versions.guava
-    contractTestRuntime group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
-    contractTestRuntime group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
+    contractTestImplementation group: 'com.google.guava', name: 'guava', version: versions.guava
+    contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
+    contractTestImplementation group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
+    contractTestRuntimeOnly group: 'com.google.guava', name: 'guava', version: versions.guava
+    contractTestRuntimeOnly group: 'au.com.dius.pact.consumer', name: 'junit5', version: versions.pact_version
+    contractTestRuntimeOnly group: 'au.com.dius.pact.consumer', name: 'java8', version: versions.pact_version
 
-    contractTestCompile group: 'org.apache.httpcomponents', name: 'httpclient', version: versions.httpComponents
-    contractTestCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-    contractTestCompile("org.junit.jupiter:junit-jupiter-api:5.7.2")
-    contractTestRuntime("org.junit.jupiter:junit-jupiter-engine:5.7.2")
+    contractTestImplementation group: 'org.apache.httpcomponents', name: 'httpclient', version: versions.httpComponents
+    contractTestImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+    contractTestImplementation("org.junit.jupiter:junit-jupiter-api:5.7.2")
+    contractTestRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.2")
     contractTestImplementation('org.junit.jupiter:junit-jupiter-api:5.7.2')
-    contractTestCompile sourceSets.main.runtimeClasspath
-    contractTestCompile sourceSets.test.runtimeClasspath
+    contractTestImplementation sourceSets.main.runtimeClasspath
+    contractTestImplementation sourceSets.test.runtimeClasspath
 }
 
 dependencies {

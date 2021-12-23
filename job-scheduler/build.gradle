@@ -2,13 +2,11 @@ sourceCompatibility = 11
 
 repositories {
     mavenLocal()
-    maven {
-        url "https://dl.bintray.com/hmcts/hmcts-maven"
-    }
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
     maven {
         url 'https://repo.spring.io/libs-milestone'
     }
-    jcenter()
 }
 
 compileJava {
@@ -29,22 +27,22 @@ def versions = [
 ]
 
 dependencies {
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
-  compile group: 'org.flywaydb', name: 'flyway-core', version: versions.flyway
-  compile group: 'org.springframework.retry', name: 'spring-retry'
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
-  compile group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
-  compile group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-quartz'
+    implementation group: 'org.flywaydb', name: 'flyway-core', version: versions.flyway
+    implementation group: 'org.springframework.retry', name: 'spring-retry'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-jdbc'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
+    implementation group: 'org.postgresql', name: 'postgresql', version: versions.postgresql
 
-  annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
-  compile group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: versions.lombok
+    implementation group: 'org.projectlombok', name: 'lombok', version: versions.lombok
 
-  compile group: 'uk.gov.hmcts.reform', name: 'java-logging', version: versions.reformJavaLogging
+    implementation group: 'com.github.hmcts.java-logging', name: 'java-logging', version: versions.reformJavaLogging
 
-  compile (group: 'com.fasterxml.jackson.core', name:'jackson-databind', version: versions.jacksonDatabind) {
+    implementation (group: 'com.fasterxml.jackson.core', name:'jackson-databind', version: versions.jacksonDatabind) {
     force = true
   }
 
-  testCompile group: 'org.springframework.boot', name: 'spring-boot-starter-test'
-  testCompile group: 'org.assertj', name: 'assertj-core', version: versions.assertj
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+    testImplementation group: 'org.assertj', name: 'assertj-core', version: versions.assertj
 }
