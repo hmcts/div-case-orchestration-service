@@ -45,7 +45,6 @@ import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETIT
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_FULL_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_PETITIONER_LAST_NAME;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_RESPONDENT_FULL_NAME;
-import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WESLH_DATE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WESLH_DATE_COE;
 import static uk.gov.hmcts.reform.divorce.orchestration.TestConstants.TEST_WESLH_LIMIT_DATE_COE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.COURT_NAME;
