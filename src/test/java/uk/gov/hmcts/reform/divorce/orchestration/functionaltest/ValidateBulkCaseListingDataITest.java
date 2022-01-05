@@ -29,7 +29,7 @@ public class ValidateBulkCaseListingDataITest extends IdamTestSupport {
 
     private static final String TEST_AUTH_TOKEN = "testAuthToken";
 
-    private static final String ERROR_MESSAGE = "Court hearing date is in the past. Are you sure you want to continue?";
+    private static final String ERROR_MESSAGE = "Court hearing date is in the past";
 
     @Autowired
     private MockMvc webClient;
@@ -69,6 +69,6 @@ public class ValidateBulkCaseListingDataITest extends IdamTestSupport {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.warnings", contains(ERROR_MESSAGE)));
+                .andExpect(jsonPath("$.errors", contains(ERROR_MESSAGE)));
     }
 }

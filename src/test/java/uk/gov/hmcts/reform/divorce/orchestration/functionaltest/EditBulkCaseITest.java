@@ -36,7 +36,7 @@ public class EditBulkCaseITest extends MockedFunctionalTest {
     private static final String API_URL = "/about-to-edit-bulk-case";
     private static final String DEPRECATED_API_URL = "/bulk/edit/listing?templateId=a&documentType=b&filename=c";
 
-    private static final String ERROR_MESSAGE = "Court hearing date is in the past. Are you sure you want to continue?";
+    private static final String ERROR_MESSAGE = "Court hearing date is in the past";
 
     private Map<String, Object> caseData;
 
