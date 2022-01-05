@@ -568,7 +568,18 @@ public class CaseOrchestrationServiceImpl implements CaseOrchestrationService {
     @Override
     public Map<String, Object> solicitorAmendPetitionForRefusal(CcdCallbackRequest ccdCallbackRequest, String authorizationToken)
         throws WorkflowException {
-        return createNewAmendedCaseAndSubmitToCCDWorkflow.run(ccdCallbackRequest.getCaseDetails(), authorizationToken);
+
+        Map<String, Object> payLoad = createNewAmendedCaseAndSubmitToCCDWorkflow.run(ccdCallbackRequest.getCaseDetails(), authorizationToken);
+
+        if (createNewAmendedCaseAndSubmitToCCDWorkflow.errors().isEmpty()) {
+            log.info("solicitorAmendPetitionForRefusal callback for case with CASE ID: {} successfully completed",
+                ccdCallbackRequest.getCaseDetails().getCaseId());
+            return payLoad;
+        } else {
+            log.error("solicitorAmendPetitionForRefusal callback for case with CASE ID: {} failed",
+                ccdCallbackRequest.getCaseDetails().getCaseId());
+            return createNewAmendedCaseAndSubmitToCCDWorkflow.errors();
+        }
     }
 
     @Override
