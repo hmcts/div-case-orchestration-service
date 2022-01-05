@@ -80,7 +80,7 @@ public class BulkCaseController {
         try {
             orchestrationService.validateBulkCaseListingData(ccdCallbackRequest.getCaseDetails().getCaseData());
         } catch (WorkflowException exception) {
-            ccdCallbackResponseBuilder.warnings(asList(exception.getMessage()));
+            ccdCallbackResponseBuilder.errors(asList(exception.getMessage()));
         }
 
         return ResponseEntity.ok(ccdCallbackResponseBuilder.build());
