@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.Task;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
@@ -9,6 +10,7 @@ import java.util.Map;
 
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_FIRM;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.CcdFields.PETITIONER_SOLICITOR_ORGANISATION_POLICY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_AGREES_EMAIL_CONTACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_DERIVED_ADDRESS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.PETITIONER_SOLICITOR_EMAIL;
@@ -18,11 +20,15 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.CCD_CASE_DATA;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class CopyPetitionerSolicitorDetailsTask implements Task<Map<String, Object>> {
 
     @Override
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
+        String oldCaseId = context.getTransientObject(CASE_ID_JSON_KEY);
+        log.info("Copying Petitioner Solicitor details from old case id {}", oldCaseId);
+
         Map<String, Object> oldCaseData = context.getTransientObject(CCD_CASE_DATA);
 
         copyFrom(PETITIONER_SOLICITOR_NAME, oldCaseData, caseData);
