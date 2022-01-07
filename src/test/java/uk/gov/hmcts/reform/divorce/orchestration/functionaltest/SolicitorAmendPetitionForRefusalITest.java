@@ -21,6 +21,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.jayway.jsonpath.matchers.JsonPathMatchers.hasJsonPath;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -84,7 +85,7 @@ public class SolicitorAmendPetitionForRefusalITest extends MockedFunctionalTest 
         String formattedContent = convertObjectToJsonString(formattedDraftData);
         stubMaintenanceServerEndpointForSubmit(HttpStatus.OK, formattedContent);
 
-        when(validationService.validate(any())).thenReturn(validationResponseOk);
+        when(validationService.validate(any(), anyString())).thenReturn(validationResponseOk);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
