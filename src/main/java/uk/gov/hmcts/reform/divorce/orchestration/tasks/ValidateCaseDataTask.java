@@ -12,6 +12,7 @@ import uk.gov.hmcts.reform.divorce.validation.service.ValidationService;
 
 import java.util.Map;
 
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.CASE_EVENT_ID_JSON_KEY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.ID;
 
 @Component
@@ -26,10 +27,12 @@ public class ValidateCaseDataTask implements Task<Map<String, Object>> {
     public Map<String, Object> execute(TaskContext context, Map<String, Object> caseData) {
         String caseId = caseData.getOrDefault(ID, "").toString();
 
+        String caseEventId = context.getTransientObject(CASE_EVENT_ID_JSON_KEY);
+
         log.info("Mapping: caseData, CoreCaseData.class");
         CoreCaseData coreCaseData = mapper.convertValue(caseData, CoreCaseData.class);
         log.info("Validating case data for case Id {}", caseId);
-        ValidationResponse validationResponse = validationService.validate(coreCaseData);
+        ValidationResponse validationResponse = validationService.validate(coreCaseData, caseEventId);
         log.info("Finished Validation case data for case Id {}, valid = {}", caseId, validationResponse.isValid());
 
         if (!validationResponse.isValid()) {
