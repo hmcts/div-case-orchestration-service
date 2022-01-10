@@ -121,7 +121,7 @@ public class PetitionIssuedRespJourneyITest extends IdamTestSupport {
 
     @Test
     public void givenValidationFailed_whenPetitionIssued_thenReturnCaseWithValidationErrors() throws Exception {
-        final List<String> errors = List.of("Validation response was null");
+        final List<String> errors = getListOfErrors();
         final ValidationResponse validationResponseFail = ValidationResponse.builder()
             .errors(errors)
             .warnings(Collections.singletonList("Warning!"))

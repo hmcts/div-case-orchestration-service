@@ -77,7 +77,7 @@ public class ValidateCaseDataTaskTest {
     @Test
     public void executeShouldReturnUpdatedPayloadForValidCase() {
         //given
-        when(validationService.validate(any(), anyString())).thenReturn(validationResponse);
+        when(validationService.validate(any(), any())).thenReturn(validationResponse);
 
         //when
         Map<String, Object> response = validateCaseDataTask.execute(context, payload);
@@ -91,7 +91,7 @@ public class ValidateCaseDataTaskTest {
     @Test
     public void executeShouldReturnUpdatedContextForInValidCase() {
         //given
-        when(validationService.validate(any(), anyString())).thenReturn(invalidationResponse);
+        when(validationService.validate(any(), any())).thenReturn(invalidationResponse);
 
         //when
         Map<String, Object> response = validateCaseDataTask.execute(context, payload);
