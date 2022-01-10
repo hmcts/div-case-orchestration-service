@@ -38,7 +38,6 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -101,7 +100,7 @@ public class SubmitCaseTest extends MockedFunctionalTest {
         stubMaintenanceServerEndpointForRetrieve(HttpStatus.NOT_FOUND, null);
         stubMaintenanceServerEndpointForSubmit(Collections.singletonMap(ID, TEST_CASE_ID));
         stubMaintenanceServerEndpointForDeleteDraft(HttpStatus.OK);
-        when(validationService.validate(any(), anyString())).thenReturn(validationResponseOk);
+        when(validationService.validate(any(), any())).thenReturn(validationResponseOk);
 
         MvcResult result = webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -134,7 +133,7 @@ public class SubmitCaseTest extends MockedFunctionalTest {
         stubMaintenanceServerEndpointForRetrieve(HttpStatus.NOT_FOUND, null);
         stubMaintenanceServerEndpointForSubmitRepResp(Collections.singletonMap(ID, TEST_CASE_ID));
         stubMaintenanceServerEndpointForDeleteDraft(HttpStatus.OK);
-        when(validationService.validate(any(), anyString())).thenReturn(validationResponseOk);
+        when(validationService.validate(any(), any())).thenReturn(validationResponseOk);
         when(featureToggleService.isFeatureEnabled(Features.REPRESENTED_RESPONDENT_JOURNEY)).thenReturn(true);
 
         webClient.perform(post(API_URL)
@@ -195,7 +194,7 @@ public class SubmitCaseTest extends MockedFunctionalTest {
 
     @Test
     public void givenInvalidCaseDataAndAuth_whenCaseDataIsSubmitted_thenReturnBadRequest() throws Exception {
-        when(validationService.validate(any(), anyString())).thenReturn(validationResponseFail);
+        when(validationService.validate(any(), any())).thenReturn(validationResponseFail);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)

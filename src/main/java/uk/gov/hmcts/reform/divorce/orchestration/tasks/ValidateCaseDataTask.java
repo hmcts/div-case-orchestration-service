@@ -33,7 +33,7 @@ public class ValidateCaseDataTask implements Task<Map<String, Object>> {
         CoreCaseData coreCaseData = mapper.convertValue(caseData, CoreCaseData.class);
         log.info("Validating case data for case Id {}", caseId);
         ValidationResponse validationResponse = validationService.validate(coreCaseData, caseEventId);
-        log.info("Finished Validation case data for case Id {}, valid = {}", caseId, validationResponse.isValid());
+        log.info("Finished Validation case data for case Id {}, valid = {}", caseId, validationResponse.getValidationStatus());
 
         if (!validationResponse.isValid()) {
             for (String s : validationResponse.getErrors()) {

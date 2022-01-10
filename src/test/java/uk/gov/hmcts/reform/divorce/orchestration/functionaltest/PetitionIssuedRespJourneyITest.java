@@ -32,7 +32,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
@@ -122,12 +121,12 @@ public class PetitionIssuedRespJourneyITest extends IdamTestSupport {
 
     @Test
     public void givenValidationFailed_whenPetitionIssued_thenReturnCaseWithValidationErrors() throws Exception {
-        final List<String> errors = getListOfErrors();
+        final List<String> errors = List.of("Validation response was null");
         final ValidationResponse validationResponseFail = ValidationResponse.builder()
             .errors(errors)
             .warnings(Collections.singletonList("Warning!"))
             .build();
-        when(validationService.validate(any(), anyString())).thenReturn(validationResponseFail);
+        when(validationService.validate(any(), any())).thenReturn(validationResponseFail);
 
         final CcdCallbackResponse ccdCallbackResponse =
             CcdCallbackResponse.builder()
@@ -150,7 +149,7 @@ public class PetitionIssuedRespJourneyITest extends IdamTestSupport {
 
         stubDocumentGeneratorService(MINI_PETITION_TEMPLATE_NAME,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS), DOCUMENT_TYPE_PETITION);
-        when(validationService.validate(any(), anyString())).thenReturn(VALIDATION_RESPONSE);
+        when(validationService.validate(any(), any())).thenReturn(VALIDATION_RESPONSE);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -167,7 +166,7 @@ public class PetitionIssuedRespJourneyITest extends IdamTestSupport {
 
         stubDocumentGeneratorService(MINI_PETITION_TEMPLATE_NAME,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS), DOCUMENT_TYPE_PETITION);
-        when(validationService.validate(any(), anyString())).thenReturn(VALIDATION_RESPONSE);
+        when(validationService.validate(any(), any())).thenReturn(VALIDATION_RESPONSE);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -195,7 +194,7 @@ public class PetitionIssuedRespJourneyITest extends IdamTestSupport {
         stubPinDetailsEndpoint(BEARER_AUTH_TOKEN_1, pinRequest, pin);
         stubDocumentGeneratorService(MINI_PETITION_TEMPLATE_NAME,
             singletonMap(DOCUMENT_CASE_DETAILS_JSON_KEY, CASE_DETAILS), DOCUMENT_TYPE_PETITION);
-        when(validationService.validate(any(), anyString())).thenReturn(VALIDATION_RESPONSE);
+        when(validationService.validate(any(), any())).thenReturn(VALIDATION_RESPONSE);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -233,7 +232,7 @@ public class PetitionIssuedRespJourneyITest extends IdamTestSupport {
                 ACCESS_CODE, TEST_PIN_CODE
             ),
             DOCUMENT_TYPE_RESPONDENT_INVITATION);
-        when(validationService.validate(any(), anyString())).thenReturn(VALIDATION_RESPONSE);
+        when(validationService.validate(any(), any())).thenReturn(VALIDATION_RESPONSE);
 
         webClient.perform(post(API_URL)
             .header(AUTHORIZATION, AUTH_TOKEN)
@@ -273,7 +272,7 @@ public class PetitionIssuedRespJourneyITest extends IdamTestSupport {
                 ACCESS_CODE, TEST_PIN_CODE),
             DOCUMENT_TYPE_RESPONDENT_INVITATION
         );
-        when(validationService.validate(any(), anyString())).thenReturn(VALIDATION_RESPONSE);
+        when(validationService.validate(any(), any())).thenReturn(VALIDATION_RESPONSE);
 
         FeeResponse feeResponse = FeeResponse.builder().amount(550.00).build();
 
