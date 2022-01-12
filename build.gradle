@@ -55,7 +55,7 @@ def versions = [
         jsonAssert                   : '1.2.3',
         jsonPathAssert               : '2.2.0',
         junit                        : '4.13.1',
-        lombok                       : '1.18.18',
+        lombok                       : '1.18.22',
         postgresql                   : '42.2.13',
         puppyCrawl                   : '8.29',
         reformPropertiesVolume       : '0.0.4',
@@ -272,7 +272,7 @@ dependencies {
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: versions.springBoot
     implementation group: 'org.springframework.retry', name: 'spring-retry'
     implementation "com.github.hmcts:bsp-common-lib:${versions.bspCommonLib}"
-    implementation "com.github.hmcts:div-common-lib:1.2.18_dfr-62_0.6"
+    implementation "com.github.hmcts:div-common-lib:1.2.18_dfr-62_0.8"
     implementation group: 'uk.gov.hmcts.reform', name: 'idam-client', version: versions.idamClient
     implementation group: 'uk.gov.hmcts.reform', name: 'logging', version: versions.reformsJavaLogging
     implementation group: 'uk.gov.hmcts.reform', name: 'logging-appinsights', version: versions.reformsJavaLogging
