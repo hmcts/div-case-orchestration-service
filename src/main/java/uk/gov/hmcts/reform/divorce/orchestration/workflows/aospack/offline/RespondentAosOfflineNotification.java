@@ -3,6 +3,7 @@ package uk.gov.hmcts.reform.divorce.orchestration.workflows.aospack.offline;
 import com.google.common.collect.ImmutableMap;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.LanguagePreference;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -68,7 +69,10 @@ public class RespondentAosOfflineNotification {
             tasks.add(aosReceivedPetitionerSolicitorEmailTask);
             updateTaskContext(contextTransientObjects, caseDetails, authToken); //not clear from online equivalent which ones are actually needed
         } else {
-            if (isNotEmpty(getOptionalPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL, EMPTY_STRING))) {
+            log.info("CaseId: {} Petitioner not represented, checking email", caseId);
+            String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
+            if (!StringUtils.isBlank(petitionerEmail)) {
+                log.info("Petitioner email was not empty");
                 // notify petitioner
                 if (usingRespondentSolicitor(caseData)) {
                     log.info("CaseId: {} Adding email task for petitioner about offline respondent solicitor AoS submission", caseId);

@@ -51,6 +51,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.constants.TaskContextConstants.CCD_CASE_DATA;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.ADULTERY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.SEPARATION_FIVE_YEARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.SEPARATION_TWO_YEARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.tasks.util.TaskUtils.getMandatoryPropertyValueAsString;
 
@@ -278,6 +279,39 @@ public class RespondentAosOfflineNotificationTest {
         assertThat(contextTransientObjects.get(CCD_CASE_DATA), is(caseData));
         assertThat(contextTransientObjects.get(NOTIFICATION_EMAIL), is(petitionerEmail));
         assertThat(contextTransientObjects.get(NOTIFICATION_TEMPLATE), is(EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT_CORESP_NOT_REPLIED));
+
+        checkTemplateVariables(contextTransientObjects);
+    }
+
+    @Test
+    public void test_PetitionerEmail_RespondentNotDefending_ReasonIs5YrsSeparation() {
+        Map<String, Object> caseData = testFixture.getCaseDataForPetitionerEmail(false, false, SEPARATION_FIVE_YEARS, YES_VALUE, EMPTY, EMPTY);
+
+        final String caseId = getMandatoryPropertyValueAsString(caseData, D_8_CASE_REFERENCE);
+        final String petitionerEmail = getMandatoryPropertyValueAsString(caseData, D_8_PETITIONER_EMAIL);
+
+        CaseDetails caseDetails = mock(CaseDetails.class);
+        when(caseDetails.getCaseId()).thenReturn(caseId);
+        when(caseDetails.getCaseData()).thenReturn(caseData);
+
+        try {
+            respondentAosOfflineNotification.addAOSEmailTasks(contextTransientObjects, tasks, caseDetails, OfflineAosTestFixture.AUTH_TOKEN);
+        } catch (WorkflowException e) {
+            e.printStackTrace();
+            fail("no exception expected");
+        }
+
+        verify(caseDetails, atLeast(1)).getCaseId();
+        verify(caseDetails, atLeast(1)).getCaseData();
+
+        assertThat(tasks, hasSize(1));
+        assertThat(tasks.get(0), is(emailNotificationTask));
+
+        assertThat(contextTransientObjects.get(AUTH_TOKEN_JSON_KEY), is(OfflineAosTestFixture.AUTH_TOKEN));
+        assertThat(contextTransientObjects.get(CASE_ID_JSON_KEY), is(caseId));
+        assertThat(contextTransientObjects.get(CCD_CASE_DATA), is(caseData));
+        assertThat(contextTransientObjects.get(NOTIFICATION_EMAIL), is(petitionerEmail));
+        assertThat(contextTransientObjects.get(NOTIFICATION_TEMPLATE), is(EmailTemplateNames.RESPONDENT_SUBMISSION_CONSENT));
 
         checkTemplateVariables(contextTransientObjects);
     }
