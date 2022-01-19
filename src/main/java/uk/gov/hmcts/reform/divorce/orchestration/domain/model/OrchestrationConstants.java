@@ -145,6 +145,7 @@ public class OrchestrationConstants {
     public static final String CASE_LIST_FOR_PRONOUNCEMENT_DOCUMENT_TYPE = "caseListForPronouncement";
     public static final String CASE_LIST_FOR_PRONOUNCEMENT_FILE_NAME = "caseListForPronouncement";
     public static final String DN_DECISION_DATE_FIELD = "DNApprovalDate";
+    public static final String D8_PETITIONER_CONTACT_DETAILS_CONFIDENTIAL = "D8PetitionerContactDetailsConfidential";
 
     // Divorce Session
     public static final String DIVORCE_SESSION_EXISTING_PAYMENTS = "existingPayments";
