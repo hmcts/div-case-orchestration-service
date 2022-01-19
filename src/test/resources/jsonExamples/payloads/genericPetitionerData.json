@@ -8,6 +8,7 @@
       "D8PetitionerLastName": "Jones",
       "D8DerivedPetitionerCorrespondenceAddr": "10 Jones's Close\nLondon",
       "D8InferredRespondentGender": "female"
+      "D8PetitionerContactDetailsConfidential": "share"
     }
   }
 }
