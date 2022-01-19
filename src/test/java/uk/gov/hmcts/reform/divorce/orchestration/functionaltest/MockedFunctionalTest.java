@@ -8,6 +8,7 @@ import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.junit.ClassRule;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -99,6 +100,9 @@ public abstract class MockedFunctionalTest {
 
     @ClassRule
     public static WireMockClassRule prdServer = new WireMockClassRule(buildWireMockConfig(4451));
+
+    @BeforeEach
+    public void resetWireMocksBefore() { WireMock.reset(); }
 
     @AfterEach
     public void resetWireMocks() {
