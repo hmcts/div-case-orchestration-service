@@ -73,12 +73,14 @@ public class RespondentAosOfflineNotification {
             if (!StringUtils.isBlank(petitionerEmail)) {
                 log.info("Petitioner email was not empty");
                 // notify petitioner
+                log.info("CaseId: {} is using respondent Solicitor: {}", caseId, usingRespondentSolicitor(caseData));
+                log.info("CaseId: {} is Not Defending: {}", caseId, caseDataUtils.isRespondentNotDefending(caseData));
                 if (usingRespondentSolicitor(caseData)) {
                     log.info("CaseId: {} Adding email task for petitioner about offline respondent solicitor AoS submission", caseId);
                     tasks.add(emailNotificationTask);
                     updateTaskContext(contextTransientObjects, caseDetails, authToken);
                     updateTaskContextGenericEmail(contextTransientObjects, caseDetails);
-                } else if (caseDataUtils.isRespondentNotDefending(caseDetails.getCaseData())) {
+                } else if (caseDataUtils.isRespondentNotDefending(caseData)) {
                     log.info("CaseId: {} Adding email task for petitioner about offline respondent undefended AoS submission", caseId);
                     tasks.add(emailNotificationTask);
                     updateTaskContext(contextTransientObjects, caseDetails, authToken);
