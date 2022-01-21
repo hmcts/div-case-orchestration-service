@@ -47,10 +47,13 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.SOLICITOR_HOW_TO_PAY_JSON_KEY;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UI_ONLY_RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.ADULTERY;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.DESERTION;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.SEPARATION_FIVE_YEARS;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.SEPARATION_TWO_YEARS;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.facts.DivorceFact.UNREASONABLE_BEHAVIOUR;
 import static uk.gov.hmcts.reform.divorce.orchestration.testutil.CaseDataTestHelper.createCollectionMemberDocumentAsMap;
 
 public class CaseDataUtilsTest {
@@ -561,6 +564,30 @@ public class CaseDataUtilsTest {
         )), is(true));
 
         assertThat(caseDataUtils.isRespondentNotDefending(Collections.emptyMap()), is(false));
+    }
+
+    @Test
+    public void test_isRespondentNotDefendingAosOffline() {
+        assertThat(caseDataUtils.isRespondentNotDefendingAosOffline(ImmutableMap.of(
+            RESP_WILL_DEFEND_DIVORCE, YES_VALUE,
+            UI_ONLY_RESP_WILL_DEFEND_DIVORCE, YES_VALUE,
+            D_8_REASON_FOR_DIVORCE, UNREASONABLE_BEHAVIOUR.getValue()
+        )), is(false));
+
+        assertThat(caseDataUtils.isRespondentNotDefendingAosOffline(ImmutableMap.of(
+            UI_ONLY_RESP_WILL_DEFEND_DIVORCE, YES_VALUE,
+            D_8_REASON_FOR_DIVORCE, SEPARATION_TWO_YEARS.getValue()
+        )), is(false));
+
+        assertThat(caseDataUtils.isRespondentNotDefendingAosOffline(ImmutableMap.of(
+            UI_ONLY_RESP_WILL_DEFEND_DIVORCE, NO_VALUE,
+            D_8_REASON_FOR_DIVORCE, SEPARATION_FIVE_YEARS.getValue()
+        )), is(true));
+
+        assertThat(caseDataUtils.isRespondentNotDefendingAosOffline(ImmutableMap.of(
+            UI_ONLY_RESP_WILL_DEFEND_DIVORCE, NOT_DEFENDING_NOT_ADMITTING,
+            D_8_REASON_FOR_DIVORCE, SEPARATION_FIVE_YEARS.getValue()
+        )), is(true));
     }
 
 }

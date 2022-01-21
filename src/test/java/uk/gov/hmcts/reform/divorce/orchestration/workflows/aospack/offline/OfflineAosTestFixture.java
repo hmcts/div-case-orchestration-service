@@ -19,6 +19,7 @@ import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.Orchestrati
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_ADMIT_OR_CONSENT_TO_FACT;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_SOL_REPRESENTED;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.RESP_WILL_DEFEND_DIVORCE;
+import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.UI_ONLY_RESP_WILL_DEFEND_DIVORCE;
 import static uk.gov.hmcts.reform.divorce.orchestration.domain.model.OrchestrationConstants.YES_VALUE;
 
 public class OfflineAosTestFixture {
@@ -55,6 +56,7 @@ public class OfflineAosTestFixture {
             .put(D_8_CASE_REFERENCE, CASE_ID)
             .put(RESP_SOL_REPRESENTED, respondentRepresented ? YES_VALUE : NO_VALUE)
             .put(RESP_WILL_DEFEND_DIVORCE, defended ? YES_VALUE : NO_VALUE)
+            .put(UI_ONLY_RESP_WILL_DEFEND_DIVORCE, defended ? YES_VALUE : NO_VALUE)
             .put(D_8_REASON_FOR_DIVORCE, reasonForDivorce != null ? reasonForDivorce.getValue() : EMPTY)
             .put(RESP_ADMIT_OR_CONSENT_TO_FACT, respAdmit)
             .put(D_8_CO_RESPONDENT_NAMED, coRespNamed)

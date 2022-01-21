@@ -80,7 +80,7 @@ public class RespondentAosOfflineNotification {
                     tasks.add(emailNotificationTask);
                     updateTaskContext(contextTransientObjects, caseDetails, authToken);
                     updateTaskContextGenericEmail(contextTransientObjects, caseDetails);
-                } else if (caseDataUtils.isRespondentNotDefending(caseData)) {
+                } else if (caseDataUtils.isRespondentNotDefendingAosOffline(caseData)) {
                     log.info("CaseId: {} Adding email task for petitioner about offline respondent undefended AoS submission", caseId);
                     tasks.add(emailNotificationTask);
                     updateTaskContext(contextTransientObjects, caseDetails, authToken);
