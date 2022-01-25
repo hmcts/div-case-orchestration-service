@@ -71,10 +71,7 @@ public class RespondentAosOfflineNotification {
             log.info("CaseId: {} Petitioner not represented, checking email", caseId);
             String petitionerEmail = (String) caseData.get(D_8_PETITIONER_EMAIL);
             if (!StringUtils.isBlank(petitionerEmail)) {
-                log.info("Petitioner email was not empty");
                 // notify petitioner
-                log.info("CaseId: {} is using respondent Solicitor: {}", caseId, usingRespondentSolicitor(caseData));
-                log.info("CaseId: {} is Not Defending: {}", caseId, caseDataUtils.isRespondentNotDefending(caseData));
                 if (usingRespondentSolicitor(caseData)) {
                     log.info("CaseId: {} Adding email task for petitioner about offline respondent solicitor AoS submission", caseId);
                     tasks.add(emailNotificationTask);
