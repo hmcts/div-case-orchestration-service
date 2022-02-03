@@ -5,6 +5,7 @@ import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 import com.google.common.collect.ImmutableMap;
 import org.apache.logging.log4j.util.Strings;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -241,6 +242,7 @@ public class DnDecisionMadeCallbackITest extends MockedFunctionalTest {
     }
 
     @Test
+    @Ignore("Ignore for testing purposes")
     public void shouldSendEmailToPetitionerWhenDnDecisionMade() throws Exception {
         final String caseId = "1509876543215683";
 
