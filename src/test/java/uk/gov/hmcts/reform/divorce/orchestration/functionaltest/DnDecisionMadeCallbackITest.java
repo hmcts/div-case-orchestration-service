@@ -242,7 +242,6 @@ public class DnDecisionMadeCallbackITest extends MockedFunctionalTest {
     }
 
     @Test
-    @Ignore("Ignore for testing purposes")
     public void shouldSendEmailToPetitionerWhenDnDecisionMade() throws Exception {
         final String caseId = "1509876543215683";
 
