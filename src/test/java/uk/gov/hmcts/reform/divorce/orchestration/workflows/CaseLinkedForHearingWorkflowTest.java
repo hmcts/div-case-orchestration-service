@@ -28,12 +28,15 @@ import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.CoEResponde
 import uk.gov.hmcts.reform.divorce.orchestration.tasks.bulk.printing.MultiBulkPrinterTask;
 import uk.gov.hmcts.reform.divorce.orchestration.util.CaseDataUtils;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertTrue;
@@ -399,7 +402,7 @@ public class CaseLinkedForHearingWorkflowTest {
             AUTH_TOKEN
         );
 
-        assertThat(returnedCaseData.get(D8DOCUMENTS_GENERATED), is(equalTo(null)));
+        assertThat(Optional.ofNullable(returnedCaseData.get(D8DOCUMENTS_GENERATED)), is(equalTo(nullValue())));
     }
 
     @Test

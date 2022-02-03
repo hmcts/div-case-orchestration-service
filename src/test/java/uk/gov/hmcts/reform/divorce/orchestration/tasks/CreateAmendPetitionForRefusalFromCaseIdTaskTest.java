@@ -10,6 +10,7 @@ import uk.gov.hmcts.reform.divorce.orchestration.client.CaseMaintenanceClient;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.TaskContext;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,6 +38,7 @@ public class CreateAmendPetitionForRefusalFromCaseIdTaskTest {
         context.setTransientObject(AUTH_TOKEN_JSON_KEY, AUTH_TOKEN);
         context.setTransientObject(CASE_ID_JSON_KEY, TEST_CASE_ID);
         Map<String, Object> payload = new HashMap<>();
+        @Nullable
         Map<String, Object> expectedResponse = null;
 
         when(caseMaintenanceClient.amendPetitionForRefusalFromCaseId(AUTH_TOKEN, TEST_CASE_ID))
