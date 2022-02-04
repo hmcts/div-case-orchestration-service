@@ -4,7 +4,9 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 import com.google.common.collect.ImmutableMap;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.logging.log4j.util.Strings;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,8 +104,16 @@ public class DnDecisionMadeCallbackITest extends MockedFunctionalTest {
     @Autowired
     ThreadPoolTaskExecutor asyncTaskExecutor;
 
-    @BeforeEach
+    @Autowired
+    PoolingHttpClientConnectionManager poolingHttpClientConnectionManager;
+
+    @Before
     public void setUp() {
+        poolingHttpClientConnectionManager.setValidateAfterInactivity(10);
+    }
+
+    @BeforeEach
+    public void reset() {
         resetAllMockServices();
     }
 
