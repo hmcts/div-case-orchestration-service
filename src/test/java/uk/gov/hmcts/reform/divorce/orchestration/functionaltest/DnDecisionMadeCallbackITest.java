@@ -5,8 +5,8 @@ import com.github.tomakehurst.wiremock.http.RequestMethod;
 import com.github.tomakehurst.wiremock.matching.RequestPatternBuilder;
 import com.google.common.collect.ImmutableMap;
 import org.apache.logging.log4j.util.Strings;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpMethod;
@@ -102,7 +102,7 @@ public class DnDecisionMadeCallbackITest extends MockedFunctionalTest {
     @Autowired
     ThreadPoolTaskExecutor asyncTaskExecutor;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         resetAllMockServices();
     }
