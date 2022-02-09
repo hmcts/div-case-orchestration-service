@@ -1,12 +1,14 @@
 package uk.gov.hmcts.reform.divorce.orchestration.workflows;
 
 import feign.FeignException;
+import feign.Request;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.WorkflowException;
@@ -108,7 +110,7 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
     public void caseNotFoundIsWrappedInWorkflowException() throws WorkflowException, TaskException {
         final UserDetails userDetails = UserDetails.builder().build();
 
-        when(getCaseWithId.execute(any(), eq(userDetails))).thenThrow(new FeignException.NotFound("test", null, null, null));
+        when(getCaseWithId.execute(any(), eq(userDetails))).thenThrow(new FeignException.NotFound("test", Mockito.mock(Request.class),null));
 
         respondentSolicitorLinkCaseWorkflow.run(caseDetails, TEST_TOKEN);
     }
@@ -120,7 +122,9 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
         when(getCaseWithId.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(validateExistingSolicitorLink.execute(any(), eq(userDetails))).thenReturn(userDetails);
         when(retrievePinUserDetails.execute(any(), eq(userDetails))).thenReturn(userDetails);
-        when(linkRespondentTask.execute(any(), eq(userDetails))).thenThrow(new FeignException.Unauthorized("test", null, null, null));
+        when(linkRespondentTask.execute(any(), eq(userDetails)))
+            .thenThrow(new FeignException.Unauthorized("test",
+                Mockito.mock(Request.class), null));
 
         respondentSolicitorLinkCaseWorkflow.run(caseDetails, TEST_TOKEN);
     }
@@ -129,7 +133,7 @@ public class RespondentSolicitorLinkCaseWorkflowTest {
     public void otherExceptionsNotWrappedInWorkflowException() throws WorkflowException, TaskException {
         final UserDetails userDetails = UserDetails.builder().build();
 
-        when(getCaseWithId.execute(any(), eq(userDetails))).thenThrow(new FeignException.GatewayTimeout("test", null, null,null));
+        when(getCaseWithId.execute(any(), eq(userDetails))).thenThrow(new FeignException.GatewayTimeout("test", Mockito.mock(Request.class), null));
 
         respondentSolicitorLinkCaseWorkflow.run(caseDetails, TEST_TOKEN);
     }

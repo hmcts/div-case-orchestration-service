@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.divorce.orchestration.testutil;
 
 import feign.FeignException;
+import feign.Request;
+import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.CreditAccountPaymentResponse;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.pay.StatusHistoriesItem;
@@ -40,10 +42,12 @@ public class PbaClientErrorTestUtil {
 
     public static FeignException buildException(HttpStatus httpStatus, CreditAccountPaymentResponse paymentResponse) {
         byte[] body = ObjectMapperTestUtil.convertObjectToJsonString(paymentResponse).getBytes();
-        return new FeignException.FeignClientException(httpStatus.value(),  TEST_ERROR_MESSAGE, null, body, null);
+        return new FeignException.FeignClientException(httpStatus.value(),
+            TEST_ERROR_MESSAGE, Mockito.mock(Request.class), body);
     }
 
     public static FeignException buildExceptionWithOutResponseBody(HttpStatus httpStatus) {
-        return new FeignException.FeignClientException(httpStatus.value(), TEST_ERROR_MESSAGE, null, TEST_ERROR_MESSAGE.getBytes(), null);
+        return new FeignException.FeignClientException(httpStatus.value(),
+            TEST_ERROR_MESSAGE, Mockito.mock(Request.class), TEST_ERROR_MESSAGE.getBytes());
     }
 }

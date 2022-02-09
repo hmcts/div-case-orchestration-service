@@ -7,7 +7,7 @@ import feign.RetryableException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -43,8 +43,6 @@ public class RetryableBulkCaseWorkflowTest {
     @Spy
     private RetryableBulkCaseWorkflow retryableBulkCaseWorkflow;
 
-    @Mock
-    Request mockRequest;
 
     @Before
     public void setup() {
@@ -75,32 +73,32 @@ public class RetryableBulkCaseWorkflowTest {
     @Test
     public void givenServiceUnavailableException_whenExecuteWithRetries_thenExhaustAllTheRetries() throws WorkflowException {
         given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(
-            new FeignException.ServiceUnavailable("Error", null, "Error".getBytes(), null));
+            new FeignException.ServiceUnavailable("Error", Mockito.mock(Request.class), "Error".getBytes()));
     }
 
     @Test
     public void givenBadGatewayException_whenExecuteWithRetries_thenExhaustAllTheRetries() throws WorkflowException {
         given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(
-            new FeignException.BadGateway("Error", null, "Error".getBytes(), null));
+            new FeignException.BadGateway("Error", Mockito.mock(Request.class), "Error".getBytes()));
     }
 
     @Test
     public void givenGatewayTimeoutException_whenExecuteWithRetries_thenExhaustAllTheRetries() throws WorkflowException {
         given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(
-            new FeignException.GatewayTimeout("Error", null, "Error".getBytes(), null));
+            new FeignException.GatewayTimeout("Error", Mockito.mock(Request.class), "Error".getBytes()));
     }
 
     @Test
     public void givenRetryableException_whenExecuteWithRetries_thenExhaustAllTheRetries() throws WorkflowException {
         RetryableException retryableException = new RetryableException(-1, "Error", Request.HttpMethod.GET,
-            new Date(), null);
+            new Date(), Mockito.mock(Request.class));
         given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(retryableException);
     }
 
     @Test
     public void givenInternalServerErrorException_whenExecuteWithRetries_thenExhaustAllTheRetries() throws WorkflowException {
         given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(
-            new FeignException.InternalServerError("", mockRequest, "Error".getBytes(), null));
+            new FeignException.InternalServerError("", Mockito.mock(Request.class), "Error".getBytes()));
     }
 
     public void given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(FeignException expectedException) throws WorkflowException {
@@ -119,7 +117,7 @@ public class RetryableBulkCaseWorkflowTest {
 
         verify(retryableBulkCaseWorkflow, times(MAX_RETRIES)).run(caseDetail, TEST_CASE_ID_1, AUTH_TOKEN);
         verify(retryableBulkCaseWorkflow, times(1)).run(caseDetail, TEST_CASE_ID_2, AUTH_TOKEN);
-        verify(retryableBulkCaseWorkflow,times(1)).notifyFailedCases(TEST_CASE_ID, Collections.singletonList(caseData1));
+        verify(retryableBulkCaseWorkflow, times(1)).notifyFailedCases(TEST_CASE_ID, Collections.singletonList(caseData1));
     }
 
     @Test
@@ -131,7 +129,7 @@ public class RetryableBulkCaseWorkflowTest {
             CCD_CASE_DATA_FIELD, bulkCaseData);
 
         when(retryableBulkCaseWorkflow.run(caseDetail, TEST_CASE_ID_1, AUTH_TOKEN))
-            .thenThrow(new FeignException.NotAcceptable("Error", mockRequest, "Error".getBytes(), null));
+            .thenThrow(new FeignException.NotAcceptable("Error", Mockito.mock(Request.class), "Error".getBytes()));
 
         boolean executionSuccessful = retryableBulkCaseWorkflow.executeWithRetries(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
 
@@ -139,7 +137,7 @@ public class RetryableBulkCaseWorkflowTest {
 
         verify(retryableBulkCaseWorkflow, times(1)).run(caseDetail, TEST_CASE_ID_1, AUTH_TOKEN);
         verify(retryableBulkCaseWorkflow, times(1)).run(caseDetail, TEST_CASE_ID_2, AUTH_TOKEN);
-        verify(retryableBulkCaseWorkflow,times(1)).notifyFailedCases(TEST_CASE_ID, Collections.singletonList(caseData1));
+        verify(retryableBulkCaseWorkflow, times(1)).notifyFailedCases(TEST_CASE_ID, Collections.singletonList(caseData1));
     }
 
     @Test
@@ -148,10 +146,10 @@ public class RetryableBulkCaseWorkflowTest {
         Map<String, Object> caseData2 = ImmutableMap.of(VALUE_KEY, ImmutableMap.of(CASE_REFERENCE_FIELD, TEST_CASE_ID_2));
         Map<String, Object> bulkCaseData = ImmutableMap.of(BULK_CASE_ACCEPTED_LIST_KEY, asList(caseData1, caseData2));
         Map<String, Object> caseDetail = ImmutableMap.of(ID, TEST_CASE_ID,
-                CCD_CASE_DATA_FIELD, bulkCaseData);
+            CCD_CASE_DATA_FIELD, bulkCaseData);
 
         when(retryableBulkCaseWorkflow.run(caseDetail, TEST_CASE_ID_1, AUTH_TOKEN))
-                .thenThrow(new FeignException.UnprocessableEntity("Error", mockRequest, "Error".getBytes(), null));
+            .thenThrow(new FeignException.UnprocessableEntity("Error", Mockito.mock(Request.class), "Error".getBytes()));
 
         boolean executionSuccessful = retryableBulkCaseWorkflow.executeWithRetries(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
 
@@ -159,7 +157,7 @@ public class RetryableBulkCaseWorkflowTest {
 
         verify(retryableBulkCaseWorkflow, times(1)).run(caseDetail, TEST_CASE_ID_1, AUTH_TOKEN);
         verify(retryableBulkCaseWorkflow, times(1)).run(caseDetail, TEST_CASE_ID_2, AUTH_TOKEN);
-        verify(retryableBulkCaseWorkflow,times(1)).notifyFailedCases(TEST_CASE_ID, Collections.singletonList(caseData1));
+        verify(retryableBulkCaseWorkflow, times(1)).notifyFailedCases(TEST_CASE_ID, Collections.singletonList(caseData1));
     }
 
     @Test
@@ -180,7 +178,7 @@ public class RetryableBulkCaseWorkflowTest {
 
         verify(retryableBulkCaseWorkflow, times(1)).run(caseDetail, TEST_CASE_ID_1, AUTH_TOKEN);
         verify(retryableBulkCaseWorkflow, times(1)).run(caseDetail, TEST_CASE_ID_2, AUTH_TOKEN);
-        verify(retryableBulkCaseWorkflow,times(1)).notifyFailedCases(TEST_CASE_ID, asList(caseData1, caseData2));
+        verify(retryableBulkCaseWorkflow, times(1)).notifyFailedCases(TEST_CASE_ID, asList(caseData1, caseData2));
     }
 
     @Test(expected = BulkUpdateException.class)
@@ -194,10 +192,10 @@ public class RetryableBulkCaseWorkflowTest {
         Map<String, Object> caseData2 = ImmutableMap.of(VALUE_KEY, ImmutableMap.of(CASE_REFERENCE_FIELD, TEST_CASE_ID_2));
         Map<String, Object> bulkCaseData = ImmutableMap.of(BULK_CASE_ACCEPTED_LIST_KEY, asList(caseData1, caseData2));
         Map<String, Object> caseDetail = ImmutableMap.of(ID, TEST_CASE_ID,
-                CCD_CASE_DATA_FIELD, bulkCaseData);
+            CCD_CASE_DATA_FIELD, bulkCaseData);
 
         BulkWorkflowExecutionResult result =
-                retryableBulkCaseWorkflow.executeWithRetriesForCreate(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
+            retryableBulkCaseWorkflow.executeWithRetriesForCreate(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
 
         assertThat(result.isSuccessStatus(), is(true));
 
@@ -211,13 +209,13 @@ public class RetryableBulkCaseWorkflowTest {
         Map<String, Object> caseData2 = ImmutableMap.of(VALUE_KEY, ImmutableMap.of(CASE_REFERENCE_FIELD, TEST_CASE_ID_2));
         Map<String, Object> bulkCaseData = ImmutableMap.of(BULK_CASE_ACCEPTED_LIST_KEY, asList(caseData1, caseData2));
         Map<String, Object> caseDetail = ImmutableMap.of(ID, TEST_CASE_ID,
-                CCD_CASE_DATA_FIELD, bulkCaseData);
+            CCD_CASE_DATA_FIELD, bulkCaseData);
 
         when(retryableBulkCaseWorkflow.run(caseDetail, TEST_CASE_ID_1, AUTH_TOKEN))
-                .thenThrow(new FeignException.NotAcceptable("Error", mockRequest, "Error".getBytes(), null));
+            .thenThrow(new FeignException.NotAcceptable("Error", Mockito.mock(Request.class), "Error".getBytes()));
 
         BulkWorkflowExecutionResult result =
-                retryableBulkCaseWorkflow.executeWithRetriesForCreate(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
+            retryableBulkCaseWorkflow.executeWithRetriesForCreate(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
 
         assertThat(result.isSuccessStatus(), is(false));
         assertThat(result.getRemovableCaseIds().size(), is(0));
@@ -225,7 +223,7 @@ public class RetryableBulkCaseWorkflowTest {
 
         verify(retryableBulkCaseWorkflow, times(1)).run(caseDetail, TEST_CASE_ID_1, AUTH_TOKEN);
         verify(retryableBulkCaseWorkflow, times(1)).run(caseDetail, TEST_CASE_ID_2, AUTH_TOKEN);
-        verify(retryableBulkCaseWorkflow,times(1)).notifyFailedCases(TEST_CASE_ID, Collections.singletonList(caseData1));
+        verify(retryableBulkCaseWorkflow, times(1)).notifyFailedCases(TEST_CASE_ID, Collections.singletonList(caseData1));
     }
 
     @Test
@@ -234,13 +232,13 @@ public class RetryableBulkCaseWorkflowTest {
         Map<String, Object> caseData2 = ImmutableMap.of(VALUE_KEY, ImmutableMap.of(CASE_REFERENCE_FIELD, TEST_CASE_ID_2));
         Map<String, Object> bulkCaseData = ImmutableMap.of(BULK_CASE_ACCEPTED_LIST_KEY, asList(caseData1, caseData2));
         Map<String, Object> caseDetail = ImmutableMap.of(ID, TEST_CASE_ID,
-                CCD_CASE_DATA_FIELD, bulkCaseData);
+            CCD_CASE_DATA_FIELD, bulkCaseData);
 
         when(retryableBulkCaseWorkflow.run(caseDetail, TEST_CASE_ID_1, AUTH_TOKEN))
-                .thenThrow(new FeignException.UnprocessableEntity("Error", mockRequest, "Error".getBytes(), null));
+            .thenThrow(new FeignException.UnprocessableEntity("Error", Mockito.mock(Request.class), "Error".getBytes()));
 
         BulkWorkflowExecutionResult result =
-                retryableBulkCaseWorkflow.executeWithRetriesForCreate(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
+            retryableBulkCaseWorkflow.executeWithRetriesForCreate(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
 
         assertThat(result.isSuccessStatus(), is(true));
         assertThat(result.getRemovableCaseIds().size(), is(1));
@@ -248,7 +246,7 @@ public class RetryableBulkCaseWorkflowTest {
 
         verify(retryableBulkCaseWorkflow, times(1)).run(caseDetail, TEST_CASE_ID_1, AUTH_TOKEN);
         verify(retryableBulkCaseWorkflow, times(1)).run(caseDetail, TEST_CASE_ID_2, AUTH_TOKEN);
-        verify(retryableBulkCaseWorkflow,times(1)).notifyFailedCases(TEST_CASE_ID, Collections.singletonList(caseData1));
+        verify(retryableBulkCaseWorkflow, times(1)).notifyFailedCases(TEST_CASE_ID, Collections.singletonList(caseData1));
     }
 
     @Test
@@ -257,13 +255,13 @@ public class RetryableBulkCaseWorkflowTest {
         Map<String, Object> caseData2 = ImmutableMap.of(VALUE_KEY, ImmutableMap.of(CASE_REFERENCE_FIELD, TEST_CASE_ID_2));
         Map<String, Object> bulkCaseData = ImmutableMap.of(BULK_CASE_ACCEPTED_LIST_KEY, asList(caseData1, caseData2));
         Map<String, Object> caseDetail = ImmutableMap.of(ID, TEST_CASE_ID,
-                CCD_CASE_DATA_FIELD, bulkCaseData);
+            CCD_CASE_DATA_FIELD, bulkCaseData);
 
         when(retryableBulkCaseWorkflow.run(caseDetail, TEST_CASE_ID_1, AUTH_TOKEN))
-                .thenThrow(new FeignException.NotFound("Error", mockRequest, "Error".getBytes(), null));
+            .thenThrow(new FeignException.NotFound("Error", Mockito.mock(Request.class), "Error".getBytes()));
 
         BulkWorkflowExecutionResult result =
-                retryableBulkCaseWorkflow.executeWithRetriesForCreate(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
+            retryableBulkCaseWorkflow.executeWithRetriesForCreate(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
 
         assertThat(result.isSuccessStatus(), is(true));
         assertThat(result.getRemovableCaseIds().size(), is(1));
@@ -271,7 +269,7 @@ public class RetryableBulkCaseWorkflowTest {
 
         verify(retryableBulkCaseWorkflow, times(1)).run(caseDetail, TEST_CASE_ID_1, AUTH_TOKEN);
         verify(retryableBulkCaseWorkflow, times(1)).run(caseDetail, TEST_CASE_ID_2, AUTH_TOKEN);
-        verify(retryableBulkCaseWorkflow,times(1)).notifyFailedCases(TEST_CASE_ID, Collections.singletonList(caseData1));
+        verify(retryableBulkCaseWorkflow, times(1)).notifyFailedCases(TEST_CASE_ID, Collections.singletonList(caseData1));
     }
 
     @Test
@@ -280,15 +278,15 @@ public class RetryableBulkCaseWorkflowTest {
         Map<String, Object> caseData2 = ImmutableMap.of(VALUE_KEY, ImmutableMap.of(CASE_REFERENCE_FIELD, TEST_CASE_ID_2));
         Map<String, Object> bulkCaseData = ImmutableMap.of(BULK_CASE_ACCEPTED_LIST_KEY, asList(caseData1, caseData2));
         Map<String, Object> caseDetail = ImmutableMap.of(ID, TEST_CASE_ID,
-                CCD_CASE_DATA_FIELD, bulkCaseData);
+            CCD_CASE_DATA_FIELD, bulkCaseData);
 
         when(retryableBulkCaseWorkflow.run(caseDetail, TEST_CASE_ID_1, AUTH_TOKEN))
-                .thenThrow(new RuntimeException());
+            .thenThrow(new RuntimeException());
         when(retryableBulkCaseWorkflow.run(caseDetail, TEST_CASE_ID_2, AUTH_TOKEN))
-                .thenThrow(new RuntimeException());
+            .thenThrow(new RuntimeException());
 
         BulkWorkflowExecutionResult result =
-                retryableBulkCaseWorkflow.executeWithRetriesForCreate(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
+            retryableBulkCaseWorkflow.executeWithRetriesForCreate(caseDetail, TEST_CASE_ID, AUTH_TOKEN);
 
         assertThat(result.isSuccessStatus(), is(false));
         assertThat(result.getRemovableCaseIds().size(), is(0));
@@ -296,6 +294,6 @@ public class RetryableBulkCaseWorkflowTest {
 
         verify(retryableBulkCaseWorkflow, times(1)).run(caseDetail, TEST_CASE_ID_1, AUTH_TOKEN);
         verify(retryableBulkCaseWorkflow, times(1)).run(caseDetail, TEST_CASE_ID_2, AUTH_TOKEN);
-        verify(retryableBulkCaseWorkflow,times(1)).notifyFailedCases(TEST_CASE_ID, asList(caseData1, caseData2));
+        verify(retryableBulkCaseWorkflow, times(1)).notifyFailedCases(TEST_CASE_ID, asList(caseData1, caseData2));
     }
 }

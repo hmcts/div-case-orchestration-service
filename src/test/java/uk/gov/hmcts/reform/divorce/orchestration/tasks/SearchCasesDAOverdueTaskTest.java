@@ -1,12 +1,14 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import feign.FeignException;
+import feign.Request;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
 import uk.gov.hmcts.reform.divorce.orchestration.framework.workflow.task.DefaultTaskContext;
@@ -138,7 +140,7 @@ public class SearchCasesDAOverdueTaskTest {
             eq(AUTH_TOKEN),
             any(),
             any())
-        ).thenThrow(new FeignException.BadRequest("Bad test request",  null, "".getBytes(),null));
+        ).thenThrow(new FeignException.BadRequest("Bad test request",  Mockito.mock(Request.class), "".getBytes()));
 
         try {
             classUnderTest.execute(contextBeingModified, Collections.emptyMap());

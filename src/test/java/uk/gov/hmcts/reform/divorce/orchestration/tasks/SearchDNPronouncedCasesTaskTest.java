@@ -1,6 +1,7 @@
 package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import feign.FeignException;
+import feign.Request;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
@@ -8,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import uk.gov.hmcts.reform.divorce.orchestration.domain.model.ccd.CaseDetails;
@@ -98,7 +100,7 @@ public class SearchDNPronouncedCasesTaskTest {
     @Test
     public void shouldRethrowFeignException() throws TaskException {
         when(mockCmsElasticSearchSupport.searchCMSCases(eq(AUTH_TOKEN), any(), any()))
-            .thenThrow(new FeignException.BadRequest("Bad test request", null, "".getBytes(), null));
+            .thenThrow(new FeignException.BadRequest("Bad test request", Mockito.mock(Request.class), "".getBytes()));
 
         Map<String, Object> actualResult = null;
         try {

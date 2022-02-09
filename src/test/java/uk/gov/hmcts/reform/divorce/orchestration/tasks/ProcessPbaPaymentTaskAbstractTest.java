@@ -2,11 +2,13 @@ package uk.gov.hmcts.reform.divorce.orchestration.tasks;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
+import feign.Request;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.springframework.http.HttpStatus;
@@ -278,7 +280,7 @@ public abstract class ProcessPbaPaymentTaskAbstractTest {
         byte[] body = ObjectMapperTestUtil.convertObjectToJsonString(paymentResponse).getBytes();
         return (invocation) -> {
             if (httpStatus.value() >= 400) {
-                throw new FeignException.FeignClientException(httpStatus.value(), errorMessage, null, body, null);
+                throw new FeignException.FeignClientException(httpStatus.value(), errorMessage, Mockito.mock(Request.class),body);
             }
             return ResponseEntity.status(httpStatus).body(paymentResponse);
         };
