@@ -49,11 +49,10 @@ public class SearchForCaseByEmailTest {
     public void shouldSearchCaseByEmailAndReturnCaseDetailsWhenFound() {
 
         when(authUtil.getCaseworkerToken()).thenReturn(CASEWORKER_TOKEN);
-        when(caseMaintenanceClient.searchCases(anyString(), anyString())).thenReturn(SearchResult.builder().cases(Collections.singletonList(
-            CaseDetails.builder().caseId("caseId").build())).build());
+        when(caseMaintenanceClient.searchCases(anyString(), anyString()))
+            .thenReturn(SearchResult.builder().cases(Collections.singletonList(CaseDetails.builder().caseId("caseId").build())).build());
 
         Optional<List<CaseDetails>> caseDetails = searchForCaseByEmail.searchCasesByEmail("emailAddress");
-
         verify(caseMaintenanceClient).searchCases(tokenCaptor.capture(), queryCaptor.capture());
         assertThat(tokenCaptor.getValue(), equalTo(CASEWORKER_TOKEN));
         assertThat(queryCaptor.getValue(), equalTo("{\"query\":{\"term\":{ \"data.D8PetitionerEmail.keyword\":\"emailAddress\"}}}"));

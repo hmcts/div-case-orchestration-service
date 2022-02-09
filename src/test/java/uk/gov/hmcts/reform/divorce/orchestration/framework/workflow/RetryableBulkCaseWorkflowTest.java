@@ -74,28 +74,33 @@ public class RetryableBulkCaseWorkflowTest {
 
     @Test
     public void givenServiceUnavailableException_whenExecuteWithRetries_thenExhaustAllTheRetries() throws WorkflowException {
-        given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(new FeignException.ServiceUnavailable("Error", null, "Error".getBytes(), null));
+        given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(
+            new FeignException.ServiceUnavailable("Error", null, "Error".getBytes(), null));
     }
 
     @Test
     public void givenBadGatewayException_whenExecuteWithRetries_thenExhaustAllTheRetries() throws WorkflowException {
-        given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(new FeignException.BadGateway("Error", null, "Error".getBytes(), null));
+        given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(
+            new FeignException.BadGateway("Error", null, "Error".getBytes(), null));
     }
 
     @Test
     public void givenGatewayTimeoutException_whenExecuteWithRetries_thenExhaustAllTheRetries() throws WorkflowException {
-        given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(new FeignException.GatewayTimeout("Error", null, "Error".getBytes(), null));
+        given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(
+            new FeignException.GatewayTimeout("Error", null, "Error".getBytes(), null));
     }
 
     @Test
     public void givenRetryableException_whenExecuteWithRetries_thenExhaustAllTheRetries() throws WorkflowException {
-        RetryableException retryableException = new RetryableException(-1, "Error", Request.HttpMethod.GET, new Date(), null);
+        RetryableException retryableException = new RetryableException(-1, "Error", Request.HttpMethod.GET,
+            new Date(), null);
         given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(retryableException);
     }
 
     @Test
     public void givenInternalServerErrorException_whenExecuteWithRetries_thenExhaustAllTheRetries() throws WorkflowException {
-        given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(new FeignException.InternalServerError("", mockRequest, "Error".getBytes(), null));
+        given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(
+            new FeignException.InternalServerError("", mockRequest, "Error".getBytes(), null));
     }
 
     public void given5xException_whenExecuteWithRetries_thenExhaustAllTheRetries(FeignException expectedException) throws WorkflowException {
