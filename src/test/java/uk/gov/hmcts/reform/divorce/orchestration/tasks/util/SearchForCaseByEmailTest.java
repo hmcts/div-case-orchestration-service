@@ -51,13 +51,12 @@ public class SearchForCaseByEmailTest {
         when(authUtil.getCaseworkerToken()).thenReturn(CASEWORKER_TOKEN);
         when(caseMaintenanceClient.searchCases(anyString(), anyString()))
             .thenReturn(SearchResult.builder().cases(Collections.singletonList(CaseDetails.builder().caseId("caseId").build())).build());
-
         Optional<List<CaseDetails>> caseDetails = searchForCaseByEmail.searchCasesByEmail("emailAddress");
+        assertThat(caseDetails.isPresent(), equalTo(Boolean.TRUE));
         verify(caseMaintenanceClient).searchCases(tokenCaptor.capture(), queryCaptor.capture());
         assertThat(tokenCaptor.getValue(), equalTo(CASEWORKER_TOKEN));
         assertThat(queryCaptor.getValue(), equalTo("{\"query\":{\"term\":{ \"data.D8PetitionerEmail.keyword\":\"emailAddress\"}}}"));
 
-        assertThat(caseDetails.isPresent(), equalTo(Boolean.TRUE));
     }
 
     @Test
@@ -67,11 +66,10 @@ public class SearchForCaseByEmailTest {
         when(caseMaintenanceClient.searchCases(anyString(), anyString())).thenReturn(SearchResult.builder().cases(Collections.emptyList()).build());
 
         Optional<List<CaseDetails>> caseDetails = searchForCaseByEmail.searchCasesByEmail("emailAddress");
-
+        assertThat(caseDetails.isEmpty(), equalTo(Boolean.TRUE));
         verify(caseMaintenanceClient).searchCases(tokenCaptor.capture(), queryCaptor.capture());
         assertThat(tokenCaptor.getValue(), equalTo(CASEWORKER_TOKEN));
         assertThat(queryCaptor.getValue(), equalTo("{\"query\":{\"term\":{ \"data.D8PetitionerEmail.keyword\":\"emailAddress\"}}}"));
 
-        assertThat(caseDetails.isEmpty(), equalTo(Boolean.TRUE));
     }
 }
